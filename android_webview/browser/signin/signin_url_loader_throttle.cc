@@ -47,7 +47,11 @@ AwGoogleAccountsDelegate* GetDelegateFromWebContents(
     return nullptr;
   }
 
-  return AwContents::FromWebContents(web_contents);
+  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
+  if (!aw_contents) {
+    return nullptr;
+  }
+  return aw_contents->maybe_google_accounts_delegate();
 }
 
 void ProcessMirrorHeader(

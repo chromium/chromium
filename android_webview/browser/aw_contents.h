@@ -99,6 +99,12 @@ class AwContents : public FindHelper::Listener,
     return render_view_host_ext_.get();
   }
 
+  AwGoogleAccountsDelegate* maybe_google_accounts_delegate() {
+    return google_account_mirroring_enabled_ ? this : nullptr;
+  }
+  void SetGoogleAccountMirroringEnabled(bool enabled,
+                                        const std::string& gaia_id);
+
   // AwGoogleAccountsDelegate:
   void OnGoogleAccountsRequest(const signin::ManageAccountsParams& params,
                                bool is_outermost_main_frame) override;
@@ -397,6 +403,8 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<PermissionRequestHandler> permission_request_handler_;
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
   AwHeaderInterceptorStore header_interceptor_store_;
+  bool google_account_mirroring_enabled_ = false;
+  std::string gaia_id_;
 
   struct PrerenderInfo : public content::PrerenderHandle::Observer {
     PrerenderInfo(std::unique_ptr<content::PrerenderHandle> prerender_handle,

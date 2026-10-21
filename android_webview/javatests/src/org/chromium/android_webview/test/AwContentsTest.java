@@ -55,6 +55,7 @@ import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwViewAndroidDelegate;
+import org.chromium.android_webview.GoogleAccountsEvent;
 import org.chromium.android_webview.http_headers.AwHeaderInterceptorStore;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
@@ -77,12 +78,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.net.test.util.WebServer;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.InputStream;
@@ -2176,5 +2179,67 @@ public class AwContentsTest extends AwParameterizedTest {
 
         Assert.assertEquals(
                 "\"success\"", resultFuture.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "ignore-certificate-errors",
+        "ignore-google-port-numbers"
+    })
+    public void testGoogleAccountsHeaderSetAndParsed() throws Throwable {
+        try (TestWebServer webServer = TestWebServer.startSsl()) {
+            webServer.setServerHost("accounts.google.com");
+            int serverPort = Uri.parse(webServer.getResponseUrl("/")).getPort();
+            CommandLine.getInstance()
+                    .appendSwitchWithValue("gaia-url", "https://accounts.google.com:" + serverPort);
+
+            mActivityTestRule.startBrowserProcess();
+            AwTestContainerView testContainer =
+                    mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+            AwContents awContents = testContainer.getAwContents();
+
+            SettableFuture<GoogleAccountsEvent> eventFuture = SettableFuture.create();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        awContents.configureGoogleAccountMirroring(
+                                "test_gaia_id", event -> eventFuture.set(event));
+                    });
+
+            String path = "/accounts_test.html";
+            List<Pair<String, String>> responseHeaders =
+                    List.of(
+                            Pair.create(
+                                    "X-Chrome-Manage-Accounts",
+                                    "action=ADDSESSION,continue_url=https://example.com/continue"));
+            String pageUrl =
+                    webServer.setResponse(
+                            path, "<html><body>accounts.google.com</body></html>", responseHeaders);
+
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+
+            // Verify the X-Chrome-Connected request header was set on the request to
+            // accounts.google.com.
+            Assert.assertEquals(1, webServer.getRequestCount(path));
+            WebServer.HTTPRequest request = webServer.getLastRequest(path);
+            Assert.assertNotNull(request);
+            String requestHeader = request.headerValue("X-Chrome-Connected");
+            Assert.assertNotNull(requestHeader);
+            Assert.assertFalse(requestHeader.isEmpty());
+            Assert.assertTrue(requestHeader.contains("source=AndroidWebView"));
+
+            // Verify the X-Chrome-Manage-Accounts response header was parsed and delivered to the
+            // callback.
+            GoogleAccountsEvent event =
+                    eventFuture.get(CallbackHelper.WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Assert.assertNotNull(event);
+            Assert.assertEquals(
+                    GAIAServiceType.GAIA_SERVICE_TYPE_ADDSESSION, event.getServiceType());
+            Assert.assertEquals("https://example.com/continue", event.getContinueUrl());
+            Assert.assertTrue(event.isOutermostMainFrame());
+        }
     }
 }

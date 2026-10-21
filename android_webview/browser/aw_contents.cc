@@ -475,16 +475,30 @@ AwContents::~AwContents() {
                   perfetto::NamedTrack::FromPointer("WebView Instance", this));
 }
 
+void AwContents::SetGoogleAccountMirroringEnabled(bool enabled,
+                                                  const std::string& gaia_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  google_account_mirroring_enabled_ = enabled;
+  gaia_id_ = gaia_id;
+}
+
 void AwContents::OnGoogleAccountsRequest(
     const signin::ManageAccountsParams& params,
     bool is_outermost_main_frame) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(b/571522191): Implemented in follow-up CL.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (!obj) {
+    return;
+  }
+
+  Java_AwContents_onGoogleAccountsRequest(
+      env, obj, static_cast<int>(params.service_type), params.continue_url,
+      is_outermost_main_frame);
 }
 
 std::string AwContents::GetGaiaId() {
-  // TODO(b/571522191): Implemented in follow-up CL.
-  return std::string();
+  return gaia_id_;
 }
 
 base::android::ScopedJavaLocalRef<jobject> AwContents::GetWebContents(

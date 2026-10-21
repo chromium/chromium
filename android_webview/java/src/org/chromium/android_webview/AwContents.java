@@ -53,6 +53,7 @@ import android.webkit.WebViewClient;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
@@ -433,6 +434,7 @@ public class AwContents implements SmartClipProvider {
     private final AwContentsClientBridge mContentsClientBridge;
     private final AwWebContentsDelegateAdapter mWebContentsDelegate;
     private AwActionModeCallback mAwActionModeCallback;
+    private @Nullable Consumer<GoogleAccountsEvent> mGoogleAccountsCallback;
     private final ShouldInterceptRequestMediator mShouldInterceptRequestMediator;
     private final AwContentsIoThreadClient mIoThreadClient;
     private final InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
@@ -3454,6 +3456,44 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
+     * Configures Google Account Mirroring.
+     *
+     * <p>By setting a callback and optional gaiaId, WebView will send a `X-Chrome-Connected` header
+     * to Google login domains, which changes the web behavior so account changes can be handled by
+     * the embedder.
+     *
+     * <p>This header will contain the value of {@code gaiaId} when sent to Google Drive and Google
+     * Docs, since those domains need it for correct account management. If the user is not
+     * currently signed in, the value should just be empty. The {@code gaiaId} value is ignored for
+     * all other domains.
+     *
+     * <p>Call with a {@code null} callback value to disable mirroring.
+     *
+     * @param gaiaId The current gaia ID. Empty string if the user is not signed in.
+     * @param callback The callback to invoke when a Google accounts event occurs.
+     */
+    public void configureGoogleAccountMirroring(
+            @NonNull String gaiaId, @Nullable Consumer<GoogleAccountsEvent> callback) {
+        if (TRACE) Log.i(TAG, "%s configureGoogleAccountMirroring", this);
+        if (isDestroyed(WARN)) return;
+        mGoogleAccountsCallback = callback;
+        AwContentsJni.get()
+                .setGoogleAccountMirroringEnabled(mNativeAwContents, callback != null, gaiaId);
+    }
+
+    @CalledByNative
+    private void onGoogleAccountsRequest(
+            int serviceType,
+            @JniType("std::string") String continueUrl,
+            boolean isOutermostMainFrame) {
+        if (isDestroyed(NO_WARN)) return;
+        if (mGoogleAccountsCallback != null) {
+            mGoogleAccountsCallback.accept(
+                    new GoogleAccountsEvent(serviceType, continueUrl, isOutermostMainFrame));
+        }
+    }
+
+    /**
      * Registers the Javascript world for later use.
      *
      * <p>If the same world has been created before, it will return the previously created world.
@@ -5425,5 +5465,8 @@ public class AwContents implements SmartClipProvider {
         void cancelPrerendering(long nativeAwContents, long prerenderId);
 
         void cancelAllPrerendering(long nativeAwContents);
+
+        void setGoogleAccountMirroringEnabled(
+                long nativeAwContents, boolean enabled, @JniType("std::string") String gaiaId);
     }
 }
