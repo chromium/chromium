@@ -230,6 +230,12 @@ inline constexpr char kFingerprintingProtectionEnabled[] =
 inline constexpr char kSigninHasAcceptedManagementDialog[] =
     "ios.signin.has_accepted_management_dialog";
 
+// Deprecated 10/2026.
+inline constexpr char kSyncEncryptionBootstrapToken[] =
+    "sync.encryption_bootstrap_token";
+inline constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
+    "sync.encryption_bootstrap_token_per_account_migration_done";
+
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
                        std::string_view source_pref_name,
@@ -950,6 +956,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 09/2026.
   registry->RegisterDictionaryPref(kSigninHasAcceptedManagementDialog);
   registry->RegisterBooleanPref(kFingerprintingProtectionEnabled, false);
+
+  // Deprecated 10/2026.
+  registry->RegisterStringPref(kSyncEncryptionBootstrapToken, std::string());
+  registry->RegisterBooleanPref(
+      kSyncEncryptionBootstrapTokenPerAccountMigrationDone, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1035,6 +1046,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Deprecated 09/2026.
   prefs->ClearPref(kSigninHasAcceptedManagementDialog);
   prefs->ClearPref(kFingerprintingProtectionEnabled);
+
+  // Added 10/2026.
+  prefs->ClearPref(kSyncEncryptionBootstrapToken);
+  prefs->ClearPref(kSyncEncryptionBootstrapTokenPerAccountMigrationDone);
 }
 
 void MigrateObsoleteUserDefault() {

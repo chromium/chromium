@@ -343,7 +343,6 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   // the account state.
   sync_prefs_.MaybeMigratePrefsForSyncToSigninPart1(
       GetSyncAccountStateForPrefs(), GetAccountInfo().gaia);
-  sync_prefs_.MaybeMigrateCustomPassphrasePref(GetAccountInfo().gaia);
 
   // Update selected types prefs if a policy is applied.
   sync_prefs_policy_handler_ = std::make_unique<SyncPrefsPolicyHandler>(this);

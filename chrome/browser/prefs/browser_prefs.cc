@@ -1155,6 +1155,12 @@ constexpr char kSupervisedUserManualUrls[] = "profile.managed.manual_urls";
 // Deprecated 10/2026.
 inline constexpr char kTabSearchUsed[] = "tab_search.used";
 
+// Deprecated 10/2026.
+inline constexpr char kSyncEncryptionBootstrapToken[] =
+    "sync.encryption_bootstrap_token";
+inline constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
+    "sync.encryption_bootstrap_token_per_account_migration_done";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1640,6 +1646,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 10/2026.
   registry->RegisterBooleanPref(kTabSearchUsed, false);
+
+  // Deprecated 10/2026.
+  registry->RegisterStringPref(kSyncEncryptionBootstrapToken, std::string());
+  registry->RegisterBooleanPref(
+      kSyncEncryptionBootstrapTokenPerAccountMigrationDone, false);
 }
 
 }  // namespace
@@ -3083,6 +3094,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 10/2026.
   profile_prefs->ClearPref(kTabSearchUsed);
+
+  // Added 10/2026.
+  profile_prefs->ClearPref(kSyncEncryptionBootstrapToken);
+  profile_prefs->ClearPref(
+      kSyncEncryptionBootstrapTokenPerAccountMigrationDone);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

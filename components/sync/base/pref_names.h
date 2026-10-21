@@ -111,11 +111,6 @@ inline constexpr char kSyncCachedPersistentAuthErrorForMetrics[] =
 inline constexpr char kSyncCachedTrustedVaultAutoUpgradeExperimentGroup[] =
     "sync.cached_trusted_vault_auto_upgrade_experiment_group";
 
-// A string that can be used to restore sync encryption infrastructure on
-// startup so that the user doesn't need to provide credentials on each start.
-inline constexpr char kSyncEncryptionBootstrapToken[] =
-    "sync.encryption_bootstrap_token";
-
 // A dict that can be used to restore per-account the sync encryption
 // infrastructure on startup so that the user doesn't need to provide
 // credentials on each start.

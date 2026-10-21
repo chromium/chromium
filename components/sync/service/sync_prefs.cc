@@ -42,10 +42,6 @@ namespace syncer {
 
 namespace {
 
-// State of the migration done by MaybeMigrateCustomPassphrasePref().
-constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
-    "sync.encryption_bootstrap_token_per_account_migration_done";
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Pref to record if the one-off MaybeMigrateAutofillToPerAccountPref()
 // migration ran.
@@ -207,9 +203,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // time the engine is successfully initialized.
   registry->RegisterStringPref(
       prefs::internal::kSyncCachedTrustedVaultAutoUpgradeExperimentGroup, "");
-  // The encryption bootstrap token represents a user-entered passphrase.
-  registry->RegisterStringPref(prefs::internal::kSyncEncryptionBootstrapToken,
-                               std::string());
 
   // Cached notion of whether or not a persistent auth error exists.
   registry->RegisterBooleanPref(
@@ -219,9 +212,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // account.
   registry->RegisterDictionaryPref(
       prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
-  // For migration only, tracks if the EncryptionBootstrapToken is migrated.
-  registry->RegisterBooleanPref(
-      kSyncEncryptionBootstrapTokenPerAccountMigrationDone, false);
 
   registry->RegisterBooleanPref(prefs::internal::kSyncManaged, false);
   registry->RegisterIntegerPref(
@@ -608,7 +598,6 @@ void SyncPrefs::ClearCachedTrustedVaultAutoUpgradeExperimentGroup() {
 
 void SyncPrefs::ClearAllEncryptionBootstrapTokens() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->ClearPref(prefs::internal::kSyncEncryptionBootstrapToken);
   if (IsInitialSyncFeatureSetupComplete()) {
     // When Sync-the-feature gets turned off, the user's encryption bootstrap
     // token should be cleared. However, at this point it's hard to determine
@@ -948,31 +937,6 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
     return true;
   }
   return false;
-}
-
-void SyncPrefs::MaybeMigrateCustomPassphrasePref(const GaiaId& gaia_id) {
-  if (pref_service_->GetBoolean(
-          kSyncEncryptionBootstrapTokenPerAccountMigrationDone)) {
-    return;
-  }
-  pref_service_->SetBoolean(
-      kSyncEncryptionBootstrapTokenPerAccountMigrationDone, true);
-
-  if (gaia_id.empty()) {
-    // Do not migrate if gaia_id is empty; no signed in user.
-    return;
-  }
-
-  const std::string& token =
-      pref_service_->GetString(prefs::internal::kSyncEncryptionBootstrapToken);
-  if (token.empty()) {
-    // No custom passphrase is used, or it is not set.
-    return;
-  }
-  SetAccountKeyedPrefValue(
-      pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
-      signin::GaiaIdHash::FromGaiaId(gaia_id), base::Value(token));
-  return;
 }
 
 // static

@@ -255,12 +255,6 @@ class SyncPrefs {
   bool MaybeMigratePrefsForSyncToSigninPart2(const GaiaId& gaia_id,
                                              bool is_using_explicit_passphrase);
 
-  // Migrates kSyncEncryptionBootstrapToken to the gaia-keyed pref, for the
-  // feature `kSyncRememberCustomPassphraseAfterSignout`. This should be called
-  // early during browser startup.
-  // TODO(crbug.com/325201878): Clean up the migration logic and the old pref.
-  void MaybeMigrateCustomPassphrasePref(const GaiaId& gaia_id);
-
   // Should be called when Sync gets disabled / the user signs out. Clears any
   // temporary state from the above migration.
   void MarkPartialSyncToSigninMigrationFullyDone();
