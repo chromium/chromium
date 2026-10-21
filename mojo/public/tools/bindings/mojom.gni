@@ -1042,7 +1042,6 @@ template("mojom") {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
     }
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     deps = []
     public_deps = []
     if (output_file_base_paths != []) {
@@ -1634,7 +1633,6 @@ template("mojom") {
           testonly = invoker.testonly
         }
         defines = export_defines
-        configs += [ "//build/config/compiler:wexit_time_destructors" ]
         configs += extra_configs
         if (output_file_base_paths != []) {
           sources = []

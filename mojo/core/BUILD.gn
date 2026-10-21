@@ -135,8 +135,6 @@ source_set("impl_for_embedder") {
     ]
   }
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   defines = [ "MOJO_SYSTEM_IMPL_IMPLEMENTATION" ]
   deps = [ "//crypto" ]
 
