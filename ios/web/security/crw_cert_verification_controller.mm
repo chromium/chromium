@@ -283,10 +283,11 @@ using web::WebThread;
     return web::CERT_ACCEPT_POLICY_NON_RECOVERABLE_ERROR;
   }
 
-  web::CertPolicy::Judgment judgment = _certPolicyCache->QueryPolicy(
-      leafCert.get(), base::SysNSStringToUTF8(host), certStatus);
+  web::CertificatePolicyCache::Judgment judgment =
+      _certPolicyCache->QueryPolicy(leafCert.get(),
+                                    base::SysNSStringToUTF8(host), certStatus);
 
-  return (judgment == web::CertPolicy::ALLOWED)
+  return (judgment == web::CertificatePolicyCache::ALLOWED)
              ? web::CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_ACCEPTED_BY_USER
              : web::CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_UNDECIDED_BY_USER;
 }

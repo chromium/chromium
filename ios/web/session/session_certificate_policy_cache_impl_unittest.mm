@@ -24,14 +24,14 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 // Synchronously checks `cache` for the specified cert and returns the judgment.
-web::CertPolicy::Judgment GetJudgmenet(
+web::CertificatePolicyCache::Judgment GetJudgment(
     const scoped_refptr<web::CertificatePolicyCache>& cache,
     const scoped_refptr<net::X509Certificate>& cert,
     const std::string& host,
     const net::CertStatus status) {
   // Post a task to the IO thread and wait for a reply
-  __block web::CertPolicy::Judgment judgement =
-      web::CertPolicy::Judgment::UNKNOWN;
+  __block web::CertificatePolicyCache::Judgment judgement =
+      web::CertificatePolicyCache::Judgment::UNKNOWN;
   __block bool completed = false;
   web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
                                              completed = true;
@@ -73,26 +73,26 @@ TEST_F(SessionCertificatePolicyCacheImplTest, RegisterAllowedCertificate) {
 
   // Check that the default value for the CertPolicyJudgment in
   // web::CertificatePolicyCache is UNKNOWN before registering it.
-  ASSERT_EQ(web::CertPolicy::Judgment::UNKNOWN,
-            GetJudgmenet(
-                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
-                cert.certificate(), cert.host(), cert.status()));
+  ASSERT_EQ(
+      web::CertificatePolicyCache::Judgment::UNKNOWN,
+      GetJudgment(web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                  cert.certificate(), cert.host(), cert.status()));
 
   // Check that creating the SessionCertificatePolicyCacheImpl does not
   // register the certificate.
   web::SessionCertificatePolicyCacheImpl cache(&browser_state_);
-  ASSERT_EQ(web::CertPolicy::Judgment::UNKNOWN,
-            GetJudgmenet(
-                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
-                cert.certificate(), cert.host(), cert.status()));
+  ASSERT_EQ(
+      web::CertificatePolicyCache::Judgment::UNKNOWN,
+      GetJudgment(web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                  cert.certificate(), cert.host(), cert.status()));
 
   // Verify that calling RegisterAllowedCertificate() register the certificate.
   cache.RegisterAllowedCertificate(cert.certificate(), cert.host(),
                                    cert.status());
-  EXPECT_EQ(web::CertPolicy::Judgment::ALLOWED,
-            GetJudgmenet(
-                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
-                cert.certificate(), cert.host(), cert.status()));
+  EXPECT_EQ(
+      web::CertificatePolicyCache::Judgment::ALLOWED,
+      GetJudgment(web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                  cert.certificate(), cert.host(), cert.status()));
 
   // Verify that there is one certificate in the serialisation, and that it
   // corresponds to the registered certificate.
@@ -112,10 +112,10 @@ TEST_F(SessionCertificatePolicyCacheImplTest, UpdateCertificatePolicyCache) {
 
   // Check that the default value for the CertPolicyJudgment in
   // web::CertificatePolicyCache is UNKNOWN before registering it.
-  ASSERT_EQ(web::CertPolicy::Judgment::UNKNOWN,
-            GetJudgmenet(
-                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
-                cert.certificate(), cert.host(), cert.status()));
+  ASSERT_EQ(
+      web::CertificatePolicyCache::Judgment::UNKNOWN,
+      GetJudgment(web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                  cert.certificate(), cert.host(), cert.status()));
 
   // Create a fake serialised state.
   web::proto::CertificatesCacheStorage storage;
@@ -124,15 +124,15 @@ TEST_F(SessionCertificatePolicyCacheImplTest, UpdateCertificatePolicyCache) {
   // Check that creating the SessionCertificatePolicyCacheImpl from
   // serialized state does not register the certificate.
   web::SessionCertificatePolicyCacheImpl cache(&browser_state_, storage);
-  ASSERT_EQ(web::CertPolicy::Judgment::UNKNOWN,
-            GetJudgmenet(
-                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
-                cert.certificate(), cert.host(), cert.status()));
+  ASSERT_EQ(
+      web::CertificatePolicyCache::Judgment::UNKNOWN,
+      GetJudgment(web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                  cert.certificate(), cert.host(), cert.status()));
 
   // Verify that calling RegisterAllowedCertificate() register the certificate.
   cache.UpdateCertificatePolicyCache();
-  EXPECT_EQ(web::CertPolicy::Judgment::ALLOWED,
-            GetJudgmenet(
-                web::BrowserState::GetCertificatePolicyCache(&browser_state_),
-                cert.certificate(), cert.host(), cert.status()));
+  EXPECT_EQ(
+      web::CertificatePolicyCache::Judgment::ALLOWED,
+      GetJudgment(web::BrowserState::GetCertificatePolicyCache(&browser_state_),
+                  cert.certificate(), cert.host(), cert.status()));
 }

@@ -9,7 +9,6 @@ source_set("security") {
   ]
 
   sources = [
-    "cert_policy.h",
     "certificate_policy_cache.h",
     "security_style.h",
     "ssl_status.h",

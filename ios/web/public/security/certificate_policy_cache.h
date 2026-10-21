@@ -5,11 +5,10 @@
 #ifndef IOS_WEB_PUBLIC_SECURITY_CERTIFICATE_POLICY_CACHE_H_
 #define IOS_WEB_PUBLIC_SECURITY_CERTIFICATE_POLICY_CACHE_H_
 
-#include <map>
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "ios/web/public/security/cert_policy.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 
 namespace web {
@@ -22,8 +21,15 @@ namespace web {
 class CertificatePolicyCache
     : public base::RefCountedThreadSafe<CertificatePolicyCache> {
  public:
-  // Can be called from any thread:
-  CertificatePolicyCache();
+  // The judgments the certificate policy cache can reach.
+  enum Judgment {
+    // There is no policy information for this certificate.
+    UNKNOWN,
+    // This certificate is allowed.
+    ALLOWED,
+    // This certificate is denied.
+    DENIED,
+  };
 
   CertificatePolicyCache(const CertificatePolicyCache&) = delete;
   CertificatePolicyCache& operator=(const CertificatePolicyCache&) = delete;
@@ -31,25 +37,24 @@ class CertificatePolicyCache
   // Everything from here on can only be called from the IO thread.
 
   // Records that `cert` is permitted to be used for `host` in the future.
-  void AllowCertForHost(const net::X509Certificate* cert,
-                        const std::string& host,
-                        net::CertStatus error);
+  virtual void AllowCertForHost(const net::X509Certificate* cert,
+                                const std::string& host,
+                                net::CertStatus error) = 0;
 
   // Queries whether `cert` is allowed or denied for `host`.
-  CertPolicy::Judgment QueryPolicy(const net::X509Certificate* cert,
-                                   const std::string& host,
-                                   net::CertStatus error);
+  virtual Judgment QueryPolicy(const net::X509Certificate* cert,
+                               const std::string& host,
+                               net::CertStatus error) = 0;
 
   // Removes all policies stored in this instance.
-  void ClearCertificatePolicies();
+  virtual void ClearCertificatePolicies() = 0;
+
+ protected:
+  CertificatePolicyCache() = default;
+  virtual ~CertificatePolicyCache() = default;
 
  private:
   friend class base::RefCountedThreadSafe<CertificatePolicyCache>;
-
-  ~CertificatePolicyCache();
-
-  // Certificate policies for each host.
-  std::map<std::string, CertPolicy> cert_policy_for_host_;
 };
 
 }  // namespace web

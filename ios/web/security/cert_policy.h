@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_PUBLIC_SECURITY_CERT_POLICY_H_
-#define IOS_WEB_PUBLIC_SECURITY_CERT_POLICY_H_
+#ifndef IOS_WEB_SECURITY_CERT_POLICY_H_
+#define IOS_WEB_SECURITY_CERT_POLICY_H_
 
 #include <map>
 
+#include "ios/web/public/security/certificate_policy_cache.h"
 #include "net/base/hash_value.h"
 #include "net/cert/cert_status_flags.h"
 
@@ -20,18 +21,6 @@ namespace web {
 // permitted or forbidden for a particular purpose.
 class CertPolicy {
  public:
-  // The judgments this policy can reach.
-  enum Judgment {
-    // We don't have policy information for this certificate.
-    UNKNOWN,
-
-    // This certificate is allowed.
-    ALLOWED,
-
-    // This certificate is denied.
-    DENIED,
-  };
-
   CertPolicy();
   ~CertPolicy();
 
@@ -39,7 +28,8 @@ class CertPolicy {
   // For a certificate to be allowed, it must not have any *additional* errors
   // from when it was allowed.
   // This function returns either ALLOWED or UNKNOWN, but never DENIED.
-  Judgment Check(const net::X509Certificate* cert, net::CertStatus error) const;
+  CertificatePolicyCache::Judgment Check(const net::X509Certificate* cert,
+                                         net::CertStatus error) const;
 
   // Causes the policy to allow this certificate for a given `error`.
   void Allow(const net::X509Certificate* cert, net::CertStatus error);
@@ -51,4 +41,4 @@ class CertPolicy {
 
 }  // namespace web
 
-#endif  // IOS_WEB_PUBLIC_SECURITY_CERT_POLICY_H_
+#endif  // IOS_WEB_SECURITY_CERT_POLICY_H_

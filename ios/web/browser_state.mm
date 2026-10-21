@@ -5,6 +5,7 @@
 #import "ios/web/public/browser_state.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
@@ -19,6 +20,7 @@
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web/security/certificate_policy_cache_impl.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/webui/url_data_manager_ios_backend.h"
@@ -41,8 +43,9 @@ const char kCertificatePolicyCacheKeyName[] = "cert_policy_cache";
 // Wraps a CertificatePolicyCache as a SupportsUserData::Data; this is necessary
 // since reference counted objects can't be user data.
 struct CertificatePolicyCacheHandle : public base::SupportsUserData::Data {
-  explicit CertificatePolicyCacheHandle(CertificatePolicyCache* cache)
-      : policy_cache(cache) {}
+  explicit CertificatePolicyCacheHandle(
+      scoped_refptr<CertificatePolicyCache> cache)
+      : policy_cache(std::move(cache)) {}
 
   scoped_refptr<CertificatePolicyCache> policy_cache;
 };
@@ -54,9 +57,10 @@ scoped_refptr<CertificatePolicyCache> BrowserState::GetCertificatePolicyCache(
     BrowserState* browser_state) {
   DCHECK_CURRENTLY_ON(WebThread::UI);
   if (!browser_state->GetUserData(kCertificatePolicyCacheKeyName)) {
-    browser_state->SetUserData(kCertificatePolicyCacheKeyName,
-                               std::make_unique<CertificatePolicyCacheHandle>(
-                                   new CertificatePolicyCache()));
+    browser_state->SetUserData(
+        kCertificatePolicyCacheKeyName,
+        std::make_unique<CertificatePolicyCacheHandle>(
+            base::MakeRefCounted<CertificatePolicyCacheImpl>()));
   }
 
   CertificatePolicyCacheHandle* handle =
