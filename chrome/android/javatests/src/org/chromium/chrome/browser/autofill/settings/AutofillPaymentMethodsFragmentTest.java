@@ -70,6 +70,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -974,6 +975,9 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/576315437): Re-enable.
+    @DisableIf.Build(supported_abis_includes = "x86")
+    @DisableIf.Build(supported_abis_includes = "x86_64")
     public void testDeleteSavedCvcsButton_whenCvcExists_shown() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
 
@@ -1091,6 +1095,9 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "false")})
+    // TODO(crbug.com/576315437): Re-enable.
+    @DisableIf.Build(supported_abis_includes = "x86")
+    @DisableIf.Build(supported_abis_includes = "x86_64")
     public void testAddIbanButton_notShownWhenAutofillDisabled() throws Exception {
         // Enable `ShouldShowAddIbanButtonOnSettingsPage` through indicating that the user has used
         // IBAN before.
