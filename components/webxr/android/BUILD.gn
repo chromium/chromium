@@ -161,6 +161,8 @@ android_library("xr_java") {
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
+
+    srcjar_deps = [ ":xr_jni_headers" ]
   }
 
   # Contains the ARCore-specific implementations of the above interfaces and any
@@ -182,10 +184,7 @@ android_library("xr_java") {
     public_deps +=
         [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java" ]
 
-    srcjar_deps = [
-      ":webxr_ar_android_enums",
-      ":xr_jni_headers",
-    ]
+    srcjar_deps += [ ":webxr_ar_android_enums" ]
   } else if (enable_cardboard || enable_openxr) {
     # These stub classes are needed for the general Xr infrastructure code, but
     # are not needed for the more broad always-available code. So we check that
