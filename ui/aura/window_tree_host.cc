@@ -540,8 +540,7 @@ void WindowTreeHost::OnAcceleratedWidgetMadeVisible(bool value) {
   UpdateCompositorVisibility(value);
 }
 
-void WindowTreeHost::CreateCompositor(bool force_software_compositor,
-                                      bool use_external_begin_frame_control,
+void WindowTreeHost::CreateCompositor(bool use_external_begin_frame_control,
                                       bool enable_compositing_based_throttling,
                                       size_t memory_limit_when_visible_mb) {
   Env* env = Env::GetInstance();
@@ -551,8 +550,8 @@ void WindowTreeHost::CreateCompositor(bool force_software_compositor,
       context_factory->AllocateFrameSinkId(), context_factory,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       features::IsPixelCanvasRecordingEnabled(),
-      use_external_begin_frame_control, force_software_compositor,
-      enable_compositing_based_throttling, memory_limit_when_visible_mb);
+      use_external_begin_frame_control, enable_compositing_based_throttling,
+      memory_limit_when_visible_mb);
   compositor_->AddObserver(this);
   if (!dispatcher()) {
     window()->Init(ui::LAYER_NOT_DRAWN);

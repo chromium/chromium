@@ -305,11 +305,9 @@ void VizProcessTransportFactory::DisableGpuCompositing(
     // The |guilty_compositor| is in the process of setting up its FrameSink
     // so removing it from |compositor_data_map_| would be both pointless and
     // the cause of a crash.
-    // Compositors with force_software_compositor() do not follow the global
-    // compositing mode, so they do not need to be changed.
-    if (compositor == guilty_compositor ||
-        compositor->force_software_compositor())
+    if (compositor == guilty_compositor) {
       continue;
+    }
 
     // Compositor expects to be not visible when releasing its FrameSink.
     bool visible = compositor->IsVisible();
@@ -346,8 +344,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     return;
   }
 
-  bool gpu_compositing =
-      !is_gpu_compositing_disabled_ && !compositor->force_software_compositor();
+  bool gpu_compositing = !is_gpu_compositing_disabled_;
 
   if (gpu_compositing) {
     auto context_result = TryCreateContextsForGpuCompositing(gpu_channel_host);

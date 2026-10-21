@@ -372,13 +372,6 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
       views::Widget::InitParams::TYPE_POPUP);
 #endif
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-#if !BUILDFLAG(IS_WIN)
-  // Use software compositing to prevent situations when the widget is not
-  // translucent when moved fast.
-  // TODO(iopopesc): Investigate if this is a compositor bug or this is indeed
-  // an intentional limitation.
-  params.force_software_compositing = true;
-#endif
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.name = "MagnifierHost";
   params.parent = parent;

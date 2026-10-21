@@ -303,11 +303,7 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
       platform_window() ? GetBeginFrameSourceExtension(*platform_window())
                         : nullptr;
 
-  // Disable compositing on tooltips as a workaround for
-  // https://crbug.com/442111.
-  CreateCompositor(params.force_software_compositing ||
-                       params.type == Widget::InitParams::TYPE_TOOLTIP,
-                   begin_frame_source != nullptr);
+  CreateCompositor(begin_frame_source != nullptr);
 
   if (begin_frame_source) {
     begin_frame_adapter_ = std::make_unique<ui::ExternalBeginFrameAdapter>(

@@ -513,9 +513,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     std::string startup_id;
 #endif  // BUILDFLAG(IS_LINUX)
 
-    // If true then the widget uses software compositing.
-    bool force_software_compositing = false;
-
     // If set, the window size will follow the content preferred size.
     bool autosize = false;
 

@@ -70,7 +70,7 @@ WindowTreeHostPlatform::WindowTreeHostPlatform(
       widget_(gfx::kNullAcceleratedWidget),
       current_cursor_(ui::mojom::CursorType::kNull) {
   size_in_pixels_ = properties.bounds.size();
-  CreateCompositor(false, false, properties.enable_compositing_based_throttling,
+  CreateCompositor(false, properties.enable_compositing_based_throttling,
                    properties.compositor_memory_limit_mb);
   CreateAndSetPlatformWindow(std::move(properties));
 }

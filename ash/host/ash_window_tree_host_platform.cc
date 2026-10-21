@@ -47,8 +47,7 @@ AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(
       delegate_(delegate),
       transformer_helper_(this) {
   DCHECK(delegate_);
-  CreateCompositor(/* force_software_compositor */ false,
-                   /* use_external_begin_frame_control */ false,
+  CreateCompositor(/* use_external_begin_frame_control */ false,
                    /* enable_compositing_based_throttling */ false,
                    compositor_memory_limit_mb);
   SetPlatformWindow(std::move(platform_window));

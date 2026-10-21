@@ -300,7 +300,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
 
   UpdateBackdropColorMode();
 
-  CreateCompositor(params.force_software_compositing);
+  CreateCompositor();
   OnAcceleratedWidgetAvailable();
   InitHost();
   window()->Show();

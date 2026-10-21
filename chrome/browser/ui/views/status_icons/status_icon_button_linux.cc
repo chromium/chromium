@@ -139,10 +139,6 @@ void StatusIconButtonLinux::OnSetDelegate() {
   params.wm_role_name = ui::kStatusIconWmRoleName;
   params.wm_class_name = shell_integration_linux::GetProgramClassName();
   params.wm_class_class = shell_integration_linux::GetProgramClassClass();
-  // The status icon is a tiny window that doesn't update very often, so
-  // creating a compositor would only be wasteful of resources.
-  params.force_software_compositing = true;
-
   widget_->Init(std::move(params));
 
   // The window and host are non-null because the widget was just initialized.

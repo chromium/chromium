@@ -124,12 +124,8 @@ HICON ChromeViewsDelegate::GetSmallWindowIcon() const {
 views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     views::Widget::InitParams* params,
     views::internal::NativeWidgetDelegate* delegate) {
-  // Check the force_software_compositing flag only on Windows. If this flag is
-  // on, it means that the widget being created wants to use the software
-  // compositor which requires a top level window. We cannot have a mixture of
-  // compositors active in one view hierarchy.
   NativeWidgetType native_widget_type =
-      (params->parent && params->child && !params->force_software_compositing &&
+      (params->parent && params->child &&
        params->type != views::Widget::InitParams::TYPE_TOOLTIP)
           ? NativeWidgetType::kNativeWidgetAura
           : NativeWidgetType::kDesktopNativeWidgetAura;

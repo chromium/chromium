@@ -857,7 +857,6 @@ TEST_F(DesktopWindowTreeHostWinTest, ExcludeContextWindowsFromCapture) {
   Widget::InitParams tooltip_params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_TOOLTIP);
   tooltip_params.context = descendant_window;
-  tooltip_params.force_software_compositing = true;
   HWND tooltip_hwnd = InitTestWidget(tooltip_widget, std::move(tooltip_params));
 
   // Verify that the tooltip window's Win32 owner is resolved to parent window.
@@ -917,7 +916,6 @@ TEST_F(DesktopWindowTreeHostWinTest, ContextTooltipAccessibilityTree) {
   auto tooltip_params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                                      Widget::InitParams::TYPE_TOOLTIP);
   tooltip_params.context = descendant;
-  tooltip_params.force_software_compositing = true;
   HWND tooltip_hwnd = InitTestWidget(tooltip, std::move(tooltip_params));
   ASSERT_EQ(bubble_hwnd, ::GetWindow(tooltip_hwnd, GW_OWNER));
   ASSERT_EQ(nullptr, tooltip.parent());
@@ -988,7 +986,6 @@ TEST_F(DesktopWindowTreeHostWinTest, ContextTooltipAccessibilityTree) {
   auto sibling_params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                                      Widget::InitParams::TYPE_TOOLTIP);
   sibling_params.context = descendant;
-  sibling_params.force_software_compositing = true;
   InitTestWidget(sibling, std::move(sibling_params));
   EXPECT_EQ(bubble_children + 2, bubble_root->GetChildCount());
 
@@ -1036,7 +1033,6 @@ TEST_F(DesktopWindowTreeHostWinTest, NativeChildPopupAccessibilityPreserved) {
   auto params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                              Widget::InitParams::TYPE_TOOLTIP);
   params.parent = native_child->GetNativeWindow();
-  params.force_software_compositing = true;
   HWND tooltip_hwnd = InitTestWidget(tooltip, std::move(params));
   ASSERT_EQ(browser_hwnd, ::GetWindow(tooltip_hwnd, GW_OWNER));
   ASSERT_EQ(native_child.get(), tooltip.parent());

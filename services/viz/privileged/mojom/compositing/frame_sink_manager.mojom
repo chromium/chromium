@@ -128,8 +128,8 @@ interface FrameSinkManager {
   // Create a CompositorFrameSink for a privileged client (e.g. WindowServer).
   // This is only used by privileged clients. The client can call methods that
   // talks to the Display (e.g. ResizeDisplay(), SetDisplayVisible(), etc).
-  // If |force_software_compositing| is true, then the resulting display
-  // compositor will not use Gpu acceleration even if it would by default.
+  // If |params.gpu_compositing| is false, then the resulting display compositor
+  // will not use GPU acceleration even if it would by default.
   // If |external_begin_frames_controller| and
   // |external_begin_frames_controller_client| are set, the resulting display
   // will be driven by a BeginFrameSource controlled by the client via the
