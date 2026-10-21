@@ -549,6 +549,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInMotion_viewNotVisible_capturesOnMotionStart() {
         makeAndInitAdapter();
         mockIsReadyDifference(ToolbarSnapshotDifference.URL_TEXT);
@@ -567,6 +568,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInMotion_viewNotVisible_snapshotSame() {
         makeAndInitAdapter();
         when(mToolbar.isReadyForTextureCapture())
@@ -583,6 +585,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInMotion_viewNotVisible_notReady() {
         makeAndInitAdapter();
         when(mToolbar.isReadyForTextureCapture())
@@ -599,6 +602,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInMotion_viewNotVisible_controlsLocked() {
         makeAndInitAdapter();
         mockIsReadyDifference(ToolbarSnapshotDifference.URL_TEXT);
