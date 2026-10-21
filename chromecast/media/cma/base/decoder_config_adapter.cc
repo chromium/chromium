@@ -182,11 +182,13 @@ EncryptionScheme ToEncryptionScheme(::media::EncryptionScheme scheme) {
 ChannelLayout DecoderConfigAdapter::ToChannelLayout(
     ::media::ChannelLayout channel_layout) {
   switch (channel_layout) {
+    case ::media::ChannelLayout::CHANNEL_LAYOUT_NONE:
     case ::media::ChannelLayout::CHANNEL_LAYOUT_UNSUPPORTED:
       return ChannelLayout::UNSUPPORTED;
     case ::media::ChannelLayout::CHANNEL_LAYOUT_MONO:
       return ChannelLayout::MONO;
     case ::media::ChannelLayout::CHANNEL_LAYOUT_STEREO:
+    case ::media::ChannelLayout::CHANNEL_LAYOUT_STEREO_DOWNMIX:
       return ChannelLayout::STEREO;
     case ::media::ChannelLayout::CHANNEL_LAYOUT_5_1:
     case ::media::ChannelLayout::CHANNEL_LAYOUT_5_1_BACK:
@@ -197,7 +199,7 @@ ChannelLayout DecoderConfigAdapter::ToChannelLayout(
       return ChannelLayout::DISCRETE;
 
     default:
-      NOTREACHED();
+      return ChannelLayout::DISCRETE;
   }
 }
 
@@ -219,7 +221,7 @@ ChannelLayout DecoderConfigAdapter::ToChannelLayout(
       return ::media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE;
 
     default:
-      NOTREACHED();
+      return ::media::ChannelLayout::CHANNEL_LAYOUT_UNSUPPORTED;
   }
 }
 
