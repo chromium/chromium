@@ -3453,6 +3453,25 @@ TEST_F(RenderViewContextMenuOrderTest, LinkMenu_StandardHttpLinkOrder) {
                            IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, LinkMenu_TouchSourceWithLinkTextOrder) {
+  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
+  params.page_url = GURL("https://www.example.com/");
+  params.link_text = u"Click here";
+  params.source_type = ui::mojom::MenuSourceType::kTouch;
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                           IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                           IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+                           IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+                           kSeparatorId, IDC_CONTENT_CONTEXT_SAVELINKAS,
+                           IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
+                           IDC_CONTENT_CONTEXT_COPYLINKTEXT, kSeparatorId,
+                           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
