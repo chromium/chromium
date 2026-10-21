@@ -10,6 +10,7 @@ import os
 import sys
 
 from util import build_utils
+from util import resource_utils
 
 import action_helpers  # build_utils adds //build to sys.path.
 
@@ -120,6 +121,8 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
     else:
         optimize_output = output
 
+    # -Othroughput is not needed here: "aapt2 optimize" copies entries without
+    # recompressing them, and its inputs already use level 1 compression.
     optimize_command = [
         options.aapt2_path,
         'optimize',
@@ -153,7 +156,10 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
 
     logging.info('Optimize command: %s', ' '.join(optimize_command))
     build_utils.CheckOutput(
-        optimize_command, print_stdout=False, print_stderr=False
+        optimize_command,
+        env=resource_utils.Aapt2Env(),
+        print_stdout=False,
+        print_stderr=False,
     )
 
     if output_format != current_format:
@@ -163,6 +169,9 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
         convert_command = [
             options.aapt2_path,
             'convert',
+            # Use faster (level 1) compression. Shipped artifacts are built
+            # from app bundles, where bundletool handles compression.
+            '-Othroughput',
             '--output-format',
             output_format,
             '-o',
@@ -170,7 +179,10 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
             optimize_output,
         ]
         build_utils.CheckOutput(
-            convert_command, print_stdout=False, print_stderr=False
+            convert_command,
+            env=resource_utils.Aapt2Env(),
+            print_stdout=False,
+            print_stderr=False,
         )
 
 
