@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
 #import "third_party/omnibox_proto/tool_mode.pb.h"
@@ -80,9 +79,10 @@ class WebStateID;
 // The delegate to be notified of state updates.
 @property(nonatomic, weak) id<ComposeboxInputStateManagerDelegate> delegate;
 
-// The current active model option. Use `setActiveModel:explicitUserAction:` to
-// set the model.
-@property(nonatomic, readonly) ComposeboxModelOption activeModel;
+// The current active model, or `MODEL_MODE_UNSPECIFIED` when no model applies
+// (e.g. in regular search). Use `setActiveModel:explicitUserAction:` to set the
+// model.
+@property(nonatomic, readonly) omnibox::ModelMode activeModel;
 
 // The current input state.
 @property(nonatomic, readonly) std::optional<contextual_search::InputState>
@@ -135,8 +135,8 @@ class WebStateID;
 // Disconnects the manager and cleans up resources.
 - (void)disconnect;
 
-// Sets the active model if eligible. If explicitUserAction is YES, records
-// metrics.
+// Sets the active model if eligible. `MODEL_MODE_UNSPECIFIED` clears the
+// explicit selection. If `explicitUserAction` is `YES`, records metrics.
 - (void)setActiveModel:(omnibox::ModelMode)model
     explicitUserAction:(BOOL)explicitUserAction;
 
@@ -168,8 +168,8 @@ class WebStateID;
 // Whether the given tool mode can be selected.
 - (BOOL)canSelectTool:(ComposeboxMode)mode;
 
-// Whether the given model option can be selected.
-- (BOOL)canSelectModel:(ComposeboxModelOption)modelOption;
+// Whether the given `model` can be selected.
+- (BOOL)canSelectModel:(omnibox::ModelMode)model;
 
 // Whether more attachments can be added.
 - (BOOL)canAddMoreAttachments;

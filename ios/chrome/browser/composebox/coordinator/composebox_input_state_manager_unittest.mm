@@ -42,7 +42,7 @@
 @interface ComposeboxInputStateManager (Testing)
 - (void)didUpdateInputState:(const contextual_search::InputState&)inputState;
 - (ComposeboxMode)defaultTool;
-- (ComposeboxModelOption)defaultModel;
+- (omnibox::ModelMode)defaultModel;
 - (void)onDriveDisclaimerChecked:
     (drive_picker::DriveDisclaimerController::DisclaimerStatus)status;
 - (BOOL)isAttachmentAllowed:(ComposeboxAttachmentOption)attachmentOption;
@@ -146,7 +146,7 @@ TEST_F(ComposeboxInputStateManagerTest, Initialization) {
   // Expect default active mode to be regular search.
   EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kRegularSearch);
   // Expect default active model to be none.
-  EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kNone);
+  EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
 }
 
 // Tests that the manager correctly observes state updates from the model
@@ -1180,7 +1180,8 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_FallbackToDefault) {
   [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
 
-  EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kRegular);
+  EXPECT_EQ(manager_.activeModel,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
 }
 
 #pragma mark - Reconciliation Tests
@@ -1319,7 +1320,7 @@ TEST_F(ComposeboxInputStateManagerTest,
   mode_holder_.mode = ComposeboxMode::kAIM;
   [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
-  EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kThinking);
+  EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 
   FakeComposeboxInputStateManagerDelegate* delegate =
       [[FakeComposeboxInputStateManagerDelegate alloc] init];
@@ -1335,7 +1336,7 @@ TEST_F(ComposeboxInputStateManagerTest,
 
   // Reconciliation should have called setActiveModelInInputState:kThinking,
   // which triggers another update.
-  EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kThinking);
+  EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 }
 
 // Tests that reconciliation falls back to default model when model
@@ -1360,7 +1361,7 @@ TEST_F(ComposeboxInputStateManagerTest,
   mode_holder_.mode = ComposeboxMode::kAIM;
   [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
-  EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kThinking);
+  EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 
   // 2. Load config that DOES NOT allow Gemini Pro.
   omnibox::SearchboxConfig deny_config;
@@ -1391,7 +1392,7 @@ TEST_F(ComposeboxInputStateManagerTest,
   }
 
   mode_holder_.mode = ComposeboxMode::kRegularSearch;
-  EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kNone);
+  EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
 
   FakeComposeboxInputStateManagerDelegate* delegate =
       [[FakeComposeboxInputStateManagerDelegate alloc] init];
@@ -1406,7 +1407,7 @@ TEST_F(ComposeboxInputStateManagerTest,
   [manager_ didUpdateInputState:state];
 
   // Reconciliation should ignore it, so activeModel remains kNone.
-  EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kNone);
+  EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
 
   // UI update should still be triggered because strings might have changed.
   EXPECT_TRUE(delegate.didUpdateUIStateCalled);

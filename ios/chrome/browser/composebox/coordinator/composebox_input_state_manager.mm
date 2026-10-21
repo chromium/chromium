@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
+#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
@@ -81,31 +82,12 @@ std::optional<ComposeboxModelOption> ModelOptionForModelMode(
   }
 }
 
-// Returns the first supported `omnibox::ModelMode` from `input_state`, checking
-// `GetDefaultModel()` first, falling back to `allowed_models`, or returning
-// `MODEL_MODE_UNSPECIFIED` if none are supported.
-omnibox::ModelMode GetDefaultModelMode(
-    const contextual_search::InputState& input_state) {
-  omnibox::ModelMode default_model = input_state.GetDefaultModel();
-  if (ModelOptionForModelMode(default_model).has_value()) {
-    return default_model;
-  }
-  for (omnibox::ModelMode allowed_model : input_state.allowed_models) {
-    if (ModelOptionForModelMode(allowed_model).has_value()) {
-      return allowed_model;
-    }
-  }
-  return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
-}
-
 // Returns the model mode for the given model option.
-omnibox::ModelMode ModelModeForModelOption(
-    ComposeboxModelOption modelOption,
-    const contextual_search::InputState& input_state) {
+omnibox::ModelMode ModelModeForModelOption(ComposeboxModelOption modelOption) {
   using enum ComposeboxModelOption;
   switch (modelOption) {
     case kNone:
-      return GetDefaultModelMode(input_state);
+      return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
     case kRegular:
       return omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
     case kAuto:
@@ -251,9 +233,11 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   ComposeboxEntrypoint _entrypoint;
   // The mode holder to read the active mode.
   ComposeboxModeHolder* _modeHolder;
-  // The active model. This is different from omnibox::ModelMode that doesn't
-  // support unselected state.
-  ComposeboxModelOption _activeModel;
+  // The active model, or `MODEL_MODE_UNSPECIFIED` when no model is explicitly
+  // selected (e.g. in regular search). Unlike `InputStateModel`, which only
+  // models AIM state and always keeps a concrete active model, this manager
+  // also covers regular search where no model applies.
+  omnibox::ModelMode _activeModel;
 
   // The web state list of the browser.
   raw_ptr<WebStateList> _webStateList;
@@ -359,7 +343,6 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     }
     _entrypoint = entrypoint;
     _isIncognito = isIncognito;
-    _activeModel = ComposeboxModelOption::kNone;
 
     if (_templateURLService) {
       _isDSEGoogle = search::DefaultSearchProviderIsGoogle(_templateURLService);
@@ -420,42 +403,32 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   return _driveDisclaimerController.get();
 }
 
-- (ComposeboxModelOption)activeModel {
+- (omnibox::ModelMode)activeModel {
+  // `InputStateModel` keeps its default model active even in regular search,
+  // where no model applies on the client.
   if ([self activeMode] == ComposeboxMode::kRegularSearch ||
       !_inputStateModel) {
-    return ComposeboxModelOption::kNone;
+    return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
   }
-  return ModelOptionForModelMode(_inputStateModel->GetInputState().active_model)
-      .value_or([self defaultModel]);
+  return _inputStateModel->GetInputState().active_model;
 }
 
 - (void)setActiveModel:(omnibox::ModelMode)model
     explicitUserAction:(BOOL)explicitUserAction {
-  ComposeboxModelOption modelOption =
-      model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
-          ? ModelOptionForModelMode(model).value_or(
-                ComposeboxModelOption::kNone)
-          : ComposeboxModelOption::kNone;
-  [self setActiveModelOption:modelOption explicitUserAction:explicitUserAction];
-}
-
-- (void)setActiveModelOption:(ComposeboxModelOption)modelOption
-          explicitUserAction:(BOOL)explicitUserAction {
   if (!_inputStateModel) {
     return;
   }
 
-  if (![self canSelectModel:modelOption]) {
+  if (![self canSelectModel:model]) {
     return;
   }
 
-  if (modelOption == _activeModel) {
+  if (model == _activeModel) {
     return;
   }
-  _activeModel = modelOption;
+  _activeModel = model;
 
-  [self setActiveModelInInputState:modelOption
-                explicitUserAction:explicitUserAction];
+  [self setActiveModelInInputState:model explicitUserAction:explicitUserAction];
 
   [self.delegate inputStateManagerDidUpdateUIState:self];
 
@@ -561,9 +534,8 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   return [self isToolAllowed:mode] && ![self isToolDisabled:mode];
 }
 
-- (BOOL)canSelectModel:(ComposeboxModelOption)modelOption {
-  return
-      [self isModelAllowed:modelOption] && ![self isModelDisabled:modelOption];
+- (BOOL)canSelectModel:(omnibox::ModelMode)model {
+  return [self isModelAllowed:model] && ![self isModelDisabled:model];
 }
 
 - (BOOL)canAddMoreAttachments {
@@ -664,7 +636,11 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   state.allowModelPicker = ShowComposeboxAdditionalAdvancedTools();
 
   state.activeTool = [self activeMode];
-  state.activeModel = self.activeModel;
+  state.activeModel =
+      self.activeModel != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
+          ? ModelOptionForModelMode(self.activeModel)
+                .value_or(ComposeboxModelOption::kNone)
+          : ComposeboxModelOption::kNone;
 
   state.uiConfig = _cachedUIConfig;
 
@@ -738,10 +714,11 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     if (modelOption == ComposeboxModelOption::kNone) {
       continue;
     }
-    if ([self isModelAllowed:modelOption]) {
+    omnibox::ModelMode model = ModelModeForModelOption(modelOption);
+    if ([self isModelAllowed:model]) {
       allowedModels.insert(modelOption);
     }
-    if ([self isModelDisabled:modelOption]) {
+    if ([self isModelDisabled:model]) {
       disabledModels.insert(modelOption);
     }
   }
@@ -821,13 +798,13 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 /// Updates the active model on mode change.
 - (void)updateModelOnModeChange {
   if ([_modeHolder isRegularSearch]) {
-    // Reset model to kNone when switching to regular search.
-    [self setActiveModelOption:ComposeboxModelOption::kNone
-            explicitUserAction:NO];
+    // Clear the model selection when switching to regular search.
+    [self setActiveModel:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
+        explicitUserAction:NO];
     return;
-  } else if (_activeModel == ComposeboxModelOption::kNone) {
+  } else if (_activeModel == omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
     // In AI tools, set the default model when none is selected.
-    [self setActiveModelOption:[self defaultModel] explicitUserAction:NO];
+    [self setActiveModel:[self defaultModel] explicitUserAction:NO];
   }
 }
 
@@ -974,23 +951,18 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   }
 }
 
-// Returns YES if the given model option matches the model mode.
-- (BOOL)isModelOption:(ComposeboxModelOption)option
+// Returns `YES` if the given `model` matches `modelMode`.
+- (BOOL)isModel:(omnibox::ModelMode)model
     matchingModelMode:(omnibox::ModelMode)modelMode {
-  std::optional<ComposeboxModelOption> targetOption =
-      ModelOptionForModelMode(modelMode);
-  if (!targetOption.has_value()) {
-    return NO;
-  }
   if ([self activeMode] == ComposeboxMode::kRegularSearch) {
     // Any model is valid in regular search.
     return YES;
   }
-  if (option == ComposeboxModelOption::kNone) {
-    // kNone is not valid in AI mode.
+  if (model == omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
+    // `MODEL_MODE_UNSPECIFIED` is not valid in AI mode.
     return NO;
   }
-  return option == *targetOption;
+  return model == modelMode;
 }
 
 // Synchronizes the local active tool mode with the server-side input state,
@@ -1027,8 +999,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     return;
   }
   // Local and inputStateModel matches.
-  if ([self isModelOption:_activeModel
-          matchingModelMode:_inputState->active_model]) {
+  if ([self isModel:_activeModel matchingModelMode:_inputState->active_model]) {
     return;
   }
 
@@ -1037,7 +1008,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     [self setActiveModelInInputState:_activeModel explicitUserAction:NO];
   } else {
     // Local is not valid, reset to default.
-    [self setActiveModelOption:[self defaultModel] explicitUserAction:NO];
+    [self setActiveModel:[self defaultModel] explicitUserAction:NO];
   }
 }
 
@@ -1146,10 +1117,12 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   }
 }
 
-// Whether the given model option is allowed.
-- (BOOL)isModelAllowed:(ComposeboxModelOption)modelOption {
-  // None is the fallback/default option that is always available.
-  if (modelOption == ComposeboxModelOption::kNone) {
+// Whether the given `model` is allowed.
+- (BOOL)isModelAllowed:(omnibox::ModelMode)model {
+  // `MODEL_MODE_UNSPECIFIED` represents having no explicit model selection
+  // (e.g. when resetting on return to regular search) and is always allowed,
+  // even though it is not part of `_inputState->allowed_models`.
+  if (model == omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
     return YES;
   }
 
@@ -1168,13 +1141,11 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     return NO;
   }
 
-  omnibox::ModelMode modelMode =
-      ModelModeForModelOption(modelOption, _inputState.value());
-  return std::ranges::contains(_inputState->allowed_models, modelMode);
+  return std::ranges::contains(_inputState->allowed_models, model);
 }
 
-// Whether the given model option is disabled.
-- (BOOL)isModelDisabled:(ComposeboxModelOption)modelOption {
+// Whether the given `model` is disabled.
+- (BOOL)isModelDisabled:(omnibox::ModelMode)model {
   // Models are only available from server state.
   if (!ShowComposeboxAdditionalAdvancedTools() ||
       !EnableComposeboxServerSideState()) {
@@ -1185,9 +1156,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     return NO;
   }
 
-  omnibox::ModelMode modelMode =
-      ModelModeForModelOption(modelOption, _inputState.value());
-  return std::ranges::contains(_inputState->disabled_models, modelMode);
+  return std::ranges::contains(_inputState->disabled_models, model);
 }
 
 #pragma mark - InputState Helpers
@@ -1197,15 +1166,20 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   return _modeHolder.mode;
 }
 
-/// Sets the active model in input state model.
-- (void)setActiveModelInInputState:(ComposeboxModelOption)modelOption
+// Sets the active model in input state model.
+- (void)setActiveModelInInputState:(omnibox::ModelMode)model
                 explicitUserAction:(BOOL)explicitUserAction {
   if (!_inputState.has_value()) {
     return;
   }
-  // Set the model in input state.
+  // `InputStateModel` expects a concrete model from `allowed_models` (and
+  // resets `MODEL_MODE_UNSPECIFIED` on config updates). Resolve
+  // `MODEL_MODE_UNSPECIFIED` to the server's default model so compatibility
+  // rules and query parameters are evaluated against the default model.
   omnibox::ModelMode requestedModelMode =
-      ModelModeForModelOption(modelOption, _inputState.value());
+      model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
+          ? model
+          : _inputState->GetDefaultModel();
 
   if (_inputState->active_model == requestedModelMode) {
     return;
@@ -1242,15 +1216,14 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 #pragma mark - Eligibility & Availability
 
 /// Returns the default model for the active mode.
-- (ComposeboxModelOption)defaultModel {
+- (omnibox::ModelMode)defaultModel {
   if ([self activeMode] == ComposeboxMode::kRegularSearch) {
-    return ComposeboxModelOption::kNone;
+    return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
   }
   if (!_inputState.has_value()) {
-    return ComposeboxModelOption::kNone;
+    return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
   }
-  return ModelOptionForModelMode(GetDefaultModelMode(*_inputState))
-      .value_or(ComposeboxModelOption::kRegular);
+  return _inputState->GetDefaultModel();
 }
 
 /// Returns the default mode/tool that is implicit in the context. The tool is
