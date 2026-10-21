@@ -1369,14 +1369,14 @@ mojom::blink::AIPageContentImageInfoPtr GetImageInfo(
 // When ARIA provides no text, try CSS alternative text, then the element's
 // alt, value, summary, or SVG title/description, then its tooltip.
 String GetFallbackLabel(Element& element) {
-  if (const std::optional<String> css_alt_text =
-          AXNodeObject::GetCSSAltText(&element)) {
+  if (const String css_alt_text = AXNodeObject::GetCSSAltText(&element);
+      !css_alt_text.IsNull()) {
     // An explicitly empty CSS alternative marks generated content as
     // decorative, like <img alt="">. Leave the fallback label empty.
-    if (css_alt_text->empty()) {
+    if (css_alt_text.empty()) {
       return String();
     }
-    String label = NormalizeLabelCandidate(css_alt_text.value());
+    String label = NormalizeLabelCandidate(css_alt_text);
     if (!label.empty()) {
       return label;
     }

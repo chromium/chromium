@@ -1328,9 +1328,9 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
 bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
   DCHECK(node.IsPseudoElement());
 
-  std::optional<String> alt_text =
+  String alt_text =
       AXNodeObject::GetCSSAltText(To<Element>(&node));
-  if (alt_text && alt_text->empty()) {
+  if (!alt_text.IsNull() && alt_text.empty()) {
     return false;
   }
 
@@ -1439,7 +1439,8 @@ bool AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
       return false;
     if (ancestor->IsPseudoElement()) {
       // When an ancestor is exposed using CSS alt text, descendants are pruned.
-      if (AXNodeObject::GetCSSAltText(To<Element>(ancestor->GetNode()))) {
+      if (!AXNodeObject::GetCSSAltText(To<Element>(ancestor->GetNode()))
+               .IsNull()) {
         return false;
       }
       return IsRelevantPseudoElement(*ancestor->GetNode());
