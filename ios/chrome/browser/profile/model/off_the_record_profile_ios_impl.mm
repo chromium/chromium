@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
+#import "ios/chrome/browser/shared/model/profile/internal/profile_dependency_manager_ios.h"
 
 OffTheRecordProfileIOSImpl::OffTheRecordProfileIOSImpl(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,

@@ -12,9 +12,9 @@
 #include "base/parameter_pack.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_factory_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_access.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
 
 // LINT.IfChange(TypedProfileKeyedServiceFactoryIOS)

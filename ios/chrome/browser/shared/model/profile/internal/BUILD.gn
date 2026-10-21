@@ -1,0 +1,76 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("internal") {
+  visibility = [
+    ":unit_tests",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/profile/test",
+  ]
+  sources = [
+    "profile_keyed_service_factory_ios.cc",
+    "profile_keyed_service_factory_ios.h",
+    "refcounted_profile_keyed_service_factory_ios.cc",
+    "refcounted_profile_keyed_service_factory_ios.h",
+  ]
+  deps = [
+    ":profile_dependency_manager",
+    ":profile_keyed_service_utils",
+    "//base",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_traits",
+    "//ios/chrome/browser/shared/model/profile/test:testing_factories",
+  ]
+}
+
+source_set("profile_dependency_manager") {
+  visibility = [
+    ":internal",
+    "//ios/chrome/browser/profile/model",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/web/model:web_internal",
+  ]
+  sources = [
+    "profile_dependency_manager_ios.cc",
+    "profile_dependency_manager_ios.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("profile_keyed_service_utils") {
+  visibility = [
+    ":internal",
+    ":unit_tests",
+  ]
+  sources = [
+    "profile_keyed_service_utils.cc",
+    "profile_keyed_service_utils.h",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_traits",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "profile_keyed_service_factory_ios_unittest.cc",
+    "profile_keyed_service_utils_unittest.cc",
+    "refcounted_profile_keyed_service_factory_ios_unittest.cc",
+  ]
+  deps = [
+    ":internal",
+    ":profile_keyed_service_utils",
+    "//base",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_DEPENDENCY_MANAGER_IOS_H_
-#define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_DEPENDENCY_MANAGER_IOS_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_INTERNAL_PROFILE_DEPENDENCY_MANAGER_IOS_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_INTERNAL_PROFILE_DEPENDENCY_MANAGER_IOS_H_
 
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/dependency_manager.h"
@@ -64,4 +64,4 @@ class ProfileDependencyManagerIOS final : public DependencyManager {
   void DoCreateProfileServices(ProfileIOS* profile, bool is_testing_profile);
 };
 
-#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_DEPENDENCY_MANAGER_IOS_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_INTERNAL_PROFILE_DEPENDENCY_MANAGER_IOS_H_

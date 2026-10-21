@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_utils.h"
+#include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_utils.h"
 
 #include "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

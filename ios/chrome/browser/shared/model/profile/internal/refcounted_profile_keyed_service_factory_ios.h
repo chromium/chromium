@@ -2,28 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_
-#define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_INTERNAL_REFCOUNTED_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_INTERNAL_REFCOUNTED_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_
 
 #include <concepts>
-#include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/traits_bag.h"
 #include "base/types/pass_key.h"
-#include "components/keyed_service/core/keyed_service_factory.h"
+#include "components/keyed_service/core/refcounted_keyed_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
 #include "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
 
 class ProfileIOS;
-class RefcountedProfileKeyedServiceFactoryIOS;
+class ProfileKeyedServiceFactoryIOS;
 class TestProfileIOS;
 
-// LINT.IfChange(ProfileKeyedServiceFactoryIOS)
+// LINT.IfChange(RefcountedProfileKeyedServiceFactoryIOS)
 //
-// ProfileKeyedServiceFactoryIOS provides a ProfileIOS-specific interface for
-// KeyedServiceFactory under //ios/chrome/browser.
+// RefcountedProfileKeyedServiceFactoryIOS provides a ProfileIOS-specific
+// interface forKeyedServiceFactory under //ios/chrome/browser.
 //
 // It automates the registration with the DependencyManager, simplifies the
 // selection of the correct ProfileIOS to use when passed an off-the-record
@@ -33,28 +32,31 @@ class TestProfileIOS;
 //
 // - Example of a factory that use the regular ProfileIOS in incognito:
 //
-// class ExampleKeyedServiceFactory : public ProfileKeyedServiceFactoryIOS {
+// class ExampleRefcountedKeyedServiceFactory
+//     : public RefcountedProfileKeyedServiceFactoryIOS {
 //  private:
-//   ExampleKeyedServiceFactory()
-//       : ProfileKeyedServiceFactoryIOS(
-//             "ExampleKeyedService",
+//   ExampleRefcountedKeyedServiceFactory()
+//       : RefcountedProfileKeyedServiceFactoryIOS(
+//             "ExampleRefcountedKeyedService",
 //             ProfileSelection::kRedirectedInIncognito) {}
 // };
 //
 // - Example of a factory creating the service with profile unless during tests.
 //
-// class ExampleKeyedServiceFactory : public ProfileKeyedServiceFactoryIOS {
+// class ExampleRefcountedKeyedServiceFactory
+//     : public RefcountedProfileKeyedServiceFactoryIOS {
 //  private:
-//   ExampleKeyedServiceFactory()
-//       : ProfileKeyedServiceFactoryIOS(
-//             "ExampleKeyedService",
+//   ExampleRefcountedKeyedServiceFactory()
+//       : RefcountedProfileKeyedServiceFactoryIOS(
+//             "ExampleRefcountedKeyedService",
 //             ServiceCreation::kCreateWithProfile,
 //             TestingCreation::kNoServiceForTests) {}
 // };
 //
-// Prefer inheriting from TypedProfileKeyedServiceFactoryIOS instead
-// of directly inheriting from ProfileKeyedServiceFactoryIOS.
-class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
+// Prefer inheriting from TypedRefcountedProfileKeyedServiceFactoryIOS instead
+// of directly inheriting from RefcountedProfileKeyedServiceFactoryIOS.
+class RefcountedProfileKeyedServiceFactoryIOS
+    : public RefcountedKeyedServiceFactory {
  public:
   // List of traits that are valid for the constructor.
   using ValidTraits =
@@ -66,13 +68,14 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   // A callback that returns the instance of a KeyedService for a given
   // ProfileIOS instance. This is used for testing where the test wants
   // to create a specific test double for a service.
-  using TestingFactory = KeyedServiceTestingFactoryIOS;
+  using TestingFactory = RefcountedKeyedServiceTestingFactoryIOS;
 
   // Constructor accepts zero or more traits.
   template <typename... Traits>
     requires base::trait_helpers::AreValidTraits<ValidTraits, Traits...>
-  NOINLINE ProfileKeyedServiceFactoryIOS(const char* name, Traits... traits)
-      : ProfileKeyedServiceFactoryIOS(
+  NOINLINE RefcountedProfileKeyedServiceFactoryIOS(const char* name,
+                                                   Traits... traits)
+      : RefcountedProfileKeyedServiceFactoryIOS(
             name,
             base::trait_helpers::GetEnum<ProfileSelection,
                                          ProfileSelection::kDefault>(traits...),
@@ -94,9 +97,10 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   // Helper that casts the value returned by GetKeyedServiceForProfile() to the
   // sub-class T of KeyedService.
   template <typename T>
-    requires std::convertible_to<T*, KeyedService*>
-  T* GetServiceForProfileAs(ProfileIOS* profile, bool create) {
-    return static_cast<T*>(GetServiceForProfile(profile, create));
+    requires std::convertible_to<T*, RefcountedKeyedService*>
+  scoped_refptr<T> GetServiceForProfileAs(ProfileIOS* profile, bool create) {
+    return base::WrapRefCounted(
+        static_cast<T*>(GetServiceForProfile(profile, create).get()));
   }
 
   // Registers any user preferences on this service. This should be overridden
@@ -104,7 +108,7 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   virtual void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Creates a new instance of the service for `profile`.
-  virtual std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+  virtual scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const = 0;
 
   // The main public interface for declaring dependencies between services
@@ -113,33 +117,35 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   void DependsOn(RefcountedProfileKeyedServiceFactoryIOS* other);
 
  private:
-  // KeyedServiceFactory implementation:
+  // RefcountedKeyedServiceFactory implementation:
   void* GetContextToUse(void* context) const final;
   bool ServiceIsCreatedWithContext() const final;
   bool ServiceIsNULLWhileTesting() const final;
   void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry) final;
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+  scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       void* context) const final;
 
   // Common implementation that maps `profile` to some service object. Deals
   // with incognito and testing profiles according to constructor traits. If
   // `create` is true, the service will be create using
   // BuildServiceInstanceFor() if it doesn't already exists.
-  KeyedService* GetServiceForProfile(ProfileIOS* profile, bool create);
+  scoped_refptr<RefcountedKeyedService> GetServiceForProfile(
+      ProfileIOS* profile,
+      bool create);
 
   // The template constructor has to be in the header but it delegates to this
   // constructor to initialize all other members out-of-line
-  ProfileKeyedServiceFactoryIOS(const char* name,
-                                ProfileSelection profile_selection,
-                                ServiceCreation service_creation,
-                                TestingCreation testing_creation,
-                                base::trait_helpers::NotATraitTag);
+  RefcountedProfileKeyedServiceFactoryIOS(const char* name,
+                                          ProfileSelection profile_selection,
+                                          ServiceCreation service_creation,
+                                          TestingCreation testing_creation,
+                                          base::trait_helpers::NotATraitTag);
 
   // Policies for this factory.
   const ProfileSelection profile_selection_;
   const ServiceCreation service_creation_;
   const TestingCreation testing_creation_;
 };
-// LINT.ThenChange(//ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h:RefcountedProfileKeyedServiceFactoryIOS)
+// LINT.ThenChange(//ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_factory_ios.h:ProfileKeyedServiceFactoryIOS)
 
-#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_INTERNAL_REFCOUNTED_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_

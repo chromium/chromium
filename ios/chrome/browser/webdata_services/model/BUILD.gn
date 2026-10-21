@@ -16,6 +16,7 @@ source_set("model") {
     "//components/webdata_services",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_access",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public/thread",
   ]

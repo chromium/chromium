@@ -28,6 +28,8 @@ source_set("test") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/profile/internal",
+    "//ios/chrome/browser/shared/model/profile/internal:profile_dependency_manager",
     "//ios/chrome/browser/shared/model/profile/test:testing_factories",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",

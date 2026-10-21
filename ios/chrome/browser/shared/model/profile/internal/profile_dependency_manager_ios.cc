@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
+#include "ios/chrome/browser/shared/model/profile/internal/profile_dependency_manager_ios.h"
 
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"

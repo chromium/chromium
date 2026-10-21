@@ -30,6 +30,7 @@ source_set("reporting") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_traits",
     "//ios/chrome/browser/signin/model",
     "//ios/web/public",
     "//services/network/public/cpp",

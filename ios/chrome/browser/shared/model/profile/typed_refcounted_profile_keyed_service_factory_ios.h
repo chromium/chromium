@@ -13,10 +13,10 @@
 #include "base/traits_bag.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "ios/chrome/browser/shared/model/profile/internal/refcounted_profile_keyed_service_factory_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_access.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
-#include "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
 // LINT.IfChange(TypedRefcountedProfileKeyedServiceFactoryIOS)
 //

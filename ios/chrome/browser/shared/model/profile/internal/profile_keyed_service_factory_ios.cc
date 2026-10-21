@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_factory_ios.h"
 
 #include "base/check.h"
-#include "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
+#include "ios/chrome/browser/shared/model/profile/internal/profile_dependency_manager_ios.h"
+#include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_utils.h"
+#include "ios/chrome/browser/shared/model/profile/internal/refcounted_profile_keyed_service_factory_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_utils.h"
 
 namespace {
 
-// Wraps `testing_factory` as a RefcountedKeyedServiceFactory::TestingFactory.
-base::OnceCallback<scoped_refptr<RefcountedKeyedService>(void*)> WrapFactory(
-    RefcountedKeyedServiceTestingFactoryIOS testing_factory) {
+// Wraps `testing_factory` as a KeyedServiceFactory::TestingFactory.
+base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
+    KeyedServiceTestingFactoryIOS testing_factory) {
   if (!testing_factory) {
     return {};
   }
 
   return base::BindOnce(
-      [](RefcountedKeyedServiceTestingFactoryIOS testing_factory,
-         void* context) -> scoped_refptr<RefcountedKeyedService> {
+      [](KeyedServiceTestingFactoryIOS testing_factory,
+         void* context) -> std::unique_ptr<KeyedService> {
         return std::move(testing_factory)
             .Run(static_cast<ProfileIOS*>(context));
       },
@@ -30,83 +30,78 @@ base::OnceCallback<scoped_refptr<RefcountedKeyedService>(void*)> WrapFactory(
 
 }  // namespace
 
-void RefcountedProfileKeyedServiceFactoryIOS::SetTestingFactory(
+void ProfileKeyedServiceFactoryIOS::SetTestingFactory(
     PassKey pass_key,
     ProfileIOS* profile,
     TestingFactory testing_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RefcountedKeyedServiceFactory::SetTestingFactory(
+  KeyedServiceFactory::SetTestingFactory(
       profile, WrapFactory(std::move(testing_factory)));
 }
 
-void RefcountedProfileKeyedServiceFactoryIOS::RegisterProfilePrefs(
+void ProfileKeyedServiceFactoryIOS::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Nothing to do.
 }
 
-scoped_refptr<RefcountedKeyedService>
-RefcountedProfileKeyedServiceFactoryIOS::GetServiceForProfile(
+KeyedService* ProfileKeyedServiceFactoryIOS::GetServiceForProfile(
     ProfileIOS* profile,
     bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetServiceForContext(profile, create);
 }
 
-void RefcountedProfileKeyedServiceFactoryIOS::DependsOn(
+void ProfileKeyedServiceFactoryIOS::DependsOn(
     ProfileKeyedServiceFactoryIOS* other) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RefcountedKeyedServiceFactory::DependsOn(other);
+  KeyedServiceFactory::DependsOn(other);
 }
 
-void RefcountedProfileKeyedServiceFactoryIOS::DependsOn(
+void ProfileKeyedServiceFactoryIOS::DependsOn(
     RefcountedProfileKeyedServiceFactoryIOS* other) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RefcountedKeyedServiceFactory::DependsOn(other);
+  KeyedServiceFactory::DependsOn(other);
 }
 
-void* RefcountedProfileKeyedServiceFactoryIOS::GetContextToUse(
-    void* context) const {
+void* ProfileKeyedServiceFactoryIOS::GetContextToUse(void* context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AssertContextWasntDestroyed(context);
   return GetContextToUseForKeyedServiceFactory(
       static_cast<ProfileIOS*>(context), profile_selection_);
 }
 
-bool RefcountedProfileKeyedServiceFactoryIOS::ServiceIsCreatedWithContext()
-    const {
+bool ProfileKeyedServiceFactoryIOS::ServiceIsCreatedWithContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return service_creation_ == ServiceCreation::kCreateWithProfile;
 }
 
-bool RefcountedProfileKeyedServiceFactoryIOS::ServiceIsNULLWhileTesting()
-    const {
+bool ProfileKeyedServiceFactoryIOS::ServiceIsNULLWhileTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return testing_creation_ == TestingCreation::kNoServiceForTests;
 }
 
-void RefcountedProfileKeyedServiceFactoryIOS::RegisterPrefs(
+void ProfileKeyedServiceFactoryIOS::RegisterPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RegisterProfilePrefs(registry);
 }
 
-scoped_refptr<RefcountedKeyedService>
-RefcountedProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
-    void* context) const {
+std::unique_ptr<KeyedService>
+ProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(void* context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return BuildServiceInstanceFor(static_cast<ProfileIOS*>(context));
 }
 
-RefcountedProfileKeyedServiceFactoryIOS::
-    RefcountedProfileKeyedServiceFactoryIOS(const char* name,
-                                            ProfileSelection profile_selection,
-                                            ServiceCreation service_creation,
-                                            TestingCreation testing_creation,
-                                            base::trait_helpers::NotATraitTag)
-    : RefcountedKeyedServiceFactory(name,
-                                    ProfileDependencyManagerIOS::GetInstance(),
-                                    BROWSER_STATE),
+ProfileKeyedServiceFactoryIOS::ProfileKeyedServiceFactoryIOS(
+    const char* name,
+    ProfileSelection profile_selection,
+    ServiceCreation service_creation,
+    TestingCreation testing_creation,
+    base::trait_helpers::NotATraitTag)
+    : KeyedServiceFactory(name,
+                          ProfileDependencyManagerIOS::GetInstance(),
+                          BROWSER_STATE),
       profile_selection_(profile_selection),
       service_creation_(service_creation),
       testing_creation_(testing_creation) {

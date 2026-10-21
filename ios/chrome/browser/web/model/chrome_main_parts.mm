@@ -69,7 +69,7 @@
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
+#import "ios/chrome/browser/shared/model/profile/internal/profile_dependency_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"

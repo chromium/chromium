@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/shared/model/profile/internal/refcounted_profile_keyed_service_factory_ios.h"
 
 #include <string_view>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,35 +17,42 @@
 
 namespace {
 
-// A dummy KeyedService.
-class DummyService final : public KeyedService {
+// A dummy RefcountedKeyedService.
+class DummyService final : public RefcountedKeyedService {
  public:
-  // KeyedService:
-  void Shutdown() final {}
+  // RefcountedKeyedService:
+  void ShutdownOnUIThread() final {}
+
+ private:
+  // Destructor needs to be explicitly declared and private to please the
+  // Chromium style checker as this class is ref-counted.
+  ~DummyService() final = default;
 };
 
 // A factory for DummyService which allow setting all the traits via the
 // constructor (thus allowing the tests to use different traits with the same
 // factory).
-class DummyServiceFactory final : public ProfileKeyedServiceFactoryIOS {
+class DummyServiceFactory final
+    : public RefcountedProfileKeyedServiceFactoryIOS {
  public:
   template <typename... Traits>
   DummyServiceFactory(Traits... traits)
-      : ProfileKeyedServiceFactoryIOS("DummyService",
-                                      std::forward<Traits>(traits)...) {}
+      : RefcountedProfileKeyedServiceFactoryIOS(
+            "DummyService",
+            std::forward<Traits>(traits)...) {}
 
-  DummyService* GetForProfile(ProfileIOS* profile) {
+  scoped_refptr<DummyService> GetForProfile(ProfileIOS* profile) {
     return GetServiceForProfileAs<DummyService>(profile, true);
   }
 
-  DummyService* GetForProfileIfExists(ProfileIOS* profile) {
+  scoped_refptr<DummyService> GetForProfileIfExists(ProfileIOS* profile) {
     return GetServiceForProfileAs<DummyService>(profile, false);
   }
 
-  // ProfileKeyedServiceFactoryIOS:
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+  // RefcountedProfileKeyedServiceFactoryIOS:
+  scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const final {
-    return std::make_unique<DummyService>();
+    return base::MakeRefCounted<DummyService>();
   }
 };
 
@@ -98,9 +106,10 @@ struct PrintToStringParamName {
 
 }  // namespace
 
-class ProfileKeyedServiceFactoryIOSTest : public testing::TestWithParam<Param> {
+class RefcountedProfileKeyedServiceFactoryIOSTest
+    : public testing::TestWithParam<Param> {
  public:
-  ProfileKeyedServiceFactoryIOSTest()
+  RefcountedProfileKeyedServiceFactoryIOSTest()
       : dummy_service_factory_(std::get<ProfileSelection>(GetParam()),
                                std::get<ServiceCreation>(GetParam()),
                                std::get<TestingCreation>(GetParam())) {
@@ -123,7 +132,7 @@ class ProfileKeyedServiceFactoryIOSTest : public testing::TestWithParam<Param> {
 
 INSTANTIATE_TEST_SUITE_P(
     CreateLazily,
-    ProfileKeyedServiceFactoryIOSTest,
+    RefcountedProfileKeyedServiceFactoryIOSTest,
     ::testing::Combine(
         ::testing::Values(ProfileSelection::kNoInstanceInIncognito,
                           ProfileSelection::kRedirectedInIncognito,
@@ -135,7 +144,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(
     CreateWithProfile,
-    ProfileKeyedServiceFactoryIOSTest,
+    RefcountedProfileKeyedServiceFactoryIOSTest,
     ::testing::Combine(
         ::testing::Values(ProfileSelection::kNoInstanceInIncognito,
                           ProfileSelection::kRedirectedInIncognito,
@@ -144,9 +153,9 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(TestingCreation::kNoServiceForTests)),
     PrintToStringParamName());
 
-// Tests that ProfileKeyedServiceFactoryIOS behaves correctly for regular
-// profiles.
-TEST_P(ProfileKeyedServiceFactoryIOSTest, RegularProfile) {
+// Tests that RefcountedProfileKeyedServiceFactoryIOS behaves correctly for
+// regular profiles.
+TEST_P(RefcountedProfileKeyedServiceFactoryIOSTest, RegularProfile) {
   ProfileIOS* profile = GetRegularProfile();
 
   // If the service should not be created during testing, check it is not
@@ -176,9 +185,9 @@ TEST_P(ProfileKeyedServiceFactoryIOSTest, RegularProfile) {
   EXPECT_NE(nullptr, factory().GetForProfile(profile));
 }
 
-// Tests that ProfileKeyedServiceFactoryIOS behaves correctly for off-the-record
-// profiles.
-TEST_P(ProfileKeyedServiceFactoryIOSTest, OffTheRecordProfile) {
+// Tests that RefcountedProfileKeyedServiceFactoryIOS behaves correctly for
+// off-the-record profiles.
+TEST_P(RefcountedProfileKeyedServiceFactoryIOSTest, OffTheRecordProfile) {
   ProfileIOS* otr_profile = GetOffTheRecordProfile();
 
   // If the service should not be created during testing, check it is not
@@ -221,7 +230,8 @@ TEST_P(ProfileKeyedServiceFactoryIOSTest, OffTheRecordProfile) {
 
   // Get the service for the regular profile to compare it to the service of the
   // off-the-record profile.
-  DummyService* regular_service = factory().GetForProfile(GetRegularProfile());
+  scoped_refptr<DummyService> regular_service =
+      factory().GetForProfile(GetRegularProfile());
   ASSERT_NE(nullptr, regular_service);
 
   // Check that the regular and off-the-record profile have either the same or a

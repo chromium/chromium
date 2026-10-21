@@ -22,6 +22,7 @@ source_set("model") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_traits",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]

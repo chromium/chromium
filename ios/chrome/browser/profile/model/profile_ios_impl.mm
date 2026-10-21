@@ -48,7 +48,7 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
-#import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
+#import "ios/chrome/browser/shared/model/profile/internal/profile_dependency_manager_ios.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
