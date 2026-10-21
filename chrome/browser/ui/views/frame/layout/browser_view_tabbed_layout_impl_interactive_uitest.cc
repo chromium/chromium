@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/common_animation_values.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -81,7 +82,6 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSidePanelTestElement);
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kSidePanelFlyoverAnimation);
     set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTest::SetUp();
   }
@@ -387,7 +387,6 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   const gfx::AnimationTestApi::RenderModeResetter render_mode_resetter_;
 };
 
@@ -824,7 +823,8 @@ class BrowserViewTabbedLayoutImplContentLayoutUiTest
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        HorizontalTabsSinglePaneOpenSidePanel) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   RunScheduledLayouts();
@@ -834,7 +834,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        HorizontalTabsSinglePaneCloseSidePanel) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   RunScheduledLayouts();
@@ -844,7 +845,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        VerticalTabsSinglePaneOpenSidePanel) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   tabs::VerticalTabStripStateController::From(browser())
@@ -856,7 +858,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        VerticalTabsSinglePaneCloseSidePanel) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   tabs::VerticalTabStripStateController::From(browser())
@@ -868,7 +871,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        VerticalTabsSinglePaneCollapse) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   tabs::VerticalTabStripStateController::From(browser())
@@ -880,7 +884,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        VerticalTabsSinglePaneExpand) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   tabs::VerticalTabStripStateController::From(browser())
@@ -893,7 +898,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        HorizontalTabsSplitViewOpenSidePanel) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   RunScheduledLayouts();
@@ -903,7 +909,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        HorizontalTabsSplitViewCloseSidePanel) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   RunScheduledLayouts();
@@ -913,7 +920,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        VerticalTabsSplitViewOpenSidePanel) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   tabs::VerticalTabStripStateController::From(browser())
@@ -925,7 +933,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        VerticalTabsSplitViewCloseSidePanel) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   tabs::VerticalTabStripStateController::From(browser())
@@ -937,7 +946,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        VerticalTabsSplitViewCollapse) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   tabs::VerticalTabStripStateController::From(browser())
@@ -950,7 +960,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
                        VerticalTabsSplitViewExpand) {
-  if (!features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() !=
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     GTEST_SKIP();
   }
   tabs::VerticalTabStripStateController::From(browser())
@@ -965,9 +976,7 @@ class BrowserViewHorizontalTabStripOldLayoutUiTest
     : public BrowserViewTabbedLayoutImplUiTest {
  public:
   void SetUp() override {
-    test_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSidePanelFlyoverAnimation},
-        /*disabled_features=*/{tabs::kTabStripUnification});
+    test_feature_list_.InitAndDisableFeature(tabs::kTabStripUnification);
     set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTest::SetUp();
   }

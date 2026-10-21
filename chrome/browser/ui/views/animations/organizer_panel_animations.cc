@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 
 #include "chrome/browser/ui/animation/browser_animation_types.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/common_animation_values.h"
 #include "ui/base/interaction/safe_castable.h"
 

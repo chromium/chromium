@@ -271,18 +271,6 @@ BASE_DECLARE_FEATURE(kThreeButtonPasswordSaveDialog);
 BASE_DECLARE_FEATURE(kPasswordSaveUpdateDropdownMenuExperiment);
 #endif
 
-// Feature which uses a flyover animation for animating side panels (and
-// expansion/contraction of the Vertical Tab Strip).
-//
-// Call `UseSidePanelFlyoverAnimation()` instead of checking this feature
-// directly.
-BASE_DECLARE_FEATURE(kSidePanelFlyoverAnimation);
-bool UseSidePanelFlyoverAnimation();
-
-BASE_DECLARE_FEATURE_PARAM(int, kSidePanelFlyoverDurationMs);
-
-BASE_DECLARE_FEATURE(kUseDefaultDeadlineWhenAnimatingBounds);
-
 // TODO(crbug.com/460764864): Cleanup all the enterprise badging feature flags.
 BASE_DECLARE_FEATURE(kNTPFooterBadgingPolicies);
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
 
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/common_animation_values.h"
 #include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -48,8 +48,10 @@ SidePanelAnimations::~SidePanelAnimations() = default;
 
 SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
     const {
-  const int kDefaultAnimationMs = features::kSidePanelFlyoverDurationMs.Get();
-  const bool use_flyover = features::UseSidePanelFlyoverAnimation();
+  constexpr int kDefaultAnimationMs = 350;
+  const bool use_flyover =
+      browser_animations::GetPanelAnimationType() ==
+      browser_animations::PanelAnimationType::kClipAndSingleReflow;
   const gfx::Tween::Type tween = use_flyover
                                      ? gfx::Tween::Type::ACCEL_80_DECEL_20
                                      : gfx::Tween::Type::ACCEL_45_DECEL_88;

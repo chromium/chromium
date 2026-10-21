@@ -4564,20 +4564,6 @@ inline constexpr char kSplitViewHorizontalName[] = "Stacked Split Views";
 inline constexpr char kSplitViewHorizontalDescription[] =
     "Whether split views can be arranged in a stacked layout.";
 
-inline constexpr char kSidePanelFlyoverAnimationName[] =
-    "Side Panel Flyover Animation";
-inline constexpr char kSidePanelFlyoverAnimationDescription[] =
-    "Simplifies contents animations while animating vertical tabstrip and side "
-    "panels, reducing jank on most platforms. When enabled, the animating "
-    "elements will appear to float over the contents, which resize at the "
-    "beginning or end of the animation.";
-
-inline constexpr char kUseDefaultDeadlineWhenAnimatingBoundsName[] =
-    "Use Default Deadline Resizing Policy";
-inline constexpr char kUseDefaultDeadlineWhenAnimatingBoundsDescription[] =
-    "Use Default Deadline Resizing Policy when animating vertical tabstrip "
-    "and side panels.";
-
 inline constexpr char kTabGroupColorRefreshName[] = "Tab Group Color Refresh";
 inline constexpr char kTabGroupColorRefreshDescription[] =
     "Update the color selection for tab groups.";

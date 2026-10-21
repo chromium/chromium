@@ -85,9 +85,6 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   contents_view_ = AddChildView(
       std::make_unique<ContentsWebView>(browser_view->GetProfile()));
   contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
-  contents_view_->set_use_default_deadline_when_animating_bounds(
-      base::FeatureList::IsEnabled(
-          features::kUseDefaultDeadlineWhenAnimatingBounds));
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     new_tab_footer_view_separator_ =

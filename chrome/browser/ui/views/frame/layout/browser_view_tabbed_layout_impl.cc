@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/common_animation_values.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
@@ -177,6 +178,11 @@ struct BrowserViewTabbedLayoutImpl::VerticalTabStripAnimation {
   double expand_on_hover_opacity = 0.0;
   // How much the tab strip is expanded, not on-hover.
   double tab_strip_width = 0.0;
+
+  bool is_expanding_or_collapsing() const {
+    return current_motion == TabStripAnimations::kExpand ||
+           current_motion == TabStripAnimations::kCollapse;
+  }
 };
 
 // Stores information about visual separators throughout the browser.
@@ -970,10 +976,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       // Let the vertical tab strip animate out over the content.
       if (vertical_tab_strip_animation.current_motion) {
         clip_content_for_animation =
-            vertical_tab_strip_animation.current_motion ==
-                TabStripAnimations::kExpand ||
-            vertical_tab_strip_animation.current_motion ==
-                TabStripAnimations::kCollapse;
+            vertical_tab_strip_animation.is_expanding_or_collapsing();
         unclipped_contents_region.Inset(
             gfx::Insets::TLBR(0, tabs::kVerticalTabStripCollapsedWidth, 0, 0));
       } else {
@@ -1255,9 +1258,11 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // repositioning status bubble.
   const bool is_origin_changing =
       (side_panel_is_animating && !views().side_panel->IsRightAligned()) ||
-      (vertical_tab_strip_animation.current_motion && !base::i18n::IsRTL());
+      (vertical_tab_strip_animation.is_expanding_or_collapsing() &&
+       !base::i18n::IsRTL());
   views().multi_contents_view->SetIsAnimatingContent(
-      side_panel_is_animating || vertical_tab_strip_animation.current_motion,
+      side_panel_is_animating ||
+          vertical_tab_strip_animation.is_expanding_or_collapsing(),
       is_origin_changing);
 
   // Lay out contents container. The contents container contains the multi-
@@ -1288,7 +1293,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                                 params.visual_client_area.height()));
 
   // Maybe expand and clip the web contents to avoid issues during animation.
-  if (features::UseSidePanelFlyoverAnimation()) {
+  if (browser_animations::GetPanelAnimationType() ==
+      browser_animations::PanelAnimationType::kClipAndSingleReflow) {
     if (clip_content_for_animation) {
       // Vertical span is whatever it is, minus any shadow overlay insets.
       unclipped_contents_region.set_y(contents_layout.bounds.y());
@@ -1375,10 +1381,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     float transition_button_opacity = 1.0f;
     if (toolbar_height > 0 && caption_button_width > 0) {
       if (!will_wrap_at_destination &&
-          (vertical_tab_strip_animation.current_motion ==
-               TabStripAnimations::kExpand ||
-           vertical_tab_strip_animation.current_motion ==
-               TabStripAnimations::kCollapse)) {
+          vertical_tab_strip_animation.is_expanding_or_collapsing()) {
         constexpr float kOpacityTransitionStart = 0.2f;
         constexpr float kOpacityTransitionEnd = 0.8f;
         if (vertical_tab_strip_animation.tab_strip_width <

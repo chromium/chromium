@@ -888,8 +888,7 @@ void ContextualTasksButton::AnimateShow() {
           .OnEnded(base::BindOnce(&ContextualTasksButton::MaybeShowFeaturePromo,
                                   weak_ptr_factory_.GetWeakPtr()))
           .Once()
-          .SetDuration(base::Milliseconds(
-              features::kSidePanelFlyoverDurationMs.Get()))
+          .SetDuration(base::Milliseconds(350))
           .SetOpacity(layer(), 1.0f);
 
   if (drop_shadow_painted_layer_) {

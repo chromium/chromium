@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 
 #include "chrome/browser/ui/animation/browser_animation_types.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/common_animation_values.h"
 #include "ui/base/interaction/safe_castable.h"
 
@@ -55,14 +54,14 @@ TabStripAnimations::TabStripAnimations() {
 TabStripAnimations::~TabStripAnimations() = default;
 
 TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
-  const int expand_duration_ms =
-      features::UseSidePanelFlyoverAnimation() ? 300 : 400;
-  const int collapse_duration_ms =
-      features::UseSidePanelFlyoverAnimation() ? 250 : 350;
+  const bool use_flyover =
+      browser_animations::GetPanelAnimationType() ==
+      browser_animations::PanelAnimationType::kClipAndSingleReflow;
+  const int expand_duration_ms = use_flyover ? 300 : 400;
+  const int collapse_duration_ms = use_flyover ? 250 : 350;
   const gfx::Tween::Type expand_collapse_tween =
-      features::UseSidePanelFlyoverAnimation()
-          ? gfx::Tween::ACCEL_80_DECEL_20
-          : gfx::Tween::EASE_IN_OUT_EMPHASIZED;
+      use_flyover ? gfx::Tween::ACCEL_80_DECEL_20
+                  : gfx::Tween::EASE_IN_OUT_EMPHASIZED;
   // The sequence goes: one corner disappears, the top animates, and then the
   // other corner appears. These are the percentages of the animation at which
   // these changes happen.

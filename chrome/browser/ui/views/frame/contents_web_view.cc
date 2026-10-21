@@ -7,6 +7,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/animations/common_animation_values.h"
 #include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
@@ -36,7 +37,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,
                                       kContentsWebViewElementId);
 
 ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
-    : views::WebView(browser_context) {
+    : views::WebView(browser_context),
+      use_default_deadline_when_animating_(
+          browser_animations::GetPanelAnimationType() ==
+          browser_animations::PanelAnimationType::
+              kContinuousFrameResizeWithSurfaceSync) {
   // Draws the ContentsWebView background.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
@@ -103,6 +108,18 @@ void ContentsWebView::SetIsAnimatingBounds(bool is_animating,
                     SetShouldUseDefaultDeadlineOnResize,
                 /*enable=*/true);
     }
+  } else {
+    if (status_bubble_) {
+      status_bubble_->Reposition();
+    }
+
+    if (use_default_deadline_when_animating_) {
+      SafeInvoke(web_contents())
+          .Then(&content::WebContents::GetRenderWidgetHostView)
+          .Then(&content::RenderWidgetHostView::
+                    SetShouldUseDefaultDeadlineOnResize,
+                /*enable=*/false);
+    }
   }
 }
 
@@ -123,18 +140,8 @@ bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 void ContentsWebView::OnVisibleBoundsChanged() {
   // If we are animating, the status bubble is hidden and avoid reposition the
   // bubble as an optimization since it's expensive on some platform.
-  if (!is_animating_bounds_) {
-    SafeInvoke(status_bubble_.get()).Then(&StatusBubbleViews::Reposition);
-  }
-
-  // Reset using default deadline once animation is completed after the final
-  // bounds changes are made.
-  if (!is_animating_bounds_ && use_default_deadline_when_animating_) {
-    SafeInvoke(web_contents())
-        .Then(&content::WebContents::GetRenderWidgetHostView)
-        .Then(
-            &content::RenderWidgetHostView::SetShouldUseDefaultDeadlineOnResize,
-            /*enable=*/false);
+  if (!is_animating_bounds_ && status_bubble_) {
+    status_bubble_->Reposition();
   }
 }
 

@@ -5,9 +5,35 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_ANIMATIONS_COMMON_ANIMATION_VALUES_H_
 #define CHROME_BROWSER_UI_VIEWS_ANIMATIONS_COMMON_ANIMATION_VALUES_H_
 
+#include "build/build_config.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace browser_animations {
+
+// Defines how browser panels (such as side panels and the vertical tab strip)
+// animate when resizing the main content area.
+enum class PanelAnimationType {
+  // Web contents are laid out once at the target size and clipped during the
+  // animation.
+  kClipAndSingleReflow,
+  // Web contents bounds are continuously resized on each animation frame.
+  kContinuousFrameResize,
+  // Web contents bounds are continuously resized on each animation frame with
+  // surface synchronization when the content origin changes.
+  kContinuousFrameResizeWithSurfaceSync,
+};
+
+constexpr PanelAnimationType GetPanelAnimationType() {
+#if BUILDFLAG(IS_MAC)
+#if defined(ARCH_CPU_ARM64)
+  return PanelAnimationType::kContinuousFrameResizeWithSurfaceSync;
+#else
+  return PanelAnimationType::kContinuousFrameResize;
+#endif
+#else
+  return PanelAnimationType::kClipAndSingleReflow;
+#endif
+}
 
 // Common parameters for panels why fly out over the browser's content area
 // (vertical tab strip expand-on-hover, organizer panel, etc.)
