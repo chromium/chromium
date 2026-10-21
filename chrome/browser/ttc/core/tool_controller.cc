@@ -426,206 +426,6 @@ Profile* ToolController::GetProfile() {
   return session_controller_->GetProfile();
 }
 
-void ToolController::Navigate(const base::DictValue& arguments,
-                              ToolResponseCallback callback) {
-  const std::string* url =
-      arguments.FindString(actor::NavigateToolRequest::kUrlParam);
-  if (!url) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing url argument"));
-    return;
-  }
-
-  PerformActionOnTrackedContents(
-      [&url](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::NavigateToolRequest>(
-            actor_surface_handle, GURL(*url));
-      },
-      std::move(callback));
-}
-
-void ToolController::PerformSearch(const base::DictValue& arguments,
-                                   ToolResponseCallback callback) {
-  const std::string* query =
-      arguments.FindString(actor::PerformSearchToolRequest::kQueryParam);
-  if (!query) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing query argument"));
-    return;
-  }
-
-  PerformActionOnTrackedContents(
-      [&query](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::PerformSearchToolRequest>(
-            actor_surface_handle, *query);
-      },
-      std::move(callback));
-}
-
-void ToolController::CloseCurrentTab(ToolResponseCallback callback) {
-  PerformActionOnTrackedContents(
-      [](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::CloseTabToolRequest>(
-            actor_surface_handle);
-      },
-      std::move(callback));
-}
-
-void ToolController::GoBack(ToolResponseCallback callback) {
-  PerformActionOnTrackedContents(
-      [](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::HistoryBackToolRequest>(
-            actor_surface_handle);
-      },
-      std::move(callback));
-}
-
-void ToolController::GoForward(ToolResponseCallback callback) {
-  PerformActionOnTrackedContents(
-      [](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::HistoryForwardToolRequest>(
-            actor_surface_handle);
-      },
-      std::move(callback));
-}
-
-void ToolController::ReloadPage(ToolResponseCallback callback) {
-  PerformActionOnTrackedContents(
-      [](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::ReloadPageToolRequest>(
-            actor_surface_handle);
-      },
-      std::move(callback));
-}
-
-void ToolController::SwitchTab(const base::DictValue& arguments,
-                               ToolResponseCallback callback) {
-  const std::string* query =
-      arguments.FindString(actor::SwitchTabToolRequest::kQueryParam);
-  if (!query || query->empty()) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing or empty query argument"));
-    return;
-  }
-
-  PerformAction(std::make_unique<actor::SwitchTabToolRequest>(*query),
-                std::move(callback));
-}
-
-void ToolController::OpenKnownPage(const base::DictValue& arguments,
-                                   ToolResponseCallback callback) {
-  const std::string* query =
-      arguments.FindString(actor::OpenKnownPageToolRequest::kQueryParam);
-  if (!query || query->empty()) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing or empty query argument"));
-    return;
-  }
-
-  PerformAction(std::make_unique<actor::OpenKnownPageToolRequest>(*query),
-                std::move(callback));
-}
-
-void ToolController::FindAndHighlight(const base::DictValue& arguments,
-                                      ToolResponseCallback callback) {
-  const std::string* query =
-      arguments.FindString(actor::FindAndHighlightToolRequest::kQueryParam);
-  if (!query) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing query argument"));
-    return;
-  }
-
-  PerformActionOnTrackedContents(
-      [&query](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::FindAndHighlightToolRequest>(
-            actor_surface_handle, *query);
-      },
-      std::move(callback));
-}
-
-void ToolController::PlayVideo(ToolResponseCallback callback) {
-  PerformActionOnTrackedContents(
-      [](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::PlayMediaToolRequest>(
-            actor_surface_handle);
-      },
-      std::move(callback));
-}
-
-void ToolController::PauseVideo(ToolResponseCallback callback) {
-  PerformActionOnTrackedContents(
-      [](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::PauseMediaToolRequest>(
-            actor_surface_handle);
-      },
-      std::move(callback));
-}
-
-void ToolController::SeekToTimestamp(const base::DictValue& arguments,
-                                     ToolResponseCallback callback) {
-  const std::string* timecode =
-      arguments.FindString(actor::SeekMediaToolRequest::kTimecodeParam);
-  if (!timecode) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing timecode argument"));
-    return;
-  }
-
-  std::optional<base::TimeDelta> seek_time =
-      actor::SeekMediaToolRequest::FromTimecode(*timecode);
-  if (!seek_time) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kArgumentsInvalid, "Invalid timecode"));
-    return;
-  }
-
-  PerformActionOnTrackedContents(
-      [&seek_time](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::SeekMediaToolRequest>(
-            actor_surface_handle, *seek_time);
-      },
-      std::move(callback));
-}
-
-void ToolController::TranslatePage(const base::DictValue& arguments,
-                                   ToolResponseCallback callback) {
-  // If `target_language` is empty, the page is translated to the user's
-  // preferred language.
-  const std::string* target_language = arguments.FindString(
-      actor::TranslatePageToolRequest::kTargetLanguageParam);
-  if (!target_language) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing target_language argument"));
-    return;
-  }
-
-  PerformActionOnTrackedContents(
-      [&target_language](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::TranslatePageToolRequest>(
-            actor_surface_handle, *target_language);
-      },
-      std::move(callback));
-}
-
 void ToolController::ClickElement(const base::DictValue& arguments,
                                   ToolResponseCallback callback) {
   base::expected<actor::PageTarget, std::string> page_target =
@@ -647,103 +447,42 @@ void ToolController::ClickElement(const base::DictValue& arguments,
       std::move(callback));
 }
 
-void ToolController::SetText(const base::DictValue& arguments,
-                             ToolResponseCallback callback) {
-  base::expected<actor::PageTarget, std::string> page_target =
-      ParseNodeIdArgument(arguments);
-  if (!page_target.has_value()) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            page_target.error()));
-    return;
-  }
-
-  const std::string* text =
-      arguments.FindString(actor::TypeToolRequest::kTextParam);
-  if (!text) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing text argument"));
-    return;
-  }
-
+void ToolController::CloseCurrentTab(ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
-      [&page_target, &text](actor::ActorSurfaceHandle actor_surface_handle)
+      [](actor::ActorSurfaceHandle actor_surface_handle)
           -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::TypeToolRequest>(
-            actor_surface_handle, *page_target, *text,
-            /*follow_by_enter=*/false, actor::TypeToolRequest::Mode::kReplace);
+        return std::make_unique<actor::CloseTabToolRequest>(
+            actor_surface_handle);
       },
       std::move(callback));
 }
 
-void ToolController::SelectOption(const base::DictValue& arguments,
-                                  ToolResponseCallback callback) {
-  base::expected<actor::PageTarget, std::string> page_target =
-      ParseNodeIdArgument(arguments);
-  if (!page_target.has_value()) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            page_target.error()));
-    return;
-  }
-
-  const std::string* value = arguments.FindString("value");
-  if (!value) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing value argument"));
-    return;
-  }
-
+void ToolController::CloseGeminiPanel(ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
-      [&page_target, &value](actor::ActorSurfaceHandle actor_surface_handle)
+      [](actor::ActorSurfaceHandle actor_surface_handle)
           -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::SelectToolRequest>(actor_surface_handle,
-                                                          *page_target, *value);
+        return std::make_unique<actor::CloseGeminiPanelToolRequest>(
+            actor_surface_handle);
       },
       std::move(callback));
 }
 
-void ToolController::ScrollPage(const base::DictValue& arguments,
-                                ToolResponseCallback callback) {
-  const std::string* granularity_arg =
-      arguments.FindString(actor::ScrollPageToolRequest::kGranularityParam);
-  std::optional<actor::ScrollPageToolRequest::Granularity> granularity =
-      granularity_arg ? ParseScrollGranularity(*granularity_arg) : std::nullopt;
-  if (!granularity) {
+void ToolController::FindAndHighlight(const base::DictValue& arguments,
+                                      ToolResponseCallback callback) {
+  const std::string* query =
+      arguments.FindString(actor::FindAndHighlightToolRequest::kQueryParam);
+  if (!query) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing or invalid granularity argument"));
-    return;
-  }
-
-  const std::string* direction_arg =
-      arguments.FindString(actor::ScrollPageToolRequest::kDirectionParam);
-  std::optional<actor::ScrollPageToolRequest::Direction> direction =
-      direction_arg ? ParseScrollDirection(*direction_arg) : std::nullopt;
-  if (!direction) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing or invalid direction argument"));
-    return;
-  }
-
-  base::expected<actor::PageTarget, std::string> page_target =
-      ParseNodeIdArgument(arguments);
-  if (!page_target.has_value()) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            page_target.error()));
+                            "Missing query argument"));
     return;
   }
 
   PerformActionOnTrackedContents(
-      [&page_target, &granularity,
-       &direction](actor::ActorSurfaceHandle actor_surface_handle)
+      [&query](actor::ActorSurfaceHandle actor_surface_handle)
           -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::ScrollPageToolRequest>(
-            actor_surface_handle, *page_target, *granularity, *direction);
+        return std::make_unique<actor::FindAndHighlightToolRequest>(
+            actor_surface_handle, *query);
       },
       std::move(callback));
 }
@@ -892,6 +631,101 @@ void ToolController::OnGetScreenshotFetched(
   std::move(callback).Run(ToolResponse::Success(std::move(result_dict)));
 }
 
+void ToolController::GoBack(ToolResponseCallback callback) {
+  PerformActionOnTrackedContents(
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::HistoryBackToolRequest>(
+            actor_surface_handle);
+      },
+      std::move(callback));
+}
+
+void ToolController::GoForward(ToolResponseCallback callback) {
+  PerformActionOnTrackedContents(
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::HistoryForwardToolRequest>(
+            actor_surface_handle);
+      },
+      std::move(callback));
+}
+
+void ToolController::Navigate(const base::DictValue& arguments,
+                              ToolResponseCallback callback) {
+  const std::string* url =
+      arguments.FindString(actor::NavigateToolRequest::kUrlParam);
+  if (!url) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing url argument"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&url](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::NavigateToolRequest>(
+            actor_surface_handle, GURL(*url));
+      },
+      std::move(callback));
+}
+
+void ToolController::OpenKnownPage(const base::DictValue& arguments,
+                                   ToolResponseCallback callback) {
+  const std::string* query =
+      arguments.FindString(actor::OpenKnownPageToolRequest::kQueryParam);
+  if (!query || query->empty()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or empty query argument"));
+    return;
+  }
+
+  PerformAction(std::make_unique<actor::OpenKnownPageToolRequest>(*query),
+                std::move(callback));
+}
+
+void ToolController::PauseVideo(ToolResponseCallback callback) {
+  PerformActionOnTrackedContents(
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::PauseMediaToolRequest>(
+            actor_surface_handle);
+      },
+      std::move(callback));
+}
+
+void ToolController::PerformSearch(const base::DictValue& arguments,
+                                   ToolResponseCallback callback) {
+  const std::string* query =
+      arguments.FindString(actor::PerformSearchToolRequest::kQueryParam);
+  if (!query) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing query argument"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&query](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::PerformSearchToolRequest>(
+            actor_surface_handle, *query);
+      },
+      std::move(callback));
+}
+
+void ToolController::PlayVideo(ToolResponseCallback callback) {
+  PerformActionOnTrackedContents(
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::PlayMediaToolRequest>(
+            actor_surface_handle);
+      },
+      std::move(callback));
+}
+
 void ToolController::PromptGeminiPanel(const base::DictValue& arguments,
                                        ToolResponseCallback callback) {
   const std::string* prompt =
@@ -913,12 +747,111 @@ void ToolController::PromptGeminiPanel(const base::DictValue& arguments,
       std::move(callback));
 }
 
-void ToolController::CloseGeminiPanel(ToolResponseCallback callback) {
+void ToolController::ReloadPage(ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
       [](actor::ActorSurfaceHandle actor_surface_handle)
           -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::CloseGeminiPanelToolRequest>(
+        return std::make_unique<actor::ReloadPageToolRequest>(
             actor_surface_handle);
+      },
+      std::move(callback));
+}
+
+void ToolController::ScrollPage(const base::DictValue& arguments,
+                                ToolResponseCallback callback) {
+  const std::string* granularity_arg =
+      arguments.FindString(actor::ScrollPageToolRequest::kGranularityParam);
+  std::optional<actor::ScrollPageToolRequest::Granularity> granularity =
+      granularity_arg ? ParseScrollGranularity(*granularity_arg) : std::nullopt;
+  if (!granularity) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or invalid granularity argument"));
+    return;
+  }
+
+  const std::string* direction_arg =
+      arguments.FindString(actor::ScrollPageToolRequest::kDirectionParam);
+  std::optional<actor::ScrollPageToolRequest::Direction> direction =
+      direction_arg ? ParseScrollDirection(*direction_arg) : std::nullopt;
+  if (!direction) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or invalid direction argument"));
+    return;
+  }
+
+  base::expected<actor::PageTarget, std::string> page_target =
+      ParseNodeIdArgument(arguments);
+  if (!page_target.has_value()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            page_target.error()));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&page_target, &granularity,
+       &direction](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::ScrollPageToolRequest>(
+            actor_surface_handle, *page_target, *granularity, *direction);
+      },
+      std::move(callback));
+}
+
+void ToolController::SeekToTimestamp(const base::DictValue& arguments,
+                                     ToolResponseCallback callback) {
+  const std::string* timecode =
+      arguments.FindString(actor::SeekMediaToolRequest::kTimecodeParam);
+  if (!timecode) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing timecode argument"));
+    return;
+  }
+
+  std::optional<base::TimeDelta> seek_time =
+      actor::SeekMediaToolRequest::FromTimecode(*timecode);
+  if (!seek_time) {
+    std::move(callback).Run(ToolResponse::Error(
+        actor::mojom::ActionResultCode::kArgumentsInvalid, "Invalid timecode"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&seek_time](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::SeekMediaToolRequest>(
+            actor_surface_handle, *seek_time);
+      },
+      std::move(callback));
+}
+
+void ToolController::SelectOption(const base::DictValue& arguments,
+                                  ToolResponseCallback callback) {
+  base::expected<actor::PageTarget, std::string> page_target =
+      ParseNodeIdArgument(arguments);
+  if (!page_target.has_value()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            page_target.error()));
+    return;
+  }
+
+  const std::string* value = arguments.FindString("value");
+  if (!value) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing value argument"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&page_target, &value](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::SelectToolRequest>(actor_surface_handle,
+                                                          *page_target, *value);
       },
       std::move(callback));
 }
@@ -938,6 +871,73 @@ void ToolController::SetFullscreen(bool fullscreen,
           return std::make_unique<actor::EnterFullscreenToolRequest>(window_id);
         }
         return std::make_unique<actor::ExitFullscreenToolRequest>(window_id);
+      },
+      std::move(callback));
+}
+
+void ToolController::SetText(const base::DictValue& arguments,
+                             ToolResponseCallback callback) {
+  base::expected<actor::PageTarget, std::string> page_target =
+      ParseNodeIdArgument(arguments);
+  if (!page_target.has_value()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            page_target.error()));
+    return;
+  }
+
+  const std::string* text =
+      arguments.FindString(actor::TypeToolRequest::kTextParam);
+  if (!text) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing text argument"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&page_target, &text](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::TypeToolRequest>(
+            actor_surface_handle, *page_target, *text,
+            /*follow_by_enter=*/false, actor::TypeToolRequest::Mode::kReplace);
+      },
+      std::move(callback));
+}
+
+void ToolController::SwitchTab(const base::DictValue& arguments,
+                               ToolResponseCallback callback) {
+  const std::string* query =
+      arguments.FindString(actor::SwitchTabToolRequest::kQueryParam);
+  if (!query || query->empty()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or empty query argument"));
+    return;
+  }
+
+  PerformAction(std::make_unique<actor::SwitchTabToolRequest>(*query),
+                std::move(callback));
+}
+
+void ToolController::TranslatePage(const base::DictValue& arguments,
+                                   ToolResponseCallback callback) {
+  // If `target_language` is empty, the page is translated to the user's
+  // preferred language.
+  const std::string* target_language = arguments.FindString(
+      actor::TranslatePageToolRequest::kTargetLanguageParam);
+  if (!target_language) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing target_language argument"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&target_language](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::TranslatePageToolRequest>(
+            actor_surface_handle, *target_language);
       },
       std::move(callback));
 }
