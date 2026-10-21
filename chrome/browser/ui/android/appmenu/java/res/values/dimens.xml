@@ -6,6 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <!-- Paired with @style/AppMenuItemText (9dp paddingEnd) for a 16dp gap. -->
-    <dimen name="menu_item_shortcut_with_text_end_padding_start">7dp</dimen>
+    <!-- Paired with @style/AppMenuItemText (9dp paddingEnd) for a 40dp gap. -->
+    <dimen name="menu_item_shortcut_with_text_end_padding_start">31dp</dimen>
 </resources>
