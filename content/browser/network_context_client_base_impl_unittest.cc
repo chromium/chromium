@@ -23,7 +23,6 @@
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/child_process_id_util.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -74,8 +73,7 @@ class NetworkContextClientBaseTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ChildProcessSecurityPolicyImpl::GetInstance()->Add(kRendererProcessId,
-                                                       &browser_context_);
+    ChildProcessSecurityPolicyImpl::GetInstance()->Add(kRendererProcessId);
   }
 
   void TearDown() override {
@@ -84,7 +82,6 @@ class NetworkContextClientBaseTest : public testing::Test {
 
  protected:
   BrowserTaskEnvironment task_environment_;
-  TestBrowserContext browser_context_;
   NetworkContextClientBase client_;
   base::ScopedTempDir temp_dir_;
 };

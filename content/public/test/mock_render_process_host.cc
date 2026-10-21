@@ -84,7 +84,7 @@ MockRenderProcessHost::MockRenderProcessHost(
       foreground_service_worker_count_(0) {
   // Child process security operations can't be unit tested unless we add
   // ourselves as an existing child process.
-  ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
+  ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID());
 
   RenderProcessHostImpl::RegisterHost(GetID(), this);
 }

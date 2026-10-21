@@ -1268,11 +1268,7 @@ ChildProcessSecurityPolicyImpl* ChildProcessSecurityPolicyImpl::GetInstance() {
   return base::Singleton<ChildProcessSecurityPolicyImpl>::get();
 }
 
-void ChildProcessSecurityPolicyImpl::Add(ChildProcessId child_id,
-                                         BrowserContext* browser_context) {
-  // TODO(crbug.com/482216433): Remove the `browser_context` parameter (and
-  // this CHECK), since ProcessState no longer stores the BrowserContext.
-  CHECK(browser_context, base::NotFatalUntil::M159);
+void ChildProcessSecurityPolicyImpl::Add(ChildProcessId child_id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(child_id, base::NotFatalUntil::M159);
 
@@ -1308,7 +1304,7 @@ void ChildProcessSecurityPolicyImpl::ProcessStateMaps::CreateStateForProcess(
 void ChildProcessSecurityPolicyImpl::AddForTesting(
     ChildProcessId child_id,
     BrowserContext* browser_context) {
-  Add(child_id, browser_context);
+  Add(child_id);
   LockProcess(IsolationContext(
                   BrowsingInstanceId(1), browser_context,
                   /*is_guest=*/false, /*is_fenced=*/false,

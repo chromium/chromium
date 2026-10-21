@@ -3478,7 +3478,7 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
             /*is_fenced=*/false,
             /*is_fixed_storage_partition=*/false);
 
-    p->Add(kRendererProcess, &context);
+    p->Add(kRendererProcess);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
     p->AddCommittedOrigin(kRendererID, foo);
@@ -3530,7 +3530,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
   // Create a SiteInstance for sub.foo.com in a new BrowsingInstance.
   TestBrowserContext context;
   {
-    p->Add(kRendererProcess, &context);
+    p->Add(kRendererProcess);
     // Isolate foo.com so we can't get a default SiteInstance. This will mean
     // that https://sub.foo.com will end up in a site-keyed SiteInstance, which
     // is what we need.
@@ -3623,7 +3623,7 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
     // BrowsingInstanceId based on `foo_instance` and not pinned to '1'.
     // This is important when this test is run with other tests, as then
     // BrowsingInstanceId will not be '1' in general.
-    p->Add(kRendererProcess, &context);
+    p->Add(kRendererProcess);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
                    ProcessLock::CreateAllowAnySite(
                        StoragePartitionConfig::CreateDefault(&context),
@@ -3675,7 +3675,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
       SiteInstanceImpl::CreateForTesting(&context, GURL("https://bar.com"));
 
   // Start by putting foo.com into an allows-any-site process.
-  p->Add(kRendererProcess, &context);
+  p->Add(kRendererProcess);
   p->LockProcess(
       foo_instance->GetIsolationContext(), kRendererProcess,
       ProcessLock::CreateAllowAnySite(
@@ -3726,7 +3726,7 @@ TEST_P(ChildProcessSecurityPolicyTest, GetProcessLockAfterProcessRemoval) {
       SiteInstanceImpl::CreateForTesting(&context, GURL("https://foo.com"));
 
   // Lock process to foo.com.
-  p->Add(kRendererProcess, &context);
+  p->Add(kRendererProcess);
   p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
                  ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
   EXPECT_TRUE(p->GetProcessLock(kRendererProcess).IsLockedToSite());

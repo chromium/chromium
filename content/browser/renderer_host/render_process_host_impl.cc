@@ -1773,7 +1773,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
 
   widget_helper_ = new RenderWidgetHelper();
 
-  ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
+  ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID());
 
   CHECK(!BrowserMainRunner::ExitedMainMessageLoop());
   RegisterHost(GetID(), this);

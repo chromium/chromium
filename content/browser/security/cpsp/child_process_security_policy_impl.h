@@ -516,7 +516,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // Upon creation, child processes should register themselves by calling this
   // this method exactly once. This call must be made on the UI thread.
-  void Add(ChildProcessId child_id, BrowserContext* browser_context);
+  void Add(ChildProcessId child_id);
 
   // Helper method for unit tests that calls Add() and
   // LockProcess() with an "allow_any_site" lock. This ensures that the process

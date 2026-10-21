@@ -20,7 +20,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/test/fuzzer/file_system_manager_mojolpm_fuzzer.pb.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
@@ -62,10 +61,9 @@ scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() {
 // The lifetime of this is scoped to a single testcase, and it is created and
 // destroyed from the fuzzer sequence.
 //
-// For FileSystemManager, this needs the basic common Browser process state
-// provided by TestBrowserContext, and to set up the storage contexts that will
-// be used. The filesystem APIs also depend on the Blob subsystem, so in
-// addition to the FileSystemContext we also need a BlobStorageContext.
+// For FileSystemManager, this needs to set up the storage contexts that will be
+// used. The filesystem APIs also depend on the Blob subsystem, so in addition
+// to the FileSystemContext we also need a BlobStorageContext.
 //
 // Since the Browser process will host one FileSystemManagerImpl per
 // RenderProcessHost, we emulate this by allowing the fuzzer to create (and
@@ -113,7 +111,6 @@ class FileSystemManagerTestcase
       base::OnceClosure done_closure);
 
   // Prerequisite state
-  TestBrowserContext browser_context_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
@@ -126,7 +123,7 @@ class FileSystemManagerTestcase
 
 FileSystemManagerTestcase::FileSystemManagerTestcase(
     const content::fuzzing::file_system_manager::proto::Testcase& testcase)
-    : Testcase<ProtoTestcase, ProtoAction>(testcase), browser_context_() {
+    : Testcase<ProtoTestcase, ProtoAction>(testcase) {
   // FileSystemManagerTestcase is created on the main thread, but the actions
   // that we want to validate the sequencing of take place on the fuzzer
   // sequence.
@@ -174,7 +171,7 @@ void FileSystemManagerTestcase::SetUpOnUIThread(
     // Process IDs must be greater than 0.
     content::ChildProcessId process_id(i + 1);
 
-    p->Add(process_id, &browser_context_);
+    p->Add(process_id);
     UNSAFE_TODO(file_system_manager_impls_[i]) =
         std::make_unique<FileSystemManagerImpl>(p->CreateHandle(process_id),
                                                 file_system_context_,
