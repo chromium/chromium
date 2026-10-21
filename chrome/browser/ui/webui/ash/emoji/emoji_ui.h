@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_page_handler.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_search_proxy.h"

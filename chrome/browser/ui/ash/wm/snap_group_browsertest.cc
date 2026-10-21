@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-#include "chrome/browser/ui/views/tabs/shared/tab_strip_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"

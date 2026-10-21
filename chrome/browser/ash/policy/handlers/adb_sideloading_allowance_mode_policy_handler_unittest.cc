@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"

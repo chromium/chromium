@@ -10,7 +10,6 @@
 #include "base/test/task_environment.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"

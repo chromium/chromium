@@ -42,7 +42,6 @@ specific_include_rules = {
   ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/apps/platform_apps",
-    "+chrome/browser/prefs/browser_prefs.h",
     "+chrome/browser/prefs/session_startup_pref.h",
     "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
     "+chrome/browser/web_applications/web_app_install_info.h",

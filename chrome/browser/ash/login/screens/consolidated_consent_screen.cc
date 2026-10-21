@@ -36,7 +36,6 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/metrics/cros_pre_choice_metrics_manager.h"
-#include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

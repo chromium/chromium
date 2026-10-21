@@ -22,8 +22,6 @@
 #include "chrome/browser/ash/login/smart_lock/smart_lock_notification_controller.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"

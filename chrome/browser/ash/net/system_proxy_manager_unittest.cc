@@ -9,7 +9,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"

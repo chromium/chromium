@@ -35,7 +35,6 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"

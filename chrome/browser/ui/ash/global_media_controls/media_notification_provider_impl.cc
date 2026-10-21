@@ -13,7 +13,6 @@
 #include "ash/system/status_area_widget.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"

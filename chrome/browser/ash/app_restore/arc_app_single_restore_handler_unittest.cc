@@ -7,7 +7,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"

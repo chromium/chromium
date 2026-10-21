@@ -20,8 +20,6 @@
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"

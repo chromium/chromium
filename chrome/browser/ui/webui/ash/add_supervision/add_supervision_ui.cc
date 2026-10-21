@@ -14,7 +14,6 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"

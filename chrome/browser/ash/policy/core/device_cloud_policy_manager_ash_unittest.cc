@@ -43,7 +43,6 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

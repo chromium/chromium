@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/chrome_switches.h"

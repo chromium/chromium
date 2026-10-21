@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/notifications/screen_capture_notification_ui_ash.h"
-#include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/arc/mojom/screen_capture.mojom.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"

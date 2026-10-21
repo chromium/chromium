@@ -8,7 +8,6 @@
 #include "base/test/gtest_tags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "components/feedback/features.h"

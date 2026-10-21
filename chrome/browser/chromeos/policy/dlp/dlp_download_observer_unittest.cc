@@ -12,7 +12,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer_factory.h"
-#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"

@@ -26,7 +26,6 @@ specific_include_rules = {
     "+chrome/common/pref_names.h",
   ],
   "system_proxy_manager_unittest\\.cc": [
-    "+chrome/browser/prefs",
     "+services/network/network_context.h",
   ],
 
