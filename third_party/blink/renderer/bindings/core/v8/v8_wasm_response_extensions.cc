@@ -8,7 +8,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/crash/core/common/crash_key.h"
@@ -46,14 +46,14 @@ namespace blink {
 
 namespace {
 
-// The first `kWireBytesDigestSize` bytes of CachedMetadata body stores the
-// SHA-256 hash of the wire bytes and created/consumed here in Blink. The
-// remaining part of CachedMetadata is created/consumed by V8.
-static const size_t kWireBytesDigestSize = 32;
+// After the header, the next `kWireBytesDigestSize` bytes of CachedMetadata
+// body stores the SHA-256 hash of the wire bytes and created/consumed here in
+// Blink. The remaining part of CachedMetadata is created/consumed by V8.
+constexpr size_t kWireBytesDigestSize = 32;
 
 // Wasm only has a single metadata type, but we need to tag it.
 // `2` is used to invalidate old cached data (which used kWasmModuleTag = 1).
-static const int kWasmModuleTag = 2;
+constexpr int kWasmModuleTag = 2;
 
 class WasmCodeCachingCallback
     : public base::RefCountedThreadSafe<WasmCodeCachingCallback> {
@@ -71,8 +71,8 @@ class WasmCodeCachingCallback
   WasmCodeCachingCallback(const WasmCodeCachingCallback&) = delete;
   WasmCodeCachingCallback operator=(const WasmCodeCachingCallback&) = delete;
 
+  // Called on a V8 background thread.
   void OnMoreFunctionsCanBeSerialized(v8::CompiledWasmModule compiled_module) {
-    // Called from V8 background thread.
     TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                         "v8.wasm.compiledModule", "url", response_url_.Utf8());
     v8::OwnedBuffer serialized_module = compiled_module.Serialize();
@@ -99,43 +99,43 @@ class WasmCodeCachingCallback
       }
     }
 
-    // The resources needed for caching may have been GC'ed, but we should still
-    // save the compiled module. Use the platform API directly.
-    Vector<uint8_t> serialized_data = CachedMetadata::GetSerializedDataHeader(
-        kWasmModuleTag, kWireBytesDigestSize + base::checked_cast<wtf_size_t>(
-                                                   serialized_module.size));
-    serialized_data.append_range(wire_bytes_digest);
+    mojo_base::BigBuffer serialized_data(
+        base::CheckAdd(sizeof(CachedMetadataHeader) + kWireBytesDigestSize,
+                       serialized_module.size)
+            .ValueOrDie());
+    base::span<uint8_t> serialized_data_span(serialized_data);
+    const CachedMetadataHeader header = {
+        .marker = CachedMetadataHandler::kSingleEntryWithTag,
+        .type = kWasmModuleTag,
+    };
+    serialized_data_span.take_first<sizeof(header)>().copy_from_nonoverlapping(
+        base::byte_span_from_ref(header));
+    serialized_data_span.take_first<kWireBytesDigestSize>()
+        .copy_from_nonoverlapping(wire_bytes_digest);
     // SAFETY: v8::CompiledWasmModule::Serialize ensures the
     // serialized_module.buffer size is equal to serialized_module.size.
-    serialized_data.append_range(UNSAFE_BUFFERS(base::span(
-        base::unchecked,
-        reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
-        serialized_module.size)));
-
-    // Make sure the data could be copied.
-    if (serialized_data.size() < serialized_module.size) {
-      return;
-    }
+    serialized_data_span.copy_from_nonoverlapping(UNSAFE_BUFFERS(
+        base::span(base::unchecked, serialized_module.buffer.get(),
+                   serialized_module.size)));
 
     DCHECK(execution_context_task_runner_.get());
     execution_context_task_runner_->PostTask(
-        FROM_HERE,
-        ConvertToBaseOnceCallback(CrossThreadBindOnce(
-            &WasmCodeCachingCallback::SendCachedData, WrapRefCounted(this),
-            std::move(serialized_data))));
+        FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                       &WasmCodeCachingCallback::SendCachedData,
+                       WrapRefCounted(this), std::move(serialized_data))));
   }
 
  private:
   friend class base::RefCountedThreadSafe<WasmCodeCachingCallback>;
   ~WasmCodeCachingCallback() = default;
 
-  void SendCachedData(Vector<uint8_t> serialized_module) {
+  void SendCachedData(mojo_base::BigBuffer data) {
     if (!execution_context_) {
       return;
     }
     CodeCacheHost* code_cache_host =
         ExecutionContext::GetCodeCacheHostFromContext(execution_context_);
-    sender_->Send(code_cache_host, mojo_base::BigBuffer(serialized_module));
+    sender_->Send(code_cache_host, std::move(data));
   }
 
   const String response_url_;
