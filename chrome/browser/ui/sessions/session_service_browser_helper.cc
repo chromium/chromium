@@ -221,8 +221,9 @@ void SessionServiceBrowserHelper::OnTabPinnedStateChanged(
     tabs::TabInterface* tab,
     int index) {
   // See comment in `OnTabGroupChanged`.
-  CHECK(!IsRelevantToAppSessionService(browser_type_),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/575984047): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!IsRelevantToAppSessionService(browser_type_));
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(&*profile_);
   if (session_service) {
