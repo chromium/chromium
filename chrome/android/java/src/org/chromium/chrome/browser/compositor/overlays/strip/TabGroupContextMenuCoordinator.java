@@ -17,6 +17,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.DataSetObserver;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
@@ -31,6 +33,7 @@ import android.widget.ListView;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
+import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -41,6 +44,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripMenuMetricsUtils.GroupMenuAction;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
@@ -92,6 +96,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -101,16 +106,22 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Token> {
+    private static final long LIVE_TITLE_UPDATE_DEBOUNCE_MS = 100;
+
     private final Context mContext;
     private @MonotonicNonNull View mContentView;
     private @MonotonicNonNull EditText mGroupTitleEditText;
     private @MonotonicNonNull TabGroupColorPickerCoordinator mTabGroupColorPickerCoordinator;
     private Token mTabGroupId;
 
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mDebouncedLiveUpdateRunnable = this::applyLiveTitleUpdate;
+
     // Title currently modified by the user through the edit box. This does not include previously
     // updated or default title.
     private @Nullable String mCurrentModifiedTitle;
     private boolean mIsPresetTitleUsed;
+    private @Nullable String mInitialTitle;
     private final WindowAndroid mWindowAndroid;
     private final @TabStripLayoutType int mTabStripLayout;
     private @Nullable Runnable mOnMenuDismissedCallback;
@@ -124,6 +135,22 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 @Override
                 public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
                     if (isMenuShowing() && mTabGroupId.equals(tabGroupId)) {
+                        if (mGroupTitleEditText != null) {
+                            String currentText = mGroupTitleEditText.getText().toString();
+                            boolean isTextUnchanged = currentText.equals(newTitle);
+                            boolean isLocalReset =
+                                    isTitleUnset(newTitle)
+                                            && (currentText.isEmpty()
+                                                    || currentText.equals(getDefaultTitle()));
+
+                            // Suppress setText if the change originated from local editing in the
+                            // EditText to prevent resetting cursor position and breaking active
+                            // input.
+                            if (isTextUnchanged || isLocalReset) {
+                                return;
+                            }
+                        }
+                        mInitialTitle = newTitle == null ? "" : newTitle;
                         setExistingOrDefaultTitle(newTitle);
                     }
                 }
@@ -365,6 +392,9 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     @Initializer
     public void showMenu(RectProvider anchorViewRectProvider, Token tabGroupId) {
         mTabGroupId = tabGroupId;
+        mHandler.removeCallbacks(mDebouncedLiveUpdateRunnable);
+        mCurrentModifiedTitle = null;
+        mInitialTitle = getTabModel().getTabGroupTitle(tabGroupId);
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,
@@ -742,27 +772,57 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         mTabGroupColorPickerCoordinator.setSelectedColorItem(newColor);
     }
 
+    private void applyLiveTitleUpdate() {
+        if (mCurrentModifiedTitle == null) return;
+        try (TraceEvent e =
+                TraceEvent.scoped("TabGroupContextMenuCoordinator.applyLiveTitleUpdate")) {
+            String newTitle = mCurrentModifiedTitle;
+
+            if (isTitleUnset(newTitle) || newTitle.equals(getDefaultTitle())) {
+                // Delete the title in TabModel so the tab strip visually updates to the default
+                // ("N tabs"), without clobbering the text in the active EditText.
+                getTabModel().deleteTabGroupTitle(mTabGroupId);
+            } else {
+                TabUiUtils.updateTabGroupTitle(getTabModel(), mTabGroupId, newTitle);
+            }
+        }
+    }
+
     @VisibleForTesting
     void updateTabGroupTitle() {
-        String newTitle = mCurrentModifiedTitle;
-        if (newTitle == null) {
-            return;
-        } else if (isTitleUnset(newTitle) || newTitle.equals(getDefaultTitle())) {
-            getTabModel().deleteTabGroupTitle(mTabGroupId);
-            TabStripMenuMetricsUtils.recordGroupMenuUserAction(
-                    GroupMenuAction.TITLE_RESET, mTabStripLayout);
+        mHandler.removeCallbacks(mDebouncedLiveUpdateRunnable);
+        applyLiveTitleUpdate();
+
+        if (mCurrentModifiedTitle != null
+                && (isTitleUnset(mCurrentModifiedTitle)
+                        || mCurrentModifiedTitle.equals(getDefaultTitle()))) {
             setExistingOrDefaultTitle(getDefaultTitle());
-        } else if (TabUiUtils.updateTabGroupTitle(getTabModel(), mTabGroupId, newTitle)) {
-            TabStripMenuMetricsUtils.recordGroupMenuUserAction(
-                    GroupMenuAction.TITLE_CHANGED, mTabStripLayout);
         }
+
+        recordTitleChangeMetrics();
         mCurrentModifiedTitle = null;
+    }
+
+    private void recordTitleChangeMetrics() {
+        String finalTitle = getTabModel().getTabGroupTitle(mTabGroupId);
+        if (finalTitle == null) finalTitle = "";
+        if (!Objects.equals(mInitialTitle, finalTitle)) {
+            if (isTitleUnset(finalTitle)) {
+                TabStripMenuMetricsUtils.recordGroupMenuUserAction(
+                        GroupMenuAction.TITLE_RESET, mTabStripLayout);
+            } else {
+                TabStripMenuMetricsUtils.recordGroupMenuUserAction(
+                        GroupMenuAction.TITLE_CHANGED, mTabStripLayout);
+            }
+            mInitialTitle = finalTitle;
+        }
     }
 
     private void setExistingOrDefaultTitle(String s) {
         // Flip `IsPresetTitleUsed`to prevent `TextWatcher` from treating `#setText` as a title
         // update.
         mIsPresetTitleUsed = true;
+        mCurrentModifiedTitle = null;
         if (mGroupTitleEditText != null) mGroupTitleEditText.setText(s);
     }
 
@@ -771,7 +831,6 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 assumeNonNull(mContext), getTabModel().getTabCountForGroup(mTabGroupId));
     }
 
-    // TODO(crbug.com/358689769): Enable live editing and updating of the group title.
     private void buildTitleEditor(View contentView, Context context, boolean isIncognito) {
         mGroupTitleEditText = contentView.findViewById(R.id.tab_group_title);
 
@@ -790,6 +849,13 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                     public void afterTextChanged(Editable s) {
                         if (!mIsPresetTitleUsed) {
                             mCurrentModifiedTitle = s.toString();
+                            if (ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.TAB_GROUP_CONTEXT_MENU_LIVE_TITLE_UPDATE)) {
+                                mHandler.removeCallbacks(mDebouncedLiveUpdateRunnable);
+                                mHandler.postDelayed(
+                                        mDebouncedLiveUpdateRunnable,
+                                        LIVE_TITLE_UPDATE_DEBOUNCE_MS);
+                            }
                         }
                         mIsPresetTitleUsed = false;
                     }
@@ -850,6 +916,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     }
 
     public void destroy() {
+        mHandler.removeCallbacks(mDebouncedLiveUpdateRunnable);
         mOnMenuDismissedCallback = null;
         getTabModel().removeTabGroupObserver(mTabGroupObserver);
     }
@@ -867,8 +934,13 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         return mKeyboardVisibilityListener;
     }
 
+    TabGroupObserver getTabGroupObserverForTesting() {
+        return mTabGroupObserver;
+    }
+
     void setGroupDataForTesting(Token tabGroupId) {
         mTabGroupId = tabGroupId;
+        mInitialTitle = getTabModel().getTabGroupTitle(tabGroupId);
     }
 
     void setTabGroupSyncServiceForTesting(TabGroupSyncService tabGroupSyncService) {

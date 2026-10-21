@@ -6694,6 +6694,12 @@ inline constexpr char kTabGroupActionsSubmenusDescription[] =
     "Enables action items and section header in tab group submenus in the "
     "app menu.";
 
+inline constexpr char kTabGroupContextMenuLiveTitleUpdateName[] =
+    "Tab group context menu live title update";
+inline constexpr char kTabGroupContextMenuLiveTitleUpdateDescription[] =
+    "Enables live updating of the tab group title on the tab strip as the user "
+    "types in the context menu title editor.";
+
 inline constexpr char kTabOpenerTrackingName[] = "Tab Opener Tracking";
 inline constexpr char kTabOpenerTrackingDescription[] =
     "Enables tracking opener and sibling relationships between tabs to select "

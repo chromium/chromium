@@ -836,6 +836,8 @@ public abstract class ChromeFeatureList {
             "TabClosureCommittedMethodRefactor";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_GROUP_ACTIONS_SUBMENUS = "TabGroupActionsSubmenus";
+    public static final String TAB_GROUP_CONTEXT_MENU_LIVE_TITLE_UPDATE =
+            "TabGroupContextMenuLiveTitleUpdate";
     public static final String TAB_OPENER_TRACKING = "TabOpenerTracking";
     public static final String TAB_SEARCH_FOR_DESKTOP = "TabSearchForDesktop";
     public static final String TAB_SHARING_TOOLBAR_ANDROID = "TabSharingToolbarAndroid";

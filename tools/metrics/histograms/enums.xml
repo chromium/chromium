@@ -16576,6 +16576,7 @@ from previous Chrome versions.
   <int value="468901900" label="AppStoreBillingDebug:disabled"/>
   <int value="468959230"
       label="enable-non-validating-reload-on-refresh-content"/>
+  <int value="469540807" label="TabGroupContextMenuLiveTitleUpdate:enabled"/>
   <int value="469999350" label="NotificationScheduleService:disabled"/>
   <int value="470011024" label="NonValidatingReloadOnNormalReload:enabled"/>
   <int value="470307075" label="MessagesForAndroidChromeSurvey:enabled"/>
@@ -18245,6 +18246,7 @@ from previous Chrome versions.
       label="ReadingListEnableSyncTransportModeUponSignIn:disabled"/>
   <int value="981818901" label="AppBanners:enabled"/>
   <int value="982032277" label="NTPOfflineBadge:disabled"/>
+  <int value="982151009" label="TabGroupContextMenuLiveTitleUpdate:disabled"/>
   <int value="982256294" label="FedCmNavigationInterception:enabled"/>
   <int value="982511393" label="NTPArticleSuggestions:disabled"/>
   <int value="982805190" label="PageInfoAboutThisSiteMoreLangs:enabled"/>

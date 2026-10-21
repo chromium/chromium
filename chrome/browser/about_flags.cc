@@ -5927,6 +5927,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupActionsSubmenusName,
      flag_descriptions::kTabGroupActionsSubmenusDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabGroupActionsSubmenus)},
+    {"tab-group-context-menu-live-title-update",
+     flag_descriptions::kTabGroupContextMenuLiveTitleUpdateName,
+     flag_descriptions::kTabGroupContextMenuLiveTitleUpdateDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupContextMenuLiveTitleUpdate)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,

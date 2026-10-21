@@ -57,6 +57,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -369,6 +370,51 @@ public class TabStripGroupContextMenuTest {
         updateGroupTitle(title);
         showMenu();
         onView(withText("2 tabs")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CONTEXT_MENU_LIVE_TITLE_UPDATE)
+    public void testLiveUpdateGroupTitle() {
+        // Prepare standard state and show menu.
+        prepareStandardState();
+        showMenu();
+
+        // Verify default group title in the menu.
+        onView(withText("2 tabs")).check(matches(isDisplayed()));
+
+        // Focus title edit box and replace text with rapid typing to verify debouncing.
+        onView(withId(R.id.tab_group_title)).perform(click());
+        onViewWaiting(allOf(withId(R.id.tab_group_title), isFocused()));
+        onView(withId(R.id.tab_group_title)).perform(replaceText("live"));
+        onView(withId(R.id.tab_group_title)).perform(replaceText("liveTitle"));
+
+        // While the menu is STILL SHOWING (no enter pressed, no dismissal), verify the TabModel
+        // updates live after the debounce period.
+        TabModel tabModel =
+                TabStripTestUtils.getTabModel(
+                        mActivityTestRule.getActivity(), /* isIncognito= */ false);
+        CriteriaHelper.pollUiThread(
+                () -> "liveTitle".equals(tabModel.getTabGroupTitle(mTabGroupId)),
+                "Tab group title should be updated live while menu is open");
+
+        // Verify the menu is still open and displaying the new title.
+        onView(allOf(withId(R.id.tab_group_title), withText("liveTitle")))
+                .check(matches(isDisplayed()));
+
+        // Clear the title in the edit box.
+        onView(withId(R.id.tab_group_title)).perform(replaceText(""));
+
+        // While still showing, verify that deleting the text clears the title in TabModel.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    String currentTitle = tabModel.getTabGroupTitle(mTabGroupId);
+                    return currentTitle == null || currentTitle.isEmpty();
+                },
+                "Tab group title in TabModel should be cleared while edit text is empty");
+
+        // Verify that the EditText itself remains empty while the user is actively typing.
+        onView(allOf(withId(R.id.tab_group_title), withText(""))).check(matches(isDisplayed()));
     }
 
     @Test

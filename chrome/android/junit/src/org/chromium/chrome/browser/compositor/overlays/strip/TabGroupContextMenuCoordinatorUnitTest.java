@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -117,12 +118,14 @@ import org.chromium.url.GURL;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 /** Unit tests for {@link TabGroupContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.DATA_SHARING,
+    ChromeFeatureList.TAB_GROUP_CONTEXT_MENU_LIVE_TITLE_UPDATE
 })
 @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
 public class TabGroupContextMenuCoordinatorUnitTest {
@@ -661,6 +664,53 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Verify the previous title is deleted and is default to "N tabs"
         verify(mTabModel).deleteTabGroupTitle(TAB_GROUP_ID);
         assertEquals("1 tab", groupTitleEditText.getText().toString());
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testLiveUpdateGroupTitle_Debounced() {
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+        EditText groupTitleEditText =
+                mTabGroupContextMenuCoordinator.getGroupTitleEditTextForTesting();
+
+        // 1. Rapid typing within 50ms does not commit intermediate text (< 100ms debounce).
+        groupTitleEditText.setText("T");
+        ShadowLooper.idleMainLooper(50, TimeUnit.MILLISECONDS);
+        groupTitleEditText.setText("Test");
+        verify(mTabModel, never()).setTabGroupTitle(any(), any());
+
+        // 2. Waiting for the 100ms debounce commits the final text.
+        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
+        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq("Test"));
+
+        // 3. Clearing the text deletes the title in TabModel without wiping the active EditText.
+        groupTitleEditText.setText("");
+        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
+        verify(mTabModel).deleteTabGroupTitle(TAB_GROUP_ID);
+        assertEquals("", groupTitleEditText.getText().toString());
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testLiveUpdateGroupTitle_RemoteUpdateClearsModifiedTitle() {
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        EditText groupTitleEditText =
+                mTabGroupContextMenuCoordinator.getGroupTitleEditTextForTesting();
+
+        // User was editing the field locally.
+        groupTitleEditText.setText("local edit");
+
+        // A remote sync update arrives while the menu is showing.
+        mTabGroupContextMenuCoordinator
+                .getTabGroupObserverForTesting()
+                .didChangeTabGroupTitle(TAB_GROUP_ID, "Remote Sync Title");
+        assertEquals("Remote Sync Title", groupTitleEditText.getText().toString());
+
+        // Dismiss menu without further user edits; verify local edit does not overwrite remote
+        // title.
+        mTabGroupContextMenuCoordinator.updateTabGroupTitle();
+        verify(mTabModel, never()).setTabGroupTitle(eq(TAB_GROUP_ID), eq("local edit"));
     }
 
     @Test
