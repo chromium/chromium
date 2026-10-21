@@ -614,17 +614,17 @@ Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
     base::OnceClosure context_lost_callback) {
   CHECK(!SharedGpuContext::IsGpuCompositingEnabled());
 
+  if (!shared_image_interface_provider ||
+      !shared_image_interface_provider->SharedImageInterface()) {
+    return nullptr;
+  }
+
   CHECK(format == viz::SharedImageFormat::N32Format() ||
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
-  auto provider = base::WrapUnique(new Canvas2DResourceProvider(
+  return base::WrapUnique(new Canvas2DResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
       shared_image_interface_provider, std::move(context_lost_callback)));
-  if (provider->IsValid()) {
-    return provider;
-  }
-
-  return nullptr;
 }
 
 void Canvas2DResourceProvider::NotifyGpuContextLostTask(
@@ -744,26 +744,23 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     : is_accelerated_(false),
       is_software_(true),
       shared_image_interface_provider_(
-          shared_image_interface_provider
-              ? shared_image_interface_provider->GetWeakPtr()
-              : nullptr),
+          shared_image_interface_provider->GetWeakPtr()),
       size_(size),
       format_(format),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       context_lost_callback_(std::move(context_lost_callback)) {
-  if (shared_image_interface_provider_) {
-    shared_image_interface_provider_->AddGpuChannelLostObserver(this);
-    if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
-      gpu::ImageInfo image_info(
-          size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
-          kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
-          /*is_software=*/true);
-      image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-          image_info, sii, "CanvasResourceSharedImage",
-          kMaxRecycledCanvasResources);
-    }
-  }
+  CHECK(shared_image_interface_provider_);
+  shared_image_interface_provider_->AddGpuChannelLostObserver(this);
+  auto* sii = shared_image_interface_provider_->SharedImageInterface();
+  CHECK(sii);
+  gpu::ImageInfo image_info(
+      size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
+      kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
+      /*is_software=*/true);
+  image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+      image_info, sii, "CanvasResourceSharedImage",
+      kMaxRecycledCanvasResources);
 }
 
 Canvas2DResourceProvider::~Canvas2DResourceProvider() {
