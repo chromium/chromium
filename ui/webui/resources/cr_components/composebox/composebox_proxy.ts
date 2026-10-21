@@ -31,7 +31,6 @@ export function createAutocompleteMatch(
     isContextualSuggestion: false,
     tailSuggestCommonPrefix: null,
     keywordModel: null,
-    fuseboxAction: null,
     suggestTemplate: {
       primaryText: {text: '', fragments: [], a11yText: null},
       secondaryText: {text: '', fragments: [], a11yText: null},
@@ -39,6 +38,7 @@ export function createAutocompleteMatch(
       image: null,
       style: SuggestStyle.kUnspecified,
       typeIcon: IconType.kIconTypeUnspecified,
+      fuseboxAction: null,
     },
     urlEmphasis: null,
     ...config,

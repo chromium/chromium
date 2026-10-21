@@ -40,7 +40,6 @@ export function createAutocompleteMatch(
     type: '',
     tailSuggestCommonPrefix: null,
     keywordModel: null,
-    fuseboxAction: null,
     suggestTemplate: createSuggestTemplateInfo(),
     urlEmphasis: null,
   };
@@ -63,6 +62,7 @@ export function createSuggestTemplateInfo(
     image: null,
     style: SuggestStyle.kUnspecified,
     typeIcon: IconType.kIconTypeUnspecified,
+    fuseboxAction: null,
   };
 
   return Object.assign(base, modifiers);

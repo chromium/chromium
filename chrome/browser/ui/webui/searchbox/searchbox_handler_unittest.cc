@@ -1678,14 +1678,15 @@ TEST_F(WebuiOmniboxHandlerTest,
       omnibox_controller_->client()->GetTemplateURLService());
 
   ASSERT_TRUE(mojom_match.has_value());
-  ASSERT_TRUE(mojom_match.value()->fusebox_action);
-  EXPECT_EQ(mojom_match.value()->fusebox_action->preselected_tool,
-            omnibox::TOOL_MODE_DEEP_SEARCH);
-  EXPECT_EQ(mojom_match.value()->fusebox_action->preferred_inventory,
-            omnibox::SUGGEST_INVENTORY_BRAINSTORM);
-  EXPECT_EQ(mojom_match.value()->fusebox_action->query_action_override,
+  ASSERT_TRUE(mojom_match.value()->suggest_template);
+  const fusebox_action::mojom::FuseboxActionPtr& action =
+      mojom_match.value()->suggest_template->fusebox_action;
+  ASSERT_TRUE(action);
+  EXPECT_EQ(action->preselected_tool, omnibox::TOOL_MODE_DEEP_SEARCH);
+  EXPECT_EQ(action->preferred_inventory, omnibox::SUGGEST_INVENTORY_BRAINSTORM);
+  EXPECT_EQ(action->query_action_override,
             fusebox_action::mojom::QueryActionOverride::kPaste);
-  EXPECT_EQ(mojom_match.value()->fusebox_action->searchbox_override,
+  EXPECT_EQ(action->searchbox_override,
             fusebox_action::mojom::SearchboxOverride::kComposebox);
 }
 

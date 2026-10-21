@@ -176,7 +176,7 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
       CreateSuggestTemplateInfo(fields.icon_type,
                                 CreateFormattedString(fields.primary_text),
                                 CreateFormattedString(fields.secondary_text)),
-      /*fusebox_action=*/nullptr, std::move(tab));
+      std::move(tab));
 }
 
 ActionChipFields CreateStaticRecentTabChip(const TabInfoFields tab) {
@@ -521,13 +521,13 @@ TEST_F(
               CreateSuggestTemplateInfo(IconType::kIconTypeUnspecified,
                                         CreateFormattedString("title1"),
                                         CreateFormattedString("subtitle1")),
-              /*fusebox_action=*/nullptr, /*tab=*/nullptr),
+              /*tab=*/nullptr),
           ActionChip::New(
               "suggention2",
               CreateSuggestTemplateInfo(IconType::kIconTypeUnspecified,
                                         CreateFormattedString("title2"),
                                         CreateFormattedString("subtitle2")),
-              /*fusebox_action=*/nullptr, /*tab=*/nullptr))));
+              /*tab=*/nullptr))));
 
   // Act
   handler().StartActionChipsRetrieval();
@@ -570,13 +570,13 @@ TEST_F(ActionChipsHandlerTest,
             CreateSuggestTemplateInfo(IconType::kIconTypeUnspecified,
                                       CreateFormattedString("title1"),
                                       CreateFormattedString("subtitle1")),
-            /*fusebox_action=*/nullptr, /*tab=*/nullptr),
+            /*tab=*/nullptr),
         ActionChip::New(
             "suggestion2",
             CreateSuggestTemplateInfo(IconType::kIconTypeUnspecified,
                                       CreateFormattedString("title2"),
                                       CreateFormattedString("subtitle2")),
-            /*fusebox_action=*/nullptr, /*tab=*/nullptr));
+            /*tab=*/nullptr));
   };
 
   // 1. First retrieval.

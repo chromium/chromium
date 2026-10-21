@@ -121,7 +121,10 @@ suite('ComposeboxMixinTest', () => {
           allowedToBeDefaultMatch: true,
           fillIntoEdit: originalInput,
         }),
-        createAutocompleteMatch({fillIntoEdit, fuseboxAction}),
+        createAutocompleteMatch({
+          fillIntoEdit,
+          suggestTemplate: createSuggestTemplateInfo({fuseboxAction}),
+        }),
       ],
     } as AutocompleteResult;
     await element.updateComplete;

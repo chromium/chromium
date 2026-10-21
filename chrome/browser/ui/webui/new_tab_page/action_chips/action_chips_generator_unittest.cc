@@ -165,7 +165,7 @@ ActionChipPtr CreateActionChip(
   auto chip = ActionChip::New();
   chip->suggestion = suggestion;
   chip->suggest_template_info = std::move(suggest_template_info);
-  chip->fusebox_action = std::move(fusebox_action);
+  chip->suggest_template_info->fusebox_action = std::move(fusebox_action);
   chip->tab = std::move(tab);
   return chip;
 }
@@ -294,12 +294,12 @@ MATCHER(BrainstormChip, "") {
          arg->suggest_template_info->primary_text->text ==
              l10n_util::GetStringUTF16(
                  IDS_NTP_ACTION_CHIP_BRAINSTORM_HEADING) &&
-         arg->fusebox_action &&
-         arg->fusebox_action->preferred_inventory ==
+         arg->suggest_template_info->fusebox_action &&
+         arg->suggest_template_info->fusebox_action->preferred_inventory ==
              omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM &&
-         arg->fusebox_action->query_action_override ==
+         arg->suggest_template_info->fusebox_action->query_action_override ==
              fusebox_action::mojom::QueryActionOverride::kPaste &&
-         arg->fusebox_action->searchbox_override ==
+         arg->suggest_template_info->fusebox_action->searchbox_override ==
              fusebox_action::mojom::SearchboxOverride::kComposebox;
 }
 
@@ -310,12 +310,12 @@ MATCHER(LearnChip, "") {
          arg->suggest_template_info->primary_text->text ==
              l10n_util::GetStringUTF16(
                  IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_HEADING) &&
-         arg->fusebox_action &&
-         arg->fusebox_action->preferred_inventory ==
+         arg->suggest_template_info->fusebox_action &&
+         arg->suggest_template_info->fusebox_action->preferred_inventory ==
              omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN &&
-         arg->fusebox_action->query_action_override ==
+         arg->suggest_template_info->fusebox_action->query_action_override ==
              fusebox_action::mojom::QueryActionOverride::kPaste &&
-         arg->fusebox_action->searchbox_override ==
+         arg->suggest_template_info->fusebox_action->searchbox_override ==
              fusebox_action::mojom::SearchboxOverride::kComposebox;
 }
 
@@ -326,12 +326,12 @@ MATCHER(WriteChip, "") {
          arg->suggest_template_info->primary_text->text ==
              l10n_util::GetStringUTF16(
                  IDS_NTP_ACTION_CHIP_WRITE_EDIT_HEADING) &&
-         arg->fusebox_action &&
-         arg->fusebox_action->preferred_inventory ==
+         arg->suggest_template_info->fusebox_action &&
+         arg->suggest_template_info->fusebox_action->preferred_inventory ==
              omnibox::SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT &&
-         arg->fusebox_action->query_action_override ==
+         arg->suggest_template_info->fusebox_action->query_action_override ==
              fusebox_action::mojom::QueryActionOverride::kPaste &&
-         arg->fusebox_action->searchbox_override ==
+         arg->suggest_template_info->fusebox_action->searchbox_override ==
              fusebox_action::mojom::SearchboxOverride::kComposebox;
 }
 
@@ -781,8 +781,9 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
                                   Eq(std::cref(chip2))));
   ASSERT_EQ(actual.size(), 3u);
-  ASSERT_TRUE(actual[1]->fusebox_action);
-  EXPECT_FALSE(actual[1]->fusebox_action->searchbox_override);
+  ASSERT_TRUE(actual[1]->suggest_template_info->fusebox_action);
+  EXPECT_FALSE(
+      actual[1]->suggest_template_info->fusebox_action->searchbox_override);
   histogram_tester.ExpectUniqueSample("NewTabPage.ActionChips.RequestStatus",
                                       ActionChipsRequestStatus::kSuccess, 1);
   histogram_tester.ExpectUniqueSample("NewTabPage.ActionChips.SuggestionCount",
@@ -1322,7 +1323,7 @@ TEST(ActionChipGeneratorTest, NewEndpointFiltersInvalidSuggestions) {
       IconType::kGlobeWithSearchLoop,
       CreateFormattedString("Valid Title", "Primary A11y Text"),
       CreateFormattedString("Valid Annotation", "Secondary A11y Text"));
-  valid_chip->fusebox_action = nullptr;
+  valid_chip->suggest_template_info->fusebox_action = nullptr;
 
   // Expect only the valid chip.
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(valid_chip))));
@@ -1469,11 +1470,13 @@ TEST(ActionChipGeneratorTest, ParsesAimActionCorrectly) {
 
   ASSERT_EQ(actual.size(), 1u);
   ASSERT_TRUE(actual[0]->suggest_template_info);
-  ASSERT_TRUE(actual[0]->fusebox_action);
-  EXPECT_EQ(actual[0]->fusebox_action->query_action_override,
-            fusebox_action::mojom::QueryActionOverride::kPaste);
-  EXPECT_EQ(actual[0]->fusebox_action->searchbox_override,
-            fusebox_action::mojom::SearchboxOverride::kComposebox);
+  ASSERT_TRUE(actual[0]->suggest_template_info->fusebox_action);
+  EXPECT_EQ(
+      actual[0]->suggest_template_info->fusebox_action->query_action_override,
+      fusebox_action::mojom::QueryActionOverride::kPaste);
+  EXPECT_EQ(
+      actual[0]->suggest_template_info->fusebox_action->searchbox_override,
+      fusebox_action::mojom::SearchboxOverride::kComposebox);
 }
 
 TEST(ActionChipGeneratorTest, NewEndpointMissingSecondaryTextIsEmpty) {
@@ -1543,22 +1546,25 @@ TEST(ActionChipsGeneratorTest, SteadyStateFallbackChipsHavePreferredInventory) {
   // Brainstorm chip.
   EXPECT_TRUE(actual[0]->suggestion.empty());
   EXPECT_EQ(actual[0]->suggest_template_info->type_icon, IconType::kLightbulb);
-  ASSERT_TRUE(actual[0]->fusebox_action);
-  EXPECT_EQ(actual[0]->fusebox_action->preferred_inventory,
-            omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM);
+  ASSERT_TRUE(actual[0]->suggest_template_info->fusebox_action);
+  EXPECT_EQ(
+      actual[0]->suggest_template_info->fusebox_action->preferred_inventory,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM);
 
   // Help me learn chip.
   EXPECT_TRUE(actual[1]->suggestion.empty());
   EXPECT_EQ(actual[1]->suggest_template_info->type_icon, IconType::kSchool);
-  ASSERT_TRUE(actual[1]->fusebox_action);
-  EXPECT_EQ(actual[1]->fusebox_action->preferred_inventory,
-            omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN);
+  ASSERT_TRUE(actual[1]->suggest_template_info->fusebox_action);
+  EXPECT_EQ(
+      actual[1]->suggest_template_info->fusebox_action->preferred_inventory,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN);
 
   // Write or edit chip.
   EXPECT_TRUE(actual[2]->suggestion.empty());
   EXPECT_EQ(actual[2]->suggest_template_info->type_icon, IconType::kInkPen);
-  ASSERT_TRUE(actual[2]->fusebox_action);
-  EXPECT_EQ(actual[2]->fusebox_action->preferred_inventory,
-            omnibox::SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT);
+  ASSERT_TRUE(actual[2]->suggest_template_info->fusebox_action);
+  EXPECT_EQ(
+      actual[2]->suggest_template_info->fusebox_action->preferred_inventory,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT);
 }
 }  // namespace

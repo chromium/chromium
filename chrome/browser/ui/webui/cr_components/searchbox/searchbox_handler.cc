@@ -62,8 +62,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/contextual_search_provider.h"
-#include "components/omnibox/browser/fusebox_action.mojom.h"
-#include "components/omnibox/browser/fusebox_action_mojo_utils.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_metrics_constants.h"
@@ -1071,11 +1069,6 @@ SearchboxHandler::CreateAutocompleteMatch(
   mojom_match->tail_suggest_common_prefix = match.tail_suggest_common_prefix;
 
   mojom_match->is_contextual_suggestion = match.IsContextualSearchSuggestion();
-
-  if (match.suggest_template && match.suggest_template->has_fusebox_action()) {
-    mojom_match->fusebox_action = fusebox_action::SyncFuseboxActionProtoToMojo(
-        match.suggest_template->fusebox_action());
-  }
 
   if (SupportsKeywordMode()) {
     KeywordState keyword_state;

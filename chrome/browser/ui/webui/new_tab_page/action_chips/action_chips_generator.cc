@@ -164,6 +164,10 @@ void SyncProtoToMojo<omnibox::SuggestTemplateInfo, SuggestTemplateInfoPtr>(
   if (a.has_secondary_text()) {
     AssignMojoField(a.secondary_text(), b->secondary_text);
   }
+  if (a.has_fusebox_action()) {
+    b->fusebox_action =
+        fusebox_action::SyncFuseboxActionProtoToMojo(a.fusebox_action());
+  }
 }
 
 // Creates a SuggestTemplateInfoPtr with the given icon and unstyled text.
@@ -238,8 +242,9 @@ ActionChipPtr CreateRecentTabChip(TabInfoPtr tab, std::string_view suggestion) {
           ? base::UTF8ToUTF16(suggestion)
           : l10n_util::GetStringUTF16(IDS_NTP_ACTION_CHIP_TAB_HEADING_1),
       base::UTF8ToUTF16(chip->tab->title));
-  chip->fusebox_action = fusebox_action::mojom::FuseboxAction::New();
-  SetPasteAndComposeboxOverrides(*chip->fusebox_action);
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -252,9 +257,11 @@ ActionChipPtr CreateDeepSearchChip(std::string_view suggestion) {
       !suggestion.empty()
           ? base::UTF8ToUTF16(suggestion)
           : l10n_util::GetStringUTF16(IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY));
-  chip->fusebox_action = fusebox_action::mojom::FuseboxAction::New();
-  chip->fusebox_action->preselected_tool = omnibox::TOOL_MODE_DEEP_SEARCH;
-  SetPasteAndComposeboxOverrides(*chip->fusebox_action);
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preselected_tool =
+      omnibox::TOOL_MODE_DEEP_SEARCH;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -277,9 +284,11 @@ ActionChipPtr CreateImageCreationChip(std::string_view suggestion) {
       !suggestion.empty()
           ? base::UTF8ToUTF16(suggestion)
           : l10n_util::GetStringUTF16(IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1));
-  chip->fusebox_action = fusebox_action::mojom::FuseboxAction::New();
-  chip->fusebox_action->preselected_tool = omnibox::TOOL_MODE_IMAGE_GEN;
-  SetPasteAndComposeboxOverrides(*chip->fusebox_action);
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preselected_tool =
+      omnibox::TOOL_MODE_IMAGE_GEN;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -300,10 +309,11 @@ ActionChipPtr CreateStarterChip() {
       IconType::kSearchLoopWithSparkle,
       l10n_util::GetStringUTF16(IDS_NTP_ACTION_CHIP_STARTER_HEADING),
       l10n_util::GetStringUTF16(IDS_NTP_ACTION_CHIP_STARTER_BODY));
-  chip->fusebox_action = fusebox_action::mojom::FuseboxAction::New();
-  chip->fusebox_action->preferred_inventory =
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preferred_inventory =
       omnibox::SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS;
-  SetPasteAndComposeboxOverrides(*chip->fusebox_action);
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -327,9 +337,11 @@ ActionChipPtr CreateCanvasChip(std::string_view suggestion) {
       !suggestion.empty()
           ? base::UTF8ToUTF16(suggestion)
           : l10n_util::GetStringUTF16(IDS_NTP_ACTION_CHIP_CANVAS_BODY));
-  chip->fusebox_action = fusebox_action::mojom::FuseboxAction::New();
-  chip->fusebox_action->preselected_tool = omnibox::TOOL_MODE_CANVAS;
-  SetPasteAndComposeboxOverrides(*chip->fusebox_action);
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preselected_tool =
+      omnibox::TOOL_MODE_CANVAS;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -350,10 +362,11 @@ ActionChipPtr CreateBrainstormChip() {
   chip->suggest_template_info = CreateSuggestTemplateInfo(
       IconType::kLightbulb,
       l10n_util::GetStringUTF16(IDS_NTP_ACTION_CHIP_BRAINSTORM_HEADING));
-  chip->fusebox_action = fusebox_action::mojom::FuseboxAction::New();
-  chip->fusebox_action->preferred_inventory =
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preferred_inventory =
       omnibox::SUGGEST_INVENTORY_BRAINSTORM;
-  SetPasteAndComposeboxOverrides(*chip->fusebox_action);
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -372,10 +385,11 @@ ActionChipPtr CreateLearnChip() {
   chip->suggest_template_info = CreateSuggestTemplateInfo(
       IconType::kSchool,
       l10n_util::GetStringUTF16(IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_HEADING));
-  chip->fusebox_action = fusebox_action::mojom::FuseboxAction::New();
-  chip->fusebox_action->preferred_inventory =
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preferred_inventory =
       omnibox::SUGGEST_INVENTORY_HELP_ME_LEARN;
-  SetPasteAndComposeboxOverrides(*chip->fusebox_action);
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -394,10 +408,11 @@ ActionChipPtr CreateWriteChip() {
   chip->suggest_template_info = CreateSuggestTemplateInfo(
       IconType::kInkPen,
       l10n_util::GetStringUTF16(IDS_NTP_ACTION_CHIP_WRITE_EDIT_HEADING));
-  chip->fusebox_action = fusebox_action::mojom::FuseboxAction::New();
-  chip->fusebox_action->preferred_inventory =
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preferred_inventory =
       omnibox::SUGGEST_INVENTORY_WRITE_OR_EDIT;
-  SetPasteAndComposeboxOverrides(*chip->fusebox_action);
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -528,7 +543,6 @@ TitleAndUrl GetTitleAndUrl(base::optional_ref<const TabInterface> tab) {
 }
 struct ParsedActionChipData {
   SuggestTemplateInfoPtr suggest_template_info;
-  fusebox_action::mojom::FuseboxActionPtr fusebox_action;
   omnibox::GroupId group_id;
 };
 
@@ -554,22 +568,14 @@ std::optional<ParsedActionChipData> ExtractActionChipData(
             << suggestion.match_contents();
     return std::nullopt;
   }
-  const omnibox::SuggestTemplateInfo& suggest_template_info =
-      *suggestion.suggest_template_info();
   SuggestTemplateInfoPtr mojom_suggest_template_info =
-      CreateSuggestTemplateInfo(suggest_template_info);
+      CreateSuggestTemplateInfo(*suggestion.suggest_template_info());
   if (mojom_suggest_template_info.is_null()) {
     return std::nullopt;
   }
-  fusebox_action::mojom::FuseboxActionPtr mojom_fusebox_action;
-  if (suggest_template_info.has_fusebox_action()) {
-    mojom_fusebox_action = fusebox_action::SyncFuseboxActionProtoToMojo(
-        suggest_template_info.fusebox_action());
-  }
   omnibox::GroupId group_id = suggestion.suggestion_group_id().value();
 
-  return ParsedActionChipData{std::move(mojom_suggest_template_info),
-                              std::move(mojom_fusebox_action), group_id};
+  return ParsedActionChipData{std::move(mojom_suggest_template_info), group_id};
 }
 
 }  // namespace
@@ -658,7 +664,6 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
       ActionChipPtr chip = ActionChip::New();
       chip->suggest_template_info =
           std::move(parsed_data->suggest_template_info);
-      chip->fusebox_action = std::move(parsed_data->fusebox_action);
 
       chip->suggestion = base::UTF16ToUTF8(suggestion.suggestion());
       if (parsed_data->group_id ==

@@ -4,6 +4,7 @@
 
 module suggest_template_info.mojom;
 
+import "components/omnibox/browser/fusebox_action.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
@@ -139,4 +140,7 @@ struct SuggestTemplateInfo {
   // The icon to display in front of the primary text.
   // TODO(crbug.com/573635047): Use this in the searchbox WebUI too.
   IconType type_icon = IconType.kIconTypeUnspecified;
+  // FuseboxAction carries client behavior and configuration to apply when the
+  // user accepts a suggestion.
+  fusebox_action.mojom.FuseboxAction? fusebox_action;
 };

@@ -197,7 +197,7 @@ export class ActionChipsElement extends CrLitElement {
   protected onClick_(e: MouseEvent|KeyboardEvent): void {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const chip = this.actionChips_[index]!;
-    switch (chip.fuseboxAction?.preselectedTool) {
+    switch (chip.suggestTemplateInfo.fuseboxAction?.preselectedTool) {
       case ToolMode.kImageGen:
         this.handler.activateMetricsFunnel('CreateImageChip');
         break;
@@ -274,7 +274,7 @@ export class ActionChipsElement extends CrLitElement {
 
   private onActionChipClick_(chip: ActionChip, e: MouseEvent|KeyboardEvent) {
     recordClick(chip.suggestTemplateInfo.typeIcon);
-    if (chip.fuseboxAction?.queryActionOverride ===
+    if (chip.suggestTemplateInfo.fuseboxAction?.queryActionOverride ===
         QueryActionOverride.kDefault) {
       this.handler.navigateToAim(
           chip.suggestion, (e as MouseEvent).button || 0, {
@@ -300,7 +300,7 @@ export class ActionChipsElement extends CrLitElement {
     this.fire<ActionChipClickDetail>('action-chip-click', {
       suggestion: chip.suggestion,
       files: contextFiles,
-      fuseboxAction: chip.fuseboxAction ?? undefined,
+      fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ?? undefined,
     });
   }
 

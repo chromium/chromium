@@ -76,6 +76,8 @@ void PrintImpl(const SuggestTemplateInfo& info, int indent, std::ostream* os) {
   PrintImpl(info.primary_text, indent + kIndentUnit, os);
   *os << ",\n" << ind << "  secondary_text: ";
   PrintImpl(info.secondary_text, indent + kIndentUnit, os);
+  *os << ",\n" << ind << "  fusebox_action: ";
+  fusebox_action::mojom::PrintTo(info.fusebox_action, os);
   *os << "\n" << ind << "}";
 }
 
@@ -95,8 +97,6 @@ void PrintImpl(const ActionChip& chip, int indent, std::ostream* os) {
       << ind << "  suggestion: \"" << chip.suggestion << "\",\n"
       << ind << "  suggest_template_info: ";
   PrintImpl(chip.suggest_template_info, indent + kIndentUnit, os);
-  *os << ",\n" << ind << "  fusebox_action: ";
-  fusebox_action::mojom::PrintTo(chip.fusebox_action, os);
   *os << ",\n" << ind << "  tab_info: ";
   PrintImpl(chip.tab, indent + kIndentUnit, os);
   *os << "\n" << ind << "}";

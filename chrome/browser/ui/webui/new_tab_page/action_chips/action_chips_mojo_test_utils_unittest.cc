@@ -53,9 +53,9 @@ TEST(ActionChipsMojoTestUtilsTest, PrintActionChip) {
             "    secondary_text: FormattedString{\n"
             "      text: \"Secondary\",\n"
             "      a11y_text: null\n"
-            "    }\n"
+            "    },\n"
+            "    fusebox_action: null\n"
             "  },\n"
-            "  fusebox_action: null,\n"
             "  tab_info: TabInfo{\n"
             "    tab_id: 456,\n"
             "    title: \"Tab Title\",\n"
@@ -79,9 +79,9 @@ TEST(ActionChipsMojoTestUtilsTest, PrintActionChipWithMissingFields) {
             "  suggest_template_info: SuggestTemplateInfo{\n"
             "    type_icon: kSearchLoop,\n"
             "    primary_text: nullptr,\n"
-            "    secondary_text: nullptr\n"
+            "    secondary_text: nullptr,\n"
+            "    fusebox_action: null\n"
             "  },\n"
-            "  fusebox_action: null,\n"
             "  tab_info: nullptr\n"
             "}");
 }
