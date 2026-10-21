@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/url_constants.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
@@ -60,8 +62,8 @@ using Feature = multidevice_setup::mojom::Feature;
 using FeatureState = multidevice_setup::mojom::FeatureState;
 using HostStatus = multidevice_setup::mojom::HostStatus;
 
-const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetMultiDeviceOptedInSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_FORGET,
         mojom::kMultiDeviceFeaturesSubpagePath,
         mojom::SearchResultIcon::kPhone,
@@ -83,12 +85,11 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kSmartLockOnOff}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>&
-GetMultiDeviceOptedInPhoneHubSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetMultiDeviceOptedInPhoneHubSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB,
        mojom::kMultiDeviceFeaturesSubpagePath,
        mojom::SearchResultIcon::kPhone,
@@ -108,47 +109,46 @@ GetMultiDeviceOptedInPhoneHubSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPhoneHubTaskContinuationOnOff}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>&
+base::span<const SearchConcept>
 GetMultiDeviceOptedInPhoneHubCameraRollSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL,
         mojom::kMultiDeviceFeaturesSubpagePath,
         mojom::SearchResultIcon::kPhone,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kPhoneHubCameraRollOnOff}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>&
+base::span<const SearchConcept>
 GetMultiDeviceOptedInPhoneHubAppsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_APPS,
         mojom::kMultiDeviceFeaturesSubpagePath,
         mojom::SearchResultIcon::kPhone,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kPhoneHubAppsOnOff}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>&
-GetMultiDeviceOptedInWifiSyncSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetMultiDeviceOptedInWifiSyncSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC,
         mojom::kMultiDeviceFeaturesSubpagePath,
         mojom::SearchResultIcon::kWifi,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kWifiSyncOnOff}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetMultiDeviceOptedOutSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+base::span<const SearchConcept> GetMultiDeviceOptedOutSearchConcepts() {
+  static const auto tags = std::to_array<SearchConcept>({[] {
     // Special-case: The "set up" search tag also includes the names of the
     // multi-device features as a way to increase discoverability of these
     // features.
@@ -190,41 +190,16 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedOutSearchConcepts() {
       set_up_concept.alt_tag_ids[alt_tag_index] = SearchConcept::kAltTagEnd;
     }
 
-    return std::vector<SearchConcept>{set_up_concept};
-  }());
-  return *tags;
+    return set_up_concept;
+  }()});
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetNearbyShareOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
-    int ns_tag = IDS_OS_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE;
-    int ns_turn_off_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF;
-    int ns_turn_off_alt_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF_ALT1;
-    int ns_device_name_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_NAME;
-    int ns_device_visibility_tag =
-        IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY;
-    int ns_device_visibility_alt_tag =
-        IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY_ALT1;
-    int ns_contacts_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_CONTACTS;
-    int ns_data_usage_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DATA_USAGE;
-
+base::span<const SearchConcept> GetNearbyShareOnSearchConcepts() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (::features::IsNameEnabled()) {
-      ns_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE;
-      ns_turn_off_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_OFF;
-      ns_turn_off_alt_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_OFF_ALT1;
-      ns_device_name_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_DEVICE_NAME;
-      ns_device_visibility_tag =
-          IDS_NEARBY_SHARE_SETTINGS_TAG_DEVICE_VISIBILITY;
-      ns_device_visibility_alt_tag =
-          IDS_NEARBY_SHARE_SETTINGS_TAG_DEVICE_VISIBILITY_ALT1;
-      ns_contacts_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_CONTACTS;
-      ns_data_usage_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_DATA_USAGE;
-    }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-    return std::vector<SearchConcept>({
-        {ns_tag,
+  if (::features::IsNameEnabled()) {
+    static constexpr auto tags = std::to_array<SearchConcept>({
+        {IDS_NEARBY_SHARE_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE,
          mojom::kNearbyShareSubpagePath,
          mojom::SearchResultIcon::kNearbyShare,
          mojom::SearchResultDefaultRank::kMedium,
@@ -232,46 +207,95 @@ const std::vector<SearchConcept>& GetNearbyShareOnSearchConcepts() {
          {.subpage = mojom::Subpage::kNearbyShare},
          {IDS_OS_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE,
           SearchConcept::kAltTagEnd}},
-        {ns_turn_off_tag,
+        {IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_OFF,
          mojom::kNearbyShareSubpagePath,
          mojom::SearchResultIcon::kNearbyShare,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kNearbyShareOnOff},
-         {ns_turn_off_alt_tag, SearchConcept::kAltTagEnd}},
-        {ns_device_name_tag,
+         {IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_OFF_ALT1,
+          SearchConcept::kAltTagEnd}},
+        {IDS_NEARBY_SHARE_SETTINGS_TAG_DEVICE_NAME,
          mojom::kNearbyShareSubpagePath,
          mojom::SearchResultIcon::kNearbyShare,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kNearbyShareDeviceName}},
-        {ns_device_visibility_tag,
+        {IDS_NEARBY_SHARE_SETTINGS_TAG_DEVICE_VISIBILITY,
          mojom::kNearbyShareSubpagePath,
          mojom::SearchResultIcon::kNearbyShare,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kNearbyShareDeviceVisibility},
-         {ns_device_visibility_alt_tag, SearchConcept::kAltTagEnd}},
-        {ns_contacts_tag,
+         {IDS_NEARBY_SHARE_SETTINGS_TAG_DEVICE_VISIBILITY_ALT1,
+          SearchConcept::kAltTagEnd}},
+        {IDS_NEARBY_SHARE_SETTINGS_TAG_CONTACTS,
          mojom::kNearbyShareSubpagePath,
          mojom::SearchResultIcon::kNearbyShare,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kNearbyShareContacts}},
-        {ns_data_usage_tag,
+        {IDS_NEARBY_SHARE_SETTINGS_TAG_DATA_USAGE,
          mojom::kNearbyShareSubpagePath,
          mojom::SearchResultIcon::kNearbyShare,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kNearbyShareDataUsage}},
     });
-  }());
-  return *tags;
+    return tags;
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  static constexpr auto tags = std::to_array<SearchConcept>({
+      {IDS_OS_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kNearbyShare},
+       {IDS_OS_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE,
+        SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareOnOff},
+       {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF_ALT1,
+        SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_NAME,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareDeviceName}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareDeviceVisibility},
+       {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY_ALT1,
+        SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_CONTACTS,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareContacts}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DATA_USAGE,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareDataUsage}},
+  });
+  return tags;
 }
 
-const std::vector<SearchConcept>&
+base::span<const SearchConcept>
 GetNearbyShareBackgroundScanningOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICES_NEARBY_SHARING_NOTIFICATION_ON,
         mojom::kNearbyShareSubpagePath,
         mojom::SearchResultIcon::kNearbyShare,
@@ -279,12 +303,12 @@ GetNearbyShareBackgroundScanningOnSearchConcepts() {
         mojom::SearchResultType::kSetting,
         {.setting =
              mojom::Setting::kDevicesNearbyAreSharingNotificationOnOff}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>&
+base::span<const SearchConcept>
 GetNearbyShareBackgroundScanningOffSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICES_NEARBY_SHARING_NOTIFICATION_OFF,
         mojom::kNearbyShareSubpagePath,
         mojom::SearchResultIcon::kNearbyShare,
@@ -292,32 +316,37 @@ GetNearbyShareBackgroundScanningOffSearchConcepts() {
         mojom::SearchResultType::kSetting,
         {.setting =
              mojom::Setting::kDevicesNearbyAreSharingNotificationOnOff}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetNearbyShareOffSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
-    int ns_turn_on_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_ON;
-    int ns_turn_on_alt_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_ON_ALT1;
-
+base::span<const SearchConcept> GetNearbyShareOffSearchConcepts() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (::features::IsNameEnabled()) {
-      ns_turn_on_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_ON;
-      ns_turn_on_alt_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_ON_ALT1;
-    }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-    return std::vector<SearchConcept>({
-        {ns_turn_on_tag,
+  if (::features::IsNameEnabled()) {
+    static constexpr auto tags = std::to_array<SearchConcept>({
+        {IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_ON,
          mojom::kMultiDeviceSectionPath,
          mojom::SearchResultIcon::kNearbyShare,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kNearbyShareOnOff},
-         {ns_turn_on_alt_tag, SearchConcept::kAltTagEnd}},
+         {IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_ON_ALT1,
+          SearchConcept::kAltTagEnd}},
     });
-  }());
-  return *tags;
+    return tags;
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  static constexpr auto tags = std::to_array<SearchConcept>({
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_ON,
+       mojom::kMultiDeviceSectionPath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareOnOff},
+       {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_ON_ALT1,
+        SearchConcept::kAltTagEnd}},
+  });
+  return tags;
 }
 
 bool IsOptedIn(HostStatus host_status) {
