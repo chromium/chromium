@@ -94,9 +94,13 @@ import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataImageBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUtils;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1561,6 +1565,66 @@ public class NtpCustomizationUtils {
                 setDailyRefreshCustomBackgroundInfoToSharedPreference(customBackgroundInfo);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Returns whether the synced background is the one persisted on this device.
+     *
+     * <p>Used to ignore synced themes that don't change anything, e.g. the synced state replayed
+     * when the native bridge attaches on startup, or a duplicate delivery of the current theme.
+     * Skipping these keeps the local state (e.g. a local chrome color daily refresh with the same
+     * color id) intact instead of clearing SharedPreferences and re-staging the same theme.
+     *
+     * <p>The comparison is with SharedPreferences rather than with the in-memory state, which may
+     * not be initialized yet or may be stale between a synced update and the NTP applying it. A
+     * pending daily refresh isn't considered either: a synced copy of the persisted theme keeps it.
+     *
+     * <p>Colors are compared with {@link NtpBackgroundDataBase#hasSameThemeAndCompatibleColor}, so
+     * a theme collection image synced without a primary color (e.g. from iOS) still matches the
+     * locally applied copy whose color was extracted from the bitmap.
+     *
+     * @param syncedBackgroundData The background data received from Chrome Sync, or null for the
+     *     default background.
+     */
+    public static boolean isSyncedBackgroundPersisted(
+            @Nullable NtpBackgroundDataBase syncedBackgroundData) {
+        @NtpBackgroundType int persistedType = getNtpBackgroundTypeFromSharedPreference();
+        if (syncedBackgroundData == null) {
+            return persistedType == NtpBackgroundType.DEFAULT;
+        }
+
+        // TODO(crbug.com/488439751): Check NtpBackgroundDataCustomizedColor once custom hex color
+        // sync is supported.
+        if (syncedBackgroundData instanceof NtpBackgroundDataColor colorData) {
+            return persistedType == NtpBackgroundType.CHROME_COLOR
+                    && colorData.getThemeColorId() == getNtpThemeColorIdFromSharedPreference();
+        }
+
+        return syncedBackgroundData.hasSameThemeAndCompatibleColor(
+                readPersistedThemeCollection(persistedType));
+    }
+
+    /**
+     * Returns the theme collection persisted on this device, or null if the persisted background
+     * isn't a theme collection. Only the data compared by {@link
+     * NtpBackgroundDataBase#hasSameThemeAndCompatibleColor} is read.
+     *
+     * @param persistedType The persisted background type.
+     */
+    private static @Nullable NtpBackgroundDataThemeCollection readPersistedThemeCollection(
+            @NtpBackgroundType int persistedType) {
+        if (persistedType != NtpBackgroundType.THEME_COLLECTION) return null;
+
+        CustomBackgroundInfo info = getCustomBackgroundInfoFromSharedPreference();
+        if (info == null) return null;
+
+        return new NtpBackgroundDataThemeCollection(
+                PlatformType.ANDROID,
+                info,
+                /* backgroundImageInfo= */ null,
+                /* bitmap= */ null,
+                getCustomizedPrimaryColorFromSharedPreference(),
+                /* fileIdHash= */ null);
     }
 
     /**

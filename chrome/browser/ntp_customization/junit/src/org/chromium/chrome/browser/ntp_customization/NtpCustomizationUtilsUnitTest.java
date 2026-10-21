@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataImageBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
@@ -2200,6 +2201,100 @@ public class NtpCustomizationUtilsUnitTest {
                 mContext, containerWithoutParams, /* applyShadow= */ true);
         assertEquals(0, containerWithoutParams.getPaddingLeft());
         assertEquals(0, containerWithoutParams.getPaddingRight());
+    }
+
+    @Test
+    public void testIsSyncedBackgroundPersisted_default() {
+        assertTrue(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        /* syncedBackgroundData= */ null));
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createColorData(NtpThemeColorId.NTP_COLORS_BLUE)));
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createThemeCollectionCandidate(
+                                createCustomBackgroundInfo(), /* primaryColor= */ null)));
+    }
+
+    @Test
+    public void testIsSyncedBackgroundPersisted_chromeColor() {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(NtpThemeColorId.NTP_COLORS_BLUE);
+
+        assertTrue(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createColorData(NtpThemeColorId.NTP_COLORS_BLUE)));
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createColorData(NtpThemeColorId.NTP_COLORS_AQUA)));
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        /* syncedBackgroundData= */ null));
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createThemeCollectionCandidate(
+                                createCustomBackgroundInfo(), /* primaryColor= */ null)));
+    }
+
+    @Test
+    public void testIsSyncedBackgroundPersisted_themeCollection() {
+        CustomBackgroundInfo info = createCustomBackgroundInfo();
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.THEME_COLLECTION);
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(info);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
+
+        // Same theme and color. Built without a bitmap, image info or file ID hash, since only the
+        // theme identity and color are compared.
+        assertTrue(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createThemeCollectionCandidate(info, Color.RED)));
+        // Same theme, different color.
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createThemeCollectionCandidate(info, Color.BLUE)));
+        // Same theme, unknown color (e.g. synced from iOS).
+        assertTrue(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createThemeCollectionCandidate(info, /* primaryColor= */ null)));
+        // Different theme.
+        CustomBackgroundInfo otherInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_2,
+                        /* collectionId= */ "other_id",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createThemeCollectionCandidate(otherInfo, Color.RED)));
+        // Different type.
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createColorData(NtpThemeColorId.NTP_COLORS_BLUE)));
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        /* syncedBackgroundData= */ null));
+    }
+
+    private NtpBackgroundDataColor createColorData(@NtpThemeColorId int colorId) {
+        return new NtpBackgroundDataColor(
+                mContext,
+                PlatformType.ANDROID,
+                colorId,
+                /* isChromeColorDailyRefreshEnabled= */ false);
+    }
+
+    private static NtpBackgroundDataThemeCollection createThemeCollectionCandidate(
+            CustomBackgroundInfo info, @Nullable @ColorInt Integer primaryColor) {
+        return new NtpBackgroundDataThemeCollection(
+                PlatformType.ANDROID,
+                info,
+                /* backgroundImageInfo= */ null,
+                /* bitmap= */ null,
+                primaryColor,
+                /* fileIdHash= */ null);
     }
 
     private static CustomBackgroundInfo createCustomBackgroundInfo() {

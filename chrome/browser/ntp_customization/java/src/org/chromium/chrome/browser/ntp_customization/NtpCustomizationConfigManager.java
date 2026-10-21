@@ -470,7 +470,8 @@ public class NtpCustomizationConfigManager {
 
     /**
      * Called when a new theme collection image has been received from Chrome Sync. Saves the synced
-     * background info and bitmap asynchronously and caches the synced theme data.
+     * background info and bitmap asynchronously and caches the synced theme data. Ignored if the
+     * theme collection is already persisted on this device.
      *
      * <p>Note: We only persist the synced image file path, background type, and background metadata
      * (CustomBackgroundInfo, matrices, and primary color) to SharedPreferences and disk, and cache
@@ -485,8 +486,8 @@ public class NtpCustomizationConfigManager {
      */
     public void onSyncedThemeCollectionImageChanged(
             Context context, NtpBackgroundDataThemeCollection themeCollectionData) {
-        // The active in-memory state isn't changed.
-        clearPendingSyncedBackgroundAndSharedPreference(context, themeCollectionData);
+        if (!maybeClearForSyncedBackground(context, themeCollectionData)) return;
+
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
                 NtpBackgroundType.THEME_COLLECTION);
         saveThemeCollectionInfoToSharedPreference(themeCollectionData);
@@ -497,14 +498,15 @@ public class NtpCustomizationConfigManager {
     }
 
     /**
-     * Called when a new Chrome color theme has been received from Chrome Sync.
+     * Called when a new Chrome color theme has been received from Chrome Sync. Ignored if the
+     * Chrome color is already persisted on this device.
      *
      * @param context The context for managing background theme resources.
      * @param colorData The synced Chrome color data.
      */
     public void onSyncedChromeColorChanged(Context context, NtpBackgroundDataColor colorData) {
-        // The active in-memory state isn't changed.
-        clearPendingSyncedBackgroundAndSharedPreference(context, colorData);
+        if (!maybeClearForSyncedBackground(context, colorData)) return;
+
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
                 NtpBackgroundType.CHROME_COLOR);
         saveChromeColorInfoToSharedPreference(colorData);
@@ -513,13 +515,31 @@ public class NtpCustomizationConfigManager {
     }
 
     /**
-     * Called when a theme reset to default has been received from Chrome Sync.
+     * Called when a theme reset to default has been received from Chrome Sync. Ignored if the
+     * default theme is already persisted on this device.
      *
      * @param context The context for managing background theme resources.
      */
     public void onSyncedDefaultThemeReset(Context context) {
-        // The active in-memory state isn't changed.
-        clearPendingSyncedBackgroundAndSharedPreference(context, /* newBackgroundData= */ null);
+        maybeClearForSyncedBackground(context, /* syncedBackgroundData= */ null);
+    }
+
+    /**
+     * Clears the pending synced background and SharedPreferences for a synced background, unless it
+     * is already persisted on this device. The active in-memory state isn't changed.
+     *
+     * @param context The context for managing synced background image files.
+     * @param syncedBackgroundData The background data received from Chrome Sync, or null for the
+     *     default background.
+     * @return True if the data was cleared and the synced background should be saved; false if it
+     *     is already persisted and nothing was changed.
+     */
+    private boolean maybeClearForSyncedBackground(
+            Context context, @Nullable NtpBackgroundDataBase syncedBackgroundData) {
+        if (NtpCustomizationUtils.isSyncedBackgroundPersisted(syncedBackgroundData)) return false;
+
+        clearPendingSyncedBackgroundAndSharedPreference(context, syncedBackgroundData);
+        return true;
     }
 
     /**
@@ -904,6 +924,7 @@ public class NtpCustomizationConfigManager {
         mIsInitialized = false;
         mBackgroundType = NtpBackgroundType.DEFAULT;
         mNtpBackgroundData = null;
+        mSyncedNtpBackgroundData = null;
         mBackgroundImageInfo = null;
         mOriginalBitmap = null;
         mCustomBackgroundInfo = null;
