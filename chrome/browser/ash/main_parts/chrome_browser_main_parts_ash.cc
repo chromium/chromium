@@ -207,7 +207,6 @@
 #include "chrome/browser/ui/webui/ash/config/ash_web_ui_config_manager.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
@@ -744,11 +743,11 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
   DocumentScannerInstaller::GetInstance()->TriggerInstall();
 
   if (auto* fake_biod_client = FakeBiodClient::Get()) {
-    // The Fake biod saves the fake records to the chrome::DIR_USER_DATA
+    // The Fake biod saves the fake records to the ash::DIR_USER_DATA
     // directory, since we can't retrieve this path from chromeos
     // we have to pass it in this way.
     base::FilePath user_data_dir;
-    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+    base::PathService::Get(ash::DIR_USER_DATA, &user_data_dir);
     fake_biod_client->SetFakeUserDataDir(std::move(user_data_dir));
   }
 
@@ -766,7 +765,7 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
     }
 
     base::FilePath user_data_dir;
-    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+    base::PathService::Get(ash::DIR_USER_DATA, &user_data_dir);
     FakeUserDataAuthClient::Get()->SetUserDataDir(std::move(user_data_dir));
     // Set a default password factor when `--login-manager` is used in
     // non-testing mode.
@@ -867,7 +866,7 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   // So, we'll use "${DIR_USER_DATA}/display_profiles" in linux-chromeos
   // then.
   base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  base::PathService::Get(ash::DIR_USER_DATA, &user_data_dir);
   CHECK(user_data_dir.IsAbsolute());
   CHECK(base::PathService::OverrideAndCreateIfNeeded(
       ash::DIR_DEVICE_DISPLAY_PROFILES,
@@ -888,10 +887,6 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
       CHECK_DEREF(g_browser_process->local_state()));
   system::StatisticsProvider::GetInstance()->StartLoadingMachineStatistics(
       load_oem_statistics);
-
-  base::FilePath downloads_directory;
-  CHECK(base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS,
-                               &downloads_directory));
 
   DeviceOAuth2TokenServiceFactory::Initialize(
       g_browser_process->system_network_context_manager()
