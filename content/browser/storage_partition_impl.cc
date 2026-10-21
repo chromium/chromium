@@ -1079,10 +1079,6 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
     base::UmaHistogramCounts1M(
         "Cookie.OnCookiesAccessed.BatchSize.CookieAccessObserver",
         details_vector.size());
-    std::optional<base::ElapsedTimer> timer;
-    if (base::ShouldRecordSubsampledMetric(0.01)) {
-      timer.emplace();
-    }
     for (auto& details : details_vector) {
       for (GlobalRenderFrameHostId frame_id : GetRoutingIdsForOrigin(
                storage_partition_, url::Origin::Create(details->url))) {
@@ -1095,12 +1091,6 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
               CookieAccessDetails::Source::kNonNavigation);
         }
       }
-    }
-    if (timer) {
-      base::UmaHistogramCustomMicrosecondsTimes(
-          "Browser.CookieAccessObserver.StoragePartitionImpl.Duration."
-          "Subsampled",
-          timer->Elapsed(), base::Microseconds(1), base::Seconds(1), 100);
     }
   }
 

@@ -22,12 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="CookieAccessReceiver">
-  <variant name="NavigationRequest"/>
-  <variant name="RenderFrameHost"/>
-  <variant name="StoragePartitionImpl"/>
-</variants>
-
 <!-- LINT.IfChange(NoSpareRendererReason) -->
 
 <variants name="NoSpareRendererReason">
@@ -220,20 +214,6 @@ chromium-metrics-reviews@google.com.
     relies on client side logic to roll the dice for device selection. This is
     recorded when the Hats pipeline ends processing, which is usually when the
     controller is destroyed.
-  </summary>
-</histogram>
-
-<histogram
-    name="Browser.CookieAccessObserver.{CookieAccessReceiver}.Duration.Subsampled"
-    units="microseconds" expires_after="2026-11-29">
-  <owner>acondor@chromium.org</owner>
-  <owner>clank-performance-team@google.com</owner>
-  <summary>
-    Records the latency of CookieAccessObserver's callbacks.
-
-    Subsampled to 1/100.
-
-    Not reported for clients with low-resolution clocks.
   </summary>
 </histogram>
 

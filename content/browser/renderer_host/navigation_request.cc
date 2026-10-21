@@ -11846,10 +11846,6 @@ void NavigationRequest::NotifyCookiesAccessed(
     CookieAccessDetails::Source source) {
   TRACE_EVENT("navigation", "NavigationRequest::NotifyCookiesAccessed",
               perfetto::Flow::FromPointer(this));
-  std::optional<base::ElapsedTimer> timer;
-  if (base::ShouldRecordSubsampledMetric(0.01)) {
-    timer.emplace();
-  }
   for (auto& details : details_vector) {
     // TODO(crbug.com/40520047): We should not send information to the current
     // frame about (potentially unrelated) ongoing navigation, but at the moment
@@ -11881,11 +11877,6 @@ void NavigationRequest::NotifyCookiesAccessed(
         }
       }
     }
-  }
-  if (timer) {
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Browser.CookieAccessObserver.NavigationRequest.Duration.Subsampled",
-        timer->Elapsed(), base::Microseconds(1), base::Seconds(1), 100);
   }
 }
 
