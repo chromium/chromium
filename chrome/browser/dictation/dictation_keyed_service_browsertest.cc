@@ -789,16 +789,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // TODO(b/533465625): Ideally we could also make this a child of
 // DictationBrowserTestBase so we get all the helpers.
-class DictationGlicBrowserTest : public glic::GlicBrowserTest {
+class DictationGlicBrowserTest : public glic::GlicBrowserTest,
+                                 public testing::WithParamInterface<bool> {
  public:
   DictationGlicBrowserTest()
       : scoped_feature_list_(CreateEnablingFeatureList()) {
-    // The fieldtrial testing config enables kGlicNoWebview, which changes what
-    // the Glic panel's WebView holds. Pin these tests to the <webview> mode
-    // that currently ships.
-    glic_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{::features::kGlicCaptureRegion},
-        /*disabled_features=*/{::features::kGlicNoWebview});
+    glic_feature_list_.InitWithFeatureStates(
+        {{::features::kGlicNoWebview, GetParam()},
+         {::features::kGlicCaptureRegion, true}});
   }
   ~DictationGlicBrowserTest() override = default;
 
@@ -875,7 +873,7 @@ class DictationGlicBrowserTest : public glic::GlicBrowserTest {
 
 // Ensure basic stream setup, state changes, and end work correctly for streams
 // started for a Glic guest.
-IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
+IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest, BasicStreamFunctions) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForGlicClient(instance));
 
@@ -923,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
   dictation_service().EndSession();
 }
 
-IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, TabUnderlineVisibility) {
+IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest, TabUnderlineVisibility) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_TRUE(tab);
 
@@ -948,7 +946,7 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, TabUnderlineVisibility) {
   EXPECT_FALSE(underline->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest,
                        TabUnderlineHiddenOnNavigation) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_TRUE(tab);
@@ -977,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest,
 
 // Ensure session URL category metric is recorded as Glic for sessions started
 // in Glic guest.
-IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest,
                        RecordsSessionUrlCategoryGlic) {
   base::HistogramTester histogram_tester;
 
@@ -1002,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest,
   dictation_service().EndSession();
 }
 
-IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest,
                        ToggleHotkeyTargetsFocusedGlicSidePanel) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_TRUE(tab);
@@ -1045,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest,
 class DictationGlicSelectionOverlayBrowserTest
     : public DictationGlicBrowserTest {};
 
-IN_PROC_BROWSER_TEST_F(DictationGlicSelectionOverlayBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationGlicSelectionOverlayBrowserTest,
                        SelectionOverlaySupport) {
   base::HistogramTester histogram_tester;
 
@@ -1091,6 +1089,11 @@ IN_PROC_BROWSER_TEST_F(DictationGlicSelectionOverlayBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return dictation_service().session_controller() == nullptr; }));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, DictationGlicBrowserTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         DictationGlicSelectionOverlayBrowserTest,
+                         testing::Bool());
 
 }  // namespace
 
