@@ -4,19 +4,23 @@
 
 #include "chrome/browser/profiles/top_chrome_webui_profile_impl.h"
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/browser/developer_tools_availability.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/pref_service_syncable_factory.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/common/content_features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -30,10 +34,20 @@ CreateTopChromeWebUIPrefService() {
 
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
   // User-specific preferences must not be stored or shared in this Top Chrome
-  // WebUI profile. Only ContentBrowserClient prefs are registered because they
+  // WebUI profile. ContentBrowserClient prefs are registered because they
   // are generic technical flags required to initialize the StoragePartition and
   // renderer processes hosting Top Chrome WebUIs.
   ChromeContentBrowserClient::RegisterProfilePrefs(pref_registry.get());
+  // DevTools are disallowed unless debugging, since the renderers of this
+  // profile are shared by the windows of all profiles, and DevTools could see
+  // the data of all of them.
+  pref_registry->RegisterIntegerPref(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(
+          base::FeatureList::IsEnabled(features::kDebugTopChromeWebUI)
+              ? policy::DeveloperToolsAvailability::kAllowed
+              : policy::DeveloperToolsAvailability::kDisallowed));
+  pref_registry->RegisterListPref(prefs::kDeveloperToolsAvailabilityAllowlist);
   return factory.CreateSyncable(pref_registry);
 }
 

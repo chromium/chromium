@@ -637,6 +637,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/media/router",
       "//chrome/browser/origin_gating",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/media_router/browser",
       "//components/media_router/browser:test_support",

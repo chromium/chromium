@@ -13,6 +13,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -32,6 +33,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -927,5 +929,30 @@ TEST_F(DevToolsAvailabilityCheckerTest,
       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/sw.js");
   EXPECT_EQ(DevToolsBlockReason::kPolicyInstalledIsolatedWebApp,
             GetDevToolsBlockReason(profile_.get(), sw_url));
+}
+
+// DevTools are disallowed for TopChromeWebUIProfile, since its renderers are
+// shared by the windows of all profiles.
+TEST_F(DevToolsAvailabilityCheckerTest, TopChromeWebUIProfileDisallowed) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  Profile* profile = webui::GetTopChromeWebUIProfile();
+  EXPECT_EQ(DevToolsBlockReason::kPolicyDisallowed,
+            GetDevToolsBlockReason(profile,
+                                   GURL("chrome://webui-toolbar.top-chrome/")));
+  EXPECT_EQ(DevToolsBlockReason::kPolicyDisallowed,
+            GetDevToolsBlockReason(
+                profile, static_cast<content::WebContents*>(nullptr)));
+}
+
+TEST_F(DevToolsAvailabilityCheckerTest,
+       TopChromeWebUIProfileAllowedForDebugging) {
+  // Enabled before the profile is created, since the profile reads it on
+  // creation.
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kDebugTopChromeWebUI);
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  EXPECT_EQ(DevToolsBlockReason::kNotBlocked,
+            GetDevToolsBlockReason(webui::GetTopChromeWebUIProfile(),
+                                   GURL("chrome://webui-toolbar.top-chrome/")));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
