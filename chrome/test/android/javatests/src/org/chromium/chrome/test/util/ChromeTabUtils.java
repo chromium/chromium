@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
@@ -37,13 +38,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.test.transit.page.PageHitTestDataCondition;
+import org.chromium.chrome.test.transit.page.PageInteractableOrHiddenCondition;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -338,39 +339,11 @@ public class ChromeTabUtils {
     public static void waitForInteractable(final Tab tab) {
         Assert.assertFalse(ThreadUtils.runningOnUiThread());
 
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    if (tab.isHidden()) return true;
-                    if (!tab.isUserInteractable()) return false;
-
-                    // There are many cases where we don't expect hit test data to be present for
-                    // the WebContents, so treat those as interactable.
-                    if (tab.getUrl().isEmpty()
-                            || tab.getUrl().getSpec().equals(ContentUrlConstants.ABOUT_BLANK_URL)) {
-                        return true;
-                    }
-                    if (tab.isNativePage()) return true;
-                    if (tab.getWebContents() == null) return true;
-                    NavigationController controller =
-                            tab.getWebContents().getNavigationController();
-                    // HTTP 204/205 No Content/Download pages will not get committed and won't have
-                    // hit test data. I don't know why http status codes likes 204/205 aren't
-                    // propagated to the NavigationEntry and I'm scared to ask. I also don't know
-                    // why we update the committed index even through the page does not commit.
-                    // However, since the page hasn't *actually* committed, the lastCommittedUrl is
-                    // blank and the NavigationController still thinks it's on the initial
-                    // navigation (which is supposed to become false when there's a committed
-                    // entry). WebContents#hasUncommittedNavigationInPrimaryMainFrame also for some
-                    // reason returns false...
-                    if (controller.isInitialNavigation()
-                            && controller.getLastCommittedEntryIndex() != -1) {
-                        return true;
-                    }
-                    return tab.getWebContents().getMainFrame().hasHitTestDataForTesting();
-                },
-                "Page never became interactable.",
-                10000,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        Triggers.noopTo()
+                .withTimeout(10000L)
+                .waitFor(
+                        new PageInteractableOrHiddenCondition(() -> tab),
+                        new PageHitTestDataCondition(() -> tab));
     }
 
     /** Switch to the given TabIndex in the current tabModel. */

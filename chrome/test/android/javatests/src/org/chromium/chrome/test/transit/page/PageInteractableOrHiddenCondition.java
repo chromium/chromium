@@ -11,10 +11,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.function.Supplier;
 
 /** Fulfilled when a page is interactable (or hidden). */
-class PageInteractableOrHiddenCondition extends UiThreadCondition {
+public class PageInteractableOrHiddenCondition extends UiThreadCondition {
     private final Supplier<Tab> mLoadedTabSupplier;
 
-    PageInteractableOrHiddenCondition(Supplier<Tab> loadedTabSupplier) {
+    public PageInteractableOrHiddenCondition(Supplier<Tab> loadedTabSupplier) {
         mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
     }
 
