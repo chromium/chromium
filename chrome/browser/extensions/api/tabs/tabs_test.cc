@@ -3964,6 +3964,101 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveEmptyTabListFails) {
                 function.get(), R"([[], {"index": 0}])", profile()));
 }
 
+// Tests that moving a tab within a window cannot cross the boundary between
+// pinned and unpinned tabs; the index is clamped to that boundary instead.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMovePinnedBoundaryWithinWindow) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MovePinnedBoundaryTest").Build();
+  TabListInterface* tab_list = GetTabListInterface();
+  std::vector<int> tab_ids = CreateAndGetTabData(tab_list, 4).tab_ids;
+  tab_list->PinTab(tab_list->GetTab(0)->GetHandle());
+  tab_list->PinTab(tab_list->GetTab(1)->GetHandle());
+
+  // [0p, 1p, 2, 3]: a pinned tab moved past the unpinned tabs stops at the end
+  // of the pinned tabs.
+  base::DictValue tab =
+      RunMoveFunction(extension.get(), tab_ids[0], R"({"index": 3})");
+  EXPECT_EQ(tab_ids[0], utils::GetInteger(tab, "id"));
+  EXPECT_EQ(1, utils::GetInteger(tab, "index"));
+  EXPECT_TRUE(utils::GetBoolean(tab, "pinned"));
+
+  // [1p, 0p, 2, 3]: an unpinned tab moved before the pinned tabs stops at the
+  // start of the unpinned tabs.
+  tab = RunMoveFunction(extension.get(), tab_ids[3], R"({"index": 0})");
+  EXPECT_EQ(tab_ids[3], utils::GetInteger(tab, "id"));
+  EXPECT_EQ(2, utils::GetInteger(tab, "index"));
+  EXPECT_FALSE(utils::GetBoolean(tab, "pinned"));
+
+  // [1p, 0p, 3, 2]: -1 moves a pinned tab to the end of the pinned tabs.
+  tab = RunMoveFunction(extension.get(), tab_ids[1], R"({"index": -1})");
+  EXPECT_EQ(tab_ids[1], utils::GetInteger(tab, "id"));
+  EXPECT_EQ(1, utils::GetInteger(tab, "index"));
+  EXPECT_TRUE(utils::GetBoolean(tab, "pinned"));
+}
+
+// Android keeps a moved tab's pinned state.
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that a pinned tab moved to another window is unpinned, and that a tab
+// moved to another window is placed after that window's pinned tabs.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMovePinnedBoundaryAcrossWindows) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MovePinnedAcrossWindowsTest").Build();
+  TabListInterface* tab_list1 = GetTabListInterface();
+  const int window_1_id =
+      ExtensionTabUtil::GetWindowId(browser_window_interface());
+  std::vector<int> tab_ids1 = CreateAndGetTabData(tab_list1, 4).tab_ids;
+  tab_list1->PinTab(tab_list1->GetTab(0)->GetHandle());
+  tab_list1->PinTab(tab_list1->GetTab(1)->GetHandle());
+  BrowserWindowInterface* window_2 =
+      CreateBrowserWindowWithType(BrowserWindowInterface::Type::TYPE_NORMAL);
+  const int window_2_id = ExtensionTabUtil::GetWindowId(window_2);
+  TabListInterface* tab_list2 = TabListInterface::From(window_2);
+  std::vector<int> tab_ids2 = CreateAndGetTabData(tab_list2, 3).tab_ids;
+  tab_list2->PinTab(tab_list2->GetTab(0)->GetHandle());
+  tab_list2->PinTab(tab_list2->GetTab(1)->GetHandle());
+
+  // A pinned tab moved into the pinned region of another window is unpinned and
+  // placed at the start of the unpinned tabs.
+  base::DictValue tab = RunMoveFunction(
+      extension.get(), tab_ids1[0],
+      base::StringPrintf(R"({"windowId": %d, "index": 0})", window_2_id));
+  EXPECT_EQ(tab_ids1[0], utils::GetInteger(tab, "id"));
+  EXPECT_EQ(window_2_id, utils::GetInteger(tab, "windowId"));
+  EXPECT_EQ(2, utils::GetInteger(tab, "index"));
+  EXPECT_FALSE(utils::GetBoolean(tab, "pinned"));
+
+  // A pinned tab moved past the pinned region of another window is unpinned and
+  // keeps the requested index.
+  tab = RunMoveFunction(
+      extension.get(), tab_ids1[1],
+      base::StringPrintf(R"({"windowId": %d, "index": 3})", window_2_id));
+  EXPECT_EQ(tab_ids1[1], utils::GetInteger(tab, "id"));
+  EXPECT_EQ(window_2_id, utils::GetInteger(tab, "windowId"));
+  EXPECT_EQ(3, utils::GetInteger(tab, "index"));
+  EXPECT_FALSE(utils::GetBoolean(tab, "pinned"));
+
+  // An unpinned tab moved into the pinned region of another window is placed at
+  // the start of the unpinned tabs.
+  tab = RunMoveFunction(
+      extension.get(), tab_ids1[2],
+      base::StringPrintf(R"({"windowId": %d, "index": 0})", window_2_id));
+  EXPECT_EQ(tab_ids1[2], utils::GetInteger(tab, "id"));
+  EXPECT_EQ(window_2_id, utils::GetInteger(tab, "windowId"));
+  EXPECT_EQ(2, utils::GetInteger(tab, "index"));
+  EXPECT_FALSE(utils::GetBoolean(tab, "pinned"));
+
+  // A pinned tab moved to another window at -1 is unpinned and appended.
+  tab = RunMoveFunction(
+      extension.get(), tab_ids2[0],
+      base::StringPrintf(R"({"windowId": %d, "index": -1})", window_1_id));
+  EXPECT_EQ(tab_ids2[0], utils::GetInteger(tab, "id"));
+  EXPECT_EQ(window_1_id, utils::GetInteger(tab, "windowId"));
+  ASSERT_EQ(2, tab_list1->GetTabCount());
+  EXPECT_EQ(1, utils::GetInteger(tab, "index"));
+  EXPECT_FALSE(utils::GetBoolean(tab, "pinned"));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Tests that saved tabs in a group can be moved.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveSavedTabGroupTabAllowed) {
   scoped_refptr<const Extension> extension =
