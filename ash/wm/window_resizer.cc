@@ -259,13 +259,17 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
   return new_bounds;
 }
 
+void WindowResizer::OnDragCompleted() {
+  drag_completed_ = true;
+}
+
 void WindowResizer::SetBoundsDuringResize(const gfx::Rect& bounds) {
   aura::Window* window = GetTarget();
   DCHECK(window);
 
   aura::Window::ScopedDeleteBlocker blocker(window);
+  WindowResizer::ScopedDeleteBlocker resizer_blocker(this);
 
-  auto ptr = weak_ptr_factory_.GetWeakPtr();
   const gfx::Size original_size = window->bounds().size();
 
   // Prepare to record presentation time (e.g. tracking Configure).
@@ -274,10 +278,11 @@ void WindowResizer::SetBoundsDuringResize(const gfx::Rect& bounds) {
 
   window->SetBounds(bounds);
 
-  // Resizer can be destroyed when a window is attached during tab dragging.
-  // crbug.com/970911.
-  if (!ptr)
+  // The drag may have been completed as a result of the bounds change, e.g.
+  // when a window is attached during tab dragging. crbug.com/970911.
+  if (IsDragCompleted()) {
     return;
+  }
 
   // Using `window->bounds()` instead of `bounds` to check size change because
   // whether "window->SetBounds()" could reject a bounds change. And when that

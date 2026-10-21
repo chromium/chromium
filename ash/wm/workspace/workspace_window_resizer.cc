@@ -748,14 +748,12 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
     // ratio which would be using the restore or normal bounds.
     auto* window_state = WindowState::Get(window);
     window_state->set_can_update_snap_ratio(false);
-    base::WeakPtr<WorkspaceWindowResizer> resizer(
-        weak_ptr_factory_.GetWeakPtr());
     SetBoundsDuringResize(bounds);
     window_state->set_can_update_snap_ratio(true);
-    // SetBounds needs to be called to update the layout which affects where the
-    // phantom window is drawn. Keep track if the window was destroyed during
-    // the drag and quit early if so.
-    if (!resizer) {
+    // The bounds change may have ended the drag, e.g. when the client
+    // transfers capture or the dragged tab(s) get attached to another browser
+    // window. Skip the snap and phantom window logic in that case.
+    if (IsDragCompleted()) {
       return;
     }
   }
@@ -820,7 +818,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
             FROM_HERE,
             snap_type != SnapType::kMaximize ? kDwellLongTime : kDwellTime,
             base::BindOnce(&WorkspaceWindowResizer::UpdateSnapPhantomWindow,
-                           weak_ptr_factory_.GetWeakPtr(), SnapType::kMaximize,
+                           base::Unretained(this), SnapType::kMaximize,
                            display));
         // Cancel maximization if drag passed threshold.
         // Window can still be maximized in next dwell cycle if stays at top of

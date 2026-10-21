@@ -30,6 +30,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/app_types.h"
@@ -112,6 +113,76 @@ class UserBoundsChangeObserver : public aura::WindowObserver {
   raw_ptr<aura::Window> window_;
   bool in_resize_loop_ = false;
   bool in_move_loop_ = false;
+};
+
+// Transfers capture to `capture_window` the first time `window`'s bounds
+// change. This mimics TabDragController, which may transfer capture to another
+// browser window in response to the bounds change made by the unmaximize
+// CrossFadeAnimation in WorkspaceWindowResizer::Drag(). The resulting capture
+// loss completes the drag while WindowResizer::Drag() is still on the stack.
+class SetCaptureOnBoundsChangeObserver : public aura::WindowObserver {
+ public:
+  SetCaptureOnBoundsChangeObserver(aura::Window* window,
+                                   aura::Window* capture_window)
+      : capture_window_(capture_window) {
+    observation_.Observe(window);
+  }
+  SetCaptureOnBoundsChangeObserver(const SetCaptureOnBoundsChangeObserver&) =
+      delete;
+  SetCaptureOnBoundsChangeObserver& operator=(
+      const SetCaptureOnBoundsChangeObserver&) = delete;
+  ~SetCaptureOnBoundsChangeObserver() override = default;
+
+  // aura::WindowObserver:
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override {
+    if (!capture_window_->HasCapture()) {
+      capture_window_->SetCapture();
+    }
+  }
+
+ private:
+  raw_ptr<aura::Window> capture_window_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observation_{
+      this};
+};
+
+// Ends the drag the first time `window`'s bounds change. This mimics
+// TabDragController ending the window move loop when the dragged tab(s) merge
+// into another browser window in response to the bounds change made by
+// TabletModeWindowResizer::Drag(), i.e. while Drag() is still on the stack.
+class EndDragOnBoundsChangeObserver : public aura::WindowObserver {
+ public:
+  explicit EndDragOnBoundsChangeObserver(aura::Window* window) {
+    observation_.Observe(window);
+  }
+  EndDragOnBoundsChangeObserver(const EndDragOnBoundsChangeObserver&) = delete;
+  EndDragOnBoundsChangeObserver& operator=(
+      const EndDragOnBoundsChangeObserver&) = delete;
+  ~EndDragOnBoundsChangeObserver() override = default;
+
+  // aura::WindowObserver:
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override {
+    auto* handler = Shell::Get()->toplevel_window_event_handler();
+    if (!handler->is_drag_in_progress()) {
+      return;
+    }
+    did_end_drag_ = true;
+    handler->CompleteDragForTesting(
+        ToplevelWindowEventHandler::DragResult::SUCCESS);
+  }
+
+  bool did_end_drag() const { return did_end_drag_; }
+
+ private:
+  bool did_end_drag_ = false;
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observation_{
+      this};
 };
 
 class ToplevelWindowEventHandlerTest : public AshTestBase {
@@ -1550,5 +1621,65 @@ TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
 }
 // Showing the resize shadows when the mouse is over the window edges is
 // tested in resize_shadow_and_cursor_test.cc
+
+// Tests that losing capture during the bounds change made by the unmaximize
+// drag completes the drag without crashing, even though the resizer is still
+// in use on the stack. See crbug.com/568021906.
+TEST_F(ToplevelWindowEventHandlerTest, CaptureLostDuringUnmaximizeDrag) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<aura::Window> other(CreateWindow(HTCAPTION));
+  std::unique_ptr<aura::Window> window(CreateWindow(HTCAPTION));
+  WindowState* window_state = WindowState::Get(window.get());
+  window_state->Maximize();
+  ASSERT_TRUE(window_state->IsMaximized());
+  ASSERT_TRUE(window_state->HasRestoreBounds());
+
+  SetCaptureOnBoundsChangeObserver observer(window.get(), other.get());
+
+  auto* handler = Shell::Get()->toplevel_window_event_handler();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo({400, 50});
+  generator->PressLeftButton();
+  ASSERT_TRUE(handler->is_drag_in_progress());
+  ASSERT_TRUE(window->HasCapture());
+
+  // Dragging past the restore threshold triggers the unmaximize cross fade,
+  // whose bounds change transfers capture to `other` and ends the drag.
+  generator->MoveMouseBy(50, 0);
+  EXPECT_FALSE(handler->is_drag_in_progress());
+  EXPECT_FALSE(window_state->is_dragged());
+  EXPECT_TRUE(other->HasCapture());
+
+  generator->ReleaseLeftButton();
+}
+
+// Tests that ending the drag during the bounds change made by
+// TabletModeWindowResizer::Drag() (e.g. because the dragged tab(s) merged into
+// another browser window) does not crash. The resizer is kept alive until the
+// event dispatch returns, so Drag() must notice the drag ended instead of
+// touching the dragged window again.
+TEST_F(ToplevelWindowEventHandlerTest, DragEndedDuringTabletModeDrag) {
+  UpdateDisplay("800x600");
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  std::unique_ptr<aura::Window> window(CreateWindow(HTCAPTION));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
+  WindowState* window_state = WindowState::Get(window.get());
+
+  EndDragOnBoundsChangeObserver observer(window.get());
+
+  auto* handler = Shell::Get()->toplevel_window_event_handler();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressTouch(gfx::Point(50, 10));
+  // This starts the drag and moves the window; the resulting bounds change
+  // ends the drag from within Drag().
+  generator->MoveTouchBy(0, 50);
+  EXPECT_TRUE(observer.did_end_drag());
+  EXPECT_FALSE(handler->is_drag_in_progress());
+  EXPECT_FALSE(window_state->is_dragged());
+
+  generator->MoveTouchBy(0, 50);
+  generator->ReleaseTouch();
+}
 
 }  // namespace ash

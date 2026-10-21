@@ -154,13 +154,8 @@ class WorkspaceWindowResizerTest : public AshTestBase {
       aura::Window* window,
       const gfx::Point& point_in_parent = gfx::Point(),
       int window_component = HTCAPTION) {
-    auto resizer =
-        CreateWindowResizer(window, gfx::PointF(point_in_parent),
-                            window_component, wm::WINDOW_MOVE_SOURCE_MOUSE);
-    auto* workspace_resizer = WorkspaceWindowResizer::GetInstanceForTest();
-    workspace_resizer_ =
-        workspace_resizer ? workspace_resizer->GetWeakPtr() : nullptr;
-    return resizer;
+    return CreateWindowResizer(window, gfx::PointF(point_in_parent),
+                               window_component, wm::WINDOW_MOVE_SOURCE_MOUSE);
   }
 
   std::unique_ptr<WorkspaceWindowResizer> CreateWorkspaceResizerForTest(
@@ -206,8 +201,17 @@ class WorkspaceWindowResizerTest : public AshTestBase {
     resizer.reset();
   }
 
+  // Returns the WorkspaceWindowResizer created by the last
+  // `CreateResizerForTest()` call. Must only be called while it is alive.
+  WorkspaceWindowResizer* workspace_resizer() const {
+    WorkspaceWindowResizer* resizer =
+        WorkspaceWindowResizer::GetInstanceForTest();
+    CHECK(resizer);
+    return resizer;
+  }
+
   PhantomWindowController* snap_phantom_window_controller() const {
-    return workspace_resizer_->snap_phantom_window_controller_.get();
+    return workspace_resizer()->snap_phantom_window_controller_.get();
   }
 
   void InitTouchResizeWindow(const gfx::Rect& bounds, int window_component) {
@@ -219,11 +223,11 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   }
 
   bool IsDwellCountdownTimerRunning() {
-    return workspace_resizer_->dwell_countdown_timer_.IsRunning();
+    return workspace_resizer()->dwell_countdown_timer_.IsRunning();
   }
 
   void DwellCountdownTimerFireNow() {
-    workspace_resizer_->dwell_countdown_timer_.FireNow();
+    workspace_resizer()->dwell_countdown_timer_.FireNow();
   }
 
   void DragToMaximizeBehaviorCheckCountdownTimerFireNow(aura::Window* window) {
@@ -241,8 +245,6 @@ class WorkspaceWindowResizerTest : public AshTestBase {
 
   aura::test::TestWindowDelegate touch_resize_delegate_;
   std::unique_ptr<aura::Window> touch_resize_window_;
-
-  base::WeakPtr<WorkspaceWindowResizer> workspace_resizer_ = nullptr;
 };
 
 // Assertions around attached window resize dragging from the right with 2

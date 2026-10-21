@@ -22,7 +22,6 @@
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -59,10 +58,10 @@ TabletModeWindowResizer::~TabletModeWindowResizer() {
 
 void TabletModeWindowResizer::Drag(const gfx::PointF& location_in_parent,
                                    int event_flags) {
+  WindowResizer::ScopedDeleteBlocker blocker(this);
   drag_delegate_->ContinueWindowDrag(
       ConvertAndSetPreviousLocationInScreen(location_in_parent),
       CalculateBoundsForDrag(location_in_parent));
-  // !!!NOTE!!! `this` may no longer be alive after ContinueWindowDrag.
 }
 
 void TabletModeWindowResizer::CompleteDrag() {
@@ -77,6 +76,11 @@ void TabletModeWindowResizer::RevertDrag() {
 
 void TabletModeWindowResizer::FlingOrSwipe(ui::GestureEvent*) {
   CompleteDrag();
+}
+
+void TabletModeWindowResizer::OnDragCompleted() {
+  WindowResizer::OnDragCompleted();
+  drag_delegate_->OnDragCompleted();
 }
 
 const gfx::PointF&
@@ -99,6 +103,7 @@ TabletModeWindowDragDelegate::~TabletModeWindowDragDelegate() = default;
 void TabletModeWindowDragDelegate::StartWindowDrag(
     aura::Window* dragged_window,
     const gfx::PointF& location_in_screen) {
+  drag_completed_ = false;
   CHECK(!dragged_window_);
   dragged_window_ = dragged_window;
   CHECK(dragged_window_);
@@ -120,12 +125,10 @@ void TabletModeWindowDragDelegate::ContinueWindowDrag(
     const gfx::PointF& location_in_screen,
     const gfx::Rect& target_bounds) {
   if (target_bounds != dragged_window_->bounds()) {
-    // Changing bounds might delete `this` as the dragged tab(s) might merge
-    // into another browser window.
-    base::WeakPtr<TabletModeWindowDragDelegate> self(
-        weak_ptr_factory_.GetWeakPtr());
     dragged_window_->SetBounds(target_bounds);
-    if (!self) {
+    // Changing the bounds may end the drag, e.g. when the dragged tab(s) merge
+    // into another browser window.
+    if (IsDragCompleted()) {
       return;
     }
   }
@@ -141,6 +144,8 @@ void TabletModeWindowDragDelegate::ContinueWindowDrag(
 void TabletModeWindowDragDelegate::EndWindowDrag(
     ToplevelWindowEventHandler::DragResult result,
     const gfx::PointF& location_in_screen) {
+  drag_completed_ = true;
+
   SnapPosition snap_position =
       (result == ToplevelWindowEventHandler::DragResult::SUCCESS)
           ? GetSnapPosition(location_in_screen)
@@ -158,6 +163,10 @@ void TabletModeWindowDragDelegate::EndWindowDrag(
   WindowBackdrop::Get(dragged_window_)->RestoreBackdrop();
 
   dragged_window_ = nullptr;
+}
+
+void TabletModeWindowDragDelegate::OnDragCompleted() {
+  drag_completed_ = true;
 }
 
 SnapPosition TabletModeWindowDragDelegate::GetSnapPosition(
