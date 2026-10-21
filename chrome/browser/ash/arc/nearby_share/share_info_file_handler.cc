@@ -26,7 +26,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 // Enable VLOG level 1.
@@ -67,16 +68,18 @@ scoped_refptr<storage::FileSystemContext> GetScopedFileSystemContext(
   return storage->GetFileSystemContext();
 }
 
-// Converts the given url to a FileSystemURL.
-file_manager::util::FileSystemURLAndHandle GetFileSystemURLAndHandle(
+// Converts the given url to a FileSystemURL. The URL is read by the browser
+// process on its own behalf, so the external mount point form of the URL is
+// returned, the same form as ash::FileSystemBackend::CreateInternalURL().
+storage::FileSystemURL GetFileSystemURL(
     const storage::FileSystemContext& context,
     const GURL& url) {
   // Obtain the absolute path in the file system.
   const base::FilePath virtual_path = ash::ExternalFileURLToVirtualPath(url);
   CHECK(!virtual_path.empty(), base::NotFatalUntil::M160);
   // Obtain the file system URL.
-  return file_manager::util::CreateIsolatedURLFromVirtualPath(
-      context, url::Origin(), virtual_path);
+  return context.CreateCrackedFileSystemURL(
+      blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
 }
 
 std::string StripPathComponents(const std::string& file_name) {
@@ -268,17 +271,17 @@ void ShareInfoFileHandler::OnFileDescriptorCreated(
   *it_context = GetScopedFileSystemContext(browser_context_, url);
   CHECK(it_context->get(), base::NotFatalUntil::M160);
 
-  const file_manager::util::FileSystemURLAndHandle isolated_file_system =
-      GetFileSystemURLAndHandle(**it_context, url);
+  const storage::FileSystemURL file_system_url =
+      GetFileSystemURL(**it_context, url);
 
-  if (!isolated_file_system.url.is_valid()) {
+  if (!file_system_url.is_valid()) {
     LOG(ERROR) << "Invalid FileSystemURL from handle.";
     NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_URL);
     return;
   }
 
   // Check if the obtained path providing external file URL or not.
-  if (!ash::IsExternalFileURLType(isolated_file_system.url.type())) {
+  if (!ash::IsExternalFileURLType(file_system_url.type())) {
     LOG(ERROR) << "FileSystemURL is not of external file type.";
     NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_URL);
     return;
@@ -287,14 +290,12 @@ void ShareInfoFileHandler::OnFileDescriptorCreated(
   file_stream_adapters_.emplace_front();
   auto it_stream_adapter = file_stream_adapters_.begin();
   *it_stream_adapter = base::MakeRefCounted<ShareInfoFileStreamAdapter>(
-      *it_context, isolated_file_system.url, /*offset=*/0, file_size,
+      *it_context, file_system_url, /*offset=*/0, file_size,
       kStreamReaderBufSizeInBytes, std::move(dest_fd),
       base::BindOnce(&ShareInfoFileHandler::OnFileStreamReadCompleted,
                      weak_ptr_factory_.GetWeakPtr(),
-                     isolated_file_system.url.DebugString(), it_stream_adapter,
-                     isolated_file_system.handle.id(), file_size));
-  storage::IsolatedContext::GetInstance()->AddReference(
-      isolated_file_system.handle.id());
+                     file_system_url.DebugString(), it_stream_adapter,
+                     file_size));
 
   (*it_stream_adapter)->StartRunner();
   file_config_.paths.push_back(dest_file_path);
@@ -315,15 +316,12 @@ void ShareInfoFileHandler::OnFileDescriptorCreated(
 void ShareInfoFileHandler::OnFileStreamReadCompleted(
     const std::string& url_str,
     std::list<scoped_refptr<ShareInfoFileStreamAdapter>>::iterator it_adapter,
-    const std::string& file_system_id,
     const int64_t bytes_read,
     bool result) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(!url_str.empty(), base::NotFatalUntil::M160);
-  CHECK(!file_system_id.empty(), base::NotFatalUntil::M160);
   CHECK_GT(bytes_read, 0, base::NotFatalUntil::M160);
 
-  storage::IsolatedContext::GetInstance()->RemoveReference(file_system_id);
   file_stream_adapters_.erase(it_adapter);
 
   if (!result) {

@@ -10,6 +10,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -68,6 +69,7 @@ class ExternalFileResolver {
       net::Error error,
       scoped_refptr<storage::FileSystemContext> file_system_context,
       file_manager::util::FileSystemURLAndHandle isolated_file_system,
+      base::ScopedClosureRunner file_access_scope,
       const std::string& mime_type);
 
   void OnFileInfoObtained(base::File::Error error,
@@ -83,6 +85,9 @@ class ExternalFileResolver {
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   file_manager::util::FileSystemURLAndHandle isolated_file_system_;
+  // Reverts the file access granted while resolving the URL. Declared after
+  // |file_system_context_| so that the context outlives the revocation.
+  base::ScopedClosureRunner file_access_scope_;
   std::string mime_type_;
   base::WeakPtrFactory<ExternalFileResolver> weak_ptr_factory_{this};
 };

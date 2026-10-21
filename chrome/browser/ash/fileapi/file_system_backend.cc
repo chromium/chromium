@@ -74,8 +74,9 @@ bool IsReadOperation(BackendFunction backend_function,
 
 // static
 bool FileSystemBackend::CanHandleURL(const storage::FileSystemURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
   return url.type() == storage::kFileSystemTypeLocal ||
          url.type() == storage::kFileSystemTypeProvided ||
          url.type() == storage::kFileSystemTypeDeviceMediaAsFileStorage ||
@@ -245,20 +246,37 @@ bool FileSystemBackend::IsAccessAllowed(
     BackendFunction backend_function,
     storage::OperationType operation_type,
     const storage::FileSystemURL& url) const {
-  if (!url.is_valid())
+  if (!url.is_valid() || !CanHandleURL(url)) {
     return false;
+  }
 
-  // No extra check is needed for isolated file systems.
-  if (url.mount_type() == storage::kFileSystemTypeIsolated)
-    return true;
-
-  if (!CanHandleURL(url))
-    return false;
+  if (url.mount_type() == storage::kFileSystemTypeIsolated) {
+    // Isolated file systems wrapping a path on a real file system (e.g. the
+    // ones created for drag-and-drop or file chooser flows) are authorized
+    // for their consumer when they are registered, so no extra check is
+    // needed for them. The same holds for isolated file systems wrapping a
+    // file system that is not handled by this backend.
+    if (url.TypeImpliesPathIsReal() || !url.origin().opaque()) {
+      return true;
+    }
+    // Isolated file systems wrapping the virtual file systems handled by
+    // this backend are registered on demand from a virtual path (see
+    // file_manager::util::CreateIsolatedURLFromVirtualPath()). When such a
+    // URL carries no origin, access must have been granted through
+    // GrantFileAccessToOrigin() for the URL's origin and virtual path.
+    base::FilePath virtual_path;
+    if (!GetVirtualPath(url.path(), &virtual_path)) {
+      return false;
+    }
+    return file_access_permissions_->HasAccessPermission(url.origin(),
+                                                         virtual_path);
+  }
 
   const url::Origin origin = url.origin();
   // If there is no origin set, then it's an internal access.
-  if (origin.opaque())
+  if (origin.opaque()) {
     return true;
+  }
 
   // The chrome://file-manager can access its filesystem origin.
   if (origin.GetURL() == file_manager::kChromeUIFileManagerURL) {
@@ -323,15 +341,17 @@ storage::AsyncFileUtil* FileSystemBackend::GetAsyncFileUtil(
 
 storage::WatcherManager* FileSystemBackend::GetWatcherManager(
     storage::FileSystemType type) {
-  if (type == storage::kFileSystemTypeProvided)
+  if (type == storage::kFileSystemTypeProvided) {
     return file_system_provider_delegate_->GetWatcherManager(type);
+  }
 
   if (type == storage::kFileSystemTypeDeviceMediaAsFileStorage) {
     return mtp_delegate_->GetWatcherManager(type);
   }
 
-  if (type == storage::kFileSystemTypeArcDocumentsProvider)
+  if (type == storage::kFileSystemTypeArcDocumentsProvider) {
     return arc_documents_provider_delegate_->GetWatcherManager(type);
+  }
 
   // TODO(mtomasz): Add support for other backends.
   return nullptr;
@@ -515,8 +535,9 @@ storage::FileSystemURL FileSystemBackend::CreateInternalURL(
     storage::FileSystemContext* context,
     const base::FilePath& entry_path) const {
   base::FilePath virtual_path;
-  if (!GetVirtualPath(entry_path, &virtual_path))
+  if (!GetVirtualPath(entry_path, &virtual_path)) {
     return storage::FileSystemURL();
+  }
 
   return context->CreateCrackedFileSystemURL(
       blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);

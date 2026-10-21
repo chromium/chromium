@@ -18,6 +18,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/isolated_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -36,6 +37,22 @@ FileSystemURL CreateFileSystemURL(const std::string& extension,
       blink::StorageKey::CreateFromStringForTesting("chrome-extension://" +
                                                     extension + "/"),
       storage::kFileSystemTypeExternal, base::FilePath::FromUTF8Unsafe(path));
+}
+
+// Registers an isolated file system wrapping |path| of the given |type| and
+// returns a URL pointing at it, mimicking
+// file_manager::util::CreateIsolatedURLFromVirtualPath().
+FileSystemURL CreateIsolatedFileSystemURL(
+    const blink::StorageKey& storage_key,
+    storage::FileSystemType type,
+    const base::FilePath& path,
+    storage::IsolatedContext::ScopedFSHandle* handle) {
+  std::string register_name;
+  *handle = storage::IsolatedContext::GetInstance()->RegisterFileSystemForPath(
+      type, std::string(), path, &register_name);
+  return storage::IsolatedContext::GetInstance()->CreateCrackedFileSystemURL(
+      storage_key, storage::kFileSystemTypeIsolated,
+      base::FilePath(handle->id()).Append(register_name));
 }
 
 TEST(ChromeOSFileSystemBackendTest, DefaultMountPoints) {
@@ -199,6 +216,118 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
       ash::BackendFunction::kCreateFileStreamWriter,
       storage::OperationType::kNone,
       CreateFileSystemURL(image_loader, "removable/foo", mount_points.get())));
+}
+
+TEST(ChromeOSFileSystemBackendTest, IsolatedURLAccessPermissions) {
+  scoped_refptr<storage::ExternalMountPoints> mount_points(
+      storage::ExternalMountPoints::CreateRefCounted());
+  scoped_refptr<storage::ExternalMountPoints> system_mount_points(
+      storage::ExternalMountPoints::CreateRefCounted());
+  ash::FileSystemBackend backend(nullptr,  // profile
+                                 nullptr,  // file_system_provider_delegate
+                                 nullptr,  // mtp_delegate
+                                 nullptr,  // arc_content_delegate
+                                 nullptr,  // arc_documents_provider_delegate
+                                 nullptr,  // drivefs_delegate
+                                 nullptr,  // smbfs_delegate
+                                 mount_points.get(), system_mount_points.get());
+
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      "provided-fs", storage::kFileSystemTypeProvided,
+      storage::FileSystemMountOption(),
+      base::FilePath(FPL("/provided/test-fs"))));
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      "local-fs", storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(), base::FilePath(FPL("/media/local"))));
+
+  // Isolated URLs minted on demand for a file system that is not backed by
+  // real paths must pass the same per-path checks as external URLs when no
+  // origin is set.
+  const url::Origin no_origin;
+  const blink::StorageKey no_origin_key =
+      blink::StorageKey::CreateFirstParty(no_origin);
+  storage::IsolatedContext::ScopedFSHandle handle;
+  const FileSystemURL provided_url = CreateIsolatedFileSystemURL(
+      no_origin_key, storage::kFileSystemTypeProvided,
+      base::FilePath(FPL("/provided/test-fs/hello.txt")), &handle);
+  ASSERT_EQ(storage::kFileSystemTypeIsolated, provided_url.mount_type());
+  ASSERT_EQ(storage::kFileSystemTypeProvided, provided_url.type());
+  EXPECT_FALSE(backend.IsAccessAllowed(
+      ash::BackendFunction::kCreateFileSystemOperation,
+      storage::OperationType::kGetMetadata, provided_url));
+  EXPECT_FALSE(
+      backend.IsAccessAllowed(ash::BackendFunction::kCreateFileStreamReader,
+                              storage::OperationType::kNone, provided_url));
+
+  backend.GrantFileAccessToOrigin(no_origin,
+                                  base::FilePath(FPL("provided-fs/hello.txt")));
+  EXPECT_TRUE(backend.IsAccessAllowed(
+      ash::BackendFunction::kCreateFileSystemOperation,
+      storage::OperationType::kGetMetadata, provided_url));
+  EXPECT_TRUE(
+      backend.IsAccessAllowed(ash::BackendFunction::kCreateFileStreamReader,
+                              storage::OperationType::kNone, provided_url));
+
+  // The grant does not extend to a sibling file reached through another
+  // isolated file system.
+  storage::IsolatedContext::ScopedFSHandle sibling_handle;
+  const FileSystemURL sibling_url = CreateIsolatedFileSystemURL(
+      no_origin_key, storage::kFileSystemTypeProvided,
+      base::FilePath(FPL("/provided/test-fs/secret.txt")), &sibling_handle);
+  EXPECT_FALSE(
+      backend.IsAccessAllowed(ash::BackendFunction::kCreateFileStreamReader,
+                              storage::OperationType::kNone, sibling_url));
+
+  // The grant does not extend to other opaque origins.
+  storage::IsolatedContext::ScopedFSHandle other_origin_handle;
+  const FileSystemURL other_origin_url = CreateIsolatedFileSystemURL(
+      blink::StorageKey::CreateFirstParty(url::Origin()),
+      storage::kFileSystemTypeProvided,
+      base::FilePath(FPL("/provided/test-fs/hello.txt")), &other_origin_handle);
+  EXPECT_FALSE(
+      backend.IsAccessAllowed(ash::BackendFunction::kCreateFileStreamReader,
+                              storage::OperationType::kNone, other_origin_url));
+
+  // Revoking the origin's access closes off the file again.
+  backend.RevokeAccessForOrigin(no_origin);
+  EXPECT_FALSE(
+      backend.IsAccessAllowed(ash::BackendFunction::kCreateFileStreamReader,
+                              storage::OperationType::kNone, provided_url));
+
+  // Isolated file systems consumed by renderers carry the renderer's origin
+  // and are authorized when they are registered, so they need no per-path
+  // grant.
+  std::string extension("ddammdhioacbehjngdmkjcjbnfginlla");
+  const blink::StorageKey extension_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(
+          extensions::Extension::GetBaseURLFromExtensionId(extension)));
+  storage::IsolatedContext::ScopedFSHandle extension_handle;
+  const FileSystemURL extension_url = CreateIsolatedFileSystemURL(
+      extension_key, storage::kFileSystemTypeProvided,
+      base::FilePath(FPL("/provided/test-fs/hello.txt")), &extension_handle);
+  EXPECT_TRUE(
+      backend.IsAccessAllowed(ash::BackendFunction::kCreateFileStreamReader,
+                              storage::OperationType::kNone, extension_url));
+
+  // Isolated file systems wrapping a path on a real file system need no
+  // per-path grant either, whether or not an origin is set.
+  storage::IsolatedContext::ScopedFSHandle local_handle;
+  const FileSystemURL local_url = CreateIsolatedFileSystemURL(
+      no_origin_key, storage::kFileSystemTypeLocal,
+      base::FilePath(FPL("/media/local/foo.txt")), &local_handle);
+  ASSERT_EQ(storage::kFileSystemTypeLocal, local_url.type());
+  EXPECT_TRUE(
+      backend.IsAccessAllowed(ash::BackendFunction::kCreateFileStreamReader,
+                              storage::OperationType::kNone, local_url));
+
+  // External URLs without an origin keep working as internal access.
+  const FileSystemURL internal_url = mount_points->CreateCrackedFileSystemURL(
+      blink::StorageKey(), storage::kFileSystemTypeExternal,
+      base::FilePath(FPL("provided-fs/hello.txt")));
+  ASSERT_TRUE(internal_url.origin().opaque());
+  EXPECT_TRUE(
+      backend.IsAccessAllowed(ash::BackendFunction::kCreateFileStreamReader,
+                              storage::OperationType::kNone, internal_url));
 }
 
 TEST(ChromeOSFileSystemBackendTest, GetVirtualPathConflictWithSystemPoints) {

@@ -311,6 +311,9 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
         return;
       }
 
+      // The file was selected by the user, so give the origin access to it.
+      ash::FileSystemBackend::Get(*context)->GrantFileAccessToOrigin(
+          origin, virtual_path);
       FileSystemURLAndHandle isolated_file_system_url_and_handle =
           CreateIsolatedURLFromVirtualPath(*context_, origin, virtual_path);
       const GURL url = isolated_file_system_url_and_handle.url.ToGURL();

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
@@ -23,12 +24,21 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace ash {
 namespace {
 
 const char kMimeTypeForRFC822[] = "message/rfc822";
 const char kMimeTypeForMHTML[] = "multipart/related";
+
+// Revokes the file access granted to |origin| while resolving a URL.
+void RevokeFileAccess(scoped_refptr<storage::FileSystemContext> context,
+                      const url::Origin& origin) {
+  FileSystemBackend* const backend = FileSystemBackend::Get(*context);
+  DCHECK(backend);
+  backend->RevokeAccessForOrigin(origin);
+}
 
 // Helper for obtaining FileSystemContext, FileSystemURL, and mime type on the
 // UI thread.
@@ -42,6 +52,7 @@ class URLHelper {
       net::Error,
       scoped_refptr<storage::FileSystemContext> file_system_context,
       file_manager::util::FileSystemURLAndHandle isolated_file_system,
+      base::ScopedClosureRunner file_access_scope,
       const std::string& mime_type)>;
 
   URLHelper(void* profile_id, const GURL& url, HelperCallback callback)
@@ -76,10 +87,14 @@ class URLHelper {
     // Obtain the absolute path in the file system.
     const base::FilePath virtual_path = ExternalFileURLToVirtualPath(url);
 
-    // Obtain the file system URL.
+    // Obtain the file system URL. The URL is minted with a unique opaque
+    // origin, and access is granted to that origin below, so that the
+    // operations performed while serving this request pass the per-path
+    // check in FileSystemBackend and nothing else can use the grant.
+    const url::Origin origin;
     isolated_file_system_ =
-        file_manager::util::CreateIsolatedURLFromVirtualPath(
-            *context, url::Origin(), virtual_path);
+        file_manager::util::CreateIsolatedURLFromVirtualPath(*context, origin,
+                                                             virtual_path);
 
     // Check if the obtained path providing external file URL or not.
     if (!isolated_file_system_.url.is_valid()) {
@@ -91,6 +106,12 @@ class URLHelper {
       ReplyResult(net::ERR_FAILED);
       return;
     }
+
+    FileSystemBackend* const backend = FileSystemBackend::Get(*context);
+    DCHECK(backend);
+    backend->GrantFileAccessToOrigin(origin, virtual_path);
+    file_access_scope_ = base::ScopedClosureRunner(
+        base::BindOnce(&RevokeFileAccess, context, origin));
 
     file_system_context_ = std::move(context);
     extensions::app_file_handler_util::GetMimeTypeForLocalPath(
@@ -114,15 +135,16 @@ class URLHelper {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback_), error,
-                       std::move(file_system_context_),
-                       std::move(isolated_file_system_), mime_type_));
+        FROM_HERE, base::BindOnce(std::move(callback_), error,
+                                  std::move(file_system_context_),
+                                  std::move(isolated_file_system_),
+                                  std::move(file_access_scope_), mime_type_));
   }
 
   HelperCallback callback_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   file_manager::util::FileSystemURLAndHandle isolated_file_system_;
+  base::ScopedClosureRunner file_access_scope_;
   std::string mime_type_;
 };
 
@@ -193,6 +215,7 @@ void ExternalFileResolver::OnHelperResultObtained(
     net::Error error,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     file_manager::util::FileSystemURLAndHandle isolated_file_system,
+    base::ScopedClosureRunner file_access_scope,
     const std::string& mime_type) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
@@ -203,6 +226,7 @@ void ExternalFileResolver::OnHelperResultObtained(
 
   CHECK(file_system_context.get(), base::NotFatalUntil::M160);
   isolated_file_system_ = std::move(isolated_file_system);
+  file_access_scope_ = std::move(file_access_scope);
   mime_type_ = mime_type;
 
   file_system_context_ = std::move(file_system_context);
