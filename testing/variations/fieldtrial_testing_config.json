@@ -1976,8 +1976,7 @@
                         "AutofillEnableAiBasedAmountExtraction",
                         "AutofillEnableAmountExtraction",
                         "AutofillEnableBuyNowPayLater",
-                        "AutofillEnablePayNowPayLaterTabs",
-                        "AutofillEnableTouchToFillReshowForBnpl"
+                        "AutofillEnablePayNowPayLaterTabs"
                     ]
                 }
             ]
