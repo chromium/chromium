@@ -275,6 +275,7 @@ build_webui("build") {
     "controls/controlled_button.ts",
     "controls/pref_key_observer_mixin.ts",
     "controls/pref_key_observer_mixin_lit.ts",
+    "controls/settings_boolean_control_mixin.ts",
     "controls/settings_dropdown_menu.html.ts",
     "controls/settings_dropdown_menu.ts",
     "controls/settings_slider.html.ts",

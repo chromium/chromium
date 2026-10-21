@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -29,7 +28,6 @@ export const PrefControlMixin = dedupingMixin(
         }
 
         declare pref?: chrome.settingsPrivate.PrefObject;
-        declare prefKey?: string;
 
         override connectedCallback() {
           super.connectedCallback();
@@ -41,10 +39,6 @@ export const PrefControlMixin = dedupingMixin(
          * found.
          */
         private validatePref_() {
-          if (this.prefKey) {
-            return;
-          }
-
           CrSettingsPrefs.initialized.then(() => {
             if (this.pref === undefined) {
               console.error(this.getErrorInfo_('not found'));
@@ -78,5 +72,4 @@ export const PrefControlMixin = dedupingMixin(
 
 export interface PrefControlMixinInterface {
   pref?: chrome.settingsPrivate.PrefObject;
-  prefKey?: string;
 }

@@ -9,9 +9,9 @@ import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';
-import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
 
 import {getTemplate} from './controlled_button.html.js';
+import {PrefControlMixin} from './pref_control_mixin.js';
 
 const ControlledButtonElementBase =
     CrPolicyPrefMixin(PrefControlMixin(PolymerElement));

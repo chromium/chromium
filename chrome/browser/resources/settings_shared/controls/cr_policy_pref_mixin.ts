@@ -29,7 +29,7 @@ export const CrPolicyPrefMixin = dedupingMixin(
         }
 
         declare noExtensionIndicator: boolean;
-        declare pref: chrome.settingsPrivate.PrefObject;
+        declare readonly pref: chrome.settingsPrivate.PrefObject;
 
         /**
          * Is the |pref| controlled by something that prevents user control of

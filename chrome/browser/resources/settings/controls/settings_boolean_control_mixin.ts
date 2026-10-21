@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,15 @@
  * checkbox and toggle button.
  */
 
-// clang-format off
+import type {CrPolicyPrefMixinInterface} from '/shared/settings/controls/cr_policy_pref_mixin.js';
+import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import type { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type { CrPolicyPrefMixinInterface} from './cr_policy_pref_mixin.js';
-import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
-import type { PrefControlMixinInterface} from './pref_control_mixin.js';
-import {PrefControlMixin} from './pref_control_mixin.js';
-
-// clang-format on
+import type {PrefKeyObserverMixinInterface} from './pref_key_observer_mixin.js';
+import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
 
 export const DEFAULT_UNCHECKED_VALUE = 0;
 export const DEFAULT_CHECKED_VALUE = 1;
@@ -28,7 +26,8 @@ type Constructor<T> = new (...args: any[]) => T;
 export const SettingsBooleanControlMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<SettingsBooleanControlMixinInterface> => {
-      const superClassBase = CrPolicyPrefMixin(PrefControlMixin(superClass));
+      const superClassBase =
+          CrPolicyPrefMixin(PrefKeyObserverMixin(superClass));
 
       class SettingsBooleanControlMixin extends superClassBase {
         static get properties() {
@@ -138,24 +137,20 @@ export const SettingsBooleanControlMixin = dedupingMixin(
 
         /** Update the pref to the current |checked| value. */
         sendPrefChange() {
+          assert(this.prefKey);
           // Ensure that newValue is the correct type for the pref type, either
           // a boolean or a number.
           if (this.pref!.type === chrome.settingsPrivate.PrefType.NUMBER) {
             assert(!this.inverted);
             assert(this.numericUncheckedValues.length > 0);
-            this.sendPrefChangeInternal(
+            PrefService.getInstance().setPrefValue(
+                this.prefKey,
                 this.checked ? this.numericCheckedValue :
                                this.numericUncheckedValues[0]);
             return;
           }
-          this.sendPrefChangeInternal(
-              this.inverted ? !this.checked : this.checked);
-        }
-
-        // Method to be overridden by classes that are migrating to the
-        // PrefService mechanism.
-        sendPrefChangeInternal(value: boolean|number) {
-          this.set('pref.value', value);
+          PrefService.getInstance().setPrefValue(
+              this.prefKey, this.inverted ? !this.checked : this.checked);
         }
 
         private prefValueChanged_() {
@@ -188,7 +183,7 @@ export const SettingsBooleanControlMixin = dedupingMixin(
     });
 
 export interface SettingsBooleanControlMixinInterface extends
-    PrefControlMixinInterface, CrPolicyPrefMixinInterface {
+    PrefKeyObserverMixinInterface, CrPolicyPrefMixinInterface {
   inverted: boolean;
   checked: boolean;
   disabled: boolean;
@@ -201,5 +196,4 @@ export interface SettingsBooleanControlMixinInterface extends
   notifyChangedByUserInteraction(): void;
   resetToPrefValue(): void;
   sendPrefChange(): void;
-  sendPrefChangeInternal(value: boolean|number): void;
 }

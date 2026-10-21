@@ -16,12 +16,10 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsBooleanControlMixin} from '/shared/settings/controls/settings_boolean_control_mixin.js';
-import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
-import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
+import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
 import {getTemplate} from './settings_toggle_button.html.js';
 
 
@@ -33,7 +31,7 @@ export interface SettingsToggleButtonElement {
 }
 
 const SettingsToggleButtonElementBase =
-    PrefKeyObserverMixin(SettingsBooleanControlMixin(PolymerElement));
+    SettingsBooleanControlMixin(PolymerElement);
 
 export class SettingsToggleButtonElement extends
     SettingsToggleButtonElementBase {
@@ -226,17 +224,6 @@ export class SettingsToggleButtonElement extends
     this.checked = checked;
     this.notifyChangedByUserInteraction();
     this.fire_('change', this.checked);
-  }
-
-  override sendPrefChangeInternal(value: boolean|number) {
-    if (this.prefKey) {
-      PrefService.getInstance().setPrefValue(this.prefKey, value);
-      return;
-    }
-
-    // Fallback to the old 'prefs' mechanism if this element hasn't been
-    // migrated to use prefKey yet.
-    super.sendPrefChangeInternal(value);
   }
 }
 

@@ -23,7 +23,6 @@ export * as nearbyShareMojom from '/shared/nearby_share.mojom-webui.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '/shared/nearby_share_settings.js';
 export type {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
 export {NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
-export {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from '/shared/settings/controls/settings_boolean_control_mixin.js';
 export type {ExtensionControlBrowserProxy} from '/shared/settings/extension_control_browser_proxy.js';
 export {ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
 export type {LifetimeBrowserProxy} from '/shared/settings/lifetime_browser_proxy.js';
@@ -90,6 +89,7 @@ export type {PrefsState, UserActionSettingPrefChangeEvent} from './common/types.
 export {ControlledButtonElement} from './controls/controlled_button.js';
 export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';
 export {ExtensionControlledIndicatorElement} from './controls/extension_controlled_indicator.js';
+export {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from './controls/settings_boolean_control_mixin.js';
 export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
 export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
 export {SettingsSliderElement} from './controls/settings_slider.js';
