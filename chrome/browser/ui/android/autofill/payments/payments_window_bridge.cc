@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "chrome/browser/ui/android/autofill/payments/payments_window_delegate.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -23,7 +24,7 @@ PaymentsWindowBridge::PaymentsWindowBridge(
     PaymentsWindowDelegate* payments_window_delegate)
     : payments_window_delegate_(CHECK_DEREF(payments_window_delegate)) {
   java_payments_window_bridge_ = Java_PaymentsWindowBridge_Constructor(
-      base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this));
+      base::android::AttachCurrentThread(), jni_zero::MakeRaw(this));
 }
 
 PaymentsWindowBridge::~PaymentsWindowBridge() {

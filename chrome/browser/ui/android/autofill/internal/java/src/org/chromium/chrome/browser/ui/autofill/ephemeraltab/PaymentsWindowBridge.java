@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.ui.autofill.ephemeraltab;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -17,11 +21,14 @@ import org.chromium.url.GURL;
 @JNINamespace("autofill::payments")
 @NullMarked
 class PaymentsWindowBridge {
-    private long mNativePaymentsWindowBridge;
+    @JniType("::autofill::payments::PaymentsWindowBridge")
+    interface NativePaymentsWindowBridge extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativePaymentsWindowBridge> mNativePaymentsWindowBridge;
     private PaymentsWindowCoordinator mPaymentsWindowCoordinator;
 
     @CalledByNative
-    PaymentsWindowBridge(long nativePaymentsWindowBridge) {
+    PaymentsWindowBridge(JniRawPtr<NativePaymentsWindowBridge> nativePaymentsWindowBridge) {
         mNativePaymentsWindowBridge = nativePaymentsWindowBridge;
         mPaymentsWindowCoordinator = new PaymentsWindowCoordinator(this);
     }
@@ -41,7 +48,10 @@ class PaymentsWindowBridge {
 
     @CalledByNative
     public void onNativeDestroyed() {
-        mNativePaymentsWindowBridge = 0;
+        if (mNativePaymentsWindowBridge != null) {
+            mNativePaymentsWindowBridge.release();
+            mNativePaymentsWindowBridge = null;
+        }
     }
 
     PaymentsWindowCoordinator getPaymentsWindowCoordinatorForTesting() {
@@ -59,7 +69,7 @@ class PaymentsWindowBridge {
      * @param clickedUrl The URL that the user initiated the navigation to.
      */
     void onNavigationFinished(GURL clickedUrl) {
-        if (mNativePaymentsWindowBridge == 0) return;
+        if (mNativePaymentsWindowBridge == null) return;
         PaymentsWindowBridgeJni.get().onNavigationFinished(mNativePaymentsWindowBridge, clickedUrl);
     }
 
@@ -69,7 +79,7 @@ class PaymentsWindowBridge {
      * @param webContents The WebContents that is being observed.
      */
     public void onWebContentsObservationStarted(WebContents webContents) {
-        if (mNativePaymentsWindowBridge == 0) return;
+        if (mNativePaymentsWindowBridge == null) return;
         PaymentsWindowBridgeJni.get()
                 .onWebContentsObservationStarted(mNativePaymentsWindowBridge, webContents);
     }
@@ -81,26 +91,26 @@ class PaymentsWindowBridge {
      * imminently destroyed.
      */
     void onWebContentsDestroyed() {
-        if (mNativePaymentsWindowBridge == 0) return;
+        if (mNativePaymentsWindowBridge == null) return;
         PaymentsWindowBridgeJni.get().onWebContentsDestroyed(mNativePaymentsWindowBridge);
     }
 
     void onUserDeniedTabOpening() {
-        if (mNativePaymentsWindowBridge == 0) return;
+        if (mNativePaymentsWindowBridge == null) return;
         PaymentsWindowBridgeJni.get().onUserDeniedTabOpening(mNativePaymentsWindowBridge);
     }
 
     @NativeMethods
     interface Natives {
         void onNavigationFinished(
-                long nativePaymentsWindowBridge, @JniType("GURL") GURL clickedUrl);
+                JniPtr<NativePaymentsWindowBridge> self, @JniType("GURL") GURL clickedUrl);
 
         void onWebContentsObservationStarted(
-                long nativePaymentsWindowBridge,
+                JniPtr<NativePaymentsWindowBridge> self,
                 @JniType("content::WebContents*") WebContents webContents);
 
-        void onWebContentsDestroyed(long nativePaymentsWindowBridge);
+        void onWebContentsDestroyed(JniPtr<NativePaymentsWindowBridge> self);
 
-        void onUserDeniedTabOpening(long nativePaymentsWindowBridge);
+        void onUserDeniedTabOpening(JniPtr<NativePaymentsWindowBridge> self);
     }
 }

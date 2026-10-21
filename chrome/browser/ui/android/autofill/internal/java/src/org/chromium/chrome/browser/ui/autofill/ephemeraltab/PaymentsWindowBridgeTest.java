@@ -8,6 +8,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +27,8 @@ import org.chromium.url.GURL;
 public class PaymentsWindowBridgeTest {
     private static final String TAB_TITLE = "Issuer Name";
     private static final GURL ISSUER_URL = new GURL("https://www.example.com/");
-    private static final long AUTOFILL_PAYMENTS_WINDOW_BRIDGE_NATIVE_POINTER = 100L;
+    private final JniRawPtr<PaymentsWindowBridge.NativePaymentsWindowBridge>
+            mNativePaymentsWindowBridge = JniRawPtr.createForTesting(100L);
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private WebContents mMerchantWebContents;
@@ -36,8 +39,12 @@ public class PaymentsWindowBridgeTest {
 
     @Before
     public void setUp() {
-        mPaymentsWindowBridge =
-                new PaymentsWindowBridge(AUTOFILL_PAYMENTS_WINDOW_BRIDGE_NATIVE_POINTER);
+        mPaymentsWindowBridge = new PaymentsWindowBridge(mNativePaymentsWindowBridge);
+    }
+
+    @After
+    public void tearDown() {
+        mNativePaymentsWindowBridge.release();
     }
 
     @Test
@@ -70,8 +77,7 @@ public class PaymentsWindowBridgeTest {
 
         mPaymentsWindowBridge.onNavigationFinished(ISSUER_URL);
 
-        verify(mNativeMock)
-                .onNavigationFinished(AUTOFILL_PAYMENTS_WINDOW_BRIDGE_NATIVE_POINTER, ISSUER_URL);
+        verify(mNativeMock).onNavigationFinished(mNativePaymentsWindowBridge, ISSUER_URL);
     }
 
     @Test
@@ -80,7 +86,7 @@ public class PaymentsWindowBridgeTest {
 
         mPaymentsWindowBridge.onWebContentsDestroyed();
 
-        verify(mNativeMock).onWebContentsDestroyed(AUTOFILL_PAYMENTS_WINDOW_BRIDGE_NATIVE_POINTER);
+        verify(mNativeMock).onWebContentsDestroyed(mNativePaymentsWindowBridge);
     }
 
     @Test
@@ -89,7 +95,7 @@ public class PaymentsWindowBridgeTest {
 
         mPaymentsWindowBridge.onUserDeniedTabOpening();
 
-        verify(mNativeMock).onUserDeniedTabOpening(AUTOFILL_PAYMENTS_WINDOW_BRIDGE_NATIVE_POINTER);
+        verify(mNativeMock).onUserDeniedTabOpening(mNativePaymentsWindowBridge);
     }
 
     @Test
