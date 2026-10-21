@@ -1,0 +1,21 @@
+[document web]
+++[separator] name='Owner with the hidden attribute does not own' horizontal
+++[panel]
+++++[push button] name='btn-hidden-attr'
+++[separator] name='Owner with display:none does not own' horizontal
+++[panel]
+++++[push button] name='btn-display-none'
+++[separator] name='Owner inside a hidden ancestor does not own' horizontal
+++[panel]
+++++[push button] name='btn-hidden-ancestor'
+++[separator] name='Owner with visibility:hidden does not own' horizontal
+++[panel]
+++++[push button] name='btn-visibility-hidden'
+++[separator] name='Control: owner with display:contents owns' horizontal
+++[panel]
+++++[push button] name='btn-display-contents'
+++[panel]
+++[separator] name='Control: visible owner owns' horizontal
+++[panel]
+++++[push button] name='btn-visible'
+++[panel]

@@ -1,0 +1,52 @@
+<!--
+@AURALINUX-DENY:checkable
+-->
+<!-- Per https://w3c.github.io/aria/#aria-owns, "User agents MUST NOT resolve
+  aria-owns when it is set on an element that has been excluded from the
+  accessibility tree." In each "does not own" section below, the button must
+  remain a child of its DOM parent group, and the hidden owner must have no
+  children. The control sections verify that owners which are merely
+  layout-less (display:contents) or plainly visible still own their targets. -->
+<style>
+  .none { display: none; }
+  .vhidden { visibility: hidden; }
+  .contents { display: contents; }
+</style>
+
+<hr aria-label="Owner with the hidden attribute does not own">
+<div role="group" aria-owns="btn-hidden-attr" hidden></div>
+<div role="group">
+  <input type="button" value="btn-hidden-attr" id="btn-hidden-attr">
+</div>
+
+<hr aria-label="Owner with display:none does not own">
+<div role="group" aria-owns="btn-display-none" class="none"></div>
+<div role="group">
+  <input type="button" value="btn-display-none" id="btn-display-none">
+</div>
+
+<hr aria-label="Owner inside a hidden ancestor does not own">
+<div hidden>
+  <div role="group" aria-owns="btn-hidden-ancestor"></div>
+</div>
+<div role="group">
+  <input type="button" value="btn-hidden-ancestor" id="btn-hidden-ancestor">
+</div>
+
+<hr aria-label="Owner with visibility:hidden does not own">
+<div role="group" aria-owns="btn-visibility-hidden" class="vhidden"></div>
+<div role="group">
+  <input type="button" value="btn-visibility-hidden" id="btn-visibility-hidden">
+</div>
+
+<hr aria-label="Control: owner with display:contents owns">
+<div role="group" aria-owns="btn-display-contents" class="contents"></div>
+<div role="group">
+  <input type="button" value="btn-display-contents" id="btn-display-contents">
+</div>
+
+<hr aria-label="Control: visible owner owns">
+<div role="group" aria-owns="btn-visible"></div>
+<div role="group">
+  <input type="button" value="btn-visible" id="btn-visible">
+</div>

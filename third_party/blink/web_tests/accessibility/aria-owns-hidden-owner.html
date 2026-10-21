@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<!--
+  Per https://w3c.github.io/aria/#aria-owns, "User agents MUST NOT resolve
+  aria-owns when it is set on an element that has been excluded from the
+  accessibility tree." The referenced elements must remain with their natural
+  parent.
+
+  The static cases mirror external/wpt/accname/aria-owns.html, but assert the
+  tree structure rather than computed names. The dynamic cases (toggling the
+  owner's hidden state) cannot be expressed as a WPT.
+
+  Note: markup deliberately avoids whitespace between the "home" groups and
+  their buttons so that childrenCount assertions are not affected by
+  whitespace text nodes.
+-->
+
+<script>
+const ax = (id) => accessibilityController.accessibleElementById(id);
+
+// Asserts that |targetId| is still parented by |homeId| and that |ownerId|,
+// if it has an accessibility object at all, has no children.
+function assertNotOwned(ownerId, homeId, targetId) {
+  const axHome = ax(homeId);
+  const axTarget = ax(targetId);
+  assert_equals(axTarget.parentElement(), axHome,
+                "target keeps its natural parent");
+  assert_equals(axHome.childrenCount, 1, "home still has its one child");
+  assert_equals(axHome.childAtIndex(0), axTarget);
+  const axOwner = ax(ownerId);
+  if (axOwner)
+    assert_equals(axOwner.childrenCount, 0, "hidden owner has no children");
+}
+
+// Asserts that |ownerId| owns |targetId| and |homeId| is therefore empty.
+function assertOwned(ownerId, homeId, targetId) {
+  const axOwner = ax(ownerId);
+  const axTarget = ax(targetId);
+  assert_equals(axTarget.parentElement(), axOwner, "target is owned");
+  assert_equals(axOwner.childrenCount, 1, "owner has exactly the target");
+  assert_equals(axOwner.childAtIndex(0), axTarget);
+  assert_equals(ax(homeId).childrenCount, 0, "home no longer has the target");
+}
+</script>
+
+<h3 id="heading-hidden-attr"><span hidden aria-owns="treasure">This ninja can't steal the...</span><mark id="treasure">treasure</mark></h3>
+<script>
+test(() => {
+  assert_equals(ax("heading-hidden-attr").name, "treasure",
+      "The heading is named from the content that the hidden span failed to own");
+}, "Name from contents of a heading is unaffected by aria-owns on a hidden descendant");
+</script>
+
+<div id="owner-hidden-attr" role="group" aria-owns="target-hidden-attr" hidden></div>
+<div id="home-hidden-attr" role="group"><button id="target-hidden-attr">target</button></div>
+<script>
+test(() => {
+  assertNotOwned("owner-hidden-attr", "home-hidden-attr", "target-hidden-attr");
+}, "aria-owns is not resolved when the owner has the hidden attribute");
+</script>
+
+<div hidden><div id="owner-hidden-ancestor" role="group" aria-owns="target-hidden-ancestor"></div></div>
+<div id="home-hidden-ancestor" role="group"><button id="target-hidden-ancestor">target</button></div>
+<script>
+test(() => {
+  assertNotOwned("owner-hidden-ancestor", "home-hidden-ancestor", "target-hidden-ancestor");
+}, "aria-owns is not resolved when the owner is inside a hidden ancestor");
+</script>
+
+<div id="owner-visibility-hidden" role="group" aria-owns="target-visibility-hidden" style="visibility: hidden"></div>
+<div id="home-visibility-hidden" role="group"><button id="target-visibility-hidden">target</button></div>
+<script>
+test(() => {
+  assertNotOwned("owner-visibility-hidden", "home-visibility-hidden", "target-visibility-hidden");
+}, "aria-owns is not resolved when the owner is visibility:hidden");
+</script>
+
+<div id="owner-display-contents" role="group" aria-owns="target-display-contents" style="display: contents"></div>
+<div id="home-display-contents" role="group"><button id="target-display-contents">target</button></div>
+<script>
+test(() => {
+  assertOwned("owner-display-contents", "home-display-contents", "target-display-contents");
+}, "Control: aria-owns is still resolved when the owner is display:contents");
+</script>
+
+<div id="owner-toggle-hidden" role="group" aria-owns="target-toggle-hidden"></div>
+<div id="home-toggle-hidden" role="group"><button id="target-toggle-hidden">target</button></div>
+<script>
+test(() => {
+  const owner = document.getElementById("owner-toggle-hidden");
+  assertOwned("owner-toggle-hidden", "home-toggle-hidden", "target-toggle-hidden");
+
+  owner.hidden = true;
+  assertNotOwned("owner-toggle-hidden", "home-toggle-hidden", "target-toggle-hidden");
+
+  owner.hidden = false;
+  assertOwned("owner-toggle-hidden", "home-toggle-hidden", "target-toggle-hidden");
+}, "Toggling the hidden attribute on an owner removes and restores the aria-owns relation");
+</script>
+
+<div id="owner-toggle-visibility" role="group" aria-owns="target-toggle-visibility"></div>
+<div id="home-toggle-visibility" role="group"><button id="target-toggle-visibility">target</button></div>
+<script>
+test(() => {
+  const owner = document.getElementById("owner-toggle-visibility");
+  assertOwned("owner-toggle-visibility", "home-toggle-visibility", "target-toggle-visibility");
+
+  owner.style.visibility = "hidden";
+  assertNotOwned("owner-toggle-visibility", "home-toggle-visibility", "target-toggle-visibility");
+
+  owner.style.visibility = "visible";
+  assertOwned("owner-toggle-visibility", "home-toggle-visibility", "target-toggle-visibility");
+}, "Toggling visibility on an owner removes and restores the aria-owns relation");
+</script>

@@ -8722,8 +8722,11 @@ bool AXObject::HasARIAOwns(Element* element) {
   if (!element)
     return false;
 
-  // A LayoutObject is not required, because an invisible object can still
-  // use aria-owns to point to visible children.
+  // A LayoutObject is not required: this must also return true for invisible
+  // elements so that they are included in the tree and their aria-owns
+  // bookkeeping can be set up and torn down. Note that an owner that is hidden
+  // from all users does not actually get to own anything, per
+  // AXRelationCache::IsValidOwner().
 
   const AtomicString& aria_owns =
       AriaAttribute(*element, html_names::kAriaOwnsAttr);

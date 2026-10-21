@@ -2435,6 +2435,16 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object,
   if (visibility_or_inertness_changed) {
     ChildrenChanged(ax_object);
     ChildrenChanged(ax_object->ParentObject());
+    // A visibility change can change whether this element is a valid aria-owns
+    // owner (see AXRelationCache::IsValidOwner()). Unlike display:none or
+    // aria-hidden changes, the AXObject is not rebuilt in this case, so the
+    // owner must be explicitly re-validated in order to drop or re-establish
+    // its owned children. Inertness does not affect owner validity, so for
+    // inertness-only changes the re-validation is harmless and cheap.
+    if (Element* element = DynamicTo<Element>(layout_object->GetNode());
+        element && AXObject::HasARIAOwns(element)) {
+      DeferTreeUpdate(TreeUpdateReason::kUpdateAriaOwns, element);
+    }
   }
   MarkAXObjectDirty(ax_object);
 }

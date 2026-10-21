@@ -881,10 +881,24 @@ bool AXRelationCache::IsValidOwner(AXObject* owner) {
   if (!AXObject::CanComputeAsNaturalParent(owner->GetNode()))
     return false;
 
-  // Problematic for cycles, and does not solve a known use case.
-  // Easiest to omit the possibility.
+  // Per ARIA, "User agents MUST NOT resolve aria-owns when it is set on an
+  // element that has been excluded from the accessibility tree."
+  // https://w3c.github.io/aria/#aria-owns
+  //
+  // aria-hidden owners: also problematic for cycles, and does not solve a
+  // known use case. Easiest to omit the possibility.
   if (owner->IsAriaHidden())
     return false;
+
+  // Owners hidden via style, e.g. display:none (including via the hidden
+  // attribute), visibility:hidden, or a descendant of such an element. The
+  // referenced elements remain in their natural position in the tree, which
+  // also keeps the name-from-contents of their natural parent intact.
+  // Note that aria-owned children are already required to have a layout object
+  // (see IsValidOwnedChild()), so this only closes the gap on the owner side.
+  if (owner->IsHiddenViaStyle()) {
+    return false;
+  }
 
   return true;
 }

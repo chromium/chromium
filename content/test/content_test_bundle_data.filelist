@@ -2214,6 +2214,9 @@ data/accessibility/aria/aria-owns-from-display-none-expected-android.txt
 data/accessibility/aria/aria-owns-from-display-none-expected-auralinux.txt
 data/accessibility/aria/aria-owns-from-display-none-expected-blink.txt
 data/accessibility/aria/aria-owns-from-display-none.html
+data/accessibility/aria/aria-owns-from-hidden-owner-expected-auralinux.txt
+data/accessibility/aria/aria-owns-from-hidden-owner-expected-blink.txt
+data/accessibility/aria/aria-owns-from-hidden-owner.html
 data/accessibility/aria/aria-owns-grid-expected-blink.txt
 data/accessibility/aria/aria-owns-grid.html
 data/accessibility/aria/aria-owns-ignored-expected-android-assist-data.txt

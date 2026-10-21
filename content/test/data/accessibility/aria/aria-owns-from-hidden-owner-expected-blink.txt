@@ -1,0 +1,39 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++splitter horizontal name='Owner with the hidden attribute does not own'
+++++++group ignored invisible
+++++++group
+++++++++button name='btn-hidden-attr' nameFrom=value
+++++++++++staticText name='btn-hidden-attr'
+++++++++++++inlineTextBox name='btn-hidden-attr'
+++++++splitter horizontal name='Owner with display:none does not own'
+++++++group ignored invisible
+++++++group
+++++++++button name='btn-display-none' nameFrom=value
+++++++++++staticText name='btn-display-none'
+++++++++++++inlineTextBox name='btn-display-none'
+++++++splitter horizontal name='Owner inside a hidden ancestor does not own'
+++++++group ignored invisible
+++++++group
+++++++++button name='btn-hidden-ancestor' nameFrom=value
+++++++++++staticText name='btn-hidden-ancestor'
+++++++++++++inlineTextBox name='btn-hidden-ancestor'
+++++++splitter horizontal name='Owner with visibility:hidden does not own'
+++++++group ignored invisible
+++++++group
+++++++++button name='btn-visibility-hidden' nameFrom=value
+++++++++++staticText name='btn-visibility-hidden'
+++++++++++++inlineTextBox name='btn-visibility-hidden'
+++++++splitter horizontal name='Control: owner with display:contents owns'
+++++++group
+++++++++button name='btn-display-contents' nameFrom=value
+++++++++++staticText name='btn-display-contents'
+++++++++++++inlineTextBox name='btn-display-contents'
+++++++group
+++++++splitter horizontal name='Control: visible owner owns'
+++++++group
+++++++++button name='btn-visible' nameFrom=value
+++++++++++staticText name='btn-visible'
+++++++++++++inlineTextBox name='btn-visible'
+++++++group
