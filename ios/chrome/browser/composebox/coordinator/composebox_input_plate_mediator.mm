@@ -70,7 +70,6 @@
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
@@ -78,6 +77,7 @@
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
+#import "ios/chrome/browser/composebox/ui/composebox_model_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -1106,8 +1106,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     [self.metricsRecorder recordToolModeShown:tool];
   }
 
-  for (const auto& model : state.allowedModels) {
-    [self.metricsRecorder recordModelModeShown:model];
+  for (ComposeboxModelItem* modelItem in state.modelItems) {
+    [self.metricsRecorder recordModelModeShown:modelItem.modelMode];
   }
 }
 

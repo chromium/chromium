@@ -129,27 +129,6 @@ omnibox::ToolMode ToolModeFromComposeboxMode(ComposeboxMode tool) {
   }
 }
 
-/// Converts ComposeboxModelOption to omnibox::ModelMode.
-omnibox::ModelMode ModelModeFromComposeboxModelOption(
-    ComposeboxModelOption model) {
-  switch (model) {
-    case ComposeboxModelOption::kNone:
-      return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
-    case ComposeboxModelOption::kRegular:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
-    case ComposeboxModelOption::kAuto:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
-    case ComposeboxModelOption::kThinking:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
-    case ComposeboxModelOption::kThinkingNoGenUI:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
-    case ComposeboxModelOption::kFlash:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST;
-    case ComposeboxModelOption::kProLatest:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_LATEST;
-  }
-}
-
 /// Returns the string suffix associated with the entrypoint.
 std::string GetStringForEntrypoint(ComposeboxEntrypoint entrypoint) {
   switch (entrypoint) {
@@ -409,10 +388,9 @@ std::string GetStringForPickerAttachmentType(
   }
 }
 
-- (void)recordModelModeShown:(ComposeboxModelOption)model {
+- (void)recordModelModeShown:(omnibox::ModelMode)model {
   if (_contextualSearchMetricsRecorder) {
-    _contextualSearchMetricsRecorder->RecordModelModeShown(
-        ModelModeFromComposeboxModelOption(model));
+    _contextualSearchMetricsRecorder->RecordModelModeShown(model);
   }
 }
 

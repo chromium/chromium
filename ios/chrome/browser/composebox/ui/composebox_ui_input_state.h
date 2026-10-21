@@ -11,7 +11,6 @@
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 
 @class ComposeboxMenuSharedTab;
 @class ComposeboxModelItem;
@@ -40,14 +39,6 @@
 /// The set of tools that should be disabled.
 @property(nonatomic, assign) std::unordered_set<ComposeboxMode> disabledTools;
 
-/// The set of models that are allowed to be shown in the picker.
-@property(nonatomic, assign) std::unordered_set<ComposeboxModelOption>
-    allowedModels;
-
-/// The set of models that should be disabled in the picker.
-@property(nonatomic, assign) std::unordered_set<ComposeboxModelOption>
-    disabledModels;
-
 /// The model items to display in the picker, in server order. Models without a
 /// label are excluded.
 @property(nonatomic, copy) NSArray<ComposeboxModelItem*>* modelItems;
@@ -70,9 +61,6 @@
 /// The currently active tool.
 @property(nonatomic, assign) ComposeboxMode activeTool;
 
-/// The currently active model.
-@property(nonatomic, assign) ComposeboxModelOption activeModel;
-
 /// Whether the given attachment option should be hidden.
 - (BOOL)isAttachmentHidden:(ComposeboxAttachmentOption)option;
 
@@ -91,15 +79,6 @@
 
 /// Whether the given tool is available (allowed and not disabled).
 - (BOOL)isToolAvailable:(ComposeboxMode)option;
-
-/// Whether the given model should be hidden.
-- (BOOL)isModelHidden:(ComposeboxModelOption)option;
-
-/// Whether the given model should be disabled.
-- (BOOL)isModelDisabled:(ComposeboxModelOption)option;
-
-/// Whether the given model is available (allowed and not disabled).
-- (BOOL)isModelAvailable:(ComposeboxModelOption)option;
 
 /// Returns whether global testing mode for making all tools accessible is
 /// active.

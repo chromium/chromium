@@ -10,7 +10,6 @@
 #import <unordered_map>
 
 #import "base/memory/raw_ptr.h"
-#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
@@ -29,7 +28,6 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
@@ -68,57 +66,6 @@ UIImage* FallbackIconForModel(omnibox::ModelMode model) {
       return SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize);
     default:
       return SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize);
-  }
-}
-
-// Records an unknown server-side `model_mode` to UMA.
-void ReportUnknownModelMode(omnibox::ModelMode model_mode) {
-  base::UmaHistogramSparse("Omnibox.MobileFusebox.UnsupportedModelMode",
-                           static_cast<int>(model_mode));
-}
-
-// Returns the `ComposeboxModelOption` corresponding to `model_mode`, or
-// `std::nullopt` if `model_mode` is unsupported.
-std::optional<ComposeboxModelOption> ModelOptionForModelMode(
-    omnibox::ModelMode model_mode) {
-  using enum ComposeboxModelOption;
-  switch (model_mode) {
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
-      return kAuto;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
-      return kThinking;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
-      return kThinkingNoGenUI;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
-    case omnibox::ModelMode::MODEL_MODE_UNSPECIFIED:
-      return kRegular;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST:
-      return kFlash;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_LATEST:
-      return kProLatest;
-    default:
-      return std::nullopt;
-  }
-}
-
-// Returns the model mode for the given model option.
-omnibox::ModelMode ModelModeForModelOption(ComposeboxModelOption modelOption) {
-  using enum ComposeboxModelOption;
-  switch (modelOption) {
-    case kNone:
-      return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
-    case kRegular:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
-    case kAuto:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
-    case kThinking:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
-    case kThinkingNoGenUI:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
-    case kFlash:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST;
-    case kProLatest:
-      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_LATEST;
   }
 }
 
@@ -181,29 +128,6 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
     }
   }
 
-  std::unordered_map<ComposeboxModelOption, ComposeboxItemUIConfig*>
-      model_mapping;
-  for (const omnibox::ModelConfig& model_config : input_state.model_configs) {
-    std::optional<ComposeboxModelOption> model_option =
-        ModelOptionForModelMode(model_config.model());
-    if (!model_option.has_value()) {
-      ReportUnknownModelMode(model_config.model());
-      continue;
-    }
-    NSString* menuLabel = base::SysUTF8ToNSString(model_config.menu_label());
-    NSString* hintText = base::SysUTF8ToNSString(model_config.hint_text());
-    UIImage* icon = nil;
-    if (model_config.has_icon() && model_config.icon().has_icon_id()) {
-      icon = ImageForIconResourceId(model_config.icon().icon_id(),
-                                    kSymbolActionPointSize);
-    }
-    model_mapping[*model_option] =
-        [[ComposeboxItemUIConfig alloc] initWithMenuLabel:menuLabel
-                                                chipLabel:nil
-                                                 hintText:hintText
-                                                     icon:icon];
-  }
-
   NSString* modelSectionHeader = @"";
   NSString* toolsSectionHeader = @"";
 
@@ -218,7 +142,6 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
   }
 
   return [[ComposeboxUIConfig alloc] initWithToolMapping:tool_mapping
-                                            modelMapping:model_mapping
                                       modelSectionHeader:modelSectionHeader
                                       toolsSectionHeader:toolsSectionHeader];
 }
@@ -655,11 +578,6 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   state.allowModelPicker = ShowComposeboxAdditionalAdvancedTools();
 
   state.activeTool = [self activeMode];
-  state.activeModel =
-      self.activeModel != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
-          ? ModelOptionForModelMode(self.activeModel)
-                .value_or(ComposeboxModelOption::kNone)
-          : ComposeboxModelOption::kNone;
 
   state.uiConfig = _cachedUIConfig;
 
@@ -724,26 +642,6 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 
   state.allowedTools = allowedTools;
   state.disabledTools = disabledTools;
-
-  std::unordered_set<ComposeboxModelOption> allowedModels;
-  std::unordered_set<ComposeboxModelOption> disabledModels;
-
-  for (ComposeboxModelOption modelOption : ComposeboxModelOptionSet::All()) {
-    // Skip ComposeboxModelOption::kNone in the available models.
-    if (modelOption == ComposeboxModelOption::kNone) {
-      continue;
-    }
-    omnibox::ModelMode model = ModelModeForModelOption(modelOption);
-    if ([self isModelAllowed:model]) {
-      allowedModels.insert(modelOption);
-    }
-    if ([self isModelDisabled:model]) {
-      disabledModels.insert(modelOption);
-    }
-  }
-
-  state.allowedModels = allowedModels;
-  state.disabledModels = disabledModels;
   state.modelItems = [self modelItems];
 
   return state;

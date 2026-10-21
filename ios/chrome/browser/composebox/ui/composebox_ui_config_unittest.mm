@@ -52,7 +52,6 @@ TEST_F(ComposeboxUIConfigTest, TestRemoveToolAccessibilityLabel) {
                                                    icon:nil];
   ComposeboxUIConfig* serverConfig =
       [[ComposeboxUIConfig alloc] initWithToolMapping:tool_mapping
-                                         modelMapping:{}
                                    modelSectionHeader:nil
                                    toolsSectionHeader:nil];
 
@@ -101,28 +100,6 @@ TEST_F(ComposeboxUIConfigTest, TestLocalFallbackForTool) {
   EXPECT_EQ([uiConfig iconForTool:ComposeboxMode::kRegularSearch], nil);
 }
 
-TEST_F(ComposeboxUIConfigTest, TestLocalFallbackForModel) {
-  ComposeboxUIConfig* uiConfig = [ComposeboxUIConfig localFallbackUIConfig];
-
-  EXPECT_NSEQ(
-      [uiConfig menuLabelForModel:ComposeboxModelOption::kAuto],
-      l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO));
-  EXPECT_NE([uiConfig iconForModel:ComposeboxModelOption::kAuto], nil);
-
-  EXPECT_NSEQ([uiConfig menuLabelForModel:ComposeboxModelOption::kThinking],
-              l10n_util::GetNSString(
-                  IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING));
-  EXPECT_NE([uiConfig iconForModel:ComposeboxModelOption::kThinking], nil);
-  EXPECT_NE([uiConfig iconForModel:ComposeboxModelOption::kThinkingNoGenUI],
-            nil);
-  EXPECT_NE([uiConfig iconForModel:ComposeboxModelOption::kRegular], nil);
-  EXPECT_NSEQ(
-      [uiConfig menuLabelForModel:ComposeboxModelOption::kFlash],
-      l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_FLASH));
-  EXPECT_NE([uiConfig iconForModel:ComposeboxModelOption::kFlash], nil);
-  EXPECT_EQ([uiConfig iconForModel:ComposeboxModelOption::kNone], nil);
-}
-
 TEST_F(ComposeboxUIConfigTest, TestLocalFallbackForAttachment) {
   ComposeboxUIConfig* uiConfig = [ComposeboxUIConfig localFallbackUIConfig];
 
@@ -148,18 +125,8 @@ TEST_F(ComposeboxUIConfigTest, TestServerConfigMapping) {
                                                hintText:@"Server Hint Image"
                                                    icon:toolIcon];
 
-  UIImage* modelIcon = [[UIImage alloc] init];
-  std::unordered_map<ComposeboxModelOption, ComposeboxItemUIConfig*>
-      model_mapping;
-  model_mapping[ComposeboxModelOption::kThinking] =
-      [[ComposeboxItemUIConfig alloc] initWithMenuLabel:@"Server Menu Model"
-                                              chipLabel:nil
-                                               hintText:@"Server Hint Model"
-                                                   icon:modelIcon];
-
   ComposeboxUIConfig* uiConfig =
       [[ComposeboxUIConfig alloc] initWithToolMapping:tool_mapping
-                                         modelMapping:model_mapping
                                    modelSectionHeader:@"Server Model Header"
                                    toolsSectionHeader:@"Server Tools Header"];
 
@@ -171,16 +138,8 @@ TEST_F(ComposeboxUIConfigTest, TestServerConfigMapping) {
               @"Server Hint Image");
   EXPECT_EQ([uiConfig iconForTool:ComposeboxMode::kImageGeneration], toolIcon);
 
-  EXPECT_NSEQ([uiConfig menuLabelForModel:ComposeboxModelOption::kThinking],
-              @"Server Menu Model");
-  EXPECT_NSEQ([uiConfig hintTextForModel:ComposeboxModelOption::kThinking],
-              @"Server Hint Model");
-  EXPECT_EQ([uiConfig iconForModel:ComposeboxModelOption::kThinking],
-            modelIcon);
-
-  // Fallback for tools and models without server icon
+  // Fallback for tools without server icon
   EXPECT_NE([uiConfig iconForTool:ComposeboxMode::kAIM], nil);
-  EXPECT_NE([uiConfig iconForModel:ComposeboxModelOption::kAuto], nil);
 
   EXPECT_NSEQ([uiConfig toolsSectionHeader], @"Server Tools Header");
   EXPECT_NSEQ([uiConfig modelSectionHeader], @"Server Model Header");
@@ -197,14 +156,10 @@ TEST_F(ComposeboxUIConfigTest, TestHeaderFallbacks) {
       l10n_util::GetNSStringF(IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE, u"3"));
 }
 
-TEST_F(ComposeboxUIConfigTest, TestUnknownToolAndModelFallback) {
+TEST_F(ComposeboxUIConfigTest, TestUnknownToolFallback) {
   ComposeboxUIConfig* uiConfig = [ComposeboxUIConfig localFallbackUIConfig];
 
   // Unknown tool fallback returns a sensible icon and does not crash.
   ComposeboxMode unknownTool = static_cast<ComposeboxMode>(999);
   EXPECT_NE([uiConfig iconForTool:unknownTool], nil);
-
-  // Unknown model fallback returns a sensible icon and does not crash.
-  ComposeboxModelOption unknownModel = static_cast<ComposeboxModelOption>(999);
-  EXPECT_NE([uiConfig iconForModel:unknownModel], nil);
 }

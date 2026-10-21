@@ -11,7 +11,6 @@
 
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_constants.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
 
@@ -95,8 +94,8 @@ enum class ComposeboxEntrypoint;
 // Records that the given tool mode option was displayed.
 - (void)recordToolModeShown:(ComposeboxMode)tool;
 
-// Records that the given model option was displayed.
-- (void)recordModelModeShown:(ComposeboxModelOption)model;
+// Records that the given `model` was displayed.
+- (void)recordModelModeShown:(omnibox::ModelMode)model;
 
 // Records the tool explicitly selected in the menu.
 - (void)recordToolSelected:(ComposeboxMode)tool;

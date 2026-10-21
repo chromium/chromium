@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 
 // Bundles UI configuration (labels, hint text, and icon) for a single item.
 @interface ComposeboxItemUIConfig : NSObject
@@ -60,14 +59,12 @@
 // Creates a new instance with local fallback strings and icons.
 + (instancetype)localFallbackUIConfig;
 
-// Creates a new instance based on the given mappings.
+// Creates a new instance based on the given `toolMapping`, section header
+// for models (`modelSectionHeader`), and section header for tools
+// (`toolsSectionHeader`).
 - (instancetype)
     initWithToolMapping:
-        (std::unordered_map<ComposeboxMode, ComposeboxItemUIConfig*>)
-            controlMapping
-           modelMapping:
-               (std::unordered_map<ComposeboxModelOption,
-                                   ComposeboxItemUIConfig*>)modelMapping
+        (std::unordered_map<ComposeboxMode, ComposeboxItemUIConfig*>)toolMapping
      modelSectionHeader:(NSString*)modelSectionHeader
      toolsSectionHeader:(NSString*)toolsSectionHeader;
 
@@ -88,15 +85,6 @@
 
 // Returns the menu icon for the given tool.
 - (UIImage*)iconForTool:(ComposeboxMode)tool;
-
-// Returns the menu label for the given model.
-- (NSString*)menuLabelForModel:(ComposeboxModelOption)model;
-
-// Returns the hint text for the given model.
-- (NSString*)hintTextForModel:(ComposeboxModelOption)model;
-
-// Returns the menu icon for the given model.
-- (UIImage*)iconForModel:(ComposeboxModelOption)model;
 
 // Returns the string for the given attachment option.
 - (NSString*)stringForAttachmentOption:(ComposeboxAttachmentOption)option;

@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
+#import "ios/chrome/browser/composebox/ui/composebox_model_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -550,8 +551,8 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
     [_metricsRecorder recordToolModeShown:tool];
   }
 
-  for (const auto& model : _inputState.allowedModels) {
-    [_metricsRecorder recordModelModeShown:model];
+  for (ComposeboxModelItem* modelItem in _inputState.modelItems) {
+    [_metricsRecorder recordModelModeShown:modelItem.modelMode];
   }
 
   [_metricsRecorder

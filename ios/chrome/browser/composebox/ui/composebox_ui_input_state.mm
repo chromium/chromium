@@ -59,27 +59,6 @@ static BOOL gAllToolsEnabled = NO;
   return _allowedTools.contains(option) && !_disabledTools.contains(option);
 }
 
-- (BOOL)isModelHidden:(ComposeboxModelOption)option {
-  if (gAllToolsEnabled) {
-    return NO;
-  }
-  return !_allowedModels.contains(option);
-}
-
-- (BOOL)isModelDisabled:(ComposeboxModelOption)option {
-  if (gAllToolsEnabled) {
-    return NO;
-  }
-  return _disabledModels.contains(option);
-}
-
-- (BOOL)isModelAvailable:(ComposeboxModelOption)option {
-  if (gAllToolsEnabled) {
-    return YES;
-  }
-  return _allowedModels.contains(option) && !_disabledModels.contains(option);
-}
-
 - (std::unordered_set<ComposeboxAttachmentOption>)allowedAttachments {
   if (gAllToolsEnabled) {
     std::unordered_set<ComposeboxAttachmentOption> attachments;
@@ -115,24 +94,6 @@ static BOOL gAllToolsEnabled = NO;
     return {};
   }
   return _disabledTools;
-}
-
-- (std::unordered_set<ComposeboxModelOption>)allowedModels {
-  if (gAllToolsEnabled) {
-    std::unordered_set<ComposeboxModelOption> models;
-    for (ComposeboxModelOption opt : ComposeboxModelOptionSet::All()) {
-      models.insert(opt);
-    }
-    return models;
-  }
-  return _allowedModels;
-}
-
-- (std::unordered_set<ComposeboxModelOption>)disabledModels {
-  if (gAllToolsEnabled) {
-    return {};
-  }
-  return _disabledModels;
 }
 
 - (BOOL)allowModelPicker {
