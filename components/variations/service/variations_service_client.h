@@ -106,6 +106,12 @@ class VariationsServiceClient {
       RotateUmaLogForRuntimeMutability(
           metrics::MetricsService::RuntimeMutabilityPassKey);
 
+  // Returns whether applying runtime mutable variations changes should be
+  // delayed (e.g. because it is currently too early to close the current UMA
+  // log).
+  virtual bool ShouldDelayRuntimeMutability(
+      metrics::MetricsService::RuntimeMutabilityPassKey);
+
  private:
   // Gets the channel of the embedder. But all variations callers should use
   // |GetChannelForVariations()| instead.

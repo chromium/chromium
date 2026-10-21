@@ -122,6 +122,14 @@ ChromeVariationsServiceClient::RotateUmaLogForRuntimeMutability(
   return metrics_service->RotateUmaLogForRuntimeMutability(passkey);
 }
 
+bool ChromeVariationsServiceClient::ShouldDelayRuntimeMutability(
+    metrics::MetricsService::RuntimeMutabilityPassKey passkey) {
+  metrics::MetricsService* metrics_service =
+      g_browser_process->metrics_service();
+  CHECK(metrics_service);
+  return metrics_service->ShouldDelayRuntimeMutability(passkey);
+}
+
 version_info::Channel ChromeVariationsServiceClient::GetChannel() {
   return chrome::GetChannel();
 }

@@ -61,4 +61,13 @@ AwVariationsServiceClient::RotateUmaLogForRuntimeMutability(
   return metrics_service->RotateUmaLogForRuntimeMutability(passkey);
 }
 
+bool AwVariationsServiceClient::ShouldDelayRuntimeMutability(
+    metrics::MetricsService::RuntimeMutabilityPassKey passkey) {
+  AwMetricsServiceClient* client = AwMetricsServiceClient::GetInstance();
+  CHECK(client);
+  metrics::MetricsService* metrics_service = client->GetMetricsService();
+  CHECK(metrics_service);
+  return metrics_service->ShouldDelayRuntimeMutability(passkey);
+}
+
 }  // namespace android_webview

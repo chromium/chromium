@@ -47,6 +47,8 @@ class IOSChromeVariationsServiceClient
   bool IsChromeEnterpriseCoreSupported() override;
   metrics::MetricsService::RotateUmaLogResult RotateUmaLogForRuntimeMutability(
       metrics::MetricsService::RuntimeMutabilityPassKey passkey) override;
+  bool ShouldDelayRuntimeMutability(
+      metrics::MetricsService::RuntimeMutabilityPassKey passkey) override;
   version_info::Channel GetChannel() override;
 };
 

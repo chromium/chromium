@@ -87,6 +87,14 @@ IOSChromeVariationsServiceClient::RotateUmaLogForRuntimeMutability(
   return metrics_service->RotateUmaLogForRuntimeMutability(passkey);
 }
 
+bool IOSChromeVariationsServiceClient::ShouldDelayRuntimeMutability(
+    metrics::MetricsService::RuntimeMutabilityPassKey passkey) {
+  metrics::MetricsService* metrics_service =
+      GetApplicationContext()->GetMetricsService();
+  CHECK(metrics_service);
+  return metrics_service->ShouldDelayRuntimeMutability(passkey);
+}
+
 version_info::Channel IOSChromeVariationsServiceClient::GetChannel() {
   return ::GetChannel();
 }

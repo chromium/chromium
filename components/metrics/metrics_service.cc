@@ -1263,6 +1263,18 @@ MetricsService::RotateUmaLogForRuntimeMutability(
       MetricsLogsEventManager::CreateReason::kRuntimeMutability);
 }
 
+bool MetricsService::ShouldDelayRuntimeMutability(
+    RuntimeMutabilityPassKey passkey) const {
+  // If recording is disabled, there is no point in delaying seed processing,
+  // as logs will not be sent. Return false to proceed immediately. Note that
+  // `reporting_active()` is intentionally not checked: reporting may be
+  // temporarily disabled (e.g. no network at startup) while logs are still
+  // persisted for later upload. Delaying allows the first ongoing log to be
+  // closed and gives reporting a chance to come back before the rotation is
+  // attempted.
+  return recording_active() && IsTooEarlyToCloseLog();
+}
+
 MetricsService::RotateUmaLogResult MetricsService::RotateUmaLog(
     MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1626,7 +1638,7 @@ void MetricsService::UpdateLastLiveTimestampTask() {
   StartUpdatingLastLiveTimestamp();
 }
 
-bool MetricsService::IsTooEarlyToCloseLog() {
+bool MetricsService::IsTooEarlyToCloseLog() const {
   // Only start closing logs when logs have started being sent.
   return state_ < SENDING_LOGS;
 }

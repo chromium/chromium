@@ -160,6 +160,11 @@ class MetricsService {
   RotateUmaLogResult RotateUmaLogForRuntimeMutability(
       RuntimeMutabilityPassKey passkey);
 
+  // Returns whether applying runtime mutable feature mutations should be
+  // delayed (e.g. because recording is active and it is currently too early to
+  // close the current UMA log).
+  bool ShouldDelayRuntimeMutability(RuntimeMutabilityPassKey passkey) const;
+
   // Returns the client ID for this client, or the empty string if metrics
   // recording is not currently running.
   std::string GetClientId() const;
@@ -603,7 +608,7 @@ class MetricsService {
   void UpdateLastLiveTimestampTask();
 
   // Returns whether it is too early to close a log.
-  bool IsTooEarlyToCloseLog();
+  bool IsTooEarlyToCloseLog() const;
 
   // Called if this install is detected as cloned.
   void OnClonedInstallDetected();

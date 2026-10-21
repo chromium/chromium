@@ -120,6 +120,12 @@ const uint32_t kServerTimeResolutionInSeconds = 1;
 // Timeout for fetching the variations seed.
 const base::TimeDelta kVariationsSeedFetchTimeout = base::Seconds(60);
 
+// Delay before retrying runtime mutable seed processing when it is too early to
+// close the UMA log, and the maximum number of retries per session before
+// applying the seed anyway.
+constexpr base::TimeDelta kRetryRuntimeMutableSeedDelay = base::Seconds(30);
+constexpr int kMaxRuntimeMutableSeedRetries = 4;
+
 // Whether the VariationsService should fetch the seed for testing.
 bool g_should_fetch_for_testing = false;
 
@@ -895,7 +901,7 @@ void VariationsService::OnSeedStoreResult(bool is_delta_compressed,
     // between this and `PerformSimulationWithVersion()` above (which is used
     // for badging killswitches).
     if (base::FeatureList::IsEnabled(kVariationsRuntimeMutability)) {
-      SimulateAndApplyRuntimeMutableChanges(seed);
+      SimulateAndApplyRuntimeMutableChanges(std::move(seed));
     }
 
     NotifySeedFetched();
@@ -903,8 +909,46 @@ void VariationsService::OnSeedStoreResult(bool is_delta_compressed,
 }
 
 void VariationsService::SimulateAndApplyRuntimeMutableChanges(
-    const VariationsSeed& seed) {
+    VariationsSeed seed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // A newly arrived seed supersedes any previously delayed seed. Stop the retry
+  // timer before checking `seed.study().empty()` so that a new seed with no
+  // runtime-mutable studies still cancels an older unapplied seed.
+  runtime_mutable_seed_retry_timer_.Stop();
+
+  // Strip studies that are not runtime-mutable before potentially delaying so
+  // that we do not retain the full `VariationsSeed` in memory.
+  google::protobuf::erase_if(*seed.mutable_study(), [](const Study& study) {
+    return !study.runtime_mutable();
+  });
+  if (seed.study().empty()) {
+    return;
+  }
+
+  // When `kVariationsRuntimeMutabilityRotateUmaLog` is enabled, applying
+  // runtime mutable changes rotates the current UMA log so that pre-mutation
+  // and post-mutation metrics are not mixed in the same log. However, if a seed
+  // arrives early in the session before `MetricsService` has started sending
+  // logs (`ShouldDelayRuntimeMutability()` is true), log rotation would fail
+  // with `RotateUmaLogResult::kTooEarly`. Delay processing the seed and retry
+  // after `kRetryRuntimeMutableSeedDelay`, up to
+  // `kMaxRuntimeMutableSeedRetries` times (after which the seed is applied
+  // anyway so that an idle client does not delay mutations indefinitely).
+  // `base::Unretained(this)` is safe because `this` owns
+  // `runtime_mutable_seed_retry_timer_`.
+  if (kVariationsRuntimeMutabilityRotateUmaLog.Get() &&
+      client_->ShouldDelayRuntimeMutability(
+          base::PassKey<VariationsService>()) &&
+      runtime_mutable_seed_retry_count_ < kMaxRuntimeMutableSeedRetries) {
+    ++runtime_mutable_seed_retry_count_;
+    runtime_mutable_seed_retry_timer_.Start(
+        FROM_HERE, kRetryRuntimeMutableSeedDelay,
+        base::BindOnce(
+            &VariationsService::SimulateAndApplyRuntimeMutableChanges,
+            base::Unretained(this), std::move(seed)));
+    return;
+  }
 
   base::ScopedUmaHistogramTimer scoped_timer(
       "Variations.SimulateAndApplyRuntimeMutableChanges.Time");

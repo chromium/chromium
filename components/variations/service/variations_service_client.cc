@@ -128,4 +128,9 @@ VariationsServiceClient::RotateUmaLogForRuntimeMutability(
   return metrics::MetricsService::RotateUmaLogResult::kNotSupported;
 }
 
+bool VariationsServiceClient::ShouldDelayRuntimeMutability(
+    metrics::MetricsService::RuntimeMutabilityPassKey) {
+  return false;
+}
+
 }  // namespace variations

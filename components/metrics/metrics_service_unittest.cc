@@ -1430,20 +1430,31 @@ TEST_F(MetricsServiceTest, OutOfBandLogUpload) {
 
 // Verify that calling RotateUmaLogForRuntimeMutability() closes the current log
 // and opens a new one when called after logs have started being sent, and is a
-// no-op if called too early.
+// no-op if called too early. Also verify ShouldDelayRuntimeMutability() across
+// recording states and log rotation lifecycle states.
 TEST_F(MetricsServiceTest, RotateUmaLogForRuntimeMutability) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
                              GetLocalState());
   service.InitializeMetricsRecordingState();
+
+  // Before Start(), recording is not active, so ShouldDelayRuntimeMutability()
+  // should return false.
+  ASSERT_FALSE(service.recording_active());
+  EXPECT_FALSE(service.ShouldDelayRuntimeMutability(
+      MetricsService::GetRuntimeMutabilityPassKeyForTesting()));
+
   service.Start();
+  ASSERT_TRUE(service.recording_active());
   ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
 
   base::HistogramTester histogram_tester;
 
   // Calling RotateUmaLogForRuntimeMutability() before logs have started being
-  // sent (IsTooEarlyToCloseLog() is true) should be a no-op.
+  // sent (ShouldDelayRuntimeMutability() is true) should be a no-op.
+  EXPECT_TRUE(service.ShouldDelayRuntimeMutability(
+      MetricsService::GetRuntimeMutabilityPassKeyForTesting()));
   EXPECT_EQ(MetricsService::RotateUmaLogResult::kTooEarly,
             service.RotateUmaLogForRuntimeMutability(
                 MetricsService::GetRuntimeMutabilityPassKeyForTesting()));
@@ -1455,6 +1466,8 @@ TEST_F(MetricsServiceTest, RotateUmaLogForRuntimeMutability) {
   base::TimeDelta initialization_delay = service.GetInitializationDelay();
   task_environment_.FastForwardBy(initialization_delay);
   EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+  EXPECT_TRUE(service.ShouldDelayRuntimeMutability(
+      MetricsService::GetRuntimeMutabilityPassKeyForTesting()));
 
   // Fast forward until MetricsRotationScheduler completes the first ongoing
   // log.
@@ -1462,6 +1475,8 @@ TEST_F(MetricsServiceTest, RotateUmaLogForRuntimeMutability) {
       base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
       initialization_delay);
   ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
+  EXPECT_FALSE(service.ShouldDelayRuntimeMutability(
+      MetricsService::GetRuntimeMutabilityPassKeyForTesting()));
 
   // Stage and discard the first ongoing log.
   MetricsLogStore* test_log_store = service.LogStoreForTest();

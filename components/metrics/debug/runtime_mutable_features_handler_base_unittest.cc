@@ -36,7 +36,7 @@ class MockVariationsService : public variations::TestVariationsService {
       : variations::TestVariationsService(prefs, state_manager) {}
 
   void SimulateAndApplyRuntimeMutableChanges(
-      const variations::VariationsSeed& seed) override {
+      variations::VariationsSeed seed) override {
     called_simulate_ = true;
   }
 

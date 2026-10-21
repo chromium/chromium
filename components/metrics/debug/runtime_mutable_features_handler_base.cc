@@ -5,6 +5,7 @@
 #include "components/metrics/debug/runtime_mutable_features_handler_base.h"
 
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -135,7 +136,7 @@ void RuntimeMutableFeaturesHandlerBase::HandleUploadSeed(
              << (parsed ? "succeeded" : "failed");
     if (parsed) {
       variations_service_->SimulateAndApplyUploadedSeed(
-          base::PassKey<RuntimeMutableFeaturesHandlerBase>(), seed);
+          base::PassKey<RuntimeMutableFeaturesHandlerBase>(), std::move(seed));
     }
   }
 

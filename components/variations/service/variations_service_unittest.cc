@@ -180,6 +180,16 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     return rotate_uma_log_for_runtime_mutability_call_count_;
   }
 
+  bool ShouldDelayRuntimeMutability(
+      metrics::MetricsService::RuntimeMutabilityPassKey) override {
+    return should_delay_runtime_mutability_;
+  }
+
+  void set_should_delay_runtime_mutability(
+      bool should_delay_runtime_mutability) {
+    should_delay_runtime_mutability_ = should_delay_runtime_mutability;
+  }
+
  private:
   // VariationsServiceClient:
   version_info::Channel GetChannel() override { return channel_; }
@@ -191,6 +201,7 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   int rotate_uma_log_for_runtime_mutability_call_count_ = 0;
   metrics::MetricsService::RotateUmaLogResult rotate_uma_log_result_ =
       metrics::MetricsService::RotateUmaLogResult::kSuccess;
+  bool should_delay_runtime_mutability_ = false;
   raw_ptr<network_time::NetworkTimeTracker> network_time_tracker_ = nullptr;
 };
 
@@ -238,10 +249,9 @@ class TestVariationsService : public VariationsService {
   base::Time stored_date() const { return stored_date_; }
 
   bool CallMaybeRetryOverHTTP() { return CallMaybeRetryOverHTTPForTesting(); }
-  void SimulateAndApplyRuntimeMutableChanges(
-      const VariationsSeed& seed) override {
+  void SimulateAndApplyRuntimeMutableChanges(VariationsSeed seed) override {
     runtime_simulation_called_ = true;
-    VariationsService::SimulateAndApplyRuntimeMutableChanges(seed);
+    VariationsService::SimulateAndApplyRuntimeMutableChanges(std::move(seed));
   }
 
   const std::string& GetLatestSerialNumber() override {
@@ -512,7 +522,8 @@ class VariationsServiceTest : public ::testing::Test {
  protected:
   // Declare task_environment_ first so task_environment_ is destroyed last,
   // after other members.
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple prefs_;
   raw_ptr<network::TestNetworkConnectionTracker> network_tracker_;
 
@@ -4038,8 +4049,9 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_RotatesUmaLog) {
   // RotateUmaLogForRuntimeMutability should not be called.
   {
     base::HistogramTester histogram_tester;
-    VariationsSeed empty_seed;
-    service.SimulateAndApplyRuntimeMutableChanges(empty_seed);
+    VariationsSeed ineligible_seed = CreateTestRuntimeMutableSeed(
+        "Study1", "Group1", {}, {kTestRegularFeature.name});
+    service.SimulateAndApplyRuntimeMutableChanges(ineligible_seed);
     EXPECT_EQ(
         service.client()->rotate_uma_log_for_runtime_mutability_call_count(),
         0);
@@ -4100,13 +4112,16 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_RotatesUmaLog) {
 }
 
 // Verifies that when the rotate_uma_log param is false (the default),
-// RotateUmaLogForRuntimeMutability is not called when applying mutations.
+// RotateUmaLogForRuntimeMutability is not called when applying mutations, and
+// seed processing is not delayed even if ShouldDelayRuntimeMutability() returns
+// true.
 TEST_F(VariationsServiceTest,
        ApplyRuntimeMutableChanges_RotateUmaLogDisabledByDefault) {
   TestVariationsService service(
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
       &prefs_, GetMetricsStateManager(), true);
+  service.client()->set_should_delay_runtime_mutability(true);
 
   base::test::ScopedFeatureList scoped_feature_list;
   auto feature_list = std::make_unique<base::FeatureList>();
@@ -4165,6 +4180,288 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_RotateUmaLogFails) {
       metrics::MetricsService::RotateUmaLogResult::kTooEarly, 1);
   histogram_tester.ExpectTotalCount(
       kSimulateAndApplyRuntimeMutableChangesRotateUmaLogTimeMetric, 0);
+}
+
+// Verifies that when ShouldDelayRuntimeMutability() returns true, the runtime
+// mutable seed is not processed immediately and is instead retried after 30
+// seconds until ShouldDelayRuntimeMutability() returns false.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_ShouldDelayRuntimeMutabilityRetries) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  service.client()->set_should_delay_runtime_mutability(true);
+
+  std::vector<std::string> event_log;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitFromCommandLine(
+      "VariationsRuntimeMutability:rotate_uma_log/true",
+      base::features::kFeatureParamWithCache.name);
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [&event_log](std::reference_wrapper<const base::Feature> feature,
+                       std::string_view study_name, std::string_view group_name,
+                       base::FeatureList::OverrideState state) {
+            event_log.push_back("pre_mutation");
+          }),
+      /*post_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [&event_log](std::reference_wrapper<const base::Feature> feature,
+                       std::string_view study_name, std::string_view group_name,
+                       base::FeatureList::OverrideState state) {
+            event_log.push_back("post_mutation");
+          }));
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed valid_seed = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+  service.SimulateAndApplyRuntimeMutableChanges(valid_seed);
+
+  // Initial attempt should see ShouldDelayRuntimeMutability() == true and defer
+  // processing without running callbacks or rotating the log.
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_TRUE(event_log.empty());
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 0);
+  histogram_tester.ExpectTotalCount(
+      kSimulateAndApplyRuntimeMutableChangesTimeMetric, 0);
+  histogram_tester.ExpectTotalCount(
+      kSimulateAndApplyRuntimeMutableChangesRotateUmaLogResultMetric, 0);
+  histogram_tester.ExpectTotalCount(
+      kSimulateAndApplyRuntimeMutableChangesRotateUmaLogTimeMetric, 0);
+
+  // Fast-forward 29 seconds: retry has not happened yet.
+  task_environment_.FastForwardBy(base::Seconds(29));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 0);
+
+  // Fast-forward 1 more second (total 30s): retry runs,
+  // ShouldDelayRuntimeMutability() is still true, so it schedules another retry
+  // in 30s without processing.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_TRUE(event_log.empty());
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 0);
+  histogram_tester.ExpectTotalCount(
+      kSimulateAndApplyRuntimeMutableChangesTimeMetric, 0);
+
+  // Now allow the UMA log to be closed, and fast-forward 30 seconds.
+  service.client()->set_should_delay_runtime_mutability(false);
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_THAT(event_log, testing::ElementsAre("pre_mutation", "post_mutation"));
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 1);
+  histogram_tester.ExpectTotalCount(
+      kSimulateAndApplyRuntimeMutableChangesTimeMetric, 1);
+  histogram_tester.ExpectUniqueSample(
+      kSimulateAndApplyRuntimeMutableChangesRotateUmaLogResultMetric,
+      metrics::MetricsService::RotateUmaLogResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      kSimulateAndApplyRuntimeMutableChangesRotateUmaLogTimeMetric, 1);
+}
+
+// Verifies that if ShouldDelayRuntimeMutability() remains true past the maximum
+// number of retries (4 retries = 2 minutes), the pending runtime mutable seed
+// is applied anyway rather than being delayed indefinitely, and any subsequent
+// seed in the same session is also applied immediately without retrying again.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_ShouldDelayRuntimeMutabilityMaxRetries) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  service.client()->set_should_delay_runtime_mutability(true);
+  service.client()->set_rotate_uma_log_result(
+      metrics::MetricsService::RotateUmaLogResult::kTooEarly);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitFromCommandLine(
+      "VariationsRuntimeMutability:rotate_uma_log/true",
+      base::features::kFeatureParamWithCache.name);
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/base::DoNothing(),
+      /*post_mutation_callback=*/base::DoNothing());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/base::DoNothing(),
+      /*post_mutation_callback=*/base::DoNothing());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed valid_seed = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+  service.SimulateAndApplyRuntimeMutableChanges(valid_seed);
+
+  // Across the first 3 retries (at 30s, 60s, 90s), the seed should still be
+  // delayed because ShouldDelayRuntimeMutability() remains true.
+  for (int i = 0; i < 3; ++i) {
+    task_environment_.FastForwardBy(base::Seconds(30));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_EQ(
+        service.client()->rotate_uma_log_for_runtime_mutability_call_count(),
+        0);
+  }
+
+  // On the 4th retry (at 120s), the max retry limit is reached, so the seed
+  // should be applied even though ShouldDelayRuntimeMutability() is still true.
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 1);
+  histogram_tester.ExpectUniqueSample(
+      kSimulateAndApplyRuntimeMutableChangesRotateUmaLogResultMetric,
+      metrics::MetricsService::RotateUmaLogResult::kTooEarly, 1);
+
+  // Because the max retry count is a per-session cap, a subsequent seed should
+  // be applied immediately without waiting for another 4 retries.
+  VariationsSeed second_seed = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+  *second_seed.add_study() =
+      *CreateTestRuntimeMutableSeed("Study2", "Group2", {},
+                                    {kTestRuntimeFeatureB.name})
+           .mutable_study(0);
+  service.SimulateAndApplyRuntimeMutableChanges(second_seed);
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 2);
+}
+
+// Verifies that if a seed is delayed because ShouldDelayRuntimeMutability()
+// returns true, and a new seed arrives during the 30-second waiting period,
+// the new seed supersedes the pending seed so that only the newer seed is
+// applied and the UMA log is rotated only once.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_NewSeedSupersedesPending) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  service.client()->set_should_delay_runtime_mutability(true);
+
+  std::vector<std::string> applied_features;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitFromCommandLine(
+      "VariationsRuntimeMutability:rotate_uma_log/true",
+      base::features::kFeatureParamWithCache.name);
+  auto record_post_mutation = base::BindLambdaForTesting(
+      [&applied_features](std::reference_wrapper<const base::Feature> feature,
+                          std::string_view study_name,
+                          std::string_view group_name,
+                          base::FeatureList::OverrideState state) {
+        applied_features.push_back(
+            base::StrCat({feature.get().name, ":", group_name}));
+      });
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/base::DoNothing(),
+      /*post_mutation_callback=*/record_post_mutation);
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/base::DoNothing(),
+      /*post_mutation_callback=*/record_post_mutation);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // Seed 1 disables kTestRuntimeFeatureA. Because
+  // ShouldDelayRuntimeMutability() is true, it is delayed and scheduled to
+  // retry in 30 seconds.
+  VariationsSeed seed1 = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+  service.SimulateAndApplyRuntimeMutableChanges(seed1);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+  EXPECT_TRUE(applied_features.empty());
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 0);
+
+  // 10 seconds later, while ShouldDelayRuntimeMutability() is still true,
+  // Seed 2 arrives (which only disables kTestRuntimeFeatureB, superseding
+  // Seed 1). It stops Seed 1's timer and schedules a new 30-second retry for
+  // Seed 2.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  VariationsSeed seed2 = CreateTestRuntimeMutableSeed(
+      "Study2", "Group2", {}, {kTestRuntimeFeatureB.name});
+  service.SimulateAndApplyRuntimeMutableChanges(seed2);
+
+  // 20 seconds later (at t = 30s, when Seed 1's timer would have fired),
+  // nothing happens because Seed 1 was canceled and Seed 2's timer fires at
+  // t = 40s.
+  service.client()->set_should_delay_runtime_mutability(false);
+  task_environment_.FastForwardBy(base::Seconds(20));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+  EXPECT_TRUE(applied_features.empty());
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 0);
+
+  // 10 seconds later (at t = 40s), Seed 2's timer fires. Only Seed 2 is
+  // applied (kTestRuntimeFeatureA remains enabled), and the UMA log is rotated
+  // only once.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+  EXPECT_THAT(applied_features, testing::ElementsAre(base::StrCat(
+                                    {kTestRuntimeFeatureB.name, ":Group2"})));
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 1);
+}
+
+// Verifies that if a seed is delayed because ShouldDelayRuntimeMutability()
+// returns true, and a new seed with no runtime-mutable studies arrives during
+// the waiting period, the new seed still cancels the pending seed.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_NonMutableSeedCancelsPending) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  service.client()->set_should_delay_runtime_mutability(true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitFromCommandLine(
+      "VariationsRuntimeMutability:rotate_uma_log/true",
+      base::features::kFeatureParamWithCache.name);
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/base::DoNothing(),
+      /*post_mutation_callback=*/base::DoNothing());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // Seed 1 disables kTestRuntimeFeatureA and is delayed for 30 seconds.
+  VariationsSeed seed1 = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+  service.SimulateAndApplyRuntimeMutableChanges(seed1);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+
+  // 10 seconds later, Seed 2 arrives with no runtime-mutable studies. It should
+  // cancel the pending Seed 1.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  VariationsSeed seed2 = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+  seed2.mutable_study(0)->set_runtime_mutable(false);
+  service.SimulateAndApplyRuntimeMutableChanges(seed2);
+
+  // Even after ShouldDelayRuntimeMutability() becomes false and 30 seconds
+  // elapse, Seed 1 is never applied.
+  service.client()->set_should_delay_runtime_mutability(false);
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 0);
 }
 
 // Verifies that if post-mutation validation fails, the study name hash is
