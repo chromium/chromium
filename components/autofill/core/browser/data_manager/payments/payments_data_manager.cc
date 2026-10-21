@@ -789,11 +789,8 @@ PaymentsDataManager::GetApplicableBenefitForCardAndOrigin(
 
 std::vector<const CreditCard*> PaymentsDataManager::GetLocalCreditCards()
     const {
-  return base::ToVector(
-      local_credit_cards_,
-      [](const std::unique_ptr<CreditCard>& card) -> const CreditCard* {
-        return card.get();
-      });
+  return base::ToVector<const CreditCard*>(local_credit_cards_,
+                                           &std::unique_ptr<CreditCard>::get);
 }
 
 std::vector<const CreditCard*> PaymentsDataManager::GetServerCreditCards()
@@ -801,11 +798,8 @@ std::vector<const CreditCard*> PaymentsDataManager::GetServerCreditCards()
   if (!IsAutofillWalletImportEnabled()) {
     return {};
   }
-  return base::ToVector(
-      server_credit_cards_,
-      [](const std::unique_ptr<CreditCard>& card) -> const CreditCard* {
-        return card.get();
-      });
+  return base::ToVector<const CreditCard*>(server_credit_cards_,
+                                           &std::unique_ptr<CreditCard>::get);
 }
 
 std::vector<const CreditCard*> PaymentsDataManager::GetCreditCards() const {
@@ -823,24 +817,15 @@ std::vector<const CreditCard*> PaymentsDataManager::GetCreditCards() const {
 }
 
 std::vector<const Iban*> PaymentsDataManager::GetLocalIbans() const {
-  std::vector<const Iban*> result;
-  result.reserve(local_ibans_.size());
-  for (const auto& iban : local_ibans_) {
-    result.push_back(iban.get());
-  }
-  return result;
+  return base::ToVector<const Iban*>(local_ibans_, &std::unique_ptr<Iban>::get);
 }
 
 std::vector<const Iban*> PaymentsDataManager::GetServerIbans() const {
   if (!IsAutofillWalletImportEnabled()) {
     return {};
   }
-  std::vector<const Iban*> result;
-  result.reserve(server_ibans_.size());
-  for (const std::unique_ptr<Iban>& iban : server_ibans_) {
-    result.push_back(iban.get());
-  }
-  return result;
+  return base::ToVector<const Iban*>(server_ibans_,
+                                     &std::unique_ptr<Iban>::get);
 }
 
 std::vector<const Iban*> PaymentsDataManager::GetIbans() const {
@@ -877,12 +862,8 @@ std::vector<Iban> PaymentsDataManager::GetOrderedIbansToSuggest() const {
                                                         comparison_time);
   });
 
-  std::vector<Iban> ibans_to_suggest;
-  ibans_to_suggest.reserve(available_ibans.size());
-  for (const Iban* iban : available_ibans) {
-    ibans_to_suggest.push_back(*iban);
-  }
-  return ibans_to_suggest;
+  return base::ToVector(available_ibans,
+                        [](const Iban* iban) { return *iban; });
 }
 
 bool PaymentsDataManager::HasMaskedBankAccounts() const {
@@ -940,12 +921,8 @@ PaymentsDataManager::GetCreditCardCloudTokenData() const {
   if (!IsAutofillWalletImportEnabled()) {
     return {};
   }
-  std::vector<CreditCardCloudTokenData*> result;
-  result.reserve(server_credit_card_cloud_token_data_.size());
-  for (const auto& data : server_credit_card_cloud_token_data_) {
-    result.push_back(data.get());
-  }
-  return result;
+  return base::ToVector(server_credit_card_cloud_token_data_,
+                        &std::unique_ptr<CreditCardCloudTokenData>::get);
 }
 
 std::vector<const AutofillOfferData*> PaymentsDataManager::GetAutofillOffers()
@@ -953,10 +930,8 @@ std::vector<const AutofillOfferData*> PaymentsDataManager::GetAutofillOffers()
   if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
-  return base::ToVector(
-      autofill_offer_data_,
-      [](const std::unique_ptr<AutofillOfferData>& offer)
-          -> const AutofillOfferData* { return offer.get(); });
+  return base::ToVector<const AutofillOfferData*>(
+      autofill_offer_data_, &std::unique_ptr<AutofillOfferData>::get);
 }
 
 std::vector<const AutofillOfferData*>
@@ -1543,12 +1518,9 @@ void PaymentsDataManager::DeleteLocalCreditCards(
 }
 
 void PaymentsDataManager::DeleteAllLocalCreditCards() {
-  std::vector<CreditCard> cards_to_delete;
-  cards_to_delete.reserve(local_credit_cards_.size());
-  for (const CreditCard* card : GetLocalCreditCards()) {
-    cards_to_delete.push_back(*card);
-  }
-  DeleteLocalCreditCards(cards_to_delete);
+  DeleteLocalCreditCards(base::ToVector(
+      local_credit_cards_,
+      [](const std::unique_ptr<CreditCard>& card) { return *card; }));
 }
 
 bool PaymentsDataManager::HasAllLocalCreditCards() const {
