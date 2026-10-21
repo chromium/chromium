@@ -309,12 +309,7 @@ struct MenuItemAvailability {
       return driveSymbol;
     }
     // Model actions are created from `ComposeboxModelItem`s.
-    case ComposeboxMenuItemType::kModelRegular:
-    case ComposeboxMenuItemType::kModelAuto:
-    case ComposeboxMenuItemType::kModelThinking:
-    case ComposeboxMenuItemType::kModelThinkingNoGenUI:
-    case ComposeboxMenuItemType::kModelFlash:
-    case ComposeboxMenuItemType::kModelProLatest:
+    case ComposeboxMenuItemType::kModel:
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
     case ComposeboxMenuItemType::kMoreOptionsSubmenu:
     case ComposeboxMenuItemType::kUnknown:
@@ -351,12 +346,7 @@ struct MenuItemAvailability {
     case ComposeboxMenuItemType::kAttachmentDrive:
       return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DRIVE_ACTION);
     // Model actions are created from `ComposeboxModelItem`s.
-    case ComposeboxMenuItemType::kModelRegular:
-    case ComposeboxMenuItemType::kModelAuto:
-    case ComposeboxMenuItemType::kModelThinking:
-    case ComposeboxMenuItemType::kModelThinkingNoGenUI:
-    case ComposeboxMenuItemType::kModelFlash:
-    case ComposeboxMenuItemType::kModelProLatest:
+    case ComposeboxMenuItemType::kModel:
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
     case ComposeboxMenuItemType::kMoreOptionsSubmenu:
     case ComposeboxMenuItemType::kUnknown:
@@ -402,12 +392,7 @@ struct MenuItemAvailability {
     case ComposeboxMenuItemType::kCanvas:
       return MenuItemAvailability(_inputState, ComposeboxMode::kCanvas);
     // Model actions are created from `ComposeboxModelItem`s.
-    case ComposeboxMenuItemType::kModelRegular:
-    case ComposeboxMenuItemType::kModelAuto:
-    case ComposeboxMenuItemType::kModelThinking:
-    case ComposeboxMenuItemType::kModelThinkingNoGenUI:
-    case ComposeboxMenuItemType::kModelFlash:
-    case ComposeboxMenuItemType::kModelProLatest:
+    case ComposeboxMenuItemType::kModel:
     case ComposeboxMenuItemType::kUnknown:
     case ComposeboxMenuItemType::kMoreOptionsSubmenu:
     case ComposeboxMenuItemType::kAttachmentSharedTabs:

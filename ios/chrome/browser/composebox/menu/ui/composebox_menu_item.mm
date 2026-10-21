@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
+#import "ios/chrome/browser/composebox/ui/composebox_model_item.h"
 
 @implementation ComposeboxMenuItem
 
@@ -90,6 +91,17 @@
                      favicon:nil];
 }
 
+- (instancetype)initWithModelItem:(ComposeboxModelItem*)modelItem {
+  self = [self initWithTitle:modelItem.title
+                       image:modelItem.icon
+                        type:ComposeboxMenuItemType::kModel
+                    disabled:modelItem.disabled];
+  if (self) {
+    _modelItem = modelItem;
+  }
+  return self;
+}
+
 - (BOOL)isAttachmentType {
   return self.type == ComposeboxMenuItemType::kCurrentTab ||
          self.type == ComposeboxMenuItemType::kAttachmentTabs ||
@@ -117,15 +129,22 @@
          self.disabled == other.disabled &&
          (self.image == other.image || [self.image isEqual:other.image]) &&
          (self.favicon == other.favicon ||
-          [self.favicon isEqual:other.favicon]);
+          [self.favicon isEqual:other.favicon]) &&
+         self.modelItem.modelMode == other.modelItem.modelMode &&
+         self.modelItem.selected == other.modelItem.selected;
 }
 
 - (NSUInteger)hash {
   return static_cast<NSUInteger>(self.type) ^ self.title.hash ^
-         self.subtitle.hash ^ self.favicons.hash ^ self.disabled;
+         self.subtitle.hash ^ self.favicons.hash ^ self.disabled ^
+         static_cast<NSUInteger>(self.modelItem.modelMode) ^
+         self.modelItem.selected;
 }
 
 - (id)copyWithZone:(NSZone*)zone {
+  if (self.modelItem) {
+    return [[ComposeboxMenuItem alloc] initWithModelItem:self.modelItem];
+  }
   return [[ComposeboxMenuItem alloc] initWithTitle:self.title
                                           subtitle:self.subtitle
                                           favicons:self.favicons

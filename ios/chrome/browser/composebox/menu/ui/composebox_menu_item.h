@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 
+@class ComposeboxModelItem;
+
 // Represents a menu item in the Composebox menu.
 @interface ComposeboxMenuItem : NSObject <NSCopying>
 
@@ -26,6 +28,9 @@
 @property(nonatomic, copy, readonly) NSString* subtitle;
 // The composebox menu item favicons.
 @property(nonatomic, copy, readonly) NSArray<UIImage*>* favicons;
+// The model represented by this menu item. Only set for
+// `ComposeboxMenuItemType::kModel` items.
+@property(nonatomic, strong, readonly) ComposeboxModelItem* modelItem;
 
 - (BOOL)isEqual:(id)object;
 - (NSUInteger)hash;
@@ -56,6 +61,9 @@
 - (instancetype)initWithTitle:(NSString*)title
                         image:(UIImage*)image
                          type:(ComposeboxMenuItemType)type;
+
+// Initializes a `ComposeboxMenuItemType::kModel` menu item for `modelItem`.
+- (instancetype)initWithModelItem:(ComposeboxModelItem*)modelItem;
 
 // Returns YES if the item is an attachment type.
 - (BOOL)isAttachmentType;

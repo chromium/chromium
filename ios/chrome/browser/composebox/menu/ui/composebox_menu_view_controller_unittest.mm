@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/composebox/ui/composebox_favicons_accordion_view.h"
+#import "ios/chrome/browser/composebox/ui/composebox_model_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -276,6 +277,34 @@ TEST_F(ComposeboxMenuViewControllerTest,
   // On iPhone SE (available width 343 pt), natural width would be
   // (343 - 30) / 6 = 52 pt, but must be clamped to 60 pt.
   EXPECT_EQ(firstAttributes.frame.size.width, 60.0f);
+}
+
+// Tests that model menu items are identified by their model, so that models
+// sharing a label are distinct items.
+TEST_F(ComposeboxMenuViewControllerTest, TestModelMenuItemIdentity) {
+  ComposeboxModelItem* thinking = [[ComposeboxModelItem alloc]
+      initWithModelMode:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
+                  title:@"Thinking"
+                   icon:nil
+               selected:NO
+               disabled:NO];
+  ComposeboxModelItem* thinkingNoGenUI = [[ComposeboxModelItem alloc]
+      initWithModelMode:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI
+                  title:@"Thinking"
+                   icon:nil
+               selected:NO
+               disabled:NO];
+
+  ComposeboxMenuItem* thinkingItem =
+      [[ComposeboxMenuItem alloc] initWithModelItem:thinking];
+  ComposeboxMenuItem* thinkingNoGenUIItem =
+      [[ComposeboxMenuItem alloc] initWithModelItem:thinkingNoGenUI];
+
+  EXPECT_EQ(thinkingItem.type, ComposeboxMenuItemType::kModel);
+  EXPECT_EQ(thinkingItem.modelItem, thinking);
+  EXPECT_NSEQ(thinkingItem.title, @"Thinking");
+  EXPECT_NSNE(thinkingItem, thinkingNoGenUIItem);
+  EXPECT_NSEQ(thinkingItem, [thinkingItem copy]);
 }
 
 // Tests that Drive has the expected accessibility identifier.

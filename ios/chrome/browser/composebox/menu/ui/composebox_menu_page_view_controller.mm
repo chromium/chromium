@@ -16,10 +16,10 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_section.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_separator_footer.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/composebox/ui/composebox_favicons_accordion_view.h"
+#import "ios/chrome/browser/composebox/ui/composebox_model_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -471,9 +471,11 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     return;
   }
 
-  // Ignore taps on already selected models.
-  if (_inputState.activeModel != ComposeboxModelOption::kNone &&
-      item.type == MenuItemTypeForModel(_inputState.activeModel)) {
+  if (item.type == ComposeboxMenuItemType::kModel) {
+    // Ignore taps on already selected models.
+    if (!item.modelItem.selected) {
+      [self.mutator selectModelItem:item.modelItem];
+    }
     return;
   }
 
@@ -654,8 +656,8 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   if (_inputState.activeTool != ComposeboxMode::kRegularSearch &&
       item.type == MenuItemTypeForTool(_inputState.activeTool)) {
     isSelected = YES;
-  } else if (_inputState.activeModel != ComposeboxModelOption::kNone &&
-             item.type == MenuItemTypeForModel(_inputState.activeModel)) {
+  } else if (item.type == ComposeboxMenuItemType::kModel &&
+             item.modelItem.selected) {
     isSelected = YES;
   }
 
@@ -823,20 +825,9 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   NSMutableArray<ComposeboxMenuItem*>* modelsItems =
       [[NSMutableArray alloc] init];
 
-  ComposeboxUIConfig* uiConfig = _inputState.uiConfig;
-  for (ComposeboxModelOption option : ComposeboxModelOptionSet::All()) {
-    if (option == ComposeboxModelOption::kNone) {
-      continue;
-    }
-
-    if (![_inputState isModelHidden:option]) {
-      [modelsItems
-          addObject:[[ComposeboxMenuItem alloc]
-                        initWithTitle:[uiConfig menuLabelForModel:option]
-                                image:[uiConfig iconForModel:option]
-                                 type:MenuItemTypeForModel(option)
-                             disabled:[_inputState isModelDisabled:option]]];
-    }
+  for (ComposeboxModelItem* modelItem in _inputState.modelItems) {
+    [modelsItems
+        addObject:[[ComposeboxMenuItem alloc] initWithModelItem:modelItem]];
   }
 
   if (modelsItems.count == 0) {
@@ -844,7 +835,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   }
 
   return [[ComposeboxMenuSection alloc]
-      initWithTitle:uiConfig.modelSectionHeader
+      initWithTitle:_inputState.uiConfig.modelSectionHeader
               items:modelsItems
          identifier:ComposeboxMenuSectionIdentifier::kModels];
 }

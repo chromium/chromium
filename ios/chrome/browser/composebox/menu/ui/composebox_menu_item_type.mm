@@ -4,25 +4,6 @@
 
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 
-ComposeboxMenuItemType MenuItemTypeForModel(ComposeboxModelOption option) {
-  switch (option) {
-    case ComposeboxModelOption::kRegular:
-      return ComposeboxMenuItemType::kModelRegular;
-    case ComposeboxModelOption::kAuto:
-      return ComposeboxMenuItemType::kModelAuto;
-    case ComposeboxModelOption::kThinking:
-      return ComposeboxMenuItemType::kModelThinking;
-    case ComposeboxModelOption::kThinkingNoGenUI:
-      return ComposeboxMenuItemType::kModelThinkingNoGenUI;
-    case ComposeboxModelOption::kFlash:
-      return ComposeboxMenuItemType::kModelFlash;
-    case ComposeboxModelOption::kProLatest:
-      return ComposeboxMenuItemType::kModelProLatest;
-    case ComposeboxModelOption::kNone:
-      return ComposeboxMenuItemType::kUnknown;
-  }
-}
-
 ComposeboxMenuItemType MenuItemTypeForTool(ComposeboxMode mode) {
   switch (mode) {
     case ComposeboxMode::kAIM:
