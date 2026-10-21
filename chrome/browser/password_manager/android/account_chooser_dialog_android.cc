@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -146,7 +147,7 @@ bool AccountChooserDialogAndroid::ShowDialog() {
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN);
   }
   dialog_jobject_.Reset(Java_AccountChooserDialog_createAndShowAccountChooser(
-      env, native_window->GetJavaObject(), reinterpret_cast<intptr_t>(this),
+      env, native_window->GetJavaObject(), jni_zero::MakeRaw(this),
       java_credentials_array, title, origin, signin_button));
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory =
       GetURLLoaderForMainFrame(web_contents_);
