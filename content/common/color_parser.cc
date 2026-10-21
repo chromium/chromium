@@ -7,7 +7,10 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <string>
+#include <string_view>
 
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
@@ -20,7 +23,7 @@
 namespace content {
 namespace {
 
-bool ParseHslColorString(const std::string& color_string, SkColor* result) {
+bool ParseHslColorString(std::string_view color_string, SkColor* result) {
   // http://www.w3.org/wiki/CSS/Properties/color/HSL#The_format_of_the_HSL_Value
   // The CSS3 specification defines the format of a HSL color as
   // hsl(<number>, <percent>, <percent>)
@@ -56,17 +59,20 @@ bool ParseHslColorString(const std::string& color_string, SkColor* result) {
 
 }  // anonymous namespace
 
-bool ParseCssColorString(const std::string& color_string, SkColor* result) {
-  if (color_string.empty())
+bool ParseCssColorString(std::string_view color_string, SkColor* result) {
+  if (color_string.empty()) {
     return false;
-  if (color_string[0] == '#')
+  }
+  if (color_string[0] == '#') {
     return ParseHexColorString(color_string, result);
-  if (base::StartsWith(color_string, "hsl", base::CompareCase::SENSITIVE))
+  }
+  if (base::StartsWith(color_string, "hsl", base::CompareCase::SENSITIVE)) {
     return ParseHslColorString(color_string, result);
+  }
   if (base::StartsWith(color_string, "rgb", base::CompareCase::SENSITIVE)) {
     return ParseRgbColorString(color_string, result);
   }
-  if (SkParse::FindNamedColor(color_string.c_str(), color_string.size(),
+  if (SkParse::FindNamedColor(color_string.data(), color_string.size(),
                               result) != nullptr) {
     return true;
   }
@@ -74,14 +80,15 @@ bool ParseCssColorString(const std::string& color_string, SkColor* result) {
   return false;
 }
 
-bool ParseHexColorString(const std::string& color_string, SkColor* result) {
+bool ParseHexColorString(std::string_view color_string, SkColor* result) {
   std::string formatted_color;
   // Save a memory allocation -- we never need more than 8 chars.
   formatted_color.reserve(8);
 
   // Check the string for incorrect formatting.
-  if (color_string.empty() || color_string[0] != '#')
+  if (color_string.empty() || color_string[0] != '#') {
     return false;
+  }
 
   // Convert the string from #FFF format to #FFFFFF format.
   if (color_string.length() == 4 || color_string.length() == 5) {
@@ -104,15 +111,16 @@ bool ParseHexColorString(const std::string& color_string, SkColor* result) {
 
   // Convert the hex string to an integer.
   std::array<uint8_t, 4> color_bytes;
-  if (!base::HexStringToSpan(formatted_color, color_bytes))
+  if (!base::HexStringToSpan(formatted_color, color_bytes)) {
     return false;
+  }
 
   *result = SkColorSetARGB(color_bytes[3], color_bytes[0], color_bytes[1],
                            color_bytes[2]);
   return true;
 }
 
-bool ParseRgbColorString(const std::string& color_string, SkColor* result) {
+bool ParseRgbColorString(std::string_view color_string, SkColor* result) {
   // https://www.w3.org/wiki/CSS/Properties/color/RGB#The_format_of_the_RGB_Value
   // The CSS3 specification defines the format of a RGB color as
   // rgb(<number>, <number>, <number>) or

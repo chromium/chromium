@@ -4,40 +4,42 @@
 
 #include "content/public/common/color_parser.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {
 
-void RunPassCssTest(const std::string& css_string, SkColor expected_result) {
+void RunPassCssTest(std::string_view css_string, SkColor expected_result) {
   SkColor color = 0;
   EXPECT_TRUE(ParseCssColorString(css_string, &color));
   EXPECT_EQ(color, expected_result);
 }
 
-void RunFailCssTest(const std::string& css_string) {
+void RunFailCssTest(std::string_view css_string) {
   SkColor color = 0;
   EXPECT_FALSE(ParseCssColorString(css_string, &color));
 }
 
-void RunPassHexTest(const std::string& css_string, SkColor expected_result) {
+void RunPassHexTest(std::string_view css_string, SkColor expected_result) {
   SkColor color = 0;
   EXPECT_TRUE(ParseHexColorString(css_string, &color));
   EXPECT_EQ(color, expected_result);
 }
 
-void RunFailHexTest(const std::string& css_string) {
+void RunFailHexTest(std::string_view css_string) {
   SkColor color = 0;
   EXPECT_FALSE(ParseHexColorString(css_string, &color));
 }
 
-void RunPassRgbTest(const std::string& rgb_string, SkColor expected) {
+void RunPassRgbTest(std::string_view rgb_string, SkColor expected) {
   SkColor color = 0;
   EXPECT_TRUE(ParseRgbColorString(rgb_string, &color));
   EXPECT_EQ(color, expected);
 }
 
-void RunFailRgbTest(const std::string& rgb_string) {
+void RunFailRgbTest(std::string_view rgb_string) {
   SkColor color = 0;
   EXPECT_FALSE(ParseRgbColorString(rgb_string, &color));
 }
