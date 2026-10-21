@@ -995,7 +995,7 @@ message MathData {
   // MathML tags become <mrow>; non-MathML tags are unwrapped) and the alttext,
   // mathvariant, rowspan and columnspan attributes, minus annotations. `&`,
   // `<`, `>` and `$` are XML-escaped. Unset if the markup would exceed 65536
-  // bytes or 128 levels of nesting.
+  // bytes or 64 levels of nesting.
   //
   // For backward compatibility, the node's descendants also carry the formula
   // as rendered text.

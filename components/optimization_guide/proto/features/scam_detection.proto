@@ -35,6 +35,9 @@ message ScamDetectionRequest {
 
   // The URL of the web page being scanned.
   string url = 2 [features = { field_presence: EXPLICIT }];
+
+  // Raw PNG bytes of the tab screenshot.
+  bytes tab_screenshot = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // Information about LLM detection of a page of what the page is about. This

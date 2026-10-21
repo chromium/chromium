@@ -496,10 +496,17 @@ class _GetProtoValue:
         out.write('}\n\n')  # End function
 
     @classmethod
+    def _IsSupported(cls, field: Field) -> bool:
+        return not field.is_repeated and field.type not in {
+            Type.GROUP,
+            Type.BYTES,
+        }
+
+    @classmethod
     def _IfMsg(cls, out: IO[str], msg: Message):
         if msg.type_name == "optimization_guide.proto.Media":
             return
-        if all(field.is_repeated for field in msg.fields):
+        if not any(cls._IsSupported(field) for field in msg.fields):
             # Omit the empty case to avoid unused variable warnings.
             return
         out.write(f'if (msg.GetTypeName() == "{msg.type_name}") {{\n')
@@ -507,7 +514,7 @@ class _GetProtoValue:
         out.write(f'  static_cast<const {msg.cpp_name}&>(msg);\n')
         out.write('switch (tag_number) {\n')
         for field in msg.fields:
-            if field.is_repeated:
+            if not cls._IsSupported(field):
                 continue
             cls._FieldCase(out, field)
         out.write('}\n')  # End switch
