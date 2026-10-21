@@ -331,7 +331,6 @@ if (!is_android) {
       "//chrome/browser/spellchecker",
       "//chrome/browser/ttc/core",
       "//chrome/browser/ui:accelerator_table",
-      "//chrome/browser/ui:browser_action_prefs_listener",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions",
@@ -1082,21 +1081,6 @@ source_set("browser_otr_state") {
 }
 
 if (!is_android) {
-  source_set("browser_action_prefs_listener") {
-    public = [ "browser_action_prefs_listener.h" ]
-    sources = [ "browser_action_prefs_listener.cc" ]
-    deps = [
-      "//base",
-      "//chrome/browser:browser_process",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui:browser_actions",
-      "//chrome/browser/ui/actions:actions_headers",
-      "//chrome/common:constants",
-      "//components/prefs",
-      "//ui/actions",
-    ]
-  }
-
   source_set("focus_tab_after_navigation_helper") {
     public = [ "focus_tab_after_navigation_helper.h" ]
     sources = [ "focus_tab_after_navigation_helper.cc" ]

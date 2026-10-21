@@ -284,6 +284,12 @@ class BrowserCommandController : public CommandUpdater,
   // Updates commands and actions for the profile menu.
   void UpdateCommandsForProfile();
 
+  // Updates action visibilities that depend on the sharing hub policy.
+  void UpdateActionsForSharingHubPolicy();
+
+  // Updates the QR code generator action enabled state.
+  void UpdateQRCodeGeneratorActionEnabledState();
+
   void UpdateCommandAndActionEnabled(int command_id,
                                      actions::ActionId action_id,
                                      bool enabled);

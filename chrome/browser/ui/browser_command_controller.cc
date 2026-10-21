@@ -359,9 +359,21 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
         base::BindRepeating(
             &BrowserCommandController::UpdateCommandsForFileSelectionDialogs,
             base::Unretained(this)));
+    local_pref_registrar_.Add(
+        prefs::kQRCodeGeneratorEnabled,
+        base::BindRepeating(
+            &BrowserCommandController::UpdateQRCodeGeneratorActionEnabledState,
+            base::Unretained(this)));
   }
 
   profile_pref_registrar_.Init(profile()->GetPrefs());
+#if !BUILDFLAG(IS_CHROMEOS)
+  profile_pref_registrar_.Add(
+      prefs::kDesktopSharingHubEnabled,
+      base::BindRepeating(
+          &BrowserCommandController::UpdateActionsForSharingHubPolicy,
+          base::Unretained(this)));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   profile_pref_registrar_.Add(
       bookmarks::prefs::kEditBookmarksEnabled,
       base::BindRepeating(
@@ -2938,6 +2950,35 @@ void BrowserCommandController::UpdateCommandsForProfile() {
   if (auto* const profile_action =
           FindAction(kActionProfileSubmenu, browser_)) {
     profile_action->SetAccessibleName(accessible_name);
+  }
+}
+
+void BrowserCommandController::UpdateActionsForSharingHubPolicy() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Update the visibility of the QR code generator, send tab to self, and copy
+  // link actions based on the sharing hub policy. This matches the fact that
+  // these actions' visibility in the app menu.
+  const bool sharing_enabled =
+      profile()->GetPrefs()->GetBoolean(prefs::kDesktopSharingHubEnabled);
+
+  auto update_action_visibility =
+      [this, &sharing_enabled](actions::ActionId action_id) {
+        if (auto* action_item = FindAction(action_id, browser_)) {
+          action_item->SetVisible(sharing_enabled);
+        }
+      };
+  update_action_visibility(kActionQrCodeGenerator);
+  update_action_visibility(kActionSendTabToSelf);
+  update_action_visibility(kActionCopyUrl);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+void BrowserCommandController::UpdateQRCodeGeneratorActionEnabledState() {
+  bool qr_code_generator_enabled = g_browser_process->local_state()->GetBoolean(
+      prefs::kQRCodeGeneratorEnabled);
+  if (auto* qr_code_action_item =
+          FindAction(kActionQrCodeGenerator, browser_)) {
+    qr_code_action_item->SetEnabled(qr_code_generator_enabled);
   }
 }
 

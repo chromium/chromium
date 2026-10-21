@@ -106,7 +106,6 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_bubble_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser_action_prefs_listener.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -408,7 +407,6 @@ BrowserActions::BrowserActions(BrowserWindowInterface* bwi)
       scoped_unowned_user_data_(bwi->GetUnownedUserDataHost(), *this) {}
 
 BrowserActions::~BrowserActions() {
-  browser_action_prefs_listener_.reset();
   // Extract the root and destruct it after the raw_ptr to avoid a dangling
   // pointer scenario.
   if (root_action_item_) {
@@ -428,8 +426,6 @@ void BrowserActions::InitializeBrowserActions() {
   InitializeToolbarAndMiscActions();
   InitializeNavigationActions();
   InitializeSubmenuActions();
-
-  AddListeners();
 }
 
 void BrowserActions::InitializeSidePanelActions() {
@@ -5501,9 +5497,4 @@ void BrowserActions::InitializeSubmenuActions() {
           contextual_tasks_submenu_icon,
           /*is_pinnable=*/false)
           .Build());
-}
-
-void BrowserActions::AddListeners() {
-  browser_action_prefs_listener_ = std::make_unique<BrowserActionPrefsListener>(
-      base::to_address(profile_), this);
 }

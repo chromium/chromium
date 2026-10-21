@@ -5,14 +5,10 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_ACTIONS_H_
 #define CHROME_BROWSER_UI_BROWSER_ACTIONS_H_
 
-#include <memory>
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class BrowserActionPrefsListener;
 class BrowserWindowInterface;
 class Profile;
 
@@ -51,12 +47,7 @@ class BrowserActions {
   void InitializeNavigationActions();
   void InitializeSubmenuActions();
 
-  // Creates all the listeners for the action items that update different states
-  // and property of the action item.
-  void AddListeners();
-
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
-  std::unique_ptr<BrowserActionPrefsListener> browser_action_prefs_listener_;
   const raw_ref<BrowserWindowInterface> bwi_;
   const raw_ref<Profile> profile_;
   ui::ScopedUnownedUserData<BrowserActions> scoped_unowned_user_data_;
