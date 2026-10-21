@@ -9,6 +9,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -34,7 +35,7 @@ HtmlColorPickerBridge::HtmlColorPickerBridge(
 
   // Create a bridge to communicate with Java-side code.
   j_color_chooser_.Reset(Java_HtmlColorPickerBridge_create(
-      env, reinterpret_cast<intptr_t>(this), window_android));
+      env, jni_zero::MakeRaw(this), window_android));
 
   // End with the initial color if the bridge creation failed.
   if (j_color_chooser_.is_null()) {
