@@ -5031,7 +5031,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.api.async" units="code units"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -5042,7 +5042,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.api.check" units="code units"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -5054,7 +5054,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.api.check.suggestions" units="code units"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -5096,7 +5096,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.CheckedWordsPerHour" units="words"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -5120,7 +5120,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.Enabled2" enum="BooleanEnabled"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -5179,7 +5179,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.SpellingService.Enabled2" enum="BooleanEnabled"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -5198,7 +5198,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.SpellingService.RequestResultType"
-    enum="ServiceRequestResultType" expires_after="2024-12-01">
+    enum="ServiceRequestResultType" expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
