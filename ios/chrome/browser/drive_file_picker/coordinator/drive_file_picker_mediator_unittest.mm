@@ -120,10 +120,6 @@ class MockDriveFilePickerImageFetcher : public DriveFilePickerImageFetcher {
 }
 
 - (void)mediator:(DriveFilePickerMediator*)mediator
-    didActivateSearch:(BOOL)searchActivated {
-}
-
-- (void)mediator:(DriveFilePickerMediator*)mediator
     didPickDriveItems:(const std::vector<DriveItem>&)driveItems {
 }
 

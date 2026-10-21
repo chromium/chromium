@@ -117,9 +117,6 @@
   _viewController.driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   [_baseNavigationController pushViewController:_viewController animated:YES];
-  _baseNavigationController.sheetPresentationController.prefersGrabberVisible =
-      YES;
-
   _viewController.mutator = _mediator;
   [_mediator setCollection:std::move(_collection)];
   _mediator.consumer = _viewController;
@@ -203,12 +200,6 @@
 - (void)mediator:(DriveFilePickerMediator*)mediator
     didAllowDismiss:(BOOL)allowDismiss {
   [self.delegate coordinator:self didAllowDismiss:allowDismiss];
-}
-
-- (void)mediator:(DriveFilePickerMediator*)mediator
-    didActivateSearch:(BOOL)searchActivated {
-  _baseNavigationController.sheetPresentationController.prefersGrabberVisible =
-      !searchActivated;
 }
 
 - (void)mediator:(DriveFilePickerMediator*)mediator

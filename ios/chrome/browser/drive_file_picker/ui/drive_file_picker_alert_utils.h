@@ -17,6 +17,7 @@ UIAlertController* FailAlertController(NSString* file_name,
 // Returns an alert asking the user to confirm whether to discard the selection.
 UIAlertController* DiscardSelectionAlertController(
     ProceduralBlock discard_block,
-    ProceduralBlock cancel_block);
+    ProceduralBlock cancel_block,
+    UITraitCollection* trait_collection);
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_ALERT_UTILS_H_

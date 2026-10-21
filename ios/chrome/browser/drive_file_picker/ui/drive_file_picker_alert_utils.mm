@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -54,10 +55,12 @@ UIAlertController* FailAlertController(NSString* file_name,
 
 UIAlertController* DiscardSelectionAlertController(
     ProceduralBlock discard_block,
-    ProceduralBlock cancel_block) {
+    ProceduralBlock cancel_block,
+    UITraitCollection* trait_collection) {
   UIAlertControllerStyle style =
       (ui::GetDeviceFormFactor() ==
-       ui::DeviceFormFactor::DEVICE_FORM_FACTOR_TABLET)
+           ui::DeviceFormFactor::DEVICE_FORM_FACTOR_TABLET ||
+       IsRegularXRegularSizeClass(trait_collection))
           ? UIAlertControllerStyleAlert
           : UIAlertControllerStyleActionSheet;
   UIAlertController* alert = [UIAlertController

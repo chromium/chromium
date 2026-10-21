@@ -61,6 +61,7 @@ source_set("alert_utils") {
     "//base",
     "//components/strings:components_strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 }

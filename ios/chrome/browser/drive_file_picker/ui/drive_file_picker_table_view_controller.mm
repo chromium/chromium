@@ -25,6 +25,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/font/font_api.h"
@@ -200,6 +201,10 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   // Whether the view is showing the logo title (and thus must be updated for
   // dark/light mode).
   BOOL _isShowingLogoTitle;
+
+  // Registration for size-class trait changes on the presenting view
+  // controller.
+  id<UITraitChangeRegistration> _traitChangeRegistration;
 }
 
 - (instancetype)init {
@@ -297,11 +302,41 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
                      withAction:@selector(userInterfaceStyleDidChange)];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self
+      updateSheetGrabberVisibilityForSearchState:self.navigationItem
+                                                     .searchController.active];
+  if (self.presentingViewController && !_traitChangeRegistration) {
+    __weak __typeof(self) weakSelf = self;
+    _traitChangeRegistration = [self.presentingViewController
+        registerForTraitChanges:@[
+          UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
+        ]
+                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                  UITraitCollection* previousCollection) {
+                      [weakSelf handleTraitChangeWithPreviousCollection:
+                                    previousCollection
+                                                       traitEnvironment:
+                                                           traitEnvironment];
+                    }];
+  }
+}
+
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   // Force VoiceOver to focus the heading of the view.
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   self.navigationItem.titleView);
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  if (_traitChangeRegistration) {
+    [self.presentingViewController
+        unregisterForTraitChanges:_traitChangeRegistration];
+    _traitChangeRegistration = nil;
+  }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -350,6 +385,27 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 #pragma mark - Private
+
+// Handles size-class trait changes on the presenting view controller.
+- (void)handleTraitChangeWithPreviousCollection:
+            (UITraitCollection*)previousCollection
+                               traitEnvironment:
+                                   (id<UITraitEnvironment>)traitEnvironment {
+  if (IsRegularXRegularSizeClass(traitEnvironment) !=
+      IsRegularXRegularSizeClass(previousCollection)) {
+    [self updateSheetGrabberVisibilityForSearchState:self.navigationItem
+                                                         .searchController
+                                                         .active];
+  }
+}
+
+// Updates the sheet grabber visibility based on `searchActive` and the
+// presenting view controller's size class.
+- (void)updateSheetGrabberVisibilityForSearchState:(BOOL)searchActive {
+  self.navigationController.sheetPresentationController.prefersGrabberVisible =
+      !searchActive &&
+      !IsRegularXRegularSizeClass(self.presentingViewController);
+}
 
 // Updates `_diffableDataSource.editableItems` so it contains all items which
 // are enabled files inside of `_primaryItems` and `_secondaryItems`. For the
@@ -1057,6 +1113,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setSearchBarFocused:(BOOL)focused searchText:(NSString*)searchText {
+  [self updateSheetGrabberVisibilityForSearchState:focused];
   UISearchController* searchController = self.navigationItem.searchController;
   UISearchBar* searchBar = searchController.searchBar;
   if (searchController.active == focused) {
@@ -1238,10 +1295,12 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 #pragma mark - UISearchControllerDelegate
 
 - (void)willDismissSearchController:(UISearchController*)searchController {
+  [self updateSheetGrabberVisibilityForSearchState:NO];
   [self.mutator setSearchBarFocused:NO];
 }
 
 - (void)willPresentSearchController:(UISearchController*)searchController {
+  [self updateSheetGrabberVisibilityForSearchState:YES];
   [self.mutator setSearchBarFocused:YES];
 }
 

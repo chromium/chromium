@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
-#import "ui/base/device_form_factor.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
@@ -102,8 +102,12 @@ CGRect GetKeyboardFrameInWindow(CGRect keyboardFrame,
     // updated the additional safe area insets to account for the keyboard.
     return;
   }
-  // Since the keyboard went up, switch to a large detent on phones.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+  // Since the keyboard went up, switch to a large detent in
+  // non-regular-x-regular layouts.
+  UITraitCollection* containerTraits =
+      self.view.window ? self.view.window.traitCollection
+                       : self.presentingViewController.traitCollection;
+  if (!IsRegularXRegularSizeClass(containerTraits)) {
     self.sheetPresentationController.selectedDetentIdentifier =
         UISheetPresentationControllerDetentIdentifierLarge;
   }
