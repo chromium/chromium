@@ -344,6 +344,7 @@ if (!is_android) {
       "//chrome/browser/prefs",
       "//chrome/browser/search_engines",
       "//chrome/browser/send_tab_to_self",
+      "//chrome/browser/sharing_hub",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/lens",

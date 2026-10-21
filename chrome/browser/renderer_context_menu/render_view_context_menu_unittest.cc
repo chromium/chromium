@@ -43,6 +43,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -124,6 +125,7 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "url/gurl.h"
@@ -3303,4 +3305,117 @@ TEST_F(RenderViewContextMenuPrefsTest, ExecPlatformCommandCalledAndLogged) {
   EXPECT_TRUE(menu.platform_command_executed());
   histogram_tester.ExpectBucketCount("RenderViewContextMenu.Used", /*98*/ 98,
                                      1);
+}
+
+class RenderViewContextMenuOrderTest : public RenderViewContextMenuPrefsTest {
+ public:
+  static constexpr int kSeparatorId = -1;
+
+  RenderViewContextMenuOrderTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{lens::features::kLensOverlay,
+                              lens::features::kLensStandalone,
+                              media::kContextMenuSearchForVideoFrame},
+        /*disabled_features=*/{
+            features::kMenuSimplification, features::kReadAnythingImprovedUi,
+            features::kGlic, sharing_hub::kDesktopScreenshots});
+  }
+
+  void SetUp() override {
+    RenderViewContextMenuPrefsTest::SetUp();
+    translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
+    NavigateAndCommit(GURL("https://www.example.com/"));
+    SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                         /*supports_image_search=*/true);
+    ChromeTranslateClient::CreateForWebContents(web_contents());
+    ChromeTranslateClient* translate_client =
+        ChromeTranslateClient::FromWebContents(web_contents());
+    ASSERT_TRUE(translate_client);
+    translate_client->GetTranslateManager()
+        ->GetLanguageState()
+        ->LanguageDetermined("fr", true);
+  }
+
+  void TearDown() override {
+    translate::TranslateManager::SetIgnoreMissingKeyForTesting(false);
+    RenderViewContextMenuPrefsTest::TearDown();
+  }
+
+  std::unique_ptr<TestRenderViewContextMenu> CreateAndInitMenu(
+      content::ContextMenuParams params) {
+    if (!params.link_url.is_empty() && params.unfiltered_link_url.is_empty()) {
+      params.unfiltered_link_url = params.link_url;
+    }
+    params.properties[prefs::kDefaultSearchProviderContextMenuAccessAllowed] =
+        "";
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents()->GetPrimaryMainFrame(), params);
+    menu->SetBrowser(GetBrowser());
+    menu->set_protocol_handler_registry(protocol_handler_registry());
+    menu->Init();
+    return menu;
+  }
+
+  static std::vector<int> GetMenuItemsAndSeparators(
+      const ui::MenuModel& model) {
+    std::vector<int> items;
+    items.reserve(model.GetItemCount());
+    for (size_t i = 0; i < model.GetItemCount(); ++i) {
+      if (model.GetTypeAt(i) == ui::MenuModel::TYPE_SEPARATOR) {
+        EXPECT_EQ(kSeparatorId, model.GetCommandIdAt(i))
+            << "Separator at index " << i << " did not have kSeparatorId";
+        items.push_back(kSeparatorId);
+      } else {
+        EXPECT_NE(kSeparatorId, model.GetCommandIdAt(i))
+            << "Non-separator at index " << i << " had kSeparatorId";
+        items.push_back(model.GetCommandIdAt(i));
+      }
+    }
+    return items;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(RenderViewContextMenuOrderTest, PageMenu_Order) {
+  content::ContextMenuParams params = CreateParams(0);
+  params.page_url = GURL("https://www.example.com/");
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId, IDC_SAVE_PAGE,
+          IDC_PRINT, IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+          kSeparatorId, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, kSeparatorId,
+          IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
+          IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+class RenderViewContextMenuSimplifiedOrderTest
+    : public RenderViewContextMenuOrderTest {
+ public:
+  RenderViewContextMenuSimplifiedOrderTest() {
+    simplification_feature_list_.InitAndEnableFeature(
+        features::kMenuSimplification);
+  }
+
+ private:
+  base::test::ScopedFeatureList simplification_feature_list_;
+};
+
+TEST_F(RenderViewContextMenuSimplifiedOrderTest, PageMenu_Order) {
+  content::ContextMenuParams params = CreateParams(0);
+  params.page_url = GURL("https://www.example.com/");
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId, IDC_SAVE_PAGE,
+          IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+          IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE,
+          IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
+          IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
