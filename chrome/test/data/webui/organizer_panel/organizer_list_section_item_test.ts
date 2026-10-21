@@ -7,6 +7,7 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionItemElement, StackedFaviconsElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -443,4 +444,109 @@ suite('OrganizerListSectionItemTest', () => {
         assertDeepEquals([[]], listItem.$.title.highlightRanges);
         assertDeepEquals([[]], listItem.$.description.highlightRanges);
       });
+
+  test(
+      'sets tabIndex to -1 on focusable element and supports focus()',
+      async () => {
+        listItem.item = {
+          title: ['Google Search'],
+        };
+        await microtasksFinished();
+
+        assertEquals(
+            -1, listItem.$.crUrlListItem.getFocusableElement().tabIndex);
+
+        listItem.focus();
+        assertEquals(
+            listItem.$.crUrlListItem.getFocusableElement(),
+            getDeepActiveElement());
+      });
+
+  test('tab navigation on item with action button', async () => {
+    listItem.item = {
+      title: ['Tab with close action'],
+      hoveredActionButton: {
+        icon: 'cr:close',
+        ariaLabel: 'Close tab',
+      },
+    };
+    await microtasksFinished();
+
+    listItem.focus();
+    assertEquals(
+        listItem.$.crUrlListItem.getFocusableElement(), getDeepActiveElement());
+
+    const actionButton =
+        listItem.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
+    assertTrue(!!actionButton);
+
+    // Tab focuses action button
+    listItem.$.crUrlListItem.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    assertEquals(actionButton, getDeepActiveElement());
+
+    // Shift+Tab on action button returns focus to item
+    actionButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    assertEquals(
+        listItem.$.crUrlListItem.getFocusableElement(), getDeepActiveElement());
+
+    // Tab on action button fires focus-next-section
+    const whenFocusNextSection = eventToPromise('focus-next-section', listItem);
+    actionButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await whenFocusNextSection;
+  });
+
+  test('tab navigation on item without action button', async () => {
+    listItem.item = {
+      title: ['Tab without action button'],
+    };
+    await microtasksFinished();
+
+    listItem.focus();
+
+    // Tab fires focus-next-section immediately
+    const whenFocusNextSection = eventToPromise('focus-next-section', listItem);
+    listItem.$.crUrlListItem.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await whenFocusNextSection;
+  });
+
+  test('shift+tab on item fires focus-current-section', async () => {
+    listItem.item = {
+      title: ['Tab'],
+    };
+    await microtasksFinished();
+
+    listItem.focus();
+
+    const whenFocusCurrentSection =
+        eventToPromise('focus-current-section', listItem);
+    listItem.$.crUrlListItem.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await whenFocusCurrentSection;
+  });
 });
