@@ -23,6 +23,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/media/router/providers/cast/cast_activity_test_base.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
@@ -200,8 +201,23 @@ class CastActivityManagerTest : public testing::Test,
       const std::string& app_id) override {
     auto activity = std::make_unique<NiceMock<MockAppActivity>>(route, app_id);
     app_activity_ = activity.get();
+    if (use_real_add_client_) {
+      UseRealAddClient(activity.get());
+    }
     app_activity_callback_.Run(activity.get());
     return activity;
+  }
+
+  // Makes `activity` track connected clients like a real AppActivity, so that
+  // session join and auto-join logic can be exercised.
+  static void UseRealAddClient(MockAppActivity* activity) {
+    ON_CALL(*activity, AddClient)
+        .WillByDefault([activity](const CastMediaSource& source,
+                                  const url::Origin& origin,
+                                  content::FrameTreeNodeId frame_tree_node_id) {
+          return activity->CastActivity::AddClient(source, origin,
+                                                   frame_tree_node_id);
+        });
   }
 
   // from CastActivityFactoryForTest
@@ -558,6 +574,8 @@ class CastActivityManagerTest : public testing::Test,
   cast_channel::Result stop_session_callback_arg_ = cast_channel::Result::kOk;
   mojom::RoutePresentationConnectionPtr presentation_connections_;
   const std::string cast_streaming_app_id_;
+  // If true, app activities created by this fixture track connected clients.
+  bool use_real_add_client_ = false;
   NiceMock<MockLogger> mock_logger_;
   mojo::Remote<mojom::Logger> logger_;
   std::unique_ptr<mojo::Receiver<mojom::Logger>> logger_receiver_;
@@ -1062,6 +1080,274 @@ TEST_F(CastActivityManagerTest, AddMirroringActivityOverwritesAppActivity) {
   EXPECT_TRUE(
       manager_->app_activities_for_testing().find(route.media_route_id()) ==
       manager_->app_activities_for_testing().end());
+}
+
+namespace {
+
+constexpr char kClientId2[] = "theClientId2";
+constexpr char kOtherOrigin[] = "https://example.com";
+constexpr char kSessionPresentationId[] = "cast-session_theSessionId";
+
+std::string MakeJoinSourceId(const std::string& app_id,
+                             const std::string& client_id,
+                             const std::string& auto_join_policy) {
+  return base::StrCat({"cast:", app_id, "?clientId=", client_id,
+                       "&autoJoinPolicy=", auto_join_policy});
+}
+
+struct JoinResult {
+  std::optional<MediaRoute> route;
+  std::optional<std::string> error_message;
+  mojom::RouteRequestResultCode result_code =
+      mojom::RouteRequestResultCode::UNKNOWN_ERROR;
+};
+
+}  // namespace
+
+// Tests for joining an existing app session, either by session ID (as the
+// Cast SDK does when reconnecting) or through an auto-join policy.
+class CastActivityManagerJoinTest : public CastActivityManagerTest,
+                                    public CastSessionClientFactoryForTest {
+ public:
+  void SetUp() override {
+    CastActivityManagerTest::SetUp();
+    use_real_add_client_ = true;
+    CastActivity::SetClientFactoryForTest(this);
+  }
+
+  void TearDown() override {
+    CastActivityManagerTest::TearDown();
+    CastActivity::SetClientFactoryForTest(nullptr);
+  }
+
+  // from CastSessionClientFactoryForTest
+  std::unique_ptr<CastSessionClient> MakeClientForTest(
+      const std::string& client_id,
+      const url::Origin& origin,
+      content::FrameTreeNodeId frame_tree_node_id) override {
+    return std::make_unique<NiceMock<MockCastSessionClient>>(
+        client_id, origin, frame_tree_node_id);
+  }
+
+  // Launches an app session for `kAppId1` from `origin_` and
+  // `kFrameTreeNodeId`, with a connected client `kClientId`.
+  void LaunchSessionForJoin() {
+    LaunchAppSession();
+    ASSERT_TRUE(app_activity_);
+    ASSERT_EQ("theSessionId", app_activity_->session_id());
+    // Expectations set during launch would be oversaturated by a join, so
+    // reset them and restore the client tracking behavior.
+    testing::Mock::VerifyAndClearExpectations(app_activity_);
+    UseRealAddClient(app_activity_);
+  }
+
+  JoinResult JoinSession(const std::string& source_id,
+                         const std::string& presentation_id,
+                         const url::Origin& origin,
+                         content::FrameTreeNodeId frame_tree_node_id) {
+    auto source = CastMediaSource::FromMediaSourceId(source_id);
+    CHECK(source);
+    JoinResult result;
+    bool called = false;
+    manager_->JoinSession(
+        *source, presentation_id, origin, frame_tree_node_id,
+        base::BindLambdaForTesting(
+            [&](const std::optional<MediaRoute>& route,
+                mojom::RoutePresentationConnectionPtr,
+                const std::optional<std::string>& error_message,
+                mojom::RouteRequestResultCode result_code) {
+              called = true;
+              result.route = route;
+              result.error_message = error_message;
+              result.result_code = result_code;
+            }));
+    RunUntilIdle();
+    EXPECT_TRUE(called);
+    return result;
+  }
+
+  // Expects a successful join by `client_id` to send the client a
+  // "new_session" message and to open a virtual connection for it.
+  void ExpectJoinSuccess(const std::string& client_id) {
+    EXPECT_CALL(
+        *app_activity_,
+        AddClient(testing::Property(&CastMediaSource::client_id, client_id), _,
+                  _));
+    EXPECT_CALL(*app_activity_, SendMessageToClient(client_id, _));
+    EXPECT_CALL(message_handler_,
+                EnsureConnection(kChannelId, client_id, "theTransportId",
+                                 cast_channel::VirtualConnectionType::kStrong));
+  }
+
+  void ExpectNoJoin() {
+    EXPECT_CALL(*app_activity_, AddClient).Times(0);
+    EXPECT_CALL(message_handler_, EnsureConnection).Times(0);
+  }
+
+  const url::Origin other_origin_ = url::Origin::Create(GURL(kOtherOrigin));
+};
+
+TEST_F(CastActivityManagerJoinTest, JoinSessionBySessionId) {
+  LaunchSessionForJoin();
+  ExpectJoinSuccess(kClientId2);
+
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId1, kClientId2, "page_scoped"),
+                  kSessionPresentationId, other_origin_, kFrameTreeNodeId2);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::OK, result.result_code);
+  ASSERT_TRUE(result.route);
+  EXPECT_EQ(route_->media_route_id(), result.route->media_route_id());
+  EXPECT_TRUE(result.route->is_local());
+}
+
+TEST_F(CastActivityManagerJoinTest, JoinSessionWithUnknownSessionIdFails) {
+  LaunchSessionForJoin();
+  ExpectNoJoin();
+
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId1, kClientId2, "page_scoped"),
+                  "cast-session_notTheSessionId", origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
+  EXPECT_FALSE(result.route);
+}
+
+TEST_F(CastActivityManagerJoinTest,
+       JoinSessionWithNonSessionPresentationIdFails) {
+  LaunchSessionForJoin();
+  ExpectNoJoin();
+
+  // Only "cast-session_<session ID>" presentation IDs can be joined directly.
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId1, kClientId2, "page_scoped"),
+                  kPresentationId, origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
+}
+
+TEST_F(CastActivityManagerJoinTest, JoinSessionForDifferentAppFails) {
+  LaunchSessionForJoin();
+  ExpectNoJoin();
+
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId2, kClientId2, "page_scoped"),
+                  kSessionPresentationId, origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
+}
+
+TEST_F(CastActivityManagerJoinTest, JoinSessionWithConnectedClientIdFails) {
+  LaunchSessionForJoin();
+  ExpectNoJoin();
+
+  // `kClientId` is already connected to the session it launched.
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId1, kClientId, "page_scoped"),
+                  kSessionPresentationId, origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
+}
+
+TEST_F(CastActivityManagerJoinTest, JoinSessionAfterSinkRemovedFails) {
+  LaunchSessionForJoin();
+
+  // Removing the sink removes its session, which tears down the activity, so
+  // there is no longer a route to join.
+  media_sink_service_.RemoveSink(sink_);
+  RunUntilIdle();
+  app_activity_ = nullptr;
+  EXPECT_TRUE(manager_->GetRoutes().empty());
+
+  EXPECT_CALL(message_handler_, EnsureConnection).Times(0);
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId1, kClientId2, "page_scoped"),
+                  kSessionPresentationId, origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
+}
+
+TEST_F(CastActivityManagerJoinTest, AutoJoinTabAndOriginScopedSameTab) {
+  LaunchSessionForJoin();
+  ExpectJoinSuccess(kClientId2);
+
+  JoinResult result = JoinSession(
+      MakeJoinSourceId(kAppId1, kClientId2, "tab_and_origin_scoped"),
+      kAutoJoinPresentationId, origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::OK, result.result_code);
+  ASSERT_TRUE(result.route);
+  EXPECT_EQ(route_->media_route_id(), result.route->media_route_id());
+}
+
+TEST_F(CastActivityManagerJoinTest, AutoJoinTabAndOriginScopedOtherTabFails) {
+  LaunchSessionForJoin();
+  ExpectNoJoin();
+
+  JoinResult result = JoinSession(
+      MakeJoinSourceId(kAppId1, kClientId2, "tab_and_origin_scoped"),
+      kAutoJoinPresentationId, origin_, kFrameTreeNodeId2);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
+}
+
+TEST_F(CastActivityManagerJoinTest,
+       AutoJoinTabAndOriginScopedOtherOriginFails) {
+  LaunchSessionForJoin();
+  ExpectNoJoin();
+
+  JoinResult result = JoinSession(
+      MakeJoinSourceId(kAppId1, kClientId2, "tab_and_origin_scoped"),
+      kAutoJoinPresentationId, other_origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
+}
+
+TEST_F(CastActivityManagerJoinTest, AutoJoinOriginScopedOtherTab) {
+  LaunchSessionForJoin();
+  ExpectJoinSuccess(kClientId2);
+
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId1, kClientId2, "origin_scoped"),
+                  kAutoJoinPresentationId, origin_, kFrameTreeNodeId2);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::OK, result.result_code);
+  ASSERT_TRUE(result.route);
+  EXPECT_EQ(route_->media_route_id(), result.route->media_route_id());
+}
+
+TEST_F(CastActivityManagerJoinTest, AutoJoinOriginScopedOtherOriginFails) {
+  LaunchSessionForJoin();
+  ExpectNoJoin();
+
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId1, kClientId2, "origin_scoped"),
+                  kAutoJoinPresentationId, other_origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
+}
+
+TEST_F(CastActivityManagerJoinTest, AutoJoinPageScopedFails) {
+  LaunchSessionForJoin();
+  ExpectNoJoin();
+
+  // Page-scoped sessions can never be auto-joined, even from the same page.
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId1, kClientId2, "page_scoped"),
+                  kAutoJoinPresentationId, origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
+}
+
+TEST_F(CastActivityManagerJoinTest, AutoJoinForDifferentAppFails) {
+  LaunchSessionForJoin();
+  ExpectNoJoin();
+
+  JoinResult result =
+      JoinSession(MakeJoinSourceId(kAppId2, kClientId2, "origin_scoped"),
+                  kAutoJoinPresentationId, origin_, kFrameTreeNodeId);
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, result.result_code);
 }
 
 }  // namespace media_router
