@@ -89,10 +89,8 @@ void CreateFakeComponentUpdatedWidevine(
     manifest.Set("version", version.GetString());
     manifest.Set("x-cdm-codecs", "vp8,vp09,av01");
     manifest.Set("x-cdm-module-versions", "4");
-    // TODO(b/425796122): Update to "10,11" (or "11") once shipped CDM manifests
-    // also list 11 in x-cdm-interface-versions.
     manifest.Set("x-cdm-interface-versions", "10");
-    manifest.Set("x-cdm-host-versions", "10,11");
+    manifest.Set("x-cdm-host-versions", "10");
 
     // Write the manifest to the manifest file.
     auto manifest_path =

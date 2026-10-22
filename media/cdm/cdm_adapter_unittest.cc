@@ -304,9 +304,13 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
     }
 
     // The ClearKeyCdm records the LicenseSdkVersion in CreateSession.
-    EXPECT_CALL(*cdm_helper_,
-                RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)))
-        .Times(1);
+    if (GetCdmInterfaceVersion() > 10) {
+      EXPECT_CALL(*cdm_helper_,
+                  RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)))
+          .Times(1);
+    } else {
+      EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
+    }
 
     cdm_->CreateSessionAndGenerateRequest(
         CdmSessionType::kTemporary, data_type, key_id,
@@ -440,9 +444,11 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
 
 // Instantiate test cases
 
+INSTANTIATE_TEST_SUITE_P(CDM_10, CdmAdapterTestWithClearKeyCdm, Values(10));
 INSTANTIATE_TEST_SUITE_P(CDM_11, CdmAdapterTestWithClearKeyCdm, Values(11));
 INSTANTIATE_TEST_SUITE_P(CDM_12, CdmAdapterTestWithClearKeyCdm, Values(12));
 
+INSTANTIATE_TEST_SUITE_P(CDM_10, CdmAdapterTestWithMockCdm, Values(10));
 INSTANTIATE_TEST_SUITE_P(CDM_11, CdmAdapterTestWithMockCdm, Values(11));
 INSTANTIATE_TEST_SUITE_P(CDM_12, CdmAdapterTestWithMockCdm, Values(12));
 
@@ -653,9 +659,14 @@ TEST_P(CdmAdapterTestWithMockCdm, RecordUkmCalled) {
   CdmConfig cdm_config = GetCdmConfig();
   InitializeWithCdmConfig(cdm_config);
 
-  // UKM should be recorded when CdmAdapter destructed.
-  EXPECT_CALL(*cdm_helper_,
-              RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)));
+  // UKM should be recorded when CdmAdapter destructed, only if supported by the
+  // CDM interface.
+  if (GetCdmInterfaceVersion() > 10) {
+    EXPECT_CALL(*cdm_helper_,
+                RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)));
+  } else {
+    EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
+  }
 
   cdm_host_proxy_->ReportMetrics(cdm::kSdkVersion, kExpectedLicenseSdkVersion);
 }
@@ -663,6 +674,10 @@ TEST_P(CdmAdapterTestWithMockCdm, RecordUkmCalled) {
 TEST_P(CdmAdapterTestWithMockCdm, RecordUMA) {
   CdmConfig cdm_config = GetCdmConfig();
   InitializeWithCdmConfig(cdm_config);
+
+  if (GetCdmInterfaceVersion() < 11) {
+    GTEST_SKIP() << "ReportMetrics not supported";
+  }
 
   // bypass_count = 0, should record 0
   {

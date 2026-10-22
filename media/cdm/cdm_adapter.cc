@@ -128,7 +128,7 @@ void* GetCdmHost(int host_interface_version, void* user_data) {
     return nullptr;
 
   static_assert(
-      CheckSupportedCdmHostVersions(cdm::Host_11::kVersion,
+      CheckSupportedCdmHostVersions(cdm::Host_10::kVersion,
                                     cdm::Host_12::kVersion),
       "Mismatch between GetCdmHost() and IsSupportedCdmHostVersion()");
 
@@ -137,6 +137,8 @@ void* GetCdmHost(int host_interface_version, void* user_data) {
   CdmAdapter* cdm_adapter = static_cast<CdmAdapter*>(user_data);
   DVLOG(1) << "Create CDM Host with version " << host_interface_version;
   switch (host_interface_version) {
+    case cdm::Host_10::kVersion:
+      return static_cast<cdm::Host_10*>(cdm_adapter);
     case cdm::Host_11::kVersion:
       return static_cast<cdm::Host_11*>(cdm_adapter);
     case cdm::Host_12::kVersion:

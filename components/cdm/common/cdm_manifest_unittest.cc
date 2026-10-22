@@ -48,8 +48,10 @@ const char kCdmSupportedEncryptionSchemesName[] =
 // supported.
 constexpr int kSupportedCdmModuleVersion = CDM_MODULE_VERSION;
 constexpr int kSupportedCdmInterfaceVersion =
-    media::GetMinEnabledCdmInterfaceVersion();
-constexpr int kSupportedCdmHostVersion = media::GetMinSupportedCdmHostVersion();
+    media::kSupportedCdmInterfaceVersions[0].version;
+static_assert(media::kSupportedCdmInterfaceVersions[0].enabled,
+              "kSupportedCdmInterfaceVersion is not enabled by default.");
+constexpr int kSupportedCdmHostVersion = media::kMinSupportedCdmHostVersion;
 const char kVersion[] = "1.2.3.4";
 
 // Make a string of the values from 0 up to and including |item|.

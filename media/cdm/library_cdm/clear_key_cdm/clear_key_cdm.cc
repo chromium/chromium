@@ -183,9 +183,23 @@ void* CreateCdmInstance(int cdm_interface_version,
     return nullptr;
   }
 
-  // We support CDM_11 and CDM_12.
+  // We support CDM_10, CDM_11, and CDM_12.
+  using CDM_10 = cdm::ContentDecryptionModule_10;
   using CDM_11 = cdm::ContentDecryptionModule_11;
   using CDM_12 = cdm::ContentDecryptionModule_12;
+
+  if (cdm_interface_version == CDM_10::kVersion) {
+    static_assert(CDM_10::kVersion == CDM_10::Host::kVersion,
+                  "CDM host version mismatch");
+    CDM_10::Host* host = static_cast<CDM_10::Host*>(
+        get_cdm_host_func(CDM_10::Host::kVersion, user_data));
+    if (!host)
+      return nullptr;
+
+    DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_10::Host.";
+    return static_cast<CDM_10*>(
+        new media::ClearKeyCdm(host, key_system_string));
+  }
 
   if (cdm_interface_version == CDM_11::kVersion) {
     static_assert(CDM_11::kVersion == CDM_11::Host::kVersion,

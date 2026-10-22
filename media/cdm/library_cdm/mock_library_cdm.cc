@@ -53,9 +53,21 @@ void* CreateMockLibraryCdm(int cdm_interface_version,
 
   std::string key_system_string(key_system, key_system_size);
 
-  // We support CDM_11 and CDM_12.
+  // We support CDM_10, CDM_11 and CDM_12.
+  using CDM_10 = cdm::ContentDecryptionModule_10;
   using CDM_11 = cdm::ContentDecryptionModule_11;
   using CDM_12 = cdm::ContentDecryptionModule_12;
+
+  if (cdm_interface_version == CDM_10::kVersion) {
+    CDM_10::Host* host = static_cast<CDM_10::Host*>(
+        get_cdm_host_func(CDM_10::Host::kVersion, user_data));
+    if (!host)
+      return nullptr;
+
+    DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_10::Host.";
+    g_mock_library_cdm = new MockLibraryCdm(host, key_system_string);
+    return static_cast<CDM_10*>(g_mock_library_cdm);
+  }
 
   if (cdm_interface_version == CDM_11::kVersion) {
     CDM_11::Host* host = static_cast<CDM_11::Host*>(

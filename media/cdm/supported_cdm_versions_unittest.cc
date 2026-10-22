@@ -10,8 +10,6 @@ namespace media {
 
 TEST(SupportedCdmVersions, IsSupportedCdmInterfaceVersion) {
   EXPECT_FALSE(IsSupportedCdmInterfaceVersion(9));
-  // TODO(b/425796122): Mark as EXPECT_FALSE once shipped CDM manifests also
-  // list 11 in x-cdm-interface-versions.
   EXPECT_TRUE(IsSupportedCdmInterfaceVersion(10));
   EXPECT_TRUE(IsSupportedCdmInterfaceVersion(11));
   EXPECT_TRUE(IsSupportedCdmInterfaceVersion(12));
@@ -20,7 +18,7 @@ TEST(SupportedCdmVersions, IsSupportedCdmInterfaceVersion) {
 
 TEST(SupportedCdmVersions, IsSupportedCdmHostVersion) {
   EXPECT_FALSE(IsSupportedCdmHostVersion(9));
-  EXPECT_FALSE(IsSupportedCdmHostVersion(10));
+  EXPECT_TRUE(IsSupportedCdmHostVersion(10));
   EXPECT_TRUE(IsSupportedCdmHostVersion(11));
   EXPECT_TRUE(IsSupportedCdmHostVersion(12));
   EXPECT_FALSE(IsSupportedCdmHostVersion(13));
@@ -28,8 +26,6 @@ TEST(SupportedCdmVersions, IsSupportedCdmHostVersion) {
 
 TEST(SupportedCdmVersions, IsSupportedAndEnabledCdmInterfaceVersion) {
   EXPECT_FALSE(IsSupportedAndEnabledCdmInterfaceVersion(9));
-  // TODO(b/425796122): Mark as EXPECT_FALSE once shipped CDM manifests also
-  // list 11 in x-cdm-interface-versions.
   EXPECT_TRUE(IsSupportedAndEnabledCdmInterfaceVersion(10));
   EXPECT_TRUE(IsSupportedAndEnabledCdmInterfaceVersion(11));
   EXPECT_FALSE(IsSupportedAndEnabledCdmInterfaceVersion(12));

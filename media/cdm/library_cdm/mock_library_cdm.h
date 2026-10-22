@@ -18,7 +18,8 @@ namespace media {
 class CdmHostProxy;
 
 // Mock implementation of the cdm::ContentDecryptionModule interfaces.
-class MockLibraryCdm : public cdm::ContentDecryptionModule_11,
+class MockLibraryCdm : public cdm::ContentDecryptionModule_10,
+                       public cdm::ContentDecryptionModule_11,
                        public cdm::ContentDecryptionModule_12 {
  public:
   // Provides easy access to the MockLibraryCdm instance for testing to avoid
@@ -33,7 +34,8 @@ class MockLibraryCdm : public cdm::ContentDecryptionModule_11,
 
   CdmHostProxy* GetCdmHostProxy();
 
-  // cdm::ContentDecryptionModule_11 implementation.
+  // cdm::ContentDecryptionModule_10 and cdm::ContentDecryptionModule_11
+  // implementation.
   MOCK_METHOD1(
       InitializeVideoDecoder,
       cdm::Status(const cdm::VideoDecoderConfig_2& video_decoder_config));
