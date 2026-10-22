@@ -8480,11 +8480,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableNearbyBleV2ExtendedAdvertising)},
 
-    {"display-alignment-assistance",
-     flag_descriptions::kDisplayAlignmentAssistanceName,
-     flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDisplayAlignAssist)},
-
     {"enable-oauth-ipp", flag_descriptions::kEnableOAuthIppName,
      flag_descriptions::kEnableOAuthIppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableOAuthIpp)},

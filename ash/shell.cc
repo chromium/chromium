@@ -61,7 +61,6 @@
 #include "ash/detachable_base/detachable_base_notification_controller.h"
 #include "ash/display/cros_display_config.h"
 #include "ash/display/cursor_window_controller.h"
-#include "ash/display/display_alignment_controller.h"
 #include "ash/display/display_color_manager.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/display_configuration_observer.h"
@@ -828,7 +827,6 @@ Shell::~Shell() {
   cros_display_config_.reset();
   display_configuration_observer_.reset();
   display_prefs_.reset();
-  display_alignment_controller_.reset();
 
   // Remove the focus from any window and set ShutdowFocusRules. This will
   // prevent overhead and side effects (e.g. crashes) from changing focus
@@ -1838,15 +1836,8 @@ void Shell::Init(
   // is started.
   display_manager_->CreateMirrorWindowAsyncIfAny();
 
-  // TODO(1091497): Consider combining DisplayHighlightController and
-  // DisplayAlignmentController.
   display_highlight_controller_ =
       std::make_unique<DisplayHighlightController>();
-
-  if (features::IsDisplayAlignmentAssistanceEnabled()) {
-    display_alignment_controller_ =
-        std::make_unique<DisplayAlignmentController>();
-  }
 
   if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     glanceables_controller_ = std::make_unique<GlanceablesController>();

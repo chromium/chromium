@@ -495,10 +495,6 @@ BASE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpressDefaultOn,
 BASE_FEATURE(kDisableBruschettaInstallChecks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-
-// Enables indicators to hint where displays are connected.
-BASE_FEATURE(kDisplayAlignAssist, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, DriveFS will be used for Drive sync.
 BASE_FEATURE(kDriveFs, "DriveFS", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2138,10 +2134,6 @@ bool IsDeviceMoveConfigSaveEnabled() {
 
 bool IsDisplayPerformanceModeEnabled() {
   return base::FeatureList::IsEnabled(kDisplayPerformanceMode);
-}
-
-bool IsDisplayAlignmentAssistanceEnabled() {
-  return base::FeatureList::IsEnabled(kDisplayAlignAssist);
 }
 
 bool IsDoNotDisturbShortcutEnabled() {

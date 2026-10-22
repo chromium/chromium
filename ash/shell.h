@@ -140,7 +140,6 @@ class DarkLightModeControllerImpl;
 class DesksController;
 class DetachableBaseHandler;
 class DetachableBaseNotificationController;
-class DisplayAlignmentController;
 class DisplayColorManager;
 class NativeCursorManagerAsh;
 class DisplayConfigurationController;
@@ -517,10 +516,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   DisplayPrefs* display_prefs() { return display_prefs_.get(); }
   DisplayConfigurationController* display_configuration_controller() {
     return display_configuration_controller_.get();
-  }
-
-  DisplayAlignmentController* display_alignment_controller() {
-    return display_alignment_controller_.get();
   }
 
   display::DisplayConfigurator* display_configurator();
@@ -1252,7 +1247,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<BluetoothDeviceStatusUiHandler>
       bluetooth_device_status_ui_handler_;
   std::unique_ptr<KeyboardControllerImpl> keyboard_controller_;
-  std::unique_ptr<DisplayAlignmentController> display_alignment_controller_;
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<DisplayColorManager> display_color_manager_;
   std::unique_ptr<DisplayErrorObserver> display_error_observer_;

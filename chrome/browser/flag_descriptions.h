@@ -7712,13 +7712,6 @@ inline constexpr char kDisableExplicitDmaFencesDescription[] =
     "Always rely on implicit synchronization between GPU and display "
     "controller instead of using dma-fences explicitly when available.";
 
-inline constexpr char kDisplayAlignmentAssistanceName[] =
-    "Enable Display Alignment Assistance";
-inline constexpr char kDisplayAlignmentAssistanceDescription[] =
-    "Show indicators on shared edges of the displays when user is "
-    "attempting to move their mouse over to another display. Show preview "
-    "indicators when the user is moving a display in display layouts.";
-
 inline constexpr char kEnableLibinputToHandleTouchpadName[] =
     "Enable libinput to handle touchpad.";
 inline constexpr char kEnableLibinputToHandleTouchpadDescription[] =
