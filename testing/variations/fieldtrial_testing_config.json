@@ -20178,6 +20178,23 @@
                     ]
                 }
             ]
+        },
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VTVideoEncodeAcceleratorOpaqueRgbSharedImageEncode",
+                        "WebRtcMacSharedImageEncode"
+                    ],
+                    "disable_features": [
+                        "BreakoutBoxConversionWithoutSinkSignal"
+                    ]
+                }
+            ]
         }
     ],
     "WebviewSingleSharedContextState": [
