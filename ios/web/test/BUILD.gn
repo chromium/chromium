@@ -113,6 +113,22 @@ source_set("js_test_util_internal") {
   ]
 }
 
+source_set("cert_test_util") {
+  testonly = true
+
+  public_deps = [ "//base" ]
+
+  sources = [
+    "cert_test_util.h",
+    "cert_test_util.mm",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "Security.framework",
+  ]
+}
+
 source_set("test_constants") {
   testonly = true
   sources = [

@@ -89,24 +89,6 @@ scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
       intermediates);
 }
 
-base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
-    NSArray* certs,
-    NSString* host) {
-  base::apple::ScopedCFTypeRef<SecTrustRef> scoped_result;
-  if (certs.count == 0) {
-    return scoped_result;
-  }
-
-  base::apple::ScopedCFTypeRef<SecPolicyRef> policy(
-      SecPolicyCreateSSL(TRUE, static_cast<CFStringRef>(host)));
-  SecTrustRef ref_result = nullptr;
-  if (SecTrustCreateWithCertificates((__bridge CFArrayRef)certs, policy.get(),
-                                     &ref_result) == errSecSuccess) {
-    scoped_result.reset(ref_result);
-  }
-  return scoped_result;
-}
-
 void EnsureFutureTrustEvaluationSucceeds(SecTrustRef trust) {
   base::apple::ScopedCFTypeRef<CFDataRef> exceptions(
       SecTrustCopyExceptions(trust));

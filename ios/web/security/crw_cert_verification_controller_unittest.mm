@@ -13,6 +13,7 @@
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/security/wk_web_view_security_util.h"
+#import "ios/web/test/cert_test_util.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"

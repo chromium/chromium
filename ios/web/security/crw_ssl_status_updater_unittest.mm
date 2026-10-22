@@ -13,6 +13,7 @@
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/security/wk_web_view_security_util.h"
+#import "ios/web/test/cert_test_util.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/test/fakes/fake_navigation_manager_delegate.h"
 #import "net/cert/x509_util_apple.h"

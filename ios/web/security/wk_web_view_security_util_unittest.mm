@@ -13,6 +13,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
 #import "base/containers/span.h"
+#import "ios/web/test/cert_test_util.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
