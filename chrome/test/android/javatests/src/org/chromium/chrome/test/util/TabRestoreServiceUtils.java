@@ -7,8 +7,8 @@ package org.chromium.chrome.test.util;
 import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
-import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedBridge;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntry;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalEntry;

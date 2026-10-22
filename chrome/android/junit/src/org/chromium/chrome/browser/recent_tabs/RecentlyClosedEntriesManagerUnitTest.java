@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package chrome.android.junit.src.org.chromium.chrome.browser;
+package org.chromium.chrome.browser.recent_tabs;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -42,21 +42,12 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
-import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
-import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerImpl;
-import org.chromium.chrome.browser.RecentlyClosedWindowMetadata;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
-import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
-import org.chromium.chrome.browser.ntp.RecentlyClosedTabManager;
-import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
-import org.chromium.chrome.browser.ntp.SessionRecentlyClosedEntry;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;

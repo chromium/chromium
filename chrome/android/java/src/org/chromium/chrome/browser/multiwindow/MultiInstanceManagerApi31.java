@@ -39,8 +39,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
-import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -51,6 +49,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceS
 import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate.StartupMode;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManager;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;

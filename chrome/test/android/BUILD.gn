@@ -438,6 +438,7 @@ android_library("chrome_java_integration_test_support") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/prefetch/android:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/recent_tabs:java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",

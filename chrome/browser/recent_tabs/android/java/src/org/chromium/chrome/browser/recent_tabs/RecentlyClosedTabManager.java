@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp;
+package org.chromium.chrome.browser.recent_tabs;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -15,6 +15,7 @@ import java.util.List;
 public interface RecentlyClosedTabManager {
     /**
      * Sets the {@link Runnable} to be called whenever the list of recently closed entries changes.
+     *
      * @param runnable The {@link Runnable} to be called, or null.
      */
     void setEntriesUpdatedRunnable(@Nullable Runnable runnable);
@@ -32,7 +33,7 @@ public interface RecentlyClosedTabManager {
      * @param tabModel The {@link TabModel} to open the tab into.
      * @param recentTab The RecentlyClosedTab to open.
      * @param windowOpenDisposition The WindowOpenDisposition value specifying whether to open in
-     *         the current tab or a new tab. The current tab is found in native.
+     *     the current tab or a new tab. The current tab is found in native.
      * @return Whether the tab was successfully opened.
      */
     boolean openRecentlyClosedTab(

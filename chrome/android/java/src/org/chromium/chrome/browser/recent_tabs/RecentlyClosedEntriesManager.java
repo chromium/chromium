@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.recent_tabs;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -28,13 +28,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowA
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
-import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
-import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
-import org.chromium.chrome.browser.ntp.RecentlyClosedTabManager;
-import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
-import org.chromium.chrome.browser.ntp.SessionRecentlyClosedEntry;
-import org.chromium.chrome.browser.ntp.TabGroupContainer;
 import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -58,7 +51,6 @@ import java.util.concurrent.TimeUnit;
  * the TabRestoreService. This class is responsible for synchronizing and collectively managing
  * entries from both sources.
  */
-// TODO:(crbug.com/466442723): Try move RecentTabs related file to a separate package.
 @NullMarked
 public class RecentlyClosedEntriesManager {
     public static final int MAX_RECENTLY_CLOSED_TABS_AND_WINDOWS = 25;

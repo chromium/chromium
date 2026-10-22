@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.recent_tabs;
 
 import android.util.ArraySet;
 
@@ -12,7 +12,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.ArrayList;

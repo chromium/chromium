@@ -85,8 +85,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTracker;
-import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -102,6 +100,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStart
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManagerTracker;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;

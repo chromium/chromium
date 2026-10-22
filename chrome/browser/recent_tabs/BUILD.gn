@@ -32,8 +32,17 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ForeignSessionHelper.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedBridge.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedBulkEvent.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedEntry.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedGroup.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedTab.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedTabManager.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedWindow.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsController.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsControllerDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/SessionRecentlyClosedEntry.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/TabGroupContainer.java",
   ]
 
   deps = [
@@ -42,9 +51,11 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//components/sync_device_info:sync_device_info_java",
+    "//components/tab_groups:tab_groups_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
   ]
 }
@@ -105,5 +116,9 @@ robolectric_library("junit") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/recent_tabs/ForeignSessionHelper.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/ForeignSessionHelper.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedBridge.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedTab.java",
+  ]
 }

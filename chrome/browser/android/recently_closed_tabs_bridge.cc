@@ -31,8 +31,8 @@
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/RecentlyClosedBridge_jni.h"
-#include "chrome/android/chrome_jni_headers/RecentlyClosedTab_jni.h"
+#include "chrome/browser/recent_tabs/jni_headers/RecentlyClosedBridge_jni.h"
+#include "chrome/browser/recent_tabs/jni_headers/RecentlyClosedTab_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;

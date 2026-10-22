@@ -161,6 +161,7 @@ android_library("chrome_test_java_helper") {
     "//chrome/browser/profiles/android:test_support_java",
     "//chrome/browser/quick_delete:java",
     "//chrome/browser/readaloud/android:java",
+    "//chrome/browser/recent_tabs:java",
     "//chrome/browser/regional_capabilities/android:java",
     "//chrome/browser/safe_browsing/android:java",
     "//chrome/browser/safety_check/android:java",
@@ -1035,7 +1036,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {
     "src/org/chromium/chrome/browser/ntp/NewTabPageSigninPromoTest.java",
     "src/org/chromium/chrome/browser/ntp/NewTabPageTest.java",
     "src/org/chromium/chrome/browser/ntp/RecentTabsPageTest.java",
-    "src/org/chromium/chrome/browser/ntp/RecentlyClosedBridgeTest.java",
     "src/org/chromium/chrome/browser/ntp/ShowNtpAtStartupTest.java",
   ]
 

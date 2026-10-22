@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.ntp;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntry;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedTab;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedTabManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.ArrayList;
