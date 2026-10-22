@@ -106,8 +106,9 @@ void BoundSessionCookieObserver::OnCookieChange(
     case net::CookieChangeCause::EXPIRED:
       CHECK(net::CookieChangeCauseIsDeletion(change.cause),
             base::NotFatalUntil::M162);
-      CHECK(change.cookie.ExpiryDate() < base::Time::Now(),
-            base::NotFatalUntil::M162);
+      // TODO(crbug.com/576071796): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(change.cookie.ExpiryDate() < base::Time::Now());
       callback_.Run(cookie_name_, change.cookie.ExpiryDate());
   }
 }
