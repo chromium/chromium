@@ -290,6 +290,7 @@ export class SettingsCursorAndTouchpadPageElement extends
     Setting.kLargeCursor,
     Setting.kMouseKeysEnabled,
     Setting.kOverscrollEnabled,
+    Setting.kShakeToLocateCursor,
     Setting.kTabletNavigationButtons,
   ]);
 

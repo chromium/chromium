@@ -346,6 +346,7 @@ enum Setting {
   kBounceKeys = 1554,
   kSlowKeys = 1555,
   kDisableTouchpad = 1556,
+  kShakeToLocateCursor = 1557,
 
   // Reset section.
   kPowerwash = 1600,
