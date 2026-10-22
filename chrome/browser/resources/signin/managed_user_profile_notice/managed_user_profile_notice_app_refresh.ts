@@ -95,7 +95,6 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
     showEnterpriseBadge: false,
     title: '',
     subtitle: '',
-    proceedLabel: '',
     checkLinkDataCheckboxByDefault: false,
   };
 
@@ -265,7 +264,7 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
       case State.DISCLOSURE:
       case State.PROCESSING:
       case State.SUCCESS:
-        return this.profileInfo_.proceedLabel || this.i18n('continueLabel');
+        return this.i18n('continueLabel');
       case State.USER_DATA_HANDLING:
         return this.i18n('confirmLabel');
       case State.ERROR:

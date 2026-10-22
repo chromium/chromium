@@ -28,7 +28,6 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
     showEnterpriseBadge: false,
     title: 'title',
     subtitle: 'subtitle',
-    proceedLabel: 'proceed_label',
     accountName: 'account_name',
     continueAs: 'continue_as',
     email: 'email@email.com',
@@ -109,7 +108,7 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
     await checkState(
         State.DISCLOSURE, ['#disclosure', '#proceedButton', '#cancelButton'],
         allSections.filter(id => id !== '#disclosure'),
-        testManagedUserProfileInfo.proceedLabel);
+        app.i18n('continueLabel'));
 
     await checkState(
         State.SIGNALS_DISCLAIMER,
@@ -133,7 +132,7 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
     await checkState(
         State.SUCCESS, ['#success', '#proceedButton'],
         [...allSections.filter(id => id !== '#success'), '#cancelButton'],
-        testManagedUserProfileInfo.proceedLabel);
+        app.i18n('continueLabel'));
   });
 
   test('signalsDisclaimerSection', async function() {
@@ -222,8 +221,7 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
         targetElement.$.subtitle.textContent.trim());
     assertTrue(isVisible(app.$.proceedButton));
     assertEquals(
-        testManagedUserProfileInfo.proceedLabel,
-        app.$.proceedButton.textContent.trim());
+        app.i18n('continueLabel'), app.$.proceedButton.textContent.trim());
 
     checkImageUrl(targetElement, AVATAR_URL_1);
     assertFalse(isChildVisible(targetElement, '.work-badge'));
@@ -234,7 +232,6 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
       showEnterpriseBadge: true,
       title: 'new_title',
       subtitle: 'new_subtitle',
-      proceedLabel: 'new_proceed_label',
       accountName: 'new_account_name',
       continueAs: 'new_continue_as',
       email: 'new_email@email.com',
@@ -253,7 +250,7 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
         targetElement.$.subtitle.textContent.trim());
     assertTrue(isVisible(app.$.proceedButton));
     assertEquals(
-        newProfileInfo.proceedLabel, app.$.proceedButton.textContent.trim());
+        app.i18n('continueLabel'), app.$.proceedButton.textContent.trim());
 
     checkImageUrl(targetElement, AVATAR_URL_2);
     assertTrue(isChildVisible(targetElement, '.work-badge'));
