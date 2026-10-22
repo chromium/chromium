@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/webgpu_cmd_ids.h"
+#include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
@@ -47,6 +48,12 @@ class WebGPUTest : public testing::Test {
     // By default, disable the blocklist so all adapters
     // can be tested.
     bool adapter_blocklist = false;
+
+    // Overrides the adapter selection, like --use-webgpu-adapter.
+    WebGPUAdapterName use_webgpu_adapter = WebGPUAdapterName::kDefault;
+
+    // If true, Initialize() does not expect an adapter to be found.
+    bool allow_no_adapter = false;
   };
 
  protected:

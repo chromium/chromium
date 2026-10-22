@@ -25,6 +25,7 @@
 #include "gpu/webgpu/callback.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_implementation.h"
 
 namespace gpu {
 
@@ -116,6 +117,7 @@ void WebGPUTest::Initialize(const Options& options) {
 #endif
   }
   gpu_preferences.enable_unsafe_webgpu = options.enable_unsafe_webgpu;
+  gpu_preferences.use_webgpu_adapter = options.use_webgpu_adapter;
   if (!options.adapter_blocklist) {
     gpu_preferences.disabled_dawn_features_list = {"adapter_blocklist"};
   }
@@ -148,7 +150,7 @@ void WebGPUTest::Initialize(const Options& options) {
       &ra_options, wgpu::CallbackMode::AllowSpontaneous,
       [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
           wgpu::StringView message) {
-        if (!options.force_fallback_adapter) {
+        if (!options.force_fallback_adapter && !options.allow_no_adapter) {
           // If we don't force a particular adapter, we
           // should always find one.
           EXPECT_EQ(status, wgpu::RequestAdapterStatus::Success);
@@ -468,6 +470,28 @@ TEST_F(WebGPUTest, ImplicitFallbackAdapterIsDisallowed) {
     adapter_.GetInfo(&info);
     // If we got an Adapter, it must not be a CPU adapter.
     EXPECT_NE(info.adapterType, wgpu::AdapterType::CPU);
+  }
+}
+
+// Web-facing Dawn GL adapters must only be created when Chrome's GL is backed
+// by ANGLE, so that Dawn GL inherits ANGLE's driver workarounds.
+TEST_F(WebGPUTest, OpenGLESAdapterRequiresANGLE) {
+  auto options = WebGPUTest::Options();
+  options.feature_level = wgpu::FeatureLevel::Compatibility;
+  options.enable_unsafe_webgpu = false;
+  options.adapter_blocklist = true;
+  options.use_webgpu_adapter = WebGPUAdapterName::kOpenGLES;
+  options.allow_no_adapter = true;
+  // Initialize attempts to create an adapter.
+  Initialize(options);
+
+  if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE) {
+    // No web-facing adapter may be created on non-ANGLE GL.
+    EXPECT_EQ(adapter_, nullptr);
+  } else if (adapter_) {
+    wgpu::AdapterInfo info;
+    adapter_.GetInfo(&info);
+    EXPECT_EQ(info.backendType, wgpu::BackendType::OpenGLES);
   }
 }
 

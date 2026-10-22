@@ -68,6 +68,7 @@
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/gl/gl_context_egl.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -1818,6 +1819,26 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     adapter.GetInfo(&adapter_info);
 
     if (use_blocklist() && IsWebGPUAdapterBlocklisted(adapter).blocked) {
+      return false;
+    }
+
+    // Web-facing Dawn GL backend must run on top of ANGLE. Dawn uses
+    // Chrome's GL setup (EGL display and GL proc addresses), so if Chrome is
+    // using a native (non-ANGLE) EGL/GLES driver, Dawn would talk directly to
+    // that driver. Requiring ANGLE guarantees that Dawn GL inherits all of the
+    // driver bug workarounds and mitigations already implemented in ANGLE.
+    //
+    // TODO(crbug.com/576008842):
+    // Long term (e.g. after WebGL-on-WebGPU), we will probably want to remove
+    // ANGLE from the GPU process and run Dawn GL directly on native GLES.
+    // Before removing this check, all the relevant ANGLE driver workarounds
+    // must first be added to Dawn's GL backend.
+    //
+    // This is only relaxed with --enable-unsafe-webgpu (or
+    // --disable-dawn-features=adapter_blocklist) for local testing.
+    if (adapter_info.backendType == wgpu::BackendType::OpenGLES &&
+        use_blocklist() &&
+        gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE) {
       return false;
     }
 
