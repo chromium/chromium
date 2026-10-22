@@ -1,1 +1,10 @@
 mixins: "//chrome/browser/profiles/COMMON_METADATA"
+
+agentic_review {
+  capability_groups {
+    path_expression: [
+      "chrome/browser/ui/views/profiles/first_run_flow_controller\\.(cc|h)",
+      "chrome/browser/ui/views/profiles/feature_showcase/.*"
+    ]
+  }
+}
