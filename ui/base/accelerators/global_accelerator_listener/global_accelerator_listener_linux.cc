@@ -36,6 +36,7 @@ namespace ui {
 namespace {
 
 constexpr char kStateDescriptionKey[] = "description";
+constexpr char kStateTriggerKey[] = "trigger";
 constexpr char kStateStateKey[] = "state";
 
 template <typename T>
@@ -191,7 +192,9 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
   }
 
   // Replace the command set for this prefix instead of only inserting. This
-  // avoids retaining stale commands after command updates.
+  // avoids retaining stale commands after command updates. Shortcuts that are
+  // no longer global are forgotten, so making them global again offers them
+  // again.
   auto is_stale = [&](const auto& pair) {
     return pair.first.starts_with(id_prefix) &&
            !global_ids.contains(pair.first);
@@ -212,7 +215,17 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
     bc.accelerator_group_id = accelerator_group_id;
     bc.execute_command = execute_command;
 
-    offered_shortcuts_[id].description = GetDescription(command);
+    std::string trigger = AcceleratorToXdgShortcut(command.accelerator());
+    auto [it, inserted] = offered_shortcuts_.try_emplace(id);
+    OfferedShortcut& offered = it->second;
+    if (!inserted && offered.state == OfferState::kDeclined &&
+        offered.trigger != trigger) {
+      // The user changed the accelerator of a declined shortcut, so offer it
+      // again.
+      offered.state = OfferState::kNew;
+    }
+    offered.description = GetDescription(command);
+    offered.trigger = std::move(trigger);
   }
 
   SaveState();
@@ -447,14 +460,71 @@ void GlobalAcceleratorListenerLinux::OnBindShortcuts(
       }
     }
     SaveState();
-  } else {
-    LOG(ERROR) << "Failed to call BindShortcuts (error code "
-               << static_cast<int>(results.error()) << ").";
+    session_ids_ = std::move(bound_ids);
+    bind_state_ = BindState::kBound;
+    if (needs_rebind) {
+      CloseSession();
+      CreateSession();
+    }
+    return;
   }
 
+  LOG(ERROR) << "Failed to call BindShortcuts (error code "
+             << static_cast<int>(results.error()) << ").";
+
+  // If the user cancelled the dialog, or the backend failed to apply the
+  // shortcuts after showing it (e.g. xdg-desktop-portal-gnome without GNOME
+  // Shell, which always responds with kRequestCancelledOther), don't offer the
+  // new shortcuts again. Otherwise the dialog would be shown on every start.
+  // If there are no new shortcuts and the user cancelled the dialog, the portal
+  // showed it for known shortcuts, e.g. because its stored shortcuts were reset
+  // or a different backend is used now, so decline those instead. Known
+  // shortcuts aren't declined on kRequestCancelledOther, since a backend may
+  // respond with it without showing a dialog (e.g. if it isn't ready yet), and
+  // declining would permanently deactivate working shortcuts.
+  bool newly_declined = false;
+  const bool cancelled_by_user =
+      results.error() == dbus_xdg::ResponseError::kRequestCancelledByUser;
+  if (cancelled_by_user ||
+      results.error() == dbus_xdg::ResponseError::kRequestCancelledOther) {
+    const bool has_new = std::ranges::any_of(bound_ids, [&](const auto& id) {
+      auto it = offered_shortcuts_.find(id);
+      return it != offered_shortcuts_.end() &&
+             it->second.state == OfferState::kNew;
+    });
+    for (const std::string& id : bound_ids) {
+      auto it = offered_shortcuts_.find(id);
+      if (it == offered_shortcuts_.end() ||
+          it->second.state == OfferState::kDeclined) {
+        continue;
+      }
+      if (it->second.state == OfferState::kNew ||
+          (!has_new && cancelled_by_user)) {
+        it->second.state = OfferState::kDeclined;
+        newly_declined = true;
+      }
+    }
+    SaveState();
+  }
+
+  base::EraseIf(bound_ids, [&](const std::string& id) {
+    auto it = offered_shortcuts_.find(id);
+    return it != offered_shortcuts_.end() &&
+           it->second.state == OfferState::kDeclined;
+  });
   session_ids_ = std::move(bound_ids);
   bind_state_ = BindState::kBound;
-  if (needs_rebind) {
+
+  if (GetIdsToBind().empty()) {
+    // Everything was declined, so there's nothing to keep the session for.
+    CloseSession();
+    return;
+  }
+
+  // Retry with the remaining shortcuts so that previously accepted shortcuts
+  // stay active. This can't loop indefinitely, since a retry only happens if a
+  // shortcut was declined or shortcuts were added during the bind.
+  if (newly_declined || needs_rebind) {
     CloseSession();
     CreateSession();
   }
@@ -507,7 +577,9 @@ base::flat_set<std::string> GlobalAcceleratorListenerLinux::GetIdsToBind()
   std::vector<std::string> ids;
   ids.reserve(offered_shortcuts_.size());
   for (const auto& [id, offered] : offered_shortcuts_) {
-    ids.push_back(id);
+    if (offered.state != OfferState::kDeclined) {
+      ids.push_back(id);
+    }
   }
   return base::flat_set<std::string>(std::move(ids));
 }
@@ -536,13 +608,15 @@ void GlobalAcceleratorListenerLinux::LoadState() {
       continue;
     }
     const std::string* description = entry->FindString(kStateDescriptionKey);
+    const std::string* trigger = entry->FindString(kStateTriggerKey);
     std::optional<int> state_value = entry->FindInt(kStateStateKey);
     if (!description || !state_value ||
         *state_value < static_cast<int>(OfferState::kNew) ||
-        *state_value > static_cast<int>(OfferState::kKnown)) {
+        *state_value > static_cast<int>(OfferState::kDeclined)) {
       continue;
     }
-    offered_shortcuts_[id] = {*description,
+    // The trigger is only needed for declined shortcuts.
+    offered_shortcuts_[id] = {*description, trigger ? *trigger : std::string(),
                               static_cast<OfferState>(*state_value)};
   }
 }
@@ -555,6 +629,7 @@ void GlobalAcceleratorListenerLinux::SaveState() {
   for (const auto& [id, offered] : offered_shortcuts_) {
     state.Set(id, base::DictValue()
                       .Set(kStateDescriptionKey, offered.description)
+                      .Set(kStateTriggerKey, offered.trigger)
                       .Set(kStateStateKey, static_cast<int>(offered.state)));
   }
   state_store_->Save(std::move(state));

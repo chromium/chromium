@@ -45,7 +45,8 @@ namespace ui {
 // session to activate shortcuts, and every BindShortcuts call replaces the set
 // of shortcuts stored for the app. To avoid showing a dialog on every browser
 // start, this class binds the complete, stable set of every global shortcut
-// that has been offered (persisted with a StateStore).
+// that has been offered (persisted with a StateStore), and doesn't offer
+// shortcuts again after the user declines them.
 class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
     GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  public:
@@ -99,10 +100,19 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
     // Successfully bound in this or a previous session, or reported by
     // ListShortcuts. Binding it again should not show a dialog.
     kKnown = 1,
+    // Binding was cancelled or failed. Not offered again until the user
+    // explicitly changes the command.
+    // TODO(crbug.com/404298968): Add an explicit way to offer declined
+    // shortcuts again.
+    kDeclined = 2,
   };
 
   struct OfferedShortcut {
     std::string description;
+    // The preferred trigger of the command when it was last offered, in the
+    // format of AcceleratorToXdgShortcut(). Used to detect that the user
+    // changed the accelerator of a declined shortcut.
+    std::string trigger;
     OfferState state = OfferState::kNew;
   };
 
