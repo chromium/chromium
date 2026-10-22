@@ -18,7 +18,7 @@
 namespace gpu {
 // MemoryCacheEntry class for LRU tracking and holding key/value pair.
 class GPU_GLES2_EXPORT MemoryCacheEntry
-    : public base::LinkNode<MemoryCacheEntry>,
+    : public base::UnsafeLinkNode<MemoryCacheEntry>,
       public base::RefCountedThreadSafe<MemoryCacheEntry> {
  public:
   MemoryCacheEntry(std::string_view key, base::span<const uint8_t> data);
@@ -91,7 +91,7 @@ class GPU_GLES2_EXPORT MemoryCache : public base::RefCounted<MemoryCache> {
 
   base::Lock mutex_;
   base::flat_set<scoped_refptr<MemoryCacheEntry>> entries_ GUARDED_BY(mutex_);
-  base::LinkedList<MemoryCacheEntry> lru_ GUARDED_BY(mutex_);
+  base::UnsafeLinkedList<MemoryCacheEntry> lru_ GUARDED_BY(mutex_);
 
   const size_t max_size_;
   size_t size_limit_ GUARDED_BY(mutex_) = 0;
