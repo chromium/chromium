@@ -10,6 +10,7 @@ import("//build/config/features.gni")
 import("//build/config/freetype/freetype.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/rust/cargo_crate.gni")
 import("//build/rust/rust_static_library.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -652,7 +653,7 @@ component("skia_switches") {
   deps = [ "//base" ]
 }
 
-rust_static_library("rust_common_ffi") {
+cargo_crate("rust_common_ffi") {
   visibility = [ ":*" ]
   crate_name = "skia_rust_common"
   allow_unsafe = true  # For FFI
@@ -660,12 +661,12 @@ rust_static_library("rust_common_ffi") {
   sources = skia_rust_common_ffi_rs_srcs
   cxx_bindings = skia_rust_common_ffi_cxx_bridge_srcs
   public_deps = [ ":rust_common_ffi_cpp" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [
     ":skia_config",
     "//build/config/compiler:no_chromium_code",
   ]
-  no_clippy = true  # TODO(https://crbug.com/472355480)
+  build_native_rust_unit_tests = false
 }
 
 source_set("rust_common_ffi_cpp") {
