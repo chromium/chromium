@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/cros_display_config.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
+#include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
@@ -159,6 +161,15 @@ void OobeTestAPIHandler::LoginWithPin(const std::string& username,
 
 void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
   VLOG(1) << "AdvanceToScreen(" << screen << ")";
+  // Advancing directly to the enrollment screen in tests bypasses
+  // `AutoEnrollmentCheckScreen`, leaving `kAutoEnrollmentCheckExited` false.
+  // Mark it exited so `OnEnrollmentFinished()` /
+  // `PerformOOBECompletedActions()` allow marking OOBE completed instead of
+  // treating enrollment as a bypass.
+  if (features::IsOobeAutoEnrollmentCheckForcedEnabled() &&
+      screen == EnrollmentScreenView::kScreenId.name) {
+    local_state_->SetBoolean(prefs::kAutoEnrollmentCheckExited, true);
+  }
   LoginDisplayHost::default_host()->StartWizard(OobeScreenId(screen));
 }
 

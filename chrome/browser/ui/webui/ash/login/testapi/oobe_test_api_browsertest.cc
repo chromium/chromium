@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -15,12 +17,15 @@
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chromeos/ash/components/hid_detection/fake_hid_detection_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -182,6 +187,20 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, SkipPostLoginScreens) {
 
   test::OobeJS().ExecuteAsync("OobeAPI.skipPostLoginScreens()");
   login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(OobeTestApiTest,
+                       AdvanceToEnrollmentMarksAutoEnrollmentCheckExited) {
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+  ASSERT_FALSE(StartupUtils::IsOobeCompleted(local_state));
+  ASSERT_FALSE(local_state.GetBoolean(prefs::kAutoEnrollmentCheckExited));
+
+  test::OobeJS().CreateWaiter("window.OobeAPI")->Wait();
+  test::OobeJS().ExecuteAsync(base::StringPrintf(
+      "OobeAPI.advanceToScreen('%s')", EnrollmentScreenView::kScreenId.name));
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+
+  EXPECT_TRUE(local_state.GetBoolean(prefs::kAutoEnrollmentCheckExited));
 }
 
 }  // namespace ash
