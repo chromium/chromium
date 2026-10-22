@@ -116,6 +116,7 @@ source_set("glic") {
     "//chrome/browser/actor/ui:states",
     "//chrome/browser/enterprise",
     "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic/public:provider",
     "//chrome/browser/glic/public:request_headers",
     "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/glic/suggestions",

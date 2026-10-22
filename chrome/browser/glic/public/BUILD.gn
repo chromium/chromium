@@ -20,3 +20,11 @@ source_set("request_headers") {
   ]
   deps = [ "//services/network/public/mojom" ]
 }
+
+# The Glic provider enum. Kept free of Glic dependencies so that low-level
+# helpers can use it.
+source_set("provider") {
+  # Feature code outside Glic should use GlicKeyedService::provider_spec().
+  visibility = [ "//chrome/browser/glic/*" ]
+  sources = [ "glic_provider.h" ]
+}
