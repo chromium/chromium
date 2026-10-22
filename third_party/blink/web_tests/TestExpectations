@@ -2077,7 +2077,6 @@ crbug.com/443773822 external/wpt/webdriver/tests/classic/take_element_screenshot
 # Linux / Debug
 crbug.com/575780008 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/activate/activate.py [ Failure Pass ]
 crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]  # Randomized context ID
-crbug.com/523199907 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/create/type.py [ Crash Failure Pass Timeout ]
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/error.py [ Failure Pass Timeout ]
 crbug.com/441826647 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Skip Timeout ]
 crbug.com/569736364 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_interrupted.py [ Pass Timeout ]
