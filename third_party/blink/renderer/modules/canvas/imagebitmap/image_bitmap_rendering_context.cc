@@ -541,6 +541,19 @@ ImageBitmap* ImageBitmapRenderingContext::TransferToImageBitmap(
   return MakeGarbageCollected<ImageBitmap>(std::move(image));
 }
 
+void ImageBitmapRenderingContext::Reshape(gfx::Size old_size,
+                                          gfx::Size new_size) {
+  if (Host()->IsOffscreenCanvas()) {
+    if (old_size != new_size) {
+      Reset();
+      DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+    }
+  } else {
+    SizeChanged();
+    Host()->UpdateMemoryUsage();
+  }
+}
+
 CanvasRenderingContext* ImageBitmapRenderingContext::Factory::Create(
     ExecutionContext*,
     CanvasRenderingContextHost* host,

@@ -119,6 +119,7 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
 
   // CanvasRenderingContext implementation
   ImageBitmap* TransferToImageBitmap(ScriptState*, ExceptionState&) override;
+  void Reshape(gfx::Size old_size, gfx::Size new_size) override;
 
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
