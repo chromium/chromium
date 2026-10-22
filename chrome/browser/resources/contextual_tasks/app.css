@@ -219,7 +219,7 @@
 
   /* Panel surface colors */
   --search-background-color: var(--surface-background-color);
-  --search-background-color-rgb: 34, 36, 42;
+  --search-background-color-rgb: 34, 36, 43;
 
   /* Composebox colors */
   --color-sds-comp-input-aim-action-neutral-dark: #2a2b36;

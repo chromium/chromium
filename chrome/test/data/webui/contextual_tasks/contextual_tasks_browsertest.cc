@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksToolbarThemeBrowserTest,
       await toolbar.updateComplete;
       const lightLogo = toolbar.shadowRoot.querySelector('.chrome-logo-light');
       const darkLogo = toolbar.shadowRoot.querySelector('.chrome-logo-dark');
-      if (getComputedStyle(app).backgroundColor !== 'rgb(34, 36, 42)') {
+      if (getComputedStyle(app).backgroundColor !== 'rgb(34, 36, 43)') {
         return 'bad bg: ' + getComputedStyle(app).backgroundColor;
       }
       const iconColor = getComputedStyle(app)

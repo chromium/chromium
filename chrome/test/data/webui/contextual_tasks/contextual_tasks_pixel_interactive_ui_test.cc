@@ -819,13 +819,13 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, menu, menu_screenshot_name,
-                              /*baseline_cl=*/"8452168")),
+                              /*baseline_cl=*/"8617866")),
          Else(WaitForWebContentsPainted(kActiveTab),
               SetOnIncompatibleAction(
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, toolbar, toolbar_screenshot_name,
-                              /*baseline_cl=*/"8452168"))));
+                              /*baseline_cl=*/"8617866"))));
 }
 
 struct LensChipPixelTestParams {

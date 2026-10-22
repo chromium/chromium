@@ -24,7 +24,7 @@
 
 @media (prefers-color-scheme: dark) {
   :host {
-    --search-background-color: rgba(34, 36, 42, 1);
+    --search-background-color: rgba(34, 36, 43, 1);
     --toolbar-divider-color: rgb(94,94,94);
     --toolbar-menu-background-color: rgb(31, 31, 31);
     --toolbar-text-color: rgb(227,227,227);
