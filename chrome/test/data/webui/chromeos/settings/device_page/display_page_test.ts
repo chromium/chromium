@@ -1063,24 +1063,6 @@ suite('<settings-display>', () => {
         '<a href="#">'));
   });
 
-  test('Display Performance', async () => {
-    await initPage();
-
-    // Set up a single display.
-    addDisplay(1);
-    fakeSystemDisplay.onDisplayChanged.callListeners();
-    await fakeSystemDisplay.getInfoCalled.promise;
-    await fakeSystemDisplay.getLayoutCalled.promise;
-    assertEquals(1, displayPage.displays.length);
-
-    const displayPerformanceToggle = strictQuery(
-        '#displayPerformanceModeToggle', displayPage.shadowRoot, HTMLElement);
-    assertTrue(!!displayPerformanceToggle);
-    displayPerformanceToggle.click();
-
-    assertTrue(displaySettingsProvider.getShinyPerformance());
-  });
-
   test('Display brightness on internal display', async () => {
     await initPage();
 

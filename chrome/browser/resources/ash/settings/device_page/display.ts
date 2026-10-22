@@ -185,13 +185,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      isDisplayPerformanceSupported_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isDisplayPerformanceSupported');
-        },
-      },
-
       ambientColorAvailable_: {
         type: Boolean,
         value() {
@@ -236,11 +229,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       brightnessSliderMax_: {
         type: Number,
         value: 100,
-      },
-
-      isDisplayPerformanceEnabled_: {
-        type: Boolean,
-        value: false,
       },
 
       selectedParentModePref_: {
@@ -319,8 +307,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   declare private hasAmbientLightSensor_: boolean;
   private invalidDisplayId_: string;
   declare private isAmbientLightSensorEnabled_: boolean;
-  declare private isDisplayPerformanceEnabled_: boolean;
-  declare private readonly isDisplayPerformanceSupported_: boolean;
   declare private isTabletMode_: boolean;
   declare private logicalResolutionText_: string;
   private mirroringExcludedId_: string;
@@ -1574,12 +1560,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       displayLayout.updateDisplays(
           this.displays, this.layouts, this.mirroringDestinationIds);
     }
-  }
-
-  private toggleDisplayPerformanceEnabled_(): void {
-    this.isDisplayPerformanceEnabled_ = !this.isDisplayPerformanceEnabled_;
-    this.displaySettingsProvider.setShinyPerformance(
-        this.isDisplayPerformanceEnabled_);
   }
 
   getInvalidDisplayId(): string {

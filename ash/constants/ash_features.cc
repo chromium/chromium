@@ -475,9 +475,6 @@ BASE_FEATURE(kDemoModeWallpaperUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 // sign in is enable. No-op if demo mode sign in is disabled.
 BASE_FEATURE(kDemoModeSignInFileCleanup, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Toggle different display features based on user setting and power state
-BASE_FEATURE(kDisplayPerformanceMode, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable the do not disturb shortcut.
 BASE_FEATURE(kDoNotDisturbShortcut, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2126,10 +2123,6 @@ bool IsDeskTemplateSyncEnabled() {
 
 bool IsDeviceMoveConfigSaveEnabled() {
   return base::FeatureList::IsEnabled(kDeviceMoveConfigSave);
-}
-
-bool IsDisplayPerformanceModeEnabled() {
-  return base::FeatureList::IsEnabled(kDisplayPerformanceMode);
 }
 
 bool IsDoNotDisturbShortcutEnabled() {

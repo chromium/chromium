@@ -32,29 +32,10 @@ void DisplayPerformanceModeController::OnPowerStatusChanged() {
   UpdateCurrentStateAndNotifyIfChanged();
 }
 
-void DisplayPerformanceModeController::SetHighPerformanceModeByUser(
-    bool is_high_performance_enabled) {
-  is_high_performance_enabled_ = is_high_performance_enabled;
-  UpdateCurrentStateAndNotifyIfChanged();
-}
-
 void DisplayPerformanceModeController::UpdateCurrentStateAndNotifyIfChanged() {
-  //   Implementation Logic:
-  //   1. If the user has enabled the high performance mode in the UI, then the
-  //      display features should be in the high performance mode regardless of
-  //      the power status.
-  //   2. If the user has not enabled the high performance mode in the UI, then
-  //      the display features should be in the power saver mode if the power
-  //      status is in battery saver mode.
-  //   3. If the user has not enabled the high performance mode in the UI, then
-  //      the display features should be in the intelligent mode if the power
-  //      status is not in battery saver mode.
-  ModeState new_state = ModeState::kIntelligent;
-  if (is_high_performance_enabled_) {
-    new_state = ModeState::kHighPerformance;
-  } else if (PowerStatus::Get()->IsBatterySaverActive()) {
-    new_state = ModeState::kPowerSaver;
-  }
+  ModeState new_state = PowerStatus::Get()->IsBatterySaverActive()
+                            ? ModeState::kPowerSaver
+                            : ModeState::kIntelligent;
 
   if (new_state != current_state_) {
     current_state_ = new_state;

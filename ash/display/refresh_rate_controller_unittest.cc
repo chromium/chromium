@@ -971,69 +971,6 @@ TEST_F(RefreshRateControllerTest, SeamlessRefreshRatesChanged) {
   }
 }
 
-TEST_F(RefreshRateControllerTest, TestBorealisWithHighPerformance) {
-  const int64_t internal_id = GetPrimaryDisplay().id();
-  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
-  snapshots.push_back(BuildVrrPanelSnapshot(
-      internal_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(std::move(snapshots));
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
-      {.bounds = GetPrimaryDisplay().work_area(), .window_id = 0}));
-
-  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
-                                           WindowState::Get(window.get()));
-  performance_controller_->SetHighPerformanceModeByUser(true);
-
-  // Expect VRR to be disabled. The VrrEnabled feature is specifically only for
-  // borealis gaming, and it hasn't been vetted for other applications.
-  {
-    const DisplaySnapshot* internal_snapshot = GetDisplaySnapshot(internal_id);
-    ASSERT_TRUE(internal_snapshot);
-    ASSERT_TRUE(internal_snapshot->IsVrrCapable());
-    EXPECT_FALSE(internal_snapshot->IsVrrEnabled());
-  }
-
-  // Set the game mode to indicate the user is gaming.
-  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
-                                           WindowState::Get(window.get()));
-
-  // Expect the new state to have VRR enabled on the Borealis display only.
-  {
-    const DisplaySnapshot* internal_snapshot = GetDisplaySnapshot(internal_id);
-    ASSERT_TRUE(internal_snapshot);
-    EXPECT_TRUE(internal_snapshot->IsVrrEnabled());
-  }
-
-  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
-                                           WindowState::Get(window.get()));
-}
-
-TEST_F(RefreshRateControllerTest, TestThrottlingWithHighPerformance) {
-  constexpr int64_t display_id = 12345;
-  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
-  snapshots.push_back(BuildDualRefreshPanelSnapshot(
-      display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(std::move(snapshots));
-
-  // Expect the initial state to be 120 Hz.
-  {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
-    ASSERT_TRUE(snapshot);
-    ASSERT_NE(snapshot->current_mode(), nullptr);
-    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
-  }
-
-  performance_controller_->SetHighPerformanceModeByUser(true);
-
-  // Expect the new state to be unchanged.
-  {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
-    ASSERT_TRUE(snapshot);
-    ASSERT_NE(snapshot->current_mode(), nullptr);
-    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
-  }
-}
-
 TEST_F(RefreshRateControllerTest, CompositorsGetVrrIntervalsOnSwap) {
   constexpr int kVsyncRateMinInternal = 48;
   constexpr int kVsyncRateMinExternal = 40;

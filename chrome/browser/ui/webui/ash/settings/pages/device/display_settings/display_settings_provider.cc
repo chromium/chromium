@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "ash/display/cros_display_config.h"
-#include "ash/display/display_performance_mode_controller.h"
 #include "ash/display/display_prefs.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
@@ -353,18 +352,6 @@ void DisplaySettingsProvider::RecordChangingDisplaySettings(
       displays_connection_timestamp_map_.erase(id);
     }
   }
-}
-
-void DisplaySettingsProvider::SetShinyPerformance(bool enabled) {
-  // The provider could outlive the shell so check if it's still valid.
-  if (!Shell::HasInstance() ||
-      !Shell::Get()->display_performance_mode_controller()) {
-    return;
-  }
-
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(enabled);
 }
 
 void DisplaySettingsProvider::ScreenBrightnessChanged(

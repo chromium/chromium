@@ -103,128 +103,31 @@ TEST_F(DisplayPerformanceModeControllerTest,
   Shell::Get()->display_performance_mode_controller()->OnPowerStatusChanged();
 }
 
-TEST_F(DisplayPerformanceModeControllerTest, TestHighPerformance) {
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kHighPerformance));
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(true);
-}
-
-TEST_F(DisplayPerformanceModeControllerTest, AvoidDuplicateSetting) {
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kHighPerformance))
-      .Times(1);
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(true);
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(true);
-}
-
-TEST_F(DisplayPerformanceModeControllerTest,
-       TestHighPerformanceModeBeforeOnPowerSaverBattery) {
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kHighPerformance))
-      .Times(1);
-
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(true);
-
-  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
-      power_manager::PowerSupplyProperties::AC, 100.f));
-  PowerStatus::Get()->SetBatterySaverStateForTesting(true);
-  Shell::Get()->display_performance_mode_controller()->OnPowerStatusChanged();
-}
-
-TEST_F(DisplayPerformanceModeControllerTest,
-       TestHighPerformanceModeAfterOnPowerSaverBattery) {
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kPowerSaver));
-  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
-      power_manager::PowerSupplyProperties::AC, 100.f));
-  PowerStatus::Get()->SetBatterySaverStateForTesting(true);
-  Shell::Get()->display_performance_mode_controller()->OnPowerStatusChanged();
-
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kHighPerformance));
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(true);
-}
-
-TEST_F(DisplayPerformanceModeControllerTest,
-       TestTurnOffHighPerformanceToIntelligent) {
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kHighPerformance));
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(true);
-
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kIntelligent));
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(false);
-}
-
-TEST_F(DisplayPerformanceModeControllerTest,
-       TestTurnOffHighPerformanceToPowerSaver) {
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kPowerSaver));
-  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
-      power_manager::PowerSupplyProperties::DISCONNECTED, 10.f));
-  PowerStatus::Get()->SetBatterySaverStateForTesting(true);
-  Shell::Get()->display_performance_mode_controller()->OnPowerStatusChanged();
-
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kHighPerformance));
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(true);
-
-  EXPECT_CALL(observer_,
-              OnDisplayPerformanceModeChanged(ModeState::kPowerSaver));
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(false);
-}
-
 TEST_F(DisplayPerformanceModeControllerTest, TestModeStateOnAddObserver) {
-  // Set Shiny Mode to go into High Performance mode.
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(true);
-
-  // Check that adding the controller reports back High Performance mode.
+  // Check that adding the controller reports back the current mode.
   Shell::Get()->display_performance_mode_controller()->RemoveObserver(
       &observer_);
   ModeState current_state =
       Shell::Get()->display_performance_mode_controller()->AddObserver(
           &observer_);
-  EXPECT_EQ(current_state, ModeState::kHighPerformance);
+  EXPECT_EQ(current_state, ModeState::kDefault);
 }
 
-TEST_F(DisplayPerformanceModeControllerTest, TestHighPerformanceReadBack) {
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(true);
+TEST_F(DisplayPerformanceModeControllerTest, TestModeStateReadBack) {
+  EXPECT_EQ(Shell::Get()
+                ->display_performance_mode_controller()
+                ->GetCurrentStateForTesting(),
+            ModeState::kDefault);
+
+  EXPECT_CALL(observer_,
+              OnDisplayPerformanceModeChanged(ModeState::kPowerSaver));
+  PowerStatus::Get()->SetBatterySaverStateForTesting(true);
+  Shell::Get()->display_performance_mode_controller()->OnPowerStatusChanged();
 
   EXPECT_EQ(Shell::Get()
                 ->display_performance_mode_controller()
                 ->GetCurrentStateForTesting(),
-            ModeState::kHighPerformance);
-
-  Shell::Get()
-      ->display_performance_mode_controller()
-      ->SetHighPerformanceModeByUser(false);
-
-  EXPECT_NE(Shell::Get()
-                ->display_performance_mode_controller()
-                ->GetCurrentStateForTesting(),
-            ModeState::kHighPerformance);
+            ModeState::kPowerSaver);
 }
 
 }  // namespace ash

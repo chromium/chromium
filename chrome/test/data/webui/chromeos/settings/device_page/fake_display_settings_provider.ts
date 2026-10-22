@@ -42,7 +42,6 @@ export class FakeDisplaySettingsProvider implements
   // Enabled by default to match system behavior.
   private isAmbientLightSensorEnabled: boolean = true;
   private hasAmbientLightSensor_: boolean = true;
-  private performanceSettingEnabled: boolean = false;
   private internalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private externalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private displayHistogram = new Map<DisplaySettingsType, number>();
@@ -231,15 +230,6 @@ export class FakeDisplaySettingsProvider implements
   }
 
   startNativeTouchscreenMappingExperience(): void {}
-
-  // Implement DisplaySettingsProviderInterface.
-  setShinyPerformance(enabled: boolean): void {
-    this.performanceSettingEnabled = enabled;
-  }
-
-  getShinyPerformance(): boolean {
-    return this.performanceSettingEnabled;
-  }
 
   getInternalDisplayHistogram(): Map<DisplaySettingsType, number> {
     return this.internalDisplayHistogram;

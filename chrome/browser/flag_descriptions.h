@@ -7760,12 +7760,6 @@ inline constexpr char kEnableExternalDisplayHdr10Name[] =
 inline constexpr char kEnableExternalDisplayHdr10Description[] =
     "Allows using HDR10 mode on any external monitor that supports it";
 
-inline constexpr char kEnableDisplayPerformanceModeName[] =
-    "Enable Display Performance Mode";
-inline constexpr char kEnableDisplayPerformanceModeDescription[] =
-    "This option enables toggling different display features based on user "
-    "setting and power state";
-
 inline constexpr char kEnableRFC8925Name[] =
     "Enable RFC8925 (prefer IPv6-only on IPv6-only-capable network)";
 inline constexpr char kEnableRFC8925Description[] =

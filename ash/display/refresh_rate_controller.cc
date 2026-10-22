@@ -272,8 +272,6 @@ RefreshRateController::GetDesiredThrottleState() {
   switch (current_performance_mode_) {
     case ModeState::kPowerSaver:
       return ThrottleState::kEnabled;
-    case ModeState::kHighPerformance:
-      return ThrottleState::kDisabled;
     case ModeState::kIntelligent:
       return GetDynamicThrottleState();
     default:

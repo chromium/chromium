@@ -114,8 +114,6 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
       mojom::DisplaySettingsType type,
       mojom::DisplaySettingsValuePtr value) override;
 
-  void SetShinyPerformance(bool enabled) override;
-
   void SetInternalDisplayScreenBrightness(double percent) override;
 
   void SetInternalDisplayAmbientLightSensorEnabled(bool enabled) override;

@@ -59,20 +59,6 @@
   }
 </style>
 
-<!-- Display Shiny Performance Mode Controller -->
-<div id="displayPerformanceModeSubsection" class="settings-box"
-    hidden="[[!isDisplayPerformanceSupported_]]">
-  <div id="displayPerformanceModeLabel"
-      class="start text-area" aria-hidden="true">
-      <!-- TODO(b/326270858): Translate the label -->
-      $i18n{displayShinyPerformanceLabel}
-  </div>
-  <cr-toggle id="displayPerformanceModeToggle"
-      aria-labelledby="displayPerformanceModeLabel"
-      on-change="toggleDisplayPerformanceEnabled_">
-  </cr-toggle>
-</div>
-
 <!-- Arrangement section -->
 <template is="dom-if"
     if="[[shouldShowArrangementSection(displays)]]" restamp>

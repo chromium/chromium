@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 
-#include "ash/display/display_performance_mode_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/brightness/brightness_controller_chromeos.h"
@@ -560,20 +559,6 @@ TEST_F(DisplaySettingsProviderTest,
       DisplaySettingsProvider::DisplayDefaultSettingsMeasurement::
           kOverrideResolution,
       0);
-}
-
-TEST_F(DisplaySettingsProviderTest, UserToggleDisplayPerformance) {
-  provider_->SetShinyPerformance(true);
-  EXPECT_EQ(Shell::Get()
-                ->display_performance_mode_controller()
-                ->GetCurrentStateForTesting(),
-            DisplayPerformanceModeController::ModeState::kHighPerformance);
-
-  provider_->SetShinyPerformance(false);
-  EXPECT_NE(Shell::Get()
-                ->display_performance_mode_controller()
-                ->GetCurrentStateForTesting(),
-            DisplayPerformanceModeController::ModeState::kHighPerformance);
 }
 
 // Test the behavior when the display brightness is changed.

@@ -3917,14 +3917,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-display-performance-mode",
-    "owners": [
-      "markyacoub@chromium.org",
-      "chromeos-gfx-display@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "enable-download-save-as-system-file-dialog",
     "owners": [
       "qinmin@chromium.org",
