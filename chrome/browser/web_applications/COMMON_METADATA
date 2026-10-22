@@ -15,7 +15,12 @@ agentic_review {
       "chrome/browser/(web_applications|ui/web_applications|ui/views/web_apps)/.*_(unittest|browsertest|interactive_uitest|interactve_uitest|ui_test)(_[a-z0-9_]+)?\\.(cc|mm)",
       "chrome/browser/sync/test/integration/web_apps/.*_test(_[a-z0-9_]+)?\\.cc"
     ]
-    path_expression_exclusion: ".*_(base|util|utils|helper|helpers|mixin)\\.(cc|mm)"
+    path_expression_exclusion: [".*_(base|util|utils|helper|helpers|mixin)\\.(cc|mm)"]
     review_capability_skills: ["chrome/browser/web_applications/docs/skills/webapps-testing-review/SKILL.md"]
+  }
+  capability_groups {
+    path_expression: "chrome/browser/web_applications/app_service/.*\\.(cc|h)"
+    path_expression_exclusion: [".*_(unittest|browsertest)\\.(cc|h)"]
+    review_capability_skills: ["chrome/browser/web_applications/_agents/skills/webapps-app-service-review/SKILL.md"]
   }
 }
