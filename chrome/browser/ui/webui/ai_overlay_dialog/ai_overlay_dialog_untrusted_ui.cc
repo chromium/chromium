@@ -19,6 +19,10 @@
 #include "chrome/browser/ttc/core/buildflags.h"
 #include "chrome/browser/ttc/core/switches.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+#include "chrome/browser/ttc/core/harness_page_handler.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#endif
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
@@ -191,6 +195,14 @@ void AiOverlayDialogUntrustedUI::BindInterface(
       std::move(receiver), std::move(dummy_remote), nullptr);
 }
 
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+void AiOverlayDialogUntrustedUI::BindInterface(
+    mojo::PendingReceiver<ttc::mojom::HarnessPageHandlerFactory> receiver) {
+  harness_page_handler_factory_receiver_.reset();
+  harness_page_handler_factory_receiver_.Bind(std::move(receiver));
+}
+#endif
+
 WEB_UI_CONTROLLER_TYPE_IMPL(AiOverlayDialogUntrustedUI)
 
 void AiOverlayDialogUntrustedUI::CreatePageHandler(
@@ -209,5 +221,16 @@ void AiOverlayDialogUntrustedUI::CreatePageHandler(
   tools_ = AiOverlayTools::Create(std::move(tools), bwi,
                                   page_context_monitor_.get());
 }
+
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+void AiOverlayDialogUntrustedUI::CreatePageHandler(
+    mojo::PendingReceiver<ttc::mojom::HarnessPageHandler> handler) {
+  if (auto* service = TtcKeyedService::Get(
+          web_ui()->GetWebContents()->GetBrowserContext())) {
+    harness_page_handler_ =
+        std::make_unique<HarnessPageHandler>(*service, std::move(handler));
+  }
+}
+#endif
 
 }  // namespace ttc

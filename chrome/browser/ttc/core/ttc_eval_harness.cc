@@ -31,7 +31,22 @@ mojom::TurnResultPtr MakeErrorTurnResult(std::string error_message) {
 
 TtcEvalHarness::TtcEvalHarness(TtcKeyedService& service) : service_(service) {}
 
-TtcEvalHarness::~TtcEvalHarness() = default;
+TtcEvalHarness::~TtcEvalHarness() {
+  if (start_session_callback_) {
+    start_session_timeout_.Stop();
+    std::move(start_session_callback_).Run(false);
+  }
+  if (turn_complete_callback_) {
+    if (current_turn_result_ &&
+        current_turn_result_->status == mojom::TurnStatus::kComplete) {
+      current_turn_result_->status = mojom::TurnStatus::kError;
+      current_turn_result_->error_message =
+          "Evaluation harness destroyed before turn completed";
+    }
+    FinishTurn();
+  }
+  EndSession();
+}
 
 void TtcEvalHarness::StartSession(StartSessionCallback callback) {
   if (!service_->IsEnabled() || service_->is_session_active()) {
@@ -55,7 +70,10 @@ void TtcEvalHarness::StartSession(StartSessionCallback callback) {
 }
 
 void TtcEvalHarness::EndSession() {
-  service_->EndSession();
+  if (observation_.IsObserving()) {
+    observation_.Reset();
+    service_->EndSession();
+  }
 }
 
 void TtcEvalHarness::OnSessionLifecycleChanged(SessionLifecycle state) {
@@ -65,6 +83,19 @@ void TtcEvalHarness::OnSessionLifecycleChanged(SessionLifecycle state) {
   } else if (state == SessionLifecycle::kFinished) {
     observation_.Reset();
     audio_controller_.reset();
+    if (start_session_callback_) {
+      start_session_timeout_.Stop();
+      std::move(start_session_callback_).Run(false);
+    }
+    if (turn_complete_callback_) {
+      if (current_turn_result_ &&
+          current_turn_result_->status == mojom::TurnStatus::kComplete) {
+        current_turn_result_->status = mojom::TurnStatus::kError;
+        current_turn_result_->error_message =
+            "Session ended before turn completed";
+      }
+      FinishTurn();
+    }
   }
 }
 

@@ -11,21 +11,18 @@
 #include "chrome/browser/ttc/core/eval_harness.mojom.h"
 #include "chrome/browser/ttc/core/ttc_eval_harness.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ttc {
 
 class TtcKeyedService;
 
 // Coordinates communication between browser C++ and WebUI test runner
-// (ttc_eval_api.ts) via eval_harness.mojom.
+// (eval_app.ts) via eval_harness.mojom.
 class HarnessPageHandler : public mojom::HarnessPageHandler {
  public:
   HarnessPageHandler(TtcKeyedService& service,
-                     mojo::PendingReceiver<mojom::HarnessPageHandler> receiver,
-                     mojo::PendingRemote<mojom::HarnessPage> page);
+                     mojo::PendingReceiver<mojom::HarnessPageHandler> receiver);
   ~HarnessPageHandler() override;
   HarnessPageHandler(const HarnessPageHandler&) = delete;
   HarnessPageHandler& operator=(const HarnessPageHandler&) = delete;
@@ -42,7 +39,6 @@ class HarnessPageHandler : public mojom::HarnessPageHandler {
  private:
   const raw_ptr<TtcKeyedService> service_;
   mojo::Receiver<mojom::HarnessPageHandler> receiver_;
-  mojo::Remote<mojom::HarnessPage> page_;
 
   std::unique_ptr<TtcEvalHarness> eval_harness_;
 };

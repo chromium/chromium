@@ -16,11 +16,8 @@ namespace ttc {
 
 HarnessPageHandler::HarnessPageHandler(
     TtcKeyedService& service,
-    mojo::PendingReceiver<mojom::HarnessPageHandler> receiver,
-    mojo::PendingRemote<mojom::HarnessPage> page)
-    : service_(&service),
-      receiver_(this, std::move(receiver)),
-      page_(std::move(page)) {}
+    mojo::PendingReceiver<mojom::HarnessPageHandler> receiver)
+    : service_(&service), receiver_(this, std::move(receiver)) {}
 
 HarnessPageHandler::~HarnessPageHandler() = default;
 

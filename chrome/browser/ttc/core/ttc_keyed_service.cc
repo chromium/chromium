@@ -15,9 +15,6 @@
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
-#if BUILDFLAG(ENABLE_TTC_WEBUI)
-#include "chrome/browser/ttc/core/harness_page_handler.h"
-#endif
 
 namespace ttc {
 
@@ -35,9 +32,6 @@ TtcKeyedService::TtcKeyedService(Profile* profile,
 TtcKeyedService::~TtcKeyedService() = default;
 
 void TtcKeyedService::Shutdown() {
-#if BUILDFLAG(ENABLE_TTC_WEBUI)
-  harness_page_handler_.reset();
-#endif
   EndSession();
   // Drop platform bridges (e.g. the Android JNI counterpart) now, during
   // KeyedService shutdown, rather than in the destructor, so nothing can reach
@@ -98,15 +92,6 @@ std::unique_ptr<Conversation> TtcKeyedService::MakeConversation(
 TtcActorUiStateManager& TtcKeyedService::actor_ui_state_manager() {
   return CHECK_DEREF(actor_ui_state_manager_.get());
 }
-
-#if BUILDFLAG(ENABLE_TTC_WEBUI)
-void TtcKeyedService::BindHarnessPage(
-    mojo::PendingReceiver<mojom::HarnessPageHandler> receiver,
-    mojo::PendingRemote<mojom::HarnessPage> page) {
-  harness_page_handler_ = std::make_unique<HarnessPageHandler>(
-      *this, std::move(receiver), std::move(page));
-}
-#endif
 
 base::WeakPtr<TtcKeyedService> TtcKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

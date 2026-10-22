@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
@@ -30,6 +31,11 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+#include "chrome/browser/ttc/core/buildflags.h"
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+#include "chrome/browser/ttc/core/eval_harness.mojom.h"
+#include "chrome/browser/ttc/core/switches.h"
+#endif
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
@@ -210,9 +216,17 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsFeatures(
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
-    registry.ForWebUI<ttc::AiOverlayDialogUntrustedUI>()
-        .Add<ai_overlay_dialog::mojom::PageHandlerFactory>();
+  if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+      || base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ttc::switches::kEnableTtcTestApi)
+#endif
+  ) {
+    auto registration = registry.ForWebUI<ttc::AiOverlayDialogUntrustedUI>();
+    registration.Add<ai_overlay_dialog::mojom::PageHandlerFactory>();
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+    registration.Add<ttc::mojom::HarnessPageHandlerFactory>();
+#endif
   }
 #endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 }

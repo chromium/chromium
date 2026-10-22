@@ -1221,6 +1221,8 @@ source_set("core") {
     "//chrome/browser/tracing",
     "//chrome/browser/translate",
     "//chrome/browser/trusted_vault",
+    "//chrome/browser/ttc/core",
+    "//chrome/browser/ttc/core:buildflags",
     "//chrome/browser/ttc/core:features",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions",

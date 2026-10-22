@@ -37,8 +37,7 @@ struct TurnResult {
 // Factory for creating a HarnessPageHandler.
 interface HarnessPageHandlerFactory {
   // The WebUI calls this method when the eval harness page is first initialized.
-  CreatePageHandler(pending_receiver<HarnessPageHandler> handler,
-                    pending_remote<HarnessPage> page);
+  CreatePageHandler(pending_receiver<HarnessPageHandler> handler);
 };
 
 // Implemented by browser C++. Called by the WebUI evaluation harness.
@@ -58,13 +57,4 @@ interface HarnessPageHandler {
   // PCM audio samples, observing the session lifecycle and returning the
   // consolidated TurnResult.
   SendAudio(array<uint8> pcm16_bytes) => (TurnResult result);
-};
-
-// Implemented by the WebUI evaluation harness (TypeScript). Called by browser C++.
-interface HarnessPage {
-  // Signals that the model has started generating an interactive response turn.
-  OnModelTurnStarted();
-
-  // Signals that the model has completed generating an interactive response turn.
-  OnModelTurnEnded();
 };

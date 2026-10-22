@@ -72,11 +72,7 @@ build_webui("build") {
 
   if (enable_ttc_webui) {
     static_files += [ "eval/eval.html" ]
-    ts_files += [
-      "eval/eval_app.ts",
-      "eval/eval_proxy.ts",
-      "eval/ttc_eval_api.ts",
-    ]
+    ts_files += [ "eval/eval_app.ts" ]
     mojo_files_deps +=
         [ "//chrome/browser/ttc/core:mojo_bindings_ts__generator" ]
     mojo_files +=

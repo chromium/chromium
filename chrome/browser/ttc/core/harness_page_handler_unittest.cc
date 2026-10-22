@@ -45,25 +45,6 @@ class FakeConversation : public Conversation {
   std::unique_ptr<AudioController> audio_controller_;
 };
 
-class FakeHarnessPage : public mojom::HarnessPage {
- public:
-  FakeHarnessPage() = default;
-  ~FakeHarnessPage() override = default;
-
-  mojo::PendingRemote<mojom::HarnessPage> BindAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void OnModelTurnStarted() override { turn_started_ = true; }
-  void OnModelTurnEnded() override { turn_ended_ = true; }
-
-  bool turn_started_ = false;
-  bool turn_ended_ = false;
-
- private:
-  mojo::Receiver<mojom::HarnessPage> receiver_{this};
-};
-
 class HarnessPageHandlerTest : public testing::Test {
  public:
   HarnessPageHandlerTest() {
@@ -91,14 +72,12 @@ class HarnessPageHandlerTest : public testing::Test {
   TestingProfile profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<TtcKeyedService> service_ = nullptr;
-  FakeHarnessPage page_;
   mojo::Remote<mojom::HarnessPageHandler> handler_remote_;
   std::unique_ptr<HarnessPageHandler> handler_;
 
   void SetUp() override {
     handler_ = std::make_unique<HarnessPageHandler>(
-        *service_, handler_remote_.BindNewPipeAndPassReceiver(),
-        page_.BindAndPassRemote());
+        *service_, handler_remote_.BindNewPipeAndPassReceiver());
   }
 };
 
@@ -189,6 +168,111 @@ TEST_F(HarnessPageHandlerTest, SendAudioReturnsResult) {
 TEST_F(HarnessPageHandlerTest, CloseSessionDoesNotCrash) {
   handler_remote_->CloseSession();
   handler_remote_.FlushForTesting();
+}
+
+TEST_F(HarnessPageHandlerTest, SessionEndedDuringTurnResolvesWithError) {
+  base::RunLoop start_loop;
+  handler_remote_->StartSession(base::BindLambdaForTesting([&](bool success) {
+    EXPECT_TRUE(success);
+    start_loop.Quit();
+  }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(service_->is_session_active());
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
+  start_loop.Run();
+
+  base::RunLoop turn_loop;
+  handler_remote_->SendText(
+      "Hello, world!",
+      base::BindLambdaForTesting([&](mojom::TurnResultPtr result) {
+        ASSERT_TRUE(result);
+        EXPECT_EQ(result->status, mojom::TurnStatus::kError);
+        EXPECT_EQ(result->error_message, "Session ended before turn completed");
+        turn_loop.Quit();
+      }));
+  handler_remote_.FlushForTesting();
+
+  // Abruptly end the session while the turn is in flight.
+  service_->EndSession();
+  turn_loop.Run();
+}
+
+TEST_F(HarnessPageHandlerTest, FatalErrorDuringTurnResolvesWithErrorCode) {
+  base::RunLoop start_loop;
+  handler_remote_->StartSession(base::BindLambdaForTesting([&](bool success) {
+    EXPECT_TRUE(success);
+    start_loop.Quit();
+  }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(service_->is_session_active());
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
+  start_loop.Run();
+
+  base::RunLoop turn_loop;
+  handler_remote_->SendText(
+      "Hello, world!",
+      base::BindLambdaForTesting([&](mojom::TurnResultPtr result) {
+        ASSERT_TRUE(result);
+        EXPECT_EQ(result->status, mojom::TurnStatus::kError);
+        EXPECT_EQ(result->error_code,
+                  static_cast<int32_t>(ErrorCode::kInternalBackendError));
+        turn_loop.Quit();
+      }));
+  handler_remote_.FlushForTesting();
+
+  // Trigger a fatal error on the SessionController while the turn is in flight.
+  service_->session_controller()->OnError(ErrorCode::kInternalBackendError);
+  turn_loop.Run();
+}
+
+TEST_F(HarnessPageHandlerTest, DestroyingHandlerEndsActiveSession) {
+  base::RunLoop start_loop;
+  handler_remote_->StartSession(base::BindLambdaForTesting([&](bool success) {
+    EXPECT_TRUE(success);
+    start_loop.Quit();
+  }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(service_->is_session_active());
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
+  start_loop.Run();
+
+  // Destroying the owning HarnessPageHandler (e.g. when the WebUI tab closes)
+  // should end the session it started.
+  handler_.reset();
+  EXPECT_FALSE(service_->is_session_active());
+}
+
+TEST_F(HarnessPageHandlerTest, SecondHandlerDoesNotDisruptActiveSession) {
+  base::RunLoop start_loop;
+  handler_remote_->StartSession(base::BindLambdaForTesting([&](bool success) {
+    EXPECT_TRUE(success);
+    start_loop.Quit();
+  }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(service_->is_session_active());
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
+  start_loop.Run();
+
+  // A second WebUI window binding its own HarnessPageHandler should not
+  // destroy or disrupt the first window's session.
+  mojo::Remote<mojom::HarnessPageHandler> second_remote;
+  auto second_handler = std::make_unique<HarnessPageHandler>(
+      *service_, second_remote.BindNewPipeAndPassReceiver());
+
+  base::RunLoop second_start_loop;
+  second_remote->StartSession(base::BindLambdaForTesting([&](bool success) {
+    EXPECT_FALSE(success);
+    second_start_loop.Quit();
+  }));
+  second_start_loop.Run();
+  EXPECT_TRUE(service_->is_session_active());
+
+  // Closing or destroying the second handler must not end the first handler's
+  // active session.
+  second_remote->CloseSession();
+  second_remote.FlushForTesting();
+  second_handler.reset();
+  EXPECT_TRUE(service_->is_session_active());
 }
 
 }  // namespace

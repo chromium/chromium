@@ -4,23 +4,55 @@
 
 import '/strings.m.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {EvalProxy} from './eval_proxy.js';
-import {TtcEvalApi} from './ttc_eval_api.js';
+import {browserProxyFactory} from '../eval_harness.mojom-webui.js';
+import type {TurnResult} from '../eval_harness.mojom-webui.js';
 
 export class EvalAppElement extends CrLitElement {
   static get is() {
     return 'ttc-eval-app';
   }
 
-  private evalProxy_: EvalProxy = EvalProxy.getInstance();
-  private testApi_: TtcEvalApi =
-      new TtcEvalApi(this.evalProxy_.handler, this.evalProxy_.callbackRouter);
+  private get handler_() {
+    return browserProxyFactory.getInstance().handler;
+  }
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.testApi_.install();
+  private isTestApiEnabled_(): boolean {
+    return loadTimeData.valueExists('enableTtcTestApi') &&
+        loadTimeData.getBoolean('enableTtcTestApi');
+  }
+
+  async start(): Promise<boolean> {
+    if (!this.isTestApiEnabled_()) {
+      throw new Error('TTC Test API is not enabled.');
+    }
+    const response = await this.handler_.startSession();
+    return response.success;
+  }
+
+  end(): void {
+    if (!this.isTestApiEnabled_()) {
+      throw new Error('TTC Test API is not enabled.');
+    }
+    this.handler_.closeSession();
+  }
+
+  async sendText(text: string): Promise<TurnResult> {
+    if (!this.isTestApiEnabled_()) {
+      throw new Error('TTC Test API is not enabled.');
+    }
+    const response = await this.handler_.sendText(text);
+    return response.result;
+  }
+
+  async sendAudio(pcm16Audio: Uint8Array): Promise<TurnResult> {
+    if (!this.isTestApiEnabled_()) {
+      throw new Error('TTC Test API is not enabled.');
+    }
+    const response = await this.handler_.sendAudio(Array.from(pcm16Audio));
+    return response.result;
   }
 }
 
