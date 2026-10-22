@@ -440,6 +440,46 @@ TEST_F(MojoRendererTest, GetMediaTime) {
   Destroy();
 }
 
+// Media time interpolated by MojoRenderer should keep up with the remote
+// renderer between periodic time updates at playback rates above 2x, rather
+// than being clamped to the upper bound of the last time update.
+TEST_F(MojoRendererTest, GetMediaTime_HighPlaybackRate) {
+  Initialize();
+
+  // Must match `kTimeUpdateInterval` in mojo_renderer_service.cc.
+  constexpr base::TimeDelta kTimeUpdateInterval = base::Milliseconds(125);
+  constexpr double kPlaybackRate = 4.0;
+  const base::TimeDelta kStartTime = base::Milliseconds(kStartPlayingTimeInMs);
+
+  // The remote renderer's media time advances at `kPlaybackRate`.
+  base::ElapsedTimer elapsed_timer;
+  auto remote_media_time = [&]() {
+    return kStartTime + elapsed_timer.Elapsed() * kPlaybackRate;
+  };
+  EXPECT_CALL(*mock_renderer_, SetPlaybackRate(kPlaybackRate));
+  EXPECT_CALL(*mock_renderer_, StartPlayingFrom(kStartTime));
+  EXPECT_CALL(*mock_renderer_, GetMediaTime())
+      .WillRepeatedly(remote_media_time);
+  mojo_renderer_->SetPlaybackRate(kPlaybackRate);
+  mojo_renderer_->StartPlayingFrom(kStartTime);
+
+  // Wait for the first periodic time update.
+  task_environment_.FastForwardBy(kTimeUpdateInterval);
+  EXPECT_EQ(remote_media_time(), mojo_renderer_->GetMediaTime());
+
+  // Sample the media time throughout the next few update intervals. At 4x,
+  // more than `2 * kTimeUpdateInterval` of media time elapses within a single
+  // update interval, so an upper bound that is not scaled by the playback rate
+  // would stall the interpolated media time until the next time update.
+  constexpr int kSamplesPerInterval = 5;
+  for (int i = 0; i < 3 * kSamplesPerInterval; ++i) {
+    task_environment_.FastForwardBy(kTimeUpdateInterval / kSamplesPerInterval);
+    EXPECT_EQ(remote_media_time(), mojo_renderer_->GetMediaTime());
+  }
+
+  Destroy();
+}
+
 TEST_F(MojoRendererTest, OnBufferingStateChange) {
   Initialize();
   Play();
