@@ -216,11 +216,9 @@ void SessionStorageNamespaceImpl::OpenArea(
 
 void SessionStorageNamespaceImpl::Clone(const std::string& clone_to_namespace) {
   DCHECK(IsPopulated());
-  // `clone_to_namespace` comes from the mojo peer and must be a valid session
-  // storage namespace ID. Reject invalid IDs here rather than crashing later
-  // when the shared map's metadata key is written.
-  if (clone_to_namespace.size() != blink::kSessionStorageNamespaceIdLength) {
-    receivers_.ReportBadMessage("Invalid session storage namespace ID.");
+
+  if (!IsNamespaceIdValid(clone_to_namespace)) {
+    receivers_.ReportBadMessage(kInvalidNamespaceIdError);
     return;
   }
 

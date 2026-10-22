@@ -11,6 +11,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
+#include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "components/services/storage/dom_storage/sqlite/map_entries_table.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_macros.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
@@ -56,9 +57,14 @@ StatusOr<DomStorageDatabase::MapMetadata> ParseMapMetadata(
       blink::StorageKey::Deserialize(statement.ColumnBlobAsString(1)),
       []() { return DbStatus::Corruption("invalid storage key"); });
 
+  std::string session_id = statement.ColumnString(0);
+  if (!IsNamespaceIdValid(session_id)) {
+    return base::unexpected(DbStatus::Corruption(kInvalidNamespaceIdError));
+  }
+
   return DomStorageDatabase::MapMetadata{
       .map_locator{
-          /*session_id=*/statement.ColumnString(0),
+          std::move(session_id),
           std::move(storage_key),
           /*map_id=*/statement.ColumnInt(2),
       },

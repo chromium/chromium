@@ -182,6 +182,24 @@ TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithSessionIdMissing) {
   EXPECT_TRUE(map_metadata.error().IsCorruption());
 }
 
+TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithSessionIdInvalid) {
+  // Valid UUIDs strings must not contain '$' characters.
+  constexpr char kInvalidSessionId[] = "ce8c7dc5$73b4_4320_a506_ce1f4fd3356f";
+
+  std::string invalid_key = base::StrCat({
+      base::as_string_view(kNamespacePrefix),
+      kInvalidSessionId,
+      std::string(/*count=*/1, kNamespaceStorageKeySeparator),
+      kFakeUrlStorageKey.Serialize(),
+  });
+  StatusOr<DomStorageDatabase::MapMetadata> map_metadata = ParseMapMetadata({
+      ToBytes(invalid_key),
+      /*value=*/ToBytes("314"),
+  });
+  ASSERT_FALSE(map_metadata.has_value());
+  EXPECT_TRUE(map_metadata.error().IsCorruption());
+}
+
 TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithSeparatorMissing) {
   std::string invalid_key = base::StrCat({
       base::as_string_view(kNamespacePrefix),

@@ -79,6 +79,11 @@ SessionStorageImpl::~SessionStorageImpl() {
 void SessionStorageImpl::BindNamespace(
     const std::string& namespace_id,
     mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver) {
+  if (!IsNamespaceIdValid(namespace_id)) {
+    receiver_.ReportBadMessage(kInvalidNamespaceIdError);
+    return;
+  }
+
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(base::BindOnce(&SessionStorageImpl::BindNamespace,
                                     weak_ptr_factory_.GetWeakPtr(),
@@ -129,6 +134,11 @@ void SessionStorageImpl::BindStorageArea(
 }
 
 void SessionStorageImpl::CreateNamespace(const std::string& namespace_id) {
+  if (!IsNamespaceIdValid(namespace_id)) {
+    receiver_.ReportBadMessage(kInvalidNamespaceIdError);
+    return;
+  }
+
   if (namespaces_.find(namespace_id) != namespaces_.end())
     return;
 
@@ -140,6 +150,12 @@ void SessionStorageImpl::CloneNamespace(
     const std::string& clone_from_namespace_id,
     const std::string& clone_to_namespace_id,
     mojom::SessionStorageCloneType clone_type) {
+  if (!IsNamespaceIdValid(clone_from_namespace_id) ||
+      !IsNamespaceIdValid(clone_to_namespace_id)) {
+    receiver_.ReportBadMessage(kInvalidNamespaceIdError);
+    return;
+  }
+
   if (namespaces_.find(clone_to_namespace_id) != namespaces_.end()) {
     // Non-immediate clones expect to be paired with a |Clone| from the mojo
     // namespace object. If that clone has already happened, then we don't need
@@ -205,6 +221,11 @@ void SessionStorageImpl::CloneNamespace(
 
 void SessionStorageImpl::DeleteNamespace(const std::string& namespace_id,
                                          bool should_persist) {
+  if (!IsNamespaceIdValid(namespace_id)) {
+    receiver_.ReportBadMessage(kInvalidNamespaceIdError);
+    return;
+  }
+
   auto namespace_it = namespaces_.find(namespace_id);
   // If the namespace has pending clones, do the clone now before destroying it.
   if (namespace_it != namespaces_.end()) {
@@ -292,6 +313,11 @@ void SessionStorageImpl::GetUsage(GetUsageCallback callback) {
 void SessionStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
                                        const std::string& namespace_id,
                                        DeleteStorageCallback callback) {
+  if (!IsNamespaceIdValid(namespace_id)) {
+    receiver_.ReportBadMessage(kInvalidNamespaceIdError);
+    return;
+  }
+
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(base::BindOnce(&SessionStorageImpl::DeleteStorage,
                                     weak_ptr_factory_.GetWeakPtr(), storage_key,
@@ -646,11 +672,18 @@ void SessionStorageImpl::DeleteNamespacesFromMetadataAndDatabase(
   CHECK_EQ(connection_state_, CONNECTION_FINISHED);
 
   // Remove each namespace from `metadata_`.
+  std::vector<std::string> namespaces_to_delete;
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  for (const std::string& namespace_id : namespace_ids) {
+  for (std::string& namespace_id : namespace_ids) {
     std::map<blink::StorageKey,
              scoped_refptr<DomStorageDatabase::SharedMapLocator>>
         namespace_to_delete = metadata_.TakeNamespace(namespace_id);
+
+    if (namespace_to_delete.empty()) {
+      // An empty namespace is already deleted.
+      continue;
+    }
+    namespaces_to_delete.push_back(std::move(namespace_id));
 
     // Find unreferenced map key/value pairs to delete from `database_`.
     for (auto& [storage_key, map_locator] : namespace_to_delete) {
@@ -661,10 +694,11 @@ void SessionStorageImpl::DeleteNamespacesFromMetadataAndDatabase(
   }
 
   // Delete the namespaces and map key/values from `database_`.
-  if (!database_) {
+  if (namespaces_to_delete.empty() || !database_) {
     return;
   }
-  database_->DeleteSessions(std::move(namespace_ids), std::move(maps_to_delete),
+  database_->DeleteSessions(std::move(namespaces_to_delete),
+                            std::move(maps_to_delete),
                             base::BindOnce(&SessionStorageImpl::OnCommitResult,
                                            weak_ptr_factory_.GetWeakPtr()));
 }

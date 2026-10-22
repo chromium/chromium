@@ -3028,6 +3028,79 @@ TEST_P(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
   EXPECT_EQ(1ul, data.size());
 }
 
+// Regression test for https://crbug.com/574512015.
+TEST_P(SessionStorageImplTest,
+       InvalidNamespaceDeletionDoesNotLeakDataAcrossOrigins) {
+  // Create a new session that contains a map with one key/value pair.
+  const std::string namespace_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(
+          "https://source-origin.test");
+
+  session_storage()->CreateNamespace(namespace_id);
+
+  mojo::Remote<blink::mojom::StorageArea> area;
+  session_storage()->BindStorageArea(storage_key, namespace_id,
+                                     area.BindNewPipeAndPassReceiver());
+
+  ASSERT_TRUE(test::PutSync(area.get(), StringViewToUint8Vector("source_key"),
+                            StringViewToUint8Vector("source_value"),
+                            std::nullopt, test::MakeStorageAreaSource()));
+  session_storage_impl()->FlushAreaForTesting(namespace_id, storage_key);
+  WaitForDatabaseTasks();
+
+  // Deleting an invalid namespace must not corrupt the database.  In LevelDB,
+  // the prefix for the invalid namespace overlaps with the valid namespace
+  // from above.  This incorrectly deletes the metadata for both namespaces
+  // while leaving the key/value pairs intact.
+  const std::string invalid_namespace_id = namespace_id + "-https://source";
+  session_storage()->DeleteNamespace(invalid_namespace_id,
+                                     /*should_persist=*/false);
+  FlushMojo();
+  WaitForDatabaseTasks();
+
+  // `SessionStorageImpl` must report the invalid namespace ID as a bad message.
+  EXPECT_TRUE(bad_message_called_);
+
+  // Reopening recomputes the next map ID from the stored metadata. A new origin
+  // must not inherit data from an orphaned map's key/value pairs because it
+  // reuses the orphaned map's ID.
+  area.reset();
+  ShutDownSessionStorage();
+
+  const std::string new_namespace_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  const blink::StorageKey new_storage_key =
+      blink::StorageKey::CreateFromStringForTesting(
+          "https://other-origin.test");
+
+  session_storage()->CreateNamespace(new_namespace_id);
+  session_storage()->BindStorageArea(new_storage_key, new_namespace_id,
+                                     area.BindNewPipeAndPassReceiver());
+
+  // Since its brand new, the namespace does not attempt to load any key/value
+  // pairs from the database.
+  EXPECT_TRUE(test::GetAllSync(area.get()).empty());
+
+  // Force the new namespace to read its key/value pairs from the database.
+  const auto new_key = StringViewToUint8Vector("new_key");
+  const auto new_value = StringViewToUint8Vector("new_value");
+  ASSERT_TRUE(test::PutSync(area.get(), new_key, new_value, std::nullopt,
+                            test::MakeStorageAreaSource()));
+  session_storage_impl()->FlushAreaForTesting(new_namespace_id,
+                                              new_storage_key);
+  WaitForDatabaseTasks();
+
+  // The new namespace must not contained any orphaned key/value pairs from
+  // another origin.
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area.get());
+  ASSERT_EQ(1u, data.size());
+  EXPECT_EQ(new_key, data[0]->key);
+  EXPECT_EQ(new_value, data[0]->value);
+}
+
 // Regression test for https://crbug.com/40761980: when the namespace a clone
 // was destined for is deleted before the renderer's `Clone()` call arrives,
 // that call must be dropped. Recreating the namespace would leak it, as the

@@ -86,6 +86,14 @@ class SessionStorageMetadata {
   NamespaceStorageKeyMap namespace_storage_key_map_;
 };
 
+// Session storage namespace IDs must use a lowercase `base::Uuid` string with
+// underscores instead of dashes.  For example:
+// `36356e0b_1627_4492_a474_db76a8996bed`.
+bool IsNamespaceIdValid(const std::string& namespace_id);
+
+inline constexpr char kInvalidNamespaceIdError[] =
+    "Invalid session storage namespace ID.";
+
 }  // namespace storage
 
 #endif  // COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_SESSION_STORAGE_METADATA_H_

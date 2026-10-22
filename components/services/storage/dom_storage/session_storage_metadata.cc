@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/uuid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "url/gurl.h"
 
@@ -174,6 +175,14 @@ SessionStorageMetadata::GetOrCreateNamespaceEntry(
       .emplace(std::piecewise_construct, std::forward_as_tuple(namespace_id),
                std::forward_as_tuple())
       .first;
+}
+
+bool IsNamespaceIdValid(const std::string& namespace_id) {
+  std::string namespace_uuid_string = namespace_id;
+  std::ranges::replace(namespace_uuid_string, '_', '-');
+
+  base::Uuid namespace_uuid = base::Uuid::ParseLowercase(namespace_uuid_string);
+  return namespace_uuid.is_valid();
 }
 
 }  // namespace storage
