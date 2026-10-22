@@ -13,7 +13,6 @@
 
 namespace base {
 class CommandLine;
-class FilePath;
 }
 
 namespace blink {
@@ -25,7 +24,6 @@ class AssociatedInterfaceRegistry;
 
 namespace content {
 class BrowserChildProcessHost;
-class BrowserContext;
 class BrowserURLHandler;
 class RenderFrameHost;
 class RenderProcessHost;
@@ -38,10 +36,6 @@ namespace mojo {
 template <typename>
 class BinderMapWithContext;
 }  // namespace mojo
-
-namespace storage {
-class FileSystemBackend;
-}
 
 // Implements a platform or feature specific part of ChromeContentBrowserClient.
 // All the public methods corresponds to the methods of the same name in
@@ -74,11 +68,6 @@ class ChromeContentBrowserClientParts {
       std::vector<std::string>* additional_allowed_schemes) {}
   virtual void GetURLRequestAutoMountHandlers(
       std::vector<storage::URLRequestAutoMountHandler>* handlers) {}
-  virtual void GetAdditionalFileSystemBackends(
-      content::BrowserContext* browser_context,
-      const base::FilePath& storage_partition_path,
-      std::vector<std::unique_ptr<storage::FileSystemBackend>>*
-          additional_backends) {}
 
   // Append extra switches to |command_line| for |process|.
   virtual void AppendExtraRendererCommandLineSwitches(

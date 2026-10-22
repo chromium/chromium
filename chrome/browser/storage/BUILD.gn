@@ -6,6 +6,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 source_set("storage") {
   public = [
+    "file_system_backends.h",
     "persistent_storage_permission_context.h",
     "storage_notification_service_factory.h",
     "storage_notification_service_impl.h",
@@ -23,6 +24,7 @@ source_set("storage") {
 
 source_set("impl") {
   sources = [
+    "file_system_backends.cc",
     "persistent_storage_permission_context.cc",
     "storage_notification_service_factory.cc",
     "storage_notification_service_impl.cc",
@@ -38,8 +40,26 @@ source_set("impl") {
     "//chrome/common:non_code_constants",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
+    "//extensions/buildflags",
+    "//storage/browser",
     "//third_party/blink/public/common:headers",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/arc/fileapi",
+      "//chrome/browser/ash/drive/fileapi",
+      "//chrome/browser/ash/file_system_provider/fileapi",
+      "//chrome/browser/ash/fileapi",
+      "//chrome/browser/ash/smb_client/fileapi",
+      "//chrome/browser/media_galleries/fileapi",
+      "//storage/common",
+    ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/sync_file_system" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -64,6 +84,15 @@ source_set("unit_tests") {
     "//content/public/browser",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    sources += [ "file_system_backends_unittest.cc" ]
+    deps += [
+      "//chrome/browser/ui/webui/top_chrome",
+      "//content/test:test_support",
+      "//storage/browser",
+    ]
+  }
 }
 
 if (!is_android) {

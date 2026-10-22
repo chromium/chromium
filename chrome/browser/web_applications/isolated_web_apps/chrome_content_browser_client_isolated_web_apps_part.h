@@ -13,6 +13,10 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "url/origin.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 class ChromeContentBrowserClient;
 
 namespace web_app {

@@ -20,6 +20,7 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
+class BrowserContext;
 class RenderFrameHost;
 class RenderProcessHost;
 class SecurityPrincipal;
@@ -159,11 +160,6 @@ class ChromeContentBrowserClientExtensionsPart
       std::vector<std::string>* additional_allowed_schemes) override;
   void GetURLRequestAutoMountHandlers(
       std::vector<storage::URLRequestAutoMountHandler>* handlers) override;
-  void GetAdditionalFileSystemBackends(
-      content::BrowserContext* browser_context,
-      const base::FilePath& storage_partition_path,
-      std::vector<std::unique_ptr<storage::FileSystemBackend>>*
-          additional_backends) override;
   void AppendExtraRendererCommandLineSwitches(
       base::CommandLine* command_line,
       content::RenderProcessHost& process) override;

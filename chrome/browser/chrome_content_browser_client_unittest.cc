@@ -171,7 +171,6 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "media/base/picture_in_picture_events_info.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "ui/base/page_transition_types.h"
 #else
@@ -2300,21 +2299,6 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// A BrowserContext without a path, e.g. the Top Chrome WebUI profile, gets no
-// additional file system backends, since they need the path for their files.
-TEST_F(ChromeContentBrowserClientTest,
-       NoAdditionalFileSystemBackendsWithoutPath) {
-  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
-  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
-  ASSERT_TRUE(top_chrome_webui_profile->GetPath().empty());
-
-  ChromeContentBrowserClient browser_client;
-  std::vector<std::unique_ptr<storage::FileSystemBackend>> backends;
-  browser_client.GetAdditionalFileSystemBackends(
-      top_chrome_webui_profile, top_chrome_webui_profile->GetPath(), &backends);
-  EXPECT_TRUE(backends.empty());
-}
-
 // Tests that WebPreferences of a WebContents in the Top Chrome WebUI profile
 // are computed from the user profile set for it.
 TEST_F(ChromeContentBrowserClientTest,
