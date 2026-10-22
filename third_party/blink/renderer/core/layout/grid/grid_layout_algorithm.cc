@@ -340,11 +340,14 @@ MinMaxSizes GridLayoutAlgorithm::ComputeSubgridMinMaxSizes(
 }
 
 LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicBlockSize(
-    const GridSizingSubtree& sizing_subtree) const {
+    const GridSizingSubtree& sizing_subtree,
+    SizingConstraint sizing_constraint) const {
   DCHECK(sizing_subtree.HasValidRootFor(Node()));
 
+  // Block-axis track sizing is the same for all sizing constraints. Preserve
+  // the caller's constraint so measurements during layout can cache results.
   return ComputeSubgridIntrinsicSize(sizing_subtree, kForRows,
-                                     SizingConstraint::kMaxContent);
+                                     sizing_constraint);
 }
 
 const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
@@ -555,7 +558,8 @@ LayoutUnit Baseline(const GridItemData& grid_item,
 
 LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
                                       const GridItemData& subgrid_data,
-                                      const ConstraintSpace& space) {
+                                      const ConstraintSpace& space,
+                                      SizingConstraint sizing_constraint) {
   DCHECK(sizing_subtree);
   DCHECK(subgrid_data.IsSubgrid());
 
@@ -563,7 +567,8 @@ LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
   return ComputeBlockSizeForFragment(
       space, node,
       ComputeBorders(space, node) + ComputePadding(space, node.Style()),
-      node.ComputeSubgridIntrinsicBlockSize(sizing_subtree, space),
+      node.ComputeSubgridIntrinsicBlockSize(sizing_subtree, space,
+                                            sizing_constraint),
       space.AvailableSize().inline_size);
 }
 
@@ -674,7 +679,8 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
 
     if (grid_item->IsSubgrid()) {
       return ComputeBlockSizeForSubgrid(
-          sizing_subtree.SubgridSizingSubtree(*grid_item), *grid_item, space);
+          sizing_subtree.SubgridSizingSubtree(*grid_item), *grid_item, space,
+          sizing_constraint);
     }
 
     // TODO(ikilpatrick): This check is potentially too broad, i.e. a fixed

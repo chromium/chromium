@@ -35,7 +35,8 @@ class CORE_EXPORT GridLayoutAlgorithm
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 
   LayoutUnit ComputeSubgridIntrinsicBlockSize(
-      const GridSizingSubtree& sizing_subtree) const;
+      const GridSizingSubtree& sizing_subtree,
+      SizingConstraint sizing_constraint) const;
   MinMaxSizes ComputeSubgridMinMaxSizes(
       const GridSizingSubtree& sizing_subtree) const;
 

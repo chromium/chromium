@@ -14,6 +14,7 @@ namespace blink {
 struct GridItemData;
 class GridItems;
 class GridSizingSubtree;
+enum class SizingConstraint;
 
 // Grid specific extensions to `BlockNode`.
 class CORE_EXPORT GridNode final : public BlockNode {
@@ -65,7 +66,8 @@ class CORE_EXPORT GridNode final : public BlockNode {
 
   LayoutUnit ComputeSubgridIntrinsicBlockSize(
       const GridSizingSubtree& sizing_subtree,
-      const ConstraintSpace& space) const;
+      const ConstraintSpace& space,
+      SizingConstraint sizing_constraint) const;
 
   // Adjusts a subgridded item's span to be relative to the parent grid's
   // coordinate system.

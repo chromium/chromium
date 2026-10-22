@@ -200,7 +200,8 @@ MinMaxSizesResult GridNode::ComputeSubgridMinMaxSizes(
 
 LayoutUnit GridNode::ComputeSubgridIntrinsicBlockSize(
     const GridSizingSubtree& sizing_subtree,
-    const ConstraintSpace& space) const {
+    const ConstraintSpace& space,
+    SizingConstraint sizing_constraint) const {
   DCHECK(sizing_subtree.HasValidRootFor(*this));
   DCHECK(sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(kForRows));
 
@@ -212,7 +213,8 @@ LayoutUnit GridNode::ComputeSubgridIntrinsicBlockSize(
 
     const auto intrinsic_block_size =
         GridLayoutAlgorithm({*this, fragment_geometry, space})
-            .ComputeSubgridIntrinsicBlockSize(sizing_subtree);
+            .ComputeSubgridIntrinsicBlockSize(sizing_subtree,
+                                              sizing_constraint);
 
     // The min and max-content block size are both the box's "ideal" size after
     // layout (see https://drafts.csswg.org/css-sizing-3/#max-content).
