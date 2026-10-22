@@ -446,6 +446,16 @@ TEST_F(OneTimePermissionProviderTest, SuspendExpiresAllGrants) {
       ContentSettingsType::MEDIASTREAM_MIC, base::Value(CONTENT_SETTING_ALLOW),
       one_time_constraints());
 
+  auto* geolocation_info = PermissionSettingsRegistry::GetInstance()->Get(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  GeolocationSetting allow_geolocation{PermissionOption::kAllowed,
+                                       PermissionOption::kAllowed};
+  one_time_permission_provider_->SetWebsiteSetting(
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      geolocation_info->delegate().ToValue(allow_geolocation),
+      one_time_constraints());
+
   one_time_permission_provider_->OnSuspend();
 
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
@@ -458,6 +468,11 @@ TEST_F(OneTimePermissionProviderTest, SuspendExpiresAllGrants) {
                 one_time_permission_provider_.get(), other_url, secondary_url,
                 ContentSettingsType::MEDIASTREAM_MIC, false));
 
+  EXPECT_EQ(std::nullopt,
+            TestUtils::GetPermissionSetting(
+                one_time_permission_provider_.get(), primary_url, secondary_url,
+                ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false));
+
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
           ContentSettingsType::MEDIASTREAM_CAMERA),
@@ -465,6 +480,10 @@ TEST_F(OneTimePermissionProviderTest, SuspendExpiresAllGrants) {
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
           ContentSettingsType::MEDIASTREAM_MIC),
+      2);
+  histograms.ExpectTotalCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
       2);
   histograms.ExpectBucketCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
@@ -487,6 +506,18 @@ TEST_F(OneTimePermissionProviderTest, SuspendExpiresAllGrants) {
   histograms.ExpectBucketCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
           ContentSettingsType::MEDIASTREAM_MIC),
+      static_cast<base::HistogramBase::Sample32>(
+          permissions::OneTimePermissionEvent::EXPIRED_ON_SUSPEND),
+      1);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
+      static_cast<base::HistogramBase::Sample32>(
+          permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
+      1);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
       static_cast<base::HistogramBase::Sample32>(
           permissions::OneTimePermissionEvent::EXPIRED_ON_SUSPEND),
       1);
