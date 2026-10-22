@@ -10,11 +10,11 @@
 #include <memory>
 #include <string>
 
+#include "base/cancelable_callback.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "pdf/loader/result_codes.h"
 #include "pdf/loader/url_loader_wrapper.h"
 #include "ui/gfx/range/range.h"
@@ -69,7 +69,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   base::raw_span<uint8_t, DanglingUntriaged> buffer_;
   bool multi_part_processed_ = false;
 
-  base::OneShotTimer read_starter_;
+  base::CancelableOnceClosure read_starter_;
 
   base::WeakPtrFactory<URLLoaderWrapperImpl> weak_factory_{this};
 };

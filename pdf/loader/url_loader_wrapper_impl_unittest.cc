@@ -4,12 +4,15 @@
 
 #include "pdf/loader/url_loader_wrapper_impl.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/loader/result_codes.h"
 #include "pdf/loader/url_loader.h"
@@ -79,6 +82,24 @@ class URLLoaderWrapperImplTest : public testing::Test {
   FakeUrlLoaderClient fake_client_;
   NiceMock<base::MockCallback<UrlLoader::OpenCallback>> mock_open_callback_;
 };
+
+TEST_F(URLLoaderWrapperImplTest, ReadResponseBodyIsPostedWithoutDelay) {
+  auto url_loader = std::make_unique<UrlLoader>(fake_client_.GetWeakPtr());
+  url_loader->Open(UrlRequest(), mock_open_callback_.Get());
+  url_loader->DidReceiveResponse(blink::WebURLResponse());
+  url_loader->DidFinishLoading();
+  auto wrapper = std::make_unique<URLLoaderWrapperImpl>(std::move(url_loader));
+
+  std::array<uint8_t, 1> buffer;
+  base::test::TestFuture<int> future;
+  const base::TimeTicks start = base::TimeTicks::Now();
+  wrapper->ReadResponseBody(buffer, future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(0, future.Get());
+  EXPECT_EQ(start, base::TimeTicks::Now());
+}
 
 TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartValidContentRange) {
   blink::WebURLResponse response;

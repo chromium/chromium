@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/http/http_util.h"
 #include "pdf/loader/result_codes.h"
 #include "pdf/loader/url_loader.h"
@@ -32,9 +33,6 @@
 namespace chrome_pdf {
 
 namespace {
-
-// We should read with delay to prevent block UI thread, and reduce CPU usage.
-constexpr base::TimeDelta kReadDelayMs = base::Milliseconds(2);
 
 constexpr std::string_view kBytes = "bytes";
 
@@ -145,7 +143,7 @@ bool URLLoaderWrapperImpl::GetByteRangeStart(int* start) const {
 
 void URLLoaderWrapperImpl::Close() {
   url_loader_->Close();
-  read_starter_.Stop();
+  read_starter_.Cancel();
 }
 
 void URLLoaderWrapperImpl::OpenRange(const std::string& url,
@@ -163,10 +161,11 @@ void URLLoaderWrapperImpl::ReadResponseBody(
     base::span<uint8_t> buffer,
     base::OnceCallback<void(int)> callback) {
   buffer_ = buffer;
-  read_starter_.Start(
-      FROM_HERE, kReadDelayMs,
+  read_starter_.Reset(
       base::BindOnce(&URLLoaderWrapperImpl::ReadResponseBodyImpl,
                      base::Unretained(this), std::move(callback)));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, read_starter_.callback());
 }
 
 void URLLoaderWrapperImpl::ReadResponseBodyImpl(
