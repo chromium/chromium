@@ -136,6 +136,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"nextSentenceLabel", IDS_READING_MODE_NAVIGATE_NEXT_SENTENCE},
       {"settingsLabel", IDS_READING_MODE_SETTINGS},
       {"translateLabel", IDS_READING_MODE_TRANSLATE},
+      {"sendFeedbackLabel", IDS_READING_MODE_SEND_FEEDBACK_LABEL},
       {"voiceSpeedLabel", IDS_READING_MODE_VOICE_SPEED},
       {"voiceHighlightLabel", IDS_READING_MODE_VOICE_HIGHLIGHT},
       {"voiceSpeedWithRateLabel", IDS_READING_MODE_VOICE_SPEED_WITH_RATE},

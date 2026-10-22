@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {KEYBOARD_NAV_CLASS, LINE_FOCUS_FEATURE_NAME, MENU_SHOW_DELAY_MS, SUBMENU_SHOW_DELAY_MS, userEducationProxyFactory} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAnythingSettingsAction, SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
@@ -15,10 +15,12 @@ import {TestUserEducationMixedTrustHandler} from 'chrome-untrusted://webui-test/
 import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {setupTestEnvironment} from './common.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('SettingsMenuElement', () => {
   let settingsMenu: SettingsMenuElement;
+  let metrics: TestMetricsBrowserProxy;
   let userEducationHandler: TestUserEducationMixedTrustHandler;
   let visualBrowserProxy: TestVisualBrowserProxy;
 
@@ -46,6 +48,7 @@ suite('SettingsMenuElement', () => {
 
   setup(async () => {
     const result = setupTestEnvironment({lineFocusEnabled: true});
+    metrics = result.metrics;
     visualBrowserProxy = result.visualBrowserProxy;
     userEducationHandler = new TestUserEducationMixedTrustHandler();
     userEducationProxyFactory.setInstance({handler: userEducationHandler});
@@ -588,6 +591,83 @@ suite('SettingsMenuElement', () => {
     const event = await whenFired;
     assertEquals(SettingsOption.FONT, event.detail.previousId);
   });
+
+  test('send feedback action fires event when clicked', async () => {
+    visualBrowserProxy.sendFeedbackEnabled = true;
+    settingsMenu.remove();
+    await createSettingsMenu();
+
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    const feedbackItem =
+        menuItems.find(item => item.id === SettingsOption.SEND_FEEDBACK);
+    assertTrue(!!feedbackItem);
+
+    const whenFired = eventToPromise(ToolbarEvent.SEND_FEEDBACK, settingsMenu);
+    feedbackItem.click();
+    await whenFired;
+    assertEquals(
+        ReadAnythingSettingsAction.SEND_FEEDBACK_ACTION,
+        await metrics.whenCalled('recordSettingsAction'));
+    assertFalse(actionMenu.open);
+  });
+
+  test('clicking send feedback closes open submenu', async () => {
+    visualBrowserProxy.readAnythingImprovedUiEnabled = true;
+    visualBrowserProxy.sendFeedbackEnabled = true;
+    settingsMenu.remove();
+    await createSettingsMenu();
+
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    const appearanceItem =
+        menuItems.find(item => item.id === SettingsOption.APPEARANCE);
+    const feedbackItem =
+        menuItems.find(item => item.id === SettingsOption.SEND_FEEDBACK);
+    assertTrue(!!appearanceItem);
+    assertTrue(!!feedbackItem);
+
+    // Click appearanceItem to open its submenu.
+    const whenSubmenuOpened =
+        eventToPromise(ToolbarEvent.OPEN_SETTINGS_SUBMENU, settingsMenu);
+    appearanceItem.click();
+    await whenSubmenuOpened;
+    await microtasksFinished();
+
+    const whenFired = eventToPromise<CustomEvent<{previousId: SettingsOption}>>(
+        ToolbarEvent.CLOSE_SUBMENU_REQUESTED, settingsMenu);
+
+    // Now click the Send Feedback action item.
+    feedbackItem.click();
+    const event = await whenFired;
+    assertEquals(SettingsOption.APPEARANCE, event.detail.previousId);
+  });
+
+  test(
+      'send feedback action does not show when sendFeedbackEnabled is false',
+      async () => {
+        visualBrowserProxy.sendFeedbackEnabled = false;
+        settingsMenu.remove();
+        await createSettingsMenu();
+
+        let actionMenu = settingsMenu.$.lazyMenu.get();
+        let menuItems = Array.from(
+            actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+        assertFalse(
+            menuItems.some(item => item.id === SettingsOption.SEND_FEEDBACK));
+
+        visualBrowserProxy.readAnythingImprovedUiEnabled = true;
+        settingsMenu.remove();
+        await createSettingsMenu();
+
+        actionMenu = settingsMenu.$.lazyMenu.get();
+        menuItems = Array.from(
+            actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+        assertFalse(
+            menuItems.some(item => item.id === SettingsOption.SEND_FEEDBACK));
+      });
 
   test(
       'line focus item shows new badge when showLineFocusNewBadge is true',

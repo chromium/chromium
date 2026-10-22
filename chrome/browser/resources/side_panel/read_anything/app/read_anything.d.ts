@@ -128,6 +128,9 @@ declare namespace chrome {
     // Whether the Read Anything Translate Entry Point feature flag is enabled.
     let isReadAnythingTranslateEntryPointEnabled: boolean;
 
+    // Whether the Read Anything Send Feedback feature flag is enabled.
+    let isReadAnythingSendFeedbackEnabled: boolean;
+
     // Whether the Read Anything Read Aloud Experimental Playback UI flag is
     // enabled.
     let isReadAnythingReadAloudExperimentalPlaybackUiEnabled: boolean;

@@ -10097,6 +10097,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_TRANSLATE" desc="Accessibility label for button that opens the translation box for the reading mode feature.">
         Translate
       </message>
+      <message name="IDS_READING_MODE_SEND_FEEDBACK_LABEL" desc="Label for the button in the reading mode settings menu that opens the send feedback dialog.">
+        Send feedback about reading mode
+      </message>
       <message name="IDS_READING_MODE_VOICE_SPEED" desc="Accessibility label for button that opens a dropdown with options for changing the speed of the voice for Read Aloud.">
         Voice speed
       </message>

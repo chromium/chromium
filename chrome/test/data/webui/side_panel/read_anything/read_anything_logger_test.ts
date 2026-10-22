@@ -134,6 +134,12 @@ suite('Logger', () => {
     assertEquals(
         ReadAnythingSettingsAction.TRANSLATE_ACTION,
         await metrics.whenCalled('recordSettingsAction'));
+    metrics.reset();
+
+    logger.logSettingsAction(ReadAnythingSettingsAction.SEND_FEEDBACK_ACTION);
+    assertEquals(
+        ReadAnythingSettingsAction.SEND_FEEDBACK_ACTION,
+        await metrics.whenCalled('recordSettingsAction'));
   });
 
   test('speech settings', async () => {

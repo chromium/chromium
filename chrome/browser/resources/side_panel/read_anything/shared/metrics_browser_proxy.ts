@@ -129,9 +129,10 @@ export enum ReadAnythingSettingsChange {
 // LINT.IfChange(ReadAnythingSettingsAction)
 export enum ReadAnythingSettingsAction {
   TRANSLATE_ACTION = 0,
+  SEND_FEEDBACK_ACTION = 1,
 
   // Must be last.
-  COUNT = 1,
+  COUNT = 2,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingSettingsAction)
 

@@ -1378,6 +1378,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty<
           &ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled>(
           "isReadAnythingTranslateEntryPointEnabled")
+      .SetProperty<
+          &ReadAnythingAppController::IsReadAnythingSendFeedbackEnabled>(
+          "isReadAnythingSendFeedbackEnabled")
       .SetProperty<&ReadAnythingAppController::IsTranslatePdfEnabled>(
           "isTranslatePdfEnabled")
       .SetProperty<&ReadAnythingAppController::
@@ -2143,6 +2146,10 @@ bool ReadAnythingAppController::
 bool ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled()
     const {
   return features::IsReadAnythingTranslateEntryPointEnabled();
+}
+
+bool ReadAnythingAppController::IsReadAnythingSendFeedbackEnabled() const {
+  return features::IsReadAnythingSendFeedbackEnabled();
 }
 
 bool ReadAnythingAppController::IsTranslatePdfEnabled() const {

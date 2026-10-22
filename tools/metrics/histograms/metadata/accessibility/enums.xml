@@ -2446,6 +2446,7 @@ Unknown properties are collapsed to zero. -->
 
 <enum name="ReadAnythingSettingsAction">
   <int value="0" label="Translate entrypoint"/>
+  <int value="1" label="Send feedback"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingSettingsAction) -->

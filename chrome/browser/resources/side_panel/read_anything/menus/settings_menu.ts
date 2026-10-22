@@ -154,6 +154,12 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
     title: 'translateLabel',
     itemType: SettingsItemType.ACTION,
   },
+  [SettingsOption.SEND_FEEDBACK]: {
+    id: SettingsOption.SEND_FEEDBACK,
+    icon: 'read-anything:feedback',
+    title: 'sendFeedbackLabel',
+    itemType: SettingsItemType.ACTION,
+  },
   [SettingsOption.VOICE_SELECTION]: {
     id: SettingsOption.VOICE_SELECTION,
     icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
@@ -296,6 +302,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);
     }
 
+    if (this.visualBrowserProxy_.isReadAnythingSendFeedbackEnabled()) {
+      optionIDs.push(SettingsOption.SEND_FEEDBACK);
+    }
+
     return optionIDs;
   }
 
@@ -317,6 +327,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
     if (this.isImmersiveMode) {
       optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);
+    }
+
+    if (this.visualBrowserProxy_.isReadAnythingSendFeedbackEnabled()) {
+      optionIDs.push(SettingsOption.SEND_FEEDBACK);
     }
 
     return optionIDs;
@@ -430,19 +444,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     if (item.itemType === SettingsItemType.ACTION) {
-      if (item.id === SettingsOption.TRANSLATION_REQUESTED) {
-        // Close any open submenus before firing the translate event.
-        if (this.currentOpenId_) {
-          this.fire(ToolbarEvent.CLOSE_SUBMENU_REQUESTED, {
-            previousId: this.currentOpenId_,
-          });
-          this.currentOpenId_ = null;
-        }
-        this.logger_.logSettingsAction(
-            ReadAnythingSettingsAction.TRANSLATE_ACTION);
-        this.fire(ToolbarEvent.TRANSLATION_REQUESTED);
-        this.close();
-      }
+      this.onActionMenuItemClick_(item);
       return;
     }
 
@@ -466,6 +468,31 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       previousId,
       target: currentTarget,
     });
+  }
+
+  private onActionMenuItemClick_(item: SettingsItem) {
+    if (item.itemType !== SettingsItemType.ACTION || item.disabled) {
+      return;
+    }
+
+    // Close any open submenus before firing the action event.
+    if (this.currentOpenId_) {
+      this.fire(ToolbarEvent.CLOSE_SUBMENU_REQUESTED, {
+        previousId: this.currentOpenId_,
+      });
+      this.currentOpenId_ = null;
+    }
+
+    if (item.id === SettingsOption.TRANSLATION_REQUESTED) {
+      this.logger_.logSettingsAction(
+          ReadAnythingSettingsAction.TRANSLATE_ACTION);
+      this.fire(ToolbarEvent.TRANSLATION_REQUESTED);
+    } else if (item.id === SettingsOption.SEND_FEEDBACK) {
+      this.logger_.logSettingsAction(
+          ReadAnythingSettingsAction.SEND_FEEDBACK_ACTION);
+      this.fire(ToolbarEvent.SEND_FEEDBACK);
+    }
+    this.close();
   }
 
   private onToggleMenuItemClick_(item: SettingsItem) {

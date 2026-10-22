@@ -898,3 +898,24 @@ TEST_F(ReadAnythingAppControllerTest,
     EXPECT_EQ(0, enabled);
   }
 }
+
+TEST_F(ReadAnythingAppControllerTest,
+       IsReadAnythingSendFeedbackEnabled_ExposedToJavaScript) {
+  int enabled = -1;
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kReadAnythingSendFeedback);
+    EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+        u"chrome.readingMode.isReadAnythingSendFeedbackEnabled ? 1 : 0",
+        &enabled));
+    EXPECT_EQ(1, enabled);
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kReadAnythingSendFeedback);
+    EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+        u"chrome.readingMode.isReadAnythingSendFeedbackEnabled ? 1 : 0",
+        &enabled));
+    EXPECT_EQ(0, enabled);
+  }
+}
