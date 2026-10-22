@@ -2600,25 +2600,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.SyncStoppedURLFetchResponse"
+<histogram name="Sync.SyncStoppedURLFetchResponse2"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-08-30">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
-    Counts of responses (both http code and net error code) for Sync stopped
-    event URL fetches. Note that requests that timed out are not covered by this
-    histogram; see Sync.SyncStoppedURLFetchTimedOut for that.
+    Counts of responses (both HTTP status codes, including non-2xx error codes,
+    and net error codes) for Sync stopped event URL fetches. Note that requests
+    that timed out are not covered by this histogram; see
+    Sync.SyncStoppedURLFetchTimedOut2 for that.
   </summary>
 </histogram>
 
-<histogram name="Sync.SyncStoppedURLFetchTimedOut" enum="BooleanTimedOut"
-    expires_after="2026-12-15">
+<histogram name="Sync.SyncStoppedURLFetchTimedOut2" enum="BooleanTimedOut"
+    expires_after="2027-08-30">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
     Whether a Sync stopped event URL fetch timed out or not. Note that this
-    records true on timeout and false on success, but doesn't record anything if
-    the fetch failed for any other reason.
+    records true on timeout and false if an HTTP response was received
+    (regardless of the HTTP status code), but doesn't record anything if the
+    fetch failed for any other reason.
   </summary>
 </histogram>
 

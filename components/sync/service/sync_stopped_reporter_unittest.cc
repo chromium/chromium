@@ -148,10 +148,10 @@ TEST_F(SyncStoppedReporterTest, HappyCase) {
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
-  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchResponse",
+  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchResponse2",
                                       net::HTTP_OK, 1);
-  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchTimedOut", false,
-                                      1);
+  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchTimedOut2",
+                                      false, 1);
 }
 
 TEST_F(SyncStoppedReporterTest, ServerNotFound) {
@@ -163,9 +163,10 @@ TEST_F(SyncStoppedReporterTest, ServerNotFound) {
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
-  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchResponse",
-                                      net::ERR_HTTP_RESPONSE_CODE_FAILURE, 1);
-  histogram_tester.ExpectTotalCount("Sync.SyncStoppedURLFetchTimedOut", 0);
+  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchResponse2",
+                                      net::HTTP_NOT_FOUND, 1);
+  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchTimedOut2",
+                                      false, 1);
 }
 
 class MockTimeSyncStoppedReporterTest : public SyncStoppedReporterTest {
@@ -187,7 +188,7 @@ TEST_F(MockTimeSyncStoppedReporterTest, Timeout) {
 
   // Trigger the timeout, 30 seconds should be more than enough.
   task_environment_.FastForwardBy(base::Seconds(30));
-  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchTimedOut", true,
+  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchTimedOut2", true,
                                       1);
 }
 

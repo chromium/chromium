@@ -36,7 +36,7 @@ constexpr char kEventEndpoint[] = "event";
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(10);
 
 void LogSyncStoppedRequestTimeout(bool timed_out) {
-  base::UmaHistogramBoolean("Sync.SyncStoppedURLFetchTimedOut", timed_out);
+  base::UmaHistogramBoolean("Sync.SyncStoppedURLFetchTimedOut2", timed_out);
 }
 
 void LogSyncStoppedRequestResult(
@@ -52,7 +52,7 @@ void LogSyncStoppedRequestResult(
     LogSyncStoppedRequestTimeout(/*timed_out=*/false);
   }
   base::UmaHistogramSparse(
-      "Sync.SyncStoppedURLFetchResponse",
+      "Sync.SyncStoppedURLFetchResponse2",
       request_succeeded ? http_status_code : net_error_code);
 }
 
@@ -125,6 +125,7 @@ void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   simple_url_loader_->AttachStringForUpload(msg, "application/octet-stream");
+  simple_url_loader_->SetAllowHttpErrorResults(true);
   simple_url_loader_->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&SyncStoppedReporter::OnSimpleLoaderComplete,
