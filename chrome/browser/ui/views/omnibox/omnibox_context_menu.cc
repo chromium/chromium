@@ -130,11 +130,11 @@ void OmniboxContextMenu::WillShowMenu(views::MenuItemView* menu) {
       // `scroll_container` erroneously casts an outer shadow around the insets.
       if (!scroll_container->HasBubbleBorder() &&
           !view_shadows_.contains(scroll_container)) {
-        auto shadow = std::make_unique<views::ViewDecoration>(scroll_container,
-                                                              kShadowOption);
+        auto shadow = std::make_unique<views::ViewDecoration>(scroll_container);
         int corner_radius = views::MenuConfig::instance().CornerRadiusForMenu(
             menu->GetMenuController());
         shadow->SetRoundedCornerRadius(corner_radius);
+        shadow->SetShadow(kShadowOption);
         view_shadows_[scroll_container] = std::move(shadow);
       }
     }

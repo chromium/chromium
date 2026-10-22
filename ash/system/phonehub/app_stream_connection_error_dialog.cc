@@ -96,9 +96,9 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         kDialogRoundedCornerRadius,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
-    view_shadow_ =
-        std::make_unique<views::ViewDecoration>(this, kDialogShadowElevation);
+    view_shadow_ = std::make_unique<views::ViewDecoration>(this);
     view_shadow_->SetRoundedCornerRadius(kDialogRoundedCornerRadius);
+    view_shadow_->SetShadow(kDialogShadowElevation);
 
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, kDialogContentInsets));

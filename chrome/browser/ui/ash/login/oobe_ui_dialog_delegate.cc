@@ -175,9 +175,9 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
 
     if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       // Create a shadow for the OOBE dialog.
-      view_shadow_ = std::make_unique<views::ViewDecoration>(
-          oobe_view_.get(), kOobeDialogShadowElevation);
+      view_shadow_ = std::make_unique<views::ViewDecoration>(oobe_view_.get());
       view_shadow_->SetRoundedCornerRadius(kOobeDialogCornerRadius);
+      view_shadow_->SetShadow(kOobeDialogShadowElevation);
     }
   }
 

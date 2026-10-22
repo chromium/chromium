@@ -85,9 +85,10 @@ void RemoteMaintenanceCurtainView::AddCurtainWebView() {
                                        StackLayout::VerticalAlignment::kCenter);
 
   // Add a shadow
-  curtain_view_shadow_ = std::make_unique<views::ViewDecoration>(
-      curtain_view_.get(), util().GetShadowElevation());
+  curtain_view_shadow_ =
+      std::make_unique<views::ViewDecoration>(curtain_view_.get());
   curtain_view_shadow_->SetRoundedCornerRadius(util().GetCornerRadius());
+  curtain_view_shadow_->SetShadow(util().GetShadowElevation());
 
   // Load the actual security curtain content.
   curtain_view_->Navigate(GURL(kRemoteManagementCurtainUrl));

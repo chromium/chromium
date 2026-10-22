@@ -34,9 +34,9 @@ void ShadowFrameView::SetShadowVisible(bool visible) {
   }
 
   if (visible) {
-    view_decoration_ =
-        std::make_unique<views::ViewDecoration>(this, shadow_elevation_);
+    view_decoration_ = std::make_unique<views::ViewDecoration>(this);
     view_decoration_->SetRoundedCorners(corners_);
+    view_decoration_->SetShadow(shadow_elevation_);
     view_decoration_->decoration()->layer()->SetOpacity(shadow_opacity_);
     UpdateShadowColors();
   } else {
@@ -101,7 +101,7 @@ void ShadowFrameView::AddedToWidget() {
 
 void ShadowFrameView::UpdateShadowColors() {
   CHECK(view_decoration_);
-  if (!view_decoration_->decoration()) {
+  if (!view_decoration_->shadow()) {
     return;
   }
 
@@ -129,8 +129,6 @@ void ShadowFrameView::UpdateShadowColors() {
 
   const ui::decoration::Shadow::ElevationToColorsMap map{
       {shadow_elevation_, shadow_colors}};
-  view_decoration_->decoration()
-      ->GetSourceAs<ui::decoration::Shadow>()
-      ->SetColorMap(map);
+  view_decoration_->shadow()->SetColorMap(map);
   SchedulePaint();
 }

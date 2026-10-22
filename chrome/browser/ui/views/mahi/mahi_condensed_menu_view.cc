@@ -110,11 +110,11 @@ END_METADATA
 }  // namespace
 
 MahiCondensedMenuView::MahiCondensedMenuView()
-    : view_shadow_(
-          std::make_unique<views::ViewDecoration>(this, /*elevation=*/2)) {
+    : view_shadow_(std::make_unique<views::ViewDecoration>(this)) {
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kMenuRadius);
   view_shadow_->SetRoundedCornerRadius(corner_radius);
+  view_shadow_->SetShadow(/*elevation=*/2);
 
   SetUseDefaultFillLayout(true);
   SetBackground(

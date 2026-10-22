@@ -20,14 +20,14 @@ namespace chromeos {
 
 ReadWriteCardsView::ReadWriteCardsView(
     chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller)
-    : view_shadow_(
-          std::make_unique<views::ViewDecoration>(this, /*elevation=*/2)),
+    : view_shadow_(std::make_unique<views::ViewDecoration>(this)),
       read_write_cards_ui_controller_(read_write_cards_ui_controller) {
   context_menu_bounds_ = read_write_cards_ui_controller_->context_menu_bounds();
 
   view_shadow_->SetRoundedCornerRadius(
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kMenuRadius));
+  view_shadow_->SetShadow(/*elevation=*/2);
 
   CHECK(layer()) << "A layer should be created by the constructor of "
                     "ViewDecoration with SetPaintToLayer()";
