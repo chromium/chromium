@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -1298,10 +1300,17 @@ TEST_F(ClipboardTest, SupportsRejectsHtmlAndSvgInWorkers) {
   EXPECT_TRUE(ClipboardItem::supports(window_context, ui::kMimeTypeHtml));
   EXPECT_TRUE(ClipboardItem::supports(window_context, ui::kMimeTypeSvg));
 
-  WorkerReportingProxy proxy;
+  MockWorkerReportingProxy proxy;
+  EXPECT_CALL(proxy,
+              DidEvaluateTopLevelScriptMock(/*success=*/true, testing::_));
   WorkerThreadForTest worker_thread(proxy);
-  worker_thread.StartWithSourceCode(window_context->GetSecurityOrigin(),
-                                    "/* no worker script */");
+  const KURL worker_url("https://example.com/worker.js");
+  // The test window's opaque origin is incompatible with this script URL.
+  scoped_refptr<SecurityOrigin> worker_origin =
+      SecurityOrigin::Create(worker_url);
+  worker_thread.StartWithSourceCode(worker_origin.get(),
+                                    "/* no worker script */", worker_url);
+  proxy.WaitUntilDidEvaluateTopLevelScript();
 
   scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner =
       worker_thread.GetWorkerBackingThread().BackingThread().GetTaskRunner();
