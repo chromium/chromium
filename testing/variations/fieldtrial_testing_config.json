@@ -1795,27 +1795,6 @@
             ]
         }
     ],
-    "AutofillAiWalletPrivatePassesCapability": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAiWalletPrivatePassesCapability",
-                        "ReadSupportsWalletPrivatePassesInAutofillCapability"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiWalletServerProvidedDeepLink": [
         {
             "platforms": [
