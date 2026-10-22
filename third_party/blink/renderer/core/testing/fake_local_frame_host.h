@@ -31,6 +31,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   FakeLocalFrameHost() = default;
 
   void Init(blink::AssociatedInterfaceProvider* provider);
+  void FlushForTesting() { receiver_.FlushForTesting(); }
   void EnterFullscreen(mojom::blink::FullscreenOptionsPtr options,
                        EnterFullscreenCallback callback) override;
   void ExitFullscreen() override;

@@ -173,6 +173,7 @@
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -12659,6 +12660,79 @@ TEST_F(WebFrameTest, CopyImageWithImageMap) {
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
   EXPECT_EQ(String(), frame_host.Result());
   // Explicitly reset to break dependency on locally scoped client.
+  helper.Reset();
+}
+
+TEST_F(WebFrameTest, CopyAndSaveImageCanvas) {
+  TestLocalFrameHostForSaveImageFromDataURL frame_host;
+  frame_test_helpers::WebViewHelper helper;
+  frame_test_helpers::TestWebFrameClient client;
+  frame_host.Init(client.GetRemoteNavigationAssociatedInterfaces());
+  WebViewImpl* web_view = helper.Initialize(&client);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+
+  WebLocalFrameImpl* web_frame = web_view->MainFrameImpl();
+  LocalFrame* local_frame = web_frame->GetFrame();
+  Document* document = local_frame->GetDocument();
+  ASSERT_TRUE(document);
+
+  document->body()->SetInnerHTMLWithoutTrustedTypes(
+      "<canvas id='canvas' width='50' height='50' "
+      "style='position:absolute; left:0; top:0; width:50px; height:50px'>"
+      "</canvas>");
+  UpdateAllLifecyclePhases(web_view);
+
+  auto* canvas =
+      To<HTMLCanvasElement>(document->getElementById(AtomicString("canvas")));
+  ASSERT_TRUE(canvas);
+  EXPECT_TRUE(canvas->OriginClean());
+
+  PageTestBase::MockClipboardHostProvider mock_clipboard_host_provider(
+      local_frame->GetBrowserInterfaceBroker());
+  SystemClipboard* system_clipboard = local_frame->GetSystemClipboard();
+  ASSERT_TRUE(system_clipboard);
+  EXPECT_TRUE(system_clipboard->ReadAvailableTypes().empty());
+
+  // Origin-clean canvas can be copied and saved.
+  web_frame->CopyImageAtForTesting(gfx::Point(25, 25));
+  RunPendingTasks();
+
+  Vector<String> types = system_clipboard->ReadAvailableTypes();
+  EXPECT_EQ(2u, types.size());
+  EXPECT_EQ("text/html", types[0]);
+  EXPECT_EQ("image/png", types[1]);
+  EXPECT_GT(system_clipboard->ReadPng(mojom::blink::ClipboardBuffer::kStandard)
+                .size(),
+            0u);
+
+  frame_host.Reset();
+  local_frame->SaveImageAt(gfx::Point(25, 25));
+  frame_host.FlushForTesting();
+  EXPECT_TRUE(frame_host.Result().starts_with("data:image/png;base64,"));
+
+  // Clear the clipboard and mark the canvas as not origin-clean.
+  system_clipboard->WritePlainText("");
+  system_clipboard->CommitWrite();
+  RunPendingTasks();
+  EXPECT_TRUE(system_clipboard->ReadAvailableTypes().empty());
+
+  canvas->SetOriginTainted();
+  ASSERT_FALSE(canvas->OriginClean());
+  EXPECT_TRUE(canvas->ImageSourceURL().IsNull());
+
+  // Non-origin-clean canvas must not be copied to the clipboard or saved.
+  web_frame->CopyImageAtForTesting(gfx::Point(25, 25));
+  RunPendingTasks();
+  EXPECT_TRUE(system_clipboard->ReadAvailableTypes().empty());
+  EXPECT_EQ(0u,
+            system_clipboard->ReadPng(mojom::blink::ClipboardBuffer::kStandard)
+                .size());
+
+  frame_host.Reset();
+  local_frame->SaveImageAt(gfx::Point(25, 25));
+  frame_host.FlushForTesting();
+  EXPECT_EQ(String(), frame_host.Result());
+
   helper.Reset();
 }
 

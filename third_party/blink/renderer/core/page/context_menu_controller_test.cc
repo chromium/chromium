@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
@@ -1423,6 +1424,7 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestStandardCanvas) {
   ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kCanvas,
             context_menu_data.media_type);
+  EXPECT_TRUE(context_menu_data.has_image_contents);
 
   histograms.ExpectBucketCount(
       "Blink.ContextMenu.ImageSelection.Outcome",
@@ -1441,6 +1443,23 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestStandardCanvas) {
       "Blink.ContextMenu.ImageSelection.Outcome",
       ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
       0);
+}
+
+TEST_F(ContextMenuControllerTest, TaintedCanvasHasNoCopyableImageContents) {
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <body style="margin:0">
+      <canvas id="target" width="100" height="100"></canvas>
+    </body>
+  )HTML");
+  auto* canvas = To<HTMLCanvasElement>(
+      GetDocument()->getElementById(AtomicString("target")));
+  canvas->SetOriginTainted();
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      canvas, ui::mojom::blink::MenuSourceType::kMouse));
+  const ContextMenuData& data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kCanvas, data.media_type);
+  EXPECT_FALSE(data.has_image_contents);
 }
 
 // Test that  an image node will not be selected through an opaque div

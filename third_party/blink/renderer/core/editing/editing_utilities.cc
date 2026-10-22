@@ -1927,8 +1927,11 @@ static scoped_refptr<Image> ImageFromNode(const Node& node) {
     return nullptr;
 
   if (layout_object->IsCanvas()) {
-    return To<HTMLCanvasElement>(const_cast<Node&>(node))
-        .Snapshot(kFrontBuffer);
+    const auto& canvas = To<HTMLCanvasElement>(node);
+    if (!canvas.OriginClean()) {
+      return nullptr;
+    }
+    return canvas.Snapshot(kFrontBuffer);
   }
 
   if (!layout_object->IsImage())

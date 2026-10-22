@@ -5,17 +5,33 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 
 #include "skia/ext/codec_utils.h"
+#include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace blink {
 
@@ -26,6 +42,141 @@ class EditingUtilitiesTest : public EditingTestBase {
     skia::EnsurePNGDecoderRegistered();
   }
 };
+
+class CanvasClipboardTest : public SimTest {
+ protected:
+  void TearDown() override {
+    CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+    SimTest::TearDown();
+  }
+
+  void LoadCanvas(bool cors_enabled) {
+    SimRequest page("https://example.com/", "text/html");
+    SimSubresourceRequest image("https://other.test/image.png", "image/png");
+    // SimNetwork does not apply the network service's CORS response filtering.
+    WebURLResponse response(image.GetURL());
+    response.SetMimeType("image/png");
+    response.SetHttpStatusCode(200);
+    response.SetType(cors_enabled ? network::mojom::FetchResponseType::kCors
+                                  : network::mojom::FetchResponseType::kOpaque);
+    if (cors_enabled) {
+      response.AddHttpHeaderField("Access-Control-Allow-Origin", "*");
+    }
+    url_test_helpers::RegisterMockedURLUnregister(image.GetURL());
+    url_test_helpers::RegisterMockedURLLoadWithCustomResponse(image.GetURL(),
+                                                              "", response);
+
+    LoadURL("https://example.com/");
+    page.Complete(
+        "<body style='margin:0'><div style='width:300px;height:300px;"
+        "overflow:hidden'><canvas id=canvas width=600 "
+        "height=600></canvas></div>"
+        "<img id=source>");
+    auto* source = To<HTMLImageElement>(GetElementById("source"));
+    if (cors_enabled) {
+      source->setAttribute(html_names::kCrossoriginAttr,
+                           AtomicString("anonymous"));
+    }
+    source->setAttribute(html_names::kSrcAttr, image.GetURL().GetString());
+    test::RunPendingTasks();
+    const auto image_data =
+        test::ReadFromFile(test::CoreTestDataPath("white-1x1.png"));
+    ASSERT_TRUE(image_data);
+    image.Complete(*image_data);
+    test::RunPendingTasks();
+    ASSERT_TRUE(source->CachedImage());
+    ASSERT_TRUE(source->CachedImage()->HasImage());
+    ASSERT_EQ(cors_enabled, source->CachedImage()->IsCorsSameOrigin());
+    ClassicScript::CreateUnspecifiedScript(R"JS(
+      const canvas = document.getElementById('canvas');
+      const context = canvas.getContext('2d');
+      context.fillStyle = 'red';
+      context.fillRect(0, 0, 300, 300);
+      context.drawImage(document.getElementById('source'), 300, 300, 20, 20);
+    )JS")
+        ->RunScript(&Window());
+    CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    ASSERT_EQ(cors_enabled, Canvas().OriginClean());
+  }
+
+  HTMLCanvasElement& Canvas() {
+    return *To<HTMLCanvasElement>(GetElementById("canvas"));
+  }
+
+  void ExpectCopy(bool should_copy, const HitTestResult* hit_result = nullptr) {
+    LocalFrame& frame = *GetDocument().GetFrame();
+    PageTestBase::MockClipboardHostProvider clipboard_provider(
+        frame.GetBrowserInterfaceBroker());
+    SystemClipboard& clipboard = *frame.GetSystemClipboard();
+    clipboard.WritePlainText("original");
+    clipboard.WriteHTML("original markup", NullUrl());
+    clipboard.CommitWrite();
+    test::RunPendingTasks();
+    const auto sequence_number = clipboard.SequenceNumber();
+
+    if (hit_result) {
+      frame.GetEditor().CopyImage(*hit_result);
+    } else {
+      frame.CopyImageAtViewportPoint(gfx::Point(10, 10));
+    }
+    test::RunPendingTasks();
+
+    const auto png =
+        clipboard.ReadPng(mojom::blink::ClipboardBuffer::kStandard);
+    KURL url;
+    unsigned fragment_start = 0;
+    unsigned fragment_end = 0;
+    const String html = clipboard.ReadHTML(url, fragment_start, fragment_end);
+    if (should_copy) {
+      SkBitmap bitmap = gfx::PNGCodec::Decode(png);
+      ASSERT_FALSE(bitmap.isNull());
+      EXPECT_EQ(600, bitmap.width());
+      EXPECT_EQ(600, bitmap.height());
+      EXPECT_EQ(SK_ColorWHITE, bitmap.getColor(300, 300));
+      EXPECT_TRUE(html.contains("data:image/png;base64,"));
+      EXPECT_NE(sequence_number, clipboard.SequenceNumber());
+    } else {
+      EXPECT_EQ(0u, png.size());
+      EXPECT_EQ("original", clipboard.ReadPlainText());
+      EXPECT_EQ("original markup", html);
+      EXPECT_EQ(sequence_number, clipboard.SequenceNumber());
+    }
+  }
+};
+
+TEST_F(CanvasClipboardTest, TaintedCanvasDoesNotCopyPixelsOrMarkup) {
+  LoadCanvas(false);
+  ExpectCopy(false);
+}
+
+TEST_F(CanvasClipboardTest, CorsApprovedCanvasCopiesPixelsAndMarkup) {
+  LoadCanvas(true);
+  ExpectCopy(true);
+}
+
+TEST_F(CanvasClipboardTest, TaintedCanvasHasNoImageUrl) {
+  LoadCanvas(false);
+  EXPECT_TRUE(Canvas().ImageSourceURL().empty());
+}
+
+TEST_F(CanvasClipboardTest, DisabledCanvasReadingDoesNotExportPixelsOrMarkup) {
+  LoadCanvas(true);
+  GetDocument().GetSettings()->SetDisableReadingFromCanvas(true);
+  ASSERT_FALSE(Canvas().OriginClean());
+  EXPECT_TRUE(Canvas().ImageSourceURL().empty());
+  ExpectCopy(false);
+}
+
+TEST_F(CanvasClipboardTest, CanvasTaintedAfterHitTestDoesNotCopy) {
+  LoadCanvas(true);
+  const HitTestLocation location(PhysicalOffset(10, 10));
+  HitTestResult result(HitTestRequest(HitTestRequest::kReadOnly), location);
+  ASSERT_TRUE(GetDocument().GetLayoutView()->HitTest(location, result));
+  ASSERT_EQ(&Canvas(), result.InnerNodeOrImageMapImage());
+  Canvas().SetOriginTainted();
+  ExpectCopy(false, &result);
+}
 
 TEST_F(EditingUtilitiesTest, ComputePositionForNodeRemovalAfterChildren) {
   SetBodyContent("<div id=a><p id=b><img id=c></p></div>");
