@@ -8,7 +8,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/types/expected.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
@@ -50,6 +52,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_definition.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_details.h"
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/modules/webaudio/deferred_task_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
@@ -62,7 +65,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {
@@ -71,6 +73,20 @@ namespace {
 
 constexpr size_t kRenderQuantumFrames = 128;
 constexpr char kWorkletScriptUrl[] = "https://example.com/worklet.js";
+
+// A processor whose constructor throws. Tests for options failures reuse it
+// deliberately: if the options check were skipped and the constructor ran, the
+// error would carry a source URL and line number, failing those assertions.
+constexpr char kThrowingConstructorProcessorScript[] = R"JS(
+  class ThrowingConstructorProcessor extends AudioWorkletProcessor {
+    constructor() {
+      super();
+      throw new TypeError('Constructor boom');
+    }
+    process() {}
+  }
+  registerProcessor('test', ThrowingConstructorProcessor);
+)JS";
 
 }  // namespace
 
@@ -291,6 +307,28 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     waitable_event.Wait();
   }
 
+  AudioWorkletProcessorErrorDetails CreateFailingConstructorProcessor(
+      const String& source_code,
+      scoped_refptr<SerializedScriptValue> options =
+          SerializedScriptValue::NullValue()) {
+    std::unique_ptr<OfflineAudioWorkletThread> thread =
+        CreateAudioWorkletThread();
+    AudioWorkletProcessorErrorDetails error;
+    base::WaitableEvent waitable_event;
+    PostCrossThreadTask(
+        *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(
+            &AudioWorkletGlobalScopeTest::
+                CreateFailingConstructorProcessorOnWorkletThread,
+            CrossThreadUnretained(this), CrossThreadUnretained(thread.get()),
+            source_code, std::move(options), CrossThreadUnretained(&error),
+            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+    thread->Terminate();
+    thread->WaitForShutdownForTesting();
+    return error;
+  }
+
  private:
   void ExpectEvaluateScriptModule(AudioWorkletGlobalScope* global_scope,
                                   const String& source_code,
@@ -354,9 +392,10 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
 
     AudioWorkletProcessor* processor =
-        global_scope->CreateProcessor("testProcessor", dummy_port_channel,
-                                      SerializedScriptValue::NullValue());
-    EXPECT_TRUE(processor);
+        global_scope
+            ->CreateProcessor("testProcessor", dummy_port_channel,
+                              SerializedScriptValue::NullValue())
+            .value();
     EXPECT_EQ(processor->Name(), "testProcessor");
     v8::Local<v8::Value> processor_value =
         ToV8Traits<AudioWorkletProcessor>::ToV8(script_state, processor);
@@ -456,9 +495,10 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
     AudioWorkletProcessor* processor =
-        global_scope->CreateProcessor("testProcessor", dummy_port_channel,
-                                      SerializedScriptValue::NullValue());
-    EXPECT_TRUE(processor);
+        global_scope
+            ->CreateProcessor("testProcessor", dummy_port_channel,
+                              SerializedScriptValue::NullValue())
+            .value();
 
     Vector<scoped_refptr<AudioBus>> input_buses;
     Vector<scoped_refptr<AudioBus>> output_buses;
@@ -526,9 +566,10 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
     AudioWorkletProcessor* processor =
-        global_scope->CreateProcessor("testProcessor", dummy_port_channel,
-                                      SerializedScriptValue::NullValue());
-    EXPECT_TRUE(processor);
+        global_scope
+            ->CreateProcessor("testProcessor", dummy_port_channel,
+                              SerializedScriptValue::NullValue())
+            .value();
 
     Vector<scoped_refptr<AudioBus>> input_buses;
     Vector<scoped_refptr<AudioBus>> output_buses;
@@ -644,9 +685,10 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
     AudioWorkletProcessor* processor =
-        global_scope->CreateProcessor("paramTestProcessor", dummy_port_channel,
-                                      SerializedScriptValue::NullValue());
-    EXPECT_TRUE(processor);
+        global_scope
+            ->CreateProcessor("paramTestProcessor", dummy_port_channel,
+                              SerializedScriptValue::NullValue())
+            .value();
 
     Vector<scoped_refptr<AudioBus>> input_buses;
     Vector<scoped_refptr<AudioBus>> output_buses;
@@ -756,10 +798,11 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
 
     auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
-    AudioWorkletProcessor* processor = global_scope->CreateProcessor(
-        "handlerParamTestProcessor", dummy_port_channel,
-        SerializedScriptValue::NullValue());
-    EXPECT_TRUE(processor);
+    base::expected<AudioWorkletProcessor*, AudioWorkletProcessorErrorDetails>
+        processor = global_scope->CreateProcessor(
+            "handlerParamTestProcessor", dummy_port_channel,
+            SerializedScriptValue::NullValue());
+    EXPECT_TRUE(processor.has_value());
 
     DeferredTaskHandler& deferred_task_handler =
         context->GetDeferredTaskHandler();
@@ -770,7 +813,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
       handler->Output(0).UpdateRenderingState();
     }
 
-    handler->SetProcessorOnRenderThread(processor);
+    handler->SetProcessorOnRenderThread(std::move(processor));
     handler->Output(0).Bus()->Zero();
     handler->Process(kRenderQuantumFrames);
 
@@ -816,9 +859,10 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     auto* channel = MakeGarbageCollected<MessageChannel>(global_scope);
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
     AudioWorkletProcessor* processor =
-        global_scope->CreateProcessor(name, std::move(dummy_port_channel),
-                                      SerializedScriptValue::NullValue());
-    EXPECT_TRUE(processor);
+        global_scope
+            ->CreateProcessor(name, std::move(dummy_port_channel),
+                              SerializedScriptValue::NullValue())
+            .value();
     EXPECT_FALSE(processor->Process(input_buses, output_buses, param_data_map));
     EXPECT_TRUE(processor->hasErrorOccurred());
     return processor;
@@ -927,6 +971,33 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     wait_event->Signal();
   }
 
+  void CreateFailingConstructorProcessorOnWorkletThread(
+      WorkerThread* thread,
+      const String& source_code,
+      scoped_refptr<SerializedScriptValue> options,
+      AudioWorkletProcessorErrorDetails* out_error,
+      base::WaitableEvent* wait_event) {
+    EXPECT_TRUE(thread->IsCurrentThread());
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
+    ScriptState* script_state =
+        global_scope->ScriptController()->GetScriptState();
+    ScriptState::Scope scope(script_state);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
+
+    ExpectEvaluateScriptModule(global_scope, source_code, true);
+    auto* channel = MakeGarbageCollected<MessageChannel>(global_scope);
+    base::expected<AudioWorkletProcessor*, AudioWorkletProcessorErrorDetails>
+        result = global_scope->CreateProcessor(
+            "test", channel->port2()->Disentangle(), std::move(options));
+    EXPECT_FALSE(result.has_value());
+    if (!result.has_value()) {
+      // `AudioWorkletProcessorErrorDetails` copies with isolated strings, so
+      // `*out_error` remains valid after this thread-local `result` dies.
+      *out_error = result.error();
+    }
+    wait_event->Signal();
+  }
+
   std::unique_ptr<WorkerReportingProxy> reporting_proxy_;
 };
 
@@ -1000,6 +1071,67 @@ TEST_F(AudioWorkletGlobalScopeTest, ProcessThrowing) {
   RunProcessThrowingTest(thread.get());
   thread->Terminate();
   thread->WaitForShutdownForTesting();
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, ConstructorExceptionErrorDetails) {
+  AudioWorkletProcessorErrorDetails error =
+      CreateFailingConstructorProcessor(kThrowingConstructorProcessorScript);
+  EXPECT_EQ(error.error_state,
+            AudioWorkletProcessorErrorState::kConstructionError);
+  EXPECT_TRUE(error.error_message.contains("Constructor boom"));
+  EXPECT_EQ(error.source_url, kWorkletScriptUrl);
+  EXPECT_GT(error.line_number, 0);
+  EXPECT_GT(error.column_number, 0);
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, NonProcessorConstructorReturnError) {
+  AudioWorkletProcessorErrorDetails error =
+      CreateFailingConstructorProcessor(R"JS(
+    class NonProcessor extends AudioWorkletProcessor {
+      constructor() { super(); return {}; }
+      process() {}
+    }
+    registerProcessor('test', NonProcessor);
+  )JS");
+  EXPECT_EQ(error.error_state,
+            AudioWorkletProcessorErrorState::kConstructionError);
+  EXPECT_FALSE(error.error_message.empty());
+  EXPECT_TRUE(error.source_url.empty());
+  EXPECT_EQ(error.line_number, 0);
+  EXPECT_EQ(error.column_number, 0);
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, UnexposedInterfaceOptionsError) {
+  SerializedScriptValue::ScopedOverrideCanDeserializeInForTesting
+      cannot_deserialize(
+          base::BindRepeating([](const SerializedScriptValue&,
+                                 ExecutionContext*, bool) { return false; }));
+  AudioWorkletProcessorErrorDetails error =
+      CreateFailingConstructorProcessor(kThrowingConstructorProcessorScript);
+  EXPECT_EQ(error.error_state,
+            AudioWorkletProcessorErrorState::kConstructionError);
+  EXPECT_FALSE(error.error_message.empty());
+  EXPECT_TRUE(error.source_url.empty());
+  EXPECT_EQ(error.line_number, 0);
+  EXPECT_EQ(error.column_number, 0);
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, MalformedOptionsDeserializationError) {
+  // Wire format version 9 (0xff, 0x09) predates the Blink trailer, so
+  // CanDeserializeIn() passes; deserializing invalid tag 0xfe fails and sets
+  // HasDeserializationError().
+  static constexpr uint8_t kInvalidWireData[] = {0xff, 0x09, 0xfe, 0x00};
+  scoped_refptr<SerializedScriptValue> options =
+      SerializedScriptValue::Create(kInvalidWireData);
+  ASSERT_TRUE(options->CanDeserializeIn(GetFrame().DomWindow()));
+  AudioWorkletProcessorErrorDetails error = CreateFailingConstructorProcessor(
+      kThrowingConstructorProcessorScript, std::move(options));
+  EXPECT_EQ(error.error_state,
+            AudioWorkletProcessorErrorState::kConstructionError);
+  EXPECT_FALSE(error.error_message.empty());
+  EXPECT_TRUE(error.source_url.empty());
+  EXPECT_EQ(error.line_number, 0);
+  EXPECT_EQ(error.column_number, 0);
 }
 
 }  // namespace blink

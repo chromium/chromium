@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_object_proxy.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/modules/webaudio/deferred_task_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
@@ -76,9 +75,8 @@ void AudioWorkletMessagingProxy::CreateProcessorOnRenderingThread(
   DCHECK(worker_thread->IsCurrentThread());
   AudioWorkletGlobalScope* global_scope =
       To<AudioWorkletGlobalScope>(worker_thread->GlobalScope());
-  AudioWorkletProcessor* processor = global_scope->CreateProcessor(
-      name, message_port_channel, std::move(node_options));
-  handler->SetProcessorOnRenderThread(processor);
+  handler->SetProcessorOnRenderThread(global_scope->CreateProcessor(
+      name, message_port_channel, std::move(node_options)));
 
   // Transfer the handler reference back to the main thread in the completion
   // task. This guarantees that if this was the last reference, destruction

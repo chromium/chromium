@@ -613,13 +613,8 @@ AudioWorkletProcessor::ErrorDetailsFromTryCatch(
   error_details.char_position = message->GetStartPosition();
   v8::Local<v8::Value> script_resource_name = message->GetScriptResourceName();
   if (!script_resource_name.IsEmpty() && script_resource_name->IsString()) {
-    String source_url = ToCoreStringWithNullCheck(
-        isolate, script_resource_name.As<v8::String>());
-    if (!source_url.IsNull()) {
-      error_details.source_url = source_url;
-    }
-  } else {
-    error_details.source_url = "Unknown Source";
+    error_details.source_url =
+        ToCoreString(isolate, script_resource_name.As<v8::String>());
   }
   return error_details;
 }

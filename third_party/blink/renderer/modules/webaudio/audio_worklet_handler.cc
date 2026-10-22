@@ -275,28 +275,22 @@ double AudioWorkletHandler::TailTime() const {
 }
 
 void AudioWorkletHandler::SetProcessorOnRenderThread(
-    AudioWorkletProcessor* processor) {
+    base::expected<AudioWorkletProcessor*, AudioWorkletProcessorErrorDetails>
+        result) {
   // TODO(crbug.com/1071917): unify the thread ID check. The thread ID for this
   // call may be different from `Context()->IsAudiothread()`.
   DCHECK(!IsMainThread());
 
-  // `processor` can be `nullptr` when the invocation of user-supplied
-  // constructor fails. That failure fires at the node's `.onprocessorerror`
-  // event handler.
-  if (processor) {
-    processor_ = processor;
+  if (result.has_value()) {
+    processor_ = result.value();
   } else {
-    AudioWorkletProcessorErrorDetails error_details(
-        AudioWorkletProcessorErrorState::kConstructionError,
-        StrCat({name_, " invoking user-supplied constructor failed"}),
-        /*source_url=*/"",
-        /*line_number=*/0,
-        /*column_number=*/0,
-        /*char_position=*/0);
+    // The invocation of the user-supplied constructor failed; see
+    // `AudioWorkletGlobalScope::CreateProcessor()` for the failure modes. That
+    // failure fires at the node's `.onprocessorerror` event handler.
     PostCrossThreadTask(
         *main_thread_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&AudioWorkletHandler::NotifyProcessorError,
-                            weak_this_, error_details));
+                            weak_this_, result.error()));
   }
 }
 
