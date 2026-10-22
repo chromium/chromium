@@ -5,16 +5,23 @@
 package org.chromium.chrome.browser.media;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
 /** Glue for the tab sharing toolbar UI code and communication with the native backend. */
 @NullMarked
 public class TabSharingUiBridge {
+    @JniType("::TabSharingUIAndroid")
+    interface NativeTabSharingUIAndroid extends JniTypeToken {}
+
     private final WebContents mCapturer;
     private final WebContents mCapturee;
     private final WebContentsObserver mCapturerObserver;
@@ -22,7 +29,7 @@ public class TabSharingUiBridge {
     private final boolean mIsSourceSwitchingSupported;
     private final boolean mAppPreferredCurrentTab;
 
-    private long mNativeTabSharingUIAndroid;
+    private @Nullable JniRawPtr<NativeTabSharingUIAndroid> mNativeTabSharingUIAndroid;
 
     /**
      * Constructor, taking a pointer to the native instance.
@@ -32,7 +39,7 @@ public class TabSharingUiBridge {
      * @param capturee The {@link WebContents} that is being shared.
      */
     private TabSharingUiBridge(
-            long nativeTabSharingUIAndroid,
+            JniRawPtr<NativeTabSharingUIAndroid> nativeTabSharingUIAndroid,
             WebContents capturer,
             WebContents capturee,
             boolean isSourceSwitchingSupported,
@@ -67,7 +74,7 @@ public class TabSharingUiBridge {
      */
     @CalledByNative
     static TabSharingUiBridge create(
-            long nativePtr,
+            JniRawPtr<NativeTabSharingUIAndroid> nativePtr,
             @JniType("content::WebContents*") WebContents capturer,
             @JniType("content::WebContents*") WebContents capturee,
             boolean isSourceSwitchingSupported,
@@ -85,17 +92,18 @@ public class TabSharingUiBridge {
 
     @CalledByNative
     void destroy() {
-        if (mNativeTabSharingUIAndroid == 0) return;
+        if (mNativeTabSharingUIAndroid == null) return;
         mCapturerObserver.observe(null);
         mCaptureeObserver.observe(null);
         TabSharingUiManager.getInstance().removeBridge(this);
-        mNativeTabSharingUIAndroid = 0;
+        mNativeTabSharingUIAndroid.release();
+        mNativeTabSharingUIAndroid = null;
     }
 
     /** Stops the sharing session associated with this bridge. */
     public void stopSharing() {
         MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, false);
-        if (mNativeTabSharingUIAndroid == 0) return;
+        if (mNativeTabSharingUIAndroid == null) return;
         TabSharingUiBridgeJni.get().stopSharing(mNativeTabSharingUIAndroid);
     }
 
@@ -105,7 +113,7 @@ public class TabSharingUiBridge {
      * @param newSource The new {@link WebContents} source to be shared.
      */
     public void changeSource(WebContents newSource) {
-        if (mNativeTabSharingUIAndroid == 0) return;
+        if (mNativeTabSharingUIAndroid == null) return;
         MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, true);
         TabSharingUiBridgeJni.get().changeSource(mNativeTabSharingUIAndroid, newSource);
     }
@@ -132,10 +140,10 @@ public class TabSharingUiBridge {
 
     @NativeMethods
     interface Natives {
-        void stopSharing(long nativeTabSharingUIAndroid);
+        void stopSharing(JniPtr<NativeTabSharingUIAndroid> self);
 
         void changeSource(
-                long nativeTabSharingUIAndroid,
+                JniPtr<NativeTabSharingUIAndroid> self,
                 @JniType("content::WebContents*") WebContents newSource);
     }
 }

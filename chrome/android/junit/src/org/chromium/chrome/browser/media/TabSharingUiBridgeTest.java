@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +42,8 @@ public class TabSharingUiBridgeTest {
     @Mock private TabSharingUiManager.Observer mManagerObserver;
     @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureJniMock;
 
-    private static final long NATIVE_PTR = 12345L;
+    private final JniRawPtr<TabSharingUiBridge.NativeTabSharingUIAndroid> mNativePtr =
+            JniRawPtr.createForTesting(12345L);
     private TabSharingUiBridge mBridge;
 
     @Before
@@ -49,7 +51,7 @@ public class TabSharingUiBridgeTest {
         TabSharingUiBridgeJni.setInstanceForTesting(mNativeMock);
         MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(mMediaCaptureJniMock);
         TabSharingUiManager.getInstance().addObserver(mManagerObserver);
-        mBridge = TabSharingUiBridge.create(NATIVE_PTR, mCapturer, mCapturee, true, false);
+        mBridge = TabSharingUiBridge.create(mNativePtr, mCapturer, mCapturee, true, false);
     }
 
     @After
@@ -77,13 +79,13 @@ public class TabSharingUiBridgeTest {
     @Test
     public void testStopSharing() {
         mBridge.stopSharing();
-        verify(mNativeMock).stopSharing(NATIVE_PTR);
+        verify(mNativeMock).stopSharing(mNativePtr);
     }
 
     @Test
     public void testChangeSource() {
         mBridge.changeSource(mCapturee);
-        verify(mNativeMock).changeSource(NATIVE_PTR, mCapturee);
+        verify(mNativeMock).changeSource(mNativePtr, mCapturee);
     }
 
     @Test
@@ -98,7 +100,7 @@ public class TabSharingUiBridgeTest {
 
         // Simulating capturer destruction should trigger stopSharing().
         observer.webContentsDestroyed();
-        verify(mNativeMock).stopSharing(NATIVE_PTR);
+        verify(mNativeMock).stopSharing(mNativePtr);
     }
 
     @Test

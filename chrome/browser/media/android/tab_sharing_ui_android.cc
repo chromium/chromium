@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabSharingUiBridge_jni.h"
@@ -126,7 +127,7 @@ gfx::NativeViewId TabSharingUIAndroid::OnStarted(
             chrome::android::kTabSharingToolbarAndroid)) {
       JNIEnv* env = base::android::AttachCurrentThread();
       java_bridge_ = Java_TabSharingUiBridge_create(
-          env, reinterpret_cast<intptr_t>(this), capturer_web_contents_.get(),
+          env, jni_zero::MakeRaw(this), capturer_web_contents_.get(),
           web_contents, !source_callback_.is_null(),
           app_preferred_current_tab_);
     }
