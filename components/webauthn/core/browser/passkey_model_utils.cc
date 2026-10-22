@@ -241,7 +241,10 @@ bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
          !passkey.rp_id().empty() && cred_id_size >= kCredentialIdMinLength &&
          cred_id_size <= kCredentialIdMaxLength &&
          passkey.user_id().length() <= kUserIdMaxLength &&
-         (passkey.has_private_key() || passkey.has_encrypted());
+         (passkey.has_private_key() || passkey.has_encrypted() ||
+          (passkey.has_security_domain_encrypted() &&
+           base::FeatureList::IsEnabled(
+               features::kDeviceAuthorizationPasskeyDecryption)));
 }
 
 bool IsGpmPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
