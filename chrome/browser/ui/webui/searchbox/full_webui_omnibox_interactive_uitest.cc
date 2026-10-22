@@ -4,6 +4,7 @@
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
+#include "base/json/string_escape.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -57,6 +58,7 @@
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
@@ -81,6 +83,8 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -130,6 +134,10 @@ const DeepQuery kPopupSearchbox = {"omnibox-full-app",
                                    "omnibox-popup-searchbox"};
 const DeepQuery kWebUIInput = {"omnibox-full-app", "omnibox-popup-searchbox",
                                "cr-searchbox-input", "#input"};
+// The `cr-searchbox-icon` at the start of the input row.
+const DeepQuery kWebUIInputIcon = {"omnibox-full-app",
+                                   "omnibox-popup-searchbox",
+                                   "cr-searchbox-input", "#icon"};
 const DeepQuery kFirstSuggestionMatch = {
     "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
     "cr-searchbox-match[match-index='1']"};
@@ -847,6 +855,128 @@ class FullWebUIOmniboxInteractiveTest
   bool IsWebUIToolbarEnabled() const { return GetParam(); }
 
  protected:
+  // Waits until the active tab has downloaded the favicon of the page it shows.
+  // The favicon is written to the favicon database before the tab is told about
+  // it, so once this returns, chrome://favicon2 serves it for the page URL.
+  auto WaitForActiveTabFavicon() {
+    return PollUntil(
+        [this]() {
+          content::NavigationEntry* entry = browser()
+                                                ->tab_strip_model()
+                                                ->GetActiveWebContents()
+                                                ->GetController()
+                                                .GetLastCommittedEntry();
+          return entry && entry->GetFavicon().valid &&
+                 !entry->GetFavicon().image.IsEmpty();
+        },
+        "WaitForActiveTabFavicon");
+  }
+
+  // Opens `page_url` in `tab_id` and waits until its favicon is downloaded into
+  // the favicon database. Navigating from `about:blank` rather than passing
+  // `page_url` to `AddInstrumentedTab` avoids `OnTabChanged` on tab insertion
+  // sending `page_url` to the preloaded popup before the page's favicon has
+  // been fetched (which would cache a failed `chrome://favicon2` load on
+  // `cr-searchbox-icon`).
+  auto OpenTabWithFavicon(ui::ElementIdentifier tab_id, const GURL& page_url) {
+    return Steps(WaitForBrowserActive(),
+                 AddInstrumentedTab(tab_id, GURL(url::kAboutBlankURL)),
+                 WaitForWebContentsReady(tab_id),
+                 NavigateWebContents(tab_id, page_url),
+                 WaitForActiveTabFavicon());
+  }
+
+  // Waits for the input row icon to show the default search provider icon
+  // (e.g. the Google G) rather than a page or URL favicon. If
+  // `expect_search_match` is true, the selected match must be a search match;
+  // otherwise no match may be selected (e.g. on focus with no input).
+  auto WaitForInputIconShowsDefaultSearchProviderIcon(
+      bool expect_search_match) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
+        kInputIconShowsDefaultSearchProviderIcon);
+    const std::string expected_icon =
+        base::GetQuotedJSONString(GetDefaultSearchProviderIcon(
+            TemplateURLServiceFactory::GetForProfile(browser()->GetProfile())));
+    StateChange state_change;
+    state_change.event = kInputIconShowsDefaultSearchProviderIcon;
+    state_change.where = kWebUIInputIcon;
+    // With the Google search provider, the icon is the Google G resource on
+    // branded builds and the provider's favicon URL otherwise. Both are shown
+    // via #faviconImage, because a mask image would drop their colors.
+    state_change.test_function = base::StringPrintf(
+        R"((el) => {
+              if (!el || el.pageUrl !== '') {
+                return false;
+              }
+              const matchOk = %s ? !!el.match && el.match.isSearchType
+                                 : !el.match;
+              const img = el.shadowRoot.querySelector('#faviconImage');
+              return matchOk && el.defaultIcon === %s &&
+                  img.getAttribute('src') === %s;
+            })",
+        expect_search_match ? "true" : "false", expected_icon.c_str(),
+        expected_icon.c_str());
+    state_change.continue_across_navigation = true;
+    return InAnyContext(WaitForStateChange(kPopupWebView, state_change));
+  }
+
+  // Waits for the input row icon to show the loaded favicon of `page_url`, the
+  // unedited page the omnibox is focused on, instead of the generic page icon.
+  auto WaitForInputIconShowsPageFavicon(const GURL& page_url) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputIconShowsPageFavicon);
+    const std::string expected_url = base::GetQuotedJSONString(page_url.spec());
+    StateChange state_change;
+    state_change.event = kInputIconShowsPageFavicon;
+    state_change.where = kWebUIInputIcon;
+    state_change.test_function = base::StringPrintf(
+        R"((el) => {
+              if (!el || el.match || el.pageUrl !== %s) {
+                return false;
+              }
+              const img = el.shadowRoot.querySelector('#faviconImage');
+              const src = img.getAttribute('src');
+              if (!src || !src.startsWith('chrome://favicon2/') ||
+                  new URL(src).searchParams.get('pageUrl') !== %s) {
+                return false;
+              }
+              // The favicon loaded and replaced the generic page icon.
+              return img.complete && img.naturalWidth > 0 &&
+                  !el.shadowRoot.querySelector('#faviconImageContainer')
+                       .hidden &&
+                  el.shadowRoot.querySelector('#icon').hidden;
+            })",
+        expected_url.c_str(), expected_url.c_str());
+    state_change.continue_across_navigation = true;
+    return InAnyContext(WaitForStateChange(kPopupWebView, state_change));
+  }
+
+  // Waits for the input row icon to show the favicon of the selected URL
+  // (non-search) match, whose destination host must be `expected_host`.
+  auto WaitForInputIconShowsUrlMatchFavicon(const std::string& expected_host) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputIconShowsUrlMatchFavicon);
+    StateChange state_change;
+    state_change.event = kInputIconShowsUrlMatchFavicon;
+    state_change.where = kWebUIInputIcon;
+    state_change.test_function = base::StringPrintf(
+        R"((el) => {
+              if (!el || el.pageUrl !== '' || !el.match ||
+                  el.match.isSearchType) {
+                return false;
+              }
+              const destination = el.match.destinationUrl;
+              if (new URL(destination).hostname !== %s) {
+                return false;
+              }
+              const src = el.shadowRoot.querySelector('#faviconImage')
+                              .getAttribute('src');
+              return !!src && src.startsWith('chrome://favicon2/') &&
+                  new URL(src).searchParams.get('pageUrl') === destination;
+            })",
+        base::GetQuotedJSONString(expected_host).c_str());
+    state_change.continue_across_navigation = true;
+    return InAnyContext(WaitForStateChange(kPopupWebView, state_change));
+  }
+
   FindBar* GetFindBar() {
     return FindBarController::From(browser())->find_bar();
   }
@@ -978,6 +1108,82 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
               "window.getComputedStyle(el)"
               ".getPropertyValue('--location-bar-height').trim() === '%s'",
               expected_height.c_str()))));
+}
+
+// Verifies that focusing the omnibox on the NTP, which has no page favicon to
+// show, shows the default search provider icon in the input row.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       InputIconOnNtpFocusShowsDefaultSearchProviderIcon) {
+  RunTestSequence(
+      // Opening an NTP focuses the omnibox.
+      WaitForBrowserActive(), WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab1), WaitForPopupReady(),
+      WaitForWebUIInputValue(""),
+      WaitForInputIconShowsDefaultSearchProviderIcon(
+          /*expect_search_match=*/false));
+}
+
+// Verifies that clicking the omnibox on an HTTPS page that serves a favicon
+// shows that favicon in the input row.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       InputIconOnPageFocusShowsPageFavicon) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url =
+      embedded_https_test_server().GetURL("/favicon/page_with_favicon.html");
+
+  RunTestSequence(OpenTabWithFavicon(kTab1, url),
+                  WaitForPopupTransitionLockout(),
+                  MoveMouseTo(kOmniboxElementId), ClickMouse(),
+                  WaitForPopupReady(), WaitForInputIconShowsPageFavicon(url));
+}
+
+// Verifies that the input row icon follows what the user types: the page
+// favicon gives way to the default search provider icon for a query, and to the
+// URL's favicon for a URL.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       InputIconUpdatesWhileTyping) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url =
+      embedded_https_test_server().GetURL("/favicon/page_with_favicon.html");
+
+  RunTestSequence(
+      OpenTabWithFavicon(kTab1, url), WaitForPopupTransitionLockout(),
+      MoveMouseTo(kOmniboxElementId), ClickMouse(), WaitForPopupReady(),
+      WaitForPopupActive(), WaitForInputIconShowsPageFavicon(url),
+      // Clicking the omnibox selects the URL, so a single key press replaces it
+      // with a search query.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_H, ui::EF_NONE)),
+      InAnyContext(WaitForWebUIInputValue("h")),
+      WaitForInputIconShowsDefaultSearchProviderIcon(
+          /*expect_search_match=*/true),
+      // Use `InputWebUIText` for the multi-character URL to avoid
+      // layout-dependent punctuation keycodes.
+      ClearWebUIText(), InputWebUIText("example.com"),
+      WaitForInputIconShowsUrlMatchFavicon("example.com"));
+}
+
+// Verifies that the input row icon follows the selection while arrowing
+// between a URL match and a search match.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       InputIconUpdatesWhileArrowing) {
+  RunTestSequence(
+      // Opening an NTP focuses the omnibox.
+      WaitForBrowserActive(), WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab1), WaitForPopupReady(), WaitForPopupActive(),
+      // The default match for a URL is a URL match.
+      InputWebUIText("example.com"),
+      WaitForInputIconShowsUrlMatchFavicon("example.com"),
+      InAnyContext(
+          WaitForElementToRender(kPopupWebView, kFirstSuggestionMatch)),
+      // Arrow down to a search match.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      WaitForInputIconShowsDefaultSearchProviderIcon(
+          /*expect_search_match=*/true),
+      // Arrow back up to the URL match.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_UP, ui::EF_NONE)),
+      WaitForInputIconShowsUrlMatchFavicon("example.com"));
 }
 
 // Verifies the draft, selection range, and focus are restored after typing an
