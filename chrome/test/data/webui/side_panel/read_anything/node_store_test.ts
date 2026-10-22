@@ -140,6 +140,17 @@ suite('NodeStore', () => {
     assertEquals(0, nodeStore.getAxNodeOffset(node1));
   });
 
+  test('clearDomNodes clears block ancestors', () => {
+    const block = document.createElement('p');
+    const inline = document.createElement('span');
+    nodeStore.setBlockAncestor(inline, block);
+    assertEquals(block, nodeStore.getBlockAncestor(inline));
+
+    nodeStore.clearDomNodes();
+
+    assertEquals(undefined, nodeStore.getBlockAncestor(inline));
+  });
+
   test('replaceDomNode', () => {
     const parent = document.createElement('p');
     const parentId = 308;

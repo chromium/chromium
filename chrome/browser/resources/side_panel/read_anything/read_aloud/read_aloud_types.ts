@@ -12,8 +12,9 @@ import {ReadAloudNodeStore} from './read_aloud_node_store.js';
 // representing text nodes and segments, allowing the core logic to work
 // with different text segmentation strategies.
 
-// Display types that should signal a line break.
-const LINE_BREAKING_DISPLAY_TYPES = [
+// Set of display types that signal a line break. Using a Set allows O(1)
+// lookup instead of array scanning during text traversal.
+const LINE_BREAKING_DISPLAY_TYPES = new Set([
   'block',
   'list-item',
   'flex',
@@ -25,7 +26,7 @@ const LINE_BREAKING_DISPLAY_TYPES = [
   'table-row-group',
   'table-header-group',
   'table-footer-group',
-];
+]);
 
 // Wrapper class to represent a node used by read aloud. The type of node
 // could be either a DOM node or an AXNode depending on what type of text
@@ -171,14 +172,29 @@ export class DomReadAloudNode extends ReadAloudNode {
   }
 
   private getNearestBlockAncestor_(): Node|undefined {
-    let currentAncestor = this.node.parentElement;
-
+    const nodeStore = NodeStore.getInstance();
+    const parent = this.node.parentElement;
+    let currentAncestor: Element|null = parent;
     while (currentAncestor) {
+      // Reuse the cached block ancestor and memoize for the immediate parent.
+      const cached = nodeStore.getBlockAncestor(currentAncestor);
+      if (cached) {
+        if (parent) {
+          nodeStore.setBlockAncestor(parent, cached);
+        }
+        return cached;
+      }
+
       const displayStyle = window.getComputedStyle(currentAncestor).display;
-      // Check for common block-level display values
-      if (LINE_BREAKING_DISPLAY_TYPES.includes(displayStyle)) {
+      if (LINE_BREAKING_DISPLAY_TYPES.has(displayStyle)) {
+        // Cache this block element for itself and the immediate parent.
+        nodeStore.setBlockAncestor(currentAncestor, currentAncestor);
+        if (parent) {
+          nodeStore.setBlockAncestor(parent, currentAncestor);
+        }
         return currentAncestor;
       }
+
       currentAncestor = currentAncestor.parentElement;
     }
 

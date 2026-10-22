@@ -135,6 +135,11 @@ export class NodeStore {
   // order.
   private blockIdToTextOrders_: Map<number, number[]> = new Map();
 
+  // Key: a DOM element in the reading mode panel
+  // Value: the element's nearest inclusive block-level ancestor. Caches
+  // getComputedStyle() lookups when finding block ancestors for read aloud.
+  private blockAncestors_: WeakMap<Element, Node> = new WeakMap();
+
   private audioBrowserProxy_: AudioBrowserProxy =
       AudioBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -154,6 +159,7 @@ export class NodeStore {
     this.textsInOrder_ = [];
     this.textIdToOrder_.clear();
     this.blockIdToTextOrders_.clear();
+    this.blockAncestors_ = new WeakMap();
     this.textNodesSeen_.clear();
     this.wordsSeenLastSavedTime_ = Date.now();
     clearTimeout(this.countWordsTimer_);
@@ -318,6 +324,14 @@ export class NodeStore {
 
   getAxNodeOffset(node: Node): number {
     return this.axNodeOffset_.get(node) || 0;
+  }
+
+  getBlockAncestor(element: Element): Node|undefined {
+    return this.blockAncestors_.get(element);
+  }
+
+  setBlockAncestor(element: Element, blockAncestor: Node) {
+    this.blockAncestors_.set(element, blockAncestor);
   }
 
   // Registers the text node with the given AXNodeID and text length as part of
