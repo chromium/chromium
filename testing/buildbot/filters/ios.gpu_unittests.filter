@@ -2,9 +2,7 @@
 # feature was disabled.
 -GpuChannelExitForContextLostTest.CreateFailsDuringLostContextShutdown_1
 -GpuChannelExitForContextLostTest.CreateFailsDuringLostContextShutdown_2
--GpuChannelTest.CreateFailsIfSharedContextIsLost
 -GpuChannelTest.CreateOffscreenCommandBuffer
--GpuChannelTest.IncompatibleStreamIds
 
 # TODO(crbug.com/352379282): These tests have failed since
 # https://crrev.com/c/5690471.

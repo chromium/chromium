@@ -12,7 +12,6 @@
 -DistillerPageWebContentsTest.HandlesRelativeLinks
 -DistillerPageWebContentsTest.HandlesRelativeVideos
 -DistillerPageWebContentsTest.HandlesShadowDOM
--DistillerPageWebContentsTest.MarkupInfo
 -DistillerPageWebContentsTest.PageDestroyedBeforeFinishDistillation
 -DistillerPageWebContentsTest.TestNoContentDoesNotCrash
 -DistillerPageWebContentsTest.UsingCurrentWebContentsNotFinishedLoadingYet
@@ -29,7 +28,6 @@
 -All/PageContentProtoProviderBrowserTestSiteIsolation.*
 -PageContentProtoProviderBrowserTest.*
 -PageContentProtoProviderBrowserTestActionableElements.AIPageContent
--PageContentProtoProviderBrowserTestFencedFrame.AIPageContentFencedFrame
 -PageContentProtoProviderBrowserTestPaidContentDisabled.PaidContentDisabled
 -ScaledPageContentProtoProviderBrowserTest.ScaleSizes
 

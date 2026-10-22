@@ -16,8 +16,6 @@
 -AutofillAgentTest.DriverPreviewSpecificFormField
 -AutofillAgentTest.FillSpecificFormField
 -AutofillAgentTest.ScrollFieldIntoView
--AutofillAgentTest.onSuggestionsReady_ClearForm
--AutofillAgentTest.onSuggestionsReady_ClearFormWithGPay
 -AutofillAgentTest.showAutofillPopup_EmptyIconInCreditCardSuggestion
 -AutofillAgentTest.showAutofillPopup_PreferCustomIconForCreditCardSuggestions
 -AutofillAgentTest.showAutofillPopup_ShowVirtualCards
@@ -28,7 +26,6 @@
 # https://crrev.com/c/5496051. It looks like it's missing a
 # content::BrowserTaskEnvironment member in your fixture.
 -AutofillAgentTest.DidSelectSuggestion_AutocompleteEntry
--AutofillAgentTest.DidSelectSuggestion_ClearFormEntry
 -AutofillAgentTest.FillData_UnknowFieldIdInResults
 -AutofillAgentTest.FillData_UpdateWithResults
 
@@ -81,31 +78,11 @@
 -FormMutationFormControlElements.AddedFormControlElement/2
 -FormMutationFormControlElements.AddedFormControlElement/3
 -FormMutationFormControlElements.AddedFormControlElement/4
--FormMutationFormControlElements.AddedFormControlElement/5
--FormMutationFormControlElements.AddedFormControlElement/6
--FormMutationFormControlElements.AddedFormControlElement/7
--FormMutationFormControlElements.AddedFormControlElement/8
--FormMutationFormControlElements.AddedFormControlElement/9
 -FormMutationFormControlElements.AddedFormlessControlElement/0
 -FormMutationFormControlElements.AddedFormlessControlElement/1
 -FormMutationFormControlElements.AddedFormlessControlElement/2
 -FormMutationFormControlElements.AddedFormlessControlElement/3
 -FormMutationFormControlElements.AddedFormlessControlElement/4
--FormMutationFormControlElements.AddedFormlessControlElement/5
--FormMutationFormControlElements.AddedFormlessControlElement/6
--FormMutationFormControlElements.AddedFormlessControlElement/7
--FormMutationFormControlElements.AddedFormlessControlElement/8
--FormMutationFormControlElements.AddedFormlessControlElement/9
--FormMutationFormControlElements.RemovedFormControlElement/0
--FormMutationFormControlElements.RemovedFormControlElement/1
--FormMutationFormControlElements.RemovedFormControlElement/2
--FormMutationFormControlElements.RemovedFormControlElement/3
--FormMutationFormControlElements.RemovedFormControlElement/4
--FormMutationFormControlElements.RemovedFormControlElement/5
--FormMutationFormControlElements.RemovedFormControlElement/6
--FormMutationFormControlElements.RemovedFormControlElement/7
--FormMutationFormControlElements.RemovedFormControlElement/8
--FormMutationFormControlElements.RemovedFormControlElement/9
 
 # TODO(crbug.com/335686693): FormMutationTests have been failing since
 # https://crrev.com/c/5460162. Currently they fail with use_blink due to
@@ -164,11 +141,6 @@
 -SecurityStateUtilsTest.GetMaliciousContentStatus
 -SecurityStateUtilsTest.GetSecurityLevelForWebStateMaliciousContent
 
-# TODO(crbug.com/40945961): Test currently fails on iOS blink.
--TranslateControllerTest.OnTranslateSendRequestWithValidCommand
--TranslateControllerTest.OnTranslateSendRequestWithBadURL
--TranslateControllerTest.OnTranslateSendRequestWithBadMethod
-
 # TODO(crbug.com/40945963): Test currently fails on iOS blink.
 -UkmUrlRecorderTest.Basic
 -UkmUrlRecorderTest.IgnoreDownloadUrl
@@ -216,13 +188,6 @@
 -AutofillAcrossIframesTest.FrameAndFormIdsDontMatch
 -AutofillAcrossIframesTest.TriggerExtraction_AcrossFrames
 
-# TODO(crbug.com/365245828): These tests have been failing since
-# https://crrev.com/c/5829970.
--BackgroundTracingUtilsTest.SetupBackgroundTracingFromProtoConfigFile
--BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrial
--BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrialOutputPath
--BackgroundTracingUtilsTest.SetupSystemTracingFromFieldTrial
-
 # TODO(crbug.com/370751353): These tests have been failing since
 # https://crrev.com/c/5873728.
 -RemoteFrameTokenRegistrationTest.ChildFrameAcceptsAncestorRegistration
@@ -236,21 +201,6 @@
 # https://crrev.com/c/6000833.
 -FormSubmittedHookTest.TestFormSubmittedHook
 -FormSubmittedHookTest.TestFormSubmittedHookAcrossIframes
-
-# TODO(crbug.com/388135869): This test has been failing since
-# https://crrev.com/c/6143155.
--LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion
--LocalStorageImplTest.Basic
--LocalStorageImplTest.DeleteStorageNotifiesWrapper
--LocalStorageImplTest.DeleteStorageWithPendingWrites
--LocalStorageImplTest.DeleteStorageWithoutConnection
--LocalStorageImplTest.GetStorageUsage_Data
--LocalStorageImplTest.MetaDataClearedOnDelete
--LocalStorageImplTest.OpeningWrappersPurgesInactiveWrappers
--LocalStorageImplTest.ShutdownClearsData
--LocalStorageImplTest.StorageKeysAreIndependent
--LocalStorageImplTest.WrapperOutlivesMojoConnection
--LocalStorageImplTest.MetaDataClearedOnDeleteAll
 
 # TODO(crbug.com/473587148): These tests have failed with use_blink due to spinning up on
 # an unknown thread since https://crrev.com/c/7275448.
@@ -279,19 +229,6 @@
 
 # TODO(crbug.com/514423251): Autofill and form-related JavaScript tests crash
 # on iOS Blink.
--AutofillAcrossIframesTest.FillFormAcrossFrames
--AutofillAcrossIframesTest.RecognizeFormAcrossFrames
--AutofillDriverIOSTest.FieldWasModifiedByJavascript
--AutofillDriverIOSTest.FormRemoved
--AutofillDriverIOSTest.FormsSeen
--AutofillDriverIOSTest.FormsSeenAfterParsing
--AutofillDriverIOSTest.FormsSeenPreFormParsing
--AutofillDriverIOSTest.FormsSubmitted
--AutofillDriverIOSTest.JustTriggerFormExtractionOfPasswordForms
--AutofillDriverIOSTest.TriggerReparse
--ChildProcessJavaScriptFeatureTest.ChildFrameMessaging
--ChildProcessJavaScriptFeatureTest.GrandChildFrameMessaging
--ChildProcessJavaScriptFeatureTest.MainAndChildFrameMessaging
 -All/FillContentEditableJsTest.FillContentEditableReplaceContent/0
 -All/FillContentEditableJsTest.FillContentEditableReplaceContent/1
 -All/FillContentEditableJsTest.FillContentEditableWithChildTags/0
@@ -309,55 +246,12 @@
 -All/FormContentEditableTest.FocusContentEditableSiblingElement/0
 -All/FormContentEditableTest.FocusContentEditableSiblingElement/1
 -FillJsTest.SanitizeValueForInputElement
--FormActivityTest.TestCheckbox
--FormActivityTest.TestCrossFrameObserving
--FormActivityTest.TestFieldUserInput
--FormActivityTest.TestFocus
--FormActivityTest.TestFormReassignment
--FormActivityTest.TestInput
--FormActivityTest.TestRadioButton
--FormActivityTest.TestRemoved
--FormActivityTest.TestSelect
--FormActivityTest.TestSubmit
--FormActivityTest.TestTextArea
--FormActivityTest.TestTypingTextField
--FormHandlersJavaScriptFeatureTest.FieldReassignedByJavaScriptBeforeSubmit
--FormHandlersJavaScriptFeatureTest.FormReassignedByJavaScriptAfterSubmit
--FormHandlersJavaScriptFeatureTest.FormReassignedByJavaScriptBeforeSubmit
--FormHandlersJavaScriptFeatureTest.FormSubmittedByJavaScript
--FormHandlersJavaScriptFeatureTest.FrameDetachedOnFormSubmission
--FormHandlersJavaScriptFeatureTest.FrameDetachedOnFormSubmissionWithScheduledSubmit
--FormUtilJavascriptTest.GetCanonicalActionForForm
--IOSFormHelperBaseTest.FindFormByUniqueId
--IOSFormHelperBaseTest.FindFormByUniqueIdWithRendererIds
--IOSFormHelperBaseTest.GetFormInputElementValues
--IOSFormHelperBaseTest.GetFormInputElementValuesRendererIds
--IOSFormHelperBaseTest.GetToggleTrackingPrefix
--IOSFormHelperBaseTest.IsSameFormAsSuggestionForm
--IOSFormHelperBaseTest.TrackedFormElements
--IOSFormHelperBaseTest.TrackedFormElementsRendererIds
--PasswordControllerJsTest.GetFillFormData
--PasswordControllerJsTest.GetPasswordFormData
--PasswordControllerJsTest.GetPasswordFormDataForPasswordElement
--PasswordControllerJsTest.GetPasswordFormFields
--SuggestionControllerJavaScriptFeatureTest.SelectNextAndPreviousElement
--SuggestionControllerJavaScriptFeatureTest.SelectNextAndPreviousElementWithTabOrder
--SuggestionControllerJavaScriptFeatureTest.SelectNextAndPreviousElementWithTabOrderAndCrossFrame
 
 # TODO(crbug.com/514423252): SqliteVfs multiprocess tests crash on iOS Blink.
 -SqliteVfsMultiprocessTest.AbandonAndReconnect/Rollback
 -SqliteVfsMultiprocessTest.AbandonAndReconnect/Wal
 -SqliteVfsMultiprocessTest.AbandonReadOnlyShared/Rollback
 -SqliteVfsMultiprocessTest.AbandonReadOnlyShared/Wal
--SqliteVfsMultiprocessTest.CanReadFromAProcessWhileTheOtherIsWritingMMap
--SqliteVfsMultiprocessTest.CanReadFromAProcessWhileTheOtherIsWritingWal
--SqliteVfsMultiprocessTest.CanWriteInMultipleProcessesMMap
--SqliteVfsMultiprocessTest.CanWriteInMultipleProcessesWal
--SqliteVfsMultiprocessTest.CrossProcessLockContention
--SqliteVfsMultiprocessTest.DeletionDoesNotCorruptMMap
--SqliteVfsMultiprocessTest.DeletionDoesNotCorruptWal
--SqliteVfsMultiprocessTest.MigratesFromOldMMapJournalToWal
--SqliteVfsMultiprocessTest.ReturnsDataIfStaleConnectionInAnotherProcess
 -SqliteVfsMultiprocessTest.ParallelStressTest/Rollback
 -SqliteVfsMultiprocessTest.ParallelStressTest/Wal
 -SqliteVfsMultiprocessTest.ReaderBlocksWriterInRollback/Rollback
@@ -371,18 +265,15 @@
 -VfsTransitionMultiprocessTest.TransitionAfterCrash/MultiConnection_Wal
 -VfsTransitionMultiprocessTest.TransitionAfterCrash/SingleConnection_Rollback
 -VfsTransitionMultiprocessTest.TransitionAfterCrash/SingleConnection_Wal
--VfsTransitionMultiprocessTest.VfsChangeTest
 
 # TODO(crbug.com/514423253): Miscellaneous components_unittests failures on iOS
 # Blink.
 -CountryInfoTest.SetCodeReadName
 -CountryInfoTest.SetNameReadName
 -CountryNamesForLocaleTest.EmptyCountryCodeForInvalidLocale
--DarkModeImageClassifierTest.Classification
 -DeviceEventLogTest.TestTimeFormat
 -FieldLogUkmMetricTest/LogFocusedComplexFormAtFormRemoveTest.TestEmittedUKM/ablation_study
 -FieldLogUkmMetricTest/LogFocusedComplexFormAtFormRemoveTest.TestEmittedUKM/ablation_study_in_dry_run_mode
--PolicyLoggerTest.DeleteOldLogsMultithreaded
 -PrivateAiNetworkDriverIOSTest.CreateNetworkContext
 -UmaPageLoadMetricsObserverTest.TestTracingDomContentLoadedEventStart
 -UmaPageLoadMetricsObserverTest.TestTracingLoadEventStart
@@ -405,31 +296,3 @@
 -PasskeyTabHelperTest.StartPasskeyAssertionSuccessLogsBrowserAssistedLogin
 -PasskeyTabHelperTest.StartPasskeyCreationFromCrossOriginIframe
 -PasskeyTabHelperTest.StartPasskeyCreationWithExcludedCredential
-
-# TODO(crbug.com/517208683): The test is flaky on the ios-blink and tvos bots.
-# The test was updated by https://crrev.com/c/7676358.
--SessionStorageImplFakeDbTest.TransientErrorsAfterRecovery
-
-# TODO(crbug.com/553479932): The tests below are failing on the ios-blink.
-# The tests were added by https://crrev.com/c/8279577.
--AutofillAgentTest.DriverFillSpecificFormField_ReplaceSelectionForAtMemory
--AutofillAgentTest.ScrollFieldIntoView
--FillJsTest.InsertInputElementValueAtCursorCursorPosition
--FillJsTest.InsertInputElementValueAtCursorInsertAtCursor
--FillJsTest.InsertInputElementValueAtCursorReplaceSelection
--All/FillContentEditableJsTest.FillContentEditableReplaceContent/0
--All/FillContentEditableJsTest.FillContentEditableReplaceContent/1
--All/FillContentEditableJsTest.FillContentEditableWithChildTags/0
--All/FillContentEditableJsTest.FillContentEditableWithChildTags/1
--All/FillContentEditableJsTest.FillContentEditableWithSibling/0
--All/FillContentEditableJsTest.FillContentEditableWithSibling/1
--All/FillContentEditableJsTest.FillNestedContentEditable/0
--All/FillContentEditableJsTest.FillNestedContentEditable/1
--All/FillContentEditableJsTest.FillSimpleContentEditable/0
--All/FillContentEditableJsTest.FillSimpleContentEditable/1
--All/FormContentEditableTest.FocusContentEditable/0
--All/FormContentEditableTest.FocusContentEditable/1
--All/FormContentEditableTest.FocusContentEditableChildElement/0
--All/FormContentEditableTest.FocusContentEditableChildElement/1
--All/FormContentEditableTest.FocusContentEditableSiblingElement/0
--All/FormContentEditableTest.FocusContentEditableSiblingElement/1

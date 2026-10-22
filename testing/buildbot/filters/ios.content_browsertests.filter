@@ -24,14 +24,6 @@
 -All/SitePerProcessBrowserTest.FrameOwnerPropertiesPropagationScrolling/1
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/0
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/1
--All/TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale/0
--All/TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale/1
--All/TouchpadPinchBrowserTest.WheelListenerAllowingPinch/0
--All/TouchpadPinchBrowserTest.WheelListenerAllowingPinch/1
--All/TouchpadPinchBrowserTest.WheelListenerPreventingDoubleTap/0
--All/TouchpadPinchBrowserTest.WheelListenerPreventingDoubleTap/1
--All/TouchpadPinchBrowserTest.WheelListenerPreventingPinch/0
--All/TouchpadPinchBrowserTest.WheelListenerPreventingPinch/1
 -BackForwardCacheBrowserTest.BlockAndUnblockFromHTMLFile
 -BackForwardCacheBrowserTest.BlockAndUnblockFromJavaScriptFile
 -BackForwardCacheBrowserTest.DoesNotCacheIfRunFileChooserIsInvoked
@@ -79,14 +71,10 @@
 -NoGPUCaptureScreenshotTest.LargeScreenshot
 -PointerLockBrowserTest.PointerLockRequestUnadjustedMovement
 -PointerLockBrowserTest.PointerLockWheelEventRouting
--PortalBrowserTest.GestureCleanedUpBeforeActivation
--PortalPixelBrowserTest.PageScaleRaster
 -PrerenderBrowserTest.ActivateOnLinkClick_TargetBlankWithNoopener_WithTargetHintBlank
 -PrerenderBrowserTest.ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
 -PrerenderBrowserTest.MultipleNewTabPrerendering
--RenderWidgetHostFoldableCSSTest.FoldablesCSSWithOverrides
 -RenderWidgetHostFoldableCSSTest.FoldablesCSSWithReload
--RenderWidgetHostSitePerProcessTest.BrowserClosesSelectPopup
 -RenderWidgetHostTouchEmulatorBrowserTest.TouchEmulatorPinchWithGestureFling
 -RenderWidgetHostViewChildFrameBrowserTest.VisualPropertiesPropagation_RootViewportSegments
 -ScrollBehaviorBrowserTest.InstantScriptScrollAdjustsSmoothWheelScroll
@@ -134,10 +122,6 @@
 # TODO(crbug.com/40274214): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.
 -BackForwardCacheBrowserTestNoTestingConfig.CCNSAndWebSocketBothRecorded
--BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromHTMLFile
--BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromJavaScriptFile
--BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromHTMLFile
--BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromJavaScriptFile
 
 # TODO(crbug.com/40282425): These tests fail by a different width for a frame.
 -All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink
@@ -173,9 +157,6 @@
 -WebRtcAudioBrowserTest.EstablishAudioVideoCallAndVerifyRemoteMutingWorks
 -WebRtcAudioBrowserTest.EstablishAudioVideoCallAndVerifyUnmutingWorks
 -WebRtcAudioDebugRecordingsBrowserTest.CallWithAudioDebugRecordings
-
-# TODO(crbug.com/40285557): reports the wrong width/height.
--RenderWidgetHostFoldableCSSTest.ViewportSegmentsWorksInUAFullscreenCSS
 
 # TODO(crbug.com/40286643): Text area handle has shrunk.
 -FormControlsBrowserTest.Textarea
@@ -223,15 +204,9 @@
 -BackForwardCacheBrowserTest.DoesNotCacheIfSpeechRecognitionIsStarted
 -IndexedDBBrowserTest.CanDeleteWhenOverQuotaTest
 -NavigationBrowserTest.NavigateToAboutBlankWhileFirstNavigationPending
--PortalHitTestBrowserTest.InputToOOPIFAfterActivation
 -WebRtcBrowserTest.CallAndVerifyVideoMutingWorks
 -WebRtcGetUserMediaBrowserTest.InvalidSourceIdInIFrameAndCloseInFailureCb
 -WebRtcGetUserMediaBrowserTest.ConcurrentGetUserMediaStop
-
-# TODO(crbug.com/40274214): Assertion happens because |spawner_url_base_| is
-# empty.
--All/WorkerTest.WebSocketSharedWorker/PrivateNetworkAccessForWorkersDisabled
--All/WorkerTest.WebSocketSharedWorker/PrivateNetworkAccessForWorkersEnabled
 
 # TODO(crbug.com/335331442): A timeout happens after bump the version of SDK up to 17.4.
 -All/AccessibilityHitTestingBrowserTest.HitTestInPopup/ZoomFactor1
@@ -248,7 +223,6 @@
 -All/DumpAccessibilityTreeTest.ReloadSelectionCrash/blink
 -All/YieldingParserDumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpenMultiple/blink
 -All/YieldingParserDumpAccessibilityTreeTest.AccessibilityInputTimeWithPopupOpen/blink
--BackForwardCacheBrowserTestWithJavaScriptDetails.StickyFeaturesWithDetails
 -BrowserChildProcessObserverBrowserTest.LaunchAndDisconnect
 -BrowserChildProcessObserverBrowserTest.LaunchAndForceShutdown
 -BrowserChildProcessObserverBrowserTest.KillProcess
@@ -281,7 +255,6 @@
 -PowerMonitorTest.TestRendererProcess
 -PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers.FetchSharedWorkerFromSecureTreatAsPublicToLocal
 -RenderFrameDevToolsAgentHostFencedFrameBrowserTest.PageCrashInFencedFrame
--RenderAccessibilityImplTest.TestHitTestPopupDoesNotCrash
 -RenderFrameDevToolsAgentHostBrowserTest.CancelCrossOriginNavigationAfterReadyToCommit
 -RenderWidgetHostDelegatedInkMetadataTest.FlagGetsSetFromRenderFrameMetadata
 -SandboxedHttpCacheBrowserTest.CreateSimpleCacheOnParentDirectory
@@ -333,10 +306,6 @@
 -CrossPlatformAccessibilityBrowserTest.SelectWithOptgroupActiveDescendant
 -CrossPlatformAccessibilityBrowserTest.SelectSizeChangeWithOpenedPopupDoesNotCrash
 -CrossPlatformAccessibilityBrowserTest.NavigateInIframe
-
-# TODO(crbug.com/342866174): The test has been failing since
-# https://crrev.com/c/5545059.
--FoldableAPIsOriginTrialBrowserTest.ValidOriginTrialToken
 
 # TODO(crbug.com/343248827): The test has been failing since
 # https://crrev.com/c/5467603. The CL removed
@@ -440,7 +409,6 @@
 # [2] https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-rel-fyi/100/overview
 -BackForwardCacheWebHidTest.DoesNotCacheIfGetDevicesWasCalled
 -BackForwardCacheWebHidTest.DoesNotCacheIfRequestDeviceWasCalled
--HidFencedFramesBrowserTest.BlockFromFencedFrame
 -HidTest.DeviceWithAllProtectedReportsIsExcluded
 -HidTest.DisallowRequestDevice
 -HidTest.GetDevices
@@ -546,7 +514,6 @@
 -NetworkServiceBrowserCacheResetTest.CacheResetTest
 -NetworkServiceBrowserCacheResetTest.PRE_CacheResetTest
 -ObservedServiceRemoteBrowserTest.Lifecycle
--RenderWidgetHostSitePerProcessTest.VerifyPopupCreatorFrameIdPlumbing
 -RustMojoTestBrowserTest.LoadRustMojoService
 -RustMojoTestBrowserTestWithCommandLineSwitch.LoadRustMojoServiceWithCommandLineSwitch
 -RustMojoTestBrowserTestWithFeatureEnabled.LoadRustMojoServiceWithFeatureEnabled
