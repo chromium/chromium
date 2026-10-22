@@ -364,14 +364,6 @@ mojom("test_struct_traits_interfaces") {
           move_only = true
           nullable_is_same_type = true
         },
-        {
-          mojom = "mojo.test.StructForceSerialize"
-          cpp = "::mojo::test::StructForceSerializeImpl"
-        },
-        {
-          mojom = "mojo.test.StructNestedForceSerialize"
-          cpp = "::mojo::test::StructNestedForceSerializeImpl"
-        },
       ]
       traits_sources = [
         "//mojo/public/cpp/bindings/tests/struct_with_traits_impl_traits.cc",

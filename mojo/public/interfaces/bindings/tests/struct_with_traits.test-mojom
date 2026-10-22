@@ -5,14 +5,13 @@
 module mojo.test;
 
 // TODO(yzshen): Rename *WithTraits* types to something more readable.
-
 struct NestedStructWithTraits {
   int32 value;
 };
 
 enum EnumWithTraits {
   VALUE_0,
-  VALUE_1
+  VALUE_1,
 };
 
 struct StructWithTraits {
@@ -66,47 +65,27 @@ union UnionWithTraits {
 interface TraitsTestService {
   EchoStructWithTraits(StructWithTraits s) => (StructWithTraits passed);
 
-  EchoTrivialStructWithTraits(TrivialStructWithTraits s) =>
-      (TrivialStructWithTraits passed);
+  EchoTrivialStructWithTraits(TrivialStructWithTraits s)
+      => (TrivialStructWithTraits passed);
 
-  EchoMoveOnlyStructWithTraits(MoveOnlyStructWithTraits s) =>
-      (MoveOnlyStructWithTraits passed);
+  EchoMoveOnlyStructWithTraits(MoveOnlyStructWithTraits s)
+      => (MoveOnlyStructWithTraits passed);
 
-  EchoNullableMoveOnlyStructWithTraits(MoveOnlyStructWithTraits? s) =>
-      (MoveOnlyStructWithTraits? passed);
+  EchoNullableMoveOnlyStructWithTraits(MoveOnlyStructWithTraits? s)
+      => (MoveOnlyStructWithTraits? passed);
 
   EchoEnumWithTraits(EnumWithTraits e) => (EnumWithTraits passed);
 
-  EchoStructWithTraitsForUniquePtr(StructWithTraitsForUniquePtr e) => (
-      StructWithTraitsForUniquePtr passed);
+  EchoStructWithTraitsForUniquePtr(StructWithTraitsForUniquePtr e)
+      => (StructWithTraitsForUniquePtr passed);
 
-  EchoNullableStructWithTraitsForUniquePtr(StructWithTraitsForUniquePtr? e) => (
-      StructWithTraitsForUniquePtr? passed);
+  EchoNullableStructWithTraitsForUniquePtr(StructWithTraitsForUniquePtr? e)
+      => (StructWithTraitsForUniquePtr? passed);
 
   EchoUnionWithTraits(UnionWithTraits u) => (UnionWithTraits passed);
-};
-
-interface TestUnserializedStruct {
-  PassUnserializedStruct(StructWithUnreachableTraits s)
-      => (StructWithUnreachableTraits passed);
 };
 
 // Test that specifying default value for a typemapped enum field works.
 struct EnumWithTraitsContainer {
   EnumWithTraits f_field = EnumWithTraits.VALUE_1;
-};
-
-struct StructForceSerialize {
-  int32 value;
-};
-
-struct StructNestedForceSerialize {
-  StructForceSerialize force;
-};
-
-interface ForceSerializeTester {
-  SendForceSerializedStruct(StructForceSerialize s)
-      => (StructForceSerialize passed);
-  SendNestedForceSerializedStruct(StructNestedForceSerialize s)
-      => (StructNestedForceSerialize passed);
 };

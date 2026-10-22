@@ -32,13 +32,5 @@ UnionWithTraitsInt32::~UnionWithTraitsInt32() = default;
 
 UnionWithTraitsStruct::~UnionWithTraitsStruct() = default;
 
-StructForceSerializeImpl::StructForceSerializeImpl() = default;
-
-StructForceSerializeImpl::~StructForceSerializeImpl() = default;
-
-StructNestedForceSerializeImpl::StructNestedForceSerializeImpl() = default;
-
-StructNestedForceSerializeImpl::~StructNestedForceSerializeImpl() = default;
-
 }  // namespace test
 }  // namespace mojo
