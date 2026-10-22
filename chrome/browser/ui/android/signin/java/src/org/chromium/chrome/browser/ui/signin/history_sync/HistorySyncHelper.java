@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -29,21 +30,23 @@ import java.util.Set;
 public class HistorySyncHelper {
     private static final int MAX_SUCCESSIVE_DECLINES = 2;
     private static final long MIN_DAYS_SINCE_LAST_DECLINE = 14;
-    @Nullable private static HistorySyncHelper sInstance;
+    private static final ProfileKeyedMap<HistorySyncHelper> sProfileMap =
+            new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+    @Nullable private static HistorySyncHelper sInstanceForTesting;
     private final @Nullable SyncService mSyncService;
     private final PrefService mPrefService;
 
     public static HistorySyncHelper getForProfile(Profile profile) {
-        if (sInstance == null) {
-            sInstance = new HistorySyncHelper(profile);
+        if (sInstanceForTesting != null) {
+            return sInstanceForTesting;
         }
-        return sInstance;
+        return sProfileMap.getForProfile(profile, HistorySyncHelper::new);
     }
 
-    public static void setInstanceForTesting(HistorySyncHelper historySyncHelper) {
-        var oldInstance = sInstance;
-        sInstance = historySyncHelper;
-        ResettersForTesting.register(() -> sInstance = oldInstance);
+    public static void setInstanceForTesting(@Nullable HistorySyncHelper historySyncHelper) {
+        var oldInstance = sInstanceForTesting;
+        sInstanceForTesting = historySyncHelper;
+        ResettersForTesting.register(() -> sInstanceForTesting = oldInstance);
     }
 
     @VisibleForTesting

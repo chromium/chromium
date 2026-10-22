@@ -47,6 +47,7 @@ public class HistorySyncHelperTest {
 
     @Mock private SyncService mSyncServiceMock;
     @Mock private Profile mProfileMock;
+    @Mock private Profile mProfileMock2;
     @Mock private PrefService mPrefServiceMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
@@ -59,7 +60,19 @@ public class HistorySyncHelperTest {
         when(mUserPrefsJniMock.get(any(Profile.class))).thenReturn(mPrefServiceMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mHistorySyncHelper = new HistorySyncHelper(mProfileMock);
+                    mHistorySyncHelper = HistorySyncHelper.getForProfile(mProfileMock);
+                });
+    }
+
+    @Test
+    public void testGetForProfile() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertSame(
+                            mHistorySyncHelper, HistorySyncHelper.getForProfile(mProfileMock));
+                    HistorySyncHelper secondHelper = HistorySyncHelper.getForProfile(mProfileMock2);
+                    Assert.assertNotSame(mHistorySyncHelper, secondHelper);
+                    Assert.assertSame(secondHelper, HistorySyncHelper.getForProfile(mProfileMock2));
                 });
     }
 
