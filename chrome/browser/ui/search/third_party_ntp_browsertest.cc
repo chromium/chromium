@@ -380,21 +380,19 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifyCanUseSpareProcess) {
   content::RenderProcessHost* old_process =
       web_contents->GetPrimaryMainFrame()->GetProcess();
 
-  // Setup and navigate to a third-party NTP while a spare process is present.
-  GURL base_url =
-      https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
-  GURL ntp_url = https_test_server().GetURL("ntp.example.com",
-                                            "/instant_extended_ntp.html");
-  SetupInstant(browser()->GetProfile(), base_url, ntp_url);
-  // `InProcessBrowserTest::Initialize()` disables
-  // `kSpareRendererForSitePerProcess` when `!EXPENSIVE_TEST_LOGIC_IS_ON()` for
-  // test speed (and `SetupInstant` terminates existing processes), so
-  // explicitly warm up a spare renderer for this test.
+  // Navigate to a third-party NTP while a spare process is present.
   content::SpareRenderProcessHostManager::Get().WarmupSpare(
       browser()->GetProfile());
   content::RenderProcessHost* spare_process =
       content::SpareRenderProcessHostManager::Get().GetSpares().front();
   ASSERT_TRUE(spare_process);
+
+  // Setup and navigate to a third-party NTP.
+  GURL base_url =
+      https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
+  GURL ntp_url = https_test_server().GetURL("ntp.example.com",
+                                            "/instant_extended_ntp.html");
+  SetupInstant(browser()->GetProfile(), base_url, ntp_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
 
   content::RenderProcessHost* new_process =

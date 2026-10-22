@@ -1297,16 +1297,6 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
              content::NavigationHandle* navigation_handle) {
             content::RenderProcessHost* srp_rph =
                 navigation_handle->GetRenderFrameHost()->GetProcess();
-            // Ensure the renderer process has finished launching before calling
-            // `Shutdown(0)`, which is a no-op while the process is still
-            // starting (e.g., when `InProcessBrowserTest::Initialize()`
-            // disables `kSpareRendererForSitePerProcess` for test speed).
-            if (!srp_rph->IsReady()) {
-              content::RenderProcessHostWatcher ready_observer(
-                  srp_rph,
-                  content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
-              ready_observer.Wait();
-            }
             content::RenderProcessHostWatcher crash_observer(
                 srp_rph,
                 content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);

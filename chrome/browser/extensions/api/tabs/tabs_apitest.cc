@@ -335,14 +335,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, UpdateHighlighted) {
 
 class ExtensionApiCaptureTest : public ExtensionApiTabTest {
  public:
-  ExtensionApiCaptureTest() {
-    // Enabled by default in production, but disabled in
-    // `InProcessBrowserTest::Initialize()` when `!EXPENSIVE_TEST_LOGIC_IS_ON()`
-    // for test speed. `CaptureVisibleTab*` tests below open new windows/tabs
-    // and capture pixels, which relies on a spare renderer to avoid flakiness.
-    feature_list_.InitAndEnableFeature(
-        features::kSpareRendererForSitePerProcess);
-  }
+  ExtensionApiCaptureTest() = default;
   ExtensionApiCaptureTest(const ExtensionApiCaptureTest&) = delete;
   ExtensionApiCaptureTest& operator=(const ExtensionApiCaptureTest&) = delete;
 
@@ -352,9 +345,6 @@ class ExtensionApiCaptureTest : public ExtensionApiTabTest {
     EnablePixelOutput();
     ExtensionApiTabTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // https://crbug.com/40915448 Flaky on Mac.

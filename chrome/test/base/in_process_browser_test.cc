@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -92,7 +91,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -451,17 +449,6 @@ void InProcessBrowserTest::Initialize() {
   // (crbug.com/563340729). Dedicated prewarm tests explicitly enable it via
   // ScopedPrewarmFeatureList.
   disabled_features.push_back(features::kPrewarm);
-
-#if !EXPENSIVE_TEST_LOGIC_IS_ON()
-  // Keeping a background spare renderer alive at all times spawns an extra
-  // renderer process after navigations that goes unused in the vast majority
-  // of browser_tests (crbug.com/573256256). Disable it when
-  // EXPENSIVE_TEST_LOGIC_IS_ON() is false (such as on CQ release trybots) while
-  // keeping it enabled on CI and local developer builds to preserve broader
-  // test coverage. Tests exercising spare renderer behavior warm up a spare
-  // explicitly or enable this feature via ScopedFeatureList.
-  disabled_features.push_back(features::kSpareRendererForSitePerProcess);
-#endif
   // In-product help can conflict with tests' expected window activation and
   // focus. Individual tests can re-enable IPH.
   block_all_iph_feature_list_.InitWithNoFeaturesAllowed();

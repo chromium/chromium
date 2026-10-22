@@ -50,7 +50,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_test.h"
@@ -205,15 +204,9 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
   // `kPdfAccessibilityHeuristicEnhancements` is enabled by default.
   explicit PrintPreviewDialogControllerBrowserTest(
       bool enable_pdf_heuristic_enhancements) {
-    // `kSpareRendererForSitePerProcess` is enabled by default in production,
-    // but disabled in `InProcessBrowserTest::Initialize()` when
-    // `!EXPENSIVE_TEST_LOGIC_IS_ON()` for test speed. Tests below (such as
-    // `MultiplePreviewDialogsClose`) rely on spare renderer availability when
-    // opening tabs and print preview dialogs.
-    feature_list_.InitWithFeatureStates(
-        {{features::kPdfAccessibilityHeuristicEnhancements,
-          enable_pdf_heuristic_enhancements},
-         {features::kSpareRendererForSitePerProcess, true}});
+    feature_list_.InitWithFeatureState(
+        features::kPdfAccessibilityHeuristicEnhancements,
+        enable_pdf_heuristic_enhancements);
   }
 
   void RunPrintPreviewPdfAccessibilityTest(

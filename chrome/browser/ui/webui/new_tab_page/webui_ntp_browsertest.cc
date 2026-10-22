@@ -187,13 +187,10 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, ProcessPerSite) {
 // Verify that the WebUI NTP uses an available spare process and does not
 // discard it as in https://crbug.com/40699271.
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
-  // `InProcessBrowserTest::Initialize()` disables
-  // `kSpareRendererForSitePerProcess` when `!EXPENSIVE_TEST_LOGIC_IS_ON()` for
-  // test speed, and Android does not warm up a spare renderer on startup by
-  // default. Warm one up explicitly if none is present.
-  if (content::SpareRenderProcessHostManager::Get().GetSpareIds().empty()) {
-    content::SpareRenderProcessHostManager::Get().WarmupSpare(GetProfile());
-  }
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not keep a spare renderer around by default, so create one.
+  content::SpareRenderProcessHostManager::Get().WarmupSpare(GetProfile());
+#endif
 
   // Capture current spare renderer.
   std::vector<content::ChildProcessId> spare_ids_before_navigation =

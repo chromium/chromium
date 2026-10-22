@@ -36,7 +36,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -188,15 +187,8 @@ class ReadAnythingOmniboxControllerBrowserTest
   ReadAnythingOmniboxControllerBrowserTest()
       : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHReadingModePageActionLabelFeature})) {
-    // `kSpareRendererForSitePerProcess` is enabled by default in production,
-    // but disabled in `InProcessBrowserTest::Initialize()` when
-    // `!EXPENSIVE_TEST_LOGIC_IS_ON()` for test speed. Tests below (such as
-    // `PageChangeWithLoadingIsDebounced`) use
-    // `ScopedMockTimeMessageLoopTaskRunner` during navigation and require a
-    // spare renderer to already be available.
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kReadAnythingOmniboxChip,
-        features::kSpareRendererForSitePerProcess,
         feature_engagement::kIPHReadingModePageActionLabelFeature,
     };
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
