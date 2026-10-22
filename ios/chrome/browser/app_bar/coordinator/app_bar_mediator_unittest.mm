@@ -317,11 +317,7 @@ class AppBarMediatorTest : public PlatformTest,
 
     GeminiBrowserAgent::CreateForBrowser(regular_browser_.get());
 
-    aim_eligibility_service_ = std::make_unique<MockAimEligibilityService>(
-        *regular_profile_->GetTestingPrefService(),
-        search_engines_test_environment_.template_url_service(),
-        regular_profile_->GetSharedURLLoaderFactory(),
-        IdentityManagerFactory::GetForProfile(regular_profile_.get()));
+    aim_eligibility_service_ = CreateMockAimEligibilityService();
     ON_CALL(*aim_eligibility_service_, IsAimEligible())
         .WillByDefault(testing::Return(false));
     ON_CALL(*aim_eligibility_service_, IsServerEligibilityEnabled())
@@ -593,6 +589,16 @@ class AppBarMediatorTest : public PlatformTest,
     mediator.incognitoTabGroupsCommands = mock_tab_groups_handler_;
     mediator.delegate = mock_delegate_;
     return mediator;
+  }
+
+  // Creates a `MockAimEligibilityService` configured for unit tests without a
+  // `SharedURLLoaderFactory` to prevent background network requests.
+  std::unique_ptr<MockAimEligibilityService> CreateMockAimEligibilityService() {
+    return std::make_unique<MockAimEligibilityService>(
+        *regular_profile_->GetTestingPrefService(),
+        search_engines_test_environment_.template_url_service(),
+        /*url_loader_factory=*/nullptr,
+        IdentityManagerFactory::GetForProfile(regular_profile_.get()));
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -2038,11 +2044,8 @@ TEST_F(AppBarMediatorTest, TestAimEligibilityChangeUpdatesAssistantButton) {
   feature_list.InitWithFeatures({kGeminiKillSwitch}, {kPageActionMenu});
 
   base::RepeatingClosure aim_callback;
-  auto mock_aim_service = std::make_unique<MockAimEligibilityService>(
-      *regular_profile_->GetTestingPrefService(),
-      search_engines_test_environment_.template_url_service(),
-      regular_profile_->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(regular_profile_.get()));
+  std::unique_ptr<MockAimEligibilityService> mock_aim_service =
+      CreateMockAimEligibilityService();
 
   EXPECT_CALL(*mock_aim_service, RegisterEligibilityChangedCallback(testing::_))
       .WillOnce([&](base::RepeatingClosure callback) {
@@ -2527,11 +2530,8 @@ TEST_F(AppBarMediatorTest,
       static_cast<int>(gemini::SettingsPolicy::kNotAllowed));
 
   base::RepeatingClosure aim_callback;
-  auto mock_aim_service = std::make_unique<MockAimEligibilityService>(
-      *regular_profile_->GetTestingPrefService(),
-      search_engines_test_environment_.template_url_service(),
-      regular_profile_->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(regular_profile_.get()));
+  std::unique_ptr<MockAimEligibilityService> mock_aim_service =
+      CreateMockAimEligibilityService();
 
   ON_CALL(*mock_aim_service, IsAimLocallyEligible())
       .WillByDefault(testing::Return(true));
@@ -2663,11 +2663,8 @@ TEST_F(AppBarMediatorTest,
       "aim_eligibility_service.aim_eligibility_response",
       base::Base64Encode(response_string));
 
-  auto mock_aim_service = std::make_unique<MockAimEligibilityService>(
-      *regular_profile_->GetTestingPrefService(),
-      search_engines_test_environment_.template_url_service(),
-      regular_profile_->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(regular_profile_.get()));
+  std::unique_ptr<MockAimEligibilityService> mock_aim_service =
+      CreateMockAimEligibilityService();
 
   ON_CALL(*mock_aim_service, IsAimLocallyEligible())
       .WillByDefault(testing::Return(true));
