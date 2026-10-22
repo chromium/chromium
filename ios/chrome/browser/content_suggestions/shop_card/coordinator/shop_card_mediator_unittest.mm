@@ -90,6 +90,10 @@ class ShopCardMediatorTest : public PlatformTest {
     favicon_loader_ =
         IOSChromeFaviconLoaderFactory::GetForProfile(profile_.get());
 
+    pref_service_.registry()->RegisterBooleanPref(
+        commerce::kPriceTrackingHomeModuleEnabled, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled, true);
     mediator_ = [[ShopCardMediator alloc]
         initWithShoppingService:shopping_service_.get()
                     prefService:pref_service()
@@ -100,10 +104,6 @@ class ShopCardMediatorTest : public PlatformTest {
                   faviconLoader:favicon_loader_
          impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
                                     profile_)];
-    pref_service_.registry()->RegisterBooleanPref(
-        commerce::kPriceTrackingHomeModuleEnabled, true);
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled, true);
   }
 
   ~ShopCardMediatorTest() override {}
@@ -143,8 +143,7 @@ TEST_F(ShopCardMediatorTest, TestReset) {
   EXPECT_EQ(nil, mediator().shopCardConfigForTesting);
 }
 
-// TODO(crbug.com/424378332): `removeShopCard` is not called.
-TEST_F(ShopCardMediatorTest, DISABLED_TestRemoveShopCard) {
+TEST_F(ShopCardMediatorTest, TestRemoveShopCard) {
   id mockDelegate = OCMStrictProtocolMock(@protocol(ShopCardMediatorDelegate));
   OCMExpect([mockDelegate removeShopCard]);
   mediator().delegate = mockDelegate;
