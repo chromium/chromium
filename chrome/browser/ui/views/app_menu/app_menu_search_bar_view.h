@@ -41,6 +41,11 @@ class AppMenuSearchBarView : public views::BoxLayoutView {
   [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback);
 
+  // Runs `callback` when the back button is pressed, before the query is
+  // cleared.
+  [[nodiscard]] base::CallbackListSubscription AddBackPressedCallback(
+      base::RepeatingClosure callback);
+
   bool is_active_for_testing() const;
 
   void HandleKeyEvent(ui::KeyEvent* event);

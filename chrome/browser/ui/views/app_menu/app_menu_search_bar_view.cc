@@ -62,6 +62,9 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
 
   void SetLeadingIcon(LeadingIcon icon);
 
+  [[nodiscard]] base::CallbackListSubscription AddBackPressedCallback(
+      base::RepeatingClosure callback);
+
   bool is_active() const { return is_active_; }
 
   void HandleKeyEvent(ui::KeyEvent* event);
@@ -78,8 +81,7 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
  private:
   void SetTextfieldFocused(bool focused);
 
-  // Clears the query. The resulting text change drives the menu back
-  // to its normal contents.
+  // Notifies `back_pressed_callbacks_`, then clears the query.
   void OnBackPressed();
 
   bool is_active_ = false;
@@ -87,6 +89,7 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
   raw_ptr<views::ImageView> search_icon_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;
   std::unique_ptr<views::EventMonitor> event_monitor_;
+  base::RepeatingClosureList back_pressed_callbacks_;
 };
 
 AppMenuSearchBarView::SearchField::SearchField() {
@@ -176,7 +179,14 @@ void AppMenuSearchBarView::SearchField::SetLeadingIcon(LeadingIcon icon) {
   back_button_->SetVisible(icon == LeadingIcon::kBack);
 }
 
+base::CallbackListSubscription
+AppMenuSearchBarView::SearchField::AddBackPressedCallback(
+    base::RepeatingClosure callback) {
+  return back_pressed_callbacks_.Add(std::move(callback));
+}
+
 void AppMenuSearchBarView::SearchField::OnBackPressed() {
+  back_pressed_callbacks_.Notify();
   SetText(std::u16string());
   SetTextfieldFocused(true);
 }
@@ -272,6 +282,11 @@ void AppMenuSearchBarView::SetText(std::u16string_view text) {
 base::CallbackListSubscription AppMenuSearchBarView::AddTextChangedCallback(
     views::PropertyChangedCallback callback) {
   return search_field_->AddTextChangedCallback(std::move(callback));
+}
+
+base::CallbackListSubscription AppMenuSearchBarView::AddBackPressedCallback(
+    base::RepeatingClosure callback) {
+  return search_field_->AddBackPressedCallback(std::move(callback));
 }
 
 bool AppMenuSearchBarView::is_active_for_testing() const {

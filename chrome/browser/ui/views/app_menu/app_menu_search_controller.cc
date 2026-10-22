@@ -120,6 +120,9 @@ AppMenuSearchController::AppMenuSearchController(
   query_changed_subscription_ =
       search_bar_->AddTextChangedCallback(base::BindRepeating(
           &AppMenuSearchController::OnQueryChanged, base::Unretained(this)));
+  back_pressed_subscription_ =
+      search_bar_->AddBackPressedCallback(base::BindRepeating(
+          &AppMenuSearchController::OnBackPressed, base::Unretained(this)));
 }
 
 AppMenuSearchController::~AppMenuSearchController() = default;
@@ -171,6 +174,16 @@ void AppMenuSearchController::OnQueryChanged() {
   search_bar_->SetLeadingIcon(search_results_
                                   ? AppMenuSearchBarView::LeadingIcon::kBack
                                   : AppMenuSearchBarView::LeadingIcon::kSearch);
+}
+
+void AppMenuSearchController::OnBackPressed() {
+  if (!search_results_) {
+    return;
+  }
+
+  delegate_->RestoreMenu();
+  search_results_.reset();
+  search_bar_->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kSearch);
 }
 
 void AppMenuSearchController::FlattenHierarchyRecursive(

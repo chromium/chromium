@@ -218,4 +218,26 @@ TEST_F(AppMenuSearchBarViewTest, BackPressNotifiesTextChanged) {
   EXPECT_TRUE(search_bar->GetText().empty());
 }
 
+TEST_F(AppMenuSearchBarViewTest, BackPressNotifiesBackPressed) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
+  search_bar->SetText(u"downloads");
+  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
+
+  int notifications = 0;
+  base::CallbackListSubscription subscription =
+      search_bar->AddBackPressedCallback(base::BindLambdaForTesting([&]() {
+        ++notifications;
+        // Runs before the query is cleared.
+        EXPECT_EQ(search_bar->GetText(), u"downloads");
+      }));
+
+  views::test::ButtonTestApi(GetBackButton(search_bar))
+      .NotifyDefaultMouseClick();
+
+  EXPECT_EQ(notifications, 1);
+  EXPECT_TRUE(search_bar->GetText().empty());
+}
+
 }  // namespace

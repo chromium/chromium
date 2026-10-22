@@ -26,6 +26,8 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace {
 
@@ -805,6 +807,25 @@ TEST_F(AppMenuSearchControllerTest, ShortQueryAfterResultsShowsNormalMenu) {
   EXPECT_CALL(delegate_, RestoreMenu());
   search_bar_->SetText(u"New");
   search_bar_->SetText(u"N");
+  EXPECT_FALSE(IsBackButtonVisible());
+}
+
+TEST_F(AppMenuSearchControllerTest, BackPressShowsNormalMenu) {
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .Build());
+  controller_->InitializeSearchIndex();
+
+  testing::InSequence sequence;
+  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull()));
+  EXPECT_CALL(delegate_, RestoreMenu());
+  search_bar_->SetText(u"New");
+  views::test::ButtonTestApi(
+      views::Button::AsButton(search_bar_->GetViewByElementId(
+          AppMenuSearchBarView::kBackButtonElementId)))
+      .NotifyDefaultMouseClick();
+  EXPECT_TRUE(search_bar_->GetText().empty());
   EXPECT_FALSE(IsBackButtonVisible());
 }
 

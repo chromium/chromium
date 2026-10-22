@@ -118,6 +118,9 @@ class AppMenuSearchController {
   // When the query becomes too short to search, has it show the normal menu.
   void OnQueryChanged();
 
+  // Has `delegate_` restore the normal menu again.
+  void OnBackPressed();
+
   // Recursively traverses action and its children to extract searchable leaf
   // items into search_items_, tracking contextual text and category types.
   void FlattenHierarchyRecursive(actions::BaseAction* action,
@@ -160,6 +163,7 @@ class AppMenuSearchController {
   std::unique_ptr<actions::ActionItem> search_results_;
 
   base::CallbackListSubscription query_changed_subscription_;
+  base::CallbackListSubscription back_pressed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_CONTROLLER_H_
