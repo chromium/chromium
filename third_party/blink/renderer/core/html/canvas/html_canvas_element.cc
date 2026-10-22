@@ -881,13 +881,14 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
   canvas_is_clear_ = true;
   gfx::Size old_size = Size();
   gfx::Size new_size(w, h);
+  size_ = new_size;
 
   if (frame_dispatcher_) {
     frame_dispatcher_->Reshape(new_size);
   }
 
   if (IsRenderingContext2D()) {
-    context_->ResetWithSize(size_);
+    context_->ResetWithSize(old_size);
     origin_clean_ = true;
 
     // For Canvas2D, reuse any existing backing buffer rather than dropping and
@@ -898,7 +899,6 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
       return;
     }
 
-    size_ = new_size;
     RenderingContext()->SizeChanged();
 
     ResetLayer();
@@ -908,16 +908,12 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
       context_->RestoreFromInvalidSizeIfNeeded();
     }
   } else if (IsWebGL()) {
-    size_ = new_size;
     context_->Reshape(old_size, new_size);
   } else if (IsWebGPU()) {
-    size_ = new_size;
     context_->Reshape(old_size, new_size);
   } else if (IsImageBitmapRenderingContext()) {
-    size_ = new_size;
     context_->Reshape(old_size, new_size);
   } else {
-    size_ = new_size;
     UpdateMemoryUsage();
 
     CHECK(!context_);
