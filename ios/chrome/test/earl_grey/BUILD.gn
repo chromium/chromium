@@ -19,6 +19,19 @@ source_set("device_check_eg2_tests") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "chrome_test_case_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    ":switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("hooks") {
   testonly = true
   sources = [ "eg_tests_hook.mm" ]

@@ -128,7 +128,10 @@ _signin_eg2tests_deps = [
   "//ios/chrome/browser/signin/model:eg2_tests",
 ]
 
-_smoke_eg2tests_deps = [ "//ios/chrome/test/earl_grey2:eg2_tests" ]
+_smoke_eg2tests_deps = [
+  "//ios/chrome/test/earl_grey:eg2_tests",
+  "//ios/chrome/test/earl_grey2:eg2_tests",
+]
 
 _ui_eg2tests_deps = [
   "//ios/chrome/app/application_delegate:eg2_tests",

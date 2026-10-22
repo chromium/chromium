@@ -285,6 +285,8 @@ void ResetAuthentication() {
 // Tear down called once per test, to close all tabs and menus, and clear the
 // tracked tests accounts. It also makes sure mock authentication is running.
 - (void)tearDown {
+  [[AppLaunchManager sharedManager] removeObserver:self];
+
   if (![ChromeTestCase forceRestartAndWipe]) {
     [self tearDownHelper];
   }
@@ -296,8 +298,6 @@ void ResetAuthentication() {
     [ChromeEarlGrey closeAllExtraWindows];
     [EarlGrey setRootMatcherForSubsequentInteractions:nil];
   }
-
-  [[AppLaunchManager sharedManager] removeObserver:self];
 
   if (_tearDownHandler) {
     _tearDownHandler();

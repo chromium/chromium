@@ -197,9 +197,6 @@ crbug.com/568721888 [ iPhone Simulator ] IncognitoLockSettingTestCase/testChange
 # Gardening suppression 2026-10-05
 crbug.com/570028794 [ Device ] WebDragDropTestCase [ Pass Failure ]
 
-# Gardening suppression 2026-10-06
-crbug.com/570563895 [ Simulator ] SigninCoordinatorTestCase/testSignInDisabledAtStartupWithManagedAccount [ Skip ]
-
 # Gardening suppression 2026-10-12
 crbug.com/572663691 [ iPad Simulator ] HistoryUITestCase/testContextMenuOpenInNewWindow [ Skip ]
 crbug.com/572662973 [ Simulator ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
