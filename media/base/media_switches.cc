@@ -801,6 +801,11 @@ BASE_FEATURE(kMatchSourceAudioChannelLayout, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMediaCapabilitiesQueryGpuFactories,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, MediaCapabilities enforces strict W3C specification checks
+// for single-codec and application/* MIME types in IsValidMimeType().
+BASE_FEATURE(kMediaCapabilitiesStrictMimeTypeValidation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable Media Capabilities with finch-parameters.
 BASE_FEATURE(kMediaCapabilitiesWithParameters,
              base::FEATURE_ENABLED_BY_DEFAULT);
