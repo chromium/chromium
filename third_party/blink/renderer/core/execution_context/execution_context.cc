@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
+#include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
@@ -277,21 +278,31 @@ void ExecutionContext::AddConsoleMessageImpl(
 void ExecutionContext::DispatchErrorEvent(
     ErrorEvent* error_event,
     SanitizeScriptErrors sanitize_script_errors) {
+  if (is_draining_pending_exceptions_) {
+    // Disregard errors reported while draining pending exceptions. This would
+    // help to avoid potential infinite recursion and, given this only
+    // happens with with inspector Runtime domain enabled, somewhat reduces
+    // devtools side effects.
+    return;
+  }
   if (in_dispatch_error_event_) {
     pending_exceptions_.emplace_back(error_event, sanitize_script_errors);
     return;
   }
 
   // First report the original exception and only then all the nested ones.
-  if (!DispatchErrorEventInternal(error_event, sanitize_script_errors))
+  if (!DispatchErrorEventInternal(error_event, sanitize_script_errors)) {
+    base::AutoReset auto_reset(&is_draining_pending_exceptions_, true);
     ExceptionThrown(error_event, sanitize_script_errors);
+  }
 
-  if (pending_exceptions_.empty())
-    return;
-  for (const auto& [pending_event, pending_sanitize] : pending_exceptions_) {
+  base::AutoReset auto_reset(&is_draining_pending_exceptions_, true);
+  auto pending_exceptions = std::move(pending_exceptions_);
+  for (const auto& [pending_event, pending_sanitize] : pending_exceptions) {
     ExceptionThrown(pending_event, pending_sanitize);
   }
-  pending_exceptions_.clear();
+  // Assure handling pending exceptions doesn't add more pending exceptions.
+  CHECK(pending_exceptions_.empty());
 }
 
 bool ExecutionContext::DispatchErrorEventInternal(

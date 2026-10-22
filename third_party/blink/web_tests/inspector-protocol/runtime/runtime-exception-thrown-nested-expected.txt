@@ -1,0 +1,5 @@
+Tests that nested exceptions thrown while reporting an exception to Runtime domain do not crash.
+<no description>
+Error: error listener 1
+Error: error listener 2
+

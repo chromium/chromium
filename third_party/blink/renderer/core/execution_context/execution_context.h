@@ -541,6 +541,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   unsigned circular_sequential_id_;
 
   bool in_dispatch_error_event_;
+  bool is_draining_pending_exceptions_ = false;
   HeapVector<std::pair<Member<ErrorEvent>, SanitizeScriptErrors>>
       pending_exceptions_;
 
