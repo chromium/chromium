@@ -37,10 +37,10 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
@@ -1294,7 +1294,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUISingleCredential) {
 
   ChipController* chip_controller =
       BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetLocationBarView()
+          ->GetLocationBar()
           ->GetChipController();
   ASSERT_NE(chip_controller, nullptr);
   EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
@@ -1327,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIClosingBubbleKeepsChip) {
 
   ChipController* chip_controller =
       BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetLocationBarView()
+          ->GetLocationBar()
           ->GetChipController();
   ASSERT_NE(chip_controller, nullptr);
   ASSERT_TRUE(base::test::RunUntil(
