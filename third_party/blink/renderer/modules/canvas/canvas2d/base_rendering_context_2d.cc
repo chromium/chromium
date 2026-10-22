@@ -1162,10 +1162,6 @@ void BaseRenderingContext2D::OnFlushForImage(
   }
 }
 
-void BaseRenderingContext2D::Reset() {
-  ResetInternal();
-}
-
 std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     FlushReason reason) {
   MemoryManagedPaintRecorder* recorder = Recorder();

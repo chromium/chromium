@@ -172,7 +172,8 @@ void GPUCanvasContext::Reshape(gfx::Size old_size, gfx::Size new_size) {
       return;
     }
   } else {
-    SizeChanged();
+    did_fail_to_create_resource_provider_ = false;
+    resource_provider_.reset();
     Host()->UpdateMemoryUsage();
   }
 
@@ -336,11 +337,6 @@ bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
 
   return swap_buffers_->CopyToVideoFrame(frame_pool, src_buffer,
                                          dst_color_space, std::move(callback));
-}
-
-void GPUCanvasContext::SizeChanged() {
-  did_fail_to_create_resource_provider_ = false;
-  resource_provider_.reset();
 }
 
 scoped_refptr<CanvasResource> GPUCanvasContext::GetResourceForPushFrame(

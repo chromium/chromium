@@ -716,7 +716,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }
   void PageVisibilityChanged() override;
-  void SizeChanged() override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer) override;
   void ClearMarkedCanvasDirty() override { marked_canvas_dirty_ = false; }

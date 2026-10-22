@@ -103,8 +103,6 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   // TODO(junov): handle lost contexts when content is GPU-backed
   void LoseContext(LostContextMode) override {}
 
-  void Reset() override;
-
   base::ByteSize AllocatedBufferSize() const override;
 
   void Stop() override;

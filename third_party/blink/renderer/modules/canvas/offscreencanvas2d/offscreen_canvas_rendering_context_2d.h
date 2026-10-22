@@ -63,7 +63,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   void Stop() final { NOTREACHED(); }
   scoped_refptr<StaticBitmapImage> GetImage() final;
-  void Reset() override;
   void Reshape(gfx::Size old_size, gfx::Size new_size) override;
   // CanvasRenderingContext - ActiveScriptWrappable
   // This method will avoid this class to be garbage collected, as soon as

@@ -2057,12 +2057,6 @@ void WebGLRenderingContextBase::PageVisibilityChanged() {
     GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
 }
 
-void WebGLRenderingContextBase::SizeChanged() {
-  did_fail_to_create_resource_provider_ = false;
-  resource_provider_.reset();
-  cached_snapshot_.reset();
-}
-
 scoped_refptr<StaticBitmapImage>
 WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer) {
@@ -2467,7 +2461,9 @@ void WebGLRenderingContextBase::Reshape(gfx::Size old_size,
       return;
     }
   } else {
-    SizeChanged();
+    did_fail_to_create_resource_provider_ = false;
+    resource_provider_.reset();
+    cached_snapshot_.reset();
     Host()->UpdateMemoryUsage();
     if (old_size == new_size) {
       return;

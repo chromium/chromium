@@ -80,7 +80,6 @@ class GPUCanvasContext : public ScriptWrappable,
       const gfx::ColorSpace& dst_color_space,
       VideoFrameCopyCompletedCallback callback) override;
   void PageVisibilityChanged() override {}
-  void SizeChanged() override;
   bool isContextLost() const override { return false; }
   bool IsComposited() const final { return true; }
   bool IsPaintable() const final { return true; }

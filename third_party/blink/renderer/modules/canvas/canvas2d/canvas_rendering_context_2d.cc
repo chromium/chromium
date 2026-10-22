@@ -1036,12 +1036,6 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
   return canvas()->GetFontSelector();
 }
 
-void CanvasRenderingContext2D::SizeChanged() {
-  ResetBacking();
-  ResetRecorder();
-  did_fail_to_create_backing_ = false;
-}
-
 void CanvasRenderingContext2D::Reshape(gfx::Size old_size, gfx::Size new_size) {
   if (IsHibernating()) {
     CanvasHibernationHandler::ReportHibernationEvent(
@@ -1053,7 +1047,9 @@ void CanvasRenderingContext2D::Reshape(gfx::Size old_size, gfx::Size new_size) {
   set_clear_frame(true);
 
   if (old_size != new_size) {
-    SizeChanged();
+    ResetBacking();
+    ResetRecorder();
+    did_fail_to_create_backing_ = false;
 
     canvas()->ResetLayer();
     Host()->UpdateMemoryUsage();

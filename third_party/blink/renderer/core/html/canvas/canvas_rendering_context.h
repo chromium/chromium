@@ -184,7 +184,6 @@ class CORE_EXPORT CanvasRenderingContext
   // which are being rendered to, just not being displayed in the
   // page.
   virtual void PageVisibilityChanged() = 0;
-  virtual void SizeChanged() {}
   virtual bool isContextLost() const { return true; }
   bool IsContextBeingRestored() const { return is_context_being_restored_; }
   // TODO(fserb): remove AsV8RenderingContext and AsV8OffscreenRenderingContext.
@@ -264,7 +263,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) {
     NOTREACHED();
   }
-  virtual void Reset() {}
   virtual void RestoreFromInvalidSizeIfNeeded() {}
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}
