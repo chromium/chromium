@@ -26,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
     static final String LOADING_RESULT_HISTOGRAM = "Autofill.VirtualCardEnrollBubble.LoadingResult";
 
     private final AutofillVcnEnrollBottomSheetContent mContent;
+    private final AutofillVcnEnrollBottomSheetCoordinator.Delegate mDelegate;
     private final AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
     private final AutofillSheetUiController mUiController;
     private final PropertyModel mModel;
@@ -60,14 +61,19 @@ import java.lang.annotation.RetentionPolicy;
      * Constructs the mediator controller for the virtual card enrollment bottom sheet.
      *
      * @param content The bottom sheet content.
+     * @param delegate The delegate to signal UI flow events to.
      * @param lifecycle A custom lifecycle that ignores page navigations.
+     * @param uiController The controller to use for showing or hiding the content.
+     * @param model The property model for the bottom sheet.
      */
     AutofillVcnEnrollBottomSheetMediator(
             AutofillVcnEnrollBottomSheetContent content,
+            AutofillVcnEnrollBottomSheetCoordinator.Delegate delegate,
             AutofillVcnEnrollBottomSheetLifecycle lifecycle,
             AutofillSheetUiController uiController,
             PropertyModel model) {
         mContent = content;
+        mDelegate = delegate;
         mLifecycle = lifecycle;
         mUiController = uiController;
         mModel = model;
@@ -90,6 +96,7 @@ import java.lang.annotation.RetentionPolicy;
 
     /** Callback for when the user hits the [accept] button. */
     void onAccept() {
+        mDelegate.onAccept();
         mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true);
         mLoadingResult = VirtualCardEnrollmentBubbleResult.ACCEPTED;
         RecordHistogram.recordBooleanHistogram(LOADING_SHOWN_HISTOGRAM, true);
@@ -97,6 +104,7 @@ import java.lang.annotation.RetentionPolicy;
 
     /** Callback for when the user hits the [cancel] button. */
     void onCancel() {
+        mDelegate.onCancel();
         if (mModel.get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE)) {
             mLoadingResult = VirtualCardEnrollmentBubbleResult.CLOSED;
         }

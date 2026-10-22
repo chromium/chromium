@@ -35,6 +35,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AutofillVcnEnrollBottomSheetContent mContent;
+    @Mock private AutofillVcnEnrollBottomSheetCoordinator.Delegate mDelegate;
     @Mock private AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
     @Mock private AutofillSheetUiController mUiController;
     private PropertyModel mModel;
@@ -47,7 +48,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         when(mUiController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator =
                 new AutofillVcnEnrollBottomSheetMediator(
-                        mContent, mLifecycle, mUiController, mModel);
+                        mContent, mDelegate, mLifecycle, mUiController, mModel);
     }
 
     @Test
@@ -74,6 +75,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
 
         assertTrue(mModel.get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE));
         verify(mUiController, times(0)).hideContent(any(), anyBoolean(), anyInt());
+        verify(mDelegate).onAccept();
     }
 
     @Test
@@ -86,6 +88,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
                         eq(mContent),
                         /* animate= */ eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+        verify(mDelegate).onCancel();
     }
 
     @Test

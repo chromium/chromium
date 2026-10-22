@@ -81,11 +81,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties
                                         .ON_ACCEPT_BUTTON_CLICK_ACTION,
-                                () -> onAccept(delegate))
+                                this::onAccept)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties
                                         .ON_CANCEL_BUTTON_CLICK_ACTION,
-                                () -> onCancel(delegate))
+                                this::onCancel)
                         .build();
         mView = new AutofillVcnEnrollBottomSheetView(context);
         PropertyModelChangeProcessor.create(
@@ -99,21 +99,18 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
                 new AutofillVcnEnrollBottomSheetMediator(
                         new AutofillVcnEnrollBottomSheetContent(
                                 mView.mContentView, mView.mScrollView, delegate::onDismiss),
+                        delegate,
                         new AutofillVcnEnrollBottomSheetLifecycle(
                                 layoutStateProvider, tabModelSelectorSupplier),
                         uiController,
                         mModel);
     }
 
-    private void onAccept(Delegate delegate) {
-        // TODO(crbug.com/575904703): Merge the two callbacks in the mediator.
-        delegate.onAccept();
+    private void onAccept() {
         mMediator.onAccept();
     }
 
-    private void onCancel(Delegate delegate) {
-        // TODO(crbug.com/575904703): Merge the two callbacks in the mediator.
-        delegate.onCancel();
+    private void onCancel() {
         mMediator.onCancel();
     }
 
