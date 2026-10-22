@@ -14,6 +14,7 @@ source_set("utils") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/page_action",
+    "//chrome/browser/ui/page_info:about_this_site_icon",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/toolbar/pinned_toolbar",

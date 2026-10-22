@@ -126,9 +126,6 @@ class PageInfoViewFactory {
   // Returns the icon for a button which opens a subpage within page info.
   static const ui::ImageModel GetOpenSubpageIcon();
 
-  // Returns a reference to the vector icon for 'About this site' button.
-  static const gfx::VectorIcon& GetAboutThisSiteVectorIcon();
-
   // Returns the image model for the vector icon.
   static const ui::ImageModel GetImageModel(const gfx::VectorIcon& icon);
 

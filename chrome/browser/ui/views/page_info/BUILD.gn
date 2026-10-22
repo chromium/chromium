@@ -37,6 +37,7 @@ source_set("page_info") {
     "//chrome/browser/lookalikes",
     "//chrome/browser/page_info",
     "//chrome/browser/ui/page_info",
+    "//chrome/browser/ui/page_info:about_this_site_icon",
     "//chrome/browser/ui/views/controls",
     "//components/content_settings/core/common",
     "//components/media_effects",

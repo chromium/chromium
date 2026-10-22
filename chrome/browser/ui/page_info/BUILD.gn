@@ -36,6 +36,23 @@ source_set("page_info") {
   ]
 }
 
+if (!is_android) {
+  # Toolkit agnostic icon set for About This Site.
+  source_set("about_this_site_icon") {
+    sources = [
+      "about_this_site_icon.cc",
+      "about_this_site_icon.h",
+    ]
+    deps = [
+      "//build:branding_buildflags",
+      "//components/vector_icons",
+      "//ui/base:features",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+  }
+}
+
 source_set("impl") {
   sources = [
     "chrome_page_info_delegate.cc",

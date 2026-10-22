@@ -12,13 +12,13 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
+#include "chrome/browser/ui/page_info/about_this_site_icon.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/views/vector_icons.h"
 
 namespace webui_toolbar {
 
@@ -333,13 +333,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
                            : vector_icons::kImageSearchOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowLens;
     case kActionSidePanelShowAboutThisSite:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      CHECK_EQ(icon, &vector_icons::kPageInsightsIcon);
-#else
-      CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
-                           ? views::kInfoIcon
-                           : views::kInfoChromeRefreshOldIcon));
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      CHECK_EQ(icon, &page_info::GetAboutThisSiteIcon());
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowAboutThisSite;
     case kActionSidePanelShowCustomizeChrome:

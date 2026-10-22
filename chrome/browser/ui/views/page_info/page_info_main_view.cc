@@ -15,6 +15,7 @@
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/page_info/about_this_site_icon.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -742,8 +743,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteButton(
             view->GetWidget()->Close();
           },
           this, GURL(info.more_about().url()), info.has_description()),
-      PageInfoViewFactory::GetImageModel(
-          PageInfoViewFactory::GetAboutThisSiteVectorIcon()),
+      PageInfoViewFactory::GetImageModel(page_info::GetAboutThisSiteIcon()),
       title, description, PageInfoViewFactory::GetLaunchIcon());
   about_this_site_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
