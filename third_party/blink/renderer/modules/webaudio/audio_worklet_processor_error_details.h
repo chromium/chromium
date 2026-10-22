@@ -5,81 +5,74 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_PROCESSOR_ERROR_DETAILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_PROCESSOR_ERROR_DETAILS_H_
 
+#include <optional>
+
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 
-// A list of state regarding the error in AudioWorkletProcessor object.
-enum class AudioWorkletProcessorErrorState : unsigned {
-  // The constructor or the process method in the processor has not thrown any
-  // exception.
-  kNoError = 0,
+// Categorizes the failure that stopped an AudioWorkletProcessor. Absence of an
+// error is represented by `std::nullopt` rather than an enum, so every
+// `AudioWorkletProcessorErrorDetails` instance describes an actual error.
+enum class AudioWorkletProcessorErrorState {
+  // The processor could not be constructed: the options failed to deserialize,
+  // the constructor threw, or it did not return an AudioWorkletProcessor.
+  kConstructionError,
 
-  // An exception thrown from the construction failure.
-  kConstructionError = 1,
-
-  // An exception thrown from the process method.
-  kProcessError = 2,
+  // Rendering failed: process() or its property getter threw, or the parameter
+  // data could not be prepared.
+  kProcessError,
 
   // The process property is missing or not callable (e.g. a non-function data
   // property or a getter returning a non-function); reported as a TypeError.
-  kProcessMethodUndefinedError = 3,
+  kProcessMethodUndefinedError,
 };
 
+// Diagnostic details for an AudioWorkletProcessor failure, posted from the
+// worklet or audio thread to the main thread, where AudioWorkletNode turns
+// them into a `processorerror` ErrorEvent. Plain copies are safe to post
+// across threads: `String` is thread-safe. Construct only via Create().
 struct AudioWorkletProcessorErrorDetails {
-  AudioWorkletProcessorErrorState error_state =
-      AudioWorkletProcessorErrorState::kNoError;
-  String error_message = "";
-  String source_url = "";
+  // What V8 reports about a caught exception.
+  struct ScriptException {
+    String message;
+    // Empty when the script resource name is not a string (eval, Function).
+    String source_url;
+    int line_number = 0;
+    int column_number = 0;
+    int char_position = 0;
+  };
+
+  AudioWorkletProcessorErrorState error_state;
+  String error_message;
+  String source_url;
   int line_number = 0;
   int column_number = 0;
   int char_position = 0;
 
-  AudioWorkletProcessorErrorDetails() = default;
+  // Populates `error_message` from `exception->message` when non-empty, or
+  // formats a fallback message for `error_state` from `name` and `reason`.
+  // When `exception` is present, copies its `source_url`, `line_number`,
+  // `column_number`, and `char_position` into the returned details.
+  static AudioWorkletProcessorErrorDetails Create(
+      AudioWorkletProcessorErrorState error_state,
+      const StringView& name,
+      const StringView& reason,
+      std::optional<ScriptException> exception = std::nullopt);
 
+  // Returns the exception captured by `try_catch`, or nullopt when nothing was
+  // caught or V8 provides no message. Must be called on the isolate's thread
+  // while `try_catch` is live.
+  static std::optional<ScriptException> ExtractScriptException(
+      v8::Isolate* isolate,
+      v8::Local<v8::Context> context,
+      const v8::TryCatch& try_catch);
+
+ private:
   AudioWorkletProcessorErrorDetails(AudioWorkletProcessorErrorState error_state,
-                                    const String& error_message,
-                                    const String& source_url,
-                                    int line_number,
-                                    int column_number,
-                                    int char_position)
-      : error_state(error_state),
-        error_message(error_message),
-        source_url(source_url),
-        line_number(line_number),
-        column_number(column_number),
-        char_position(char_position) {}
-
-  // Copy constructor for thread-safe copying
-  AudioWorkletProcessorErrorDetails(
-      const AudioWorkletProcessorErrorDetails& other)
-      : error_state(other.error_state),
-        line_number(other.line_number),
-        column_number(other.column_number),
-        char_position(other.char_position) {
-    DCHECK(!other.error_message.IsNull());
-    DCHECK(!other.source_url.IsNull());
-
-    error_message = String(other.error_message.Impl()->IsolatedCopy());
-    source_url = String(other.source_url.Impl()->IsolatedCopy());
-  }
-
-  // Copy assignment operator for thread-safe copying
-  AudioWorkletProcessorErrorDetails& operator=(
-      const AudioWorkletProcessorErrorDetails& other) {
-    if (this != &other) {
-      DCHECK(!other.error_message.IsNull());
-      DCHECK(!other.source_url.IsNull());
-
-      error_state = other.error_state;
-      error_message = String(other.error_message.Impl()->IsolatedCopy());
-      source_url = String(other.source_url.Impl()->IsolatedCopy());
-      line_number = other.line_number;
-      column_number = other.column_number;
-      char_position = other.char_position;
-    }
-    return *this;
-  }
+                                    String error_message);
 };
 
 }  // namespace blink

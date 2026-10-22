@@ -220,12 +220,6 @@ MessagePort* AudioWorkletNode::port() const {
 void AudioWorkletNode::FireProcessorError(
     const AudioWorkletProcessorErrorDetails& error_details) {
   DCHECK(IsMainThread());
-  DCHECK(error_details.error_state ==
-             AudioWorkletProcessorErrorState::kConstructionError ||
-         error_details.error_state ==
-             AudioWorkletProcessorErrorState::kProcessError ||
-         error_details.error_state ==
-             AudioWorkletProcessorErrorState::kProcessMethodUndefinedError);
   DCHECK(!error_details.error_message.empty());
 
   ErrorEvent* event = ErrorEvent::Create(

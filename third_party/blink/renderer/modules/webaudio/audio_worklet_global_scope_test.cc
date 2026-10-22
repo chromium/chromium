@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -313,7 +314,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
           SerializedScriptValue::NullValue()) {
     std::unique_ptr<OfflineAudioWorkletThread> thread =
         CreateAudioWorkletThread();
-    AudioWorkletProcessorErrorDetails error;
+    std::optional<AudioWorkletProcessorErrorDetails> error;
     base::WaitableEvent waitable_event;
     PostCrossThreadTask(
         *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
@@ -326,7 +327,8 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     waitable_event.Wait();
     thread->Terminate();
     thread->WaitForShutdownForTesting();
-    return error;
+    CHECK(error);
+    return *std::move(error);
   }
 
  private:
@@ -864,7 +866,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
                               SerializedScriptValue::NullValue())
             .value();
     EXPECT_FALSE(processor->Process(input_buses, output_buses, param_data_map));
-    EXPECT_TRUE(processor->hasErrorOccurred());
+    EXPECT_TRUE(processor->error_details().has_value());
     return processor;
   }
 
@@ -910,11 +912,13 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
       SCOPED_TRACE(name);
       AudioWorkletProcessor* processor =
           CreateAndProcessProcessor(global_scope, name);
+      ASSERT_TRUE(processor->error_details().has_value());
       const AudioWorkletProcessorErrorDetails& details =
-          processor->GetErrorDetails();
+          *processor->error_details();
       EXPECT_EQ(details.error_state,
                 AudioWorkletProcessorErrorState::kProcessMethodUndefinedError);
       EXPECT_TRUE(details.error_message.starts_with("TypeError"));
+      EXPECT_TRUE(details.error_message.contains(name));
       EXPECT_TRUE(details.source_url.empty());
       EXPECT_EQ(details.line_number, 0);
       EXPECT_EQ(details.column_number, 0);
@@ -954,15 +958,22 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
         )JS";
     ExpectEvaluateScriptModule(global_scope, source_code, true);
 
-    for (const char* name : {"throwingGetter", "throwingProcess"}) {
-      SCOPED_TRACE(name);
+    struct TestCase {
+      const char* name;
+      const char* expected_message;
+    };
+    for (const TestCase& test_case :
+         {TestCase{"throwingGetter", "process getter threw an error"},
+          TestCase{"throwingProcess", "process threw an error"}}) {
+      SCOPED_TRACE(test_case.name);
       AudioWorkletProcessor* processor =
-          CreateAndProcessProcessor(global_scope, name);
+          CreateAndProcessProcessor(global_scope, test_case.name);
+      ASSERT_TRUE(processor->error_details().has_value());
       const AudioWorkletProcessorErrorDetails& details =
-          processor->GetErrorDetails();
+          *processor->error_details();
       EXPECT_EQ(details.error_state,
                 AudioWorkletProcessorErrorState::kProcessError);
-      EXPECT_FALSE(details.error_message.empty());
+      EXPECT_TRUE(details.error_message.contains(test_case.expected_message));
       EXPECT_EQ(details.source_url, kWorkletScriptUrl);
       EXPECT_GT(details.line_number, 0);
       EXPECT_GT(details.column_number, 0);
@@ -975,7 +986,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
       WorkerThread* thread,
       const String& source_code,
       scoped_refptr<SerializedScriptValue> options,
-      AudioWorkletProcessorErrorDetails* out_error,
+      std::optional<AudioWorkletProcessorErrorDetails>* out_error,
       base::WaitableEvent* wait_event) {
     EXPECT_TRUE(thread->IsCurrentThread());
     auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
@@ -991,9 +1002,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
             "test", channel->port2()->Disentangle(), std::move(options));
     EXPECT_FALSE(result.has_value());
     if (!result.has_value()) {
-      // `AudioWorkletProcessorErrorDetails` copies with isolated strings, so
-      // `*out_error` remains valid after this thread-local `result` dies.
-      *out_error = result.error();
+      *out_error = std::move(result).error();
     }
     wait_event->Signal();
   }

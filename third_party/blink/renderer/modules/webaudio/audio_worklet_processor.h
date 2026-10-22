@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_PROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_PROCESSOR_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_details.h"
@@ -39,14 +41,15 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
   // AudioWorkletNode gets created by user-supplied JS code in the main
   // thread. This factory must not be called by user in
   // AudioWorkletGlobalScope.
-  static AudioWorkletProcessor* Create(ExecutionContext*, ExceptionState&);
+  static AudioWorkletProcessor* Create(ExecutionContext* context,
+                                       ExceptionState& exception_state);
 
-  AudioWorkletProcessor(AudioWorkletGlobalScope*,
+  AudioWorkletProcessor(AudioWorkletGlobalScope* global_scope,
                         const String& name,
-                        MessagePort*);
+                        MessagePort* port);
   ~AudioWorkletProcessor() override;
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor* visitor) const override;
 
   // IDL
   MessagePort* port() const;
@@ -56,24 +59,14 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
                Vector<scoped_refptr<AudioBus>>& outputs,
                const HashMap<String, base::span<const float>>& param_value_map);
 
-  bool hasErrorOccurred() const;
   const String& Name() const { return name_; }
-  const AudioWorkletProcessorErrorDetails& GetErrorDetails() const;
-
-  // Builds error details from the exception captured in `try_catch`. Falls
-  // back to `fallback_message` with no source location when nothing was
-  // caught or V8 provides no message. Must be called on the isolate's thread
-  // while `try_catch` is still live. Never returns null strings so the result
-  // can be copied across threads by AudioWorkletProcessorErrorDetails.
-  static AudioWorkletProcessorErrorDetails ErrorDetailsFromTryCatch(
-      v8::Isolate* isolate,
-      v8::Local<v8::Context> context,
-      const v8::TryCatch& try_catch,
-      AudioWorkletProcessorErrorState error_state,
-      const String& fallback_message);
+  const std::optional<AudioWorkletProcessorErrorDetails>& error_details()
+      const {
+    return error_details_;
+  }
 
  private:
-  void SetErrorDetails(const AudioWorkletProcessorErrorDetails& error_details);
+  void SetErrorDetails(AudioWorkletProcessorErrorDetails error_details);
 
   Member<AudioWorkletGlobalScope> global_scope_;
   Member<MessagePort> processor_port_;
@@ -90,7 +83,7 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
   HeapVector<HeapVector<TraceWrapperV8Reference<v8::ArrayBuffer>>>
       output_array_buffers_;
 
-  AudioWorkletProcessorErrorDetails error_details_;
+  std::optional<AudioWorkletProcessorErrorDetails> error_details_;
 };
 
 }  // namespace blink
