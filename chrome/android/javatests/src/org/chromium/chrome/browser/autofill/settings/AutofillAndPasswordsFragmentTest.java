@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -36,6 +37,7 @@ import android.os.Bundle;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -626,7 +628,12 @@ public class AutofillAndPasswordsFragmentTest {
         // We need to set the testing instance right before the click, otherwise Settings tests
         // don't launch proper fragment to initiate tests.
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
-        onView(withText(titleRes)).perform(scrollTo(), click());
+        // Use RecyclerViewActions to scroll, since Espresso's scrollTo() cannot reach items that
+        // are off-screen and therefore not yet bound in the RecyclerView (e.g. on small or
+        // landscape screens).
+        onView(is(mSettingsTestRule.getFragment().getListView()))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(titleRes))));
+        onView(withText(titleRes)).perform(click());
 
         verify(mSettingsNavigation).startSettings(any(), eq(expectedFragment), any(), eq(true));
     }
