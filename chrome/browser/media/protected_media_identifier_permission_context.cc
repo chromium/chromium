@@ -86,12 +86,13 @@ ProtectedMediaIdentifierPermissionContext::GetContentSettingStatusInternal(
   ContentSetting content_setting = permissions::
       ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
           render_frame_host, requesting_origin, embedding_origin);
-  CHECK(content_setting == CONTENT_SETTING_ALLOW ||
+  // TODO(crbug.com/576042411): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
 #if BUILDFLAG(IS_ANDROID)
-            content_setting == CONTENT_SETTING_ASK ||
+         content_setting == CONTENT_SETTING_ASK ||
 #endif
-            content_setting == CONTENT_SETTING_BLOCK,
-        base::NotFatalUntil::M161);
+         content_setting == CONTENT_SETTING_BLOCK);
 
   // For automated testing of protected content - having a prompt that
   // requires user intervention is problematic. If the domain has been
