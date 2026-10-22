@@ -423,7 +423,7 @@ class WPTGitHubTest(unittest.TestCase):
         pull_request = self.wpt_github.pr_for_chromium_commit(chromium_commit)
         self.assertEqual(pull_request.number, 2)
 
-    def test_pr_for_chromium_commit_multiple_change_ids(self):
+    def test_pr_for_chromium_commit_prefers_last_change_id(self):
         self.wpt_github.all_pull_requests = lambda: [
             PullRequest(
                 'PR1',
@@ -440,8 +440,9 @@ class WPTGitHubTest(unittest.TestCase):
             change_id='I00c0ffee',
             position='refs/heads/master@{#10}',
         )
-        pull_request = self.wpt_github.pr_for_chromium_commit(chromium_commit)
-        self.assertEqual(pull_request.number, 1)
+        self.assertIsNone(
+            self.wpt_github.pr_for_chromium_commit(chromium_commit)
+        )
 
         chromium_commit = MockChromiumCommit(
             MockHost(),

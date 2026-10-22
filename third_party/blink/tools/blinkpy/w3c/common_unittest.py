@@ -3,15 +3,20 @@
 # found in the LICENSE file.
 
 import json
+import textwrap
 import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.w3c.common import (
-    read_credentials,
-    is_testharness_baseline,
+    CHANGE_ID_KEY,
+    LINK_KEY,
+    REVIEWED_ON_KEY,
     is_basename_skipped,
     is_file_exportable,
+    is_testharness_baseline,
+    parse_footers,
+    read_credentials,
 )
 
 
@@ -177,3 +182,50 @@ class CommonTest(unittest.TestCase):
                 '/mock-checkout/' + RELATIVE_WPT_TESTS + 'OWNERS',
                 self.project_config,
             )
+
+    def test_parse_footers(self):
+        message = textwrap.dedent("""\
+            hashtag: Subject
+
+            Body with some text.
+            https://example.com/standalone-url
+
+            Change-Id: I00c0ffee
+            Change-Id: I00decade
+
+            Reviewed-on: https://chromium-review.googlesource.com/123
+            Link: https://example.com/1
+            """)
+        footers = parse_footers(message)
+        self.assertEqual(
+            footers.get(CHANGE_ID_KEY),
+            'I00decade',
+        )
+        # Verify case-insensitive lookups.
+        self.assertEqual(
+            footers.get('change-id'),
+            'I00decade',
+        )
+        self.assertEqual(
+            footers['CHANGE-ID'],
+            'I00decade',
+        )
+        self.assertEqual(
+            footers.get(REVIEWED_ON_KEY),
+            'https://chromium-review.googlesource.com/123',
+        )
+        self.assertEqual(
+            footers.get(LINK_KEY),
+            'https://example.com/1',
+        )
+        # Standalone URLs and subject line Gerrit hashtags are excluded.
+        self.assertNotIn('https', footers)
+        self.assertNotIn('hashtag', footers)
+        self.assertIsNone(footers.get('Nonexistent'))
+
+    def test_parse_footers_empty(self):
+        self.assertEqual(dict(parse_footers('')), {})
+        self.assertEqual(
+            parse_footers('Change-Id: 88').get(CHANGE_ID_KEY),
+            '88',
+        )

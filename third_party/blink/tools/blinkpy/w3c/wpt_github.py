@@ -17,13 +17,14 @@ from requests.exceptions import InvalidURL
 
 from blinkpy.common.memoized import memoized
 from blinkpy.w3c.common import (
+    CHANGE_ID_KEY,
+    EXPORT_PR_LABEL,
+    LEGACY_MAIN_BRANCH_NAME,
+    LINK_KEY,
+    PROVISIONAL_PR_LABEL,
     WPT_GH_ORG,
     WPT_GH_REPO_NAME,
-    EXPORT_PR_LABEL,
-    PROVISIONAL_PR_LABEL,
-    LEGACY_MAIN_BRANCH_NAME,
-    CHANGE_ID_FOOTER,
-    LINK_FOOTER,
+    parse_footers,
 )
 
 _log = logging.getLogger(__name__)
@@ -590,12 +591,8 @@ class GitHubRepo(object):
             return None
         all_prs = self.all_pull_requests()
         for pull_request in all_prs:
-            # Note: Search all 'Change-Id's so that we can manually put multiple
-            # CLs in one PR. (The exporter always creates one PR for each CL.)
-            change_ids = self.extract_metadata(
-                CHANGE_ID_FOOTER, pull_request.body, all_matches=True
-            )
-            if change_ids and target_change_id in change_ids:
+            change_id = parse_footers(pull_request.body).get(CHANGE_ID_KEY)
+            if change_id == target_change_id:
                 return pull_request
         return None
 
@@ -604,25 +601,10 @@ class GitHubRepo(object):
             return None
         all_prs = self.all_pull_requests()
         for pull_request in all_prs:
-            links = self.extract_metadata(
-                LINK_FOOTER, pull_request.body, all_matches=True
-            )
-            if links and target_link in links:
+            link = parse_footers(pull_request.body).get(LINK_KEY)
+            if link == target_link:
                 return pull_request
         return None
-
-    @staticmethod
-    def extract_metadata(tag, commit_body, all_matches=False):
-        values = []
-        for line in commit_body.splitlines():
-            if not line.startswith(tag):
-                continue
-            value = line[len(tag) :]
-            if all_matches:
-                values.append(value)
-            else:
-                return value
-        return values if all_matches else None
 
 
 class WPTGitHub(GitHubRepo):

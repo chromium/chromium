@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import textwrap
 import unittest
 
 from blinkpy.common.host_mock import MockHost
@@ -102,4 +103,123 @@ class ChromiumCommitTest(unittest.TestCase):
         self.assertEqual(
             chromium_commit.url(),
             'https://chromium.googlesource.com/chromium/src/+/c881563d73',
+        )
+
+    def test_change_id_standard(self):
+        host = MockHost()
+
+        def run_command(args):
+            if args[1] == 'footers' and '--position' in args:
+                return 'refs/heads/main@{#789}'
+            if args[1] == 'show' and '--format=%B' in args:
+                return textwrap.dedent("""\
+                    Some commit title
+
+                    Commit description.
+
+                    Change-Id: I0123456789abcdef0123456789abcdef01234567
+                    Reviewed-on: https://chromium-review.googlesource.com/12345
+                    Cr-Commit-Position: refs/heads/main@{#789}
+                    """)
+            return ''
+
+        host.executive = MockExecutive(run_command_fn=run_command)
+        commit = ChromiumCommit(
+            host, sha='c881563d734a86f7d9cd57ac509653a61c45c240'
+        )
+        self.assertEqual(
+            commit.change_id(),
+            'I0123456789abcdef0123456789abcdef01234567',
+        )
+
+    def test_change_id_when_preceding_blank_line(self):
+        host = MockHost()
+
+        def run_command(args):
+            if args[1] == 'footers' and '--position' in args:
+                return 'refs/heads/main@{#789}'
+            if args[1] == 'show' and '--format=%B' in args:
+                return textwrap.dedent("""\
+                    Some commit title
+
+                    Commit description.
+
+                    Bug: 123456
+                    Change-Id: I0123456789abcdef0123456789abcdef01234567
+
+                    Reviewed-on: https://chromium-review.googlesource.com/12345
+                    Cr-Commit-Position: refs/heads/main@{#789}
+                    """)
+            return ''
+
+        host.executive = MockExecutive(run_command_fn=run_command)
+        commit = ChromiumCommit(
+            host, sha='c881563d734a86f7d9cd57ac509653a61c45c240'
+        )
+        self.assertEqual(
+            commit.change_id(),
+            'I0123456789abcdef0123456789abcdef01234567',
+        )
+
+    def test_change_id_prefers_last_occurrence_revert(self):
+        host = MockHost()
+
+        def run_command(args):
+            if args[1] == 'footers' and '--position' in args:
+                return 'refs/heads/main@{#789}'
+            if args[1] == 'show' and '--format=%B' in args:
+                return textwrap.dedent("""\
+                    Revert "Original commit"
+
+                    This reverts commit abcdef.
+
+                    Original change's description:
+                    > Original description
+                    > Bug: 111
+                    > Change-Id: Ioldchangeid0000000000000000000000000000
+                    > Reviewed-on: https://chromium-review.googlesource.com/111
+
+                    Bug: 222
+                    Change-Id: Inewchangeid9999999999999999999999999999
+
+                    Reviewed-on: https://chromium-review.googlesource.com/222
+                    Cr-Commit-Position: refs/heads/main@{#789}
+                    """)
+            return ''
+
+        host.executive = MockExecutive(run_command_fn=run_command)
+        commit = ChromiumCommit(
+            host, sha='c881563d734a86f7d9cd57ac509653a61c45c240'
+        )
+        self.assertEqual(
+            commit.change_id(),
+            'Inewchangeid9999999999999999999999999999',
+        )
+
+    def test_link(self):
+        host = MockHost()
+
+        def run_command(args):
+            if args[1] == 'footers' and '--position' in args:
+                return 'refs/heads/main@{#789}'
+            if args[1] == 'show' and '--format=%B' in args:
+                return textwrap.dedent("""\
+                    Some title
+
+                    Body.
+
+                    Link: https://example.com/link
+
+                    Reviewed-on: https://chromium-review.googlesource.com/12345
+                    Cr-Commit-Position: refs/heads/main@{#789}
+                    """)
+            return ''
+
+        host.executive = MockExecutive(run_command_fn=run_command)
+        commit = ChromiumCommit(
+            host, sha='c881563d734a86f7d9cd57ac509653a61c45c240'
+        )
+        self.assertEqual(
+            commit.link(),
+            'https://example.com/link',
         )

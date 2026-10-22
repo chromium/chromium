@@ -106,9 +106,9 @@ class ChromiumExportableCommitsTest(unittest.TestCase):
                 ],
                 [
                     'git',
-                    'footers',
-                    '--key',
-                    'Change-Id',
+                    'show',
+                    '--format=%B',
+                    '--no-patch',
                     'add087a97844f4b9e307d9a216940582d96db306',
                 ],
             ],

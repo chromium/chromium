@@ -6,7 +6,12 @@ from typing import List, Optional
 
 from blinkpy.common.host import Host
 from blinkpy.common.system.executive import ScriptError
-from blinkpy.w3c.common import is_file_exportable
+from blinkpy.w3c.common import (
+    CHANGE_ID_KEY,
+    LINK_KEY,
+    is_file_exportable,
+    parse_footers,
+)
 
 
 class ChromiumCommit:
@@ -102,13 +107,11 @@ class ChromiumCommit:
 
     def change_id(self) -> str:
         """Returns the Change-Id footer if it is present."""
-        return self._git.run(
-            ['footers', '--key', 'Change-Id', self.sha]
-        ).strip()
+        return parse_footers(self.message()).get(CHANGE_ID_KEY, '')
 
     def link(self) -> str:
         """Returns the Link footer if it is present."""
-        return self._git.run(['footers', '--key', 'Link', self.sha]).strip()
+        return parse_footers(self.message()).get(LINK_KEY, '')
 
     def filtered_changed_files(self) -> List[str]:
         """Returns a list of modified exportable files."""

@@ -5,6 +5,9 @@
 
 import json
 import logging
+import re
+
+from requests.structures import CaseInsensitiveDict
 
 WPT_GH_ORG = 'web-platform-tests'
 WPT_GH_REPO_NAME = 'wpt'
@@ -15,9 +18,12 @@ WPT_GH_SSH_URL_TEMPLATE = 'https://{}@github.com/%s/%s.git' % (
     WPT_GH_ORG,
     WPT_GH_REPO_NAME,
 )
-WPT_REVISION_FOOTER = 'WPT-Export-Revision: '
-CHANGE_ID_FOOTER = 'Change-Id: '
-LINK_FOOTER = 'Link: '
+CHANGE_ID_KEY = 'Change-Id'
+LINK_KEY = 'Link'
+WPT_REVISION_KEY = 'WPT-Export-Revision'
+REVIEWED_ON_KEY = 'Reviewed-on'
+WPT_REVISION_FOOTER = f'{WPT_REVISION_KEY}: '
+_FOOTER_PATTERN = re.compile(r'\s*(?P<key>[\w-]+):\s*(?P<value>.*?)\s*')
 EXPORT_PR_LABEL = 'chromium-export'
 PROVISIONAL_PR_LABEL = 'do not merge yet'
 
@@ -37,6 +43,34 @@ EXPORT_DENYLIST = {
 LEGACY_MAIN_BRANCH_NAME = 'retsam'[::-1]
 
 _log = logging.getLogger(__name__)
+
+
+def parse_footers(message: str) -> CaseInsensitiveDict:
+    """Parse footer key-value pairs from a commit message or PR body.
+
+    Skips the subject line if present (to avoid potential Gerrit hashtags in the
+    subject). When a footer key appears multiple times, the last value takes
+    precedence.
+
+    Unlike `git footers --key`, which terminates backwards scanning at the
+    first blank line and therefore misses footers separated by blank lines
+    (e.g., when authors leave blank lines before landed footers), this
+    function scans across blank lines. It also avoids subprocess overhead.
+
+    Returns:
+        A CaseInsensitiveDict mapping normalized footer keys to their values.
+    """
+    footers = CaseInsensitiveDict()
+    lines = message.splitlines()
+    if len(lines) > 1 and lines[1] == '':
+        lines = lines[2:]
+    for line in lines:
+        if match := _FOOTER_PATTERN.fullmatch(line):
+            key = match.group('key')
+            if key.lower() in {'http', 'https'}:
+                continue
+            footers[key] = match.group('value')
+    return footers
 
 
 def read_credentials(host, credentials_json):

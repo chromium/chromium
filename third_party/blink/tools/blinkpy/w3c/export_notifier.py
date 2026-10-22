@@ -14,7 +14,12 @@ Design doc: https://docs.google.com/document/d/1MtdbUcWBDZyvmV0FOdsTWw_Jv16YtE6K
 import logging
 from typing import Mapping
 
-from blinkpy.w3c.common import CHANGE_ID_FOOTER, WPT_REVISION_FOOTER, WPT_GH_URL
+from blinkpy.w3c.common import (
+    CHANGE_ID_KEY,
+    WPT_GH_URL,
+    WPT_REVISION_KEY,
+    parse_footers,
+)
 from blinkpy.w3c.gerrit import GerritCL, GerritError  # noqa: F401
 from blinkpy.w3c.wpt_github import GitHubError
 
@@ -75,14 +80,12 @@ class ExportNotifier(object):
             if not checks_results:
                 continue
 
-            gerrit_id = self.wpt_github.extract_metadata('Change-Id: ', pr.body)
+            gerrit_id = parse_footers(pr.body).get(CHANGE_ID_KEY)
             if not gerrit_id:
                 _log.warning('Can not retrieve Change-Id for %s.', pr.number)
                 continue
 
-            gerrit_sha = self.wpt_github.extract_metadata(
-                WPT_REVISION_FOOTER, pr.body
-            )
+            gerrit_sha = parse_footers(pr.body).get(WPT_REVISION_KEY)
             prs_by_change_id[gerrit_id] = PRStatusInfo(
                 checks_results, pr.number, gerrit_sha
             )
@@ -91,9 +94,7 @@ class ExportNotifier(object):
         return prs_by_change_id
 
     def notify_gerrit_of_blocked_pr(self, pull_request):
-        change_id = self.wpt_github.extract_metadata(
-            CHANGE_ID_FOOTER, pull_request.body
-        )
+        change_id = parse_footers(pull_request.body).get(CHANGE_ID_KEY)
         if not change_id:
             _log.warning(
                 'Could not find Change-Id for PR #%d', pull_request.number

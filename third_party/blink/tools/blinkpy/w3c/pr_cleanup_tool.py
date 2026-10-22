@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
+from blinkpy.w3c.common import CHANGE_ID_KEY, REVIEWED_ON_KEY, parse_footers
 from blinkpy.w3c.gerrit import GerritAPI, GerritError, GerritNotFoundError
 from blinkpy.w3c.wpt_github import PullRequest
 
@@ -23,9 +24,7 @@ class PrCleanupTool(object):
         for pull_request in pull_requests:
             if pull_request.state != 'open':
                 continue
-            change_id = wpt_github.extract_metadata(
-                'Change-Id: ', pull_request.body
-            )
+            change_id = parse_footers(pull_request.body).get(CHANGE_ID_KEY)
             maybe_cleanup_reason = self._cleanup_reason(gerrit, change_id)
 
             if maybe_cleanup_reason:
@@ -84,6 +83,4 @@ class PrCleanupTool(object):
             'https://github.com/web-platform-tests/wpt/pull/%s',
             pull_request.number,
         )
-        _log.info(
-            wpt_github.extract_metadata('Reviewed-on: ', pull_request.body)
-        )
+        _log.info(parse_footers(pull_request.body).get(REVIEWED_ON_KEY))

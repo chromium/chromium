@@ -11,8 +11,10 @@ from typing import MutableMapping, NamedTuple, Optional, Set, TextIO
 
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.common import (
-    CHANGE_ID_FOOTER,
-    LINK_FOOTER,
+    CHANGE_ID_KEY,
+    REVIEWED_ON_KEY,
+    WPT_REVISION_KEY,
+    parse_footers,
     read_credentials,
 )
 from blinkpy.w3c.chromium_exportable_commits import (
@@ -251,8 +253,8 @@ class TestExporter:
             # If CL already has a corresponding PR, see if we need to update it.
             pr_url = f'{self.github.url}pull/{pull_request.number}'
             _log.info('In-flight PR found: %s', pr_url)
-            pr_cl_revision = self.github.extract_metadata(
-                self.project_config.revision_footer, pull_request.body
+            pr_cl_revision = parse_footers(pull_request.body).get(
+                WPT_REVISION_KEY
             )
             if cl.current_revision_sha == pr_cl_revision:
                 _log.info(
@@ -366,9 +368,7 @@ class TestExporter:
 
         try:
             self.github.merge_pr(pull_request.number)
-            change_id = self.github.extract_metadata(
-                CHANGE_ID_FOOTER, pull_request.body
-            )
+            change_id = parse_footers(pull_request.body).get(CHANGE_ID_KEY)
             if change_id:
                 cl = GerritCL(data={'change_id': change_id}, api=self.gerrit)
                 pr_url = f'{self.github.url}pull/{pull_request.number}'
@@ -433,22 +433,14 @@ class TestExporter:
         # Change-Id can be deleted from the body of an in-flight CL in Chromium
         # (https://crbug.com/gerrit/12244). We need to add it back. And we've
         # asserted that cl.change_id is present in GerritCL.
-        has_change_id = bool(
-            self.github.extract_metadata(CHANGE_ID_FOOTER, commit.message())
-        )
-        has_link = bool(
-            self.github.extract_metadata(LINK_FOOTER, commit.message())
-        )
-        if not has_change_id and not has_link:
+        if not commit.change_id() and not commit.link():
             _log.warn('Adding missing Change-Id back to %s', cl.url)
-            footer += '{}{}\n'.format(CHANGE_ID_FOOTER, cl.change_id)
+            footer += f'{CHANGE_ID_KEY}: {cl.change_id}\n'
         # Reviewed-on footer is not in the git commit message of in-flight CLs,
         # but a link to code review is useful so we add it manually.
-        footer += 'Reviewed-on: {}\n'.format(cl.url)
+        footer += f'{REVIEWED_ON_KEY}: {cl.url}\n'
         # WPT_REVISION_FOOTER is used by the exporter to check the CL revision.
-        footer += '{}{}'.format(
-            self.project_config.revision_footer, cl.current_revision_sha
-        )
+        footer += f'{WPT_REVISION_KEY}: {cl.current_revision_sha}'
 
         if pull_request:
             maybe_event = self.create_or_update_pr_from_commit(

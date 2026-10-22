@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from blinkpy.w3c.wpt_github import MergeError, WPTGitHub
+from blinkpy.w3c.wpt_github import MergeError
 
 
 class MockWPTGitHub(object):
@@ -117,6 +117,3 @@ class MockWPTGitHub(object):
             if change_id in pr.body:
                 return pr
         return None
-
-    def extract_metadata(self, tag, commit_body, all_matches=False):
-        return WPTGitHub.extract_metadata(tag, commit_body, all_matches)
