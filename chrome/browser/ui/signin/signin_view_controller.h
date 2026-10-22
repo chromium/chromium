@@ -108,12 +108,13 @@ class SigninViewController {
   // Returns true if Chrome new tab page/blank is displayed in `contents`.
   static bool IsNTPTab(content::WebContents* contents);
 
-  // Shows a Chrome Sync signin tab. |email_hint| may be empty.
-  // Note: If the user has already set a primary account, then this is
-  // considered a reauth of the primary account, and |email_hint| is ignored.
-  void ShowDiceEnableSyncTab(signin_metrics::AccessPoint access_point,
-                             signin_metrics::PromoAction promo_action,
-                             const std::string& email_hint);
+  // Shows a Chrome signin tab that offers history sync after signin when
+  // appropriate for `access_point`. `email_hint` may be empty.
+  // Note: If the user has already set a syncing primary account, then this is
+  // considered a reauth of the primary account, and `email_hint` is ignored.
+  void ShowEnableHistorySyncTab(signin_metrics::AccessPoint access_point,
+                                signin_metrics::PromoAction promo_action,
+                                const std::string& email_hint);
 
   // Shows the Dice "add account" tab, which adds an account to the browser but
   // does not turn sync on. |email_hint| may be empty.

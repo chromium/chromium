@@ -229,11 +229,11 @@ void ShowReauthForAccount(Profile* profile,
           GetAccountReauthSourceFromAccessPoint(access_point), email,
           base::DoNothing());
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Pass `false` for `enable_sync`, as this function is not expected to start a
-  // sync setup flow after the reauth.
+  // Pass `false` for `enable_history_sync`, as this function is not expected to
+  // start a history sync opt-in flow after the reauth.
   GetSigninUiDelegate()->ShowReauthUI(
       profile, email,
-      /*enable_sync=*/false, access_point,
+      /*enable_history_sync=*/false, access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
 #endif
 }
@@ -250,7 +250,7 @@ void SignInFromSingleAccountPromo(Profile* profile,
   // No account with refresh tokens is present.
   if (account.IsEmpty()) {
     GetSigninUiDelegate()->ShowSigninUI(
-        profile, /*enable_sync=*/false, access_point,
+        profile, /*enable_history_sync=*/false, access_point,
         GetPromoActionForNewAccount(*identity_manager),
         /*extension_name=*/"");
     return;
@@ -278,7 +278,7 @@ void SignInFromSingleAccountPromo(Profile* profile,
   if (needs_reauth_before_signin) {
     GetSigninUiDelegate()->ShowReauthUI(
         profile, account.email,
-        /*enable_sync=*/false, access_point,
+        /*enable_history_sync=*/false, access_point,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
     return;
   }
@@ -320,7 +320,7 @@ void EnableHistorySyncFromMultiAccountPromo(
 
   if (account.IsEmpty()) {
     GetSigninUiDelegate()->ShowSigninUI(
-        profile, /*enable_sync=*/true, access_point,
+        profile, /*enable_history_sync=*/true, access_point,
         GetPromoActionForNewAccount(*identity_manager),
         /*extension_name=*/"");
     return;
@@ -337,13 +337,14 @@ void EnableHistorySyncFromMultiAccountPromo(
           ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
           : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
 
-  bool needs_reauth_before_enable_sync =
+  bool needs_reauth_before_enable_history_sync =
       !identity_manager->HasAccountWithRefreshToken(account.account_id) ||
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account.account_id);
-  if (needs_reauth_before_enable_sync) {
+  if (needs_reauth_before_enable_history_sync) {
     GetSigninUiDelegate()->ShowReauthUI(profile, account.email,
-                                        /*enable_sync=*/true, access_point,
+                                        /*enable_history_sync=*/true,
+                                        access_point,
                                         existing_account_promo_action);
     return;
   }
@@ -554,7 +555,7 @@ void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
     // sign-in. This does not turn on sync, as sync promos are replaced with
     // sign-in promos.
     GetSigninUiDelegate()->ShowSigninUI(
-        profile, /*enable_sync=*/true, access_point,
+        profile, /*enable_history_sync=*/true, access_point,
         GetPromoActionForNewAccount(*identity_manager),
         /*extension_name=*/"");
   } else {

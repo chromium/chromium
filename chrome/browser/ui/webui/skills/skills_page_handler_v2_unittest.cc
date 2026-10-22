@@ -274,7 +274,7 @@ TEST_F(SkillsPageHandlerV2Test, SignInWithPrimaryAccount) {
 
   EXPECT_CALL(
       mock_signin_ui_delegate,
-      ShowReauthUI(profile(), "test@example.com", /*enable_sync=*/false,
+      ShowReauthUI(profile(), "test@example.com", /*enable_history_sync=*/false,
                    signin_metrics::AccessPoint::kSkills,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
 
@@ -288,7 +288,7 @@ TEST_F(SkillsPageHandlerV2Test, SignInWithoutPrimaryAccount) {
       signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
 
   EXPECT_CALL(mock_signin_ui_delegate,
-              ShowSigninUI(profile(), /*enable_sync=*/false,
+              ShowSigninUI(profile(), /*enable_history_sync=*/false,
                            signin_metrics::AccessPoint::kSkills,
                            signin_metrics::PromoAction::
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,

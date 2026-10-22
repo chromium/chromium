@@ -90,7 +90,7 @@ TEST_F(SigninUtilsHandlerTest, StartSignin) {
       signin::ConsentLevel::kSignin));
 
   EXPECT_CALL(mock_signin_ui_delegate,
-              ShowSigninUI(profile(), /*enable_sync=*/true,
+              ShowSigninUI(profile(), /*enable_history_sync=*/true,
                            signin_metrics::AccessPoint::kSettings,
                            signin_metrics::PromoAction::
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
@@ -124,7 +124,7 @@ TEST_F(SigninUtilsHandlerTest, HandleStartSigninManaged) {
 
   EXPECT_CALL(
       mock_signin_ui_delegate,
-      ShowReauthUI(profile(), kManagedEmail, /*enable_sync=*/false,
+      ShowReauthUI(profile(), kManagedEmail, /*enable_history_sync=*/false,
                    signin_metrics::AccessPoint::kSettings,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
 

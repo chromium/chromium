@@ -86,7 +86,7 @@ bool ShouldShowReauthFlowForEmail(Profile* profile, const std::string& email) {
 }  // namespace
 
 void ShowExtensionSigninPrompt(Profile* profile,
-                               bool enable_sync,
+                               bool enable_history_sync,
                                const std::string& email_hint,
                                const std::string& extension_name) {
   if (!CanShowSigninPrompt(profile)) {
@@ -99,7 +99,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
   if (ShouldShowReauthFlowForEmail(profile, email_hint)) {
     // Re-authenticate an existing account.
     GetSigninUiDelegateForExtensions()->ShowReauthUI(
-        profile, email_hint, enable_sync,
+        profile, email_hint, enable_history_sync,
         signin_metrics::AccessPoint::kExtensions,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
     return;
@@ -107,7 +107,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
 
   // Add a new account.
   GetSigninUiDelegateForExtensions()->ShowSigninUI(
-      profile, enable_sync, signin_metrics::AccessPoint::kExtensions,
+      profile, enable_history_sync, signin_metrics::AccessPoint::kExtensions,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       extension_name);
 }

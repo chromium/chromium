@@ -92,7 +92,7 @@ class MockSigninUiDelegate : public SigninUiDelegateImplDice {
               ShowReauthUI,
               (Profile * profile,
                const std::string& email,
-               bool enable_sync,
+               bool enable_history_sync,
                signin_metrics::AccessPoint access_point,
                signin_metrics::PromoAction promo_action),
               (override));
@@ -110,11 +110,11 @@ class SigninUiUtilTest : public SigninBrowserTestBase {
       : delegate_auto_reset_(SetSigninUiDelegateForTesting(&mock_delegate_)) {
     ON_CALL(mock_delegate_, ShowReauthUI)
         .WillByDefault([this](Profile* profile, const std::string& email,
-                              bool enable_sync,
+                              bool enable_history_sync,
                               signin_metrics::AccessPoint access_point,
                               signin_metrics::PromoAction promo_action) {
           mock_delegate_.SigninUiDelegateImplDice::ShowReauthUI(
-              profile, email, enable_sync, access_point, promo_action);
+              profile, email, enable_history_sync, access_point, promo_action);
         });
   }
 
@@ -283,10 +283,10 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
     ExpectNoSigninStartedHistograms(histogram_tester);
     EXPECT_EQ(0, user_action_tester.GetActionCount(
                      "Signin_Signin_FromBookmarkBubble"));
-    EXPECT_CALL(
-        mock_delegate_,
-        ShowReauthUI(browser()->GetProfile(), kMainEmail,
-                     /*enable_sync=*/true, access_point_, promo_action));
+    EXPECT_CALL(mock_delegate_,
+                ShowReauthUI(browser()->GetProfile(), kMainEmail,
+                             /*enable_history_sync=*/true, access_point_,
+                             promo_action));
 
     EnableSync(GetIdentityManager()
                    ->FindExtendedAccountInfoByAccountId(account_id)
@@ -436,8 +436,8 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
 
   EXPECT_CALL(
       mock_delegate_,
-      ShowReauthUI(browser()->GetProfile(), kMainEmail, /*enable_sync=*/false,
-                   access_point_,
+      ShowReauthUI(browser()->GetProfile(), kMainEmail,
+                   /*enable_history_sync=*/false, access_point_,
                    signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT));
   SignIn(GetIdentityManager()
              ->FindExtendedAccountInfoByAccountId(account_id)
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowReauthTab) {
   EXPECT_CALL(
       mock_delegate_,
       ShowReauthUI(browser()->GetProfile(), "foo@example.com",
-                   /*enable_sync=*/false,
+                   /*enable_history_sync=*/false,
                    signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
   signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
@@ -912,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
   EXPECT_CALL(
       mock_delegate_,
       ShowReauthUI(browser()->GetProfile(), "test@email.com",
-                   /*enable_sync=*/false,
+                   /*enable_history_sync=*/false,
                    signin_metrics::AccessPoint::kRecentTabs,
                    signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT));
 

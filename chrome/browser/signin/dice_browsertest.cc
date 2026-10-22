@@ -1354,7 +1354,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignInAfterToken) {
   // Signin using the Chrome Sync endpoint.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kSettings;
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+  SigninViewController::From(browser())->ShowEnableHistorySyncTab(
       access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -1443,7 +1443,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, ProfileSignInBeforeToken) {
       https_server_.GetURL(kEnableSyncURL));
 
   // Signin using the Chrome Sync endpoint.
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+  SigninViewController::From(browser())->ShowEnableHistorySyncTab(
       signin_metrics::AccessPoint::kSettings,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -1554,7 +1554,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserSiginInInterceptionInteractiveTest,
   // Signin using the Chrome Sync endpoint.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kSettings;
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+  SigninViewController::From(browser())->ShowEnableHistorySyncTab(
       access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -1722,7 +1722,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserSigninInterceptionWithAccountPreviewTest,
       DiceTabHelper::SetScopedInterceptionBubbleTimerForTesting(
           base::Milliseconds(100));
 
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+  SigninViewController::From(browser())->ShowEnableHistorySyncTab(
       signin_metrics::AccessPoint::kSettings,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -1843,7 +1843,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
   // Signin from the settings page.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kSettings;
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+  SigninViewController::From(browser())->ShowEnableHistorySyncTab(
       access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -1900,7 +1900,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
   // Signin from the settings page.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kSettings;
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+  SigninViewController::From(browser())->ShowEnableHistorySyncTab(
       access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -1945,7 +1945,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
   // Open the sign-in tab from the settings page but do not complete the signin.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kSettings;
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+  SigninViewController::From(browser())->ShowEnableHistorySyncTab(
       access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -2178,7 +2178,7 @@ IN_PROC_BROWSER_TEST_F(
   // Signin using the Chrome Sync endpoint.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kSettings;
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+  SigninViewController::From(browser())->ShowEnableHistorySyncTab(
       access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -2201,7 +2201,7 @@ IN_PROC_BROWSER_TEST_F(
   // Signin using the Chrome Sync endpoint.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kSettings;
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+  SigninViewController::From(browser())->ShowEnableHistorySyncTab(
       access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());

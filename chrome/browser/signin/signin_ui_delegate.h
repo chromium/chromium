@@ -27,24 +27,24 @@ namespace signin_ui_util {
 class SigninUiDelegate {
  public:
   // Displays a sign-in prompt to the user.
-  // `enable_sync` indicates whether the sync should be enabled after the user
-  // successfully signs in. When this prompt is displayed for extensions, we
-  // also pass the `extension_name`.
+  // `enable_history_sync` indicates whether history sync should be offered
+  // after the user successfully signs in. When this prompt is displayed for
+  // extensions, we also pass the `extension_name`.
   virtual void ShowSigninUI(Profile* profile,
-                            bool enable_sync,
+                            bool enable_history_sync,
                             signin_metrics::AccessPoint access_point,
                             signin_metrics::PromoAction promo_action,
                             const std::string& extension_name) = 0;
 
   // Displays a reauth prompt to the user for an account with indicated `email`.
   // This account should be already known to Chrome.
-  // `enable_sync` indicates whether the sync should be enabled after the user
-  // successfully re-authenticates.
-  // Note: if sync is enabled, `enable_sync` has to be false, as it's not valid
-  // to start a new sync setup flow when sync is already enabled.
+  // `enable_history_sync` indicates whether history sync should be offered
+  // after the user successfully re-authenticates.
+  // Note: if sync is enabled, `enable_history_sync` has to be false, as it's
+  // not valid to start a new setup flow when sync is already enabled.
   virtual void ShowReauthUI(Profile* profile,
                             const std::string& email,
-                            bool enable_sync,
+                            bool enable_history_sync,
                             signin_metrics::AccessPoint access_point,
                             signin_metrics::PromoAction promo_action) = 0;
 

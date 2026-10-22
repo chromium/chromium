@@ -21,7 +21,7 @@ class SigninUiDelegate;
 // Delegates to an existing sign-in tab if one exists. If not, a new sign-in tab
 // is created.
 void ShowExtensionSigninPrompt(Profile* profile,
-                               bool enable_sync,
+                               bool enable_history_sync,
                                const std::string& email_hint,
                                const std::string& extension_name);
 

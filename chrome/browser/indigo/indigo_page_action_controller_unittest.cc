@@ -1465,7 +1465,8 @@ TEST_P(IndigoPageActionControllerTest, InvokeActionTriggerReauthWhenPaused) {
   EXPECT_CALL(
       mock_signin_ui_delegate,
       ShowReauthUI(profile_.get(), "user@example.com",
-                   /*enable_sync=*/false, signin_metrics::AccessPoint::kIndigo,
+                   /*enable_history_sync=*/false,
+                   signin_metrics::AccessPoint::kIndigo,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
 
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);

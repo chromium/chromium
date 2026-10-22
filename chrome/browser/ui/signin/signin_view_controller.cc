@@ -863,7 +863,7 @@ void SigninViewController::ShowDiceSigninTab(
   }
 }
 
-void SigninViewController::ShowDiceEnableSyncTab(
+void SigninViewController::ShowEnableHistorySyncTab(
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action,
     const std::string& email_hint) {

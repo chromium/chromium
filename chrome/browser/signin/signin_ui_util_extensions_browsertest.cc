@@ -57,7 +57,7 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegateImplDice {
               ShowReauthUI,
               (Profile * profile,
                const std::string& email,
-               bool enable_sync,
+               bool enable_history_sync,
                signin_metrics::AccessPoint access_point,
                signin_metrics::PromoAction promo_action),
               ());
@@ -71,11 +71,11 @@ class SigninUiUtilExtensionsTestBase : public ::SigninBrowserTestBase {
             SetSigninUiDelegateForExtensionsTesting(&mock_delegate_)) {
     ON_CALL(mock_delegate_, ShowReauthUI)
         .WillByDefault([this](Profile* profile, const std::string& email,
-                              bool enable_sync,
+                              bool enable_history_sync,
                               signin_metrics::AccessPoint access_point,
                               signin_metrics::PromoAction promo_action) {
           mock_delegate_.SigninUiDelegateImplDice::ShowReauthUI(
-              profile, email, enable_sync, access_point, promo_action);
+              profile, email, enable_history_sync, access_point, promo_action);
         });
   }
 
@@ -99,11 +99,11 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilExtensionsTest, ShowExtensionSigninPrompt) {
 
   Profile* profile = browser()->GetProfile();
   TabStripModel* tab_strip = browser()->GetTabStripModel();
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
+  ShowExtensionSigninPrompt(profile, /*enable_history_sync=*/true,
                             /*email_hint=*/std::string(), kExtensionName);
   EXPECT_EQ(1, tab_strip->count());
   // Calling the function again reuses the tab.
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
+  ShowExtensionSigninPrompt(profile, /*enable_history_sync=*/true,
                             /*email_hint=*/std::string(), kExtensionName);
   EXPECT_EQ(1, tab_strip->count());
 
@@ -113,11 +113,11 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilExtensionsTest, ShowExtensionSigninPrompt) {
                                base::CompareCase::INSENSITIVE_ASCII));
 
   // Changing the parameter opens a new tab.
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+  ShowExtensionSigninPrompt(profile, /*enable_history_sync=*/false,
                             /*email_hint=*/std::string(), kExtensionName);
   EXPECT_EQ(2, tab_strip->count());
   // Calling the function again reuses the tab.
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+  ShowExtensionSigninPrompt(profile, /*enable_history_sync=*/false,
                             /*email_hint=*/std::string(), kExtensionName);
   EXPECT_EQ(2, tab_strip->count());
   tab = tab_strip->GetWebContentsAt(1);
@@ -142,10 +142,10 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilExtensionsTest,
   ASSERT_NE(entry, nullptr);
   entry->LockForceSigninProfile(true);
   TabStripModel* tab_strip = browser()->GetTabStripModel();
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
+  ShowExtensionSigninPrompt(profile, /*enable_history_sync=*/true,
                             /*email_hint=*/std::string(), kExtensionName);
   EXPECT_EQ(1, tab_strip->count());
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+  ShowExtensionSigninPrompt(profile, /*enable_history_sync=*/false,
                             /*email_hint=*/std::string(), kExtensionName);
   EXPECT_EQ(1, tab_strip->count());
 }
@@ -169,10 +169,10 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilExtensionsTest,
   TabStripModel* tab_strip = browser()->GetTabStripModel();
   EXPECT_CALL(
       mock_delegate_,
-      ShowReauthUI(profile, kMainEmail, /*enable_sync=*/false,
+      ShowReauthUI(profile, kMainEmail, /*enable_history_sync=*/false,
                    signin_metrics::AccessPoint::kExtensions,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false, kMainEmail,
+  ShowExtensionSigninPrompt(profile, /*enable_history_sync=*/false, kMainEmail,
                             kExtensionName);
   EXPECT_EQ(1, tab_strip->count());
 
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(DiceSigninUiUtilBrowserTest,
   EXPECT_FALSE(ProfileBrowserCollection::GetForProfile(new_profile)
                    ->GetLastActiveBrowser());
 
-  ShowExtensionSigninPrompt(new_profile, /*enable_sync=*/false,
+  ShowExtensionSigninPrompt(new_profile, /*enable_history_sync=*/false,
                             /*email_hint=*/std::string(), kExtensionName);
   // `ShowExtensionSigninPrompt()` creates a new browser.
   BrowserWindowInterface* browser =
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(DiceSigninUiUtilBrowserTest,
                    ->GetLastActiveBrowser());
 
   // `ShowExtensionSigninPrompt()` does nothing for deleted profile.
-  ShowExtensionSigninPrompt(new_profile, /*enable_sync=*/false,
+  ShowExtensionSigninPrompt(new_profile, /*enable_history_sync=*/false,
                             /*email_hint=*/std::string(), kExtensionName);
   EXPECT_FALSE(ProfileBrowserCollection::GetForProfile(new_profile)
                    ->GetLastActiveBrowser());
