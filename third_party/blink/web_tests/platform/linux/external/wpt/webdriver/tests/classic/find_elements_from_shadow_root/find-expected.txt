@@ -1,8 +1,6 @@
 This is a wdspec test.
 [FAIL] test_no_browsing_context
   assert 200 == 404
-[FAIL] test_no_such_shadow_root_with_element
-  assert 200 == 404
 [FAIL] test_no_such_shadow_root_with_unknown_shadow_root
   AssertionError: assert 'no such element' == 'no such shadow root'
 [FAIL] test_no_such_shadow_root_with_shadow_root_from_other_window_handle

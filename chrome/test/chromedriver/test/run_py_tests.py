@@ -1352,6 +1352,22 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsInstance(result, int)
     self.assertEqual(result, 321)
 
+  def testExecuteScriptWithReplacedGlobalShadowRoot(self):
+    """Tests that replacing global ShadowRoot does not affect serialization"""
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html')
+    )
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    replaced = self._driver.ExecuteScript(
+      'window.ShadowRoot = {};return typeof window.ShadowRoot !== "function";'
+    )
+    self.assertTrue(replaced)
+
+    result = self._driver.ExecuteScript('return arguments[0];', shadow)
+    self.assertIsInstance(result, webshadowroot.WebShadowRoot)
+    self.assertEqual(shadow._id, result._id)
+
   def testExecuteScriptStaleElement1(self):
     # Test the standard compliance of error handling
     div = self._driver.ExecuteScript(

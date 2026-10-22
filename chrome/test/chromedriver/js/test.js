@@ -96,4 +96,5 @@ window.addEventListener('load', function() {
 
 window.cdc_adoQpoasnfa76pfcZLmcfl_Array = window.Array;
 window.cdc_adoQpoasnfa76pfcZLmcfl_Promise = window.Promise;
+window.cdc_adoQpoasnfa76pfcZLmcfl_ShadowRoot = window.ShadowRoot;
 window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol = window.Symbol;

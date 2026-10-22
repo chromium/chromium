@@ -7,6 +7,7 @@
  * @enum {number}
  */
 const StatusCode = {
+  NO_SUCH_ELEMENT: 7,
   STALE_ELEMENT_REFERENCE: 10,
   JAVA_SCRIPT_ERROR: 17,
   NO_SUCH_SHADOW_ROOT: 65,
@@ -20,6 +21,7 @@ const StatusCode = {
 const NodeType = {
   ELEMENT: 1,
   DOCUMENT: 9,
+  DOCUMENT_FRAGMENT: 11,
 };
 
 /**
@@ -27,7 +29,7 @@ const NodeType = {
  * @const
  * @type {string}
  */
-var ELEMENT_KEY = 'ELEMENT';
+const ELEMENT_KEY = 'ELEMENT';
 
 /**
  * Dictionary key to use for holding a shadow element ID.
@@ -54,12 +56,15 @@ const REF_KEYS = [
  */
 var w3cEnabled = false;
 
+const ShadowRootConstructor =
+    window.cdc_adoQpoasnfa76pfcZLmcfl_ShadowRoot || window.ShadowRoot;
+
 /**
  * True if shadow dom is enabled.
  * @const
  * @type {boolean}
  */
-const SHADOW_DOM_ENABLED = typeof ShadowRoot === 'function';
+const SHADOW_DOM_ENABLED = typeof ShadowRootConstructor === 'function';
 
 /**
  * Constructs new error to be thrown with given code and message.
@@ -71,6 +76,37 @@ function newError(message, code) {
   const error = new Error(message);
   error.code = code;
   return error;
+}
+
+/**
+ * Returns whether the node can be deserialized from an element reference.
+ * Documents are accepted because ChromeDriver uses document references when
+ * invoking some of its internal scripts.
+ * @param {*} node The node to inspect.
+ * @return {boolean} True if the node is valid for an element reference.
+ */
+function isElementReferenceNode(node) {
+  try {
+    return node != null &&
+        (node.nodeType == NodeType.ELEMENT ||
+         node.nodeType == NodeType.DOCUMENT);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Returns whether the node can be deserialized from a shadow root reference.
+ * @param {*} node The node to inspect.
+ * @return {boolean} True if the node is a shadow root.
+ */
+function isShadowRootReferenceNode(node) {
+  try {
+    return node != null && node.nodeType == NodeType.DOCUMENT_FRAGMENT &&
+        SHADOW_DOM_ENABLED && node instanceof ShadowRootConstructor;
+  } catch {
+    return false;
+  }
 }
 
 function isNodeReachable(node) {
@@ -99,7 +135,7 @@ function getNodeRoot(node) {
  */
 function getNodeRootThroughAnyShadows(node) {
   let root = getNodeRoot(node);
-  while (SHADOW_DOM_ENABLED && root instanceof ShadowRoot) {
+  while (SHADOW_DOM_ENABLED && root instanceof ShadowRootConstructor) {
     root = getNodeRoot(root.host);
   }
   return root;
@@ -119,12 +155,12 @@ function isElement(value) {
   // frames[0].document.body instanceof Object == false even though
   // typeof(frames[0].document.body) == 'object'.
   try {
-    return ((typeof(value) == 'object' && value != null) ||
-              (typeof(value) == 'function' && value.nodeName &&
-              value.nodeType == NodeType.ELEMENT)) &&
-            (value.nodeType == NodeType.ELEMENT   ||
-             value.nodeType == NodeType.DOCUMENT  ||
-             (SHADOW_DOM_ENABLED && value instanceof ShadowRoot));
+    return ((typeof (value) == 'object' && value != null) ||
+            (typeof (value) == 'function' && value.nodeName &&
+             value.nodeType == NodeType.ELEMENT)) &&
+        (value.nodeType == NodeType.ELEMENT ||
+         value.nodeType == NodeType.DOCUMENT ||
+         (SHADOW_DOM_ENABLED && value instanceof ShadowRootConstructor));
   } catch {
     // OOPIF content window
     return false;
@@ -241,15 +277,15 @@ function preprocessResult(item, seen, nodes) {
     return {};
   if (isElement(item)) {
     if (!isNodeReachable(item)) {
-      if (item instanceof ShadowRoot)
+      if (item instanceof ShadowRootConstructor)
         throw newError('shadow root is detached from the current frame',
             StatusCode.DETACHED_SHADOW_ROOT);
       throw newError('stale element not found in the current frame',
                      StatusCode.STALE_ELEMENT_REFERENCE);
     }
     const ret = {};
-    let key = ELEMENT_KEY;
-    if (item instanceof ShadowRoot) {
+    let key = w3cEnabled ? W3C_ELEMENT_KEY : ELEMENT_KEY;
+    if (item instanceof ShadowRootConstructor) {
       if (!item.nodeType ||
           item.nodeType !== item.DOCUMENT_FRAGMENT_NODE ||
           !item.host) {
@@ -313,9 +349,27 @@ function resolveReferencesRecursive(item, seen, nodes) {
       throw newError('unable to resove node reference. '
           + 'Node index is out of range.', StatusCode.JAVA_SCRIPT_ERROR);
     }
+    const node = nodes[idx];
+    if ((key == W3C_ELEMENT_KEY || key == ELEMENT_KEY) &&
+        !isElementReferenceNode(node)) {
+      throw newError('no such element', StatusCode.NO_SUCH_ELEMENT);
+    }
+    if (key == SHADOW_ROOT_KEY && !isShadowRootReferenceNode(node)) {
+      throw newError('no such shadow root', StatusCode.NO_SUCH_SHADOW_ROOT);
+    }
+    if (!isNodeReachable(node)) {
+      if (key == SHADOW_ROOT_KEY || node instanceof ShadowRootConstructor) {
+        throw newError(
+            'shadow root is detached from the current frame',
+            StatusCode.DETACHED_SHADOW_ROOT);
+      }
+      throw newError(
+          'stale element not found in the current frame',
+          StatusCode.STALE_ELEMENT_REFERENCE);
+    }
     if (key == FRAME_KEY)
-      return nodes[idx].contentWindow;
-    return nodes[idx];
+      return node.contentWindow;
+    return node;
   }
   if (isCollection(item) || typeof item === 'object')
     return cloneWithAlgorithm(item, seen, resolveReferencesRecursive, nodes);
@@ -330,15 +384,6 @@ function resolveReferencesRecursive(item, seen, nodes) {
  * @return {*} Clone of item with status of cloning.
  */
 function resolveReferences(args, nodes) {
-  for (let idx = 0; idx < nodes.length; ++idx) {
-    if (!isNodeReachable(nodes[idx])) {
-      if (nodes[idx] instanceof ShadowRoot)
-        throw newError('shadow root is detached from the current frame',
-            StatusCode.DETACHED_SHADOW_ROOT);
-      throw newError('stale element not found in the current frame',
-                     StatusCode.STALE_ELEMENT_REFERENCE);
-    }
-  }
   return resolveReferencesRecursive(args, [], nodes);
 }
 
@@ -362,7 +407,6 @@ function resolveReferences(args, nodes) {
 function callFunction(func, args, w3c, nodes) {
   if (w3c) {
     w3cEnabled = true;
-    ELEMENT_KEY = W3C_ELEMENT_KEY;
   }
 
   function buildError(error) {

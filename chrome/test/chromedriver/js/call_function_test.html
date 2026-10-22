@@ -27,6 +27,23 @@ function deserialize(serialized) {
   return resolveReferences(JSON.parse(serialized[0]), serialized.slice(1));
 }
 
+function deserializeReference(key, node) {
+  const reference = {};
+  reference[key] = 0;
+  return deserialize([JSON.stringify(reference), node]);
+}
+
+function assertReferenceError(key, node, expectedCode) {
+  let thrown = false;
+  try {
+    deserializeReference(key, node);
+  } catch (e) {
+    thrown = true;
+    assertEquals(expectedCode, e.code);
+  }
+  assert(thrown);
+}
+
 function roundtrip(value) {
   return deserialize(serialize(value));
 }
@@ -84,11 +101,76 @@ function testObjectWithLengthProperty() {
 }
 
 function testDeserializeElementReference() {
-  const original = {};
-  original[ELEMENT_KEY] = 0;
-  const json = JSON.stringify(original);
-  deserialized = deserialize([json, document]);
-  assertEquals(deserialized, document);
+  assertEquals(document,
+               deserializeReference(ELEMENT_KEY, document));
+  assertEquals(document,
+               deserializeReference(W3C_ELEMENT_KEY, document));
+}
+
+function testDeserializeShadowRootAsElementThrows() {
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+
+  assertReferenceError(
+      W3C_ELEMENT_KEY, root, StatusCode.NO_SUCH_ELEMENT);
+  assertReferenceError(
+      ELEMENT_KEY, root, StatusCode.NO_SUCH_ELEMENT);
+
+  document.body.removeChild(host);
+}
+
+function testDeserializeElementAsShadowRootThrows() {
+  const element = document.body.appendChild(document.createElement("div"));
+
+  assertReferenceError(
+      SHADOW_ROOT_KEY, element, StatusCode.NO_SUCH_SHADOW_ROOT);
+
+  document.body.removeChild(element);
+}
+
+function testDeserializeDocumentFragmentAsShadowRootThrows() {
+  const fragment = document.createDocumentFragment();
+
+  assertReferenceError(
+      SHADOW_ROOT_KEY, fragment, StatusCode.NO_SUCH_SHADOW_ROOT);
+}
+
+function testShadowRootWithReplacedShadowRootConstructor() {
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const originalShadowRoot = window.ShadowRoot;
+  try {
+    window.ShadowRoot = {};
+    assert(window.ShadowRoot != originalShadowRoot);
+    assertEquals(root, roundtrip(root));
+  } finally {
+    window.ShadowRoot = originalShadowRoot;
+    document.body.removeChild(host);
+  }
+}
+
+function testReferenceTypeErrorPrecedesDetachedError() {
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  document.body.removeChild(host);
+
+  assertReferenceError(
+      W3C_ELEMENT_KEY, root, StatusCode.NO_SUCH_ELEMENT);
+  assertReferenceError(
+      SHADOW_ROOT_KEY, host, StatusCode.NO_SUCH_SHADOW_ROOT);
+}
+
+function testDeserializeElementWithReplacedElementConstructor() {
+  const element = document.body.appendChild(document.createElement("div"));
+  const originalElement = window.Element;
+  try {
+    window.Element = function() {};
+    assert(window.Element != originalElement);
+    assertEquals(element, deserializeReference(W3C_ELEMENT_KEY, element));
+  } finally {
+    window.Element = originalElement;
+    document.body.removeChild(element);
+  }
 }
 
 function testDeserializeNegativeIndexThrows() {
