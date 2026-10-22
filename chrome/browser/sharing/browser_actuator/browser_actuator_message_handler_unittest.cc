@@ -15,14 +15,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/test_support/fake_proto_stream_server.h"
 #include "components/browser_actuator/internal/transport/test_support/wait_for.h"
-#include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/payload_type_mapping.h"
@@ -30,9 +29,10 @@
 #include "components/browser_actuator/public/transport/transport_handler.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
+#include "components/browser_actuator/public/transport/transport_service.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
 #include "components/browser_actuator/public/transport/transport_session_registry.h"
-#include "components/browser_actuator/test_support/mock_browser_actuator_service.h"
+#include "components/browser_actuator/test_support/transport/mock_transport_service.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/sharing_message/fake_sharing_handler_registry.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
@@ -62,23 +62,23 @@ class BrowserActuatorMessageHandlerTest : public testing::Test {
 
   void SetUp() override {
     // Install the mock before the profile exists: KeyedServices created with
-    // the profile (such as ActorKeyedService) look up BrowserActuatorService
-    // at construction and again at shutdown, and must see the same instance.
+    // the profile (such as ActorKeyedService) look up TransportService at
+    // construction and again at shutdown, and must see the same instance.
     profile_ =
         TestingProfile::Builder()
             .AddTestingFactory(
-                browser_actuator::BrowserActuatorServiceFactory::GetInstance(),
+                browser_actuator::transport::TransportServiceFactory::
+                    GetInstance(),
                 base::BindRepeating([](content::BrowserContext* context)
                                         -> std::unique_ptr<KeyedService> {
                   return std::make_unique<
-                      browser_actuator::MockBrowserActuatorService>();
+                      browser_actuator::transport::MockTransportService>();
                 }))
             .Build();
-    mock_service_ = static_cast<browser_actuator::MockBrowserActuatorService*>(
-        browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
-            profile_.get()));
-    EXPECT_CALL(*mock_service_, IsInitialized())
-        .WillRepeatedly(testing::Return(true));
+    mock_service_ =
+        static_cast<browser_actuator::transport::MockTransportService*>(
+            browser_actuator::transport::TransportServiceFactory::GetForProfile(
+                profile_.get()));
 
     handler_ = std::make_unique<BrowserActuatorMessageHandler>(profile_.get());
   }
@@ -87,7 +87,7 @@ class BrowserActuatorMessageHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<browser_actuator::MockBrowserActuatorService> mock_service_;
+  raw_ptr<browser_actuator::transport::MockTransportService> mock_service_;
   std::unique_ptr<BrowserActuatorMessageHandler> handler_;
 };
 
@@ -301,7 +301,7 @@ TEST_F(BrowserActuatorMessageHandlerTest,
 // End-to-end integration test: verifies that when an FCM
 // `gcm::IncomingMessage` carrying a `SharingMessage` arrives at
 // `SharingFCMHandler`, `BrowserActuatorMessageHandler` provisions the real
-// `BrowserActuatorService`, starts the downstream transport channel, and sends
+// `TransportService`, starts the downstream transport channel, and sends
 // the `StartSessionAck` upstream.
 class BrowserActuatorFcmIntegrationTest : public testing::Test {
  protected:
@@ -421,8 +421,8 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
       upstream_msg.typed_payloads(0).proto_payload().value()));
   EXPECT_TRUE(ack_cmd.has_start_session_ack());
 
-  auto* service =
-      browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+  browser_actuator::transport::TransportService* service =
+      browser_actuator::transport::TransportServiceFactory::GetForProfile(
           profile_.get());
   ASSERT_NE(service, nullptr);
   EXPECT_NE(service->GetStreamRecorderFactory(), nullptr);
@@ -488,15 +488,15 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
        FcmGlicExperimentalTriggeringStartsChannelAndSendsUpstreamReply) {
   browser_actuator::transport::FakeProtoStreamServer stream_server(
       &test_url_loader_factory_, browser_actuator::GetWatchSessionsEndPoint());
-  auto* service =
-      browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+  browser_actuator::transport::TransportService* service =
+      browser_actuator::transport::TransportServiceFactory::GetForProfile(
           profile_.get());
   ASSERT_NE(service, nullptr);
   EchoTriggeringFactory triggering_factory;
   service->GetChannel()->GetHandlerFactoryRegistry()->RegisterFactory(
       &triggering_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
-      [](browser_actuator::BrowserActuatorService* s,
+      [](browser_actuator::transport::TransportService* s,
          browser_actuator::transport::TransportHandlerFactory* f) {
         s->GetChannel()->GetHandlerFactoryRegistry()->UnregisterFactory(f);
       },

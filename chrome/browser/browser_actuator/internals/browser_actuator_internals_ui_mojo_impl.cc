@@ -9,10 +9,10 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
-#include "components/browser_actuator/public/browser_actuator_service.h"
+#include "components/browser_actuator/public/transport/transport_service.h"
 
 namespace browser_actuator {
 
@@ -70,10 +70,11 @@ void BrowserActuatorInternalsUIMojoImpl::ExportSessionHistory(
 
 const transport::SessionStreamRecorderFactory*
 BrowserActuatorInternalsUIMojoImpl::GetRecorderFactory() const {
-  BrowserActuatorService* service =
-      profile_ ? BrowserActuatorServiceFactory::GetForProfile(profile_)
+  transport::TransportService* transport_service =
+      profile_ ? transport::TransportServiceFactory::GetForProfile(profile_)
                : nullptr;
-  return service ? service->GetStreamRecorderFactory() : nullptr;
+  return transport_service ? transport_service->GetStreamRecorderFactory()
+                           : nullptr;
 }
 
 }  // namespace browser_actuator

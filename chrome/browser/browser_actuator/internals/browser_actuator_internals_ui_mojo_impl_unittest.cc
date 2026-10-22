@@ -14,15 +14,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals.mojom.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
-#include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport/common.h"
+#include "components/browser_actuator/public/transport/transport_service.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -78,12 +78,12 @@ class BrowserActuatorInternalsUIMojoImplTest : public testing::Test {
   }
 
   void RecordStartSessionCommand(std::string_view session_id) {
-    BrowserActuatorService* service =
-        BrowserActuatorServiceFactory::GetForProfile(profile_.get());
-    ASSERT_NE(service, nullptr);
+    transport::TransportService* transport_service =
+        transport::TransportServiceFactory::GetForProfile(profile_.get());
+    ASSERT_NE(transport_service, nullptr);
 
     transport::TransportSession* session =
-        service->GetOrCreateSession(session_id);
+        transport_service->GetOrCreateSession(session_id);
     ASSERT_NE(session, nullptr);
 
     ControlCommand command;

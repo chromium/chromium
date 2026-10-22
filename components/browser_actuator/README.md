@@ -13,8 +13,7 @@ and internal implementations.
   interface (`BrowserActuatorService`), allowing embedders (e.g., `//chrome`,
   `//ios`) to consume the service without depending on internal implementation
   details.
-* `internal/`: The service implementation, which reaches the transport
-  through `TransportService`.
+* `internal/`: The service implementation (`BrowserActuatorServiceImpl`).
 * `test_support/`: Fakes, mocks, and test utilities for unit and browser
   integration testing.
 

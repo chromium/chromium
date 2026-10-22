@@ -14,7 +14,6 @@ source_set("factory") {
 
   deps = [
     "//base",
-    "//chrome/browser/browser_actuator/transport",
     "//chrome/browser/profiles:profile",
     "//components/browser_actuator/internal",
     "//components/browser_actuator/public",

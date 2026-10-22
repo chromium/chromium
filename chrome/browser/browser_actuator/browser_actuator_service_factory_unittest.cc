@@ -65,30 +65,4 @@ TEST_F(BrowserActuatorServiceFactoryTest, ReturnsNullInGuest) {
   EXPECT_EQ(nullptr, service);
 }
 
-TEST_F(BrowserActuatorServiceFactoryTest,
-       CreatesRecorderFactoryWhenInternalsEnabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kBrowserActuator, kBrowserActuatorInternals},
-      /*disabled_features=*/{});
-  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
-
-  BrowserActuatorService* service =
-      BrowserActuatorServiceFactory::GetForProfile(profile.get());
-  ASSERT_NE(nullptr, service);
-  EXPECT_NE(nullptr, service->GetStreamRecorderFactory());
-}
-
-TEST_F(BrowserActuatorServiceFactoryTest,
-       NoRecorderFactoryWhenInternalsDisabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kBrowserActuator},
-      /*disabled_features=*/{kBrowserActuatorInternals});
-  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
-
-  BrowserActuatorService* service =
-      BrowserActuatorServiceFactory::GetForProfile(profile.get());
-  ASSERT_NE(nullptr, service);
-  EXPECT_EQ(nullptr, service->GetStreamRecorderFactory());
-}
-
 }  // namespace browser_actuator

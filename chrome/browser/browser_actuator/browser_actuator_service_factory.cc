@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browser_actuator/internal/browser_actuator_service_impl.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
@@ -33,9 +32,7 @@ BrowserActuatorService* BrowserActuatorServiceFactory::GetForProfile(
 
 BrowserActuatorServiceFactory::BrowserActuatorServiceFactory()
     : ProfileKeyedServiceFactory("BrowserActuatorService",
-                                 ProfileSelections::BuildForRegularProfile()) {
-  DependsOn(transport::TransportServiceFactory::GetInstance());
-}
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 BrowserActuatorServiceFactory::~BrowserActuatorServiceFactory() = default;
 
@@ -46,9 +43,7 @@ BrowserActuatorServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<BrowserActuatorServiceImpl>(
-      transport::TransportServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context)));
+  return std::make_unique<BrowserActuatorServiceImpl>();
 }
 
 }  // namespace browser_actuator
