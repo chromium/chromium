@@ -209,9 +209,11 @@ config("ios_dynamic_flags") {
   # The path to the Swift compatibility libraries (required to run code built
   # with version N of the SDK on older version of the OS) is relative to the
   # toolchains directory and changes with the environment when using the
-  # system toolchain. When using the hermetic swift toolchain instead, those
-  # libraries are relative to $swift_toolchain_path.
-  if (swift_toolchain_path == "") {
+  # system toolchain. When using the hermetic macOS swift toolchain instead,
+  # those libraries are relative to $swift_toolchain_path. On non-macOS hosts,
+  # $swift_toolchain_path holds only Linux host binaries, and the target
+  # libraries stay in $ios_toolchains_path.
+  if (swift_toolchain_path == "" || host_os != "mac") {
     _swift_compatibility_libs_prefix = ios_toolchains_path
   } else {
     _swift_compatibility_libs_prefix = swift_toolchain_path
@@ -371,7 +373,7 @@ if (enable_swift_cxx_interop) {
 }
 
 config("swift_cxx_interop_includes") {
-  if (swift_toolchain_path == "") {
+  if (swift_toolchain_path == "" || host_os != "mac") {
     _swift_compatibility_libs_prefix = ios_toolchains_path
   } else {
     _swift_compatibility_libs_prefix = swift_toolchain_path
