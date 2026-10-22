@@ -56,11 +56,9 @@ import java.util.function.Function;
 class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     // Use weak references to ensure that caching this object on the client side doesn’t prevent the
     // WebView from being garbage collected.
-    private final WeakReference<WebView> mWebView;
     private final WeakReference<SharedWebViewChromium> mSharedWebViewChromium;
 
     public SupportLibWebViewChromium(WebView webView) {
-        mWebView = new WeakReference<>(webView);
         var sharedWebViewChromium = WebkitToSharedGlueConverter.getSharedWebViewChromium(webView);
         mSharedWebViewChromium = new WeakReference<>(sharedWebViewChromium);
         // SupportLibWebViewChromium is created lazily, so its construction implies the use of an
@@ -140,15 +138,15 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                 TraceEvent.scoped("WebView.APICall.AndroidX.ADD_WEB_MESSAGE_LISTENER")) {
             recordApiCall(ApiCall.ADD_WEB_MESSAGE_LISTENER);
             SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
-            WebView webView = mWebView.get();
-            if (sharedWebViewChromium == null || webView == null) {
+            if (sharedWebViewChromium == null) {
                 throw new IllegalStateException(
                         "Support lib method called on WebView that no longer exists.");
             }
             sharedWebViewChromium.addWebMessageListener(
                     jsObjectName,
                     allowedOriginRules,
-                    new SupportLibWebMessageListenerAdapter(webView, listener));
+                    new SupportLibWebMessageListenerAdapter(
+                            sharedWebViewChromium.getAwContents(), listener));
         }
     }
 
@@ -176,15 +174,15 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                 TraceEvent.scoped("WebView.APICall.AndroidX.ADD_WEB_MESSAGE_LISTENER_WITH_WORLD")) {
             recordApiCall(ApiCall.ADD_WEB_MESSAGE_LISTENER_WITH_WORLD);
             SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
-            WebView webView = mWebView.get();
-            if (sharedWebViewChromium == null || webView == null) {
+            if (sharedWebViewChromium == null) {
                 throw new IllegalStateException(
                         "Support lib method called on WebView that no longer exists.");
             }
             sharedWebViewChromium.addWebMessageListener(
                     jsObjectName,
                     allowedOriginRules,
-                    new SupportLibWebMessageListenerAdapter(webView, listener),
+                    new SupportLibWebMessageListenerAdapter(
+                            sharedWebViewChromium.getAwContents(), listener),
                     worldName);
         }
     }

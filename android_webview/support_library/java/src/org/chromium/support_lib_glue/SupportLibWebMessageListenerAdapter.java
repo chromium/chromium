@@ -7,6 +7,7 @@ package org.chromium.support_lib_glue;
 import android.net.Uri;
 import android.webkit.WebView;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.common.Lifetime;
@@ -18,6 +19,7 @@ import org.chromium.support_lib_boundary.WebMessageListenerBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_boundary.util.Features;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
@@ -31,13 +33,13 @@ import java.lang.reflect.Proxy;
 class SupportLibWebMessageListenerAdapter implements WebMessageListener {
     private static final String TAG = "WebMsgLtrAdptr";
 
-    private final WebView mWebView;
+    private final WeakReference<AwContents> mAwContentsRef;
     private final WebMessageListenerBoundaryInterface mImpl;
     private final String[] mSupportedFeatures;
 
     public SupportLibWebMessageListenerAdapter(
-            WebView webView, /* WebMessageListener */ InvocationHandler handler) {
-        mWebView = webView;
+            AwContents awContents, /* WebMessageListener */ InvocationHandler handler) {
+        mAwContentsRef = new WeakReference<>(awContents);
         mImpl =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                         WebMessageListenerBoundaryInterface.class, handler);
@@ -56,6 +58,9 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
             final boolean isMainFrame,
             final JsReplyProxy replyProxy,
             final MessagePort[] ports) {
+        AwContents awContents = mAwContentsRef.get();
+        if (awContents == null) return;
+
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_MESSAGE_LISTENER)) {
             Log.e(TAG, "The AndroidX doesn't have feature: " + Features.WEB_MESSAGE_LISTENER);
@@ -64,7 +69,7 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
 
         if (supportsPayloadType(payload.getType())) {
             mImpl.onPostMessage(
-                    mWebView,
+                    (WebView) awContents.getPrimaryContainerView(),
                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                             new SupportLibWebMessageAdapter(payload, ports)),
                     sourceOrigin,
