@@ -615,7 +615,7 @@ void ExclusionSpaceInternal::DerivedGeometry::Add(
                                    ? LayoutUnit::Max()
                                    : shelf_copy->line_right;
 
-        shelves_.insert(i + 1, new_shelf);
+        shelves_.insert(i + 1, std::move(new_shelf));
       }
 
       // It's safe to early exit out of this loop now. This exclusion won't
