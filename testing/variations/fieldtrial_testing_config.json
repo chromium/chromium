@@ -7502,6 +7502,21 @@
             ]
         }
     ],
+    "EnumerateDevicesUseNameInDeviceComparison": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "EnumerateDevicesUseNameInDeviceComparison"
+                    ]
+                }
+            ]
+        }
+    ],
     "EraseLegacyQueueOnDataLoss": [
         {
             "platforms": [
