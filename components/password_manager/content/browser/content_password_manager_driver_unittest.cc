@@ -340,8 +340,6 @@ TEST_F(ContentPasswordManagerDriverTest, ClearPasswordsOnAutofill) {
 TEST_F(ContentPasswordManagerDriverTest, SetFrameAndFormMetaDataOfForm) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
 
-  std::unique_ptr<ContentPasswordManagerDriver> driver(
-      new ContentPasswordManagerDriver(main_rfh(), &password_manager_client_));
   autofill::FormData form;
   autofill::FormData form2 = GetFormWithFrameAndFormMetaData(main_rfh(), form);
 
