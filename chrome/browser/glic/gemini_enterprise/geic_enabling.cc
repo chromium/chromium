@@ -122,29 +122,6 @@ base::expected<GURL, GuestUrlError> GetPolicyGuestUrl(
              : base::unexpected(GuestUrlError::kUnset);
 }
 
-GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
-  if (!IsGeicEnabledByFeature()) {
-    return GURL();
-  }
-
-  const base::expected<GURL, GuestUrlError> candidates[] = {
-      ToGuestUrl(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kGeicGuestURLSwitch)),
-      GetPolicyGuestUrl(browser_context),
-      ToGuestUrl(features::kGeicGuestURL.Get()),
-  };
-  // The first set candidate wins, even if it is invalid, so that an invalid
-  // higher-priority source doesn't silently fall through.
-  auto it = std::ranges::find_if(
-      candidates, [](const base::expected<GURL, GuestUrlError>& candidate) {
-        return candidate.has_value() ||
-               candidate.error() != GuestUrlError::kUnset;
-      });
-  return it != std::end(candidates) && it->has_value()
-             ? CanonicalizeGuestUrl(it->value())
-             : GURL();
-}
-
 // Returns the GEiC config for `browser_context`, resolving and latching it on
 // the first call. Both enabled and disabled results are latched, so the answer
 // does not change for the lifetime of `browser_context`.
@@ -175,6 +152,29 @@ bool IsGeicEnabled(content::BrowserContext* browser_context) {
 
 GURL GetGeicGuestUrl(content::BrowserContext* browser_context) {
   return GetOrLatchConfig(browser_context).guest_url;
+}
+
+GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
+  if (!IsGeicEnabledByFeature()) {
+    return GURL();
+  }
+
+  const base::expected<GURL, GuestUrlError> candidates[] = {
+      ToGuestUrl(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kGeicGuestURLSwitch)),
+      GetPolicyGuestUrl(browser_context),
+      ToGuestUrl(features::kGeicGuestURL.Get()),
+  };
+  // The first set candidate wins, even if it is invalid, so that an invalid
+  // higher-priority source doesn't silently fall through.
+  auto it = std::ranges::find_if(
+      candidates, [](const base::expected<GURL, GuestUrlError>& candidate) {
+        return candidate.has_value() ||
+               candidate.error() != GuestUrlError::kUnset;
+      });
+  return it != std::end(candidates) && it->has_value()
+             ? CanonicalizeGuestUrl(it->value())
+             : GURL();
 }
 
 }  // namespace geic

@@ -21,10 +21,17 @@ source_set("request_headers") {
   deps = [ "//services/network/public/mojom" ]
 }
 
-# The Glic provider enum. Kept free of Glic dependencies so that low-level
-# helpers can use it.
+# The per-profile Glic provider and its latch. Kept free of Glic dependencies so
+# that low-level helpers can read the latched provider. The latch is populated
+# by GlicProviderLatchFactory in //chrome/browser/glic:impl.
 source_set("provider") {
   # Feature code outside Glic should use GlicKeyedService::provider_spec().
   visibility = [ "//chrome/browser/glic/*" ]
-  sources = [ "glic_provider.h" ]
+  sources = [
+    "glic_provider.h",
+    "glic_provider_latch.cc",
+    "glic_provider_latch.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//content/public/browser" ]
 }

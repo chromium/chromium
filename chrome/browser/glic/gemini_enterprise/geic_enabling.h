@@ -56,6 +56,12 @@ bool IsGeicEnabled(content::BrowserContext* browser_context);
 // 3. Finch parameter `features::kGeicGuestURL`.
 GURL GetGeicGuestUrl(content::BrowserContext* browser_context);
 
+// Like `GetGeicGuestUrl()`, but resolves the URL from the current configuration
+// on every call, without reading or writing the latch.
+// `GlicProviderLatchFactory` calls this when a profile's keyed services are
+// created.
+GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context);
+
 }  // namespace geic
 
 #endif  // CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_ENABLING_H_

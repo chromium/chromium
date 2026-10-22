@@ -7,13 +7,16 @@ include_rules = [
   # geic_enabling is a GLiC-internal helper rather than a general purpose
   # enablement check; see the comment in geic_enabling.h. Callers should go
   # through GLiC's enablement utilities instead. The allowlist lives in
-  # chrome/browser/glic/host/DEPS; please loop in the GEiC owners before adding
+  # specific_include_rules below; please loop in the GEiC owners before adding
   # to it.
   "-chrome/browser/glic/gemini_enterprise/geic_enabling.h",
 ]
 
 specific_include_rules = {
   "glic_provider_spec_impl\\.cc": [
+    "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
+  ],
+  "glic_provider_latch_factory\\.cc": [
     "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
   ],
   "glic_actor_attempt_otp_filling_.*": [
