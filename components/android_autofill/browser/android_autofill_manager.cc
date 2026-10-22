@@ -390,6 +390,24 @@ void AndroidAutofillManager::FillOrPreviewField(
 }
 
 void AndroidAutofillManager::StartNewLoggingSession() {
+  address_logger_.reset();
+  postal_address_logger_.reset();
+  email_only_logger_.reset();
+  loyalty_card_logger_.reset();
+  payments_logger_.reset();
+  password_logger_.reset();
+  // There is nothing to measure if Android Autofill is disabled. Unlike
+  // `GetAutofillProvider()`, this doesn't require `rfh` to be active, because
+  // prerendered pages aren't reset when they're activated.
+  if (auto* rfh =
+          static_cast<ContentAutofillDriver&>(driver()).render_frame_host()) {
+    if (auto* web_contents = content::WebContents::FromRenderFrameHost(rfh)) {
+      if (auto* provider = AutofillProvider::FromWebContents(web_contents);
+          provider && provider->IsAutofillDisabled()) {
+        return;
+      }
+    }
+  }
   address_logger_ = std::make_unique<AndroidFormEventLogger>("Address");
   postal_address_logger_ =
       std::make_unique<AndroidFormEventLogger>("PostalAddress");

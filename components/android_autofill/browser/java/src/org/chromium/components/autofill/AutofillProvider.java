@@ -997,6 +997,15 @@ public class AutofillProvider {
         mRequest = null;
     }
 
+    /**
+     * Returns whether Android Autofill is known to be disabled. Doesn't create the framework
+     * wrapper, so this returns false if it hasn't been created yet.
+     */
+    @CalledByNative
+    public boolean isAutofillDisabled() {
+        return mAutofillManager != null && mAutofillManager.isDisabled();
+    }
+
     @NativeMethods
     @VisibleForTesting
     public interface Natives {

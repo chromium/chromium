@@ -111,6 +111,10 @@ class AndroidAutofillProviderBridge {
 
   // Resets the Java instance.
   virtual void Reset() = 0;
+
+  // Returns whether Android Autofill is known to be disabled (e.g., in OS
+  // settings). Returns true if there is no Java counterpart.
+  virtual bool IsAutofillDisabled() const = 0;
 };
 
 }  // namespace autofill

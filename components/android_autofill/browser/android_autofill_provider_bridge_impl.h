@@ -43,6 +43,7 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   void OnDidAutofillForm() override;
   void CancelSession() override;
   void Reset() override;
+  bool IsAutofillDisabled() const override;
 
   // Called by Java:
 

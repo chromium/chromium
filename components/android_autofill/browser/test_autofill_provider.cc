@@ -11,4 +11,8 @@ bool TestAutofillProvider::GetCachedIsAutofilled(
   return false;
 }
 
+bool TestAutofillProvider::IsAutofillDisabled() const {
+  return false;
+}
+
 }  // namespace autofill

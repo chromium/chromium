@@ -960,6 +960,15 @@ public class AutofillProviderTest {
     }
 
     @Test
+    public void testIsAutofillDisabled() {
+        when(mAutofillManager.isEnabled()).thenReturn(true);
+        assertFalse(mAutofillProvider.isAutofillDisabled());
+
+        when(mAutofillManager.isEnabled()).thenReturn(false);
+        assertTrue(mAutofillProvider.isAutofillDisabled());
+    }
+
+    @Test
     @Features.EnableFeatures({
         AndroidAutofillFeatures.ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME
     })

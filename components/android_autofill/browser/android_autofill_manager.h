@@ -159,7 +159,8 @@ class AndroidAutofillManager : public AutofillManager,
 
   AutofillProvider* GetAutofillProvider();
 
-  // Records metrics for loggers and creates new logging session.
+  // Records metrics for the current loggers and starts a new logging session.
+  // No loggers are created if Android Autofill is disabled.
   void StartNewLoggingSession();
 
   // Returns the loggers for the form types of `form_structure`.

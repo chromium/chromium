@@ -47,6 +47,7 @@ class TestAutofillProvider : public AutofillProvider {
                                     FormGlobalId form) override {}
   void OnManagerResetOrDestroyed(AndroidAutofillManager* manager) override {}
   bool GetCachedIsAutofilled(const FormFieldData& field) const override;
+  bool IsAutofillDisabled() const override;
 };
 
 }  // namespace autofill

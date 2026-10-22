@@ -67,6 +67,10 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   // Returns autofilled state from AutofillProvider's cache.
   virtual bool GetCachedIsAutofilled(const FormFieldData& field) const = 0;
 
+  // Returns whether Android Autofill is known to be disabled (e.g., in OS
+  // settings), in which case Autofill cannot be offered.
+  virtual bool IsAutofillDisabled() const = 0;
+
   virtual void MaybeInitKeyboardSuppressor() = 0;
 
   void FillOrPreviewForm(AndroidAutofillManager* manager,

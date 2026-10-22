@@ -113,6 +113,8 @@ class AndroidAutofillProvider : public AutofillProvider,
 
   bool GetCachedIsAutofilled(const FormFieldData& field) const override;
 
+  bool IsAutofillDisabled() const override;
+
   void MaybeInitKeyboardSuppressor() override;
 
  private:

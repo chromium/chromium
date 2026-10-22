@@ -194,6 +194,7 @@ class MockAndroidAutofillProviderBridge : public AndroidAutofillProviderBridge {
   MOCK_METHOD(void, OnDidAutofillForm, (), (override));
   MOCK_METHOD(void, CancelSession, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
+  MOCK_METHOD(bool, IsAutofillDisabled, (), (const, override));
 };
 
 content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
@@ -1007,6 +1008,41 @@ TEST_F(AndroidAutofillProviderTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.WebView.KeyMetrics.FillingAcceptance.Password", false, 1);
+}
+
+// Tests that if Android Autofill is disabled in OS settings, no funnel or key
+// metrics are logged by AndroidFormEventLogger.
+TEST_F(AndroidAutofillProviderTest,
+       DoNotLogFormEventMetricsWhenAutofillDisabled) {
+  ON_CALL(provider_bridge(), IsAutofillDisabled).WillByDefault(Return(true));
+  Reset(autofill_driver());
+
+  base::HistogramTester histogram_tester;
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[0].global_id());
+  android_autofill_manager().OnTextFieldValueChanged(
+      form, form.fields()[0].global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormSubmitted(
+      form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.Funnel.ParsedAsType.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.Funnel.InteractionAfterParsedAsType.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.Funnel.FillAfterInteraction.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled.Address", 0);
 }
 
 // Tests that a form submission of an ongoing Autofill session with source

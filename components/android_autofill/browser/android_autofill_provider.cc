@@ -714,6 +714,10 @@ bool AndroidAutofillProvider::GetCachedIsAutofilled(
   return cached_field && cached_field->is_autofilled_according_to_renderer();
 }
 
+bool AndroidAutofillProvider::IsAutofillDisabled() const {
+  return bridge_->IsAutofillDisabled();
+}
+
 bool AndroidAutofillProvider::IntendsToShowBottomSheet(
     AutofillManager& manager,
     FormGlobalId form,

@@ -228,6 +228,16 @@ void AndroidAutofillProviderBridgeImpl::Reset() {
   Java_AutofillProvider_reset(env, obj);
 }
 
+bool AndroidAutofillProviderBridgeImpl::IsAutofillDisabled() const {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return true;
+  }
+
+  return Java_AutofillProvider_isAutofillDisabled(env, obj);
+}
+
 void AndroidAutofillProviderBridgeImpl::DetachFromJavaAutofillProvider(
     JNIEnv* env) {
   java_ref_.reset();
