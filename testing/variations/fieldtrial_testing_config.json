@@ -6086,6 +6086,23 @@
     "DesktopToMobilePromos": [
         {
             "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Reminder_All",
+                    "params": {
+                        "mobile_promo_on_desktop_notification": "true",
+                        "mobile_promo_on_desktop_promo_type": "1,4,5"
+                    },
+                    "enable_features": [
+                        "MobilePromoOnDesktopWithReminderWave1"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
                 "chromeos",
                 "linux",
                 "mac",
@@ -6093,13 +6110,14 @@
             ],
             "experiments": [
                 {
-                    "name": "QRCode_All",
+                    "name": "Reminder_All",
                     "params": {
+                        "mobile_promo_on_desktop_notification": "true",
                         "mobile_promo_on_desktop_promo_type": "1,4,5"
                     },
                     "enable_features": [
                         "EnableCrossDevicePrefTracker",
-                        "MobilePromoOnDesktopWithQRCodeWave1"
+                        "MobilePromoOnDesktopWithReminderWave1"
                     ]
                 }
             ]
