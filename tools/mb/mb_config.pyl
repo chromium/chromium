@@ -280,9 +280,9 @@
     'tryserver.webrtc': {
       'android_chromium_compile': 'android_release_trybot_remoteexec_siso',
       'linux_chromium_compile': 'release_trybot_remoteexec_siso',
-      'linux_chromium_compile_dbg': 'debug_bot_remoteexec_siso',
+      'linux_chromium_compile_dbg': 'debug_bot_no_symbols_remoteexec_siso',
       'mac_chromium_compile': 'gpu_tests_release_trybot_remoteexec_siso',
-      'webrtc_linux_chromium': 'release_trybot_blink_siso',
+      'webrtc_linux_chromium': 'gpu_tests_release_trybot_remoteexec_siso',
       'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting_remoteexec_siso',
       'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols_remoteexec_siso',
     },
@@ -382,12 +382,12 @@
       'debug_bot_blink', 'use_siso',
     ],
 
-    'debug_bot_remoteexec': [
-      'debug_bot_remoteexec',
+    'debug_bot_no_symbols_remoteexec_siso': [
+      'debug_bot_remoteexec', 'no_symbols', 'use_siso',
     ],
 
-    'debug_bot_remoteexec_siso': [
-      'debug_bot_remoteexec', 'use_siso',
+    'debug_bot_remoteexec': [
+      'debug_bot_remoteexec',
     ],
 
     'gpu_tests_android_release_trybot_arm64_remoteexec': [
