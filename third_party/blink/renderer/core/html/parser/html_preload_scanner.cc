@@ -534,14 +534,23 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
   void SetUrlFromImageAttributes() {
+    // https://html.spec.whatwg.org/#dimension-attribute-aspect-ratio
+    // resource_width_ and resource_height_ are only set for absolute values
+    // of an img's width and height attributes.
+    std::optional<float> default_aspect_ratio;
+    if (RuntimeEnabledFeatures::SrcsetTwoDimensionalSizesEnabled() &&
+        resource_width_ && resource_height_ && *resource_width_ != 0 &&
+        *resource_height_ != 0) {
+      default_aspect_ratio = *resource_width_ / *resource_height_;
+    }
     srcset_image_candidate_ = BestFitSourceForSrcsetAttribute(
-        media_values_->DevicePixelRatio(), source_size_,
-        /*default_aspect_ratio=*/std::nullopt, srcset_attribute_value_);
-    SetUrlToLoad(BestFitSourceForImageAttributes(
-                     media_values_->DevicePixelRatio(), source_size_,
-                     /*default_aspect_ratio=*/std::nullopt, img_src_url_,
-                     srcset_image_candidate_),
-                 kAllowURLReplacement);
+        media_values_->DevicePixelRatio(), source_size_, default_aspect_ratio,
+        srcset_attribute_value_);
+    SetUrlToLoad(
+        BestFitSourceForImageAttributes(media_values_->DevicePixelRatio(),
+                                        source_size_, default_aspect_ratio,
+                                        img_src_url_, srcset_image_candidate_),
+        kAllowURLReplacement);
   }
 
   void ProcessStyleAttribute(const AtomicString& attribute_name,

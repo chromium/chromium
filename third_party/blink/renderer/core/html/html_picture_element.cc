@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/image_loader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -33,6 +34,14 @@ void HTMLPictureElement::SourceDimensionChanged() {
   for (HTMLImageElement& image_element :
        Traversal<HTMLImageElement>::ChildrenOf(*this)) {
     image_element.InvalidateAttributeMapping();
+    // A previous sibling source's width or height attribute affects the
+    // dimension attribute aspect ratio used for source selection, so changing
+    // it is a relevant mutation:
+    // https://html.spec.whatwg.org/#relevant-mutations
+    if (RuntimeEnabledFeatures::SrcsetTwoDimensionalSizesEnabled() &&
+        !image_element.ImageSourceURL().empty()) {
+      image_element.SelectSourceURL(ImageLoader::kUpdateSizeChanged);
+    }
   }
 }
 
