@@ -2011,6 +2011,9 @@
       <message name="IDS_FJORD_TOUCH_CONTROLLER_NEXT_BUTTON_TOOLTIP" desc="Tooltip shown when hovering over the disabled next button on the touch controller setup screen, telling the user to set up the touch screen before continuing.">
         Set up the touch screen
       </message>
+      <message name="IDS_FJORD_TOUCH_CONTROLLER_TEST_IMAGE_SKIP_BUTTON_TEXT" desc="Button shown only on test images on the touch controller setup screen. Lets testers continue to the next step without finishing the TC10 touch controller setup.">
+        Skip
+      </message>
       <message name="IDS_FJORD_IMAGE_SELECTION_TITLE" desc="Title of the OOBE screen for choosing the device enrollment type.">
         Choose device enrollment type
       </message>

@@ -11,6 +11,11 @@
     padding-inline-end: var(--oobe-adaptive-dialog-buttons-horizontal-padding);
     position: relative;
   }
+
+  #testImageSkipButton {
+    float: inline-end;
+    padding-inline-end: var(--oobe-adaptive-dialog-buttons-horizontal-padding);
+  }
 </style>
 
 <webview id="oobeFrame" src="http://codec.localhost:27702/oobe/tc-setup">
@@ -32,3 +37,11 @@
     </paper-tooltip>
   </template>
 </div>
+
+<!-- Only shown on test images. Lets testers move to the next screen without
+     finishing the touch controller setup. -->
+<oobe-text-button on-click="onTestImageSkipButtonClicked"
+    text-key="fjordTouchControllerTestImageSkipButton"
+    hidden="[[!isTestImageSkipButtonVisible]]"
+    id="testImageSkipButton">
+</oobe-text-button>

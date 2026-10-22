@@ -20,6 +20,8 @@ void FjordTouchControllerScreenHandler::DeclareLocalizedValues(
                IDS_FJORD_TOUCH_CONTROLLER_NEXT_BUTTON_TEXT);
   builder->Add("fjordTouchControllerNextButtonTooltip",
                IDS_FJORD_TOUCH_CONTROLLER_NEXT_BUTTON_TOOLTIP);
+  builder->Add("fjordTouchControllerTestImageSkipButton",
+               IDS_FJORD_TOUCH_CONTROLLER_TEST_IMAGE_SKIP_BUTTON_TEXT);
 }
 
 void FjordTouchControllerScreenHandler::Show() {

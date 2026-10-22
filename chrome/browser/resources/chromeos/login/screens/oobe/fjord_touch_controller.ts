@@ -40,10 +40,20 @@ export class FjordTouchControllerScreen extends
         type: Boolean,
         value: true,
       },
+
+      /**
+       * Whether the test image skip button is visible. Only true when the
+       * device is running a test image.
+       */
+      isTestImageSkipButtonVisible: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private declare isNextButtonDisabled: boolean;
+  private declare isTestImageSkipButtonVisible: boolean;
   private webview: chrome.webviewTag.WebView|null = null;
   private handler = new FjordTouchControllerPageHandlerRemote();
   private callbackRouter = new FjordTouchControllerPageCallbackRouter();
@@ -70,6 +80,8 @@ export class FjordTouchControllerScreen extends
         });
     this.callbackRouter.setNextButtonEnabled.addListener(
         this.setNextButtonEnabled.bind(this));
+    this.callbackRouter.setTestImageSkipButtonVisible.addListener(
+        this.setTestImageSkipButtonVisible.bind(this));
   }
 
   /**
@@ -77,6 +89,13 @@ export class FjordTouchControllerScreen extends
    */
   setNextButtonEnabled(enabled: boolean): void {
     this.isNextButtonDisabled = !enabled;
+  }
+
+  /**
+   * Shows or hides the test image skip button.
+   */
+  setTestImageSkipButtonVisible(visible: boolean): void {
+    this.isTestImageSkipButtonVisible = visible;
   }
 
   /**
@@ -92,6 +111,10 @@ export class FjordTouchControllerScreen extends
       return;
     }
     this.handler.onSetupComplete();
+  }
+
+  private onTestImageSkipButtonClicked(): void {
+    this.handler.onTestImageSkipClicked();
   }
 }
 

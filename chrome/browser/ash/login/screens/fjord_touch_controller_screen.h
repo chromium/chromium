@@ -51,12 +51,17 @@ class FjordTouchControllerScreen
 
   // screens_common::mojom::FjordTouchControllerPageHandler
   void OnSetupComplete() override;
+  void OnTestImageSkipClicked() override;
 
   // Updates the enabled state of the next button in the UI.
   void UpdateNextButtonState();
 
   // Whether the touch controller has signaled that its setup is finished.
   bool touch_controller_setup_finished_ = false;
+
+  // Whether the device is running a test image. Determined when the screen is
+  // shown and used to gate the test image skip button.
+  bool is_test_image_ = false;
 
   base::RepeatingClosure exit_callback_;
 

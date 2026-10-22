@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/login/screens/fjord_touch_controller_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -24,6 +26,8 @@ const test::UIPath kFjordTouchControllerDialog = {
     kFjordTouchControllerElementId};
 const test::UIPath kNextButton = {kFjordTouchControllerElementId,
                                   "primaryButton"};
+const test::UIPath kTestImageSkipButton = {kFjordTouchControllerElementId,
+                                           "testImageSkipButton"};
 
 class FjordTouchControllerScreenBrowserTest : public OobeBaseTest {
  public:
@@ -94,6 +98,39 @@ IN_PROC_BROWSER_TEST_F(FjordTouchControllerScreenBrowserTest,
       FjordTouchControllerScreenView::kScreenId);
 
   test::OobeJS().TapOnPath(kNextButton);
+  WaitForScreenExit();
+}
+
+IN_PROC_BROWSER_TEST_F(FjordTouchControllerScreenBrowserTest,
+                       TestImageSkipButtonHiddenOnNonTestImage) {
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_RELEASE_TRACK=stable-channel", base::Time());
+  ShowFjordTouchControllerScreen();
+  OobeScreenWaiter(FjordTouchControllerScreenView::kScreenId).Wait();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kFjordTouchControllerDialog)
+      ->Wait();
+
+  test::OobeJS().ExpectHiddenPath(kTestImageSkipButton);
+}
+
+IN_PROC_BROWSER_TEST_F(FjordTouchControllerScreenBrowserTest,
+                       TestImageSkipButtonShownAndExitsOnTestImage) {
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_RELEASE_TRACK=testimage-channel", base::Time());
+  ShowFjordTouchControllerScreen();
+  OobeScreenWaiter(FjordTouchControllerScreenView::kScreenId).Wait();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kFjordTouchControllerDialog)
+      ->Wait();
+
+  // The skip button is visible and enabled.
+  test::OobeJS().CreateVisibilityWaiter(true, kTestImageSkipButton)->Wait();
+  test::OobeJS().ExpectEnabledPath(kTestImageSkipButton);
+
+  test::OobeJS().TapOnPath(kTestImageSkipButton);
   WaitForScreenExit();
 }
 

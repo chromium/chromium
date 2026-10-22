@@ -66,11 +66,20 @@ interface FjordStationSetupPageHandler {
 interface FjordTouchControllerPageHandler {
   // Emits a done button clicked.
   OnSetupComplete();
+
+  // Emits a test image skip button clicked. Moves to the next screen without
+  // waiting for the touch controller setup to finish. Only honored on test
+  // images.
+  OnTestImageSkipClicked();
 };
 
 // Interface for the FjordTouchControllerScreen. Lives in the render process.
 // Implemented in Typescript and used by the page handler to update the UI.
 interface FjordTouchControllerPage {
+  // Invoked to show or hide the test image skip button. The button is only
+  // shown when the device is running a test image.
+  SetTestImageSkipButtonVisible(bool visible);
+
   // Invoked to enable or disable the next button. The next button is enabled
   // once the touch controller signals that its setup is finished.
   SetNextButtonEnabled(bool enabled);
