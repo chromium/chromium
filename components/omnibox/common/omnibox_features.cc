@@ -474,7 +474,7 @@ BASE_FEATURE(kOmniboxFuseboxAsyncInflation, DISABLED);
 
 // When enabled, AIM image attachments will be downscaled on load before
 // reaching the C++ side.
-BASE_FEATURE(kOmniboxAimImageDownscaling, DISABLED);
+BASE_FEATURE(kOmniboxAimImageDownscaling, ENABLED);
 
 // Updates various NTP/Omnibox assets and descriptions for visual alignment on
 // iOS.

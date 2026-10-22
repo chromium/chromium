@@ -12318,21 +12318,6 @@
             ]
         }
     ],
-    "OmniboxAimImageDownscaling": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxAimImageDownscaling"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxBundledExperimentV1": [
         {
             "platforms": [
