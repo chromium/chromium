@@ -6730,6 +6730,11 @@
       status: "stable",
     },
     {
+      // Kill switch for crbug.com/572900416.
+      name: "TextAreaPlaceholderBreakAriaHiddenUpdate",
+      status: "stable",
+    },
+    {
       name: "TextAreaResizerFixedSize",
       status: "stable",
     },

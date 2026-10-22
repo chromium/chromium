@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
@@ -261,6 +262,22 @@ class HTMLTextAreaElementTest : public RenderingTest {
     return clipboard_provider_->clipboard_host();
   }
 
+  // Returns the placeholder break element if it's the last child of the inner
+  // editor, or nullptr otherwise.
+  Element* PlaceholderBreak() {
+    Node* last_child = TestElement().InnerEditorElement()->lastChild();
+    return TextControlElement::IsPlaceholderBreakElement(last_child)
+               ? To<Element>(last_child)
+               : nullptr;
+  }
+
+  // Returns true if the placeholder break element exists and has aria-hidden.
+  bool DoesPlaceholderBreakHaveAriaHidden() {
+    Element* placeholder_break = PlaceholderBreak();
+    return placeholder_break &&
+           placeholder_break->FastHasAttribute(html_names::kAriaHiddenAttr);
+  }
+
   std::unique_ptr<PageTestBase::MockClipboardHostProvider> clipboard_provider_;
 };
 
@@ -402,6 +419,80 @@ TEST_F(HTMLTextAreaElementTest, PlaceholderBreakAfterUndo) {
   doc.execCommand("undo", false, "", ASSERT_NO_EXCEPTION);
   // The test passes if no DCHECK failure.
   GetFrame().SetHadUserInteraction(false);
+}
+
+// crbug.com/554925229
+TEST_F(HTMLTextAreaElementTest, PlaceholderBreakAriaHiddenAfterPaste) {
+  Document& doc = GetDocument();
+  SetBodyContent("<textarea id=test></textarea>");
+  HTMLTextAreaElement& textarea = TestElement();
+  textarea.Focus();
+  ASSERT_TRUE(PlaceholderBreak());
+  EXPECT_TRUE(DoesPlaceholderBreakHaveAriaHidden());
+
+  GetFrame().GetSettings()->SetJavaScriptCanAccessClipboard(true);
+  GetFrame().GetSettings()->SetDOMPasteAllowed(true);
+  GetFrame().SetHadUserInteraction(true);
+
+  // The blank last line should be exposed to accessibility.
+  ClipboardHost()->WriteText("foo\nbar\n");
+  ASSERT_TRUE(doc.execCommand("paste", false, "", ASSERT_NO_EXCEPTION));
+  EXPECT_EQ("foo\nbar\n", textarea.Value());
+  ASSERT_TRUE(PlaceholderBreak());
+  EXPECT_FALSE(DoesPlaceholderBreakHaveAriaHidden());
+
+  // The placeholder break for the empty value should be hidden.
+  doc.execCommand("undo", false, "", ASSERT_NO_EXCEPTION);
+  EXPECT_EQ("", textarea.Value());
+  ASSERT_TRUE(PlaceholderBreak());
+  EXPECT_TRUE(DoesPlaceholderBreakHaveAriaHidden());
+  GetFrame().SetHadUserInteraction(false);
+}
+
+// crbug.com/554925229
+TEST_F(HTMLTextAreaElementTest, PlaceholderBreakAriaHiddenAfterLineBreak) {
+  Document& doc = GetDocument();
+  SetBodyContent("<textarea id=test></textarea>");
+  HTMLTextAreaElement& textarea = TestElement();
+  textarea.Focus();
+
+  ASSERT_TRUE(
+      doc.execCommand("insertLineBreak", false, "", ASSERT_NO_EXCEPTION));
+  EXPECT_EQ("\n", textarea.Value());
+  ASSERT_TRUE(PlaceholderBreak());
+  EXPECT_FALSE(DoesPlaceholderBreakHaveAriaHidden());
+
+  textarea.SetSelectionRange(0, 0);
+  ASSERT_TRUE(doc.execCommand("insertText", false, "foo", ASSERT_NO_EXCEPTION));
+  EXPECT_EQ("foo\n", textarea.Value());
+  ASSERT_TRUE(PlaceholderBreak());
+  EXPECT_FALSE(DoesPlaceholderBreakHaveAriaHidden());
+}
+
+// crbug.com/554925229
+TEST_F(HTMLTextAreaElementTest, PlaceholderBreakAriaHiddenAfterDelete) {
+  Document& doc = GetDocument();
+  SetBodyContent("<textarea id=test>foo\n</textarea>");
+  HTMLTextAreaElement& textarea = TestElement();
+  textarea.Focus();
+  ASSERT_TRUE(PlaceholderBreak());
+  EXPECT_FALSE(DoesPlaceholderBreakHaveAriaHidden());
+
+  // Delete the trailing newline. A remaining placeholder break doesn't
+  // represent a line.
+  textarea.SetSelectionRange(4, 4);
+  ASSERT_TRUE(doc.execCommand("delete", false, "", ASSERT_NO_EXCEPTION));
+  EXPECT_EQ("foo", textarea.Value());
+  if (PlaceholderBreak()) {
+    EXPECT_TRUE(DoesPlaceholderBreakHaveAriaHidden());
+  }
+
+  // Delete all.
+  textarea.SetSelectionRange(0, 3);
+  ASSERT_TRUE(doc.execCommand("delete", false, "", ASSERT_NO_EXCEPTION));
+  EXPECT_EQ("", textarea.Value());
+  ASSERT_TRUE(PlaceholderBreak());
+  EXPECT_TRUE(DoesPlaceholderBreakHaveAriaHidden());
 }
 
 // crbug.com/442551790

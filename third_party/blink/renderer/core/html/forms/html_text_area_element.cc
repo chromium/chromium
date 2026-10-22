@@ -461,6 +461,7 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
 #endif
   SetValueBeforeFirstUserEditIfNotSet();
   UpdateValue();
+  UpdatePlaceholderBreakAriaHidden(value_);
   CheckIfValueWasReverted(Value());
   SetNeedsValidityCheck();
   SetAutofillState(WebAutofillState::kNotFilled);
