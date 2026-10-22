@@ -6,13 +6,47 @@
 
 #import "base/time/time.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 namespace gemini {
+
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterDictionaryPref(prefs::kBwgSessionMap);
+  registry->RegisterBooleanPref(
+      prefs::kIOSBwgConsent, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kIOSGeminiLiveConsent, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kIOSGeminiLiveIntroPlayed, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kIOSBWGPreciseLocationSetting, false);
+  registry->RegisterBooleanPref(prefs::kIOSBWGPageContentSetting, true);
+  registry->RegisterIntegerPref(prefs::kIOSBWGPromoImpressionCount, 0);
+  registry->RegisterBooleanPref(prefs::kIOSGeminiCameraSetting, false);
+  registry->RegisterBooleanPref(prefs::kIOSGeminiSuggestionsSetting, true);
+  registry->RegisterDictionaryPref(prefs::kIOSContextualCueingVerticalUiState);
+  registry->RegisterBooleanPref(prefs::kIOSGeminiLiveClosedCaptioningSetting,
+                                false);
+  registry->RegisterBooleanPref(prefs::kIOSGeminiLiveMicrophoneSetting, true);
+  registry->RegisterTimePref(prefs::kLastGeminiInteractionTimestamp,
+                             base::Time());
+  registry->RegisterTimePref(prefs::kLastGeminiContextualChipDisplayedTimestamp,
+                             base::Time());
+  registry->RegisterStringPref(prefs::kLastGeminiInteractionURL, std::string());
+  registry->RegisterStringPref(prefs::kGeminiConversationId, std::string());
+  registry->RegisterBooleanPref(prefs::kAppStoreGeminiPromoTriggered, false);
+  registry->RegisterIntegerPref(prefs::kGeminiEnabledByPolicy, 0);
+  registry->RegisterIntegerPref(prefs::kGenAiEnabledByPolicy, 0);
+  registry->RegisterIntegerPref(prefs::kGeminiActOnWebSettings, 0);
+  registry->RegisterListPref(prefs::kGeminiActOnWebAllowedForURLs);
+  registry->RegisterListPref(prefs::kGeminiActOnWebBlockedForURLs);
+  registry->RegisterBooleanPref(prefs::kAIHubEligibilityTriggered, false);
+}
+
 bool GeminiAllowedByPolicy(PrefService* prefs) {
   return GenAiAllowedByEnterprise(prefs) && GeminiAllowedByEnterprise(prefs);
 }

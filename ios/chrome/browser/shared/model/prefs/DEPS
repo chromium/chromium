@@ -20,6 +20,7 @@ include_rules = [
   "+ios/chrome/browser/enterprise/data_protection/public/pref_names.h",
   "+ios/chrome/browser/first_run/model/first_run.h",
   "+ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h",
+  "+ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h",
   "+ios/chrome/browser/level_up/model/level_up_service.h",
   "+ios/chrome/browser/memory/model/memory_debugger_manager.h",
   "+ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.h",

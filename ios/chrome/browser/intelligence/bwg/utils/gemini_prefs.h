@@ -12,8 +12,14 @@
 
 class PrefService;
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace gemini {
-// TODO(crbug.com/485892276): Move ProfilePrefs registration here.
+
+// Registers the profile prefs associated with Gemini.
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Enterprise policies allow for Gemini usage within Chrome.
 bool GeminiAllowedByPolicy(PrefService* prefs);

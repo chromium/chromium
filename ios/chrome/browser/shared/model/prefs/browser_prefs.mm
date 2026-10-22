@@ -124,6 +124,7 @@
 #import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
@@ -522,6 +523,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   ios_feed::RegisterProfilePrefs(registry);
   FirstRun::RegisterProfilePrefs(registry);
   FontSizeTabHelper::RegisterProfilePrefs(registry);
+  gemini::RegisterProfilePrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);
   image_fetcher::ImageCache::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
@@ -852,44 +854,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kProvisionalNotificationsAllowedByPolicy,
                                 true);
 
-  // BWG prefs.
-  registry->RegisterDictionaryPref(prefs::kBwgSessionMap);
-  registry->RegisterBooleanPref(
-      prefs::kIOSBwgConsent, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kIOSGeminiLiveConsent, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kIOSGeminiLiveIntroPlayed, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kIOSBWGPreciseLocationSetting, false);
-  registry->RegisterBooleanPref(prefs::kIOSBWGPageContentSetting, true);
-  registry->RegisterIntegerPref(prefs::kIOSBWGPromoImpressionCount, 0);
-  registry->RegisterBooleanPref(prefs::kIOSGeminiCameraSetting, false);
-  registry->RegisterBooleanPref(prefs::kIOSGeminiSuggestionsSetting, true);
-  registry->RegisterDictionaryPref(prefs::kIOSContextualCueingVerticalUiState);
-  registry->RegisterBooleanPref(prefs::kIOSGeminiLiveClosedCaptioningSetting,
-                                false);
-  registry->RegisterBooleanPref(prefs::kIOSGeminiLiveMicrophoneSetting, true);
-  registry->RegisterTimePref(prefs::kLastGeminiInteractionTimestamp,
-                             base::Time());
-  registry->RegisterTimePref(prefs::kLastGeminiContextualChipDisplayedTimestamp,
-                             base::Time());
-  registry->RegisterStringPref(prefs::kLastGeminiInteractionURL, std::string());
-  registry->RegisterStringPref(prefs::kGeminiConversationId, std::string());
-
-  registry->RegisterBooleanPref(prefs::kAppStoreGeminiPromoTriggered, false);
-
   registry->RegisterTimePref(prefs::kIosSyncInfobarErrorLastDismissedTimestamp,
                              base::Time());
-
-  registry->RegisterIntegerPref(prefs::kGeminiEnabledByPolicy, 0);
-  registry->RegisterIntegerPref(prefs::kGenAiEnabledByPolicy, 0);
-  registry->RegisterIntegerPref(prefs::kGeminiActOnWebSettings, 0);
-  registry->RegisterListPref(prefs::kGeminiActOnWebAllowedForURLs);
-  registry->RegisterListPref(prefs::kGeminiActOnWebBlockedForURLs);
-  registry->RegisterBooleanPref(prefs::kAIHubEligibilityTriggered, false);
 
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeUrlBlocklist);
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeUrlAllowlist);
