@@ -158,7 +158,7 @@ void UnlockTransferCacheEntryINTERNAL(GLuint entry_type, GLuint entry_id) {
   }
 }
 
-void DeletePaintCachePathsINTERNALImmediate(GLsizei n, const GLuint* ids) {
+void DeletePaintCachePathsINTERNALImmediate(GLsizei n, const GLuint64* ids) {
   const uint32_t size =
       raster::cmds::DeletePaintCachePathsINTERNALImmediate::ComputeSize(n);
   raster::cmds::DeletePaintCachePathsINTERNALImmediate* c =
@@ -179,7 +179,7 @@ void DeletePaintCachePathsINTERNAL(GLsizei n,
   }
 }
 
-void DeletePaintCacheEffectsINTERNALImmediate(GLsizei n, const GLuint* ids) {
+void DeletePaintCacheEffectsINTERNALImmediate(GLsizei n, const GLuint64* ids) {
   const uint32_t size =
       raster::cmds::DeletePaintCacheEffectsINTERNALImmediate::ComputeSize(n);
   raster::cmds::DeletePaintCacheEffectsINTERNALImmediate* c =
