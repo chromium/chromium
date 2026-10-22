@@ -306,6 +306,8 @@ crbug.com/567498386 [ win10 nvidia-0x2184 target-cpu-32 ] OverlayModeTraceTest_D
 crbug.com/568529652 [ android android-pixel-2 ] TraceTest_Canvas2DRedBox [ RetryOnFailure ]
 crbug.com/568316653 [ win10 intel-0x4680 ] VideoPathTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
 crbug.com/568316653 [ win10 intel-0x4680 ] VideoPathTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ RetryOnFailure ]
+crbug.com/576731811 [ android android-sm-s911u1 ] TraceTest_RepeatedWebGLTo2D [ Failure ]
+crbug.com/576731811 [ android android-sm-s911u1 ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas [ Failure ]
 
 ###############################
 # Permanent Slow Expectations #
