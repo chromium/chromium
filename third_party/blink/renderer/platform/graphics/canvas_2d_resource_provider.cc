@@ -507,7 +507,6 @@ Canvas2DResourceProvider::CreateWithClear(
   // resource provider would be invalid anyway
   if (!context_provider_wrapper ||
       !context_provider_wrapper->ContextProvider().RasterInterface() ||
-      !context_provider_wrapper->ContextProvider().SharedImageInterface() ||
       context_provider_wrapper->ContextProvider().IsContextLost()) {
     return nullptr;
   }
