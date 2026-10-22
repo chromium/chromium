@@ -847,6 +847,9 @@ void Canvas2DRecorderContext::ResetInternal() {
     recorder->RestartRecording();
   }
 
+  ValidateStateStack();
+  origin_tainted_by_content_ = false;
+
   // Clear the frame in case a flush previously drew to the canvas surface.
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
     int width = Width();  // Keeping results to avoid repetitive virtual calls.
@@ -855,9 +858,6 @@ void Canvas2DRecorderContext::ResetInternal() {
              CanvasPerformanceMonitor::DrawType::kOther);
     c->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, width, height), GetClearFlags());
   }
-
-  ValidateStateStack();
-  origin_tainted_by_content_ = false;
 }
 
 void Canvas2DRecorderContext::reset() {
