@@ -15,10 +15,12 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
@@ -28,6 +30,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
+#include "ui/views/view_decoration.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -214,6 +217,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "PhantomWindow";
+  params.layer_type = ui::LAYER_NOT_DRAWN;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.parent = root_window->GetChildById(kShellWindowId_ShelfContainer);
 
@@ -226,15 +230,23 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
   // Ensure the phantom and its shadow do not cover the shelf.
   phantom_widget_window->parent()->StackChildAtBottom(phantom_widget_window);
 
-  phantom_widget->SetContentsView(
-      views::Builder<views::View>()
-          .SetBackground(views::CreateRoundedRectBackground(
-              kColorAshPhantomWindowBackgroundColor,
-              kPhantomWindowCornerRadius))
-          .SetBorder(std::make_unique<views::HighlightBorder>(
-              kPhantomWindowCornerRadius,
-              views::HighlightBorder::Type::kHighlightBorderNoShadow))
-          .Build());
+  views::View* content_view =
+      phantom_widget->SetContentsView(std::make_unique<views::View>());
+  content_view->SetBackground(views::CreateLayerBasedRoundedBackground(
+      kColorAshPhantomWindowBackgroundColor,
+      gfx::RoundedCornersF(kPhantomWindowCornerRadius)));
+  content_view->GetBackground()->SetInternalName("PhantomWindow:Background");
+  phantom_window_decoration_ =
+      std::make_unique<views::ViewDecoration>(content_view);
+  phantom_window_decoration_->SetRoundedCornerRadius(
+      kPhantomWindowCornerRadius);
+  phantom_window_decoration_->SetHighlightBorder(
+      views::HighlightBorder::GetHighlightColor(
+          *content_view,
+          views::HighlightBorder::Type::kHighlightBorderNoShadow),
+      views::HighlightBorder::GetBorderColor(
+          *content_view,
+          views::HighlightBorder::Type::kHighlightBorderNoShadow));
   return phantom_widget;
 }
 

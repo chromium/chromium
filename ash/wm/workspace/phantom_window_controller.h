@@ -16,8 +16,9 @@ class Window;
 }
 
 namespace views {
+class ViewDecoration;
 class Widget;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -81,6 +82,8 @@ class ASH_EXPORT PhantomWindowController {
 
   // Phantom representation of the window.
   std::unique_ptr<views::Widget> phantom_widget_;
+
+  std::unique_ptr<views::ViewDecoration> phantom_window_decoration_;
 
   // Maximize cue on top-snap phantom to inform users to hold longer if they
   // want to maximize instead of snap top.
