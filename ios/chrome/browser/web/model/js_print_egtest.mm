@@ -21,7 +21,8 @@ const char kPrintPath[] = "/printpage";
 // Matcher for the cancel button on the printer options view.
 id<GREYMatcher> PrintOptionsCancelButton() {
   if (@available(iOS 26, *)) {
-    return grey_allOf(grey_accessibilityLabel(@"Close"),
+    return grey_allOf(grey_anyOf(grey_accessibilityLabel(@"Close"),
+                                 grey_accessibilityLabel(@"Cancel"), nil),
                       grey_kindOfClassName(@"_UIModernBarButton"),
                       grey_kindOfClass([UIButton class]), nil);
   }
