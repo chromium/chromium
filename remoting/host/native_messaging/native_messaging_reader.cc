@@ -5,8 +5,10 @@
 #include "remoting/host/native_messaging/native_messaging_reader.h"
 
 #include <array>
+#include <atomic>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -64,7 +66,14 @@ class NativeMessagingReader::Core {
   // |message_callback_| on the originating thread. Called on the reader thread.
   void ReadMessage();
 
+  void StopReading() { stop_reading_.store(true); }
+  bool in_read() const { return in_read_.load(); }
+
  private:
+  // Reads data from |read_stream_| into |buffer| while tracking |in_read_| and
+  // checking |stop_reading_|.
+  std::optional<size_t> ReadData(base::span<uint8_t> buffer);
+
   // Notify the reader's EOF callback when an error occurs or EOF is reached.
   void NotifyEof();
 
@@ -77,6 +86,9 @@ class NativeMessagingReader::Core {
 
   // Used to DCHECK that the reader code executes on the correct thread.
   scoped_refptr<base::SequencedTaskRunner> read_task_runner_;
+
+  std::atomic<bool> stop_reading_{false};
+  std::atomic<bool> in_read_{false};
 };
 
 NativeMessagingReader::Core::Core(
@@ -94,18 +106,18 @@ NativeMessagingReader::Core::~Core() = default;
 void NativeMessagingReader::Core::ReadMessage() {
   DCHECK(read_task_runner_->RunsTasksInCurrentSequence());
 
-  // Keep reading messages until the stream is closed or an error occurs.
-  while (true) {
+  while (!stop_reading_.load()) {
     std::array<uint8_t, kMessageHeaderSize> message_length_bytes;
-    std::optional<size_t> read_result =
-        read_stream_.ReadAtCurrentPos(message_length_bytes);
+    std::optional<size_t> read_result = ReadData(message_length_bytes);
     if (read_result != kMessageHeaderSize) {
-      // 0 means EOF which is normal and should not be logged as an error.
-      if (!read_result || *read_result != 0) {
-        LOG(ERROR) << "Failed to read message header, read returned "
-                   << read_result.value_or(-1);
+      if (!stop_reading_.load()) {
+        // 0 means EOF which is normal and should not be logged as an error.
+        if (!read_result || *read_result != 0) {
+          LOG(ERROR) << "Failed to read message header, read returned "
+                     << read_result.value_or(-1);
+        }
+        NotifyEof();
       }
-      NotifyEof();
       return;
     }
 
@@ -119,12 +131,13 @@ void NativeMessagingReader::Core::ReadMessage() {
     }
 
     std::string message_json(message_length, '\0');
-    read_result = read_stream_.ReadAtCurrentPos(
-        base::as_writable_byte_span(message_json));
+    read_result = ReadData(base::as_writable_byte_span(message_json));
     if (read_result != message_length) {
-      LOG(ERROR) << "Failed to read message body, read returned "
-                 << read_result.value_or(-1);
-      NotifyEof();
+      if (!stop_reading_.load()) {
+        LOG(ERROR) << "Failed to read message body, read returned "
+                   << read_result.value_or(-1);
+        NotifyEof();
+      }
       return;
     }
 
@@ -141,6 +154,24 @@ void NativeMessagingReader::Core::ReadMessage() {
         FROM_HERE, base::BindOnce(&NativeMessagingReader::InvokeMessageCallback,
                                   reader_, std::move(*message)));
   }
+}
+
+std::optional<size_t> NativeMessagingReader::Core::ReadData(
+    base::span<uint8_t> buffer) {
+  DCHECK(read_task_runner_->RunsTasksInCurrentSequence());
+  // Set |in_read_| before checking |stop_reading_| using default sequential
+  // consistency. This guarantees that after ~NativeMessagingReader() calls
+  // StopReading(), either this check sees |stop_reading_| == true and skips the
+  // blocking read, or ~NativeMessagingReader() sees |in_read_| == true and
+  // cancels the synchronous I/O until ReadAtCurrentPos() returns.
+  in_read_.store(true);
+  if (stop_reading_.load()) {
+    in_read_.store(false);
+    return std::nullopt;
+  }
+  std::optional<size_t> result = read_stream_.ReadAtCurrentPos(buffer);
+  in_read_.store(false);
+  return result;
 }
 
 void NativeMessagingReader::Core::NotifyEof() {
@@ -162,30 +193,41 @@ NativeMessagingReader::NativeMessagingReader(base::File file)
 }
 
 NativeMessagingReader::~NativeMessagingReader() {
-  read_task_runner_->DeleteSoon(FROM_HERE, core_.release());
+  core_->StopReading();
 
 #if BUILDFLAG(IS_WIN)
   // The ReadMessage() method uses a blocking read (on all platforms) which
-  // cause a deadlock if the owning thread attempts to destroy this object
+  // causes a deadlock if the owning thread attempts to destroy this object
   // while there is a read operation pending.
   // On POSIX platforms, closing the write end of the pipe causes the Chrome
   // process to close the read end so that this class can be cleaned up.
   // On Windows, closing the write end of the pipe does nothing as the parent
-  // process is cmd.exe which doesn't care.  Thus, the read end of the pipe
+  // process is cmd.exe which doesn't care. Thus, the read end of the pipe
   // remains open, the read operation is blocked, and we hang in the d'tor.
-  // Canceling the pending I/O here prevents the hang on Windows and isn't
-  // needed for POSIX since it works correctly.
+  //
+  // CancelSynchronousIo() only cancels an I/O request that is already pending
+  // in the kernel. If the reader thread passed the |stop_reading_| check in
+  // ReadData() but has not yet entered the kernel ReadFile() call,
+  // CancelSynchronousIo() returns ERROR_NOT_FOUND. We must keep retrying while
+  // |in_read_| is true; breaking out early would leave the subsequent
+  // ReadFile() uncanceled and cause reader_thread_'s destructor (which joins
+  // the thread) to deadlock.
   base::PlatformThreadId thread_id = reader_thread_.GetThreadId();
   base::win::ScopedHandle thread_handle(
       OpenThread(THREAD_TERMINATE, /*bInheritHandle=*/false, thread_id.raw()));
-  if (!CancelSynchronousIo(thread_handle.Get())) {
-    // ERROR_NOT_FOUND means there were no pending IO requests so don't treat
-    // that result as an error.
-    if (GetLastError() != ERROR_NOT_FOUND) {
+  while (core_->in_read()) {
+    if (!CancelSynchronousIo(thread_handle.Get()) &&
+        GetLastError() != ERROR_NOT_FOUND) {
       PLOG(ERROR) << "CancelSynchronousIo() failed";
+      break;
+    }
+    if (core_->in_read()) {
+      base::PlatformThread::YieldCurrentThread();
     }
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+  read_task_runner_->DeleteSoon(FROM_HERE, core_.release());
 }
 
 void NativeMessagingReader::Start(const MessageCallback& message_callback,
