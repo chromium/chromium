@@ -98,6 +98,10 @@ def __step_config(ctx, step_config):
             "command_prefix": platform.python_bin + " ../../third_party/perfetto/tools/touch_file.py",
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "replace": True,
+            # TODO(https://crbug.com/576114677): touch_file.py produces an empty
+            # stamp file consumed by gen_amalgamated_sql.py and
+            # gen_tp_table_headers.py without a depfile or transitive input list.
+            "restat_content": False,
             "timeout": "2m",
             "remote_command": platform.remote_python_bin,
         },

@@ -36,6 +36,16 @@ def __step_config(ctx, step_config):
             "command_prefix": platform.python_bin + " ../../third_party/depot_tools/download_from_google_storage.py",
             "handler": "download_from_google_storage",
         },
+        {
+            "name": "perfetto/touch_file",
+            "command_prefix": platform.python_bin + " ../../third_party/perfetto/tools/touch_file.py",
+            "remote": False,
+            "replace": True,
+            # TODO(https://crbug.com/576114677): touch_file.py produces an empty
+            # stamp file consumed by gen_amalgamated_sql.py and
+            # gen_tp_table_headers.py without a depfile or transitive input list.
+            "restat_content": False,
+        },
     ])
     return step_config
 
