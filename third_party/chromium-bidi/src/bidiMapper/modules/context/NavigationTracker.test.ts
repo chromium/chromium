@@ -612,4 +612,57 @@ describe('NavigationTracker', () => {
       });
     });
   });
+
+  describe('navigationIdForLoaderId', () => {
+    it('returns the navigation of the loader', () => {
+      const navigation = navigationTracker.createPendingNavigation(SOME_URL);
+      navigationTracker.frameStartedNavigating(
+        SOME_URL,
+        LOADER_ID,
+        'differentDocument',
+      );
+      navigationTracker.frameNavigated(SOME_URL, LOADER_ID);
+
+      assert.equal(
+        navigationTracker.navigationIdForLoaderId(LOADER_ID),
+        navigation.navigationId,
+      );
+    });
+
+    it('does not return a pending navigation for the previous document', () => {
+      // The first navigation commits.
+      navigationTracker.frameStartedNavigating(
+        SOME_URL,
+        LOADER_ID,
+        'differentDocument',
+      );
+      navigationTracker.frameNavigated(SOME_URL, LOADER_ID);
+      const committedNavigationId = navigationTracker.currentNavigationId;
+
+      // The next navigation starts, but does not commit yet.
+      navigationTracker.frameStartedNavigating(
+        ANOTHER_URL,
+        ANOTHER_LOADER_ID,
+        'differentDocument',
+      );
+      const pendingNavigationId = navigationTracker.currentNavigationId;
+      assert.notEqual(pendingNavigationId, committedNavigationId);
+
+      // Lifecycle events of the previous document must use the committed
+      // navigation, not the pending one.
+      assert.equal(
+        navigationTracker.navigationIdForLoaderId(LOADER_ID),
+        committedNavigationId,
+      );
+      // An unknown loader belongs to the last committed document.
+      assert.equal(
+        navigationTracker.navigationIdForLoaderId('ERROR_PAGE_LOADER_ID'),
+        committedNavigationId,
+      );
+      assert.equal(
+        navigationTracker.navigationIdForLoaderId(ANOTHER_LOADER_ID),
+        pendingNavigationId,
+      );
+    });
+  });
 });

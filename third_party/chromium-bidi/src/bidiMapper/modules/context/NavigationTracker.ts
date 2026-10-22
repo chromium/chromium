@@ -243,6 +243,19 @@ export class NavigationTracker {
   }
 
   /**
+   * Returns the ID of the navigation that loads the document with the given
+   * `loaderId`. Use it for events of a specific document, e.g. lifecycle
+   * events. A pending navigation does not have a committed document yet, so
+   * events of the current document must not use the pending navigation ID.
+   */
+  navigationIdForLoaderId(loaderId: string): string {
+    return (
+      this.#loaderIdToNavigationsMap.get(loaderId)?.navigationId ??
+      this.#lastCommittedNavigation.navigationId
+    );
+  }
+
+  /**
    * Flags if the current navigation relates to the initial to `about:blank` navigation.
    */
   get isInitialNavigation(): boolean {
