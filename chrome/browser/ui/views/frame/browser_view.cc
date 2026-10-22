@@ -190,6 +190,7 @@
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
+#include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
@@ -5886,7 +5887,7 @@ void BrowserView::ShowHatsDialog(
 void BrowserView::ShowIncognitoClearBrowsingDataDialog() {
   CHECK(ToolbarButtonProvider::From(browser_));
   IncognitoClearBrowsingDataDialogCoordinator::From(browser())->Show(
-      IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble,
+      IncognitoClearBrowsingDataDialog::Type::kDefaultBubble,
       ToolbarButtonProvider::From(browser_)
           ->GetAvatarToolbarButtonInterface()
           ->GetBubbleAnchor(*browser()));
@@ -5895,7 +5896,7 @@ void BrowserView::ShowIncognitoClearBrowsingDataDialog() {
 void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
   CHECK(ToolbarButtonProvider::From(browser_));
   IncognitoClearBrowsingDataDialogCoordinator::From(browser())->Show(
-      IncognitoClearBrowsingDataDialogInterface::Type::kHistoryDisclaimerBubble,
+      IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble,
       ToolbarButtonProvider::From(browser_)
           ->GetAvatarToolbarButtonInterface()
           ->GetBubbleAnchor(*browser()));

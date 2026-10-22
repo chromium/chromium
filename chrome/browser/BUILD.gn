@@ -4253,7 +4253,6 @@ source_set("browser") {
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:idle_bubble",
       "//chrome/browser/ui:idle_dialog",
-      "//chrome/browser/ui:incognito_clear_browsing_data_dialog_interface",
       "//chrome/browser/ui:sad_tab",
       "//chrome/browser/ui:sad_tab_impl",
       "//chrome/browser/ui/actions",

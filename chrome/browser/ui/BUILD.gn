@@ -1678,10 +1678,6 @@ if (!is_android) {
     }
   }
 
-  source_set("incognito_clear_browsing_data_dialog_interface") {
-    public = [ "incognito_clear_browsing_data_dialog_interface.h" ]
-  }
-
   source_set("idle_bubble") {
     public = [ "idle_bubble.h" ]
     public_deps = [

@@ -44,7 +44,7 @@ class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
     return incognito_browser;
   }
 
-  void OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type type) {
+  void OpenDialog(IncognitoClearBrowsingDataDialog::Type type) {
     if (!incognito_browser_) {
       incognito_browser_ = CreateIncognitoBrowser(GetProfile());
     }
@@ -105,7 +105,7 @@ class IncognitoClearBrowsingDataDialogBrowserTest
     : public SupportsTestDialog<IncognitoClearBrowsingDataDialogTest> {
  public:
   void ShowUi(const std::string& name) override {
-    OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble);
+    OpenDialog(IncognitoClearBrowsingDataDialog::Type::kDefaultBubble);
   }
 };
 
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
                        TestDialogIsShown_DefaultBubble) {
-  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble);
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kDefaultBubble);
   auto* incognito_cbd_dialog_view = GetDialogView();
 
   ASSERT_TRUE(GetCoordinator()->IsShowing());
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
                        TestCloseWindowsButton) {
   base::HistogramTester histogram_tester;
-  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble);
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kDefaultBubble);
   auto destroyed_observer = BubbleWidgetDestroyedObserver(
       GetIncognitoBrowser(), GetDialogView()->GetWidget());
 
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, TestCancelButton) {
   base::HistogramTester histogram_tester;
-  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble);
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kDefaultBubble);
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(GetDialogWidget());
 
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, TestCancelButton) {
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
                        TestBrowserCloseEventClosesDialogFirst) {
-  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble);
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kDefaultBubble);
   auto destroyed_observer =
       BubbleWidgetDestroyedObserver(GetIncognitoBrowser(), GetDialogWidget());
 
@@ -241,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedClearBrowsingDataDialogTest,
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
                        TestDialogIsShown_HistoryDisclaimerBubble) {
-  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::
-                 kHistoryDisclaimerBubble);
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble);
   auto* incognito_cbd_dialog_view = GetDialogView();
 
   ASSERT_TRUE(GetCoordinator()->IsShowing());
@@ -257,8 +256,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
                        TestCloseIncognitoButton) {
-  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::
-                 kHistoryDisclaimerBubble);
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble);
 
   ui_test_utils::BrowserDestroyedObserver observer(GetIncognitoBrowser());
   GetDialogView()->CancelDialog();
@@ -268,8 +266,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, TestGotItButton) {
-  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::
-                 kHistoryDisclaimerBubble);
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble);
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(GetDialogWidget());
 
@@ -281,8 +278,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, TestGotItButton) {
 }
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, ShowTwice) {
-  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::
-                 kHistoryDisclaimerBubble);
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble);
   auto* const first_incognito_cbd_dialog_view = GetDialogView();
   EXPECT_TRUE(first_incognito_cbd_dialog_view);
 
@@ -292,8 +288,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, ShowTwice) {
       first_incognito_cbd_dialog_view);
 
   // Show again with the same type.
-  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::
-                 kHistoryDisclaimerBubble);
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble);
   const auto* const second_incognito_cbd_dialog_view = GetDialogView();
   EXPECT_TRUE(second_incognito_cbd_dialog_view);
 

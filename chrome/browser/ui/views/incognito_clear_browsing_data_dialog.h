@@ -6,19 +6,29 @@
 #define CHROME_BROWSER_UI_VIEWS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/incognito_clear_browsing_data_dialog_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Profile;
 
 class IncognitoClearBrowsingDataDialog
-    : public IncognitoClearBrowsingDataDialogInterface,
-      public views::BubbleDialogDelegateView {
+    : public views::BubbleDialogDelegateView {
   METADATA_HEADER(IncognitoClearBrowsingDataDialog,
                   views::BubbleDialogDelegateView)
 
  public:
+  enum Type {
+    kDefaultBubble = 0,
+    kHistoryDisclaimerBubble = 1,
+    kMaxValue = kHistoryDisclaimerBubble,
+  };
+
+  enum class DialogActionType {
+    kCancel = 0,
+    kCloseIncognito = 1,
+    kMaxValue = kCloseIncognito,
+  };
+
   IncognitoClearBrowsingDataDialog(views::BubbleAnchor anchor,
                                    Profile* incognito_profile,
                                    Type type);
@@ -32,8 +42,8 @@ class IncognitoClearBrowsingDataDialog
   static void CloseDialog();
 
   // Helper methods to add functionality to the button.
-  void OnCloseWindowsButtonClicked() override;
-  void OnCancelButtonClicked() override;
+  void OnCloseWindowsButtonClicked();
+  void OnCancelButtonClicked();
 
   // Helper methods to decorate the dialog for different dialog type.
   void SetDialogForDefaultBubbleType();

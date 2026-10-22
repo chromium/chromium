@@ -1433,7 +1433,6 @@ source_set("incognito_clear_browsing_data_dialog") {
   ]
   public_deps = [
     "//base",
-    "//chrome/browser/ui:incognito_clear_browsing_data_dialog_interface",
     "//ui/base/metadata",
     "//ui/base/unowned_user_data",
     "//ui/views",

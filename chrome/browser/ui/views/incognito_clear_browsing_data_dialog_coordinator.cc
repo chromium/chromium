@@ -21,7 +21,7 @@ IncognitoClearBrowsingDataDialogCoordinator::
 }
 
 void IncognitoClearBrowsingDataDialogCoordinator::Show(
-    IncognitoClearBrowsingDataDialogInterface::Type type,
+    IncognitoClearBrowsingDataDialog::Type type,
     views::BubbleAnchor anchor) {
   if (bubble_tracker_.view() && bubble_tracker_.view()->GetWidget()) {
     // Ensure the previous bubble is closed before creating and showing the new
