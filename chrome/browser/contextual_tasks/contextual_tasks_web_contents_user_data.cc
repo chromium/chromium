@@ -251,7 +251,12 @@ ContextualTasksWebContentsUserData::ContextualTasksWebContentsUserData(
       query_contextualizer_(std::make_unique<QueryContextualizer>(
           ContextualTasksServiceFactory::GetForProfile(
               Profile::FromBrowserContext(contents->GetBrowserContext())),
-          query_contextualizer_delegate_.get())) {}
+          query_contextualizer_delegate_.get())) {
+  if (auto* service = ContextualTasksServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(contents->GetBrowserContext()))) {
+    contextual_tasks_service_observation_.Observe(service);
+  }
+}
 
 ContextualTasksWebContentsUserData::~ContextualTasksWebContentsUserData() {
   if (observed_controller_) {
@@ -757,6 +762,37 @@ void ContextualTasksWebContentsUserData::OnContextUploadStatusChanged(
   }
   UpdateContextState();
   UpdateSuggestInputs();
+}
+
+void ContextualTasksWebContentsUserData::OnTaskDisassociatedFromTab(
+    const base::Uuid& task_id,
+    SessionID tab_id) {
+  if (GetEffectiveTaskId() != task_id) {
+    return;
+  }
+  auto* session_handle = GetOrCreateContextualSessionHandle();
+  if (!session_handle) {
+    return;
+  }
+  base::UnguessableToken token = session_handle->GetTokenForTab(tab_id);
+  if (token.is_empty()) {
+    auto selected_tabs = GetSelectedTabs();
+    if (auto it = std::ranges::find_if(
+            selected_tabs,
+            [&](const contextual_search::TabInfo& tab) {
+              return tab.tab_id == tab_id.id();
+            });
+        it != selected_tabs.end()) {
+      token = it->context_token;
+    }
+  }
+  if (!token.is_empty()) {
+    DeleteContext(token);
+  }
+}
+
+void ContextualTasksWebContentsUserData::OnWillBeDestroyed() {
+  contextual_tasks_service_observation_.Reset();
 }
 
 void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest() {

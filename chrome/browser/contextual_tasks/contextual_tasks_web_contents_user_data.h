@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
@@ -27,6 +28,7 @@
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/input_state_model.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -63,7 +65,8 @@ class QueryContextualizer;
 class ContextualTasksWebContentsUserData
     : public content::WebContentsUserData<ContextualTasksWebContentsUserData>,
       public contextual_search::ContextualSearchContextController::
-          ContextUploadStatusObserver {
+          ContextUploadStatusObserver,
+      public ContextualTasksService::Observer {
  public:
   enum class InjectedInputType {
     kContextLibrary,
@@ -166,6 +169,11 @@ class ContextualTasksWebContentsUserData
       contextual_search::ContextUploadStatus context_upload_status,
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type) override;
+
+  // ContextualTasksService::Observer:
+  void OnTaskDisassociatedFromTab(const base::Uuid& task_id,
+                                  SessionID tab_id) override;
+  void OnWillBeDestroyed() override;
 
   void HandleOnSubmitQueryRequest();
   void HandleOpenLinkInSidePanelMode(std::string_view url);
@@ -303,6 +311,10 @@ class ContextualTasksWebContentsUserData
   base::flat_map<int32_t, int32_t> tab_handle_to_session_id_;
 
   SearchMessageDispatcherForTesting search_message_dispatcher_for_testing_;
+
+  base::ScopedObservation<ContextualTasksService,
+                          ContextualTasksService::Observer>
+      contextual_tasks_service_observation_{this};
 
   base::WeakPtrFactory<ContextualTasksWebContentsUserData> weak_ptr_factory_{
       this};

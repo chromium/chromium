@@ -758,4 +758,52 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
             404);
 }
 
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       OnTaskDisassociatedFromTab_RemovesContextAndUnmountsContextLibrary) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(task_id, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->SetTaskId(task_id);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> inject_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        if (message.has_inject_chrome_input() &&
+            message.inject_chrome_input().input_type() ==
+                lens::ClientToSearchMessage::InjectChromeInput::
+                    CONTEXT_LIBRARY) {
+          inject_messages.push_back(message);
+        }
+      }));
+
+  // Attach Tab 10: mounts the context library button (`is_active = true`).
+  const SessionID tab_id = SessionID::FromSerializedValue(10);
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token);
+  mock_handle->AttachTabPendingUpload(token, tab_id.id(),
+                                      GURL("https://example.com/1"), "Tab 1");
+  user_data->UpdateContextLibraryInputState();
+  ASSERT_EQ(inject_messages.size(), 1u);
+  EXPECT_TRUE(inject_messages.back().inject_chrome_input().is_active());
+  EXPECT_EQ(user_data->GetSelectedTabs().size(), 1u);
+
+  // Disassociating Tab 10 from the task removes its context and unmounts the
+  // context library button (`is_active = false`).
+  user_data->OnTaskDisassociatedFromTab(task_id, tab_id);
+  EXPECT_TRUE(user_data->GetSelectedTabs().empty());
+  ASSERT_EQ(inject_messages.size(), 2u);
+  EXPECT_FALSE(inject_messages.back().inject_chrome_input().is_active());
+}
+
 }  // namespace contextual_tasks
