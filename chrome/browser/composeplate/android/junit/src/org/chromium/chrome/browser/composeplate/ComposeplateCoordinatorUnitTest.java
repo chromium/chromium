@@ -53,7 +53,11 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link ComposeplateCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ComposeplateCoordinatorUnitTest {
-    private static final String LANDSCAPE_QUALIFIER = "+land";
+    // A phone in full screen landscape mode.
+    private static final String LANDSCAPE_QUALIFIER = "+w731dp-h411dp-land";
+    // A phone in top/bottom split-screen mode: the window is in landscape, but as narrow as in
+    // portrait mode.
+    private static final String SPLIT_SCREEN_LANDSCAPE_QUALIFIER = "+w411dp-h360dp-land";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -363,24 +367,16 @@ public class ComposeplateCoordinatorUnitTest {
 
     @Test
     public void testOnDisplayStyleChanged_optionalButtonVisible() {
-        Resources res = mContext.getResources();
         mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
         int portraitPadding =
-                res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
         assertEquals(
                 portraitPadding,
                 mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_LATERAL_PADDING));
 
-        RuntimeEnvironment.setQualifiers(LANDSCAPE_QUALIFIER);
-        mCoordinator.onDisplayStyleChanged();
-
-        int landscapePadding =
-                res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
+        int landscapePadding = testOnDisplayStyleChangedImpl(LANDSCAPE_QUALIFIER);
         assertNotEquals(portraitPadding, landscapePadding);
-        verifyButtonSpacing(
-                landscapePadding,
-                res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_margin));
-        assertEquals(landscapePadding, mOptionalButton.getPaddingStart());
     }
 
     @Test
@@ -398,6 +394,40 @@ public class ComposeplateCoordinatorUnitTest {
         verifyButtonSpacing(defaultSpacing, defaultSpacing);
         assertEquals(paddingStart, mOptionalButton.getPaddingStart());
         assertEquals(marginEnd, getMarginEnd(mOptionalButton));
+    }
+
+    @Test
+    public void testOnDisplayStyleChanged_fromLandscapeToSplitScreen_usesPortraitSpacing() {
+        mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
+        int portraitPadding =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
+
+        int landscapePadding = testOnDisplayStyleChangedImpl(LANDSCAPE_QUALIFIER);
+        assertNotEquals(portraitPadding, landscapePadding);
+
+        int splitScreenPadding = testOnDisplayStyleChangedImpl(SPLIT_SCREEN_LANDSCAPE_QUALIFIER);
+        assertEquals(portraitPadding, splitScreenPadding);
+    }
+
+    /**
+     * Applies the given qualifiers, notifies the coordinator of the display style change, and
+     * verifies the optional button's spacing matches the dimensions of the new configuration.
+     *
+     * @param qualifiers The Robolectric qualifiers to apply.
+     * @return The optional button's lateral padding in the new configuration.
+     */
+    private int testOnDisplayStyleChangedImpl(String qualifiers) {
+        RuntimeEnvironment.setQualifiers(qualifiers);
+        mCoordinator.onDisplayStyleChanged();
+
+        Resources res = mContext.getResources();
+        int padding = res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
+        int marginEnd = res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_margin);
+        verifyButtonSpacing(padding, marginEnd);
+        assertEquals(padding, mOptionalButton.getPaddingStart());
+        assertEquals(marginEnd, getMarginEnd(mOptionalButton));
+        return padding;
     }
 
     private void testSetOptionalButtonVisibilityImpl(boolean visible) {

@@ -226,8 +226,9 @@ public class ComposeplateCoordinator {
      */
     private void updateButtonSpacing(boolean isOptionalButtonVisible) {
         // Always read the dimensions from the current resources instead of caching them, since
-        // the activity isn't recreated on screen rotation and the landscape mode has different
-        // values. This ensures fresh values are applied after the screen rotates.
+        // the activity isn't recreated on configuration changes and wide windows (w600dp) have
+        // different values. This ensures fresh values are applied after the screen rotates or
+        // the window is resized, e.g., when entering or leaving split-screen mode.
         Resources res = mView.getResources();
         int defaultSpacing = res.getDimensionPixelSize(R.dimen.composeplate_view_button_margin);
         int optionalButtonPadding = defaultSpacing;
