@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
-#include "chrome/common/extensions/api/printing.h"
+#include "chromeos/ash/experiences/extensions/common/api/printing.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace ash {

@@ -9,7 +9,7 @@
 #include <optional>
 #include <string>
 
-#include "chrome/common/extensions/api/printing.h"
+#include "chromeos/ash/experiences/extensions/common/api/printing.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 

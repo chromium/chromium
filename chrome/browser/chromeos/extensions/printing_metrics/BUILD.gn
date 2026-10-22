@@ -24,6 +24,7 @@ static_library("printing_metrics") {
     "//chrome/browser/ash/printing/history:print_job_info_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/browser",

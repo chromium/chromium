@@ -155,6 +155,11 @@
     "contexts": ["privileged_extension"],
     "feature_flag": "ApiOdfsConfigPrivate"
   },
+  "printing": {
+    "dependencies": ["permission:printing"],
+    "contexts": ["privileged_extension"],
+    "required_buildflags": ["use_cups"]
+  },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["privileged_extension"]

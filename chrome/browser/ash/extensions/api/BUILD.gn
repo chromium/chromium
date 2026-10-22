@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chromeos/ash/experiences/extensions/common/api/api_sources.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
 assert(is_chromeos)
@@ -67,4 +68,9 @@ function_registration("api_registration") {
     "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/chromeos/extensions/wm",
   ]
+
+  if (use_cups) {
+    custom_impl_schemas += [ "printing" ]
+    inputs += [ "//chrome/browser/extensions/api/printing/printing_api.h" ]
+  }
 }

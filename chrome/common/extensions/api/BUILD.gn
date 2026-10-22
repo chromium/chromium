@@ -58,6 +58,11 @@ generated_json_strings("generated_api_json_strings") {
   root_namespace = chrome_extensions_api_root_namespace
   deps = [ "//extensions/common/api" ]
   inputs = extensions_api_schema_files + extensions_types_only_schema_files
+  if (is_chromeos && use_cups) {
+    deps += [ "//chromeos/ash/experiences/extensions/common/api" ]
+    inputs +=
+        [ "//chromeos/ash/experiences/extensions/common/api/printing.idl" ]
+  }
 
   visibility = [ ":api" ]
 }
@@ -72,6 +77,11 @@ generated_types("generated_api_types") {
   root_namespace = chrome_extensions_api_root_namespace
   deps = [ "//extensions/common/api" ]
   inputs = extensions_api_schema_files + extensions_types_only_schema_files
+  if (is_chromeos && use_cups) {
+    deps += [ "//chromeos/ash/experiences/extensions/common/api" ]
+    inputs +=
+        [ "//chromeos/ash/experiences/extensions/common/api/printing.idl" ]
+  }
 
   visibility = [ ":api" ]
 }

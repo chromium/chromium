@@ -738,11 +738,6 @@
     "dependencies": ["permission:pdfViewerPrivate"],
     "contexts": ["privileged_extension"]
   },
-  "printing": {
-    "dependencies": ["permission:printing"],
-    "contexts": ["privileged_extension"],
-    "required_buildflags": ["use_cups"]
-  },
   "printingMetrics": {
     "dependencies": ["permission:printingMetrics"],
     "contexts": ["privileged_extension"],

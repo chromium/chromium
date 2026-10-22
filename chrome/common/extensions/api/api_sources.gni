@@ -130,10 +130,7 @@ if (enable_extensions) {
     ]
 
     if (use_cups) {
-      schema_sources_ += [
-        "printing.idl",
-        "printing_metrics.idl",
-      ]
+      schema_sources_ += [ "printing_metrics.idl" ]
     }
   }
 
@@ -173,3 +170,7 @@ chrome_extensions_api_root_namespace = "extensions::api::%(namespace)s"
 
 chrome_extensions_api_schema_include_rules =
     "extensions/common/api:extensions::api::%(namespace)s"
+
+if (is_chromeos) {
+  chrome_extensions_api_schema_include_rules += " chromeos/ash/experiences/extensions/common/api:extensions::api::%(namespace)s"
+}

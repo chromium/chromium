@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 
 assert(is_chromeos)
 assert(enable_extensions_core)
@@ -26,6 +27,10 @@ chromeos_schema_sources_ = [
   "vpn_provider.idl",
   "wm_desks_private.idl",
 ]
+
+if (use_cups) {
+  chromeos_schema_sources_ += [ "printing.idl" ]
+}
 
 chromeos_extensions_api_schema_sources =
     get_path_info(chromeos_schema_sources_, "abspath")

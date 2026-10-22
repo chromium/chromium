@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/local_printer.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
-#include "chrome/common/extensions/api/printing.h"
+#include "chromeos/ash/experiences/extensions/common/api/printing.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "ui/gfx/native_ui_types.h"
