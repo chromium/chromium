@@ -9,7 +9,10 @@ export function getHtml(this: ThreadsRailElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   <div id="rail">
-    <div id="logo"></div>
+    <cr-icon-button id="logoButton"
+        suppress-rtl-flip
+        @click="${this.onLogoClick_}">
+    </cr-icon-button>
     <div id="iconsContainer">
       <!-- TODO(crbug.com/570552031): Replace placeholders with
            server-driven icons once AimEligibility icon config is wired up. -->

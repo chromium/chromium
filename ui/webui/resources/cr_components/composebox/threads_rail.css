@@ -44,16 +44,6 @@
   padding: 24px 12px 20px 12px;
 }
 
-#logo {
-  align-items: center;
-  border-radius: 12px;
-  cursor: pointer;
-  display: flex;
-  height: 40px;
-  justify-content: center;
-  width: 40px;
-}
-
 #iconsContainer {
   display: flex;
   flex-direction: column;
@@ -91,4 +81,20 @@ cr-tooltip::part(tooltip) {
   min-width: 0;
   padding: 2px 6px;
   white-space: nowrap;
+}
+
+#logoButton {
+  --cr-icon-button-fill-color: transparent;
+  background-image:
+      url('//resources/cr_components/searchbox/icons/google_g_gradient.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+}
+
+@media (forced-colors: active) {
+  #logoButton {
+    --cr-icon-image:
+        url('//resources/cr_components/searchbox/icons/google_g_gradient.svg');
+  }
 }

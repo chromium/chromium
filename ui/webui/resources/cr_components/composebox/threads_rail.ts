@@ -61,6 +61,12 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
     super.disconnectedCallback();
   }
 
+  protected onLogoClick_(): void {
+    const googleBaseUrl = loadTimeData.getString('googleBaseUrl');
+    assert(googleBaseUrl);
+    WindowProxy.getInstance().navigate(googleBaseUrl);
+  }
+
   protected onShowHistoryClick_(): void {
     recordAction(ThreadsAction.SHOW_HISTORY_CLICKED);
     // Navigate to the AI Mode search page. This will be intercepted

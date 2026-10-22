@@ -9,11 +9,13 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../test_support.js';
 
 const AIM_THREADS_HISTORY_LABEL = 'AI Mode history';
 const AIM_THREADS_NEW_SEARCH_LABEL = 'Start new AI Mode search';
+const GOOGLE_BASE_URL = 'https://www.google.com/';
 const DESKTOP_CHROME_NTP_THREADS_SOURCE = 'chrome.crn.rb';
 const DESKTOP_CHROME_NTP_THREADS_ENTRY_POINT = 129;
 const AIM_DISPLAY_MODE = 50;
@@ -34,6 +36,7 @@ suite('NewTabPageThreadsRailTest', () => {
     loadTimeData.overrideValues({
       aimThreadsHistoryLabel: AIM_THREADS_HISTORY_LABEL,
       aimThreadsNewSearchLabel: AIM_THREADS_NEW_SEARCH_LABEL,
+      googleBaseUrl: GOOGLE_BASE_URL,
       threadsUrl: AIM_THREADS_URL,
     });
     threadsRailElement = document.createElement('cr-threads-rail');
@@ -46,9 +49,11 @@ suite('NewTabPageThreadsRailTest', () => {
   });
 
   test('renders logo and icon buttons with correct tooltips', () => {
-    const logo =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#logo');
-    assertTrue(!!logo);
+    const logoButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#logoButton');
+    assertTrue(!!logoButton);
+    assertTrue(isVisible(logoButton));
+    assertTrue(logoButton.hasAttribute('suppress-rtl-flip'));
 
     const historyButton =
         threadsRailElement.shadowRoot.querySelector<HTMLElement>(
@@ -84,6 +89,18 @@ suite('NewTabPageThreadsRailTest', () => {
         threadsRailElement.shadowRoot.querySelector<HTMLElement>(
             '#tasksButton');
     assertTrue(!!tasksButton);
+  });
+
+  test('navigates to Google base URL on logo button click', () => {
+    const logoButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#logoButton');
+    assertTrue(!!logoButton);
+
+    logoButton.click();
+
+    const args = windowProxy.getArgs('navigate');
+    assertEquals(1, args.length);
+    assertEquals(loadTimeData.getString('googleBaseUrl'), args[0]);
   });
 
   test('navigates and records metric on show history button click', () => {
