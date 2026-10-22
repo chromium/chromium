@@ -31,6 +31,10 @@ class TestSearchProvider : public SearchProvider {
 
   void SetNextResults(std::vector<std::unique_ptr<ChromeSearchResult>> results);
 
+  int initialize_count() const { return initialize_count_; }
+
+  // SearchProvider:
+  void Initialize() override;
   ash::AppListSearchResultType ResultType() const override;
 
   void Start(const std::u16string& query) override;
@@ -42,6 +46,7 @@ class TestSearchProvider : public SearchProvider {
  private:
   void SetResults();
 
+  int initialize_count_ = 0;
   std::vector<std::unique_ptr<ChromeSearchResult>> results_;
   ash::AppListSearchResultType result_type_;
   base::TimeDelta delay_;

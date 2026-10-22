@@ -31,6 +31,14 @@ void SearchEngine::AddProvider(std::unique_ptr<SearchProvider> provider) {
   providers_[provider->search_category()].push_back(std::move(provider));
 }
 
+void SearchEngine::InitializeProviders() {
+  for (const auto& [category, providers] : providers_) {
+    for (const auto& provider : providers) {
+      provider->Initialize();
+    }
+  }
+}
+
 void SearchEngine::StartSearch(const std::u16string& query,
                                SearchOptions search_options,
                                SearchResultsCallback callback) {

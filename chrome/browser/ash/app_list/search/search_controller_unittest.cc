@@ -949,4 +949,27 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
   }
 }
 
+TEST_F(SearchControllerTest, InitializeProvidersOnLauncherOpen) {
+  auto provider = std::make_unique<TestSearchProvider>(Result::kHelpApp,
+                                                       base::Milliseconds(0));
+  auto* provider_ptr = provider.get();
+  search_controller_->AddProvider(std::move(provider));
+
+  EXPECT_EQ(provider_ptr->initialize_count(), 0);
+
+  // Closing the launcher before it is ever opened should not initialize
+  // providers.
+  search_controller_->AppListViewChanging(/*is_visible=*/false);
+  EXPECT_EQ(provider_ptr->initialize_count(), 0);
+
+  // Opening the launcher for the first time should initialize providers.
+  search_controller_->AppListViewChanging(/*is_visible=*/true);
+  EXPECT_EQ(provider_ptr->initialize_count(), 1);
+
+  // Closing and reopening the launcher should not re-initialize providers.
+  search_controller_->AppListViewChanging(/*is_visible=*/false);
+  search_controller_->AppListViewChanging(/*is_visible=*/true);
+  EXPECT_EQ(provider_ptr->initialize_count(), 1);
+}
+
 }  // namespace app_list::test

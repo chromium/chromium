@@ -18,8 +18,6 @@
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
@@ -60,8 +58,7 @@ class HelpAppResult : public ChromeSearchResult {
 // Provides results from the Help App based on the search query.
 class HelpAppProvider : public SearchProvider,
                         public apps::AppRegistryCache::Observer,
-                        public ash::help_app::mojom::SearchResultsObserver,
-                        public session_manager::SessionManagerObserver {
+                        public ash::help_app::mojom::SearchResultsObserver {
  public:
   explicit HelpAppProvider(Profile* profile);
   ~HelpAppProvider() override;
@@ -69,15 +66,10 @@ class HelpAppProvider : public SearchProvider,
   HelpAppProvider(const HelpAppProvider&) = delete;
   HelpAppProvider& operator=(const HelpAppProvider&) = delete;
 
-  // Initialize the provider. It should be called when:
-  //    1. User session start up tasks has completed.
-  //    2. User session start up tasks has not completed, but user has start to
-  //    search in launcher.
-  //    3. In tests with fake search handler provided.
-  void MaybeInitialize(
-      ash::help_app::SearchHandler* fake_search_handler = nullptr);
+  void InitializeForTesting(ash::help_app::SearchHandler* fake_search_handler);
 
   // SearchProvider:
+  void Initialize() override;
   void Start(const std::u16string& query) override;
   void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
@@ -90,9 +82,6 @@ class HelpAppProvider : public SearchProvider,
   // mojom::SearchResultsObserver:
   void OnSearchResultAvailabilityChanged() override;
 
-  // session_manager::SessionManagerObserver:
-  void OnUserSessionStartUpTaskCompleted() override;
-
  private:
   void OnSearchReturned(
       const std::u16string& query,
@@ -102,7 +91,6 @@ class HelpAppProvider : public SearchProvider,
   void LoadIcon();
 
   const raw_ptr<Profile> profile_;
-  bool has_initialized = false;
 
   raw_ptr<ash::help_app::SearchHandler> search_handler_ = nullptr;
   ui::ImageModel icon_;
@@ -115,10 +103,6 @@ class HelpAppProvider : public SearchProvider,
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
-
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_manager_observation_{this};
 
   base::WeakPtrFactory<HelpAppProvider> weak_factory_{this};
 };

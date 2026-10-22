@@ -18,8 +18,6 @@
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/models/image_model.h"
 
@@ -58,8 +56,7 @@ class PersonalizationResult : public ChromeSearchResult {
 class PersonalizationProvider
     : public SearchProvider,
       public ::ash::personalization_app::mojom::SearchResultsObserver,
-      public ::apps::AppRegistryCache::Observer,
-      public session_manager::SessionManagerObserver {
+      public ::apps::AppRegistryCache::Observer {
  public:
   explicit PersonalizationProvider(Profile* profile);
   ~PersonalizationProvider() override;
@@ -67,15 +64,11 @@ class PersonalizationProvider
   PersonalizationProvider(const PersonalizationProvider&) = delete;
   PersonalizationProvider& operator=(const PersonalizationProvider&) = delete;
 
-  // Initialize the provider. It should be called when:
-  //    1. User session start up tasks has completed.
-  //    2. User session start up tasks has not completed, but user has start to
-  //    search in launcher.
-  //    3. In tests with fake search handler provided.
-  void MaybeInitialize(
-      ::ash::personalization_app::SearchHandler* fake_search_handler = nullptr);
+  void InitializeForTesting(
+      ::ash::personalization_app::SearchHandler* fake_search_handler);
 
   // SearchProvider:
+  void Initialize() override;
   void Start(const std::u16string& query) override;
   void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
@@ -87,9 +80,6 @@ class PersonalizationProvider
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
-
-  // session_manager::SessionManagerObserver:
-  void OnUserSessionStartUpTaskCompleted() override;
 
  private:
   void OnSearchDone(
@@ -103,7 +93,6 @@ class PersonalizationProvider
   const raw_ptr<Profile> profile_;
   std::u16string current_query_;
   gfx::ImageSkia icon_;
-  bool has_initialized = false;
 
   raw_ptr<::ash::personalization_app::SearchHandler> search_handler_ = nullptr;
   mojo::Receiver<::ash::personalization_app::mojom::SearchResultsObserver>
@@ -112,10 +101,6 @@ class PersonalizationProvider
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
-
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_manager_observation_{this};
 
   base::WeakPtrFactory<PersonalizationProvider> weak_ptr_factory_{this};
   base::WeakPtrFactory<PersonalizationProvider> app_service_weak_ptr_factory_{

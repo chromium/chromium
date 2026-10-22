@@ -230,6 +230,12 @@ void SearchController::AppListViewChanging(bool is_visible) {
     app_discovery_metrics_manager_->OnLauncherOpen();
   }
 
+  // Lazily initialize search providers the first time the launcher is opened.
+  if (is_visible && !providers_initialized_) {
+    providers_initialized_ = true;
+    search_engine_->InitializeProviders();
+  }
+
   // On close.
   if (!is_visible) {
     search_engine_->StopZeroState();

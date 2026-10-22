@@ -18,8 +18,6 @@
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list::test {
@@ -96,7 +94,7 @@ class HelpAppProviderTest : public AppListTestBase {
     stub_icon_loader.update_version_by_app_id_[ash::kHelpAppId] = 1;
 
     auto provider = std::make_unique<HelpAppProvider>(profile());
-    provider->MaybeInitialize(&mock_handler_);
+    provider->InitializeForTesting(&mock_handler_);
     provider_ = provider.get();
     search_controller_ = std::make_unique<TestSearchController>();
     search_controller_->AddProvider(std::move(provider));
@@ -122,8 +120,6 @@ class HelpAppProviderTest : public AppListTestBase {
   MockSearchHandler* mock_handler() { return &mock_handler_; }
 
  private:
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
   ash::help_app::SearchTagRegistry search_tag_registry_;

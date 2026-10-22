@@ -206,6 +206,9 @@ class SearchController {
 
   bool disable_ranking_for_test_ = false;
 
+  // Whether search providers have been initialized.
+  bool providers_initialized_ = false;
+
   std::vector<ControlCategory> toggleable_categories_;
 
   // If set, called when results set by a provider change. Only set by tests.

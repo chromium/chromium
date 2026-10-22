@@ -37,6 +37,10 @@ void TestSearchProvider::SetNextResults(
   results_ = std::move(results);
 }
 
+void TestSearchProvider::Initialize() {
+  ++initialize_count_;
+}
+
 ash::AppListSearchResultType TestSearchProvider::ResultType() const {
   return result_type_;
 }

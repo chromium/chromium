@@ -24,8 +24,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
@@ -101,33 +99,11 @@ void HelpAppResult::Open(int event_flags) {
 HelpAppProvider::HelpAppProvider(Profile* profile)
     : SearchProvider(SearchCategory::kHelp), profile_(profile) {
   CHECK(profile_);
-
-  auto* session_manager = session_manager::SessionManager::Get();
-  if (session_manager->IsUserSessionStartUpTaskCompleted()) {
-    // If user session start up task has completed, the initialization can
-    // start.
-    MaybeInitialize();
-  } else {
-    // Wait for the user session start up task completion to prioritize
-    // resources for them.
-    session_manager_observation_.Observe(session_manager);
-  }
 }
 
 HelpAppProvider::~HelpAppProvider() = default;
 
-void HelpAppProvider::MaybeInitialize(
-    ash::help_app::SearchHandler* fake_search_handler) {
-  // Ensures that the provider can be initialized once only.
-  if (has_initialized) {
-    return;
-  }
-  has_initialized = true;
-
-  // Initialization is happening, so we no longer need to wait for user session
-  // start up task completion.
-  session_manager_observation_.Reset();
-
+void HelpAppProvider::Initialize() {
   app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile_)
            ->AppRegistryCache());
@@ -139,11 +115,7 @@ void HelpAppProvider::MaybeInitialize(
   icon_ = ui::ImageModel::FromVectorIcon(
       app_list::kHelpAppIcon, SK_ColorTRANSPARENT, kAppIconDimension);
 
-  // Use fake search handler if provided in tests, or get it from
-  // `help_app_manager`.
-  if (fake_search_handler) {
-    search_handler_ = fake_search_handler;
-  } else {
+  if (!search_handler_) {
     auto* help_app_manager =
         ash::help_app::HelpAppManagerFactory::GetForBrowserContext(profile_);
     CHECK(help_app_manager);
@@ -156,6 +128,12 @@ void HelpAppProvider::MaybeInitialize(
   search_handler_->OnProfileDirAvailable(profile_->GetPath());
   search_handler_->Observe(
       search_results_observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+void HelpAppProvider::InitializeForTesting(
+    ash::help_app::SearchHandler* fake_search_handler) {
+  search_handler_ = fake_search_handler;
+  Initialize();
 }
 
 void HelpAppProvider::Start(const std::u16string& query) {
@@ -172,11 +150,6 @@ void HelpAppProvider::Start(const std::u16string& query) {
   //  - we don't have an icon to display with results.
   if (!search_handler_) {
     LogListSearchResultState(ListSearchResultState::kSearchHandlerUnavailable);
-    // If user has started to user launcher search before the user session
-    // startup tasks completed, we should honor this user action and
-    // initialize the provider. It makes the help app search available
-    // earlier.
-    MaybeInitialize();
     return;
   } else if (icon_.IsEmpty()) {
     LogListSearchResultState(ListSearchResultState::kNoHelpAppIcon);
@@ -250,10 +223,6 @@ void HelpAppProvider::OnSearchResultAvailabilityChanged() {
     return;
   }
   Start(last_query_);
-}
-
-void HelpAppProvider::OnUserSessionStartUpTaskCompleted() {
-  MaybeInitialize();
 }
 
 void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {

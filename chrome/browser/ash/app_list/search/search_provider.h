@@ -58,6 +58,9 @@ class SearchProvider {
 
   virtual ~SearchProvider();
 
+  // Invoked to initialize the provider when the launcher is opened.
+  virtual void Initialize() {}
+
   // Invoked to start a query search. |query| is guaranteed to be non-empty.
   virtual void Start(const std::u16string& query,
                      OnSearchResultsCallback on_search_done);

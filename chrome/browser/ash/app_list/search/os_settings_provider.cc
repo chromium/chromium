@@ -26,8 +26,6 @@
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -205,40 +203,12 @@ void OsSettingsResult::Open(int event_flags) {
 OsSettingsProvider::OsSettingsProvider(Profile* profile)
     : SearchProvider(SearchCategory::kSettings), profile_(profile) {
   CHECK(profile_);
-
-  auto* session_manager = session_manager::SessionManager::Get();
-  if (session_manager->IsUserSessionStartUpTaskCompleted()) {
-    // If user session start up task has completed, the initialization can
-    // start.
-    MaybeInitialize();
-  } else {
-    // Wait for the user session start up task completion to prioritize
-    // resources for them.
-    session_manager_observation_.Observe(session_manager);
-  }
 }
 
 OsSettingsProvider::~OsSettingsProvider() = default;
 
-void OsSettingsProvider::MaybeInitialize(
-    ash::settings::SearchHandler* fake_search_handler,
-    const ash::settings::Hierarchy* fake_hierarchy) {
-  // Ensures that the provider can be initialized once only.
-  if (has_initialized) {
-    return;
-  }
-  has_initialized = true;
-
-  // Initialization is happening, so we no longer need to wait for user session
-  // start up task completion.
-  session_manager_observation_.Reset();
-
-  // Use fake search handler and hierarchy if provided in tests, or get it from
-  // `os_settings_manager`.
-  if (fake_search_handler) {
-    search_handler_ = fake_search_handler;
-    hierarchy_ = fake_hierarchy;
-  } else {
+void OsSettingsProvider::Initialize() {
+  if (!search_handler_) {
     auto* os_settings_manager =
         ash::settings::OsSettingsManagerFactory::GetForProfile(profile_);
     auto* app_service_proxy =
@@ -282,17 +252,20 @@ void OsSettingsProvider::MaybeInitialize(
   LogIconLoadStatus(IconLoadStatus::kBindOnLoadIconFromConstructor);
 }
 
+void OsSettingsProvider::InitializeForTesting(
+    ash::settings::SearchHandler* fake_search_handler,
+    const ash::settings::Hierarchy* fake_hierarchy) {
+  search_handler_ = fake_search_handler;
+  hierarchy_ = fake_hierarchy;
+  Initialize();
+}
+
 void OsSettingsProvider::Start(const std::u16string& query) {
   // Disable the provider if:
   //  - the search backend isn't available
   //  - the settings app isn't ready
   //  - we don't have an icon to display with results.
   if (!search_handler_) {
-    // If user has started to user launcher search before the user session
-    // startup tasks completed, we should honor this user action and
-    // initialize the provider. It makes the os setting search available
-    // earlier.
-    MaybeInitialize();
     return;
   } else if (icon_.IsEmpty()) {
     LogStatus(Status::kNoSettingsIcon);
@@ -377,10 +350,6 @@ void OsSettingsProvider::OnSearchResultsChanged() {
   }
 
   Start(last_query_);
-}
-
-void OsSettingsProvider::OnUserSessionStartUpTaskCompleted() {
-  MaybeInitialize();
 }
 
 void OsSettingsProvider::OnSearchReturned(

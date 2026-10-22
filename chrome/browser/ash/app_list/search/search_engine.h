@@ -46,6 +46,9 @@ class SearchEngine {
 
   void AddProvider(std::unique_ptr<SearchProvider> provider);
 
+  // Initializes all registered search providers.
+  void InitializeProviders();
+
   void StartSearch(const std::u16string& query,
                    SearchOptions search_options,
                    SearchResultsCallback callback);
