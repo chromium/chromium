@@ -1748,6 +1748,11 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
             *account, ambient_signin::kAccountPictureSize,
             /*idp_image=*/std::nullopt,
             /*device_scale_factor=*/1.0f));
+    // Accounts with fields to share show the disclosure text in the modal
+    // dialog after the bubble. Other accounts are signed in right away, which
+    // the chip shows. These include all sign-in accounts, whose fields content
+    // always clears. See HandleAmbientBubbleDecision().
+    federated_credential.signs_in_directly = account->fields.empty();
   }
 
   // TODO(crbug.com/567563304): Use the RP's frame as the requesting frame when

@@ -3368,6 +3368,27 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
 }
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       AccountsWithoutDisclosureSignInDirectly) {
+  accounts_ = CreateAccounts(
+      {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignUp}},
+      idp_data_);
+  ASSERT_TRUE(accounts_[0]->fields.empty());
+  ASSERT_FALSE(accounts_[1]->fields.empty());
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  // Choosing the returning account signs the user in right away, which the
+  // chip shows. The new account shows the disclosure text in the modal dialog
+  // first.
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  ASSERT_EQ(request->federated_credentials().size(), 2u);
+  EXPECT_TRUE(request->federated_credentials()[0].signs_in_directly);
+  EXPECT_FALSE(request->federated_credentials()[1].signs_in_directly);
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
        AcceptingAmbientBubbleSelectsChosenAccount) {
   accounts_ = CreateAccounts(
       {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignIn}},

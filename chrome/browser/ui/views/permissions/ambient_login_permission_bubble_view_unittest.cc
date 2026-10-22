@@ -25,6 +25,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -1157,6 +1158,52 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
     EXPECT_EQ(chip_model.GetChipText(), expected_chip_text);
     EXPECT_EQ(&chip_model.GetIcon(), &GooglePasswordManagerVectorIcon());
   }
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       ChipShowsSigningInAfterChoosingCredentialThatSignsInDirectly) {
+  const GURL origin("https://example.com");
+  std::vector<ambient_signin::FederatedCredential> fed_creds(2);
+  fed_creds[0].account_name = u"Carol";
+  fed_creds[1].account_name = u"Dave";
+  fed_creds[1].signs_in_directly = true;
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          origin, origin,
+          std::vector<ambient_signin::PasskeyOrPasswordCredential>(),
+          base::NullCallback(), std::move(fed_creds), base::DoNothing(),
+          base::DoNothing()));
+  auto* request = static_cast<ambient_signin::AmbientLoginPermissionRequest*>(
+      requests[0].get());
+  MockAmbientDelegate delegate(origin);
+  delegate.set_requests(std::move(requests));
+  PermissionPromptChipModel chip_model(delegate.GetWeakPtr());
+
+  // More UI follows the credential, so the chip goes away.
+  request->SelectFederatedCredential(0);
+  chip_model.UpdateWithUserDecision(permissions::PermissionAction::GRANTED);
+  EXPECT_FALSE(chip_model.CanDisplayConfirmation());
+
+  // The credential signs the user in directly, so the chip shows that.
+  const std::u16string signing_in_text =
+      l10n_util::GetStringUTF16(IDS_FEDERATION_SIGNING_IN_TITLE);
+  request->SelectFederatedCredential(1);
+  chip_model.UpdateWithUserDecision(permissions::PermissionAction::GRANTED);
+  EXPECT_TRUE(chip_model.CanDisplayConfirmation());
+  EXPECT_EQ(chip_model.GetChipText(), signing_in_text);
+  EXPECT_EQ(chip_model.GetAccessibilityChipText(), signing_in_text);
+
+  // Passkeys and passwords are unaffected.
+  MockAmbientDelegate passkey_delegate(origin, u"alice@example.com",
+                                       u"Google Password Manager");
+  static_cast<ambient_signin::AmbientLoginPermissionRequest*>(
+      passkey_delegate.Requests()[0].get())
+      ->SelectCredential(0);
+  PermissionPromptChipModel passkey_chip_model(passkey_delegate.GetWeakPtr());
+  passkey_chip_model.UpdateWithUserDecision(
+      permissions::PermissionAction::GRANTED);
+  EXPECT_FALSE(passkey_chip_model.CanDisplayConfirmation());
 }
 
 }  // namespace

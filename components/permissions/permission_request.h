@@ -147,7 +147,8 @@ class PermissionRequest {
 
   // Returns prompt text appropriate for displaying on the chip button in the
   // location bar.
-  std::optional<std::u16string> GetRequestChipText(ChipTextType type) const;
+  virtual std::optional<std::u16string> GetRequestChipText(
+      ChipTextType type) const;
 
   // Returns prompt text appropriate for displaying under the dialog title
   // "[domain] wants to:".

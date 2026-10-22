@@ -564,10 +564,15 @@ void ChipController::HandleConfirmation(
       AnimateExpand();
     }
 
-    // Discard `is_pointer_interaction` (indicating pointer vs. keyboard event)
-    // as it is not needed when showing the page info dialog.
-    chip_->SetPressedCallback(base::IgnoreArgs<bool>(base::BindRepeating(
-        &ChipController::ShowPageInfoDialog, weak_factory_.GetWeakPtr())));
+    // Page Info shows the setting of the permission, so clicking the chip opens
+    // it only if the permission has one. E.g. ambient login has none.
+    if (permission_prompt_model_->content_settings_type() !=
+        ContentSettingsType::DEFAULT) {
+      // Discard `is_pointer_interaction` (indicating pointer vs. keyboard
+      // event) as it is not needed when showing the page info dialog.
+      chip_->SetPressedCallback(base::IgnoreArgs<bool>(base::BindRepeating(
+          &ChipController::ShowPageInfoDialog, weak_factory_.GetWeakPtr())));
+    }
     AnnouncePermissionRequestForAccessibility(
         permission_prompt_model_->GetAccessibilityChipText());
 

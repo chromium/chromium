@@ -842,6 +842,47 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
   EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
 }
 
+namespace {
+// A request without a content setting, whose chip shows a confirmation, like
+// ambient login.
+class NoContentSettingPermissionRequest
+    : public permissions::MockPermissionRequest {
+ public:
+  using permissions::MockPermissionRequest::MockPermissionRequest;
+
+  // permissions::PermissionRequest:
+  permissions::IconId GetBlockedIconForChip() const override {
+    return GetIconForChip();
+  }
+  std::optional<std::u16string> GetRequestChipText(
+      ChipTextType type) const override {
+    return u"Chip text";
+  }
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
+                       ConfirmationWithoutContentSettingDoesNotOpenPageInfo) {
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {}, /*with_gesture=*/true, web_contents_);
+  delegate.SetRequest(std::make_unique<NoContentSettingPermissionRequest>(
+      GURL("https://test.origin"), permissions::RequestType::kDiskQuota,
+      permissions::PermissionRequestGestureType::GESTURE));
+  PermissionPromptChip chip_prompt(web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt.get_chip_controller_for_testing();
+
+  chip_controller->OnRequestDecided(permissions::PermissionAction::GRANTED);
+  ASSERT_TRUE(chip_controller->is_confirmation_showing());
+
+  // Page Info has no setting to show for the permission, so clicking the chip
+  // doesn't open it, and the confirmation still collapses on time.
+  chip_controller->chip()->ExecuteForTesting();
+  EXPECT_FALSE(chip_controller->IsBubbleShowing());
+  EXPECT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
+  delegate.ClearRequests();
+}
+
 IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
                        PromptWithEmptyRequestsDoesNotCrash) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(

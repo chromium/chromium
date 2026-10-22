@@ -57,6 +57,10 @@ struct FederatedCredential {
   // `kAccountPictureSize` wide, e.g. FedCM crops it into a circle like in its
   // own UI.
   ui::ImageModel icon;
+  // Whether choosing this credential signs the user in without further UI,
+  // e.g. without a dialog to review what is shared with the site. If so, the
+  // chip shows that the user is signing in.
+  bool signs_in_directly = false;
 };
 
 // A permission request for displaying ambient login options (e.g. WebAuthn
@@ -116,6 +120,8 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   permissions::IconId GetIconForChip() const override;
   permissions::IconId GetBlockedIconForChip() const override;
   bool ShouldKeepChipOnBubbleClose() const override;
+  std::optional<std::u16string> GetRequestChipText(
+      ChipTextType type) const override;
   std::u16string GetMessageTextFragment() const override;
   bool ShouldBubbleStartOpen() const override;
 

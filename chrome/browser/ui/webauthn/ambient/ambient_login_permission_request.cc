@@ -147,6 +147,21 @@ bool AmbientLoginPermissionRequest::ShouldKeepChipOnBubbleClose() const {
   return true;
 }
 
+std::optional<std::u16string> AmbientLoginPermissionRequest::GetRequestChipText(
+    ChipTextType type) const {
+  // If the chosen credential signs the user in without further UI, the chip
+  // shows that the user is signing in, rather than going away.
+  // TODO(crbug.com/567563304): End the chip when sign-in finishes or fails,
+  // rather than after the fixed time that the chip shows confirmations for.
+  if ((type == ChipTextType::ALLOW_CONFIRMATION ||
+       type == ChipTextType::ACCESSIBILITY_ALLOWED_CONFIRMATION) &&
+      selected_federated_index_ &&
+      federated_credentials_[*selected_federated_index_].signs_in_directly) {
+    return l10n_util::GetStringUTF16(IDS_FEDERATION_SIGNING_IN_TITLE);
+  }
+  return permissions::PermissionRequest::GetRequestChipText(type);
+}
+
 std::u16string AmbientLoginPermissionRequest::GetMessageTextFragment() const {
   // TODO(https://crbug.com/532206357): Ambient login uses a custom permission
   // prompt view rather than the standard "[domain] wants to <fragment>" text.
