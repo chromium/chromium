@@ -1173,11 +1173,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCanvasTransform() {
     // `PaintArtifactCompositor::Layerizer::LayerizeGroup()` so the ancestor
     // drawable's effect group is not exited early.
     const auto* effect = &context_.current_effect->Unalias();
-    while (effect && effect != &canvas_contents.Effect() &&
+    if (!effect->IsInDrawableCanvasSubtree()) {
+      effect = &canvas_contents.Effect().Unalias();
+    }
+    while (effect->IsInDrawableCanvasSubtree() &&
            !effect->HasCanvasDrawableState()) {
       effect = effect->UnaliasedParent();
     }
-    context_.current_effect = effect ? effect : &canvas_contents.Effect();
+    context_.current_effect = effect;
   }
 }
 
