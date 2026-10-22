@@ -148,7 +148,10 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   if (!is_android) {
-    ts_deps += [ "//chrome/browser/resources/webui_toolbar_shared:build_ts" ]
+    ts_deps += [
+      "//chrome/browser/resources/webui_toolbar_shared:build_ts",
+      "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    ]
   }
   if (!is_android || enable_webui_contextual_tasks_composebox) {
     ts_deps += [

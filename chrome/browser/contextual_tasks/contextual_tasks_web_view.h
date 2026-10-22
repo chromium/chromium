@@ -87,6 +87,9 @@ class ContextualTasksWebView
   // Returns whether the ghost loader overlay is currently visible.
   bool IsGhostLoaderVisible() const;
 
+  // views::View:
+  void OnThemeChanged() override;
+
   // content::WebContentsDelegate:
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
@@ -157,6 +160,10 @@ class ContextualTasksWebView
   // The WebView used for the toolbar/header (only active when the
   // rearchitecture feature is enabled).
   raw_ptr<views::WebView> toolbar_web_view_ = nullptr;
+
+  // Container view hosting `content_web_view_` and `ghost_loader_view_` under
+  // the side panel rearchitecture.
+  raw_ptr<views::View> content_container_ = nullptr;
 
   // The WebView used for the main content.
   raw_ptr<views::WebView> content_web_view_ = nullptr;

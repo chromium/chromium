@@ -26,6 +26,8 @@
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -50,6 +52,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -984,6 +988,81 @@ TEST_F(ContextualTasksWebViewTest,
   EXPECT_EQ(
       dark_web_contents->GetOrCreateWebPreferences().preferred_color_scheme,
       blink::mojom::PreferredColorScheme::kDark);
+}
+
+TEST_F(ContextualTasksWebViewTest,
+       OnThemeChangedUpdatesBackgroundsAndWebContentsColorSchemes) {
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
+  ASSERT_NE(theme_service, nullptr);
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> content_wc =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(content_wc.get());
+
+  views::View* content_container = web_view_->content_web_view()->parent();
+  ASSERT_NE(content_container, nullptr);
+  EXPECT_EQ(web_view_->GetBackground()->color(),
+            ui::ColorVariant(SK_ColorWHITE));
+  EXPECT_EQ(content_container->GetBackground()->color(),
+            ui::ColorVariant(SK_ColorWHITE));
+  EXPECT_EQ(web_view_->toolbar_web_view()
+                ->GetWebContents()
+                ->GetOrCreateWebPreferences()
+                .preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kLight);
+  EXPECT_EQ(web_view_->ghost_loader_view()
+                ->GetWebContents()
+                ->GetOrCreateWebPreferences()
+                .preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kLight);
+  EXPECT_EQ(content_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kLight);
+
+  // Switch Chrome appearance to Dark while the side panel view is open.
+  theme_service->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+  web_view_->OnThemeChanged();
+
+  EXPECT_EQ(web_view_->GetBackground()->color(),
+            ui::ColorVariant(SkColorSetRGB(34, 36, 43)));
+  EXPECT_EQ(content_container->GetBackground()->color(),
+            ui::ColorVariant(SkColorSetRGB(34, 36, 43)));
+  EXPECT_EQ(web_view_->toolbar_web_view()
+                ->GetWebContents()
+                ->GetOrCreateWebPreferences()
+                .preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ(web_view_->ghost_loader_view()
+                ->GetWebContents()
+                ->GetOrCreateWebPreferences()
+                .preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ(content_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+
+  // Switch Chrome appearance back to Light while still open.
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  web_view_->OnThemeChanged();
+
+  EXPECT_EQ(web_view_->GetBackground()->color(),
+            ui::ColorVariant(SK_ColorWHITE));
+  EXPECT_EQ(content_container->GetBackground()->color(),
+            ui::ColorVariant(SK_ColorWHITE));
+  EXPECT_EQ(web_view_->toolbar_web_view()
+                ->GetWebContents()
+                ->GetOrCreateWebPreferences()
+                .preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kLight);
+  EXPECT_EQ(web_view_->ghost_loader_view()
+                ->GetWebContents()
+                ->GetOrCreateWebPreferences()
+                .preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kLight);
+  EXPECT_EQ(content_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kLight);
 }
 
 }  // namespace

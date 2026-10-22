@@ -18,6 +18,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/chrome_test_utils.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include <string>
 #include <utility>
@@ -30,7 +38,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
@@ -647,6 +654,92 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, InfoTooltip) {
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_WebView) {
   RunTest("contextual_tasks/contextual_tasks_webview_browsertest.js",
           "mocha.run();");
+}
+
+class ContextualTasksToolbarThemeBrowserTest
+    : public ContextualTasksBrowserTest {
+ protected:
+  ContextualTasksToolbarThemeBrowserTest() {
+    rearch_feature_list_.InitAndEnableFeature(
+        contextual_tasks::kContextualTasksSidePanelRearchitecture);
+  }
+
+  void SetPreferredColorScheme(blink::mojom::PreferredColorScheme scheme) {
+    content::WebContents* wc = chrome_test_utils::GetActiveWebContents(this);
+    blink::web_pref::WebPreferences prefs = wc->GetOrCreateWebPreferences();
+    prefs.preferred_color_scheme = scheme;
+    wc->SetWebPreferences(prefs);
+  }
+
+ private:
+  base::test::ScopedFeatureList rearch_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksToolbarThemeBrowserTest,
+                       FollowsPreferredColorSchemeViaCss) {
+  content::WebContents* wc = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(content::NavigateToURL(
+      wc, GURL(chrome::kChromeUIContextualTasksToolbarURL)));
+
+  SetPreferredColorScheme(blink::mojom::PreferredColorScheme::kLight);
+  EXPECT_EQ("light", content::EvalJs(wc, R"(
+    (async () => {
+      const app = document.querySelector('contextual-tasks-toolbar-app');
+      await app.updateComplete;
+      const toolbar = app.shadowRoot.querySelector('top-toolbar');
+      await toolbar.updateComplete;
+      const lightLogo = toolbar.shadowRoot.querySelector('.chrome-logo-light');
+      const darkLogo = toolbar.shadowRoot.querySelector('.chrome-logo-dark');
+      if (getComputedStyle(app).backgroundColor !== 'rgb(255, 255, 255)') {
+        return 'bad bg: ' + getComputedStyle(app).backgroundColor;
+      }
+      const iconColor = getComputedStyle(app)
+          .getPropertyValue('--toolbar-button-icon-color').replace(/\s+/g, '');
+      if (iconColor !== 'rgb(71,71,71)') {
+        return 'bad icon: ' + iconColor;
+      }
+      if (lightLogo && darkLogo) {
+        if (getComputedStyle(lightLogo).display !== 'block' ||
+            getComputedStyle(darkLogo).display !== 'none') {
+          return 'bad logo display';
+        }
+      }
+      return 'light';
+    })();
+  )"));
+
+  SetPreferredColorScheme(blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ("dark", content::EvalJs(wc, R"(
+    (async () => {
+      const app = document.querySelector('contextual-tasks-toolbar-app');
+      await app.updateComplete;
+      const toolbar = app.shadowRoot.querySelector('top-toolbar');
+      await toolbar.updateComplete;
+      const lightLogo = toolbar.shadowRoot.querySelector('.chrome-logo-light');
+      const darkLogo = toolbar.shadowRoot.querySelector('.chrome-logo-dark');
+      if (getComputedStyle(app).backgroundColor !== 'rgb(34, 36, 42)') {
+        return 'bad bg: ' + getComputedStyle(app).backgroundColor;
+      }
+      const iconColor = getComputedStyle(app)
+          .getPropertyValue('--toolbar-button-icon-color').replace(/\s+/g, '');
+      if (iconColor !== 'rgb(199,199,199)') {
+        return 'bad icon: ' + iconColor;
+      }
+      if (lightLogo && darkLogo) {
+        if (getComputedStyle(lightLogo).display !== 'none' ||
+            getComputedStyle(darkLogo).display !== 'block') {
+          return 'bad logo display';
+        }
+      }
+      return 'dark';
+    })();
+  )"));
+
+  SetPreferredColorScheme(blink::mojom::PreferredColorScheme::kLight);
+  EXPECT_EQ("light", content::EvalJs(wc, R"(
+    getComputedStyle(document.querySelector('contextual-tasks-toolbar-app'))
+        .backgroundColor === 'rgb(255, 255, 255)' ? 'light' : 'mismatch'
+  )"));
 }
 #endif
 

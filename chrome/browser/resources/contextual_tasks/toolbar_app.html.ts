@@ -13,7 +13,6 @@ export function getHtml(this: ContextualTasksToolbarAppElement) {
     </if>
     <top-toolbar id="toolbar"
         .title="${this.threadTitle_}"
-        .darkMode="${this.darkMode_}"
         .isAiPage="${this.isAiPage_}"
         .isAimEligible="${this.isAimEligible_}"
         .isUserSignedIn="${this.isUserSignedIn_}"

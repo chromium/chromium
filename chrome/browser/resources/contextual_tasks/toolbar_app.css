@@ -22,11 +22,12 @@
   background-color: var(--search-background-color);
 }
 
-:host([dark-mode]),
-:host([dark-mode_]) {
-  --search-background-color: rgba(34, 36, 42, 1);
-  --toolbar-divider-color: rgb(94,94,94);
-  --toolbar-menu-background-color: rgb(31, 31, 31);
-  --toolbar-text-color: rgb(227,227,227);
-  --toolbar-menu-icon-color: rgba(199, 199, 199, 1);
+@media (prefers-color-scheme: dark) {
+  :host {
+    --search-background-color: rgba(34, 36, 42, 1);
+    --toolbar-divider-color: rgb(94,94,94);
+    --toolbar-menu-background-color: rgb(31, 31, 31);
+    --toolbar-text-color: rgb(227,227,227);
+    --toolbar-menu-icon-color: rgba(199, 199, 199, 1);
+  }
 }

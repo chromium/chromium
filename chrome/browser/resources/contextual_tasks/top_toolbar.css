@@ -114,7 +114,7 @@ permission-dashboard[hidden] {
 }
 
 :host([dark-mode]) .top-toolbar-logo-button.clickable {
-  background: var(--toolbar-background-color, #22242a);
+  background: var(--toolbar-background-color, #22242b);
   box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.25);
 }
 
@@ -136,12 +136,35 @@ permission-dashboard[hidden] {
   display: none;
 }
 
+/* Pre-rearchitecture <contextual-tasks-app> drives dark mode explicitly via
+ * the dark-mode host attribute, whereas post-rearchitecture toolbar.html
+ * updates preferred_color_scheme directly via C++ and relies on
+ * @media (prefers-color-scheme: dark). Scoping the media query to
+ * [is-side-panel-rearchitecture-enabled] prevents OS dark mode from
+ * overriding light mode on pre-rearchitecture pages.
+ */
 :host([dark-mode]) .chrome-logo-light {
   display: none;
 }
 
 :host([dark-mode]) .chrome-logo-dark {
   display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host([is-side-panel-rearchitecture-enabled])
+      .top-toolbar-logo-button.clickable {
+    background: var(--toolbar-background-color, #22242b);
+    box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  :host([is-side-panel-rearchitecture-enabled]) .chrome-logo-light {
+    display: none;
+  }
+
+  :host([is-side-panel-rearchitecture-enabled]) .chrome-logo-dark {
+    display: block;
+  }
 }
 
 .top-toolbar-action-buttons {
