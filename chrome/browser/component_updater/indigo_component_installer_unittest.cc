@@ -100,9 +100,8 @@ TEST_F(IndigoComponentInstallerPolicyTest, ComponentRegistered) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*service, RegisterComponent(testing::_))
-      .WillOnce(testing::DoAll(
-          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }),
-          testing::Return(true)));
+      .WillOnce(testing::DoAll([&run_loop]() { run_loop.Quit(); },
+                               testing::Return(true)));
   RegisterIndigoComponent(service.get());
   run_loop.Run();
 }

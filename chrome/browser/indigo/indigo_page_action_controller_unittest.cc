@@ -884,12 +884,12 @@ TEST_F(IndigoPageActionControllerLegacyTest,
             page_actions::AnchoredMessageConfig{
                 .priority =
                     page_actions::PageActionPriorityCategory::kContextualCue}))
-        .WillOnce(testing::InvokeWithoutArgs([&]() {
+        .WillOnce([&]() {
           page_actions::PageActionState state;
           state.action_id = kActionIndigo;
           state.anchored_message_showing = true;
           controller_->OnPageActionAnchoredMessageShown(state);
-        }));
+        });
     EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(_, _)).Times(0);
 
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
@@ -1409,12 +1409,12 @@ TEST_F(IndigoPageActionControllerLegacyTest,
     GURL url1("https://example.com/1");
     ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
     EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _))
-        .WillOnce(testing::InvokeWithoutArgs([&]() {
+        .WillOnce([&]() {
           page_actions::PageActionState state;
           state.action_id = kActionIndigo;
           state.anchored_message_showing = true;
           controller_->OnPageActionAnchoredMessageShown(state);
-        }));
+        });
     auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
         url1, tab_interface_->GetContents());
     navigation1->Commit();

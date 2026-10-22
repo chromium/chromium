@@ -58,10 +58,9 @@ class LenientMockSiteDataCacheImpl : public SiteDataCacheImpl {
     run_loop_ = std::make_unique<base::RunLoop>();
     auto quit_closure = run_loop_->QuitClosure();
     EXPECT_CALL(*this, ClearSiteDataForOrigins(::testing::Eq(expected_origins)))
-        .WillOnce(
-            ::testing::InvokeWithoutArgs([closure = std::move(quit_closure)]() {
-              std::move(closure).Run();
-            }));
+        .WillOnce([closure = std::move(quit_closure)]() {
+          std::move(closure).Run();
+        });
   }
 
   void SetClearAllSiteDataExpectations() {
@@ -69,10 +68,9 @@ class LenientMockSiteDataCacheImpl : public SiteDataCacheImpl {
     run_loop_ = std::make_unique<base::RunLoop>();
     auto quit_closure = run_loop_->QuitClosure();
     EXPECT_CALL(*this, ClearAllSiteData())
-        .WillOnce(
-            ::testing::InvokeWithoutArgs([closure = std::move(quit_closure)]() {
-              std::move(closure).Run();
-            }));
+        .WillOnce([closure = std::move(quit_closure)]() {
+          std::move(closure).Run();
+        });
   }
 
   void WaitForExpectations() {

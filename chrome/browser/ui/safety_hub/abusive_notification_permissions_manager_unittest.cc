@@ -1098,7 +1098,7 @@ TEST_F(ShowManualNotificationRevocationsTest,
       profile(), origin_to_revoke, mock_callback_receiver.Get());
   EXPECT_CALL(mock_callback_receiver, Run(PermissionRevocationRequest::Outcome::
                                               PERMISSION_REVOKED_DUE_TO_ABUSE))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   run_loop.Run();
 
   // Check if the content setting turn to ASK, when auto-revocation happens.
@@ -1174,7 +1174,7 @@ TEST_F(ShowManualNotificationRevocationsTest,
       profile(), origin_to_revoke, mock_callback_receiver.Get());
   EXPECT_CALL(mock_callback_receiver, Run(PermissionRevocationRequest::Outcome::
                                               PERMISSION_REVOKED_DUE_TO_ABUSE))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   run_loop.Run();
 
   // Regrant removes the permission from the list shown to the user and changes
@@ -1197,8 +1197,7 @@ TEST_F(ShowManualNotificationRevocationsTest,
           profile(), origin_to_revoke, mock_callback_receiver.Get());
   EXPECT_CALL(mock_callback_receiver,
               Run(PermissionRevocationRequest::Outcome::PERMISSION_NOT_REVOKED))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&run_loop_new]() { run_loop_new.Quit(); }));
+      .WillOnce([&run_loop_new]() { run_loop_new.Quit(); });
   run_loop_new.Run();
 
   // Permission should not have been revoked, since the user allowed it from
@@ -1235,7 +1234,7 @@ TEST_F(ShowManualNotificationRevocationsTest,
       profile(), origin_to_revoke, mock_callback_receiver.Get());
   EXPECT_CALL(mock_callback_receiver, Run(PermissionRevocationRequest::Outcome::
                                               PERMISSION_REVOKED_DUE_TO_ABUSE))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   run_loop.Run();
 
   // Regrant removes the permission from the list shown to the user and changes

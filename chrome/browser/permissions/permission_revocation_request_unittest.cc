@@ -94,8 +94,7 @@ class PermissionRevocationRequestTestBase : public testing::Test {
     auto permission_revocation = std::make_unique<PermissionRevocationRequest>(
         testing_profile_.get(), origin, mock_callback_receiver.Get());
     EXPECT_CALL(mock_callback_receiver, Run(expected_result))
-        .WillOnce(
-            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     run_loop.Run();
   }
 
@@ -276,7 +275,7 @@ TEST_F(PermissionRevocationRequestTest, PreloadDataAsyncTest) {
 
   EXPECT_CALL(mock_callback_receiver_2,
               Run(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
 
   SetPermission(abusive_content_origin_to_revoke, CONTENT_SETTING_ALLOW);
   SetPermission(abusive_prompts_origin_to_revoke, CONTENT_SETTING_ALLOW);

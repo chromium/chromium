@@ -24,7 +24,6 @@ namespace {
 
 using base::test::RunOnceClosure;
 using testing::_;
-using testing::InvokeWithoutArgs;
 
 class MockClient : public extensions::NativeMessageHost::Client {
  public:
@@ -86,11 +85,12 @@ TEST_F(DriveFsNativeMessageHostTest, DriveFsInitiatedMessaging) {
           &profile_, extension_port_.BindNewPipeAndPassReceiver(),
           receiver_.BindNewPipeAndPassRemote());
   MockClient client;
-  EXPECT_CALL(client, PostMessageFromNativeHost("foo"))
-      .WillOnce(InvokeWithoutArgs([&host]() { host->OnMessage("bar"); }));
-  EXPECT_CALL(*this, HandleMessageFromExtension("bar"))
-      .WillOnce(InvokeWithoutArgs(
-          [this]() { extension_port_->PostMessageToExtension("baz"); }));
+  EXPECT_CALL(client, PostMessageFromNativeHost("foo")).WillOnce([&host]() {
+    host->OnMessage("bar");
+  });
+  EXPECT_CALL(*this, HandleMessageFromExtension("bar")).WillOnce([this]() {
+    extension_port_->PostMessageToExtension("baz");
+  });
   EXPECT_CALL(client, PostMessageFromNativeHost("baz"))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
@@ -108,9 +108,9 @@ TEST_F(DriveFsNativeMessageHostTest, ExtensionInitiatedMessaging) {
                          base::Unretained(this)));
   MockClient client;
   host->Start(&client);
-  EXPECT_CALL(*this, HandleMessageFromExtension("foo"))
-      .WillOnce(InvokeWithoutArgs(
-          [this]() { extension_port_->PostMessageToExtension("bar"); }));
+  EXPECT_CALL(*this, HandleMessageFromExtension("foo")).WillOnce([this]() {
+    extension_port_->PostMessageToExtension("bar");
+  });
   EXPECT_CALL(client, PostMessageFromNativeHost("bar"))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
   host->OnMessage("foo");
@@ -130,8 +130,9 @@ TEST_F(DriveFsNativeMessageHostTest, NativeHostSendsMessageBeforeStart) {
 
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(client, PostMessageFromNativeHost("foo"))
-        .WillOnce(InvokeWithoutArgs([&host]() { host->OnMessage("bar"); }));
+    EXPECT_CALL(client, PostMessageFromNativeHost("foo")).WillOnce([&host]() {
+      host->OnMessage("bar");
+    });
     EXPECT_CALL(*this, HandleMessageFromExtension("bar"))
         .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
     host->Start(&client);

@@ -29,9 +29,8 @@ TEST_F(PrivateVerificationTokensInstallerTest, RegisterIfFeatureEnabled) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_update_service_, RegisterComponent(testing::_))
-      .WillOnce(testing::DoAll(
-          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }),
-          testing::Return(true)));
+      .WillOnce(testing::DoAll([&run_loop]() { run_loop.Quit(); },
+                               testing::Return(true)));
 
   RegisterPrivateVerificationTokensComponentIfEnabled(&mock_update_service_);
   run_loop.Run();

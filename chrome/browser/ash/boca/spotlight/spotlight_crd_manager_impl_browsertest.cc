@@ -31,7 +31,6 @@
 
 using base::test::TestFuture;
 using ::testing::_;
-using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
 using ::testing::WithArg;
@@ -176,9 +175,9 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
 IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
                        TerminatesCrdSessionOnSessionEnd) {
   TestFuture<void> session_finished_future;
-  EXPECT_CALL(*crd_session_, TerminateSession)
-      .WillOnce(InvokeWithoutArgs(
-          [&]() { std::move(session_finished_future.GetCallback()).Run(); }));
+  EXPECT_CALL(*crd_session_, TerminateSession).WillOnce([&]() {
+    std::move(session_finished_future.GetCallback()).Run();
+  });
 
   TestFuture<const std::string&> success_future;
   manager_->InitiateSpotlightSession(success_future.GetCallback(),

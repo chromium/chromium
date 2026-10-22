@@ -213,9 +213,9 @@ TEST_F(AutoPipSettingOverlayViewTest, TestDeletingOverlayClosesBubble) {
   widget->AddObserver(&widget_observer);
 
   // Removing and deleting the setting overlay should close the bubble widget.
-  EXPECT_CALL(widget_observer, OnWidgetClosing(widget))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&]() { widget->RemoveObserver(&widget_observer); }));
+  EXPECT_CALL(widget_observer, OnWidgetClosing(widget)).WillOnce([&]() {
+    widget->RemoveObserver(&widget_observer);
+  });
   RemoveAndDeleteSettingOverlay();
   testing::Mock::VerifyAndClearExpectations(&widget_observer);
 }

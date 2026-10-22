@@ -50,7 +50,6 @@ namespace {
 using testing::_;
 using testing::AnyNumber;
 using testing::DoAll;
-using testing::InvokeWithoutArgs;
 using testing::Sequence;
 
 // Total number of stopping points in ::ExpectStopOnStepN
@@ -298,14 +297,13 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
   template <typename T, typename F>
   void MakeErrorPoint(T& expectation, Sequence seq, F callback) {
-    expectation.WillOnce(InvokeWithoutArgs(callback));
+    expectation.WillOnce(callback);
     ErrorExpectation(seq);
   }
 
   template <typename T, typename F, typename G>
   void MakeErrorPoint(T& expectation, Sequence seq, F callback1, G callback2) {
-    expectation.WillOnce(
-        DoAll(InvokeWithoutArgs(callback1), InvokeWithoutArgs(callback2)));
+    expectation.WillOnce(DoAll(callback1, callback2));
     ErrorExpectation(seq);
   }
 
@@ -338,11 +336,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
       }
 
       if (use_pflash) {
-        expectation.WillOnce(
-            InvokeWithoutArgs(PrefsCallback(prefs_installable_)));
+        expectation.WillOnce(PrefsCallback(prefs_installable_));
       } else {
-        expectation.WillOnce(
-            InvokeWithoutArgs(PrefsCallback(prefs_installable_no_pflash_)));
+        expectation.WillOnce(PrefsCallback(prefs_installable_no_pflash_));
       }
     }
 
@@ -367,8 +363,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return true;
       }
 
-      expectation.WillOnce(
-          InvokeWithoutArgs(DlcCallback(dlcservice::kErrorNone)));
+      expectation.WillOnce(DlcCallback(dlcservice::kErrorNone));
     }
 
     // UEFI DLC install step
@@ -392,8 +387,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return true;
       }
 
-      expectation.WillOnce(
-          InvokeWithoutArgs(DlcCallback(dlcservice::kErrorNone)));
+      expectation.WillOnce(DlcCallback(dlcservice::kErrorNone));
     }
 
     // Boot disk download step
@@ -428,7 +422,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return true;
       }
 
-      expectation.WillOnce(InvokeWithoutArgs(DownloadSuccessCallback()));
+      expectation.WillOnce(DownloadSuccessCallback());
     }
 
     // pflash download step
@@ -463,7 +457,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
           return true;
         }
 
-        expectation.WillOnce(InvokeWithoutArgs(DownloadSuccessCallback()));
+        expectation.WillOnce(DownloadSuccessCallback());
       }
     }
 
@@ -511,8 +505,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return true;
       }
 
-      expectation.WillOnce(InvokeWithoutArgs(DiskImageCallback(
-          vm_tools::concierge::DiskImageStatus::DISK_STATUS_CREATED)));
+      expectation.WillOnce(DiskImageCallback(
+          vm_tools::concierge::DiskImageStatus::DISK_STATUS_CREATED));
     }
 
     // Install pflash file step
@@ -540,7 +534,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
           return true;
         }
 
-        expectation.WillOnce(InvokeWithoutArgs(InstallPflashCallback(true)));
+        expectation.WillOnce(InstallPflashCallback(true));
       }
     }
 
@@ -564,7 +558,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return true;
       }
 
-      expectation.WillOnce(InvokeWithoutArgs(ClearVekCallback(true)));
+      expectation.WillOnce(ClearVekCallback(true));
     }
 
     // Start VM step
@@ -598,7 +592,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return true;
       }
 
-      expectation.WillOnce(InvokeWithoutArgs(StartVmCallback(true)));
+      expectation.WillOnce(StartVmCallback(true));
     }
 
     // Open terminal step
@@ -606,7 +600,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
                 StateChanged(BruschettaInstaller::State::kLaunchTerminal))
         .Times(1)
         .InSequence(seq)
-        .WillOnce(InvokeWithoutArgs(LaunchTerminalCallback()));
+        .WillOnce(LaunchTerminalCallback());
 
     // Make sure all input steps other then kMaxSteps got handled earlier.
     if (n != 0) {

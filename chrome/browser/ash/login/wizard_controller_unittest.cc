@@ -673,11 +673,11 @@ TEST_F(WizardControllerTest, DemoModeOobeFlowEndsOnGaiaScreenAndCompletesOobe) {
 
   base::test::TestFuture<void> enrollment_signal;
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
-      .WillOnce(testing::InvokeWithoutArgs([&]() {
+      .WillOnce([&]() {
         FakeInstallAttributesForDemoMode();
         mock_enrollment_launcher_.status_consumer()->OnDeviceEnrolled();
         (enrollment_signal.GetCallback()).Run();
-      }));
+      });
 
   PerformUserAction(kActionStartSetup);
 

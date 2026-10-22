@@ -22,7 +22,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 
 MATCHER_P(ConfigModeMatches, mode, "") {
@@ -77,56 +76,56 @@ void EnrollmentHelperMixin::ExpectEnrollmentModeRepeated(
 
 void EnrollmentHelperMixin::ExpectSuccessfulOAuthEnrollment() {
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode))
-      .WillOnce(InvokeWithoutArgs([this]() {
+      .WillOnce([this]() {
         mock_enrollment_launcher_.status_consumer()->OnDeviceEnrolled();
-      }));
+      });
 }
 
 void EnrollmentHelperMixin::ExpectOAuthEnrollmentError(
     policy::EnrollmentStatus status) {
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode))
-      .WillOnce(InvokeWithoutArgs([this, status]() {
+      .WillOnce([this, status]() {
         mock_enrollment_launcher_.status_consumer()->OnEnrollmentError(status);
-      }));
+      });
 }
 
 void EnrollmentHelperMixin::ExpectAttestationEnrollmentSuccess() {
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
-      .WillOnce(InvokeWithoutArgs([this]() {
+      .WillOnce([this]() {
         mock_enrollment_launcher_.status_consumer()->OnDeviceEnrolled();
-      }));
+      });
 }
 
 void EnrollmentHelperMixin::ExpectAttestationEnrollmentError(
     policy::EnrollmentStatus status) {
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
-      .WillOnce(InvokeWithoutArgs([this, status]() {
+      .WillOnce([this, status]() {
         mock_enrollment_launcher_.status_consumer()->OnEnrollmentError(status);
-      }));
+      });
 }
 
 void EnrollmentHelperMixin::ExpectAttestationEnrollmentErrorRepeated(
     policy::EnrollmentStatus status) {
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
       .Times(AtLeast(1))
-      .WillRepeatedly(InvokeWithoutArgs([this, status]() {
+      .WillRepeatedly([this, status]() {
         mock_enrollment_launcher_.status_consumer()->OnEnrollmentError(status);
-      }));
+      });
 }
 
 void EnrollmentHelperMixin::ExpectTokenBasedEnrollmentSuccess() {
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingEnrollmentToken())
-      .WillOnce(InvokeWithoutArgs([this]() {
+      .WillOnce([this]() {
         mock_enrollment_launcher_.status_consumer()->OnDeviceEnrolled();
-      }));
+      });
 }
 
 void EnrollmentHelperMixin::ExpectTokenBasedEnrollmentError(
     policy::EnrollmentStatus status) {
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingEnrollmentToken())
-      .WillOnce(InvokeWithoutArgs([this, status]() {
+      .WillOnce([this, status]() {
         mock_enrollment_launcher_.status_consumer()->OnEnrollmentError(status);
-      }));
+      });
 }
 
 void EnrollmentHelperMixin::SetupClearAuth() {
@@ -142,10 +141,10 @@ void EnrollmentHelperMixin::ExpectEnrollmentCredentials() {
 
 void EnrollmentHelperMixin::DisableAttributePromptUpdate() {
   EXPECT_CALL(mock_enrollment_launcher_, GetDeviceAttributeUpdatePermission())
-      .WillOnce(InvokeWithoutArgs([this]() {
+      .WillOnce([this]() {
         mock_enrollment_launcher_.status_consumer()
             ->OnDeviceAttributeUpdatePermission(false);
-      }));
+      });
 }
 
 void EnrollmentHelperMixin::ExpectAttributePromptUpdate(
@@ -153,18 +152,18 @@ void EnrollmentHelperMixin::ExpectAttributePromptUpdate(
     const std::string& location) {
   // Causes the attribute-prompt flow to activate.
   ON_CALL(mock_enrollment_launcher_, GetDeviceAttributeUpdatePermission())
-      .WillByDefault(InvokeWithoutArgs([this]() {
+      .WillByDefault([this]() {
         mock_enrollment_launcher_.status_consumer()
             ->OnDeviceAttributeUpdatePermission(true);
-      }));
+      });
 
   // Ensures we receive the updates attributes.
   EXPECT_CALL(mock_enrollment_launcher_,
               UpdateDeviceAttributes(asset_id, location))
-      .WillOnce(InvokeWithoutArgs([this]() {
+      .WillOnce([this]() {
         mock_enrollment_launcher_.status_consumer()
             ->OnDeviceAttributeUploadCompleted(true);
-      }));
+      });
 }
 
 }  // namespace test

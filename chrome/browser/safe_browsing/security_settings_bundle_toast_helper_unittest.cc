@@ -62,12 +62,13 @@ TEST_F(SecuritySettingsBundleToastHelperTest, ToastShownIfPending) {
       MaybeShowToast(testing::Field(&ToastParams::toast_id,
                                     ToastId::kEnhancedBundledSecuritySettings)))
       .Times(1)
-      .WillOnce(testing::DoAll(testing::InvokeWithoutArgs([]() {
-                                 base::UmaHistogramEnumeration(
-                                     "Toast.TriggeredToShow",
-                                     ToastId::kEnhancedBundledSecuritySettings);
-                               }),
-                               testing::Return(true)));
+      .WillOnce(testing::DoAll(
+          []() {
+            base::UmaHistogramEnumeration(
+                "Toast.TriggeredToShow",
+                ToastId::kEnhancedBundledSecuritySettings);
+          },
+          testing::Return(true)));
 
   helper_->TriggerIfNeeded();
 
@@ -123,18 +124,20 @@ TEST_F(SecuritySettingsBundleToastHelperTest, RetryTriggeredIfToastShownFails) {
       toast_controller_,
       MaybeShowToast(testing::Field(&ToastParams::toast_id,
                                     ToastId::kEnhancedBundledSecuritySettings)))
-      .WillOnce(testing::DoAll(testing::InvokeWithoutArgs([]() {
-                                 base::UmaHistogramEnumeration(
-                                     "Toast.FailedToShow",
-                                     ToastId::kEnhancedBundledSecuritySettings);
-                               }),
-                               testing::Return(false)))
-      .WillOnce(testing::DoAll(testing::InvokeWithoutArgs([]() {
-                                 base::UmaHistogramEnumeration(
-                                     "Toast.TriggeredToShow",
-                                     ToastId::kEnhancedBundledSecuritySettings);
-                               }),
-                               testing::Return(true)));
+      .WillOnce(testing::DoAll(
+          []() {
+            base::UmaHistogramEnumeration(
+                "Toast.FailedToShow",
+                ToastId::kEnhancedBundledSecuritySettings);
+          },
+          testing::Return(false)))
+      .WillOnce(testing::DoAll(
+          []() {
+            base::UmaHistogramEnumeration(
+                "Toast.TriggeredToShow",
+                ToastId::kEnhancedBundledSecuritySettings);
+          },
+          testing::Return(true)));
 
   helper_->TriggerIfNeeded();
 
@@ -168,13 +171,13 @@ TEST_F(SecuritySettingsBundleToastHelperTest, RetryStopsAfterMaxRetries) {
       MaybeShowToast(testing::Field(&ToastParams::toast_id,
                                     ToastId::kEnhancedBundledSecuritySettings)))
       .Times(SecuritySettingsBundleToastHelper::kMaxRetries + 1)
-      .WillRepeatedly(
-          testing::DoAll(testing::InvokeWithoutArgs([]() {
-                           base::UmaHistogramEnumeration(
-                               "Toast.FailedToShow",
-                               ToastId::kEnhancedBundledSecuritySettings);
-                         }),
-                         testing::Return(false)));
+      .WillRepeatedly(testing::DoAll(
+          []() {
+            base::UmaHistogramEnumeration(
+                "Toast.FailedToShow",
+                ToastId::kEnhancedBundledSecuritySettings);
+          },
+          testing::Return(false)));
 
   helper_->TriggerIfNeeded();
 

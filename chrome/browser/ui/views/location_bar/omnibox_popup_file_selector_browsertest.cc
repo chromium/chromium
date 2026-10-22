@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   base::RunLoop run_loop;
   EXPECT_CALL(mock_edit_model,
               OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
 
   // Trigger the file selection.
   file_selector.FileSelected(
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   base::RunLoop run_loop;
   EXPECT_CALL(mock_edit_model,
               OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
 
   // Trigger the file selection.
   file_selector.FileSelected(

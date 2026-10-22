@@ -244,8 +244,9 @@ TEST_F(DrivePickerUntrustedHostUITest, LoadConsentKitUrl_ForwardsToPage) {
 
   const GURL test_url("https://consent.google.com/primitive?hl=en");
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_page, LoadConsentKitUrl(test_url))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(mock_page, LoadConsentKitUrl(test_url)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
 
   controller.LoadConsentKitUrl(test_url);
 

@@ -1148,8 +1148,9 @@ TEST_F(RTCDiagnosticLoggingTest,
   EXPECT_TRUE(event_log_future.Wait());
 
   bool observer_called = false;
-  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs([&]() { observer_called = true; }));
+  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(testing::_)).WillOnce([&]() {
+    observer_called = true;
+  });
 
   base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->FinishRtcDiagnosticLogging(
@@ -1179,8 +1180,9 @@ TEST_F(RTCDiagnosticLoggingTest,
   EXPECT_TRUE(event_log_future.Wait());
 
   bool observer_called = false;
-  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs([&]() { observer_called = true; }));
+  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(testing::_)).WillOnce([&]() {
+    observer_called = true;
+  });
 
   base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->CancelRtcDiagnosticLogging(

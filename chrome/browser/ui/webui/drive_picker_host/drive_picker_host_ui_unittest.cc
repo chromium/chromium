@@ -235,7 +235,7 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostReportsTokenFetchFailure) {
   EXPECT_CALL(
       result_handler,
       OnError(drive_picker_host::mojom::DrivePickerError::kTokenFetchFailure))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
 
   auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
       drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
@@ -263,8 +263,9 @@ TEST_F(DrivePickerHostUITest, LoadConsentKitUrl_ForwardsToUntrusted) {
 
   const GURL test_url("https://consent.google.com/primitive?hl=en");
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_bridge, LoadConsentKitUrl(test_url))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(mock_bridge, LoadConsentKitUrl(test_url)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
 
   controller.LoadConsentKitUrl(test_url);
 
@@ -444,8 +445,7 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowNotCompleted_RelaysCancel) {
 
   base::RunLoop consent_url_run_loop;
   EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&consent_url_run_loop]() { consent_url_run_loop.Quit(); }));
+      .WillOnce([&consent_url_run_loop]() { consent_url_run_loop.Quit(); });
   controller.TriggerDrivePickerHost(std::move(request));
   consent_url_run_loop.Run();
 
@@ -463,9 +463,9 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowNotCompleted_RelaysCancel) {
   decision->set_decision(identity_consent::Decision::DECISION_ABANDONED);
 
   base::RunLoop cancel_run_loop;
-  EXPECT_CALL(result_handler, OnCancel())
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&cancel_run_loop]() { cancel_run_loop.Quit(); }));
+  EXPECT_CALL(result_handler, OnCancel()).WillOnce([&cancel_run_loop]() {
+    cancel_run_loop.Quit();
+  });
 
   controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(message));
   cancel_run_loop.Run();
@@ -494,8 +494,7 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowCancel_RelaysCancel) {
 
   base::RunLoop consent_url_run_loop;
   EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&consent_url_run_loop]() { consent_url_run_loop.Quit(); }));
+      .WillOnce([&consent_url_run_loop]() { consent_url_run_loop.Quit(); });
   controller.TriggerDrivePickerHost(std::move(request));
   consent_url_run_loop.Run();
 
@@ -505,9 +504,9 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowCancel_RelaysCancel) {
 
   base::RunLoop cancel_run_loop;
   // Expect OnCancel to be called on result handler
-  EXPECT_CALL(result_handler, OnCancel())
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&cancel_run_loop]() { cancel_run_loop.Quit(); }));
+  EXPECT_CALL(result_handler, OnCancel()).WillOnce([&cancel_run_loop]() {
+    cancel_run_loop.Quit();
+  });
 
   controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(message));
   cancel_run_loop.Run();
@@ -536,8 +535,7 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowMissingFlowId_RelaysError) {
 
   base::RunLoop consent_url_run_loop;
   EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&consent_url_run_loop]() { consent_url_run_loop.Quit(); }));
+      .WillOnce([&consent_url_run_loop]() { consent_url_run_loop.Quit(); });
   controller.TriggerDrivePickerHost(std::move(request));
   consent_url_run_loop.Run();
 
@@ -562,8 +560,7 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowMissingFlowId_RelaysError) {
   base::RunLoop error_run_loop;
   EXPECT_CALL(result_handler,
               OnError(drive_picker_host::mojom::DrivePickerError::kUnknown))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&error_run_loop]() { error_run_loop.Quit(); }));
+      .WillOnce([&error_run_loop]() { error_run_loop.Quit(); });
 
   controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(message));
   error_run_loop.Run();
@@ -592,8 +589,7 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowMismatchedFlowId_RelaysError) {
 
   base::RunLoop consent_url_run_loop;
   EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&consent_url_run_loop]() { consent_url_run_loop.Quit(); }));
+      .WillOnce([&consent_url_run_loop]() { consent_url_run_loop.Quit(); });
   controller.TriggerDrivePickerHost(std::move(request));
   consent_url_run_loop.Run();
 
@@ -621,8 +617,7 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowMismatchedFlowId_RelaysError) {
   base::RunLoop error_run_loop;
   EXPECT_CALL(result_handler,
               OnError(drive_picker_host::mojom::DrivePickerError::kUnknown))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&error_run_loop]() { error_run_loop.Quit(); }));
+      .WillOnce([&error_run_loop]() { error_run_loop.Quit(); });
 
   controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(message));
   error_run_loop.Run();
@@ -687,8 +682,7 @@ TEST_F(DrivePickerHostUITest,
 
   base::RunLoop consent_url_run_loop;
   EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&consent_url_run_loop]() { consent_url_run_loop.Quit(); }));
+      .WillOnce([&consent_url_run_loop]() { consent_url_run_loop.Quit(); });
   controller.TriggerDrivePickerHost(std::move(request));
   consent_url_run_loop.Run();
 
@@ -696,8 +690,7 @@ TEST_F(DrivePickerHostUITest,
   EXPECT_CALL(
       result_handler,
       OnError(drive_picker_host::mojom::DrivePickerError::kMojoDisconnected))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&disconnect_run_loop]() { disconnect_run_loop.Quit(); }));
+      .WillOnce([&disconnect_run_loop]() { disconnect_run_loop.Quit(); });
 
   mock_bridge.Disconnect();
   disconnect_run_loop.Run();

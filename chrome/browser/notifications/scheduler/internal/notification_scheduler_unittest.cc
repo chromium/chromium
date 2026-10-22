@@ -30,7 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::SetArgPointee;
 
@@ -104,8 +103,9 @@ class NotificationSchedulerTest : public testing::Test {
     scheduler()->Init(
         base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
 
-    EXPECT_CALL(*client(), OnSchedulerInitialized(true, _))
-        .WillOnce(InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+    EXPECT_CALL(*client(), OnSchedulerInitialized(true, _)).WillOnce([&]() {
+      run_loop.Quit();
+    });
 
     run_loop.Run();
   }
@@ -177,8 +177,9 @@ TEST_F(NotificationSchedulerTest, InitImpressionTrackerFailed) {
   scheduler()->Init(
       base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
 
-  EXPECT_CALL(*client(), OnSchedulerInitialized(false, _))
-      .WillOnce(InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+  EXPECT_CALL(*client(), OnSchedulerInitialized(false, _)).WillOnce([&]() {
+    run_loop.Quit();
+  });
 
   run_loop.Run();
 }
@@ -201,8 +202,9 @@ TEST_F(NotificationSchedulerTest, InitScheduledNotificationManagerFailed) {
   scheduler()->Init(
       base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
 
-  EXPECT_CALL(*client(), OnSchedulerInitialized(false, _))
-      .WillOnce(InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+  EXPECT_CALL(*client(), OnSchedulerInitialized(false, _)).WillOnce([&]() {
+    run_loop.Quit();
+  });
 
   run_loop.Run();
 }
@@ -269,9 +271,7 @@ TEST_F(NotificationSchedulerTest, OnUserAction) {
                              UserActionType::kButtonClick, kGuid);
   EXPECT_CALL(*impression_tracker(), OnUserAction(action_data));
   EXPECT_CALL(*task_coordinator(), ScheduleBackgroundTask(_, _)).Times(1);
-  EXPECT_CALL(*client(), OnUserAction(_)).WillOnce(InvokeWithoutArgs([&]() {
-    loop.Quit();
-  }));
+  EXPECT_CALL(*client(), OnUserAction(_)).WillOnce([&]() { loop.Quit(); });
 
   scheduler()->OnUserAction(action_data);
   loop.Run();

@@ -404,10 +404,9 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
     BoundSessionParamsStorage::RegisterProfilePrefs(prefs_.registry());
     test_storage_ =
         BoundSessionParamsStorage::CreatePrefsStorageForTesting(prefs_);
-    EXPECT_CALL(*this, CreateBoundSessionDebugReportFetcher)
-        .WillRepeatedly(testing::InvokeWithoutArgs([] {
-          return std::make_unique<FakeBoundSessionDebugReportFetcher>();
-        }));
+    EXPECT_CALL(*this, CreateBoundSessionDebugReportFetcher).WillRepeatedly([] {
+      return std::make_unique<FakeBoundSessionDebugReportFetcher>();
+    });
   }
 
   ~BoundSessionCookieRefreshServiceImplTestBase() override = default;
@@ -807,11 +806,10 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_CALL(*this, CreateBoundSessionDebugReportFetcher(
                          kTestSessionId, kTestGoogleURL.Resolve("/rotate"),
                          /*is_off_the_record_profile=*/false, testing::_))
-      .WillOnce(testing::DoAll(
-          testing::SaveArg<3>(&sent_rotation_debug_info),
-          testing::InvokeWithoutArgs([] {
+      .WillOnce(
+          testing::DoAll(testing::SaveArg<3>(&sent_rotation_debug_info), [] {
             return std::make_unique<FakeBoundSessionDebugReportFetcher>();
-          })));
+          }));
   SimulateTerminateSession(
       SessionTerminationTrigger::kCookieRotationPersistentError,
       BoundSessionRefreshCookieFetcher::Result::kSignChallengeFailed);

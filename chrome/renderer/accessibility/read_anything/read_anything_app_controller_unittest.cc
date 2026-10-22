@@ -6631,9 +6631,9 @@ TEST_F(ReadAnythingAppControllerTest,
   // Distillation can complete synchronously, so the debouncer must already be
   // running when it starts.
   bool debouncer_running_on_distill = false;
-  EXPECT_CALL(*distiller_, Distill).WillOnce(testing::InvokeWithoutArgs([&] {
+  EXPECT_CALL(*distiller_, Distill).WillOnce([&] {
     debouncer_running_on_distill = IsPdfDrawDebouncerRunning();
-  }));
+  });
   model().set_requires_distillation(true);
   model().set_reset_distillation_delay_timer(true);
   ProcessModelUpdates();

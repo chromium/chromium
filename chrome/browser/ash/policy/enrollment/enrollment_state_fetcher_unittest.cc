@@ -67,7 +67,6 @@ constexpr int kMaxAttemptsForTesting = 10;
 
 using base::test::RunOnceCallback;
 using testing::DoAll;
-using testing::InvokeWithoutArgs;
 using testing::Return;
 
 class MockStateKeyBroker : public ServerBackedStateKeysBroker {
@@ -248,8 +247,8 @@ class EnrollmentStateFetcherTest : public testing::Test {
   void ExpectOwnershipCheck(base::TimeDelta time = base::TimeDelta()) {
     EXPECT_CALL(device_settings_service_, GetOwnershipStatusAsync)
         .WillOnce(DoAll(
-            InvokeWithoutArgs(
-                [=, this]() { task_environment_.AdvanceClock(time); }),
+
+            [=, this]() { task_environment_.AdvanceClock(time); },
             RunOnceCallback<0>(
                 ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone)));
   }
@@ -265,8 +264,8 @@ class EnrollmentStateFetcherTest : public testing::Test {
     if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
       EXPECT_CALL(state_key_broker_, RequestStateKeys)
           .WillOnce(DoAll(
-              InvokeWithoutArgs(
-                  [=, this]() { task_environment_.AdvanceClock(time); }),
+
+              [=, this]() { task_environment_.AdvanceClock(time); },
               RunOnceCallback<0>(std::vector<std::string>{kTestStateKey})));
       EXPECT_CALL(state_key_broker_, error_type)
           .WillOnce(Return(ServerBackedStateKeysBroker::ErrorType::kNoError));
@@ -279,9 +278,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
     EXPECT_CALL(job_creation_handler_,
                 OnJobCreation(
                     JobWithPsmRlweRequest(WithOprfRequestFor(&psm_test_case_))))
-        .WillOnce(DoAll(InvokeWithoutArgs([=, this]() {
-                          task_environment_.AdvanceClock(time);
-                        }),
+        .WillOnce(DoAll([=, this]() { task_environment_.AdvanceClock(time); },
                         fake_dm_service_->SendJobOKAsync(
                             CreatePsmOprfResponse(psm_test_case_))));
   }
@@ -294,9 +291,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
     EXPECT_CALL(job_creation_handler_,
                 OnJobCreation(JobWithPsmRlweRequest(
                     WithQueryRequestFor(&psm_test_case_))))
-        .WillOnce(DoAll(InvokeWithoutArgs([=, this]() {
-                          task_environment_.AdvanceClock(time);
-                        }),
+        .WillOnce(DoAll([=, this]() { task_environment_.AdvanceClock(time); },
                         fake_dm_service_->SendJobOKAsync(response)));
   }
 
@@ -306,9 +301,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
     EXPECT_CALL(job_creation_handler_,
                 OnJobCreation(JobWithStateRequest(
                     GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
-        .WillOnce(DoAll(InvokeWithoutArgs([=, this]() {
-                          task_environment_.AdvanceClock(time);
-                        }),
+        .WillOnce(DoAll([=, this]() { task_environment_.AdvanceClock(time); },
                         fake_dm_service_->SendJobOKAsync(response)));
   }
 

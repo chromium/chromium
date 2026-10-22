@@ -1373,7 +1373,7 @@ TEST_F(ReadAloudServiceTest, AudioStreamCreationFailureDispatchesError) {
   EXPECT_CALL(*delegate_ptr,
               OnPlaybackError("Failed to initialize audio output stream"))
       .Times(1)
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
+      .WillOnce([&run_loop] { run_loop.Quit(); });
 
   service()->Play(web_contents());
   run_loop.Run();

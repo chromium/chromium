@@ -49,7 +49,6 @@ using media_router::mojom::RouteMessagePtr;
 using testing::_;
 using testing::Eq;
 using testing::Invoke;
-using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::Mock;
 using testing::NiceMock;
@@ -283,7 +282,7 @@ TEST_F(MediaRouterDesktopTest, CreateRouteFails) {
   base::RunLoop run_loop;
   EXPECT_CALL(handler, DoInvoke(nullptr, "", kError,
                                 mojom::RouteRequestResultCode::TIMED_OUT, _))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   router()->CreateRoute(kSource, kSinkId, url::Origin::Create(GURL(kOrigin)),
                         nullptr,
                         base::BindOnce(&RouteResponseCallbackHandler::Invoke,
@@ -306,7 +305,7 @@ TEST_F(MediaRouterDesktopTest, JoinRouteNotFoundFails) {
   EXPECT_CALL(handler,
               DoInvoke(nullptr, "", "Route not found",
                        mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, _))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   JoinRoute(kSource, kPresentationId, url::Origin::Create(GURL(kOrigin)),
             nullptr,
             base::BindOnce(&RouteResponseCallbackHandler::Invoke,
@@ -337,7 +336,7 @@ TEST_F(MediaRouterDesktopTest, JoinRouteTimedOutFails) {
   base::RunLoop run_loop;
   EXPECT_CALL(handler, DoInvoke(nullptr, "", kError,
                                 mojom::RouteRequestResultCode::TIMED_OUT, _))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   JoinRoute(kSource, kPresentationId, url::Origin::Create(GURL(kOrigin)),
             nullptr,
             base::BindOnce(&RouteResponseCallbackHandler::Invoke,
@@ -366,7 +365,7 @@ TEST_F(MediaRouterDesktopTest, JoinRoute_EscalationFromTabToDesktopFails) {
               DoInvoke(nullptr, "",
                        "Cannot switch to desktop capture without user consent",
                        mojom::RouteRequestResultCode::USER_NOT_ALLOWED, _))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
 
   JoinRoute(desktop_source, kPresentationId, url::Origin::Create(GURL(kOrigin)),
             nullptr,
@@ -394,7 +393,7 @@ TEST_F(MediaRouterDesktopTest, JoinRoute_AutoJoinEscalationFails) {
               DoInvoke(nullptr, "",
                        "Cannot switch to desktop capture without user consent",
                        mojom::RouteRequestResultCode::USER_NOT_ALLOWED, _))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
 
   JoinRoute(desktop_source, kAutoJoinPresentationId,
             url::Origin::Create(GURL(kOrigin)), nullptr,
@@ -784,7 +783,7 @@ TEST_F(MediaRouterDesktopTest, PresentationConnectionStateChangedCallback) {
     closed_info.message = "Foo";
 
     EXPECT_CALL(callback, Run(StateChangeInfoEquals(closed_info)))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     router()->OnPresentationConnectionClosed(
         route_id, PresentationConnectionCloseReason::WENT_AWAY, "Foo");
     run_loop.Run();
@@ -796,7 +795,7 @@ TEST_F(MediaRouterDesktopTest, PresentationConnectionStateChangedCallback) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(callback, Run(StateChangeInfoEquals(terminated_info)))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     router()->OnPresentationConnectionStateChanged(
         route_id, PresentationConnectionState::TERMINATED);
     run_loop.Run();

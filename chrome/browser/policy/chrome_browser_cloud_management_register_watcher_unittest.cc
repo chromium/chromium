@@ -20,7 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using RegisterResult =
     policy::ChromeBrowserCloudManagementController::RegisterResult;
@@ -204,9 +203,9 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
-  EXPECT_CALL(*dialog(), DisplayErrorMessage(_, _))
-      .WillOnce(
-          InvokeWithoutArgs([this] { dialog()->UserClickedTheButton(false); }));
+  EXPECT_CALL(*dialog(), DisplayErrorMessage(_, _)).WillOnce([this] {
+    dialog()->UserClickedTheButton(false);
+  });
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -231,9 +230,9 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
-  EXPECT_CALL(*dialog(), DisplayErrorMessage(_, _))
-      .WillOnce(
-          InvokeWithoutArgs([this] { dialog()->UserClickedTheButton(true); }));
+  EXPECT_CALL(*dialog(), DisplayErrorMessage(_, _)).WillOnce([this] {
+    dialog()->UserClickedTheButton(true);
+  });
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -305,9 +304,9 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
        EnrollmentFailedBeforeDialogDisplay) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(*dialog(), DisplayErrorMessage(_, _))
-      .WillOnce(
-          InvokeWithoutArgs([this] { dialog()->UserClickedTheButton(false); }));
+  EXPECT_CALL(*dialog(), DisplayErrorMessage(_, _)).WillOnce([this] {
+    dialog()->UserClickedTheButton(false);
+  });
   controller()->FireNotification(false);
   EXPECT_EQ(RegisterResult::kQuitDueToFailure,
             watcher()->WaitUntilCloudPolicyEnrollmentFinished());

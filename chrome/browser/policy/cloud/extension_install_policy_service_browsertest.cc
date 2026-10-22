@@ -54,7 +54,6 @@
 namespace policy {
 
 using testing::_;
-using testing::InvokeWithoutArgs;
 using testing::Mock;
 
 namespace {
@@ -162,8 +161,7 @@ class ExtensionInstallPolicyServiceTest : public PolicyTest {
     base::test::TestFuture<void> registered_signal;
     policy::MockCloudPolicyClientObserver observer;
     EXPECT_CALL(observer, OnRegistrationStateChanged(_))
-        .WillOnce(InvokeWithoutArgs(
-            [&registered_signal]() { registered_signal.SetValue(); }));
+        .WillOnce([&registered_signal]() { registered_signal.SetValue(); });
     client->AddObserver(&observer);
 
     ASSERT_FALSE(client->is_registered());

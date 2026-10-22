@@ -81,9 +81,9 @@ class DialActivityManagerTest : public testing::Test {
                                 std::move(response_head), "",
                                 network::URLLoaderCompletionStatus());
     base::RunLoop run_loop;
-    EXPECT_CALL(*this, OnAppLaunchResult(true))
-        .WillOnce(
-            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+    EXPECT_CALL(*this, OnAppLaunchResult(true)).WillOnce([&run_loop]() {
+      run_loop.Quit();
+    });
     run_loop.Run();
 
     auto routes = manager_.GetRoutes();
@@ -134,8 +134,7 @@ class DialActivityManagerTest : public testing::Test {
         network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
     base::RunLoop run_loop;
     EXPECT_CALL(app_discovery_service_, DoFetchDialAppInfo(_, _))
-        .WillOnce(
-            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     EXPECT_CALL(*this,
                 OnStopAppResult(_, Not(mojom::RouteRequestResultCode::OK)));
     run_loop.Run();
@@ -225,8 +224,9 @@ TEST_F(DialActivityManagerTest, LaunchAppFails) {
       network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
   base::RunLoop run_loop;
-  EXPECT_CALL(*this, OnAppLaunchResult(false))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(*this, OnAppLaunchResult(false)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
   run_loop.Run();
 
   // Activity is removed on failure.
@@ -260,7 +260,7 @@ TEST_F(DialActivityManagerTest, StopApp) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnStopAppResult(testing::Eq(std::nullopt),
                                      mojom::RouteRequestResultCode::OK))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   run_loop.Run();
 
   EXPECT_TRUE(manager_.GetRoutes().empty());
@@ -285,7 +285,7 @@ TEST_F(DialActivityManagerTest, StopAppUseFallbackURL) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnStopAppResult(testing::Eq(std::nullopt),
                                      mojom::RouteRequestResultCode::OK))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   run_loop.Run();
 
   EXPECT_TRUE(manager_.GetRoutes().empty());
@@ -344,7 +344,7 @@ TEST_F(DialActivityManagerTest, StopAppMaliciousLocationHeader) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnStopAppResult(testing::Eq(std::nullopt),
                                      mojom::RouteRequestResultCode::OK))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   run_loop.Run();
 
   EXPECT_TRUE(manager_.GetRoutes().empty());

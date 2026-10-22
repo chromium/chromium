@@ -35,7 +35,6 @@
 using cast_channel::CastDeviceCapability;
 using cast_channel::CastDeviceCapabilitySet;
 using ::testing::_;
-using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -128,9 +127,9 @@ TEST_F(CastMediaSinkServiceTest, TestOnDnsSdEvent) {
                                   nullptr);
   auto* mock_impl = media_sink_service_->mock_impl();
   ASSERT_TRUE(mock_impl);
-  EXPECT_CALL(*mock_impl, DoStart()).WillOnce(InvokeWithoutArgs([this]() {
+  EXPECT_CALL(*mock_impl, DoStart()).WillOnce([this]() {
     EXPECT_TRUE(this->task_runner_->RunsTasksInCurrentSequence());
-  }));
+  });
   task_runner_->RunUntilIdle();
 
   DnsSdService service1 = CreateDnsService(

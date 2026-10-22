@@ -1512,7 +1512,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
 
     // Mock `download::DownloadItem::Cancel()`.
     ON_CALL(*ash_download_item, Cancel(/*from_user=*/testing::Eq(true)))
-        .WillByDefault(testing::InvokeWithoutArgs(
+        .WillByDefault(
             [ash_download_item = ash_download_item.get()]() {
               // When a download is cancelled, the underlying file is deleted.
               const auto& file_path = ash_download_item->GetFullPath();
@@ -1527,7 +1527,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
                       testing::Return(download::DownloadItem::CANCELLED));
               // Calling `download::DownloadItem::Cancel()` results in updates.
               ash_download_item->NotifyObserversDownloadUpdated();
-            }));
+            });
 
     // Mock `download::DownloadItem::GetETag()`.
     ON_CALL(*ash_download_item, GetETag)

@@ -1112,12 +1112,12 @@ TEST_F(PasswordGenerationAgentTest, FallbackForSaving) {
   EXPECT_EQ(0, called_inform_about_user_input_count_);
   std::u16string password = u"random_password";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)))
-      .WillOnce(testing::InvokeWithoutArgs([this]() {
+      .WillOnce([this]() {
         // Make sure that generation event was propagated to the browser before
         // the fallback showing. Otherwise, the fallback for saving provides a
         // save bubble instead of a confirmation bubble.
         EXPECT_EQ(0, called_inform_about_user_input_count_);
-      }));
+      });
   password_generation_->GeneratedPasswordAccepted(password);
   fake_driver_.Flush();
   // Two fallback requests are expected because generation changes either new
