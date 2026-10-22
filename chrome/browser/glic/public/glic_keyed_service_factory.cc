@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
@@ -48,7 +48,8 @@ GlicKeyedServiceFactory::GlicKeyedServiceFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(actor::ActorKeyedServiceFactory::GetInstance());
-  DependsOn(browser_actuator::BrowserActuatorServiceFactory::GetInstance());
+  DependsOn(
+      browser_actuator::transport::TransportServiceFactory::GetInstance());
   DependsOn(ContextualCueingServiceFactory::GetInstance());
   DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
                 GetInstance());

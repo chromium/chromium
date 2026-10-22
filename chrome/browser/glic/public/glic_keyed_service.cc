@@ -25,7 +25,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
-#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
@@ -75,10 +75,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/actor/core/journal_details_builder.h"
-#include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport/transport_channel.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
+#include "components/browser_actuator/public/transport/transport_service.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
@@ -263,14 +263,14 @@ GlicKeyedService::GlicKeyedService(
       base::FeatureList::IsEnabled(
           browser_actuator::
               kEnableBrowserActuatorForGlicExperimentalTriggering)) {
-    browser_actuator::BrowserActuatorService* actuator_service =
-        browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+    browser_actuator::transport::TransportService* transport_service =
+        browser_actuator::transport::TransportServiceFactory::GetForProfile(
             profile_);
-    if (actuator_service && actuator_service->GetChannel()) {
+    if (transport_service && transport_service->GetChannel()) {
       experimental_triggering_transport_handler_factory_ =
           std::make_unique<GlicExperimentalTriggeringTransportHandlerFactory>(
               profile_);
-      actuator_service->GetChannel()
+      transport_service->GetChannel()
           ->GetHandlerFactoryRegistry()
           ->RegisterFactory(
               experimental_triggering_transport_handler_factory_.get());
@@ -318,11 +318,11 @@ bool GlicKeyedService::IsNoWebviewEnabled() const {
 void GlicKeyedService::Shutdown() {
   cold_warming_scheduler_.Cancel();
   if (experimental_triggering_transport_handler_factory_) {
-    browser_actuator::BrowserActuatorService* actuator_service =
-        browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+    browser_actuator::transport::TransportService* transport_service =
+        browser_actuator::transport::TransportServiceFactory::GetForProfile(
             profile_);
-    if (actuator_service && actuator_service->GetChannel()) {
-      actuator_service->GetChannel()
+    if (transport_service && transport_service->GetChannel()) {
+      transport_service->GetChannel()
           ->GetHandlerFactoryRegistry()
           ->UnregisterFactory(
               experimental_triggering_transport_handler_factory_.get());
