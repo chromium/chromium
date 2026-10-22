@@ -2,8 +2,6 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/apps/app_service",
-  "+chrome/browser/apps/link_capturing",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/extensions/file_manager",
   "+chrome/browser/ash/login/users",
@@ -11,7 +9,6 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/download",
   "+chrome/browser/feedback",
-  "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/speech",
@@ -23,10 +20,13 @@ include_rules = [
 
 specific_include_rules = {
   ".*(browser|unit)test\\.cc": [
+    "+chrome/browser/apps/app_service",
+    "+chrome/browser/apps/link_capturing",
     "+chrome/browser/ash/login/login_manager_test.h",
     "+chrome/browser/ash/login/test",
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
+    "+chrome/browser/notifications",
     "+chrome/browser/prefs",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",

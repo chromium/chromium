@@ -3,7 +3,6 @@ include_rules = [
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/app_restore",
   "+chrome/browser/ash/floating_workspace",
   "+chrome/browser/ash/login/login_manager_test.h",
@@ -12,23 +11,24 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
   "+chrome/browser/chromeos/extensions/wm",
-  "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/browser_window/public/create_browser_window.h",
-  "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
-  "+chrome/browser/ui/web_applications/test",
   "+chrome/grit",
 ]
 
 specific_include_rules = {
   ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/apps/platform_apps",
+    "+chrome/browser/extensions/extension_apitest.h",
+    "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
+    "+chrome/browser/ui/web_applications/test",
     "+chrome/browser/web_applications/test",
   ],
   "chrome_saved_desk_delegate_unittest\\.cc": [

@@ -18,12 +18,10 @@ include_rules = [
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
-  "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/webui/chrome_web_contents_handler.h",
 ]
 
@@ -34,6 +32,8 @@ specific_include_rules = {
   ],
   "chrome_new_window_client_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/test",
   ],
 }

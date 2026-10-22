@@ -7,7 +7,6 @@ include_rules = [
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/app_list/extension_app_utils.h",
   "+chrome/browser/ash/app_restore",
@@ -28,19 +27,20 @@ include_rules = [
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/views/crostini",
-  "+chrome/browser/ui/web_applications",
-  "+chrome/browser/web_applications",
   "+chrome/grit",
 ]
 
 specific_include_rules = {
   ".*_(browser|unit)test\\.cc": [
+    "+chrome/browser/apps/platform_apps",
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/navigator/browser_navigator_params.h",
     "+chrome/browser/ui/tabs",
+    "+chrome/browser/ui/web_applications",
+    "+chrome/browser/web_applications",
     "+chrome/test",
   ],
 }

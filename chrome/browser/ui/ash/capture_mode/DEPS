@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/video_conference",
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/download",
-  "+chrome/browser/extensions/extension_browsertest.h",
   "+chrome/browser/lens",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
@@ -27,9 +26,6 @@ include_rules = [
   "+chrome/browser/screen_ai",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/ash/web_view",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/common",
 ]
@@ -38,6 +34,10 @@ specific_include_rules = {
   # Only tests need these //chrome dependencies.
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
     "+chrome/browser/enterprise/data_controls",
+    "+chrome/browser/extensions/extension_browsertest.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/views/frame",
   ],
   ".*browsertest\\.cc": [
     "+chrome/browser/ui/tabs/tab_strip_model.h",
