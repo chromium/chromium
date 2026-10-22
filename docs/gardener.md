@@ -30,6 +30,22 @@ gardening, including How Tos, Swapping Shifts and rotation updates, please see
 [Chromium Trunk Gardening](https://goto.google.com/chrome-gardening)
 (Google-internal link).
 
+## Tree Status
+
+The [Tree Status page](https://ci.chromium.org/ui/tree-status/chromium) tracks
+the current state of the Chromium tree:
+
+* **Open**: The Commit Queue (CQ) runs and submits changes as normal.
+* **Closed**: The CQ will not submit changes while critical build or test
+  failures are being fixed. Reverts or fixes for the tree breakage can still
+  land by adding `No-Tree-Checks: true` to the CL description footer.
+* **Throttled**: Displays a yellow caution banner in Gerrit and the LUCI UI
+  (for example, to signal that the tree is stabilizing), but the CQ currently
+  treats this state the same as **Open** and continues to submit changes as
+  normal.
+* **Maintenance**: The tree is undergoing maintenance; the CQ will not submit
+  changes while the tree is in this state.
+
 ## How to be a Gardener
 
 To be a gardener, you must be both a Chromium committer and a Google employee.
