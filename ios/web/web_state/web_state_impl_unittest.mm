@@ -46,6 +46,8 @@
 #import "ios/web/web_state/web_state_policy_decider_test_util.h"
 #import "net/http/http_response_headers.h"
 #import "net/http/http_util.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -1034,15 +1036,20 @@ TEST_F(WebStateImplTest, LastActiveTimeCanBeForcedToEpochViaCreateParams) {
 }
 
 // Tests that WebState sessionState data can be read and writen.
-// TODO(crbug.com/385130509): Test is flaky.
-TEST_F(WebStateImplTest, DISABLED_ReadAndWriteSessionStateData) {
+TEST_F(WebStateImplTest, ReadAndWriteSessionStateData) {
+  net::EmbeddedTestServer test_server;
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
   // Create a WebState, navigate and capture the session state data.
   std::unique_ptr<WebStateImpl> web_state =
       CreateWebStateImpl(web::WebState::CreateParams(GetBrowserState()));
+  web_state->GetView();
 
-  CRWWebController* web_controller = web_state->GetWebController();
-  NSString* html_content = @"<html><body>Hello world</body></html>";
-  [web_controller loadHTML:html_content forURL:GURL("http://example.org")];
+  const GURL url = test_server.GetURL("/echo");
+  NavigationManager::WebLoadParams load_params(url);
+  web_state->GetNavigationManager()->LoadURLWithParams(load_params);
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state.get(), "Echo"));
 
   NSData* data = web_state->SessionStateData();
   EXPECT_NE(nullptr, data);
@@ -1051,7 +1058,7 @@ TEST_F(WebStateImplTest, DISABLED_ReadAndWriteSessionStateData) {
   // eventually display the same URL.
   std::unique_ptr<WebStateImpl> other_web_state =
       CreateWebStateImpl(web::WebState::CreateParams(GetBrowserState()));
-  other_web_state->SetSessionStateData(data);
+  EXPECT_TRUE(other_web_state->SetSessionStateData(data));
 
   // Use pointers as the block cannot reference WebState via object.
   WebStateImpl* web_state_ptr = web_state.get();
