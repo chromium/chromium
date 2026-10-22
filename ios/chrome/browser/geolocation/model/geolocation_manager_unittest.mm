@@ -88,32 +88,31 @@ TEST_F(GeolocationManagerTest, AuthorizationStatusCacheUtilSetAndRetrieve) {
 }
 
 // Tests that the internal CLLocationManager calls its delegate after creation.
-// TODO(crbug.com/460739169): Test is flaky.
-TEST_F(GeolocationManagerTest, DISABLED_LocationUpdatesOnCreation) {
+TEST_F(GeolocationManagerTest, LocationUpdatesOnCreation) {
   FakeCLLocationManagerDelegate* delegate =
       [[FakeCLLocationManagerDelegate alloc] init];
   ASSERT_EQ(delegate.delegateCallbackCount, 0);
 
-  CLLocationManager* manager = [[CLLocationManager alloc] init];
+  NS_VALID_UNTIL_END_OF_SCOPE CLLocationManager* manager =
+      [[CLLocationManager alloc] init];
   manager.delegate = delegate;
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForFileOperationTimeout, ^bool() {
+      base::test::ios::kWaitForActionTimeout, ^bool() {
         return delegate.delegateCallbackCount > 0;
       }));
 }
 
 // Tests that GeolocationManager caches its value correctly and prefers to
 // return recent authorization status values over the cached status.
-// TODO(crbug.com/460738390): Test is flaky.
-TEST_F(GeolocationManagerTest, DISABLED_GeolocationManagerCache) {
+TEST_F(GeolocationManagerTest, GeolocationManagerCache) {
   ASSERT_FALSE(authorization_status_cache_util::GetAuthorizationStatus());
 
   // Create GeolocationManager so that it will update the cached value.
-  __unused GeolocationManager* manager = [GeolocationManager createForTesting];
+  GeolocationManager* manager = [GeolocationManager createForTesting];
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForFileOperationTimeout, ^bool() {
+      base::test::ios::kWaitForActionTimeout, ^bool() {
         return authorization_status_cache_util::GetAuthorizationStatus()
             .has_value();
       }));
