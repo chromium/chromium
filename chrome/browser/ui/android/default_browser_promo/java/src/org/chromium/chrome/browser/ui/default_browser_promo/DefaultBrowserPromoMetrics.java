@@ -47,18 +47,14 @@ public class DefaultBrowserPromoMetrics {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:DefaultBrowserPromoSourceType)
 
     private static String getSourceSuffix(@DefaultBrowserPromoEntryPoint int source) {
-        if (source == DefaultBrowserPromoEntryPoint.APP_MENU) {
-            return "AppMenu";
-        } else if (source == DefaultBrowserPromoEntryPoint.APP_MENU_RMD) {
-            return "AppMenu.RoleManagerDialog";
-        } else if (source == DefaultBrowserPromoEntryPoint.APP_MENU_DEEP_LINK) {
-            return "AppMenu.DeepLink";
-        } else if (source == DefaultBrowserPromoEntryPoint.SETTINGS) {
-            return "Settings";
-        } else if (source == DefaultBrowserPromoEntryPoint.FRE) {
-            return "FRE";
-        }
-        return "";
+        return switch (source) {
+            case DefaultBrowserPromoEntryPoint.APP_MENU -> "AppMenu";
+            case DefaultBrowserPromoEntryPoint.APP_MENU_RMD -> "AppMenu.RoleManagerDialog";
+            case DefaultBrowserPromoEntryPoint.APP_MENU_DEEP_LINK -> "AppMenu.DeepLink";
+            case DefaultBrowserPromoEntryPoint.SETTINGS -> "Settings";
+            case DefaultBrowserPromoEntryPoint.FRE -> "FRE";
+            default -> "";
+        };
     }
 
     /**

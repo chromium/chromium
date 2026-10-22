@@ -271,14 +271,12 @@ public class FlagsFragmentTest {
                     long eventTime = downTime + 50;
                     float x = view.getWidth() / 2.0f;
                     float y = view.getHeight() / 2.0f;
-                    if (position == CompoundDrawable.START) {
-                        x = 0.0f;
-                    } else if (position == CompoundDrawable.END) {
-                        x = view.getWidth();
-                    } else if (position == CompoundDrawable.TOP) {
-                        y = 0.0f;
-                    } else if (position == CompoundDrawable.BOTTOM) {
-                        y = view.getHeight();
+                    switch (position) {
+                        case CompoundDrawable.START -> x = 0.0f;
+                        case CompoundDrawable.END -> x = view.getWidth();
+                        case CompoundDrawable.TOP -> y = 0.0f;
+                        case CompoundDrawable.BOTTOM -> y = view.getHeight();
+                        default -> {}
                     }
 
                     int metaState =

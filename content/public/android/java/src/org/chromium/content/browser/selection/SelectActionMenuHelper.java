@@ -208,53 +208,64 @@ public class SelectActionMenuHelper {
             // Space default items out (see DEFAULT_ITEM_ORDER_SPACING) so embedders can interpose
             // their own items in the gaps between two default items at stable positions.
             int order = pos * DEFAULT_ITEM_ORDER_SPACING;
-            if (item == DefaultItem.CUT) {
-                if (menuType == MenuType.DROPDOWN ? !isSelectionReadOnly : delegate.canCut()) {
-                    menu.addMenuItem(cut(order, delegate.canCut()));
+            switch (item) {
+                case DefaultItem.CUT -> {
+                    if (menuType == MenuType.DROPDOWN ? !isSelectionReadOnly : delegate.canCut()) {
+                        menu.addMenuItem(cut(order, delegate.canCut()));
+                    }
                 }
-            } else if (item == DefaultItem.COPY) {
-                if (menuType == MenuType.DROPDOWN || delegate.canCopy()) {
-                    menu.addMenuItem(copy(order, delegate.canCopy()));
+                case DefaultItem.COPY -> {
+                    if (menuType == MenuType.DROPDOWN || delegate.canCopy()) {
+                        menu.addMenuItem(copy(order, delegate.canCopy()));
+                    }
                 }
-            } else if (item == DefaultItem.PASTE) {
-                if (menuType == MenuType.DROPDOWN ? !isSelectionReadOnly : delegate.canPaste()) {
-                    menu.addMenuItem(paste(order, delegate.canPaste()));
+                case DefaultItem.PASTE -> {
+                    if (menuType == MenuType.DROPDOWN
+                            ? !isSelectionReadOnly
+                            : delegate.canPaste()) {
+                        menu.addMenuItem(paste(order, delegate.canPaste()));
+                    }
                 }
-            } else if (item == DefaultItem.PASTE_AS_PLAIN_TEXT) {
-                if (menuType == MenuType.DROPDOWN
-                        ? !isSelectionReadOnly
-                        : delegate.canPasteAsPlainText()) {
-                    menu.addMenuItem(
-                            pasteAsPlainText(context, order, delegate.canPasteAsPlainText()));
+                case DefaultItem.PASTE_AS_PLAIN_TEXT -> {
+                    if (menuType == MenuType.DROPDOWN
+                            ? !isSelectionReadOnly
+                            : delegate.canPasteAsPlainText()) {
+                        menu.addMenuItem(
+                                pasteAsPlainText(context, order, delegate.canPasteAsPlainText()));
+                    }
                 }
-            } else if (item == DefaultItem.SHARE) {
-                if (menuType == MenuType.DROPDOWN || delegate.canShare(menuType)) {
-                    menu.addMenuItem(
-                            share(
-                                    context,
-                                    order,
-                                    menuType,
-                                    isSelectionReadOnly,
-                                    delegate.canShare(menuType)));
+                case DefaultItem.SHARE -> {
+                    if (menuType == MenuType.DROPDOWN || delegate.canShare(menuType)) {
+                        menu.addMenuItem(
+                                share(
+                                        context,
+                                        order,
+                                        menuType,
+                                        isSelectionReadOnly,
+                                        delegate.canShare(menuType)));
+                    }
                 }
-            } else if (item == DefaultItem.SELECT_ALL) {
-                if (menuType == MenuType.DROPDOWN
-                        ? !isSelectionReadOnly
-                        : delegate.canSelectAll(menuType)) {
-                    menu.addMenuItem(selectAll(order, delegate.canSelectAll(menuType)));
+                case DefaultItem.SELECT_ALL -> {
+                    if (menuType == MenuType.DROPDOWN
+                            ? !isSelectionReadOnly
+                            : delegate.canSelectAll(menuType)) {
+                        menu.addMenuItem(selectAll(order, delegate.canSelectAll(menuType)));
+                    }
                 }
-            } else if (item == DefaultItem.WEB_SEARCH) {
-                if (menuType == MenuType.DROPDOWN || delegate.canWebSearch(menuType)) {
-                    menu.addMenuItem(
-                            webSearch(
-                                    context,
-                                    order,
-                                    selectedText,
-                                    menuType,
-                                    isSelectionReadOnly,
-                                    selectionActionMenuDelegate,
-                                    delegate.canWebSearch(menuType)));
+                case DefaultItem.WEB_SEARCH -> {
+                    if (menuType == MenuType.DROPDOWN || delegate.canWebSearch(menuType)) {
+                        menu.addMenuItem(
+                                webSearch(
+                                        context,
+                                        order,
+                                        selectedText,
+                                        menuType,
+                                        isSelectionReadOnly,
+                                        selectionActionMenuDelegate,
+                                        delegate.canWebSearch(menuType)));
+                    }
                 }
+                default -> {}
             }
         }
     }

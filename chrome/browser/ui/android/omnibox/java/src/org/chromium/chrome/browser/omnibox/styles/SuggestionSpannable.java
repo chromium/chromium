@@ -66,37 +66,39 @@ public class SuggestionSpannable extends SpannableString {
                 return false;
             }
 
-            if (thisSpan instanceof ForegroundColorSpan) {
-                ForegroundColorSpan ta1 = (ForegroundColorSpan) thisSpan;
-                ForegroundColorSpan ta2 = (ForegroundColorSpan) otherSpan;
-                if (ta1.getForegroundColor() != ta2.getForegroundColor()) {
+            switch (thisSpan) {
+                case ForegroundColorSpan ta1 -> {
+                    ForegroundColorSpan ta2 = (ForegroundColorSpan) otherSpan;
+                    if (ta1.getForegroundColor() != ta2.getForegroundColor()) {
+                        return false;
+                    }
+                }
+                case BackgroundColorSpan ta1 -> {
+                    BackgroundColorSpan ta2 = (BackgroundColorSpan) otherSpan;
+                    if (ta1.getBackgroundColor() != ta2.getBackgroundColor()) {
+                        return false;
+                    }
+                }
+                case StyleSpan ta1 -> {
+                    StyleSpan ta2 = (StyleSpan) otherSpan;
+                    if (ta1.getStyle() != ta2.getStyle()) {
+                        return false;
+                    }
+                }
+                case TextAppearanceSpan ta1 -> {
+                    TextAppearanceSpan ta2 = (TextAppearanceSpan) otherSpan;
+                    if (!TextUtils.equals(ta1.getFamily(), ta2.getFamily())
+                            || !ta1.getLinkTextColor().equals(ta2.getLinkTextColor())
+                            || !ta1.getTextColor().equals(ta2.getTextColor())
+                            || ta1.getTextSize() != ta2.getTextSize()
+                            || ta1.getTextStyle() != ta2.getTextStyle()) {
+                        return false;
+                    }
+                }
+                default -> {
+                    assert false : "Unexpected visual span specified: " + thisSpan.getClass();
                     return false;
                 }
-            } else if (thisSpan instanceof BackgroundColorSpan) {
-                BackgroundColorSpan ta1 = (BackgroundColorSpan) thisSpan;
-                BackgroundColorSpan ta2 = (BackgroundColorSpan) otherSpan;
-                if (ta1.getBackgroundColor() != ta2.getBackgroundColor()) {
-                    return false;
-                }
-            } else if (thisSpan instanceof StyleSpan) {
-                StyleSpan ta1 = (StyleSpan) thisSpan;
-                StyleSpan ta2 = (StyleSpan) otherSpan;
-                if (ta1.getStyle() != ta2.getStyle()) {
-                    return false;
-                }
-            } else if (thisSpan instanceof TextAppearanceSpan) {
-                TextAppearanceSpan ta1 = (TextAppearanceSpan) thisSpan;
-                TextAppearanceSpan ta2 = (TextAppearanceSpan) otherSpan;
-                if (!TextUtils.equals(ta1.getFamily(), ta2.getFamily())
-                        || !ta1.getLinkTextColor().equals(ta2.getLinkTextColor())
-                        || !ta1.getTextColor().equals(ta2.getTextColor())
-                        || ta1.getTextSize() != ta2.getTextSize()
-                        || ta1.getTextStyle() != ta2.getTextStyle()) {
-                    return false;
-                }
-            } else {
-                assert false : "Unexpected visual span specified: " + thisSpan.getClass();
-                return false;
             }
         }
         return true;

@@ -641,19 +641,20 @@ public class SiteSettingsCategory {
     protected String getMessageForEnablingOsPerAppPermission(Context context, String appName) {
         @ContentSettingsType.EnumType int type = this.getContentSettingsType();
         int permissionString = R.string.android_permission_off;
-        if (type == ContentSettingsType.GEOLOCATION
-                || type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
-            permissionString = R.string.android_location_permission_off;
-        } else if (type == ContentSettingsType.MEDIASTREAM_MIC) {
-            permissionString = R.string.android_microphone_permission_off;
-        } else if (type == ContentSettingsType.MEDIASTREAM_CAMERA) {
-            permissionString = R.string.android_camera_permission_off;
-        } else if (type == ContentSettingsType.AR) {
-            permissionString = R.string.android_ar_camera_permission_off;
-        } else if (type == ContentSettingsType.HAND_TRACKING) {
-            permissionString = R.string.android_hand_tracking_permission_off;
-        } else if (type == ContentSettingsType.NOTIFICATIONS) {
-            permissionString = R.string.android_notifications_permission_off;
+        switch (type) {
+            case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS ->
+                    permissionString = R.string.android_location_permission_off;
+            case ContentSettingsType.MEDIASTREAM_MIC ->
+                    permissionString = R.string.android_microphone_permission_off;
+            case ContentSettingsType.MEDIASTREAM_CAMERA ->
+                    permissionString = R.string.android_camera_permission_off;
+            case ContentSettingsType.AR ->
+                    permissionString = R.string.android_ar_camera_permission_off;
+            case ContentSettingsType.HAND_TRACKING ->
+                    permissionString = R.string.android_hand_tracking_permission_off;
+            case ContentSettingsType.NOTIFICATIONS ->
+                    permissionString = R.string.android_notifications_permission_off;
+            default -> {}
         }
         return context.getString(permissionString, appName);
     }

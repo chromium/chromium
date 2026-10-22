@@ -308,27 +308,33 @@ public class EventForwarder {
     }
 
     private void updateTouchSequence(int actionMasked, float x, float y) {
-        if (actionMasked == MotionEvent.ACTION_DOWN) {
-            // Touch sequence started; record starting position and reset slop state.
-            mIsTouchDown = true;
-            mLastDownX = x;
-            mLastDownY = y;
-            mHasExceededTouchSlop = false;
-        } else if (actionMasked == MotionEvent.ACTION_MOVE) {
-            // Track movement to see if the gesture exceeds the touch slop threshold.
-            if (mIsTouchDown && !mHasExceededTouchSlop) {
-                mHasExceededTouchSlop =
-                        hasExceededTouchSlop(mLastDownX, mLastDownY, x, y, mScaledTouchSlop);
+        switch (actionMasked) {
+            case MotionEvent.ACTION_DOWN -> {
+                // Touch sequence started; record starting position and reset slop state.
+                mIsTouchDown = true;
+                mLastDownX = x;
+                mLastDownY = y;
+                mHasExceededTouchSlop = false;
             }
-        } else if (actionMasked == MotionEvent.ACTION_UP) {
-            // Touch sequence completed normally; notify observers with the final slop state.
-            mIsTouchDown = false;
-            notifyTouchSequenceEnded(mHasExceededTouchSlop);
-        } else if (actionMasked == MotionEvent.ACTION_CANCEL) {
-            // Touch sequence cancelled (e.g. system gesture takeover); treat as exceeded slop.
-            mIsTouchDown = false;
-            mHasExceededTouchSlop = true;
-            notifyTouchSequenceEnded(true);
+            case MotionEvent.ACTION_MOVE -> {
+                // Track movement to see if the gesture exceeds the touch slop threshold.
+                if (mIsTouchDown && !mHasExceededTouchSlop) {
+                    mHasExceededTouchSlop =
+                            hasExceededTouchSlop(mLastDownX, mLastDownY, x, y, mScaledTouchSlop);
+                }
+            }
+            case MotionEvent.ACTION_UP -> {
+                // Touch sequence completed normally; notify observers with the final slop state.
+                mIsTouchDown = false;
+                notifyTouchSequenceEnded(mHasExceededTouchSlop);
+            }
+            case MotionEvent.ACTION_CANCEL -> {
+                // Touch sequence cancelled (e.g. system gesture takeover); treat as exceeded slop.
+                mIsTouchDown = false;
+                mHasExceededTouchSlop = true;
+                notifyTouchSequenceEnded(true);
+            }
+            default -> {}
         }
     }
 

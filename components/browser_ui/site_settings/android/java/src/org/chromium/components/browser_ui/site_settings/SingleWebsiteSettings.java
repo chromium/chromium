@@ -681,25 +681,26 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     getPermissionPreference(type, setting == null ? false : setting.isOneTime());
             preference.setKey(getPreferenceKey(type));
 
-            if (type == ContentSettingsType.ADS) {
-                setUpAdsPreference(preference, setting);
-            } else if (type == ContentSettingsType.SOUND) {
-                setUpSoundPreference(preference, setting);
-            } else if (type == ContentSettingsType.JAVASCRIPT) {
-                setUpJavascriptPreference(preference, setting);
-            } else if (type == ContentSettingsType.GEOLOCATION) {
-                setUpLocationPreference(preference, setting);
-            } else if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
-                setUpLocationWithOptionsPreference(preference, setting);
-            } else if (type == ContentSettingsType.NOTIFICATIONS) {
-                setUpNotificationsPreference(preference, setting, mSite.isEmbargoed(type));
-            } else if (type == ContentSettingsType.AUTO_PICTURE_IN_PICTURE) {
-                // On Android, Auto-PiP does not have a prompt, so the UI treats the ASK
-                // state as ALLOW in regular mode and BLOCK in incognito. This logic should
-                // be removed when a prompt is implemented for parity with desktop.
-                setUpAutoPictureInPicturePreference(preference, setting);
-            } else {
-                setupContentSettingsPreference(preference, setting, mSite.isEmbargoed(type));
+            switch (type) {
+                case ContentSettingsType.ADS -> setUpAdsPreference(preference, setting);
+                case ContentSettingsType.SOUND -> setUpSoundPreference(preference, setting);
+                case ContentSettingsType.JAVASCRIPT ->
+                        setUpJavascriptPreference(preference, setting);
+                case ContentSettingsType.GEOLOCATION ->
+                        setUpLocationPreference(preference, setting);
+                case ContentSettingsType.GEOLOCATION_WITH_OPTIONS ->
+                        setUpLocationWithOptionsPreference(preference, setting);
+                case ContentSettingsType.NOTIFICATIONS ->
+                        setUpNotificationsPreference(preference, setting, mSite.isEmbargoed(type));
+                case ContentSettingsType.AUTO_PICTURE_IN_PICTURE -> {
+                    // On Android, Auto-PiP does not have a prompt, so the UI treats the ASK
+                    // state as ALLOW in regular mode and BLOCK in incognito. This logic should
+                    // be removed when a prompt is implemented for parity with desktop.
+                    setUpAutoPictureInPicturePreference(preference, setting);
+                }
+                default ->
+                        setupContentSettingsPreference(
+                                preference, setting, mSite.isEmbargoed(type));
             }
         }
     }

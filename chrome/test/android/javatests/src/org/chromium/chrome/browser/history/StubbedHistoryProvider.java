@@ -182,68 +182,68 @@ public class StubbedHistoryProvider implements HistoryProvider {
             int which, long timestamp, boolean blockedVisit, boolean isActorVisit) {
         long[] nativeTimestamps = {timestamp * 1000};
         String appId = null;
-        if (which == 0) {
-            return new HistoryItem(
-                    JUnitTestGURLs.SEARCH_URL,
-                    "www.google.com",
-                    "Google",
-                    appId,
-                    timestamp,
-                    nativeTimestamps,
-                    blockedVisit,
-                    isActorVisit);
-        } else if (which == 1) {
-            return new HistoryItem(
-                    JUnitTestGURLs.EXAMPLE_URL,
-                    "www.example.com",
-                    "Foo",
-                    appId,
-                    timestamp,
-                    nativeTimestamps,
-                    blockedVisit,
-                    isActorVisit);
-        } else if (which == 2) {
-            return new HistoryItem(
-                    JUnitTestGURLs.URL_1,
-                    "www.one.com",
-                    "Bar",
-                    appId,
-                    timestamp,
-                    nativeTimestamps,
-                    blockedVisit,
-                    isActorVisit);
-        } else if (which == 3) {
-            return new HistoryItem(
-                    JUnitTestGURLs.URL_2,
-                    "www.two.com",
-                    "News",
-                    appId,
-                    timestamp,
-                    nativeTimestamps,
-                    blockedVisit,
-                    isActorVisit);
-        } else if (which == 4) {
-            return new HistoryItem(
-                    JUnitTestGURLs.URL_3,
-                    "www.three.com",
-                    "Engineering",
-                    appId,
-                    timestamp,
-                    nativeTimestamps,
-                    blockedVisit,
-                    isActorVisit);
-        } else if (which == 5) {
-            return new HistoryItem(
-                    JUnitTestGURLs.INITIAL_URL,
-                    "initial.com",
-                    "Cannot Visit",
-                    appId,
-                    timestamp,
-                    nativeTimestamps,
-                    blockedVisit,
-                    isActorVisit);
-        } else {
-            return null;
-        }
+        return switch (which) {
+            case 0 ->
+                    new HistoryItem(
+                            JUnitTestGURLs.SEARCH_URL,
+                            "www.google.com",
+                            "Google",
+                            appId,
+                            timestamp,
+                            nativeTimestamps,
+                            blockedVisit,
+                            isActorVisit);
+            case 1 ->
+                    new HistoryItem(
+                            JUnitTestGURLs.EXAMPLE_URL,
+                            "www.example.com",
+                            "Foo",
+                            appId,
+                            timestamp,
+                            nativeTimestamps,
+                            blockedVisit,
+                            isActorVisit);
+            case 2 ->
+                    new HistoryItem(
+                            JUnitTestGURLs.URL_1,
+                            "www.one.com",
+                            "Bar",
+                            appId,
+                            timestamp,
+                            nativeTimestamps,
+                            blockedVisit,
+                            isActorVisit);
+            case 3 ->
+                    new HistoryItem(
+                            JUnitTestGURLs.URL_2,
+                            "www.two.com",
+                            "News",
+                            appId,
+                            timestamp,
+                            nativeTimestamps,
+                            blockedVisit,
+                            isActorVisit);
+            case 4 ->
+                    new HistoryItem(
+                            JUnitTestGURLs.URL_3,
+                            "www.three.com",
+                            "Engineering",
+                            appId,
+                            timestamp,
+                            nativeTimestamps,
+                            blockedVisit,
+                            isActorVisit);
+            case 5 ->
+                    new HistoryItem(
+                            JUnitTestGURLs.INITIAL_URL,
+                            "initial.com",
+                            "Cannot Visit",
+                            appId,
+                            timestamp,
+                            nativeTimestamps,
+                            blockedVisit,
+                            isActorVisit);
+            default -> null;
+        };
     }
 }

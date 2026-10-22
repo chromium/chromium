@@ -79,29 +79,37 @@ public class StylusGestureConverter {
     }
 
     public static @Nullable StylusWritingGestureData createGestureData(HandwritingGesture gesture) {
-        if (gesture instanceof SelectGesture) {
-            logGestureType(UmaGestureType.SELECT);
-            return createGestureData((SelectGesture) gesture);
-        } else if (gesture instanceof InsertGesture) {
-            logGestureType(UmaGestureType.INSERT);
-            return createGestureData((InsertGesture) gesture);
-        } else if (gesture instanceof DeleteGesture) {
-            logGestureType(UmaGestureType.DELETE);
-            return createGestureData((DeleteGesture) gesture);
-        } else if (gesture instanceof RemoveSpaceGesture) {
-            logGestureType(UmaGestureType.REMOVE_SPACE);
-            return createGestureData((RemoveSpaceGesture) gesture);
-        } else if (gesture instanceof JoinOrSplitGesture) {
-            logGestureType(UmaGestureType.JOIN_OR_SPLIT);
-            return createGestureData((JoinOrSplitGesture) gesture);
-        } else if (gesture instanceof SelectRangeGesture) {
-            logGestureType(UmaGestureType.SELECT_RANGE);
-            return createGestureData((SelectRangeGesture) gesture);
-        } else if (gesture instanceof DeleteRangeGesture) {
-            logGestureType(UmaGestureType.DELETE_RANGE);
-            return createGestureData((DeleteRangeGesture) gesture);
-        }
-        return null;
+        return switch (gesture) {
+            case SelectGesture g -> {
+                logGestureType(UmaGestureType.SELECT);
+                yield createGestureData(g);
+            }
+            case InsertGesture g -> {
+                logGestureType(UmaGestureType.INSERT);
+                yield createGestureData(g);
+            }
+            case DeleteGesture g -> {
+                logGestureType(UmaGestureType.DELETE);
+                yield createGestureData(g);
+            }
+            case RemoveSpaceGesture g -> {
+                logGestureType(UmaGestureType.REMOVE_SPACE);
+                yield createGestureData(g);
+            }
+            case JoinOrSplitGesture g -> {
+                logGestureType(UmaGestureType.JOIN_OR_SPLIT);
+                yield createGestureData(g);
+            }
+            case SelectRangeGesture g -> {
+                logGestureType(UmaGestureType.SELECT_RANGE);
+                yield createGestureData(g);
+            }
+            case DeleteRangeGesture g -> {
+                logGestureType(UmaGestureType.DELETE_RANGE);
+                yield createGestureData(g);
+            }
+            default -> null;
+        };
     }
 
     /**

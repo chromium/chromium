@@ -92,18 +92,14 @@ public class SharedPreferencesMetrics {
      */
     @VisibleForTesting
     static int estimateEntrySizeBytes(String key, @Nullable Object value) {
-        int overhead;
-        if (value instanceof Boolean) {
-            overhead = XML_OVERHEAD_BOOLEAN;
-        } else if (value instanceof Integer) {
-            overhead = XML_OVERHEAD_INT;
-        } else if (value instanceof Long) {
-            overhead = XML_OVERHEAD_LONG;
-        } else if (value instanceof Float) {
-            overhead = XML_OVERHEAD_FLOAT;
-        } else {
-            overhead = XML_OVERHEAD_STRING;
-        }
+        int overhead =
+                switch (value) {
+                    case Boolean _ -> XML_OVERHEAD_BOOLEAN;
+                    case Integer _ -> XML_OVERHEAD_INT;
+                    case Long _ -> XML_OVERHEAD_LONG;
+                    case Float _ -> XML_OVERHEAD_FLOAT;
+                    case null, default -> XML_OVERHEAD_STRING;
+                };
         return key.length() + String.valueOf(value).length() + overhead;
     }
 

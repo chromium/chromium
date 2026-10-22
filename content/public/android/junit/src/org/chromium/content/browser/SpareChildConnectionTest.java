@@ -297,22 +297,28 @@ public class SpareChildConnectionTest {
             assertNotNull(connection);
             mTestConnectionFactory.simulateConnectionBindingSuccessfully();
             assertEquals(testBindingState, connection.bindingStateCurrent());
-            if (testBindingState == ChildBindingState.WAIVED) {
-                assertEquals(0, connection.getStrongBindingCount());
-                assertEquals(0, connection.getVisibleBindingCount());
-                assertEquals(0, connection.getNotPerceptibleBindingCount());
-            } else if (testBindingState == ChildBindingState.NOT_PERCEPTIBLE) {
-                assertEquals(0, connection.getStrongBindingCount());
-                assertEquals(0, connection.getVisibleBindingCount());
-                assertEquals(1, connection.getNotPerceptibleBindingCount());
-            } else if (testBindingState == ChildBindingState.VISIBLE) {
-                assertEquals(0, connection.getStrongBindingCount());
-                assertEquals(1, connection.getVisibleBindingCount());
-                assertEquals(0, connection.getNotPerceptibleBindingCount());
-            } else if (testBindingState == ChildBindingState.STRONG) {
-                assertEquals(1, connection.getStrongBindingCount());
-                assertEquals(0, connection.getVisibleBindingCount());
-                assertEquals(0, connection.getNotPerceptibleBindingCount());
+            switch (testBindingState) {
+                case ChildBindingState.WAIVED -> {
+                    assertEquals(0, connection.getStrongBindingCount());
+                    assertEquals(0, connection.getVisibleBindingCount());
+                    assertEquals(0, connection.getNotPerceptibleBindingCount());
+                }
+                case ChildBindingState.NOT_PERCEPTIBLE -> {
+                    assertEquals(0, connection.getStrongBindingCount());
+                    assertEquals(0, connection.getVisibleBindingCount());
+                    assertEquals(1, connection.getNotPerceptibleBindingCount());
+                }
+                case ChildBindingState.VISIBLE -> {
+                    assertEquals(0, connection.getStrongBindingCount());
+                    assertEquals(1, connection.getVisibleBindingCount());
+                    assertEquals(0, connection.getNotPerceptibleBindingCount());
+                }
+                case ChildBindingState.STRONG -> {
+                    assertEquals(1, connection.getStrongBindingCount());
+                    assertEquals(0, connection.getVisibleBindingCount());
+                    assertEquals(0, connection.getNotPerceptibleBindingCount());
+                }
+                default -> {}
             }
         }
     }

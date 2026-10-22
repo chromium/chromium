@@ -326,24 +326,24 @@ public class ContextualSearchUma {
             @PanelState int toState, @StateChangeReason int reason) {
         switch (toState) {
             case PanelState.CLOSED:
-                if (reason == StateChangeReason.BACK_PRESS) {
-                    RecordUserAction.record("ContextualSearch.BackPressClose");
-                } else if (reason == StateChangeReason.CLOSE_BUTTON) {
-                    RecordUserAction.record("ContextualSearch.CloseButtonClose");
-                } else if (reason == StateChangeReason.SWIPE || reason == StateChangeReason.FLING) {
-                    RecordUserAction.record("ContextualSearch.SwipeOrFlingClose");
-                } else if (reason == StateChangeReason.TAB_PROMOTION) {
-                    RecordUserAction.record("ContextualSearch.TabPromotionClose");
-                } else if (reason == StateChangeReason.BASE_PAGE_TAP) {
-                    RecordUserAction.record("ContextualSearch.BasePageTapClose");
-                } else if (reason == StateChangeReason.BASE_PAGE_SCROLL) {
-                    RecordUserAction.record("ContextualSearch.BasePageScrollClose");
-                } else if (reason == StateChangeReason.SEARCH_BAR_TAP) {
-                    RecordUserAction.record("ContextualSearch.SearchBarTapClose");
-                } else if (reason == StateChangeReason.SERP_NAVIGATION) {
-                    RecordUserAction.record("ContextualSearch.NavigationClose");
-                } else {
-                    RecordUserAction.record("ContextualSearch.UncommonClose");
+                switch (reason) {
+                    case StateChangeReason.BACK_PRESS ->
+                            RecordUserAction.record("ContextualSearch.BackPressClose");
+                    case StateChangeReason.CLOSE_BUTTON ->
+                            RecordUserAction.record("ContextualSearch.CloseButtonClose");
+                    case StateChangeReason.SWIPE, StateChangeReason.FLING ->
+                            RecordUserAction.record("ContextualSearch.SwipeOrFlingClose");
+                    case StateChangeReason.TAB_PROMOTION ->
+                            RecordUserAction.record("ContextualSearch.TabPromotionClose");
+                    case StateChangeReason.BASE_PAGE_TAP ->
+                            RecordUserAction.record("ContextualSearch.BasePageTapClose");
+                    case StateChangeReason.BASE_PAGE_SCROLL ->
+                            RecordUserAction.record("ContextualSearch.BasePageScrollClose");
+                    case StateChangeReason.SEARCH_BAR_TAP ->
+                            RecordUserAction.record("ContextualSearch.SearchBarTapClose");
+                    case StateChangeReason.SERP_NAVIGATION ->
+                            RecordUserAction.record("ContextualSearch.NavigationClose");
+                    default -> RecordUserAction.record("ContextualSearch.UncommonClose");
                 }
                 break;
             case PanelState.PEEKED:

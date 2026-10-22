@@ -685,19 +685,25 @@ public class PaymentRequestUi
      * @param section The updated section information.
      */
     public void updateSection(@DataType int whichSection, SectionInformation section) {
-        if (whichSection == DataType.SHIPPING_ADDRESSES) {
-            mShippingAddressSectionInformation = section;
-            mShippingAddressSection.update(section);
-        } else if (whichSection == DataType.SHIPPING_OPTIONS) {
-            mShippingOptionsSectionInformation = section;
-            mShippingOptionSection.update(section);
-            addShippingOptionSectionIfNecessary();
-        } else if (whichSection == DataType.CONTACT_DETAILS) {
-            mContactDetailsSectionInformation = section;
-            mContactDetailsSection.update(section);
-        } else if (whichSection == DataType.PAYMENT_METHODS) {
-            mPaymentMethodSectionInformation = section;
-            mPaymentMethodSection.update(section);
+        switch (whichSection) {
+            case DataType.SHIPPING_ADDRESSES -> {
+                mShippingAddressSectionInformation = section;
+                mShippingAddressSection.update(section);
+            }
+            case DataType.SHIPPING_OPTIONS -> {
+                mShippingOptionsSectionInformation = section;
+                mShippingOptionSection.update(section);
+                addShippingOptionSectionIfNecessary();
+            }
+            case DataType.CONTACT_DETAILS -> {
+                mContactDetailsSectionInformation = section;
+                mContactDetailsSection.update(section);
+            }
+            case DataType.PAYMENT_METHODS -> {
+                mPaymentMethodSectionInformation = section;
+                mPaymentMethodSection.update(section);
+            }
+            default -> {}
         }
 
         boolean isFinishingEditItem = mIsEditingPaymentItem;

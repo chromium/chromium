@@ -600,18 +600,20 @@ public class PageInfoController
         Window window = activity.getWindow();
         if (window == null || !ViewCompat.isAttachedToWindow(window.getDecorView())) return;
 
-        if (source == OpenedFromSource.MENU) {
-            RecordUserAction.record("MobileWebsiteSettingsOpenedFromMenu");
-        } else if (source == OpenedFromSource.TOOLBAR) {
-            RecordUserAction.record("MobileWebsiteSettingsOpenedFromToolbar");
-        } else if (source == OpenedFromSource.VR) {
-            RecordUserAction.record("MobileWebsiteSettingsOpenedFromVR");
-        } else if (source == OpenedFromSource.WEBAPK_SNACKBAR) {
-            RecordUserAction.record("MobileWebsiteSettingsOpenedFromWebApkSnackbar");
-        } else if (source == OpenedFromSource.PERMISSION_PROMPT) {
-            RecordUserAction.record("MobileWebsiteSettingsOpenedFromPermissionPrompt");
-        } else {
-            assert false : "Invalid source passed";
+        switch (source) {
+            case OpenedFromSource.MENU ->
+                    RecordUserAction.record("MobileWebsiteSettingsOpenedFromMenu");
+            case OpenedFromSource.TOOLBAR ->
+                    RecordUserAction.record("MobileWebsiteSettingsOpenedFromToolbar");
+            case OpenedFromSource.VR ->
+                    RecordUserAction.record("MobileWebsiteSettingsOpenedFromVR");
+            case OpenedFromSource.WEBAPK_SNACKBAR ->
+                    RecordUserAction.record("MobileWebsiteSettingsOpenedFromWebApkSnackbar");
+            case OpenedFromSource.PERMISSION_PROMPT ->
+                    RecordUserAction.record("MobileWebsiteSettingsOpenedFromPermissionPrompt");
+            default -> {
+                assert false : "Invalid source passed";
+            }
         }
 
         sLastPageInfoControllerForTesting =

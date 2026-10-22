@@ -920,16 +920,12 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The height of the Overlay Panel in dps for a given |state|.
      */
     public float getPanelHeightFromState(@Nullable @PanelState Integer state) {
-        if (state == null) {
-            return 0;
-        } else if (state == PanelState.PEEKED) {
-            return getPeekedHeight();
-        } else if (state == PanelState.EXPANDED) {
-            return getExpandedHeight();
-        } else if (state == PanelState.MAXIMIZED) {
-            return getMaximizedHeight();
-        }
-        return 0;
+        return switch (state) {
+            case PanelState.PEEKED -> getPeekedHeight();
+            case PanelState.EXPANDED -> getExpandedHeight();
+            case PanelState.MAXIMIZED -> getMaximizedHeight();
+            case null, default -> 0;
+        };
     }
 
     /**

@@ -155,51 +155,56 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
     public void onRetrieverTaskFailure(boolean isLocalRequest, Exception e) {
         if (DEBUG) Log.d(TAG, "Task failed. Attempting recovery.", e);
         ApiException exception = (ApiException) e;
-        if (exception.getStatusCode() == SmsRetrieverStatusCodes.API_NOT_CONNECTED) {
-            reportBackendAvailability(BackendAvailability.API_NOT_CONNECTED);
-            mProvider.onMethodNotAvailable(isLocalRequest);
-            Log.d(TAG, "update GMS services.");
-        } else if (exception.getStatusCode() == SmsRetrieverStatusCodes.PLATFORM_NOT_SUPPORTED) {
-            reportBackendAvailability(BackendAvailability.PLATFORM_NOT_SUPPORTED);
-            mProvider.onMethodNotAvailable(isLocalRequest);
-            Log.d(TAG, "old android platform.");
-        } else if (exception.getStatusCode() == SmsRetrieverStatusCodes.API_NOT_AVAILABLE) {
-            reportBackendAvailability(BackendAvailability.API_NOT_AVAILABLE);
-            mProvider.onMethodNotAvailable(isLocalRequest);
-            Log.d(TAG, "not the default browser.");
-        } else if (exception.getStatusCode() == SmsRetrieverStatusCodes.USER_PERMISSION_REQUIRED) {
-            cancelRequestAndReportBackendAvailability();
-            Log.d(TAG, "user permission is required.");
-        } else if (exception.getStatusCode() == CommonStatusCodes.RESOLUTION_REQUIRED) {
-            if (exception instanceof ResolvableApiException) {
-                // This occurs if the default browser is in NONE permission
-                // state. Resolve it by calling PendingIntent.send() method.
-                // This shows the consent dialog to user so they grant
-                // one-time permission. The dialog result will be received
-                // via `onPermissionDone()`
-                ResolvableApiException rex = (ResolvableApiException) exception;
-                try {
-                    PendingIntent resolutionIntent = rex.getResolution();
-                    assumeNonNull(mProvider.getWindow())
-                            .showIntent(
-                                    resolutionIntent,
-                                    new WindowAndroid.IntentCallback() {
-                                        @Override
-                                        public void onIntentCompleted(
-                                                int resultCode, @Nullable Intent data) {
-                                            // Backend availability will be recorded inside
-                                            // |onPermissionDone|.
-                                            onPermissionDone(resultCode, isLocalRequest);
-                                        }
-                                    },
-                                    null);
-                } catch (Exception ex) {
-                    cancelRequestAndReportBackendAvailability();
-                    Log.e(TAG, "Cannot launch user permission", ex);
+        switch (exception.getStatusCode()) {
+            case SmsRetrieverStatusCodes.API_NOT_CONNECTED -> {
+                reportBackendAvailability(BackendAvailability.API_NOT_CONNECTED);
+                mProvider.onMethodNotAvailable(isLocalRequest);
+                Log.d(TAG, "update GMS services.");
+            }
+            case SmsRetrieverStatusCodes.PLATFORM_NOT_SUPPORTED -> {
+                reportBackendAvailability(BackendAvailability.PLATFORM_NOT_SUPPORTED);
+                mProvider.onMethodNotAvailable(isLocalRequest);
+                Log.d(TAG, "old android platform.");
+            }
+            case SmsRetrieverStatusCodes.API_NOT_AVAILABLE -> {
+                reportBackendAvailability(BackendAvailability.API_NOT_AVAILABLE);
+                mProvider.onMethodNotAvailable(isLocalRequest);
+                Log.d(TAG, "not the default browser.");
+            }
+            case SmsRetrieverStatusCodes.USER_PERMISSION_REQUIRED -> {
+                cancelRequestAndReportBackendAvailability();
+                Log.d(TAG, "user permission is required.");
+            }
+            case CommonStatusCodes.RESOLUTION_REQUIRED -> {
+                if (exception instanceof ResolvableApiException) {
+                    // This occurs if the default browser is in NONE permission
+                    // state. Resolve it by calling PendingIntent.send() method.
+                    // This shows the consent dialog to user so they grant
+                    // one-time permission. The dialog result will be received
+                    // via `onPermissionDone()`
+                    ResolvableApiException rex = (ResolvableApiException) exception;
+                    try {
+                        PendingIntent resolutionIntent = rex.getResolution();
+                        assumeNonNull(mProvider.getWindow())
+                                .showIntent(
+                                        resolutionIntent,
+                                        new WindowAndroid.IntentCallback() {
+                                            @Override
+                                            public void onIntentCompleted(
+                                                    int resultCode, @Nullable Intent data) {
+                                                // Backend availability will be recorded inside
+                                                // |onPermissionDone|.
+                                                onPermissionDone(resultCode, isLocalRequest);
+                                            }
+                                        },
+                                        null);
+                    } catch (Exception ex) {
+                        cancelRequestAndReportBackendAvailability();
+                        Log.e(TAG, "Cannot launch user permission", ex);
+                    }
                 }
             }
-        } else {
-            Log.w(TAG, "Unexpected exception", e);
+            default -> Log.w(TAG, "Unexpected exception", e);
         }
     }
 

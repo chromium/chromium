@@ -842,16 +842,13 @@ public class AccessibilityNodeInfoBuilder {
                 spannable,
                 textStyles,
                 (textStyle) -> {
-                    if (textStyle == TextStyle.BOLD) {
-                        return new StyleSpan(Typeface.BOLD);
-                    } else if (textStyle == TextStyle.ITALIC) {
-                        return new StyleSpan(Typeface.ITALIC);
-                    } else if (textStyle == TextStyle.UNDERLINE) {
-                        return new UnderlineSpan();
-                    } else if (textStyle == TextStyle.LINE_THROUGH) {
-                        return new StrikethroughSpan();
-                    }
-                    return null;
+                    return switch (textStyle) {
+                        case TextStyle.BOLD -> new StyleSpan(Typeface.BOLD);
+                        case TextStyle.ITALIC -> new StyleSpan(Typeface.ITALIC);
+                        case TextStyle.UNDERLINE -> new UnderlineSpan();
+                        case TextStyle.LINE_THROUGH -> new StrikethroughSpan();
+                        default -> null;
+                    };
                 });
         addSpans(
                 spannable,

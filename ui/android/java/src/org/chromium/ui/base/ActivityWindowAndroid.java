@@ -153,17 +153,16 @@ public class ActivityWindowAndroid extends WindowAndroid
 
     @Override
     public void onActivityStateChange(Activity activity, int newState) {
-        if (newState == ActivityState.STOPPED) {
-            onActivityStopped();
-        } else if (newState == ActivityState.STARTED) {
-            onActivityStarted();
-        } else if (newState == ActivityState.PAUSED) {
-            onActivityPaused();
-        } else if (newState == ActivityState.RESUMED) {
-            onActivityResumed();
-        } else if (newState == ActivityState.DESTROYED) {
-            onActivityDestroyed();
-            ApplicationStatus.unregisterWindowFocusChangedListener(this);
+        switch (newState) {
+            case ActivityState.STOPPED -> onActivityStopped();
+            case ActivityState.STARTED -> onActivityStarted();
+            case ActivityState.PAUSED -> onActivityPaused();
+            case ActivityState.RESUMED -> onActivityResumed();
+            case ActivityState.DESTROYED -> {
+                onActivityDestroyed();
+                ApplicationStatus.unregisterWindowFocusChangedListener(this);
+            }
+            default -> {}
         }
     }
 

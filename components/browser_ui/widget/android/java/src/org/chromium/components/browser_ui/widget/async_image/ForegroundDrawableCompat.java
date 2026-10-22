@@ -251,22 +251,26 @@ public class ForegroundDrawableCompat
         mTempSrc.set(0, 0, drawableWidth, drawableHeight);
         mTempDst.set(0, 0, viewWidth, viewHeight);
 
-        if (mScaleType == ImageView.ScaleType.FIT_START) {
-            mDrawMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.START);
-            mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
-        } else if (mScaleType == ImageView.ScaleType.FIT_CENTER) {
-            mDrawMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.CENTER);
-            mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
-        } else if (mScaleType == ImageView.ScaleType.FIT_END) {
-            mDrawMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.END);
-            mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
-        } else if (mScaleType == ImageView.ScaleType.CENTER) {
-            mDrawMatrix.setTranslate(
-                    Math.round((viewWidth - drawableWidth) * 0.5f),
-                    Math.round((viewHeight - drawableHeight) * 0.5f));
-            mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
-        } else {
-            mDrawable.setBounds(0, 0, viewWidth, viewHeight);
+        switch (mScaleType) {
+            case FIT_START -> {
+                mDrawMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.START);
+                mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
+            }
+            case FIT_CENTER -> {
+                mDrawMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.CENTER);
+                mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
+            }
+            case FIT_END -> {
+                mDrawMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.END);
+                mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
+            }
+            case CENTER -> {
+                mDrawMatrix.setTranslate(
+                        Math.round((viewWidth - drawableWidth) * 0.5f),
+                        Math.round((viewHeight - drawableHeight) * 0.5f));
+                mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
+            }
+            default -> mDrawable.setBounds(0, 0, viewWidth, viewHeight);
         }
 
         mOnBoundsChanged = false;

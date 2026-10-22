@@ -618,26 +618,31 @@ public class AccountPickerBottomSheetMediator
      */
     private void onContinueAsClicked() {
         @ViewState int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
-        if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST) {
-            assert !mIsSeamlessSignin;
-            launchDeviceLockIfNeededAndSignIn();
-        } else if (viewState == ViewState.SIGNIN_GENERAL_ERROR) {
-            if (mAcceptedAccountManagement) {
-                // User already accepted account management and is re-trying login, so the
-                // management status check & confirmation sheet can be skipped.
-                startSigninTimestampLogging();
-                signInAfterCheckingManagement();
-            } else {
+        switch (viewState) {
+            case ViewState.COLLAPSED_ACCOUNT_LIST -> {
+                assert !mIsSeamlessSignin;
                 launchDeviceLockIfNeededAndSignIn();
             }
-        } else if (viewState == ViewState.NO_ACCOUNTS) {
-            assert !mIsSeamlessSignin;
-            addAccount();
-        } else if (viewState == ViewState.SIGNIN_AUTH_ERROR) {
-            assert !mIsSeamlessSignin;
-            updateCredentials();
-        } else if (viewState == ViewState.CONFIRM_MANAGEMENT) {
-            onConfirmManagementAccepted();
+            case ViewState.SIGNIN_GENERAL_ERROR -> {
+                if (mAcceptedAccountManagement) {
+                    // User already accepted account management and is re-trying login, so the
+                    // management status check & confirmation sheet can be skipped.
+                    startSigninTimestampLogging();
+                    signInAfterCheckingManagement();
+                } else {
+                    launchDeviceLockIfNeededAndSignIn();
+                }
+            }
+            case ViewState.NO_ACCOUNTS -> {
+                assert !mIsSeamlessSignin;
+                addAccount();
+            }
+            case ViewState.SIGNIN_AUTH_ERROR -> {
+                assert !mIsSeamlessSignin;
+                updateCredentials();
+            }
+            case ViewState.CONFIRM_MANAGEMENT -> onConfirmManagementAccepted();
+            default -> {}
         }
     }
 

@@ -159,56 +159,65 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         boolean translateVisible = true;
         boolean zoomVisible = false;
 
-        if (mUiType == CustomTabsUiType.MEDIA_VIEWER) {
-            // Most of the menu items don't make sense when viewing media.
-            iconRowVisible = false;
-            findInPageVisible = false;
-            bookmarkItemVisible = false; // Set to skip initialization.
-            downloadItemVisible = false; // Set to skip initialization.
-            requestDesktopSiteVisible = false;
-            addToHomeScreenVisible = false;
-            tryAddingReadAloud = false;
-        } else if (mUiType == CustomTabsUiType.MINIMAL_UI_WEBAPP) {
-            requestDesktopSiteVisible = false;
-            // For Webapps & WebAPKs Verifier#wasPreviouslyVerified() performs verification
-            // (instead of looking up cached value).
-            addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
-            downloadItemVisible = false;
-            bookmarkItemVisible = false;
-        } else if (mUiType == CustomTabsUiType.TRUSTED_WEB_ACTIVITY) {
-            // The CCT menu button was removed for TWAs. This would only affect the
-            // app header's menu button.
-            addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
-            downloadItemVisible = false;
-            bookmarkItemVisible = false;
-            requestDesktopSiteVisible = false;
+        switch (mUiType) {
+            case CustomTabsUiType.MEDIA_VIEWER -> {
+                // Most of the menu items don't make sense when viewing media.
+                iconRowVisible = false;
+                findInPageVisible = false;
+                bookmarkItemVisible = false; // Set to skip initialization.
+                downloadItemVisible = false; // Set to skip initialization.
+                requestDesktopSiteVisible = false;
+                addToHomeScreenVisible = false;
+                tryAddingReadAloud = false;
+            }
+            case CustomTabsUiType.MINIMAL_UI_WEBAPP -> {
+                requestDesktopSiteVisible = false;
+                // For Webapps & WebAPKs Verifier#wasPreviouslyVerified() performs verification
+                // (instead of looking up cached value).
+                addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
+                downloadItemVisible = false;
+                bookmarkItemVisible = false;
+            }
+            case CustomTabsUiType.TRUSTED_WEB_ACTIVITY -> {
+                // The CCT menu button was removed for TWAs. This would only affect the
+                // app header's menu button.
+                addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
+                downloadItemVisible = false;
+                bookmarkItemVisible = false;
+                requestDesktopSiteVisible = false;
 
-            translateVisible = false;
-            // Remove icons.
-            iconRowVisible = false;
-            zoomVisible = true;
-            findInPageVisible = true;
-            mShowShare = true;
-        } else if (mUiType == CustomTabsUiType.OFFLINE_PAGE) {
-            bookmarkItemVisible = true;
-            downloadItemVisible = false;
-            addToHomeScreenVisible = false;
-            requestDesktopSiteVisible = true;
-            tryAddingReadAloud = false;
-        } else if (mUiType == CustomTabsUiType.AUTH_TAB) {
-            bookmarkItemVisible = false;
-            downloadItemVisible = false;
-            addToHomeScreenVisible = false;
-            tryAddingReadAloud = false;
-        } else if (mUiType == CustomTabsUiType.NETWORK_BOUND_TAB) {
-            addToHomeScreenVisible = false;
-            requestDesktopSiteVisible = true;
-        } else if (mUiType == CustomTabsUiType.POPUP) {
-            bookmarkItemVisible = false;
-            downloadItemVisible = false;
-            addToHomeScreenVisible = false;
-            requestDesktopSiteVisible = false;
-            tryAddingReadAloud = false;
+                translateVisible = false;
+                // Remove icons.
+                iconRowVisible = false;
+                zoomVisible = true;
+                findInPageVisible = true;
+                mShowShare = true;
+            }
+            case CustomTabsUiType.OFFLINE_PAGE -> {
+                bookmarkItemVisible = true;
+                downloadItemVisible = false;
+                addToHomeScreenVisible = false;
+                requestDesktopSiteVisible = true;
+                tryAddingReadAloud = false;
+            }
+            case CustomTabsUiType.AUTH_TAB -> {
+                bookmarkItemVisible = false;
+                downloadItemVisible = false;
+                addToHomeScreenVisible = false;
+                tryAddingReadAloud = false;
+            }
+            case CustomTabsUiType.NETWORK_BOUND_TAB -> {
+                addToHomeScreenVisible = false;
+                requestDesktopSiteVisible = true;
+            }
+            case CustomTabsUiType.POPUP -> {
+                bookmarkItemVisible = false;
+                downloadItemVisible = false;
+                addToHomeScreenVisible = false;
+                requestDesktopSiteVisible = false;
+                tryAddingReadAloud = false;
+            }
+            default -> {}
         }
 
         if (!FirstRunStatus.getFirstRunFlowComplete()) {

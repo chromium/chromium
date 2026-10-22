@@ -119,18 +119,20 @@ public class MediaCaptureNotificationUtil {
      */
     private static String getNotificationTitleText(@MediaType int mediaType) {
         int notificationContentTextId = 0;
-        if (mediaType == MediaType.TAB_CAPTURE) {
-            notificationContentTextId = R.string.tab_capture_notification_title;
-        } else if (mediaType == MediaType.WINDOW_CAPTURE) {
-            notificationContentTextId = R.string.window_capture_notification_title;
-        } else if (mediaType == MediaType.SCREEN_CAPTURE) {
-            notificationContentTextId = R.string.screen_capture_notification_title;
-        } else if (mediaType == MediaType.AUDIO_AND_VIDEO) {
-            notificationContentTextId = R.string.video_audio_capture_notification_title;
-        } else if (mediaType == MediaType.VIDEO_ONLY) {
-            notificationContentTextId = R.string.video_capture_notification_title;
-        } else if (mediaType == MediaType.AUDIO_ONLY) {
-            notificationContentTextId = R.string.audio_capture_notification_title;
+        switch (mediaType) {
+            case MediaType.TAB_CAPTURE ->
+                    notificationContentTextId = R.string.tab_capture_notification_title;
+            case MediaType.WINDOW_CAPTURE ->
+                    notificationContentTextId = R.string.window_capture_notification_title;
+            case MediaType.SCREEN_CAPTURE ->
+                    notificationContentTextId = R.string.screen_capture_notification_title;
+            case MediaType.AUDIO_AND_VIDEO ->
+                    notificationContentTextId = R.string.video_audio_capture_notification_title;
+            case MediaType.VIDEO_ONLY ->
+                    notificationContentTextId = R.string.video_capture_notification_title;
+            case MediaType.AUDIO_ONLY ->
+                    notificationContentTextId = R.string.audio_capture_notification_title;
+            default -> {}
         }
 
         return ContextUtils.getApplicationContext().getString(notificationContentTextId);

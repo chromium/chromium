@@ -280,14 +280,12 @@ public class SnackbarManager
     @Override
     public void onActivityStateChange(Activity activity, @ActivityState int newState) {
         assert activity == mActivity;
-        if (newState == ActivityState.STARTED) {
-            onStart();
-        } else if (newState == ActivityState.STOPPED) {
-            onStop();
-        } else if (newState == ActivityState.PAUSED) {
-            onPause();
-        } else if (newState == ActivityState.RESUMED) {
-            onResume();
+        switch (newState) {
+            case ActivityState.STARTED -> onStart();
+            case ActivityState.STOPPED -> onStop();
+            case ActivityState.PAUSED -> onPause();
+            case ActivityState.RESUMED -> onResume();
+            default -> {}
         }
     }
 

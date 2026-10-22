@@ -918,33 +918,38 @@ public class BottomBarConfigCreatorTest {
             BottomBarConfig config, @GoogleBottomBarVariantLayoutType int layoutType) {
         assertNull(config.getSpotlightId());
 
-        if (layoutType == NO_VARIANT) {
-            assertEquals(2, config.getButtonList().size());
-            assertEquals(SAVE, config.getButtonList().get(0).getId());
-            assertEquals(SHARE, config.getButtonList().get(1).getId());
-            assertEquals(
-                    ChromeFeatureList.sCctGoogleBottomBarNoVariantHeightDp.getDefaultValue(),
-                    config.getHeightDp());
-        } else if (layoutType == DOUBLE_DECKER) {
-            assertEquals(2, config.getButtonList().size());
-            assertEquals(SAVE, config.getButtonList().get(0).getId());
-            assertEquals(SHARE, config.getButtonList().get(1).getId());
-            assertEquals(BottomBarConfigCreator.DOUBLE_DECKER_HEIGHT_DP, config.getHeightDp());
-        } else if (layoutType == SINGLE_DECKER_WITH_RIGHT_BUTTONS) {
-            assertEquals(1, config.getButtonList().size());
-            assertEquals(SHARE, config.getButtonList().get(0).getId());
-            assertEquals(
-                    BottomBarConfigCreator.SINGLE_DECKER_WITH_RIGHT_BUTTONS_HEIGHT_DP,
-                    config.getHeightDp());
-        } else if (layoutType == SINGLE_DECKER) {
-            assertEquals(0, config.getButtonList().size());
-            assertEquals(
-                    ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp
-                            .getDefaultValue(),
-                    config.getHeightDp());
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("Layout type with id %s is not tested.", layoutType));
+        switch (layoutType) {
+            case NO_VARIANT -> {
+                assertEquals(2, config.getButtonList().size());
+                assertEquals(SAVE, config.getButtonList().get(0).getId());
+                assertEquals(SHARE, config.getButtonList().get(1).getId());
+                assertEquals(
+                        ChromeFeatureList.sCctGoogleBottomBarNoVariantHeightDp.getDefaultValue(),
+                        config.getHeightDp());
+            }
+            case DOUBLE_DECKER -> {
+                assertEquals(2, config.getButtonList().size());
+                assertEquals(SAVE, config.getButtonList().get(0).getId());
+                assertEquals(SHARE, config.getButtonList().get(1).getId());
+                assertEquals(BottomBarConfigCreator.DOUBLE_DECKER_HEIGHT_DP, config.getHeightDp());
+            }
+            case SINGLE_DECKER_WITH_RIGHT_BUTTONS -> {
+                assertEquals(1, config.getButtonList().size());
+                assertEquals(SHARE, config.getButtonList().get(0).getId());
+                assertEquals(
+                        BottomBarConfigCreator.SINGLE_DECKER_WITH_RIGHT_BUTTONS_HEIGHT_DP,
+                        config.getHeightDp());
+            }
+            case SINGLE_DECKER -> {
+                assertEquals(0, config.getButtonList().size());
+                assertEquals(
+                        ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp
+                                .getDefaultValue(),
+                        config.getHeightDp());
+            }
+            default ->
+                    throw new IllegalArgumentException(
+                            String.format("Layout type with id %s is not tested.", layoutType));
         }
         assertEquals(config.getVariantLayoutType(), layoutType);
     }

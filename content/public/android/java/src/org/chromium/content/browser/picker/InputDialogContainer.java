@@ -99,72 +99,78 @@ public class InputDialogContainer {
                 cal = gregorianCalendar;
             }
         }
-        if (dialogType == TextInputType.DATE) {
-            showPickerDialog(
-                    dialogType,
-                    cal.get(Calendar.YEAR),
-                    cal.get(Calendar.MONTH),
-                    cal.get(Calendar.DAY_OF_MONTH),
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    min,
-                    max,
-                    step);
-            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.DATE);
-        } else if (dialogType == TextInputType.TIME) {
-            showPickerDialog(
-                    dialogType,
-                    0,
-                    0,
-                    0,
-                    cal.get(Calendar.HOUR_OF_DAY),
-                    cal.get(Calendar.MINUTE),
-                    0,
-                    0,
-                    0,
-                    min,
-                    max,
-                    step);
-            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.TIME);
-        } else if (dialogType == TextInputType.DATE_TIME
-                || dialogType == TextInputType.DATE_TIME_LOCAL) {
-            showPickerDialog(
-                    dialogType,
-                    cal.get(Calendar.YEAR),
-                    cal.get(Calendar.MONTH),
-                    cal.get(Calendar.DAY_OF_MONTH),
-                    cal.get(Calendar.HOUR_OF_DAY),
-                    cal.get(Calendar.MINUTE),
-                    cal.get(Calendar.SECOND),
-                    cal.get(Calendar.MILLISECOND),
-                    0,
-                    min,
-                    max,
-                    step);
-            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.DATETIME);
-        } else if (dialogType == TextInputType.MONTH) {
-            showPickerDialog(
-                    dialogType,
-                    cal.get(Calendar.YEAR),
-                    cal.get(Calendar.MONTH),
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    min,
-                    max,
-                    step);
-            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.MONTH);
-        } else if (dialogType == TextInputType.WEEK) {
-            int year = WeekPicker.getISOWeekYearForDate(cal);
-            int week = WeekPicker.getWeekForDate(cal);
-            showPickerDialog(dialogType, year, 0, 0, 0, 0, 0, 0, week, min, max, step);
-            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.WEEK);
+        switch (dialogType) {
+            case TextInputType.DATE -> {
+                showPickerDialog(
+                        dialogType,
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DAY_OF_MONTH),
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        min,
+                        max,
+                        step);
+                DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.DATE);
+            }
+            case TextInputType.TIME -> {
+                showPickerDialog(
+                        dialogType,
+                        0,
+                        0,
+                        0,
+                        cal.get(Calendar.HOUR_OF_DAY),
+                        cal.get(Calendar.MINUTE),
+                        0,
+                        0,
+                        0,
+                        min,
+                        max,
+                        step);
+                DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.TIME);
+            }
+            case TextInputType.DATE_TIME, TextInputType.DATE_TIME_LOCAL -> {
+                showPickerDialog(
+                        dialogType,
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DAY_OF_MONTH),
+                        cal.get(Calendar.HOUR_OF_DAY),
+                        cal.get(Calendar.MINUTE),
+                        cal.get(Calendar.SECOND),
+                        cal.get(Calendar.MILLISECOND),
+                        0,
+                        min,
+                        max,
+                        step);
+                DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.DATETIME);
+            }
+            case TextInputType.MONTH -> {
+                showPickerDialog(
+                        dialogType,
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        min,
+                        max,
+                        step);
+                DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.MONTH);
+            }
+            case TextInputType.WEEK -> {
+                int year = WeekPicker.getISOWeekYearForDate(cal);
+                int week = WeekPicker.getWeekForDate(cal);
+                showPickerDialog(dialogType, year, 0, 0, 0, 0, 0, 0, week, min, max, step);
+                DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.WEEK);
+            }
+            default -> {}
         }
     }
 
@@ -198,15 +204,13 @@ public class InputDialogContainer {
                 });
 
         int dialogTitleId = R.string.date_picker_dialog_title;
-        if (dialogType == TextInputType.TIME) {
-            dialogTitleId = R.string.time_picker_dialog_title;
-        } else if (dialogType == TextInputType.DATE_TIME
-                || dialogType == TextInputType.DATE_TIME_LOCAL) {
-            dialogTitleId = R.string.date_time_picker_dialog_title;
-        } else if (dialogType == TextInputType.MONTH) {
-            dialogTitleId = R.string.month_picker_dialog_title;
-        } else if (dialogType == TextInputType.WEEK) {
-            dialogTitleId = R.string.week_picker_dialog_title;
+        switch (dialogType) {
+            case TextInputType.TIME -> dialogTitleId = R.string.time_picker_dialog_title;
+            case TextInputType.DATE_TIME, TextInputType.DATE_TIME_LOCAL ->
+                    dialogTitleId = R.string.date_time_picker_dialog_title;
+            case TextInputType.MONTH -> dialogTitleId = R.string.month_picker_dialog_title;
+            case TextInputType.WEEK -> dialogTitleId = R.string.week_picker_dialog_title;
+            default -> {}
         }
 
         mDialog =
@@ -272,102 +276,115 @@ public class InputDialogContainer {
         int stepTime = (int) step;
 
         AlertDialog dialog;
-        if (dialogType == TextInputType.DATE) {
-            // The MaterialDatePickerProvider service can be null if the service was not
-            // registered by the embedder (e.g., in WebView). If null, we fall back to the legacy
-            // DatePickerDialogCompat below.
-            MaterialDatePickerProvider datePickerProvider =
-                    ServiceLoaderUtil.maybeCreate(MaterialDatePickerProvider.class);
-            if (datePickerProvider != null) {
-                Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                cal.clear();
-                cal.set(year, month, monthDay);
-                mDialogAlreadyDismissed = false;
-                boolean status;
-                status =
-                        datePickerProvider.showDatePicker(
-                                mContext,
-                                cal.getTimeInMillis(),
-                                (long) min,
-                                (long) max,
-                                (selection) -> {
-                                    if (mDialogAlreadyDismissed) return;
-                                    mDialogAlreadyDismissed = true;
-                                    mInputActionDelegate.replaceDateTime((double) selection);
-                                },
-                                () -> {
-                                    if (!mDialogAlreadyDismissed) {
+        switch (dialogType) {
+            case TextInputType.DATE -> {
+                // The MaterialDatePickerProvider service can be null if the service was not
+                // registered by the embedder (e.g., in WebView). If null, we fall back to the
+                // legacy DatePickerDialogCompat below.
+                MaterialDatePickerProvider datePickerProvider =
+                        ServiceLoaderUtil.maybeCreate(MaterialDatePickerProvider.class);
+                if (datePickerProvider != null) {
+                    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                    cal.clear();
+                    cal.set(year, month, monthDay);
+                    mDialogAlreadyDismissed = false;
+                    boolean status;
+                    status =
+                            datePickerProvider.showDatePicker(
+                                    mContext,
+                                    cal.getTimeInMillis(),
+                                    (long) min,
+                                    (long) max,
+                                    (selection) -> {
+                                        if (mDialogAlreadyDismissed) return;
                                         mDialogAlreadyDismissed = true;
-                                        mInputActionDelegate.cancelDateTimeDialog();
-                                    }
-                                });
-                if (status) return;
-            }
-            DatePickerDialogCompat dateDialog =
-                    new DatePickerDialogCompat(
-                            mContext, new DateListener(dialogType), year, month, monthDay);
-            DateDialogNormalizer.normalize(
-                    dateDialog.getDatePicker(),
-                    dateDialog,
-                    year,
-                    month,
-                    monthDay,
-                    (long) min,
-                    (long) max);
+                                        mInputActionDelegate.replaceDateTime((double) selection);
+                                    },
+                                    () -> {
+                                        if (!mDialogAlreadyDismissed) {
+                                            mDialogAlreadyDismissed = true;
+                                            mInputActionDelegate.cancelDateTimeDialog();
+                                        }
+                                    });
+                    if (status) return;
+                }
+                DatePickerDialogCompat dateDialog =
+                        new DatePickerDialogCompat(
+                                mContext, new DateListener(dialogType), year, month, monthDay);
+                DateDialogNormalizer.normalize(
+                        dateDialog.getDatePicker(),
+                        dateDialog,
+                        year,
+                        month,
+                        monthDay,
+                        (long) min,
+                        (long) max);
 
-            dateDialog.setTitle(mContext.getText(R.string.date_picker_dialog_title));
-            dialog = dateDialog;
-        } else if (dialogType == TextInputType.TIME) {
-            // If user doesn't need to set seconds and milliseconds, show the default clock style
-            // time picker dialog. Otherwise, show a full spinner style time picker.
-            if (stepTime < 0 || stepTime >= 60000 /* milliseconds in a minute */) {
-                dialog =
-                        new TimePickerDialog(
-                                mContext,
-                                new TimeListener(dialogType),
-                                hourOfDay,
-                                minute,
-                                DateFormat.is24HourFormat(mContext));
-            } else {
-                dialog =
-                        new MultiFieldTimePickerDialog(
-                                mContext,
-                                /* theme= */ 0,
-                                hourOfDay,
-                                minute,
-                                second,
-                                millis,
-                                (int) min,
-                                (int) max,
-                                stepTime,
-                                DateFormat.is24HourFormat(mContext),
-                                new FullTimeListener(dialogType));
+                dateDialog.setTitle(mContext.getText(R.string.date_picker_dialog_title));
+                dialog = dateDialog;
             }
-        } else if (dialogType == TextInputType.DATE_TIME
-                || dialogType == TextInputType.DATE_TIME_LOCAL) {
-            dialog =
-                    new DateTimePickerDialog(
-                            mContext,
-                            new DateTimeListener(dialogType),
-                            year,
-                            month,
-                            monthDay,
-                            hourOfDay,
-                            minute,
-                            DateFormat.is24HourFormat(mContext),
-                            min,
-                            max);
-        } else if (dialogType == TextInputType.MONTH) {
-            dialog =
-                    new MonthPickerDialog(
-                            mContext, new MonthOrWeekListener(dialogType), year, month, min, max);
-        } else if (dialogType == TextInputType.WEEK) {
-            dialog =
-                    new WeekPickerDialog(
-                            mContext, new MonthOrWeekListener(dialogType), year, week, min, max);
-        } else {
-            assert false : "type was " + dialogType;
-            dialog = assumeNonNull(null);
+            case TextInputType.TIME -> {
+                // If user doesn't need to set seconds and milliseconds, show the default clock
+                // style time picker dialog. Otherwise, show a full spinner style time picker.
+                if (stepTime < 0 || stepTime >= 60000 /* milliseconds in a minute */) {
+                    dialog =
+                            new TimePickerDialog(
+                                    mContext,
+                                    new TimeListener(dialogType),
+                                    hourOfDay,
+                                    minute,
+                                    DateFormat.is24HourFormat(mContext));
+                } else {
+                    dialog =
+                            new MultiFieldTimePickerDialog(
+                                    mContext,
+                                    /* theme= */ 0,
+                                    hourOfDay,
+                                    minute,
+                                    second,
+                                    millis,
+                                    (int) min,
+                                    (int) max,
+                                    stepTime,
+                                    DateFormat.is24HourFormat(mContext),
+                                    new FullTimeListener(dialogType));
+                }
+            }
+            case TextInputType.DATE_TIME, TextInputType.DATE_TIME_LOCAL ->
+                    dialog =
+                            new DateTimePickerDialog(
+                                    mContext,
+                                    new DateTimeListener(dialogType),
+                                    year,
+                                    month,
+                                    monthDay,
+                                    hourOfDay,
+                                    minute,
+                                    DateFormat.is24HourFormat(mContext),
+                                    min,
+                                    max);
+            case TextInputType.MONTH ->
+                    dialog =
+                            new MonthPickerDialog(
+                                    mContext,
+                                    new MonthOrWeekListener(dialogType),
+                                    year,
+                                    month,
+                                    min,
+                                    max);
+            case TextInputType.WEEK ->
+                    dialog =
+                            new WeekPickerDialog(
+                                    mContext,
+                                    new MonthOrWeekListener(dialogType),
+                                    year,
+                                    week,
+                                    min,
+                                    max);
+            default -> {
+                assert false : "type was " + dialogType;
+                dialog = assumeNonNull(null);
+            }
         }
         dialog.setButton(
                 DialogInterface.BUTTON_POSITIVE,

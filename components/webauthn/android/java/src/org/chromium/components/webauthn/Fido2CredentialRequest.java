@@ -1507,24 +1507,25 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                 return CredentialRequestResult.TIMEOUT;
             }
         }
-        if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
-            return success
-                    ? CredentialRequestResult.ANDROID_FIDO2_SUCCESS
-                    : CredentialRequestResult.ANDROID_FIDO2_ERROR;
-        } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
-            return success
-                    ? CredentialRequestResult.ANDROID_FIDO2_HYBRID_SUCCESS
-                    : CredentialRequestResult.ANDROID_FIDO2_HYBRID_ERROR;
-        } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
-            return success
-                    ? CredentialRequestResult.ANDROID_FIDO2_LEGACY_SUCCESS
-                    : CredentialRequestResult.ANDROID_FIDO2_LEGACY_ERROR;
-        } else if (requestType == Fido2ApiRequestType.MAKE_CREDENTIAL) {
-            return success
-                    ? CredentialRequestResult.ANDROID_FIDO2_SUCCESS
-                    : CredentialRequestResult.ANDROID_FIDO2_ERROR;
-        }
-        return null;
+        return switch (requestType) {
+            case Fido2ApiRequestType.GET_ASSERTION ->
+                    success
+                            ? CredentialRequestResult.ANDROID_FIDO2_SUCCESS
+                            : CredentialRequestResult.ANDROID_FIDO2_ERROR;
+            case Fido2ApiRequestType.GET_ASSERTION_HYBRID ->
+                    success
+                            ? CredentialRequestResult.ANDROID_FIDO2_HYBRID_SUCCESS
+                            : CredentialRequestResult.ANDROID_FIDO2_HYBRID_ERROR;
+            case Fido2ApiRequestType.GET_ASSERTION_LEGACY ->
+                    success
+                            ? CredentialRequestResult.ANDROID_FIDO2_LEGACY_SUCCESS
+                            : CredentialRequestResult.ANDROID_FIDO2_LEGACY_ERROR;
+            case Fido2ApiRequestType.MAKE_CREDENTIAL ->
+                    success
+                            ? CredentialRequestResult.ANDROID_FIDO2_SUCCESS
+                            : CredentialRequestResult.ANDROID_FIDO2_ERROR;
+            default -> null;
+        };
     }
 
     // Handles the result.

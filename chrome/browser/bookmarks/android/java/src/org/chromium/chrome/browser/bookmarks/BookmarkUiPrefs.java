@@ -166,20 +166,21 @@ public class BookmarkUiPrefs {
     public String getSortOrderAccessibilityAnnouncementText(
             Context context, @BookmarkRowSortOrder int sortOrder) {
         int stringRes = 0;
-        if (sortOrder == BookmarkRowSortOrder.CHRONOLOGICAL) {
-            stringRes = R.string.sort_by_oldest_announcement;
-        } else if (sortOrder == BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL) {
-            stringRes = R.string.sort_by_newest_announcement;
-        } else if (sortOrder == BookmarkRowSortOrder.ALPHABETICAL) {
-            stringRes = R.string.sort_by_alpha_announcement;
-        } else if (sortOrder == BookmarkRowSortOrder.REVERSE_ALPHABETICAL) {
-            stringRes = R.string.sort_by_reverse_alpha_announcement;
-        } else if (sortOrder == BookmarkRowSortOrder.RECENTLY_USED) {
-            stringRes = R.string.sort_by_last_opened_announcement;
-        } else if (sortOrder == BookmarkRowSortOrder.MANUAL) {
-            stringRes = R.string.sort_by_manual_announcement;
-        } else {
-            assert false;
+        switch (sortOrder) {
+            case BookmarkRowSortOrder.CHRONOLOGICAL ->
+                    stringRes = R.string.sort_by_oldest_announcement;
+            case BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL ->
+                    stringRes = R.string.sort_by_newest_announcement;
+            case BookmarkRowSortOrder.ALPHABETICAL ->
+                    stringRes = R.string.sort_by_alpha_announcement;
+            case BookmarkRowSortOrder.REVERSE_ALPHABETICAL ->
+                    stringRes = R.string.sort_by_reverse_alpha_announcement;
+            case BookmarkRowSortOrder.RECENTLY_USED ->
+                    stringRes = R.string.sort_by_last_opened_announcement;
+            case BookmarkRowSortOrder.MANUAL -> stringRes = R.string.sort_by_manual_announcement;
+            default -> {
+                assert false;
+            }
         }
 
         return context.getString(stringRes);

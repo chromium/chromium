@@ -283,21 +283,18 @@ public class SettingsIndexData {
                 String key = keys.next();
                 try {
                     Object value = json.get(key);
-                    if (value instanceof Integer intVal) {
-                        bundle.putInt(key, intVal);
-                    } else if (value instanceof Long longVal) {
-                        bundle.putLong(key, longVal);
-                    } else if (value instanceof Double doubleVal) {
-                        bundle.putDouble(key, doubleVal);
-                    } else if (value instanceof Boolean boolVal) {
-                        bundle.putBoolean(key, boolVal);
-                    } else if (value instanceof String strVal) {
-                        bundle.putString(key, strVal);
-                    } else {
-                        // Complex types are not expected in the Bundle object used for extras.
-                        // Report the exception if it actually occurs.
-                        throw new IllegalArgumentException(
-                                "Unsupported complex type in extras: " + key);
+                    switch (value) {
+                        case Integer intVal -> bundle.putInt(key, intVal);
+                        case Long longVal -> bundle.putLong(key, longVal);
+                        case Double doubleVal -> bundle.putDouble(key, doubleVal);
+                        case Boolean boolVal -> bundle.putBoolean(key, boolVal);
+                        case String strVal -> bundle.putString(key, strVal);
+                        default -> {
+                            // Complex types are not expected in the Bundle object used for extras.
+                            // Report the exception if it actually occurs.
+                            throw new IllegalArgumentException(
+                                    "Unsupported complex type in extras: " + key);
+                        }
                     }
                 } catch (JSONException e) {
                     // Skip restoring the element that causes an exception.

@@ -1505,51 +1505,57 @@ public class PaymentUiService
         if (context == null) return PaymentRequestUi.SelectionResult.NONE;
 
         boolean wasRetryCalled = mDelegate.wasRetryCalled();
-        if (optionType == PaymentRequestUi.DataType.SHIPPING_ADDRESSES) {
-            AutofillAddress address = (AutofillAddress) option;
-            if (address.isComplete()) {
-                assumeNonNull(mShippingAddressesSection).setSelectedItem(option);
-                startShippingAddressChangeNormalization(address);
-            } else {
-                editAddress(address);
+        switch (optionType) {
+            case PaymentRequestUi.DataType.SHIPPING_ADDRESSES -> {
+                AutofillAddress address = (AutofillAddress) option;
+                if (address.isComplete()) {
+                    assumeNonNull(mShippingAddressesSection).setSelectedItem(option);
+                    startShippingAddressChangeNormalization(address);
+                } else {
+                    editAddress(address);
+                }
+                mPaymentInformationCallback = callback;
+                return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
             }
-            mPaymentInformationCallback = callback;
-            return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUi.DataType.SHIPPING_OPTIONS) {
-            // This may update the line items.
-            assumeNonNull(mUiShippingOptions).setSelectedItem(option);
-            mDelegate.onShippingOptionChange(option.getIdentifier());
-            mPaymentInformationCallback = callback;
-            return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUi.DataType.CONTACT_DETAILS) {
-            AutofillContact contact = (AutofillContact) option;
-            if (contact.isComplete()) {
-                assumeNonNull(mContactSection).setSelectedItem(option);
-                if (!wasRetryCalled) return PaymentRequestUi.SelectionResult.NONE;
-                mDelegate.dispatchPayerDetailChangeEventIfNeeded(contact.toPayerDetail());
-            } else {
-                editContactOnPaymentRequestUi(contact);
-                if (!wasRetryCalled) return PaymentRequestUi.SelectionResult.EDITOR_LAUNCH;
+            case PaymentRequestUi.DataType.SHIPPING_OPTIONS -> {
+                // This may update the line items.
+                assumeNonNull(mUiShippingOptions).setSelectedItem(option);
+                mDelegate.onShippingOptionChange(option.getIdentifier());
+                mPaymentInformationCallback = callback;
+                return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
             }
-            mPaymentInformationCallback = callback;
-            return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUi.DataType.PAYMENT_METHODS) {
-            if (shouldShowShippingSection() && mShippingAddressesSection == null) {
-                createShippingSectionForPaymentRequestUi(context);
+            case PaymentRequestUi.DataType.CONTACT_DETAILS -> {
+                AutofillContact contact = (AutofillContact) option;
+                if (contact.isComplete()) {
+                    assumeNonNull(mContactSection).setSelectedItem(option);
+                    if (!wasRetryCalled) return PaymentRequestUi.SelectionResult.NONE;
+                    mDelegate.dispatchPayerDetailChangeEventIfNeeded(contact.toPayerDetail());
+                } else {
+                    editContactOnPaymentRequestUi(contact);
+                    if (!wasRetryCalled) return PaymentRequestUi.SelectionResult.EDITOR_LAUNCH;
+                }
+                mPaymentInformationCallback = callback;
+                return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
             }
-            if (shouldShowContactSection() && mContactSection == null) {
-                mContactSection =
-                        new ContactDetailsSection(
-                                context,
-                                mAutofillProfiles,
-                                assumeNonNull(mContactEditor),
-                                mJourneyLogger);
-            }
-            onSelectedPaymentMethodUpdated();
-            PaymentApp paymentApp = (PaymentApp) option;
+            case PaymentRequestUi.DataType.PAYMENT_METHODS -> {
+                if (shouldShowShippingSection() && mShippingAddressesSection == null) {
+                    createShippingSectionForPaymentRequestUi(context);
+                }
+                if (shouldShowContactSection() && mContactSection == null) {
+                    mContactSection =
+                            new ContactDetailsSection(
+                                    context,
+                                    mAutofillProfiles,
+                                    assumeNonNull(mContactEditor),
+                                    mJourneyLogger);
+                }
+                onSelectedPaymentMethodUpdated();
+                PaymentApp paymentApp = (PaymentApp) option;
 
-            updateOrderSummary(paymentApp);
-            assumeNonNull(mPaymentMethodsSection).setSelectedItem(option);
+                updateOrderSummary(paymentApp);
+                assumeNonNull(mPaymentMethodsSection).setSelectedItem(option);
+            }
+            default -> {}
         }
 
         return PaymentRequestUi.SelectionResult.NONE;
