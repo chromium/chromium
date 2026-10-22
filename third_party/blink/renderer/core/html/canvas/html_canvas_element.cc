@@ -912,8 +912,6 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
     context_->Reshape(old_size, new_size);
   } else if (IsWebGPU()) {
     size_ = new_size;
-    RenderingContext()->SizeChanged();
-    UpdateMemoryUsage();
     context_->Reshape(old_size, new_size);
   } else if (IsImageBitmapRenderingContext()) {
     size_ = new_size;

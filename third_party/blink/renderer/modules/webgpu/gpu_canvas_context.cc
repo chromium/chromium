@@ -163,6 +163,19 @@ cc::Layer* GPUCanvasContext::CcLayer() const {
 }
 
 void GPUCanvasContext::Reshape(gfx::Size old_size, gfx::Size new_size) {
+  if (Host()->IsOffscreenCanvas()) {
+    if (old_size == new_size) {
+      return;
+    }
+    if (stopped_) {
+      DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+      return;
+    }
+  } else {
+    SizeChanged();
+    Host()->UpdateMemoryUsage();
+  }
+
   if (stopped_) {
     return;
   }
@@ -188,6 +201,9 @@ void GPUCanvasContext::Reshape(gfx::Size old_size, gfx::Size new_size) {
   // If we don't notify the host that something has changed it may never check
   // for the new cc::Layer.
   Host()->SetNeedsCompositingUpdate();
+  if (Host()->IsOffscreenCanvas()) {
+    DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+  }
 }
 
 void GPUCanvasContext::Dispose() {
