@@ -8,6 +8,8 @@
 #include <deque>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/proto/logs_payload.pb.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"

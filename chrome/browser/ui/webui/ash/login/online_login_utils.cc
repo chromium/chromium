@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/signin_partition_manager_factory.h"

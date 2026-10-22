@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
 #include "media/mojo/mojom/renderer.mojom.h"

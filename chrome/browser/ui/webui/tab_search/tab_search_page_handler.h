@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"

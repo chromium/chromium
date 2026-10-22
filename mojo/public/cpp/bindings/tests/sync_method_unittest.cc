@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/send_message_helper.h"
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"

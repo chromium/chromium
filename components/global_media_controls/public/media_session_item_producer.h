@@ -9,6 +9,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/timer/timer.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_producer.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"

@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
 #include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
 #include "components/optimization_guide/content/browser/page_content_test_utils.h"

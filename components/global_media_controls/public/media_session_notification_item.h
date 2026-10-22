@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "mojo/public/cpp/bindings/receiver.h"

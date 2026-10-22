@@ -9,6 +9,8 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

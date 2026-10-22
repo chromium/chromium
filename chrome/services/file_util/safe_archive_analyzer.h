@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/timer/timer.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
 #include "chrome/utility/safe_browsing/seven_zip_analyzer.h"

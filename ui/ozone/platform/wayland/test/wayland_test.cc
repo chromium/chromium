@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/run_loop.h"
+#include "base/timer/timer.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"

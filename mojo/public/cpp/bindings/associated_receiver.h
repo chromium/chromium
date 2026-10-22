@@ -13,24 +13,27 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
-#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/sync_method_traits.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/message_metadata_helpers.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
 #include "mojo/public/cpp/bindings/runtime_features.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
 namespace mojo {
 
-class MessageFilter;
-class MessageReceiver;
+class InterfaceEndpointClient;
 
 namespace internal {
 
@@ -56,25 +59,22 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedReceiverBase {
   void FlushForTesting();
 
   // Please see comments on the same method of InterfaceEndpointClient.
-  void ResetFromAnotherSequenceUnsafe() {
-    if (endpoint_client_) {
-      endpoint_client_->ResetFromAnotherSequenceUnsafe();
-    }
-  }
+  void ResetFromAnotherSequenceUnsafe();
 
  protected:
   ~AssociatedReceiverBase();
 
   // TODO(dcheng): should probably document this thing.
-  void BindImpl(ScopedInterfaceEndpointHandle handle,
-                MessageReceiverWithResponderStatus* receiver,
-                std::unique_ptr<MessageReceiver> payload_validator,
-                base::span<const uint32_t> sync_method_ordinals,
-                scoped_refptr<base::SequencedTaskRunner> runner,
-                uint32_t interface_version,
-                const char* interface_name,
-                MessageToMethodInfoCallback method_info_callback,
-                MessageToMethodNameCallback method_name_callback);
+  void Bind(ScopedInterfaceEndpointHandle handle,
+            MessageReceiverWithResponderStatus* receiver,
+            std::unique_ptr<MessageReceiver> payload_validator,
+            base::span<const uint32_t> sync_method_ordinals,
+            scoped_refptr<base::SequencedTaskRunner> runner,
+            uint32_t interface_version,
+            const char* interface_name,
+            MessageToMethodInfoCallback method_info_callback,
+            MessageToMethodNameCallback method_name_callback);
+  ScopedInterfaceEndpointHandle Unbind();
 
   std::unique_ptr<InterfaceEndpointClient> endpoint_client_;
 };
@@ -219,11 +219,12 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
       return;
     }
 
-    BindImpl(pending_receiver.PassHandle(), &stub_,
-             base::WrapUnique(new typename Interface::RequestValidator_()),
-             internal::SyncMethodTraits<Interface>::GetOrdinals(),
-             std::move(task_runner), Interface::Version_, Interface::Name_,
-             Interface::MessageToMethodInfo_, Interface::MessageToMethodName_);
+    AssociatedReceiverBase::Bind(
+        pending_receiver.PassHandle(), &stub_,
+        base::WrapUnique(new typename Interface::RequestValidator_()),
+        internal::SyncMethodTraits<Interface>::GetOrdinals(),
+        std::move(task_runner), Interface::Version_, Interface::Name_,
+        Interface::MessageToMethodInfo_, Interface::MessageToMethodName_);
   }
 
   // Binds this AssociatedReceiver with the returned PendingAssociatedRemote
@@ -265,12 +266,8 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // responses.
   [[nodiscard]] PendingAssociatedReceiver<Interface> Unbind() {
     DCHECK(is_bound());
-    // TODO(dcheng): Consider moving implementation into base class:
-    //   std::exchange(endpoint_client_, nullptr)->PassHandle();
-    PendingAssociatedReceiver<Interface> pending_receiver(
-        endpoint_client_->PassHandle());
-    endpoint_client_.reset();
-    return pending_receiver;
+    return PendingAssociatedReceiver<Interface>(
+        AssociatedReceiverBase::Unbind());
   }
 
   // Sets a message filter to be notified of each incoming message before
