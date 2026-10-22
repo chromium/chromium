@@ -81,42 +81,70 @@ pub struct EndpointInfo {
     pub(crate) disconnect_handler: Option<DisconnectHandler>,
 }
 
+impl EndpointInfo {
+    /// Post the disconnect handler (if any) to this endpoint's runner, and
+    /// return `EndpointState::BoundPeerClosed(self)`.
+    pub(super) fn handle_peer_closed(mut self) -> EndpointState {
+        if let Some(disconnect_handler) = self.disconnect_handler.take() {
+            self.runner.post_task(disconnect_handler);
+        }
+        EndpointState::BoundPeerClosed(self)
+    }
+}
+
+/// Tracks the state of an `InterfaceId` in the `EndpointRegistry`.
+///
+/// An `InterfaceId` that is not present in `endpoint_map` has never been seen
+/// by this router. Once an entry is inserted, it is never removed from the map.
+pub(super) enum EndpointState {
+    /// We received a disconnect notification for this ID before we'd even heard
+    /// about it. This can happen if we send an associated endpoint whose peer
+    /// was already closed.
+    UnregisteredPeerClosed,
+    /// The endpoint has been registered with the router, but is not currently
+    /// bound to a sequence. Incoming messages for this ID will block the
+    /// router's queue until `bind_interface` is called.
+    Unbound,
+    /// As above, but we've also received a disconnect notification for the
+    /// peer. If the endpoint is later bound via `bind_interface`, its
+    /// disconnect handler will be scheduled immediately.
+    UnboundPeerClosed,
+    /// The endpoint is bound to a sequence and both sides are connected.
+    Bound(EndpointInfo),
+    /// The endpoint is alive and bound, but the peer endpoint has closed.
+    /// We've already scheduled the disconnect handler, and are just keeping
+    /// the endpoint info alive in case C++ has a reference to it.
+    BoundPeerClosed(EndpointInfo),
+    /// The local endpoint has been dropped/closed.
+    Closed,
+}
+
+impl EndpointState {
+    pub(super) fn endpoint_info(&self) -> Option<&EndpointInfo> {
+        match self {
+            Self::Bound(info) | Self::BoundPeerClosed(info) => Some(info),
+            _ => None,
+        }
+    }
+}
+
 /// A `MultiplexRouter`'s internal map of attached endpoints.
 ///
 /// The registry tracks handlers and sequence information for each endpoint that
-/// has been registered with the router.
-///
-/// By default, new interfaces are registered by inserting their ID into the map
-/// with a `None` entry. When the endpoint is bound, we update that entry to
-/// contain the `EndpointInfo` with binding information. When the endpoint is
-/// disconnect it, we remove its entry from the map entirely.
+/// has been registered with the router. See [`EndpointState`] for the possible
+/// states of each entry.
 ///
 /// Since there are about 2^32 possible interface IDs, we do not worry about
-/// re-using entries. Each entry has four possible states, and will always
-/// move through them in order, unless the corresponding endpoint is dropped:
-///
-/// For each `InterfaceId`, it will move through:
-/// 1. Not yet added: This InterfaceId has never been assigned to an interface.
-/// 2. Inbound: The entry exists and maps to `None`. The corresponding endpoint
-///    cannot handle message or disconnect notifications.
-/// 3. Bound: The entry exists and maps to `Some`.
-/// 4. Disconnected: The entry no longer exists in the map.
-///
-/// States 1 and 4 are identical, but it is impossible to receive a
-/// (well-formed) message for an interface ID in state 1, because sending a
-/// message requires first sending an associated endpoint, and that process
-/// will perform the registration. Hence any messages received for an unknown
-/// ID are either malformed or destined for a disconnected interface, and can
-/// therefore be ignored.
+/// running out of entries
 pub(super) struct EndpointRegistry {
     next_interface_id: u32,
-    pub(super) endpoint_map: HashMap<InterfaceId, Option<EndpointInfo>>,
+    pub(super) endpoint_map: HashMap<InterfaceId, EndpointState>,
 }
 
 impl EndpointRegistry {
     pub(super) fn new(
         sets_high_bit: bool,
-        endpoint_map: HashMap<InterfaceId, Option<EndpointInfo>>,
+        endpoint_map: HashMap<InterfaceId, EndpointState>,
     ) -> Self {
         let next_interface_id = if sets_high_bit { HIGH_BIT_MASK | 1 } else { 1 };
         Self { next_interface_id, endpoint_map }

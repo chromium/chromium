@@ -32,7 +32,7 @@ pub struct MojomMessage {
     pub header: MessageHeader,
     pub payload: Vec<u8>,
     pub handles: Vec<UntypedHandle>,
-    // we keep the raw handle around so we can report a bad message later if
+    // we keep the original message handle around so we can report a bad message later if
     // necessary.
     pub raw_message_handle: Option<ReadableBytesOnlyMessage>,
 }
@@ -60,7 +60,7 @@ impl MojomMessage {
         Some(MojomMessage { header, payload, handles, raw_message_handle: Some(msg_bytes_only) })
     }
 
-    /// Parse the given raw message into a structured representation.
+    /// Report this (incoming) message as malformed.
     pub fn report_bad_message(&mut self, error_msg: &str) -> Result<(), BadMessageError> {
         match &mut self.raw_message_handle {
             Some(raw_msg) => raw_msg.report_bad_message(error_msg),

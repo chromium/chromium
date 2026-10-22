@@ -20,7 +20,7 @@ chromium::import! {
 
 use mojom_value_parser::MojomParse;
 
-use crate::message::MojomMessage;
+use crate::message::{MojomMessage, ReadableBytesOnlyMessage};
 use crate::message_header::{MessageHeader, MessageHeaderFlags};
 
 use super::endpoint_registry::{InterfaceId, CONTROL_INTERFACE_ID};
@@ -101,7 +101,12 @@ pub fn construct_peer_endpoint_closed_message(id: InterfaceId) -> system::messag
 ///
 /// If this function returns `None`, it means the message was invalid. In that
 /// case, this function reports the bad message before returning.
-pub fn parse_incoming_control_message(mut message: MojomMessage) -> Option<RunOrClosePipeInput> {
+///
+/// Otherwise, it also returns the underlying message, so that the caller
+/// can report it if the contents turn out to be invalid.
+pub fn parse_incoming_control_message(
+    mut message: MojomMessage,
+) -> Option<(RunOrClosePipeInput, ReadableBytesOnlyMessage)> {
     if message.header.name != RUN_OR_CLOSE_PIPE_MESSAGE_ID {
         let _ = message.report_bad_message("Control message has incorrect message ID");
         return None;
@@ -123,5 +128,7 @@ pub fn parse_incoming_control_message(mut message: MojomMessage) -> Option<RunOr
         }
     };
 
-    Some(params.input)
+    let raw_message =
+        message.raw_message_handle.take().expect("Incoming messages always have a raw handle");
+    Some((params.input, raw_message))
 }

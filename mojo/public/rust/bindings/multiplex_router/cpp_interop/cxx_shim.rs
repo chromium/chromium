@@ -128,7 +128,7 @@ pub fn send_message_from_cpp(
     // interface IDs that were in the message, so we don't have to do it here.
 }
 
-/// Helper function: dreferences the endpoint client held by the handlers below
+/// Helper function: dereferences the endpoint client held by the handlers below
 fn client_ref(
     client: &UniquePtr<ffi::RustAssociatedEndpointClient>,
 ) -> &ffi::RustAssociatedEndpointClient {
@@ -145,22 +145,20 @@ pub fn attach_cpp_endpoint(
 ) {
     let runner_handle = SequencedTaskRunnerHandle::clone_from_ref(runner);
 
-    // TODO(crbug.com/524990003): Currently `client` is dropped when
-    // `disconnect_handler` runs. Once MultiplexRouter tracks disconnected
-    // endpoints in its map, `client` should be held by the entry until the
-    // endpoint is detached or closed by C++.
+    // `client` is held by both handlers via `Arc`. Because `MultiplexRouter`
+    // retains the `incoming_message_handler` as long as the local endpoint
+    // is alive, `client` is also alive.
     let client = Arc::new(client);
-    let weak_client = Arc::downgrade(&client);
+    let client_for_incoming = Arc::clone(&client);
 
     // C++ creates its own equivalent of `_sender` so we can ignore it here.
     let incoming_handler = Arc::new(move |msg: MojomMessage, _sender: ResponseSender| {
-        if let Some(client) = weak_client.upgrade() {
-            // It would be nice to tear down the pipe if this fails, like C++
-            // does, but that's much harder in Rust since we only
-            // have a const ref here. We'll still report any bad
-            // messages so this is mostly an inconvenience.
-            let _ = ffi::run_cpp_incoming_handler(client_ref(&client), msg.into());
-        }
+        // The C++ bindings tear down the pipe if something goes wrong.
+        // However, we only have a shared reference to `router`, so we
+        // can't do that. In practice, if something goes wrong then we
+        // probably got a bad message (which will tear down the pipe
+        // from the other end), so it doesn't matter too much.
+        let _ = ffi::run_cpp_incoming_handler(client_ref(&client_for_incoming), msg.into());
     });
 
     let disconnect_handler = Box::new(move || {

@@ -951,6 +951,74 @@ fn test_bad_control_message() {
     expect_eq!(reported.unwrap(), "Control message has incorrect message ID");
 }
 
+/// A peer only sends a disconnect notification once per associated endpoint,
+/// and only for endpoints that exist. Make sure we report notifications that
+/// break those rules as bad messages.
+#[gtest(RustBindingsAPI, TestBogusPeerClosedNotificationReportsBadMessage)]
+fn test_bogus_peer_closed_notification_reports_bad_message() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+
+    let bad_message_flag = Arc::new(Mutex::new(None::<String>));
+    let bad_message_flag_clone = bad_message_flag.clone();
+    test_util::set_default_process_error_handler(move |msg: &str| {
+        *bad_message_flag_clone.lock().unwrap() = Some(msg.to_string());
+    });
+
+    // Capture a genuine disconnect notification. The interface ID in it was
+    // allocated by a remote, so it has the high bit set.
+    let notification_bytes = {
+        let (pending_remote, pending_receiver) =
+            PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+        let mut remote = pending_remote.bind();
+        let (math_remote, math_receiver) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+        remote.SendReceiver(math_receiver);
+        // Dropping the half we kept tells the other side that it's gone.
+        drop(math_remote);
+
+        let endpoint = pending_receiver.into_endpoint();
+        // The first message is the one carrying `math_receiver`.
+        let _ = endpoint.read().unwrap();
+        let raw_msg = endpoint.read().unwrap();
+        raw_msg.read_bytes().unwrap().to_vec()
+    };
+
+    let write_notification = |endpoint: &system::message_pipe::MessageEndpoint| {
+        let msg = system::message::WritableMessage::new_with_bytes(&notification_bytes).unwrap();
+        endpoint.write(msg.into()).unwrap();
+    };
+
+    // Case 1: Send the notification to a remote. Remotes also allocate IDs with
+    // the high bit set, so this is about an endpoint that we would have
+    // allocated ourselves, but never did.
+    {
+        let (handle0, handle1) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
+        let _remote = PendingRemote::<dyn MathService>::new(handle0).bind();
+
+        write_notification(&handle1);
+        RunLoop::new().run_until_idle();
+        expect_true!(bad_message_flag.lock().unwrap().take().is_some());
+    }
+
+    // Case 2: Send the notification to a receiver, twice. The first one is
+    // fine: the peer allocated the ID, and we just haven't heard about it yet.
+    // The second one is a duplicate.
+    {
+        let (handle0, handle1) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
+        let _receiver =
+            PendingReceiver::<dyn MathService>::new(handle0).bind(SaturatingMathService {});
+
+        write_notification(&handle1);
+        RunLoop::new().run_until_idle();
+        expect_eq!(bad_message_flag.lock().unwrap().take(), None);
+
+        write_notification(&handle1);
+        RunLoop::new().run_until_idle();
+        expect_true!(bad_message_flag.lock().unwrap().take().is_some());
+    }
+
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+}
+
 /// Tests that we correctly report a bad message that is sent across a Rust
 /// primary pipe to a C++ associated receiver.
 #[gtest(RustBindingsAPI, TestBadMessageToCppAssociatedReceiver)]

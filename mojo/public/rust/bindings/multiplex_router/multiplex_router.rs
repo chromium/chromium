@@ -51,7 +51,7 @@ use super::control_messages::{
 use super::cpp_interop::ffi;
 use super::cpp_interop::CppRouterHandle;
 
-use crate::message::MojomMessage;
+use crate::message::{MojomMessage, ReadableBytesOnlyMessage};
 use crate::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
 
 pub(crate) use super::endpoint_registry::*;
@@ -66,7 +66,10 @@ pub(crate) use super::endpoint_registry::*;
 /// been bound yet).
 enum Task {
     Message(MojomMessage),
-    Disconnect(InterfaceId),
+    /// If the notification came from the peer, this holds the raw message it
+    /// arrived in, so that we can report it if it turns out to be invalid.
+    /// Notifications that we generate ourselves don't have one.
+    Disconnect(InterfaceId, Option<ReadableBytesOnlyMessage>),
 }
 
 /// An object which is responsible for sending and receiving messages on a
@@ -129,7 +132,7 @@ impl MultiplexRouter {
         let runner = endpoint_info.runner.clone();
 
         let mut endpoint_map = HashMap::new();
-        endpoint_map.insert(PRIMARY_INTERFACE_ID, Some(endpoint_info));
+        endpoint_map.insert(PRIMARY_INTERFACE_ID, EndpointState::Bound(endpoint_info));
 
         let shared_state = Arc::new(Mutex::new(MultiplexRouterSharedState {
             registry: EndpointRegistry::new(sets_high_bit, endpoint_map),
@@ -155,7 +158,7 @@ impl MultiplexRouter {
                     endpoint,
                     runner,
                     move |msg, sender| router_weak.incoming_message_handler(msg, sender),
-                    Some(Box::new(move || router_weak_clone.run_all_disconnect_handlers())),
+                    Some(Box::new(move || router_weak_clone.queue_all_disconnect_handlers())),
                     /* begin_processing_immediately = */ false,
                 )
             }
@@ -172,10 +175,11 @@ impl MultiplexRouter {
     /// Create a MultiplexRouter that isn't bound to any pipe, for use in
     /// testing serialization/deserialization logic
     pub(super) fn new_for_testing(sets_high_bit: bool) -> Self {
+        let initial_map = HashMap::from([(PRIMARY_INTERFACE_ID, EndpointState::Unbound)]);
         Self {
             endpoint_watcher: ArcOrWeak::Weak(Weak::new()),
             shared_state: Arc::new(Mutex::new(MultiplexRouterSharedState {
-                registry: EndpointRegistry::new(sets_high_bit, HashMap::new()),
+                registry: EndpointRegistry::new(sets_high_bit, initial_map),
                 unscheduled_tasks: VecDeque::new(),
                 pipe_closed: false,
                 cpp_group_controller: None,
@@ -220,27 +224,41 @@ impl MultiplexRouter {
                 None => shared_state.registry.get_new_interface_id(),
             };
 
-            let previous_entry =
-                shared_state.registry.endpoint_map.insert(interface_id, endpoint_info);
+            match shared_state.registry.endpoint_map.entry(interface_id) {
+                std::collections::hash_map::Entry::Occupied(mut entry) => {
+                    // The peer already closed this endpoint before we
+                    // registered it locally
+                    if !matches!(entry.get(), EndpointState::UnregisteredPeerClosed) {
+                        // We should never try to add an interface ID that was
+                        // already registered, since each pair should be unique.
+                        // The only way this can happen is if we get a malicious
+                        // mojo message.
+                        return None;
+                    }
 
-            // We should never try to add an interface ID that already exists,
-            // since each pair should be unique. The only way this
-            // can happen is if we get a malicious mojo message.
-            if let Some(previous_entry) = previous_entry {
-                // Restore our map to its previous, good state.
-                shared_state.registry.endpoint_map.insert(interface_id, previous_entry);
-                return None;
-            }
+                    *entry.get_mut() = match endpoint_info {
+                        Some(info) => info.handle_peer_closed(),
+                        None => EndpointState::UnboundPeerClosed,
+                    };
+                }
+                std::collections::hash_map::Entry::Vacant(entry) => {
+                    let new_state = match endpoint_info {
+                        Some(info) => EndpointState::Bound(info),
+                        None => EndpointState::Unbound,
+                    };
+                    entry.insert(new_state);
 
-            // If the underlying message pipe has been disconnected, then we
-            // should immediately schedule the disconnect handler
-            // for any new endpoints. This is only possible if
-            // someone tries to send an associated remote/
-            // receiver across a pipe that's already closed; if so, the other
-            // endpoint will be registered, but no messages will
-            // ever arrive for it.
-            if shared_state.pipe_closed {
-                shared_state.unscheduled_tasks.push_back(Task::Disconnect(interface_id));
+                    // If the underlying message pipe has been disconnected,
+                    // then we should schedule the disconnect task for any new
+                    // endpoints. This is possible if someone tries to send an
+                    // associated remote/receiver across a pipe that's already
+                    // closed.
+                    if shared_state.pipe_closed {
+                        shared_state
+                            .unscheduled_tasks
+                            .push_back(Task::Disconnect(interface_id, None));
+                    }
+                }
             }
         }
 
@@ -266,26 +284,23 @@ impl MultiplexRouter {
     pub(crate) fn bind_interface(&self, interface_id: InterfaceId, endpoint_info: EndpointInfo) {
         {
             let mut shared_state = self.shared_state.lock().unwrap();
-            // TODO(crbug.com/524990003): It's sometimes valid for the interface
-            // ID to not yet be in the map; figure out the specific conditions
-            // and document/check for them.
-            let previous =
-                shared_state.registry.endpoint_map.insert(interface_id, Some(endpoint_info));
-            // Whatever the story is for the missing-entry case, overwriting an
-            // entry is always a bug: either the endpoint was already bound (and
-            // we just threw away its handlers), or it was removed because it
-            // disconnected (and we just resurrected a dead ID).
-            assert!(
-                !matches!(previous, Some(Some(_))),
-                "Endpoint {interface_id} was already bound to this router"
-            );
-            // If the router's underlying pipe has been disconnected, we should
-            // immediately schedule the disconnect router for this endpoint.
-            // Note that if any messages have already arrived for
-            // it, those messages will be processed first.
-            if shared_state.pipe_closed {
-                shared_state.unscheduled_tasks.push_back(Task::Disconnect(interface_id));
-            }
+            let state =
+                shared_state.registry.endpoint_map.get_mut(&interface_id).unwrap_or_else(|| {
+                    panic!("Endpoint {interface_id} was not registered prior to binding")
+                });
+            *state = match state {
+                EndpointState::Unbound => EndpointState::Bound(endpoint_info),
+                EndpointState::UnboundPeerClosed => endpoint_info.handle_peer_closed(),
+                EndpointState::Bound(_) | EndpointState::BoundPeerClosed(_) => {
+                    panic!("Endpoint {interface_id} was already bound to this router")
+                }
+                EndpointState::Closed => {
+                    panic!("Endpoint {interface_id} was already closed")
+                }
+                EndpointState::UnregisteredPeerClosed => {
+                    panic!("Endpoint {interface_id} was not registered before binding")
+                }
+            };
         }
         self.schedule_all_possible_tasks();
     }
@@ -319,34 +334,51 @@ impl MultiplexRouter {
     /// the _associated_ interfaces on this side. The other endpoint's router
     /// will handle the notification to the interfaces on the other side.
     pub(crate) fn notify_dropped(&self, interface_id: InterfaceId) {
-        // If the interface was already removed, no need to do anything
-        let previous =
-            self.shared_state.lock().unwrap().registry.endpoint_map.remove(&interface_id);
-        if previous.is_none() {
-            return;
+        // Remove the previous entry from the map, and replace it with `Closed`.
+        let previous = {
+            let mut shared_state = self.shared_state.lock().unwrap();
+            let state = shared_state
+                .registry
+                .endpoint_map
+                .get_mut(&interface_id)
+                .expect("Attempted to drop an unregistered endpoint");
+            std::mem::replace(state, EndpointState::Closed)
+        };
+        match previous {
+            EndpointState::Closed => panic!("Attempted to drop an already-closed endpoint"),
+            EndpointState::UnregisteredPeerClosed
+            | EndpointState::UnboundPeerClosed
+            | EndpointState::BoundPeerClosed(_) => {
+                // If the peer already closed, we don't need to notify the peer
+                // that our side closed as well, so nothing special to do.
+            }
+            EndpointState::Unbound | EndpointState::Bound(_) => {
+                if interface_id == PRIMARY_INTERFACE_ID {
+                    // If the primary interface is being dropped, then we don't
+                    // need to notify it of anything, but we do need to alert
+                    // all the associated interfaces on this side that they've
+                    // been disconnected.
+                    // Note that we just set the entry for the primary ID to
+                    // `Closed`, so this will run all _other_ disconnect
+                    // handlers.
+                    self.queue_all_disconnect_handlers();
+                } else {
+                    // Otherwise, we need to alert the other side that it is now
+                    // disconnected. Mojo handles this automatically for the
+                    // primary interface, but other interfaces need to send
+                    // a special control message.
+                    let msg = construct_peer_endpoint_closed_message(interface_id);
+                    self.endpoint_watcher.with(|watcher| {
+                        // The send can only fail if the entire other side is
+                        // closed, in which case we don't need to tell it
+                        // anything.
+                        let _ = watcher.send_message(msg);
+                    });
+                }
+            }
         }
-        if interface_id == PRIMARY_INTERFACE_ID {
-            // If the primary interface is being dropped, then we don't need to
-            // notify it of anything, but we do need to alert all the associated
-            // interfaces on this side that they've been disconnected.
 
-            // Note that we just removed the entry for the primary ID, so this
-            // will run all _other_ disconnect handlers.
-            self.run_all_disconnect_handlers();
-        } else {
-            // Otherwise, we need to alert the other side that it is now
-            // disconnected. Mojo handles this automatically for the
-            // primary interface, but other interfaces need to send
-            // a special control message.
-            let msg = construct_peer_endpoint_closed_message(interface_id);
-            self.endpoint_watcher.with(|watcher| {
-                // The send can only fail if the entire other side is closed,
-                // in which case we don't need to tell it anything.
-                let _ = watcher.send_message(msg);
-            });
-
-            self.schedule_all_possible_tasks();
-        }
+        self.schedule_all_possible_tasks();
     }
 
     /// Tell the router that the peer of this associated interface has been
@@ -357,8 +389,11 @@ impl MultiplexRouter {
     /// to notify us instead.
     pub(crate) fn notify_peer_closed(&self, interface_id: InterfaceId) {
         let mut shared_state = self.shared_state.lock().unwrap();
-        if shared_state.registry.endpoint_map.contains_key(&interface_id) {
-            shared_state.unscheduled_tasks.push_back(Task::Disconnect(interface_id));
+        if matches!(
+            shared_state.registry.endpoint_map.get(&interface_id),
+            Some(EndpointState::Unbound | EndpointState::Bound(_))
+        ) {
+            shared_state.unscheduled_tasks.push_back(Task::Disconnect(interface_id, None));
         }
         drop(shared_state);
         // Doesn't actually run the disconnect handler yet, just schedules it
@@ -372,7 +407,11 @@ impl MultiplexRouter {
         interface_id: InterfaceId,
         msg: system::message::SendableMessage,
     ) -> bool {
-        if self.shared_state.lock().unwrap().registry.endpoint_map.contains_key(&interface_id) {
+        let is_connected = matches!(
+            self.shared_state.lock().unwrap().registry.endpoint_map.get(&interface_id),
+            Some(EndpointState::Bound(_))
+        );
+        if is_connected {
             self.endpoint_watcher
                 .with(|watcher| watcher.send_message(msg))
                 .is_some_and(|result| result.is_ok())
@@ -403,12 +442,12 @@ impl MultiplexRouter {
             // If this is a control message, then we need to read it and create
             // the appropriate task, which at the moment will only ever be a
             // disconnect notification.
-            if let Some(RunOrClosePipeInput::PeerAssociatedEndpointClosedEvent(event)) =
+            if let Some((RunOrClosePipeInput::PeerAssociatedEndpointClosedEvent(event), message)) =
                 parse_incoming_control_message(message)
             {
-                // TODO(crbug.com/524990003): Maybe check here if this ID is
-                // valid, and report the message if not.
-                Task::Disconnect(event.id)
+                // We can't tell whether the ID is valid until the task is
+                // processed, so keep the message in case we need to report it.
+                Task::Disconnect(event.id, Some(message))
             } else {
                 // Ignore other types of control message for now, and bad
                 // messages which have already been reported.
@@ -430,107 +469,161 @@ impl MultiplexRouter {
     /// order, we can't just process all messages that have a runner; we need to
     /// stop whenever we hit one that we can't handle yet.
     fn schedule_all_possible_tasks(&self) {
-        let mut shared_state_guard = self.shared_state.lock().unwrap();
-        let shared_state = &mut *shared_state_guard;
-        let registry = &mut shared_state.registry;
-        let unscheduled_tasks = &mut shared_state.unscheduled_tasks;
-        while let Some(task) = unscheduled_tasks.front() {
-            let interface_id = match task {
-                Task::Disconnect(interface_id) => interface_id,
-                Task::Message(message) => &message.header.interface_id,
-            };
-
-            let endpoint_info = match registry.endpoint_map.get(interface_id) {
-                None => {
-                    // If we failed to find an entry for this interface ID, it
-                    // means it was dropped and removed
-                    // itself from the map. In that case, we'll never be
-                    // able to handle a task for this ID again, so remove it
-                    // from the queue.
-                    //
-                    // Note that the message can't be for an ID which we haven't
-                    // _yet_ registered, because you can't
-                    // send messages until one side is bound to a pipe, and that
-                    // process registers both sides.
-                    // TODO(crbug.com/524990003): It actually is possible to get
-                    // a _disconnect_ notification for an
-                    // ID which we haven't yet registered. In that case we'll
-                    // need to mark it as "preemptively disconnected" and run
-                    // the disconnect handler if it ever
-                    // gets bound, rather than blocking everything.
-                    unscheduled_tasks.pop_front();
-                    continue;
-                }
-                Some(None) => {
-                    // This ID had an entry in the map, but it hasn't been bound
-                    // to anything yet. We can't handle this
-                    // message until that happens. To preserve FIFO ordering,
-                    // we can't process any later messages either, so we're done
-                    // for now. TODO(crbug.com/524990003):
-                    // Actually, maybe this shouldn't block future
-                    // messages, and instead it should also mark as
-                    // "preemptively disconnected".
-                    return;
-                }
-                Some(Some(endpoint_info)) => endpoint_info,
-            };
-
-            // If both the previous checks succeeded, this task can be scheduled
-            // now, so remove it from the queue.
-            let task = unscheduled_tasks.pop_front().unwrap();
-
+        let mut shared_state = self.shared_state.lock().unwrap();
+        // Invalid notifications from the peer. Reporting them runs arbitrary
+        // embedder code, so we wait until we've released the lock.
+        let mut bad_messages = Vec::new();
+        // We pop unconditionally because we need to transfer ownership into
+        // `try_schedule_message_task`. It's inconvenient but much nicer code.
+        while let Some(task) = shared_state.unscheduled_tasks.pop_front() {
             match task {
-                Task::Disconnect(interface_id) => {
-                    // If it's a disconnect notification, remove the entry from
-                    // the registry (this is guaranteed to
-                    // run after all messages for that endpoint, so no need to
-                    // keep it around), and run the disconnect handler if one
-                    // was provided.
-                    let endpoint_info =
-                        registry.endpoint_map.remove(&interface_id).unwrap().unwrap();
-                    if let Some(disconnect_handler) = endpoint_info.disconnect_handler {
-                        endpoint_info.runner.post_task(disconnect_handler);
+                Task::Disconnect(interface_id, message) => {
+                    if let Err(error) =
+                        Self::schedule_disconnect_task(&mut shared_state.registry, interface_id)
+                    {
+                        let message =
+                            message.expect("Generated an invalid disconnect notification");
+                        bad_messages.push((message, error));
                     }
                 }
                 Task::Message(message) => {
-                    let handler_clone = endpoint_info.incoming_message_handler.clone();
-                    let router_clone = self.clone();
-                    let response_sender =
-                        super::ResponseSender::rust(router_clone, message.header.interface_id);
-                    endpoint_info
-                        .runner
-                        .post_task(move || (*handler_clone)(message, response_sender));
+                    // `try_schedule_message_task` returns `message` unchanged
+                    // on failure
+                    if let Err(message) =
+                        self.try_schedule_message_task(&shared_state.registry, message)
+                    {
+                        shared_state.unscheduled_tasks.push_front(Task::Message(message));
+                        break;
+                    }
                 }
-            };
+            }
+        }
+        drop(shared_state);
+
+        for (mut message, error) in bad_messages {
+            let _ = message.report_bad_message(&error);
         }
     }
 
-    /// Schedule a task to run the disconnect handler for each registered
+    /// Process a disconnect notification for `interface_id`.
+    ///
+    /// Disconnect tasks never block the queue: if the target endpoint is not
+    /// yet bound, its state is updated so that the disconnect handler will
+    /// be run when `bind_interface` is called.
+    ///
+    /// Returns an error if a well-behaved peer could never have sent this
+    /// notification. The ones we generate ourselves are always for registered
+    /// endpoints, so they never fail.
+    fn schedule_disconnect_task(
+        registry: &mut EndpointRegistry,
+        interface_id: InterfaceId,
+    ) -> Result<(), String> {
+        let Some(state) = registry.endpoint_map.get_mut(&interface_id) else {
+            // This interface ID has not been registered yet. That's fine if the
+            // peer allocated it, since we may not have deserialized the message
+            // that introduces it yet. Otherwise, the peer is talking about an
+            // ID we never allocated.
+            if interface_id == PRIMARY_INTERFACE_ID
+                || interface_id == CONTROL_INTERFACE_ID
+                || !registry.is_peer_allocated_id(interface_id)
+            {
+                return Err(format!(
+                    "Received disconnect notification for invalid interface ID {interface_id}"
+                ));
+            }
+            registry.endpoint_map.insert(interface_id, EndpointState::UnregisteredPeerClosed);
+            return Ok(());
+        };
+
+        let mut result = Ok(());
+        *state = match std::mem::replace(state, EndpointState::Closed) {
+            EndpointState::Unbound => EndpointState::UnboundPeerClosed,
+            EndpointState::Bound(endpoint_info) => endpoint_info.handle_peer_closed(),
+            EndpointState::UnregisteredPeerClosed => {
+                // Only the peer sends notifications for unregistered endpoints,
+                // and it only sends one per endpoint.
+                result = Err(format!(
+                    "Received duplicate disconnect notification for interface ID {interface_id}"
+                ));
+                EndpointState::UnregisteredPeerClosed
+            }
+            other @ (EndpointState::Closed
+            | EndpointState::UnboundPeerClosed
+            | EndpointState::BoundPeerClosed(_)) => {
+                // These can validly occur if endpoints were dropped while
+                // the disconnect task was sitting in the queue.
+                other
+            }
+        };
+        result
+    }
+
+    /// Schedule an incoming message on its endpoint's runner, or return
+    /// `Err(message)` if the target endpoint is currently unbound.
+    fn try_schedule_message_task(
+        &self,
+        registry: &EndpointRegistry,
+        message: MojomMessage,
+    ) -> Result<(), MojomMessage> {
+        let interface_id = message.header.interface_id;
+        match registry.endpoint_map.get(&interface_id) {
+            Some(EndpointState::Unbound) => {
+                // This ID has been registered, but hasn't been bound to a
+                // sequence yet. We can't handle this message until that
+                // happens. To preserve FIFO ordering, we can't
+                // process any later tasks either, so return the
+                // message to be put back at the front of
+                // the queue.
+                Err(message)
+            }
+            Some(EndpointState::Bound(endpoint_info)) => {
+                let handler_clone = endpoint_info.incoming_message_handler.clone();
+                let router_clone = self.clone();
+                let response_sender = super::ResponseSender::rust(router_clone, interface_id);
+                endpoint_info.runner.post_task(move || (*handler_clone)(message, response_sender));
+                Ok(())
+            }
+            None
+            | Some(
+                EndpointState::Closed
+                | EndpointState::UnregisteredPeerClosed
+                | EndpointState::UnboundPeerClosed
+                | EndpointState::BoundPeerClosed(_),
+            ) => {
+                // All of these can validly occur through various race
+                // conditions. Regardless of how, we can't ever
+                // process these messages, so do nothing and let
+                // the message drop.
+                Ok(())
+            }
+        }
+    }
+
+    /// Queue a task to run the disconnect handler for each registered
     /// interface.
     ///
     /// This is the overall disconnect handler for the router, which is run
-    /// when the other endpoint is closed. Note that it does not remove entries
-    /// from the registry, because there may still be messages that need to be
-    /// handled before the disconnect handler runs.
-    fn run_all_disconnect_handlers(&self) {
+    /// when the underlying pipe is closed. Note that it does not transition
+    /// entries immediately, because there may still be messages in the queue
+    /// that need to be handled before the disconnect handler runs.
+    fn queue_all_disconnect_handlers(&self) {
         {
             let mut shared_state_guard = self.shared_state.lock().unwrap();
             let shared_state = &mut *shared_state_guard;
             let registry = &mut shared_state.registry;
             let unscheduled_tasks = &mut shared_state.unscheduled_tasks;
 
-            for (interface_id, info_opt) in registry.endpoint_map.iter() {
-                if info_opt.is_some() {
-                    unscheduled_tasks.push_back(Task::Disconnect(*interface_id));
+            for (interface_id, state) in registry.endpoint_map.iter() {
+                if matches!(state, EndpointState::Unbound | EndpointState::Bound(_)) {
+                    unscheduled_tasks.push_back(Task::Disconnect(*interface_id, None));
                 }
-                // We'll schedule the notifications for unbound endpoints when
-                // they get bound, by checking `pipe_closed`. Scheduling only
-                // for bound endpoints lets us avoid blocking their DC handler
-                // on another endpoint getting bound. This is allowed by the
-                // FIFO ordering because we won't be getting any new messages
-                // after this point since the pipe is closed.
+                // Other states in `endpoint_map` are either already dropped
+                // locally, or their peers are closed so we've already
+                // run/scheduled their handlers.
             }
 
+            // This will make all future endpoints schedule their disconnect
+            // handlers immediately.
             shared_state.pipe_closed = true;
             // The cached controller holds a reference back to this router, so
             // we have to drop it to break the cycle. C++ endpoints
@@ -573,7 +666,7 @@ impl MultiplexRouter {
             .registry
             .endpoint_map
             .get(&PRIMARY_INTERFACE_ID)
-            .and_then(|info| info.as_ref())
+            .and_then(EndpointState::endpoint_info)
             .map(|info| info.runner.clone())
             .or_else(SequencedTaskRunnerHandle::get_current_default)
             .expect("Mojo endpoints must be used in a sequenced context");
