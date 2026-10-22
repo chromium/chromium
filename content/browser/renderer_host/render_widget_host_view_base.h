@@ -818,6 +818,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
 
   bool is_frame_sink_id_owner_ = false;
 
+  // Whether `UpdateScreenInfo()` has been called at least once. Subclasses may
+  // populate `screen_infos_` before the first `UpdateScreenInfo()` call (e.g.,
+  // when initialized without a root window), and the first `UpdateScreenInfo()`
+  // must still synchronize display properties.
+  bool has_updated_screen_info_ = false;
+
   std::unique_ptr<ScopedViewTransitionResources> view_transition_resources_;
 
   // The count of `input::ScopedInputDispatchPin` active for `this`. Preventing

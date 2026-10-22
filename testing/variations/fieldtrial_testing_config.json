@@ -14153,6 +14153,23 @@
             ]
         }
     ],
+    "PopulateUnattachedAuraScreenInfo": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PopulateUnattachedAuraScreenInfo"
+                    ]
+                }
+            ]
+        }
+    ],
     "PqcBandwidthExperiment": [
         {
             "platforms": [

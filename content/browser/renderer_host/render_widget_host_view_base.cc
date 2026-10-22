@@ -626,8 +626,10 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
   }
 #endif  // BUILDFLAG(IS_OZONE)
 
-  if (screen_infos_ == new_screen_infos && !force_sync_visual_properties)
+  if (screen_infos_ == new_screen_infos && !force_sync_visual_properties &&
+      has_updated_screen_info_) {
     return;
+  }
 
   // We need to look at `orientation_type` which is marked as kUndefined at
   // startup. Unlike `orientation_angle` that uses 0 degrees as the default.
@@ -635,10 +637,12 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
   // as tablets. We do not want the first UpdateScreenInfo to be treated as a
   // rotation.
   const bool has_rotation_changed =
+      has_updated_screen_info_ &&
       screen_infos_.current().orientation_type !=
           display::mojom::ScreenOrientation::kUndefined &&
       screen_infos_.current().orientation_type !=
           new_screen_infos.current().orientation_type;
+  has_updated_screen_info_ = true;
   screen_infos_ = std::move(new_screen_infos);
 
   // Notify the associated RenderWidgetHostImpl when screen info has changed.

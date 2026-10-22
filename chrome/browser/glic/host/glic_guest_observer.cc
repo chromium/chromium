@@ -20,6 +20,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
@@ -182,16 +183,19 @@ void GlicGuestObserver::MaybeSetBackgroundColor(
 
 void GlicGuestObserver::MaybeUpdateTopLevelScreenInfo() {
   if (!web_contents() ||
+      base::FeatureList::IsEnabled(
+          features::kPopulateUnattachedAuraScreenInfo) ||
       !base::FeatureList::IsEnabled(kGlicUpdateHiddenScreenInfo)) {
     return;
   }
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(web_contents());
   if (top && top->GetVisibility() == content::Visibility::HIDDEN) {
-    // TODO(b/573268718): RenderWidgetHostViewAura::InitAsChild
-    // leaves screen_infos_ at 0x0 when a WebContents is created unattached
-    // and hidden, causing the guest's window.screen.height to be 0 during
-    // warmup. Pulsing IncrementCapturerCount(stay_hidden=true) triggers
+    // TODO(b/573268718): When kPopulateUnattachedAuraScreenInfo is disabled,
+    // RenderWidgetHostViewAura::InitAsChild leaves screen_infos_ at 0x0 when a
+    // WebContents is created unattached and hidden, causing the guest's
+    // window.screen.height to be 0 during warmup. Pulsing
+    // IncrementCapturerCount(stay_hidden=true) triggers
     // ShowWithVisibility(kHiddenButPainting) -> UpdateScreenInfo() ->
     // Hide() while keeping the WebContents hidden.
     std::ignore = top->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,

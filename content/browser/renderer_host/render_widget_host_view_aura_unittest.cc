@@ -69,6 +69,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -8240,6 +8241,74 @@ TEST_F(RenderWidgetHostViewAuraTest,
   EXPECT_TRUE(observer.window_survived_unpin());
   // DestroyImpl() ran once DestroyOrDefer() finished, deleting the window.
   EXPECT_FALSE(tracker.Contains(window));
+}
+
+TEST_F(RenderWidgetHostViewAuraTest,
+       InitAsChildWithoutRootWindowPopulatesScreenInfo) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPopulateUnattachedAuraScreenInfo);
+
+  // When a RenderWidgetHostViewAura is initialized without a parent view (or
+  // with an unattached parent view), it has no root window. Verify that
+  // InitAsChild() populates screen_infos_ from the display for new windows
+  // without triggering SynchronizeVisualProperties() while detached/hidden.
+  FakeRenderWidgetHostViewAura* hidden_view = CreateView(/*hidden=*/true);
+  hidden_view->InitAsChild(nullptr);
+  EXPECT_FALSE(hidden_view->GetScreenInfo().rect.IsEmpty());
+  EXPECT_EQ(hidden_view->GetScreenInfo().rect,
+            display::Screen::Get()->GetDisplayForNewWindows().bounds());
+  EXPECT_EQ(
+      hidden_view->GetDeviceScaleFactor(),
+      display::Screen::Get()->GetDisplayForNewWindows().device_scale_factor());
+  EXPECT_TRUE(static_cast<MockRenderWidgetHostImpl*>(hidden_view->host())
+                  ->visual_properties()
+                  .empty());
+  DestroyView(hidden_view);
+
+  // Also verify when initialized with an unattached parent window.
+  aura::Window unattached_parent(nullptr);
+  unattached_parent.Init(ui::LAYER_NOT_DRAWN);
+  FakeRenderWidgetHostViewAura* child_view = CreateView(/*hidden=*/true);
+  child_view->InitAsChild(&unattached_parent);
+  EXPECT_FALSE(child_view->GetScreenInfo().rect.IsEmpty());
+  EXPECT_EQ(child_view->GetScreenInfo().rect,
+            display::Screen::Get()->GetDisplayForNewWindows().bounds());
+  EXPECT_EQ(
+      child_view->GetDeviceScaleFactor(),
+      display::Screen::Get()->GetDisplayForNewWindows().device_scale_factor());
+  EXPECT_TRUE(static_cast<MockRenderWidgetHostImpl*>(child_view->host())
+                  ->visual_properties()
+                  .empty());
+  DestroyView(child_view);
+
+  // Also verify that if a designated display for new windows is set (e.g.
+  // on ChromeOS or in multi-display configurations), InitAsChild() uses that
+  // display.
+  display::Display secondary_display(1001, gfx::Rect(800, 0, 1920, 1080));
+  secondary_display.set_device_scale_factor(2.0f);
+  aura_test_helper_->GetTestScreen()->display_list().AddDisplay(
+      secondary_display, display::DisplayList::Type::NOT_PRIMARY);
+  display::Screen::Get()->SetDisplayForNewWindows(secondary_display.id());
+
+  FakeRenderWidgetHostViewAura* secondary_view = CreateView(/*hidden=*/true);
+  secondary_view->InitAsChild(nullptr);
+  EXPECT_EQ(secondary_view->GetScreenInfo().rect, secondary_display.bounds());
+  EXPECT_EQ(secondary_view->GetDeviceScaleFactor(),
+            secondary_display.device_scale_factor());
+  DestroyView(secondary_view);
+
+  display::Screen::Get()->SetDisplayForNewWindows(display::kInvalidDisplayId);
+
+  // Verify that when a visible unattached view is later parented to a root
+  // window, AddedToRootWindow() -> UpdateScreenInfo() still triggers its first
+  // display property synchronization even though screen_infos_ already matched
+  // the display for new windows.
+  parent_local_surface_id_allocator_.GenerateId();
+  InitViewForFrame(nullptr);
+  ASSERT_EQ(1u, widget_host_->visual_properties().size());
+  ParentHostView(view_, parent_view_);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return widget_host_->visual_properties().size() == 2u; }));
 }
 
 }  // namespace content
