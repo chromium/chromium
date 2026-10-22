@@ -2908,6 +2908,7 @@ if (!is_robolectric && enable_java_templates) {
               # library .dex files were created with.
               input_dex_filearg =
                   "@FileArg(${_rebased_build_config}:all_dex_files)"
+              include_global_synthetics = true
 
               # Pure dex-merge.
               enable_desugar = false
@@ -4835,6 +4836,7 @@ if (!is_robolectric && enable_java_templates) {
           # This will be a pure dex-merge.
           input_dex_filearg = "@FileArg($_rebased_build_config:modules:${_module.name}:all_dex_files)"
           enable_desugar = false
+          include_global_synthetics = _module.name == "base"
 
           deps = [
             ":${_module_target_name}__java",

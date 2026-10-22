@@ -269,16 +269,7 @@ def _RunD8(
                 stderr_filter=stderr_filter,
                 fail_on_output=(warnings_as_errors and not is_debug),
             )
-        except Exception as e:
-            if isinstance(e, build_utils.CalledProcessError):
-                output = e.output
-                if "global synthetic for 'Record desugaring'" in output:
-                    sys.stderr.write('Java records are not supported.\n')
-                    sys.stderr.write(
-                        'See https://chromium.googlesource.com/chromium/src/+/'
-                        + 'main/styleguide/java/java.md#Records\n'
-                    )
-                    sys.exit(1)
+        except Exception:
             if orig_dex_cmd is not dex_cmd:
                 sys.stderr.write(
                     'Full command: ' + shlex.join(orig_dex_cmd) + '\n'
@@ -936,6 +927,10 @@ def main(args):
         dex_cmd += ['--release']
     elif options.intermediate:
         dex_cmd += ['--intermediate']
+        # Discard global synthetics (e.g. from record desugaring). The final
+        # dex step adds them all back via global_synthetics.dex.jar from the
+        # r8 CIPD package (see third_party/r8/3pp/3pp.py).
+        dex_cmd += ['--ignore-globals']
     if options.min_api:
         dex_cmd += ['--min-api', options.min_api]
 

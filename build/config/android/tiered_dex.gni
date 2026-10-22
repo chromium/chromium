@@ -107,6 +107,12 @@ template("tiered_dex_assembly") {
           "@FileArg(${_rebased_partition_build_config}:all_dex_files)"
       enable_desugar = false
 
+      # Exactly one partition carries the global synthetics dex: the one
+      # marked in tiered_dex_partitions.json (3p, which rarely rebuilds).
+      include_global_synthetics =
+          defined(_partition.include_global_synthetics) &&
+          _partition.include_global_synthetics
+
       # Rely on the depsfile to map each shard to input .jars.
       deps = [ ":$_partition_target_name" ]
     }

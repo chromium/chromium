@@ -105,6 +105,8 @@ _signflinger_jar_path =
     "//third_party/android_build_tools/signflinger/cipd/signflinger.jar"
 _signflinger_binary_path =
     "//third_party/android_build_tools/signflinger/cipd/signflinger"
+_global_synthetics_dex_path =
+    "//third_party/r8/cipd/lib/global_synthetics.dex.jar"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
 _manifest_merger_jar_path =
     "//third_party/android_build_tools/manifest_merger/cipd/manifest-merger.jar"
@@ -1667,6 +1669,16 @@ if (enable_java_templates) {
         _input_dex_jars = invoker.input_dex_jars
       }
       _deps = invoker.deps
+
+      # Per-library dexing discards D8's "global synthetics" (classes shared
+      # app-wide, e.g. RecordTag from record desugaring), so the final dex of
+      # an APK or bundle base module adds a dex containing all of them, built
+      # by //third_party/r8/3pp/3pp.py.
+      if (defined(invoker.include_global_synthetics) &&
+          invoker.include_global_synthetics) {
+        assert(!_is_library)
+        _input_dex_jars += [ _global_synthetics_dex_path ]
+      }
 
       if (_input_class_jars != []) {
         _rebased_input_class_jars =

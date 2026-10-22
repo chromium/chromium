@@ -3,7 +3,8 @@
     "name": "3p",
     "patterns": [
       "obj/*third_party/*"
-    ]
+    ],
+    "include_global_synthetics": true
   },
   {
     "name": "base_content",

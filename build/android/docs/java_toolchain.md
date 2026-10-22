@@ -120,6 +120,13 @@ This step happens only when targets have `supports_android = true`.
   containing `classes.dex` files.
 * Dexing is incremental - it will reuse dex'ed classes from a previous build if
   the corresponding `.class` file is unchanged.
+* Desugaring some constructs (e.g. Java `record` classes) makes d8 emit
+  "global synthetics": classes shared by the whole app rather than owned by one
+  library. Per-library dexing discards them (`--ignore-globals` in
+  `dex.py`) and the final dex step of debug APKs adds
+  `//third_party/r8/cipd/lib/global_synthetics.dex.jar`, built by the r8 3pp
+  package and holding every global synthetic for `min_supported_sdk_version`.
+  R8 builds need nothing extra.
 * These per-library `.dex.jar` files are inputs to the Apk step when
   `enable_proguard = false`.
   * Even when `is_java_debug = false`, many apk targets do not enable ProGuard
