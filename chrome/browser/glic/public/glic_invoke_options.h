@@ -201,6 +201,18 @@ struct AdditionalTabContext {
   PolicyCheck policy_check = PolicyCheck::kClipboard;
 };
 
+// Policy checks to apply to `GlicInvokeOptions::prompts` when they carry page
+// data (e.g. selected text pre-filled into the editable prompt input on
+// Android, rather than attached as `AdditionalTabContext`) instead of
+// Chrome-generated text.
+struct PromptPolicy {
+  // The frame the prompt text was taken from.
+  content::GlobalRenderFrameHostId source_rfh_id;
+
+  // Specifies the policy check to perform, if any.
+  PolicyCheck policy_check = PolicyCheck::kClipboard;
+};
+
 // LINT.IfChange(GlicInvokeError)
 // Possible errors that can occur during a Glic invocation.
 enum class GlicInvokeError {
@@ -223,9 +235,9 @@ enum class GlicInvokeError {
   kInvalidConfiguration = 8,
   // Observed a navigation before the policy checks completed.
   kAdditionalContextSawNavigation = 9,
-  // The clipboard copy policy check failed for the given additional context.
+  // The clipboard copy policy check failed for additional context or prompts.
   kAdditionalContextFailedCopyPolicy = 10,
-  // The clipboard paste policy check failed for the given additional context.
+  // The clipboard paste policy check failed for additional context or prompts.
   kAdditionalContextFailedPastePolicy = 11,
   // Could not find the source frame instance for the policy checks.
   kAdditionalContextNoSourceFrame = 12,
@@ -310,6 +322,13 @@ struct GlicInvokeOptions {
   // or a payload.
   glic::mojom::InvocationSource GetInvocationSource() const;
 
+  // Returns whether `additional_context` requests the clipboard policy checks.
+  bool RequiresContextClipboardPolicyCheck() const;
+
+  // Returns whether `prompts` need the clipboard policy checks requested by
+  // `prompt_policy`. `prompts` must not be empty when `prompt_policy` is set.
+  bool RequiresPromptClipboardPolicyCheck() const;
+
   // The invocation source or a specific payload.
   std::variant<glic::mojom::InvocationSource, glic::mojom::InvocationPayloadPtr>
       source_or_payload;
@@ -317,6 +336,12 @@ struct GlicInvokeOptions {
   // One or more pre-determined prompts to offer or submit. Providing multiple
   // prompts can facilitate a chip-style UI on the client.
   std::vector<std::string> prompts;
+
+  // Policy checks for `prompts` that contain page data. If a check fails, the
+  // invocation fails. Requesting checks on both `prompts` and
+  // `additional_context` fails the invocation with
+  // `GlicInvokeError::kInvalidConfiguration`.
+  std::optional<PromptPolicy> prompt_policy;
 
   // Additional context (e.g., image data, Annotated Page Content) to be
   // included with the invocation.

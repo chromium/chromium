@@ -763,6 +763,15 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     return nullptr;
   }
 
+  if (options.RequiresContextClipboardPolicyCheck() &&
+      options.RequiresPromptClipboardPolicyCheck()) {
+    metrics->RecordError(GlicInvokeError::kInvalidConfiguration);
+    if (options.on_error) {
+      std::move(options.on_error).Run(GlicInvokeError::kInvalidConfiguration);
+    }
+    return nullptr;
+  }
+
   GlicInvokeHandler::ResolvedTarget resolved_target;
   tabs::TabInterface* tab = nullptr;
 

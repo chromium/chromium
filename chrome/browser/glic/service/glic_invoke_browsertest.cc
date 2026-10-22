@@ -8,6 +8,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_enums.h"
@@ -46,6 +47,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -193,6 +196,12 @@ class GlicInvokeBrowserTest : public GlicBrowserTestMixin<PlatformBrowserTest> {
           "Timed out waiting for Host::client_load_state()");
     }
     return base::ok();
+  }
+
+  void AddDataControlsRule(std::string_view rule_json) {
+    ScopedListPrefUpdate list(GetProfile()->GetPrefs(),
+                              data_controls::kDataControlsRulesPref);
+    list->Append(base::test::ParseJsonDict(rule_json));
   }
 
  private:
@@ -1478,7 +1487,171 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_EQ(error_future.Get(),
             GlicInvokeError::kAdditionalContextFailedPastePolicy);
 }
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, PromptPolicyPasteBlocked) {
+  AddDataControlsRule(
+      R"({"destinations": {"gemini_in_chrome": true}, "restrictions": [{"class": "CLIPBOARD", "level": "BLOCK"}]})");
+
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
+
+  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+  options.prompts = {"hello"};
+  options.prompt_policy =
+      PromptPolicy{rfh->GetGlobalId(), PolicyCheck::kClipboard};
+
+  // The paste check runs against the Glic guest frame, which a
+  // `gemini_in_chrome` destination rule blocks, so the invocation fails before
+  // the prompt is sent.
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+
+  coordinator().Invoke(std::move(options));
+
+  helper.WaitForDialogToInitialize();
+  helper.CloseDialogWithoutBypass();
+  EXPECT_EQ(error_future.Get(),
+            GlicInvokeError::kAdditionalContextFailedPastePolicy);
+  // TODO(crbug.com/570159046): Change to EXPECT_FALSE once a paste block no
+  // longer leaves the panel open. The paste check runs after the panel opens,
+  // so it stays open for now.
+  EXPECT_TRUE(GetInstanceForTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, PromptPolicyCopyBlocked) {
+  AddDataControlsRule(
+      R"({"sources": {"urls": ["*"]}, "restrictions": [{"class": "CLIPBOARD", "level": "BLOCK"}]})");
+
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
+
+  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+  options.prompts = {"hello"};
+  options.prompt_policy =
+      PromptPolicy{rfh->GetGlobalId(), PolicyCheck::kClipboard};
+
+  // The copy check runs before the panel is shown, so the invocation fails
+  // without opening Glic. The helper fails on any other dialog type.
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+
+  coordinator().Invoke(std::move(options));
+
+  helper.WaitForDialogToInitialize();
+  helper.CloseDialogWithoutBypass();
+  EXPECT_EQ(error_future.Get(),
+            GlicInvokeError::kAdditionalContextFailedCopyPolicy);
+  EXPECT_FALSE(GetInstanceForTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, PromptPolicyAllowed) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
+
+  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+  options.prompts = {"hello"};
+  options.prompt_policy =
+      PromptPolicy{rfh->GetGlobalId(), PolicyCheck::kClipboard};
+
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_TRUE(GetInstanceForTab(tab));
+  EXPECT_FALSE(helper.dialog());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       PromptPolicyCopyBlockedOsClipboard) {
+  AddDataControlsRule(
+      R"({"destinations": {"os_clipboard": true}, "restrictions": [{"class": "CLIPBOARD", "level": "BLOCK"}]})");
+
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
+
+  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+  options.prompts = {"hello"};
+  options.prompt_policy =
+      PromptPolicy{rfh->GetGlobalId(), PolicyCheck::kClipboard};
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_EQ(error_future.Get(),
+            GlicInvokeError::kAdditionalContextFailedCopyPolicy);
+  EXPECT_FALSE(GetInstanceForTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, PromptPolicyNoSourceFrame) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+  options.prompts = {"hello"};
+  // An invalid ID simulates the frame being destroyed before the task starts.
+  options.prompt_policy = PromptPolicy{content::GlobalRenderFrameHostId(-1, -1),
+                                       PolicyCheck::kClipboard};
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_EQ(error_future.Get(),
+            GlicInvokeError::kAdditionalContextNoSourceFrame);
+  EXPECT_FALSE(GetInstanceForTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       PromptPolicyWithContextPolicyRejected) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
+
+  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+  options.additional_context =
+      AdditionalTabContext(CreateMockAdditionalContext(), rfh->GetGlobalId(),
+                           PolicyCheck::kClipboard);
+  options.prompts = {"hello"};
+  options.prompt_policy =
+      PromptPolicy{rfh->GetGlobalId(), PolicyCheck::kClipboard};
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConfiguration);
+  EXPECT_FALSE(GetInstanceForTab(tab));
+}
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithContextNoSourceFrame) {
   tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));

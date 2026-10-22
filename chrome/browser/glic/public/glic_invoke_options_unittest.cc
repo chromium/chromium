@@ -7,6 +7,7 @@
 #include <set>
 #include <string_view>
 
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -28,6 +29,35 @@ TEST(GlicInvokeOptionsTest, EveryInvokeErrorHasADistinctString) {
         << "Duplicate description \"" << description << "\" for error "
         << value;
   }
+}
+
+TEST(GlicInvokeOptionsTest, RequiresContextClipboardPolicyCheck) {
+  GlicInvokeOptions options(glic::mojom::InvocationSource::kOsButton);
+  EXPECT_FALSE(options.RequiresContextClipboardPolicyCheck());
+
+  options.additional_context.emplace(glic::mojom::AdditionalContext::New(),
+                                     content::GlobalRenderFrameHostId(1, 2),
+                                     PolicyCheck::kClipboard);
+  EXPECT_TRUE(options.RequiresContextClipboardPolicyCheck());
+
+  options.additional_context->policy_check = PolicyCheck::kNone;
+  EXPECT_FALSE(options.RequiresContextClipboardPolicyCheck());
+}
+
+TEST(GlicInvokeOptionsTest, RequiresPromptClipboardPolicyCheck) {
+  GlicInvokeOptions options(glic::mojom::InvocationSource::kOsButton);
+  EXPECT_FALSE(options.RequiresPromptClipboardPolicyCheck());
+
+  options.prompts = {"hello"};
+  options.prompt_policy = PromptPolicy{content::GlobalRenderFrameHostId(1, 2),
+                                       PolicyCheck::kClipboard};
+  EXPECT_TRUE(options.RequiresPromptClipboardPolicyCheck());
+
+  options.prompt_policy->policy_check = PolicyCheck::kNone;
+  EXPECT_FALSE(options.RequiresPromptClipboardPolicyCheck());
+
+  options.prompts.clear();
+  EXPECT_DCHECK_DEATH(options.RequiresPromptClipboardPolicyCheck());
 }
 
 }  // namespace

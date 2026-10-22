@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -120,6 +121,20 @@ glic::mojom::InvocationSource GlicInvokeOptions::GetInvocationSource() const {
             NOTREACHED();
           }},
       source_or_payload);
+}
+
+bool GlicInvokeOptions::RequiresContextClipboardPolicyCheck() const {
+  return additional_context.has_value() &&
+         additional_context->policy_check == PolicyCheck::kClipboard;
+}
+
+bool GlicInvokeOptions::RequiresPromptClipboardPolicyCheck() const {
+  if (!prompt_policy.has_value()) {
+    return false;
+  }
+  DCHECK(!prompts.empty());
+  return prompt_policy->policy_check == PolicyCheck::kClipboard &&
+         !prompts.empty();
 }
 
 GlicInvokeOptions::~GlicInvokeOptions() = default;

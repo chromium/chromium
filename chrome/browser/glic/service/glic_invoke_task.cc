@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -504,6 +505,11 @@ ClipboardPolicyTask::ClipboardPolicyTask(
     const GlicInvokeOptions& options,
     base::OnceCallback<void(GlicInvokeError)> error_callback)
     : instance_(instance), error_callback_(std::move(error_callback)) {
+  if (options.RequiresPromptClipboardPolicyCheck()) {
+    source_rfh_id_ = options.prompt_policy->source_rfh_id;
+    text_data_ = base::UTF8ToUTF16(base::JoinString(options.prompts, "\n"));
+    return;
+  }
   if (!options.additional_context.has_value() ||
       !options.additional_context->source_rfh_id) {
     return;
