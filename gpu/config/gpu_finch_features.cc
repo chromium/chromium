@@ -394,7 +394,7 @@ BASE_FEATURE(kSkiaGraphiteWinIntel,
 
 // Allows CompoundImageBacking to allocate backings during runtime if a
 // compatible backing to serve clients requested usage is not already present.
-BASE_FEATURE(kUseDynamicBackingAllocations, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseDynamicBackingAllocations, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, this feature allows ClientSharedImage to store and use a
 // scoped_refptr to SharedImageInterface, instead of the raw_ptr as used in

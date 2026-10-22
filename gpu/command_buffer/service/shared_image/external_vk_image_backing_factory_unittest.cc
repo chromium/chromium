@@ -11,11 +11,13 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_dawn_representation.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_skia_representation.h"
@@ -25,6 +27,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/vulkan_in_process_context_provider.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_test_config.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -487,35 +490,41 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
   }
   skia_representation.reset();
 
-  // Verify GL access works.
-  if (use_passthrough()) {
-    auto gl_representation =
-        shared_image_representation_factory_.ProduceGLTexturePassthrough(
-            mailbox);
-    ASSERT_TRUE(gl_representation);
-    auto scoped_access = gl_representation->BeginScopedAccess(
-        GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
-        SharedImageRepresentation::AllowUnclearedAccess::kNo);
-    ASSERT_TRUE(scoped_access);
+  // Verify GL access works if supported. When `kUseDynamicBackingAllocations`
+  // is enabled and a separate GL texture would be needed (e.g. BGRA_8888 on
+  // ANGLE-GL), ExternalVkImageBacking does not support GL access directly
+  // (relying on CompoundImageBacking in production instead).
+  if (backing_factory_->IsSupportedForAccessStream(SharedImageAccessStream::kGL,
+                                                   format, nullptr)) {
+    if (use_passthrough()) {
+      auto gl_representation =
+          shared_image_representation_factory_.ProduceGLTexturePassthrough(
+              mailbox);
+      ASSERT_TRUE(gl_representation);
+      auto scoped_access = gl_representation->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kNo);
+      ASSERT_TRUE(scoped_access);
 
-    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-      auto texture = gl_representation->GetTexturePassthrough(plane);
-      ASSERT_TRUE(texture);
-      EXPECT_NE(texture->service_id(), 0u);
-    }
-  } else {
-    auto gl_representation =
-        shared_image_representation_factory_.ProduceGLTexture(mailbox);
-    ASSERT_TRUE(gl_representation);
-    auto scoped_access = gl_representation->BeginScopedAccess(
-        GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
-        SharedImageRepresentation::AllowUnclearedAccess::kNo);
-    ASSERT_TRUE(scoped_access);
+      for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+        auto texture = gl_representation->GetTexturePassthrough(plane);
+        ASSERT_TRUE(texture);
+        EXPECT_NE(texture->service_id(), 0u);
+      }
+    } else {
+      auto gl_representation =
+          shared_image_representation_factory_.ProduceGLTexture(mailbox);
+      ASSERT_TRUE(gl_representation);
+      auto scoped_access = gl_representation->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kNo);
+      ASSERT_TRUE(scoped_access);
 
-    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-      auto* texture = gl_representation->GetTexture(plane);
-      ASSERT_TRUE(texture);
-      EXPECT_NE(texture->service_id(), 0u);
+      for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+        auto* texture = gl_representation->GetTexture(plane);
+        ASSERT_TRUE(texture);
+        EXPECT_NE(texture->service_id(), 0u);
+      }
     }
   }
 }
@@ -747,6 +756,18 @@ TEST_F(ExternalVkImageBackingFactoryTest, InteropRejectsSeparateGLTexture) {
 
 TEST_F(ExternalVkImageBackingFactoryTest,
        SeparateGLTextureWriteAccessSyncsContent) {
+  // Disable `kUseDynamicBackingAllocations` to test ExternalVkImageBacking's
+  // legacy internal separate-GL-texture fallback path while the feature flag
+  // still exists as a kill-switch; when the feature is enabled,
+  // `ProduceGLTexture*()` CHECK-fails if `use_separate_gl_texture()` is true
+  // because CompoundImageBacking manages the separate GL backing.
+  // TODO(crbug.com/475210055): Remove this test along with the internal
+  // separate-GL-texture fallback in ExternalVkImageBacking once
+  // `kUseDynamicBackingAllocations` is cleaned up.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kUseDynamicBackingAllocations);
+
   const auto format = viz::SinglePlaneFormat::kBGRA_8888;
   if (!ExternalVkImageBacking::UseSeparateGLTexture(context_state_.get(),
                                                     format)) {
