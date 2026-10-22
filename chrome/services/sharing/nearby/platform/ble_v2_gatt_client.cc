@@ -321,7 +321,40 @@ bool BleV2GattClient::SetCharacteristicSubscription(
 }
 
 void BleV2GattClient::Disconnect() {
-  remote_device_->Disconnect();
+  // |remote_device_| is a mojo::SharedRemote, which is NOT thread-safe for a
+  // single instance: OnMojoDisconnect() may concurrently reset() it on
+  // |task_runner_|, freeing the underlying SharedRemoteBase and
+  // ThreadSafeForwarder while this sequence is dereferencing them. Hop to
+  // |task_runner_| before touching |remote_device_|, mirroring every other
+  // public method on this class. Shutdown() calls this method on
+  // |task_runner_| itself, so keep that path direct to avoid deadlocking on
+  // our own sequence.
+  if (task_runner_->RunsTasksInCurrentSequence()) {
+    if (remote_device_.is_bound()) {
+      remote_device_->Disconnect();
+    }
+    return;
+  }
+
+  base::WaitableEvent disconnect_waitable_event;
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BleV2GattClient::DoDisconnect, base::Unretained(this),
+                     &disconnect_waitable_event));
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
+  disconnect_waitable_event.Wait();
+}
+
+void BleV2GattClient::DoDisconnect(
+    base::WaitableEvent* disconnect_waitable_event) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // The remote may have been reset by OnMojoDisconnect() before this task ran;
+  // in that case there is nothing left to disconnect.
+  if (remote_device_.is_bound()) {
+    remote_device_->Disconnect();
+  }
+  disconnect_waitable_event->Signal();
 }
 
 void BleV2GattClient::DoDiscoverServices(
@@ -516,6 +549,14 @@ BleV2GattClient::GetCharacteristicInfoMojom(const Uuid& service_uuid,
 
 void BleV2GattClient::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // A disconnect notification may still be queued on |task_runner_| behind
+  // this task; once |shutdown_waitable_event| is signaled the destructor
+  // frees this object on another thread, so an OnMojoDisconnect() task
+  // running after Shutdown() would use-after-free. Invalidate the weak
+  // pointers here, on the sequence where they are dereferenced, so any
+  // later-queued OnMojoDisconnect() is dropped.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   // The `remote_device_` might have already been reset in `OnMojoDisconnect()`.
   if (remote_device_.is_bound()) {

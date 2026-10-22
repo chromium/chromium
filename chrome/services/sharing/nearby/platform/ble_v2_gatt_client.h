@@ -105,6 +105,8 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
   GetCharacteristicInfoMojom(const Uuid& service_uuid,
                              const Uuid& characteristic_uuid);
 
+  void DoDisconnect(base::WaitableEvent* disconnect_waitable_event);
+
   void Shutdown(base::WaitableEvent* shutdown_waitable_event);
   void OnMojoDisconnect();
 
