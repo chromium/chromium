@@ -1881,4 +1881,52 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       ShowDoesNotCrashIfEmbedderDeactivatedDuringShow) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  bool callback_ran = false;
+  base::CallbackListSubscription subscription =
+      coordinator().AddGlobalShowHideCallback(base::BindLambdaForTesting([&]() {
+        if (!callback_ran) {
+          callback_ran = true;
+          if (auto* instance = static_cast<GlicInstanceImpl*>(
+                  coordinator().GetActiveInstance())) {
+            instance->Close(SidePanelEmbedderKey(tab), CloseOptions());
+          }
+        }
+      }));
+
+  auto* service = GlicKeyedService::Get(GetProfile());
+  service->ShowUI(tab->GetBrowserWindowInterface(),
+                  mojom::InvocationSource::kTopChromeButton);
+
+  EXPECT_TRUE(callback_ran);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       ShowDoesNotCrashIfEmbedderUnboundDuringShow) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  bool callback_ran = false;
+  base::CallbackListSubscription subscription =
+      coordinator().AddGlobalShowHideCallback(base::BindLambdaForTesting([&]() {
+        if (!callback_ran) {
+          callback_ran = true;
+          if (auto* instance = static_cast<GlicInstanceImpl*>(
+                  coordinator().GetActiveInstance())) {
+            instance->UnbindEmbedder(SidePanelEmbedderKey(tab));
+          }
+        }
+      }));
+
+  auto* service = GlicKeyedService::Get(GetProfile());
+  service->ShowUI(tab->GetBrowserWindowInterface(),
+                  mojom::InvocationSource::kTopChromeButton);
+
+  EXPECT_TRUE(callback_ran);
+}
+
 }  // namespace glic

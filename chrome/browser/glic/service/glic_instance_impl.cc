@@ -485,8 +485,6 @@ void GlicInstanceImpl::Show(ShowOptions options) {
 
   EmbedderKey new_key = GetEmbedderKey(options);
 
-  GlicUiEmbedder* embedder_to_show = nullptr;
-
   if (IsActiveEmbedder(new_key)) {
     if (!options.reinitialize_if_already_active) {
       // The panel is already up, so there is nothing to re-show. Unless this
@@ -500,23 +498,28 @@ void GlicInstanceImpl::Show(ShowOptions options) {
         host_.NotifyWindowIntentToShow();
       }
       return;
-    } else {
-      embedder_to_show = GetActiveEmbedder();
     }
   } else {
     DeactivateCurrentEmbedder();
     // Ensure that there is a WebContents for the embedder to use.
     EnsureHostAwake();
     StopOffscreenRendering();
-    embedder_to_show = CreateActiveEmbedder(options);
-    CHECK(embedder_to_show);
-    host_.SetDelegate(embedder_to_show->GetHostEmbedderDelegate());
+    GlicUiEmbedder* embedder = CreateActiveEmbedder(options);
+    CHECK(embedder);
+    host_.SetDelegate(embedder->GetHostEmbedderDelegate());
     SetActiveEmbedderAndNotifyVisibilityChange(new_key);
   }
 
   MaybeWarmZeroStateSuggestions(options.invocation_source);
 
-  MaybeShowHostUi(embedder_to_show, options.invocation_source,
+  // Re-fetch the active embedder rather than caching a raw pointer across
+  // synchronous notifications that may deactivate or destroy the embedder.
+  GlicUiEmbedder* embedder_to_show = GetActiveEmbedderForKey(new_key);
+  if (!embedder_to_show) {
+    return;
+  }
+
+  MaybeShowHostUi(*embedder_to_show, options.invocation_source,
                   options.prompt_suggestion, options.fre_override);
 
   if (instance_metrics().MarkShownAndCheckIfFirstTime(new_key)) {
@@ -533,12 +536,19 @@ void GlicInstanceImpl::Show(ShowOptions options) {
     }
   }
 
+  // MaybeShowHostUi() or OnInvoked() may also deactivate or destroy the
+  // embedder, so re-fetch before calling Show().
+  embedder_to_show = GetActiveEmbedderForKey(new_key);
+  if (!embedder_to_show) {
+    return;
+  }
+
   embedder_to_show->Show(options);
   host_.SetWebContentsVisibilityOverride(std::nullopt);
   // WARNING: Show() may result in deleting the embedder! Check if the embedder
   // is still active before calling Focus().
-  if (options.focus_on_show && IsActiveEmbedder(new_key)) {
-    if (auto* active_embedder = GetActiveEmbedder()) {
+  if (options.focus_on_show) {
+    if (auto* active_embedder = GetActiveEmbedderForKey(new_key)) {
       active_embedder->Focus();
     }
   }
@@ -1148,6 +1158,13 @@ GlicUiEmbedder* GlicInstanceImpl::GetActiveEmbedder() {
   return nullptr;
 }
 
+GlicUiEmbedder* GlicInstanceImpl::GetActiveEmbedderForKey(EmbedderKey key) {
+  if (!IsActiveEmbedder(key)) {
+    return nullptr;
+  }
+  return GetActiveEmbedder();
+}
+
 void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   auto* old_embedder = GetActiveEmbedder();
   if (!old_embedder) {
@@ -1322,11 +1339,11 @@ void GlicInstanceImpl::UpdateFloatingPanelCanAttach() {
 }
 
 void GlicInstanceImpl::MaybeShowHostUi(
-    GlicUiEmbedder* embedder,
+    GlicUiEmbedder& embedder,
     mojom::InvocationSource invocation_source,
     std::optional<std::string> prompt_suggestion,
     mojom::FreOverride fre_override) {
-  Host::EmbedderDelegate* delegate = embedder->GetHostEmbedderDelegate();
+  Host::EmbedderDelegate* delegate = embedder.GetHostEmbedderDelegate();
   if (!delegate) {
     return;
   }

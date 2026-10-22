@@ -372,6 +372,10 @@ class GlicInstanceImpl : public GlicInstance,
   void NotifyVisibilityChange();
   void NotifyInstanceChanged();
 
+  // Returns the active embedder if and only if `key` is currently the active
+  // embedder key. Useful for re-validating that the target embedder has not
+  // been deactivated or destroyed across synchronous observer notifications.
+  GlicUiEmbedder* GetActiveEmbedderForKey(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
   EmbedderKey GetEmbedderKeyForTab(tabs::TabInterface* tab) const;
   EmbedderEntry* GetEmbedderEntry(EmbedderKey key);
@@ -391,7 +395,7 @@ class GlicInstanceImpl : public GlicInstance,
                      EmbedderEntry& entry,
                      const CloseOptions& options = {});
   void MaybeShowHostUi(
-      GlicUiEmbedder* embedder,
+      GlicUiEmbedder& embedder,
       mojom::InvocationSource source,
       std::optional<std::string> prompt_suggestion,
       mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified);
