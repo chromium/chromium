@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -64,6 +66,7 @@ void TestSyncService::SetSignedIn(signin::ConsentLevel consent_level,
                                   const CoreAccountInfo& account_info) {
   CHECK(!local_sync_enabled_)
       << "Cannot set signed in while local sync is enabled.";
+  CHECK(!account_info.IsEmpty()) << "Cannot set signed in with empty account.";
 
   disable_reasons_.Remove(DISABLE_REASON_NOT_SIGNED_IN);
   account_info_ = account_info;
