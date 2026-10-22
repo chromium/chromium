@@ -5339,6 +5339,12 @@ void ChromeContentBrowserClient::GetAdditionalFileSystemBackends(
     const base::FilePath& storage_partition_path,
     std::vector<std::unique_ptr<storage::FileSystemBackend>>*
         additional_backends) {
+  // A BrowserContext without a path keeps all its storage in memory, and has
+  // nowhere for these backends to put their files.
+  if (browser_context->GetPath().empty()) {
+    return;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   storage::ExternalMountPoints* external_mount_points =
       browser_context->GetMountPoints();
