@@ -190,7 +190,7 @@ TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesTextFromMatch) {
     EXPECT_EQ(suggest_template->primary_text->text, u"example.com");
     ASSERT_EQ(suggest_template->primary_text->fragments.size(), 1u);
     EXPECT_EQ(suggest_template->primary_text->fragments[0]->color,
-              mojom::ColorType::kPrimary);
+              mojom::ColorType::kSuggestActionHigh);
     EXPECT_EQ(suggest_template->secondary_text->text, u"Example Title");
     ASSERT_EQ(suggest_template->secondary_text->fragments.size(), 1u);
     EXPECT_TRUE(suggest_template->secondary_text->fragments[0]->is_bolded);
@@ -207,7 +207,7 @@ TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesTextFromMatch) {
     EXPECT_EQ(suggest_template->secondary_text->text, u"example.com");
     ASSERT_EQ(suggest_template->secondary_text->fragments.size(), 1u);
     EXPECT_EQ(suggest_template->secondary_text->fragments[0]->color,
-              mojom::ColorType::kPrimary);
+              mojom::ColorType::kSuggestActionHigh);
     EXPECT_FALSE(suggest_template->secondary_text->fragments[0]->is_bolded);
   }
 }
@@ -260,18 +260,19 @@ TEST(SuggestTemplateInfoMojoUtilsTest, ConvertsClassificationsToFragments) {
     bool is_bolded;
   };
   const auto kExpected = std::to_array<Expected>({
-      {0, mojom::ColorType::kUnknown, false},
-      {1, mojom::ColorType::kUnknown, true},
-      {2, mojom::ColorType::kOnSurfaceDeemphasis, false},
-      {3, mojom::ColorType::kPrimary, false},
-      {4, mojom::ColorType::kPrimary, true},
-      {5, mojom::ColorType::kOnSurfaceDeemphasis, true},
-      {6, mojom::ColorType::kPrimary, false},
-      {7, mojom::ColorType::kUnknown, false},
+      {0, mojom::ColorType::kSuggestQueryText, false},
+      {1, mojom::ColorType::kSuggestQueryText, true},
+      {2, mojom::ColorType::kSuggestHintText, false},
+      {3, mojom::ColorType::kSuggestActionHigh, false},
+      {4, mojom::ColorType::kSuggestActionHigh, true},
+      {5, mojom::ColorType::kSuggestHintText, true},
+      {6, mojom::ColorType::kSuggestActionHigh, false},
+      {7, mojom::ColorType::kSuggestQueryText, false},
   });
   // Each classification becomes exactly one fragment, even when neighboring
-  // classifications have the same style. MATCH is converted to `is_bolded`,
-  // and URL and DIM to colors. URL wins when both are set.
+  // classifications have the same style. MATCH is converted to `is_bolded`.
+  // URL and DIM pick the color, URL wins when both are set, and other styles
+  // get the query text color.
   ASSERT_EQ(primary_text.fragments.size(), kExpected.size());
   for (size_t i = 0; i < kExpected.size(); ++i) {
     SCOPED_TRACE(i);

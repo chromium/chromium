@@ -311,31 +311,32 @@ suite('CrComponentsRealboxMatchTest', () => {
     const match = createAutocompleteMatch();
     match.suggestTemplate.primaryText = createFormattedString('abcdef', [
       createFormattedStringFragment(
-          {startIndex: 0, color: ColorType.kOnSurfaceDefault}),
+          {startIndex: 0, color: ColorType.kSuggestQueryText}),
       createFormattedStringFragment(
-          {startIndex: 1, color: ColorType.kOnSurfaceDeemphasis}),
+          {startIndex: 1, color: ColorType.kSuggestHintText}),
       createFormattedStringFragment({
         startIndex: 2,
-        color: ColorType.kOnSurfaceDeemphasis,
+        color: ColorType.kSuggestHintText,
         isBolded: true,
       }),
       createFormattedStringFragment({
         startIndex: 3,
-        color: ColorType.kPrimary,
+        color: ColorType.kSuggestActionHigh,
         isBolded: true,
       }),
       createFormattedStringFragment({startIndex: 4, color: ColorType.kUnknown}),
-      // Colors without a CSS class yet are rendered with the default color.
-      createFormattedStringFragment(
-          {startIndex: 5, color: ColorType.kOnSurfacePositive}),
+      // Other colors get no class and keep the default color.
+      createFormattedStringFragment({startIndex: 5, color: ColorType.kPrimary}),
     ]);
     matchEl.match = match;
     await microtasksFinished();
 
     const primaryTextEl = matchEl.$.primaryText;
     assertEquals(
-        '<span>a</span><span class="dim">b</span>' +
-            '<span class="dim match">c</span><span class="match url">d</span>' +
+        '<span class="color-on-surface">a</span>' +
+            '<span class="color-on-surface-subtle">b</span>' +
+            '<span class="color-on-surface-subtle match">c</span>' +
+            '<span class="color-primary url match">d</span>' +
             '<span>e</span><span>f</span>',
         primaryTextEl.innerHTML);
   });
@@ -483,11 +484,11 @@ suite('CrComponentsRealboxMatchTest', () => {
             [
               createFormattedStringFragment({
                 startIndex: 0,
-                color: ColorType.kOnSurfaceDeemphasis,
+                color: ColorType.kSuggestHintText,
                 isBolded: true,
               }),
               createFormattedStringFragment(
-                  {startIndex: 4, color: ColorType.kOnSurfaceDeemphasis}),
+                  {startIndex: 4, color: ColorType.kSuggestHintText}),
             ]),
       }),
     });
@@ -497,10 +498,10 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(2, spans.length);
     assertEquals('MIA ', spans[0]!.textContent);
     assertTrue(spans[0]!.classList.contains('match'));
-    assertTrue(spans[0]!.classList.contains('dim'));
+    assertTrue(spans[0]!.classList.contains('color-on-surface-subtle'));
     assertEquals('Basketball', spans[1]!.textContent);
     assertFalse(spans[1]!.classList.contains('match'));
-    assertTrue(spans[1]!.classList.contains('dim'));
+    assertTrue(spans[1]!.classList.contains('color-on-surface-subtle'));
   });
 
   test('DescriptionIcon', async () => {

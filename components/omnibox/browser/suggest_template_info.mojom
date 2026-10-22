@@ -27,6 +27,9 @@ enum ColorType {
   kOnSurfaceDeemphasis = 11,
   kOutlineDefault = 12,
   kSubtitleText = 13,
+  kSuggestQueryText = 14,
+  kSuggestHintText = 15,
+  kSuggestActionHigh = 16,
 };
 // LINT.ThenChange(//third_party/omnibox_proto/formatted_string.proto:ColorType)
 

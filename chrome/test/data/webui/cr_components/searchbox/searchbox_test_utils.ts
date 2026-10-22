@@ -171,8 +171,8 @@ export function createUrlMatch(modifiers: Partial<AutocompleteMatch> = {}):
     type: 'url-what-you-typed',
     suggestTemplate: createSuggestTemplateInfo({
       primaryText: createFormattedString(
-          'helloworld.com',
-          [createFormattedStringFragment({color: ColorType.kPrimary})]),
+          'helloworld.com', [createFormattedStringFragment(
+                                {color: ColorType.kSuggestActionHigh})]),
     }),
     ...modifiers,
   });

@@ -20,21 +20,20 @@ namespace suggest_template_info {
 namespace {
 
 // Returns the color for text with the classification `style`. If both URL and
-// DIM are set, URL wins. Other styles get kUnknown and keep the line's default
-// color.
+// DIM are set, URL wins. Other styles get kSuggestQueryText.
 mojom::ColorType ACMatchClassificationToColorType(int style) {
   if (style & ACMatchClassification::URL) {
-    return mojom::ColorType::kPrimary;
+    return mojom::ColorType::kSuggestActionHigh;
   }
   if (style & ACMatchClassification::DIM) {
-    return mojom::ColorType::kOnSurfaceDeemphasis;
+    return mojom::ColorType::kSuggestHintText;
   }
-  return mojom::ColorType::kUnknown;
+  return mojom::ColorType::kSuggestQueryText;
 }
 
 // Converts `text` and its `classifications` to a FormattedString. Each
 // classification becomes one fragment. The MATCH style is converted to
-// `is_bolded`, and the URL and DIM styles to colors.
+// `is_bolded`, and the other styles to a color.
 mojom::FormattedStringPtr CreateFormattedString(
     const std::u16string& text,
     const ACMatchClassifications& classifications) {

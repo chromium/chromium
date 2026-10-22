@@ -26,7 +26,7 @@ export function getHtml(this: SearchboxMatchElement) {
       <span id="ellipsis" ?hidden="${!this.showEllipsis}">...&nbsp;</span>
       <span id="suggestion">
         <span id="primaryText" .innerHTML="${this.primaryTextHtml_}"></span>
-        <span id="separator" class="dim">${this.separatorText_}</span>
+        <span id="separator" class="color-on-surface-subtle">${this.separatorText_}</span>
         <span id="secondaryText" .innerHTML="${this.secondaryTextHtml_}"
             ?has-icon="${!!this.match.descriptionIconPath}"
             style="--description-icon: url(${this.match.descriptionIconPath})">

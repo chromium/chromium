@@ -291,25 +291,34 @@
   color: var(--color-searchbox-results-foreground);
 }
 
-/* Use dimmed color for secondary text. */
-#secondaryText,
-.dim {
+.color-on-surface {
+  color: var(--color-searchbox-results-foreground);
+}
+
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .color-on-surface {
+  color: var(--color-searchbox-results-foreground-selected,
+      var(--color-searchbox-results-foreground));
+}
+
+/* The ellipsis of truncated secondary text gets the color of #secondaryText,
+ * not of its spans. */
+#secondaryText:has(.color-on-surface-subtle),
+.color-on-surface-subtle {
   color: var(--color-searchbox-results-foreground-dimmed);
 }
 
-/* Uses a dimmed color for secondary text for entities. */
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-entity-suggestion]) #secondaryText,
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .dim {
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-entity-suggestion]) #secondaryText:has(.color-on-surface-subtle),
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .color-on-surface-subtle {
   color: var(--color-searchbox-results-dim-selected);
 }
 
 /* URL ellipsis color to match the URL text color */
 #secondaryText:has(.url),
-.url {
+.color-primary {
   color: var(--color-searchbox-results-url);
 }
 
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .url {
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .color-primary {
   color: var(--color-searchbox-results-url-selected);
 }
 

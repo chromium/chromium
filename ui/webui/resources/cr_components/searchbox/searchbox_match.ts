@@ -475,18 +475,30 @@ export class SearchboxMatchElement extends CrLitElement {
 
   /**
    * Maps the color and weight of a FormattedString fragment to CSS classes.
-   * Colors without a CSS class yet are rendered with the default color.
+   * Each suggest color gets a class named after the color token it maps to.
+   * Other colors get no class and keep the default color.
    */
   private getFragmentCssClasses_(fragment: FormattedStringFragment): string[] {
     const classes = [];
-    if (fragment.color === ColorType.kOnSurfaceDeemphasis) {
-      classes.push('dim');
+    switch (fragment.color) {
+      case ColorType.kSuggestQueryText:
+        classes.push('color-on-surface');
+        break;
+      case ColorType.kSuggestHintText:
+        classes.push('color-on-surface-subtle');
+        break;
+      case ColorType.kSuggestActionHigh:
+        classes.push('color-primary');
+        // The URL layout rules key on `url`. Only URLs get ACTION_HIGH for now,
+        // so ACTION_HIGH text gets `url` too.
+        // TODO(crbug.com/574634127): Mark URLs without relying on the color.
+        classes.push('url');
+        break;
+      default:
+        break;
     }
     if (fragment.isBolded) {
       classes.push('match');
-    }
-    if (fragment.color === ColorType.kPrimary) {
-      classes.push('url');
     }
     return classes;
   }

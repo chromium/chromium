@@ -84,9 +84,9 @@ export function createAutocompleteResultForTesting(
 
 export function createSearchMatchForTesting(
     modifiers: Partial<AutocompleteMatch> = {}): AutocompleteMatch {
-  const dimFragment: FormattedStringFragment = {
+  const hintTextFragment: FormattedStringFragment = {
     startIndex: 0,
-    color: ColorType.kOnSurfaceDeemphasis,
+    color: ColorType.kSuggestHintText,
     isBolded: false,
   };
   const base = createAutocompleteMatch({
@@ -96,7 +96,7 @@ export function createSearchMatchForTesting(
     type: 'search-what-you-typed',
     suggestTemplate: createSuggestTemplateInfo({
       primaryText: createFormattedString('hello world'),
-      secondaryText: createFormattedString('Google search', [dimFragment]),
+      secondaryText: createFormattedString('Google search', [hintTextFragment]),
     }),
   });
 
