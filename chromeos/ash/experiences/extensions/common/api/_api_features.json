@@ -155,6 +155,10 @@
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["privileged_extension"]
   },
+  "systemLog": {
+    "dependencies": ["permission:systemLog"],
+    "contexts": ["privileged_extension"]
+  },
   "usersPrivate": [{
     "dependencies": ["permission:usersPrivate"],
     "contexts": ["privileged_extension"],

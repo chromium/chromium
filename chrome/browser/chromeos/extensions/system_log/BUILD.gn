@@ -18,9 +18,9 @@ static_library("system_log") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/common/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//chromeos/components/kiosk",
     "//chromeos/components/mgs",
     "//components/device_event_log",

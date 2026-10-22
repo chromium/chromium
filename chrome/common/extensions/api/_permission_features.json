@@ -959,23 +959,6 @@
     ],
     "feature_flag": "SmartCard"
   },
-  "systemLog": [{
-    "channel": "stable",
-    "extension_types": ["extension", "login_screen_extension", "platform_app"],
-    "location": "policy",
-    "platforms": ["chromeos"]
-  }, {
-    "channel": "stable",
-    "extension_types": ["extension", "login_screen_extension", "platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist": [
-      "EC3DE21E048B67319893889529354DFBFA96FD23", // Smart Card Connector
-      "A19608AC34215B127FF9D7C006D67F5C8ED8146D", // Smart Card Connector - beta channel
-      "6B748A5C005F21B7CBCF4170C2F883E435DEB511", // DriveLock Smart Card Middleware
-      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA", // Beta DriveLock Smart Card Middleware
-      "5C825E850034490380BCB756D43ABB2CF537AA91"  // b/359290130
-    ]
-  }],
   "systemPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],

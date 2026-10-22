@@ -821,10 +821,6 @@
     "dependencies": ["permission:smartCardProviderPrivate"],
     "contexts": ["privileged_extension"]
   },
-  "systemLog": {
-    "dependencies": ["permission:systemLog"],
-    "contexts": ["privileged_extension"]
-  },
   "systemPrivate": {
     "dependencies": ["permission:systemPrivate"],
     "contexts": ["privileged_extension"]
