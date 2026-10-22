@@ -5,6 +5,7 @@
 import './composebox_match.js';
 
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -13,7 +14,7 @@ import {RenderType} from '//resources/mojo/components/omnibox/browser/searchbox.
 import {SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
-import {computeImageUrl} from './common.js';
+import {computeImageUrl, recordRichImageSuggestBatchLoadLatency, recordRichImageSuggestBatchLoadStatus, recordRichImageSuggestShown, RichImageSuggestBatchLoadStatus} from './common.js';
 import {getCss} from './composebox_dropdown.css.js';
 import {getHtml} from './composebox_dropdown.html.js';
 import type {ComposeboxMatchElement} from './composebox_match.js';
@@ -112,6 +113,8 @@ export class ComposeboxDropdownElement extends CrLitElement {
   accessor overrideClampLineNum: number = -1;
   accessor richImageSuggestionsEnabled: boolean = false;
   accessor isImageBatchLoading_: boolean = false;
+  private composeboxSource_: string =
+      loadTimeData.getString('composeboxSource');
   private imagePreloadGeneration_: number = 0;
   private imagePreloadTimeoutId_: number|undefined;
   // Retains HTMLImageElement instances so Blink's MemoryCache holds a strong
@@ -373,6 +376,11 @@ export class ComposeboxDropdownElement extends CrLitElement {
   }
 
   private cancelImagePreload_() {
+    if (this.isImageBatchLoading_) {
+      recordRichImageSuggestBatchLoadStatus(
+          RichImageSuggestBatchLoadStatus.SUPERSEDED, this.composeboxSource_);
+      this.isImageBatchLoading_ = false;
+    }
     this.imagePreloadGeneration_++;
     this.clearImagePreloadTimeout_();
     for (const img of this.preloadingImages_) {
@@ -394,14 +402,21 @@ export class ComposeboxDropdownElement extends CrLitElement {
         (m, index) => !this.isMatchHidden_(index) &&
             m.suggestTemplate.style === SuggestStyle.kRichImage &&
             Boolean(m.suggestTemplate.image?.url));
-    if (imageMatches.length === 0 ||
-        imageMatches.every(
+    if (imageMatches.length === 0) {
+      this.isImageBatchLoading_ = false;
+      return;
+    }
+    if (imageMatches.every(
             m => this.loadedImages_.has(m.suggestTemplate.image!.url))) {
       this.isImageBatchLoading_ = false;
+      recordRichImageSuggestBatchLoadStatus(
+          RichImageSuggestBatchLoadStatus.CACHED, this.composeboxSource_);
+      recordRichImageSuggestShown(this.composeboxSource_);
       return;
     }
 
     this.isImageBatchLoading_ = true;
+    const startTime = window.performance.now();
     const preloadPromises = imageMatches.map(m => {
       const imageUrl = m.suggestTemplate.image!.url;
       return new Promise<void>(resolve => {
@@ -424,22 +439,33 @@ export class ComposeboxDropdownElement extends CrLitElement {
       });
     });
 
-    const timeoutPromise = new Promise<void>(resolve => {
+    const allPreloadedPromise = Promise.all(preloadPromises).then(() => {
+      recordRichImageSuggestBatchLoadLatency(
+          window.performance.now() - startTime, this.composeboxSource_);
+      return false;
+    });
+
+    const timeoutPromise = new Promise<boolean>(resolve => {
       this.imagePreloadTimeoutId_ =
-          window.setTimeout(resolve, IMAGE_PRELOAD_TIMEOUT_MS);
+          window.setTimeout(() => resolve(true), IMAGE_PRELOAD_TIMEOUT_MS);
     });
 
     void Promise
         .race([
-          Promise.all(preloadPromises),
+          allPreloadedPromise,
           timeoutPromise,
         ])
-        .then(() => {
+        .then(timedOut => {
           if (this.imagePreloadGeneration_ === generation) {
             // Only clear the timeout; let any still-in-flight images in
             // `preloadingImages_` finish and populate `loadedImages_`.
             this.clearImagePreloadTimeout_();
             this.isImageBatchLoading_ = false;
+            recordRichImageSuggestShown(this.composeboxSource_);
+            recordRichImageSuggestBatchLoadStatus(
+                timedOut ? RichImageSuggestBatchLoadStatus.TIMED_OUT :
+                           RichImageSuggestBatchLoadStatus.LOADED,
+                this.composeboxSource_);
           }
         });
   }

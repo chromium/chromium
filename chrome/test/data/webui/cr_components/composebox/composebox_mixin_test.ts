@@ -110,11 +110,12 @@ suite('ComposeboxMixinTest', () => {
   // hidden verbatim match (no action), and index 1 is the Fusebox action match.
   async function showFuseboxMatches(
       fuseboxAction: FuseboxAction, originalInput: string = 'typed input',
-      fillIntoEdit: string = 'action suggestion') {
+      fillIntoEdit: string = 'action suggestion',
+      suggestStyle: SuggestStyle = SuggestStyle.kDefault) {
     await microtasksFinished();
     element.input = originalInput;
     element.lastQueriedInput = originalInput;
-    element.result = {
+    element.result = createAutocompleteResultForTesting({
       input: originalInput,
       matches: [
         createAutocompleteMatch({
@@ -123,10 +124,11 @@ suite('ComposeboxMixinTest', () => {
         }),
         createAutocompleteMatch({
           fillIntoEdit,
-          suggestTemplate: createSuggestTemplateInfo({fuseboxAction}),
+          suggestTemplate:
+              createSuggestTemplateInfo({fuseboxAction, style: suggestStyle}),
         }),
       ],
-    } as AutocompleteResult;
+    });
     await element.updateComplete;
     await microtasksFinished();
   }
@@ -912,6 +914,38 @@ suite('ComposeboxMixinTest', () => {
       assertDeepEquals(['open', 'open', 'stats', 'open'], effects);
       assertEquals(2, matchClickCount);
       assertTrue(element.submitting);
+      element.composeboxSource = 'TestEmbedder';
+      assertEquals(
+          0,
+          metrics.count(
+              'ContextualSearch.RichImageSuggest.Clicked.TestEmbedder'));
+
+      // 7. Selecting a kRichImage action match when richImageSuggestionsEnabled
+      // is true records ContextualSearch.RichImageSuggest.Clicked.{Source} on
+      // both mouse click and keyboard Enter.
+      element.submitting = false;
+      element.richImageSuggestionsEnabled = true;
+      await showFuseboxMatches(
+          makeAction({queryActionOverride: QueryActionOverride.kPaste}),
+          'typed input', 'rich image suggestion', SuggestStyle.kRichImage);
+      clickActionMatch();
+      await microtasksFinished();
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualSearch.RichImageSuggest.Clicked.TestEmbedder', 1));
+
+      await showFuseboxMatches(
+          makeAction({queryActionOverride: QueryActionOverride.kPaste}),
+          'typed input', 'rich image suggestion', SuggestStyle.kRichImage);
+      selectMatch(1);
+      await microtasksFinished();
+      pressEnter();
+      await microtasksFinished();
+      assertEquals(
+          2,
+          metrics.count(
+              'ContextualSearch.RichImageSuggest.Clicked.TestEmbedder', 1));
     } finally {
       element.handleFuseboxAction = originalHandler;
     }

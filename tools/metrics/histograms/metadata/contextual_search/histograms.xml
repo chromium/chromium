@@ -589,6 +589,71 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.RichImageSuggest.BatchLoadLatency.{ContextualSearchSource}"
+    units="ms" expires_after="2027-04-08">
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the time in milliseconds from when a composebox autocomplete result
+    containing uncached rich image suggestions is received on
+    {ContextualSearchSource} until all visible images in the batch finish
+    preloading (including batches that settle after the 2-second ghost loader
+    timeout). Not recorded when all images are already cached in memory or when
+    a newer result batch supersedes the preload before all images settle.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.RichImageSuggest.BatchLoadStatus.{ContextualSearchSource}"
+    enum="RichImageSuggestBatchLoadStatus" expires_after="2027-04-08">
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the preload outcome of each composebox autocomplete result batch
+    containing at least one visible rich image suggestion on
+    {ContextualSearchSource}: whether all images were already cached in memory,
+    finished loading before the 2-second ghost loader timeout, timed out, or
+    were superseded while still in the ghost loader state.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.RichImageSuggest.Clicked.{ContextualSearchSource}"
+    units="count" expires_after="2027-04-08">
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when a user selects a rich image suggestion in the composebox
+    dropdown on {ContextualSearchSource} (via mouse click or Enter key) and
+    triggers its FuseboxAction.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.RichImageSuggest.Shown.{ContextualSearchSource}"
+    units="count" expires_after="2027-04-08">
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded once per autocomplete result batch when rich image suggestions are
+    revealed to the user in the composebox dropdown on {ContextualSearchSource}
+    (either immediately from memory cache, when all images finish preloading, or
+    when the 2-second ghost loader timeout reveals the cards). Note that this is
+    recorded when image preloading settles even if the composebox dropdown is
+    currently hidden, so computing a click-through rate directly as Clicked /
+    Shown will understate the actual click rate.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.Session.Duration.Total.{ContextualSearchSource}"
     units="ms" expires_after="2027-04-18">
   <owner>hujasonx@google.com</owner>

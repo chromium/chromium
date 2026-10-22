@@ -155,6 +155,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchSource) -->
 
+<!-- LINT.IfChange(RichImageSuggestBatchLoadStatus) -->
+
+<enum name="RichImageSuggestBatchLoadStatus">
+  <int value="0" label="Cached"/>
+  <int value="1" label="Loaded"/>
+  <int value="2" label="TimedOut"/>
+  <int value="3" label="Superseded"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/common.ts:RichImageSuggestBatchLoadStatus) -->
+
 </enums>
 
 </histogram-configuration>

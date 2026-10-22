@@ -436,6 +436,16 @@ export function recordSingleTabMenuItemAction(
       SingleTabMenuItemAction.MAX_VALUE + 1);
 }
 
+// LINT.IfChange(RichImageSuggestBatchLoadStatus)
+export enum RichImageSuggestBatchLoadStatus {
+  CACHED = 0,
+  LOADED = 1,
+  TIMED_OUT = 2,
+  SUPERSEDED = 3,
+  MAX_VALUE = SUPERSEDED,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:RichImageSuggestBatchLoadStatus)
+
 export function recordEnumerationValue(
     metricName: string, value: number, enumSize: number) {
   const metricsService = chrome.histograms || chrome.metricsPrivate;
@@ -465,6 +475,35 @@ export function recordCount(metricName: string, value: number) {
   }
 }
 
+export function recordTime(metricName: string, value: number) {
+  const metricsService = chrome.histograms || chrome.metricsPrivate;
+  if (metricsService) {
+    metricsService.recordTime(metricName, value);
+  }
+}
+
+export function recordRichImageSuggestBatchLoadStatus(
+    status: RichImageSuggestBatchLoadStatus, composeboxSource: string) {
+  recordEnumerationValue(
+      `ContextualSearch.RichImageSuggest.BatchLoadStatus.${composeboxSource}`,
+      status, RichImageSuggestBatchLoadStatus.MAX_VALUE + 1);
+}
+
+export function recordRichImageSuggestBatchLoadLatency(
+    latencyMs: number, composeboxSource: string) {
+  recordTime(
+      `ContextualSearch.RichImageSuggest.BatchLoadLatency.${composeboxSource}`,
+      Math.round(latencyMs));
+}
+
+export function recordRichImageSuggestClicked(composeboxSource: string) {
+  recordCount(
+      `ContextualSearch.RichImageSuggest.Clicked.${composeboxSource}`, 1);
+}
+
+export function recordRichImageSuggestShown(composeboxSource: string) {
+  recordCount(`ContextualSearch.RichImageSuggest.Shown.${composeboxSource}`, 1);
+}
 // TODO(crbug.com/468329884): Consider making this a new contextual entry
 // source so the realbox and composebox don't both get logged as NTP.
 export function recordContextAdditionMethod(
