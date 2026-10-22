@@ -3338,7 +3338,6 @@
     'runtime_enabled_features': ['jmedley+watch@chromium.org'],
     'rust': ['hans@chromium.org'],
       'safe_browsing': ['nwokedi+watch@chromium.org',
-                      'vakh+safe_browsing_watch@chromium.org',
                       'xinghuilu+watch@chromium.org',
                       'zackhan+watch@chromium.org'],
     'sampling_profiler': ['thiabaud@google.com', 'spvm@chromium.org'],
