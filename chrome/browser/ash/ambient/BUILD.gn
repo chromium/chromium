@@ -14,8 +14,6 @@ static_library("ambient") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash/profiles",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/demo_mode",

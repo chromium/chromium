@@ -13,8 +13,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -30,6 +28,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -72,10 +71,10 @@ constexpr net::NetworkTrafficAnnotationTag kAmbientClientNetworkTag =
            "The user setting is per device and cannot be overriden by admin."
         })");
 
-Profile* GetProfileForActiveUser() {
+content::BrowserContext* GetBrowserContextForActiveUser() {
   const user_manager::User* const active_user = GetActiveUser();
   CHECK(active_user, base::NotFatalUntil::M160);
-  return ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+  return ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
 }
 
 bool IsPrimaryUser() {
@@ -137,18 +136,12 @@ bool AmbientClientImpl::IsAmbientModeAllowed() {
     return false;
   }
 
-  // Primary account might be missing during unittests.
+  // Primary account might be missing during unittests. This also covers the
+  // browser context not existing yet: HasPrimaryAccount() returns false unless
+  // the user's profile has been created.
   if (!HasPrimaryAccount(active_user->GetAccountId())) {
     return false;
   }
-
-  auto* profile = GetProfileForActiveUser();
-  if (!profile) {
-    return false;
-  }
-
-  if (profile->IsOffTheRecord())
-    return false;
 
   return true;
 }
@@ -203,20 +196,19 @@ void AmbientClientImpl::DownloadImage(
 
 scoped_refptr<network::SharedURLLoaderFactory>
 AmbientClientImpl::GetURLLoaderFactory() {
-  auto* profile = GetProfileForActiveUser();
-  CHECK(profile, base::NotFatalUntil::M160);
+  content::BrowserContext* const browser_context =
+      GetBrowserContextForActiveUser();
+  CHECK(browser_context, base::NotFatalUntil::M160);
 
-  return profile->GetURLLoaderFactory();
+  return browser_context->GetURLLoaderFactory();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 AmbientClientImpl::GetSigninURLLoaderFactory() {
-  content::BrowserContext* browser_context =
+  content::BrowserContext* const browser_context =
       ash::BrowserContextHelper::Get()->GetSigninBrowserContext();
   CHECK(browser_context);
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  CHECK(profile);
-  return profile->GetURLLoaderFactory();
+  return browser_context->GetURLLoaderFactory();
 }
 
 void AmbientClientImpl::RequestWakeLockProvider(

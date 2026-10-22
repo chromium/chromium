@@ -7,12 +7,15 @@
 
 #include <string>
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace ash {
 namespace calculator_app {
 
-std::string GetInstalledCalculatorAppId(Profile* profile);
+std::string GetInstalledCalculatorAppId(
+    content::BrowserContext* browser_context);
 
 }  // namespace calculator_app
 }  // namespace ash
