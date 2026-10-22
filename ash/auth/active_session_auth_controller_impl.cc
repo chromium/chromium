@@ -150,7 +150,9 @@ class ActiveSessionAuthControllerImpl::FingerprintAuthTracker {
 
   void OnAnimationFinished() {
     VLOG(1) << "OnAnimationFinished";
-    CHECK_EQ(animation_finished_, false);
+    if (animation_finished_) {
+      return;
+    }
     animation_finished_ = true;
     MaybeNotifyOwner();
   }
@@ -566,14 +568,17 @@ void ActiveSessionAuthControllerImpl::OnSessionStateChanged(
     case ActiveSessionAuthState::kInitialized:
       StartClose();
       return;
+    case ActiveSessionAuthState::kFingerprintAuthSucceeded:
+      CHECK(fp_auth_tracker_);
+      fp_auth_tracker_->OnAnimationFinished();
+      return;
     case ActiveSessionAuthState::kPasswordAuthStarted:
     case ActiveSessionAuthState::kPinAuthStarted:
+    case ActiveSessionAuthState::kFingerprintAuthSucceededWaiting:
       SetState(ActiveSessionAuthState::kCloseRequested);
       return;
     case ActiveSessionAuthState::kPasswordAuthSucceeded:
     case ActiveSessionAuthState::kPinAuthSucceeded:
-    case ActiveSessionAuthState::kFingerprintAuthSucceeded:
-    case ActiveSessionAuthState::kFingerprintAuthSucceededWaiting:
     case ActiveSessionAuthState::kCloseRequested:
     case ActiveSessionAuthState::kAuthNotAvailable:
       return;
@@ -726,7 +731,8 @@ void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
       break;
     case ActiveSessionAuthState::kCloseRequested:
       CHECK(state_ == ActiveSessionAuthState::kPasswordAuthStarted ||
-            state_ == ActiveSessionAuthState::kPinAuthStarted);
+            state_ == ActiveSessionAuthState::kPinAuthStarted ||
+            state_ == ActiveSessionAuthState::kFingerprintAuthSucceededWaiting);
       contents_view_->SetInputEnabled(false);
       break;
     case ActiveSessionAuthState::kAuthNotAvailable:

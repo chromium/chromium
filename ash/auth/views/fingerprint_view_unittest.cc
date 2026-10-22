@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -22,6 +23,7 @@
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/views_test_utils.h"
@@ -72,6 +74,7 @@ class FingerprintViewUnitTest : public AshTestBase {
   }
 
   void TearDown() override {
+    gfx::Animation::SetPrefersReducedMotionForTesting(false);
     AshTestBase::TearDown();
     fingerprint_view_ = nullptr;
     container_view_ = nullptr;
@@ -115,6 +118,49 @@ TEST_F(FingerprintViewUnitTest, AvailableWithTouchSensorWarningTest) {
 
   task_environment()->FastForwardBy(base::Seconds(4));
   EXPECT_EQ(test_api.GetState(), FingerprintState::AVAILABLE_DEFAULT);
+}
+
+// Verify NotifyAuthSuccess skips the animation when reduced motion is enabled.
+TEST_F(FingerprintViewUnitTest, NotifyAuthSuccessReducedMotionTest) {
+  gfx::Animation::SetPrefersReducedMotionForTesting(true);
+  FingerprintView::TestApi test_api(fingerprint_view_);
+
+  fingerprint_view_->SetState(FingerprintState::AVAILABLE_DEFAULT);
+  base::test::TestFuture<void> animation_finished;
+  fingerprint_view_->NotifyAuthSuccess(animation_finished.GetCallback());
+
+  EXPECT_TRUE(test_api.GetIcon()->GetVisible());
+  EXPECT_FALSE(test_api.GetLottieAnimationView()->GetVisible());
+  EXPECT_TRUE(animation_finished.Wait());
+}
+
+// Verify NotifyAuthSuccess plays the animation and runs the callback.
+TEST_F(FingerprintViewUnitTest, NotifyAuthSuccessAnimationTest) {
+  FingerprintView::TestApi test_api(fingerprint_view_);
+
+  fingerprint_view_->SetState(FingerprintState::AVAILABLE_DEFAULT);
+  base::test::TestFuture<void> animation_finished;
+  fingerprint_view_->NotifyAuthSuccess(animation_finished.GetCallback());
+
+  EXPECT_FALSE(test_api.GetIcon()->GetVisible());
+  EXPECT_TRUE(test_api.GetLottieAnimationView()->GetVisible());
+  EXPECT_FALSE(animation_finished.IsReady());
+
+  fingerprint_view_->AnimationCycleEnded(nullptr);
+  EXPECT_TRUE(animation_finished.Wait());
+}
+
+// Verify NotifyAuthSuccess runs the callback when the animation is stopped.
+TEST_F(FingerprintViewUnitTest, NotifyAuthSuccessAnimationStoppedTest) {
+  FingerprintView::TestApi test_api(fingerprint_view_);
+
+  fingerprint_view_->SetState(FingerprintState::AVAILABLE_DEFAULT);
+  base::test::TestFuture<void> animation_finished;
+  fingerprint_view_->NotifyAuthSuccess(animation_finished.GetCallback());
+  EXPECT_FALSE(animation_finished.IsReady());
+
+  test_api.GetLottieAnimationView()->Stop();
+  EXPECT_TRUE(animation_finished.Wait());
 }
 
 }  // namespace ash

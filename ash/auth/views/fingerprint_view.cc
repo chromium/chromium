@@ -26,6 +26,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,6 +34,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -125,6 +127,10 @@ views::Label* FingerprintView::TestApi::GetLabel() {
 }
 AnimatedRoundedImageView* FingerprintView::TestApi::GetIcon() {
   return view_->icon_;
+}
+
+views::AnimatedImageView* FingerprintView::TestApi::GetLottieAnimationView() {
+  return view_->lottie_animation_view_;
 }
 
 void FingerprintView::TestApi::ShowFirstFrame() {
@@ -222,6 +228,10 @@ void FingerprintView::NotifyAuthSuccess(
   has_success_ = true;
   CHECK(on_success_animation_finished_.is_null());
   on_success_animation_finished_ = std::move(on_success_animation_finished);
+  if (gfx::Animation::PrefersReducedMotion()) {
+    AnimationStopped(nullptr);
+    return;
+  }
   CHECK(GetColorProvider());
   std::unique_ptr<lottie::Animation> animation =
       GetCheckmarkAnimation(GetColorProvider());
@@ -392,9 +402,21 @@ gfx::Size FingerprintView::CalculatePreferredSize(
 }
 
 void FingerprintView::AnimationCycleEnded(const lottie::Animation* animation) {
+  AnimationStopped(animation);
+}
+
+void FingerprintView::AnimationStopped(const lottie::Animation* animation) {
   CHECK(has_success_);
   scoped_animation_observer_.Reset();
 
+  // Post the callback so the widget is not closed while the animation is still
+  // painting or stopping.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&FingerprintView::OnSuccessAnimationFinished,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FingerprintView::OnSuccessAnimationFinished() {
   if (on_success_animation_finished_) {
     std::move(on_success_animation_finished_).Run();
   }

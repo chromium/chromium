@@ -44,6 +44,8 @@ class ASH_EXPORT FingerprintView : public views::View,
 
     AnimatedRoundedImageView* GetIcon();
 
+    views::AnimatedImageView* GetLottieAnimationView();
+
     FingerprintState GetState() const;
 
     void ShowFirstFrame();
@@ -83,8 +85,11 @@ class ASH_EXPORT FingerprintView : public views::View,
 
   // lottie::AnimationObserver:
   void AnimationCycleEnded(const lottie::Animation* animation) override;
+  void AnimationStopped(const lottie::Animation* animation) override;
 
  private:
+  void OnSuccessAnimationFinished();
+
   // Updates the visual elements to reflect the current state and PIN
   // availability.
   void DisplayCurrentState();
