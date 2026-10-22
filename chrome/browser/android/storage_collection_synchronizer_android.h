@@ -29,6 +29,9 @@ class StorageCollectionSynchronizerAndroid {
       const StorageCollectionSynchronizerAndroid&) = delete;
 
   void FullSave(JNIEnv* env, base::OnceClosure callback);
+  void SaveStructureSnapshot(JNIEnv* env,
+                             bool clear_unused_nodes,
+                             base::OnceClosure callback);
   void CancelRestore(JNIEnv* env);
   void SaveTab(JNIEnv* env, TabAndroid* tab);
   void SaveTabGroupPayload(JNIEnv* env, base::Token group_id);

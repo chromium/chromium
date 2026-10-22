@@ -34,6 +34,13 @@ void StorageCollectionSynchronizerAndroid::FullSave(
   synchronizer_.FullSave(std::move(callback));
 }
 
+void StorageCollectionSynchronizerAndroid::SaveStructureSnapshot(
+    JNIEnv* env,
+    bool clear_unused_nodes,
+    base::OnceClosure callback) {
+  synchronizer_.SaveStructureSnapshot(clear_unused_nodes, std::move(callback));
+}
+
 void StorageCollectionSynchronizerAndroid::CancelRestore(JNIEnv* env) {
   synchronizer_.CancelRestore();
 }
