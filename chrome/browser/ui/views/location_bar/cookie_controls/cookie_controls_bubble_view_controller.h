@@ -17,6 +17,7 @@
 #include "components/favicon_base/favicon_types.h"
 
 class CookieControlsBubbleView;
+class CookieControlsContentView;
 
 class CookieControlsBubbleViewController
     : public content_settings::CookieControlsObserver {
@@ -49,9 +50,12 @@ class CookieControlsBubbleViewController
 
   void OnReloadingUiTimeout();
 
-  void ApplyThirdPartyCookiesAllowedState(CookieControlsEnforcement enforcement,
-                                          base::Time expiration);
-  void ApplyThirdPartyCookiesBlockedState();
+  void ApplyThirdPartyCookiesAllowedState(
+      CookieControlsContentView* content_view,
+      CookieControlsEnforcement enforcement,
+      base::Time expiration);
+  void ApplyThirdPartyCookiesBlockedState(
+      CookieControlsContentView* content_view);
 
   void FillDescriptionAndToggle(CookieControlsEnforcement enforcement,
                                 base::Time expiration);

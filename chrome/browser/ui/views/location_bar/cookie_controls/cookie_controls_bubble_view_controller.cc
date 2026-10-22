@@ -80,9 +80,11 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
   SetCallbacks();
 
   bubble_view_->GetReloadingView()->SetVisible(false);
-  bubble_view_->GetContentView()->SetVisible(true);
-  bubble_view_->GetContentView()->GetViewAccessibility().SetRole(
-      ax::mojom::Role::kAlert);
+
+  CookieControlsContentView* const content_view =
+      bubble_view_->GetContentView();
+  content_view->SetVisible(true);
+  content_view->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 }
 
 void CookieControlsBubbleViewController::OnUserClosedContentView() {
@@ -114,6 +116,7 @@ void CookieControlsBubbleViewController::OnFaviconFetched(
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
+    CookieControlsContentView* content_view,
     CookieControlsEnforcement enforcement,
     base::Time expiration) {
   bool is_permanent_exception = expiration == base::Time();
@@ -134,21 +137,22 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
   }
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE));
-  bubble_view_->GetContentView()->UpdateContentLabels(
+  content_view->UpdateContentLabels(
       label_title, l10n_util::GetStringUTF16(label_description));
-  bubble_view_->GetContentView()->SetCookiesLabel(l10n_util::GetStringUTF16(
+  content_view->SetCookiesLabel(l10n_util::GetStringUTF16(
       IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 }
 
-void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
+void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState(
+    CookieControlsContentView* content_view) {
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
-  bubble_view_->GetContentView()->UpdateContentLabels(
+  content_view->UpdateContentLabels(
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION));
-  bubble_view_->GetContentView()->SetCookiesLabel(l10n_util::GetStringUTF16(
+  content_view->SetCookiesLabel(l10n_util::GetStringUTF16(
       IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
 }
 
@@ -156,33 +160,35 @@ void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
     CookieControlsEnforcement enforcement,
     base::Time expiration) {
   bool tpcs_allowed = controls_state_ == CookieControlsState::kAllowed3pc;
+  CookieControlsContentView* const content_view =
+      bubble_view_->GetContentView();
   if (tpcs_allowed) {
-    ApplyThirdPartyCookiesAllowedState(enforcement, expiration);
+    ApplyThirdPartyCookiesAllowedState(content_view, enforcement, expiration);
   } else {
-    ApplyThirdPartyCookiesBlockedState();
+    ApplyThirdPartyCookiesBlockedState(content_view);
   }
-  bubble_view_->GetContentView()->SetToggleIsOn(tpcs_allowed);
-  bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(tpcs_allowed));
+  content_view->SetToggleIsOn(tpcs_allowed);
+  content_view->SetToggleIcon(GetToggleIcon(tpcs_allowed));
   switch (enforcement) {
     case CookieControlsEnforcement::kNoEnforcement:
-      bubble_view_->GetContentView()->SetContentLabelsVisible(true);
-      bubble_view_->GetContentView()->SetToggleVisible(true);
-      bubble_view_->GetContentView()->SetEnforcedIconVisible(false);
+      content_view->SetContentLabelsVisible(true);
+      content_view->SetToggleVisible(true);
+      content_view->SetEnforcedIconVisible(false);
       break;
     case CookieControlsEnforcement::kEnforcedByPolicy:
     case CookieControlsEnforcement::kEnforcedByExtension:
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
-      bubble_view_->GetContentView()->SetContentLabelsVisible(
+      content_view->SetContentLabelsVisible(
           enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting);
-      bubble_view_->GetContentView()->SetToggleVisible(false);
-      bubble_view_->GetContentView()->SetEnforcedIcon(
+      content_view->SetToggleVisible(false);
+      content_view->SetEnforcedIcon(
           content_settings::CookieControlsUtil::GetEnforcedIcon(enforcement),
           content_settings::CookieControlsUtil::GetEnforcedTooltip(
-              enforcement)),
-          bubble_view_->GetContentView()->SetEnforcedIconVisible(true);
+              enforcement));
+      content_view->SetEnforcedIconVisible(true);
       break;
   }
-  bubble_view_->GetContentView()->PreferredSizeChanged();
+  content_view->PreferredSizeChanged();
 }
 
 CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
