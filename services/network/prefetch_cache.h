@@ -91,7 +91,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchCache final {
  private:
   // This is not a std::list because we want to be able to remove an item from
   // the cache by pointer.
-  using ListType = base::LinkedList<PrefetchURLLoaderClient>;
+  using ListType = base::UnsafeLinkedList<PrefetchURLLoaderClient>;
 
   // The references in the KeyType point inside the PrefetchURLLoaderClient that
   // is the value of the map, so they are guaranteed to be valid.

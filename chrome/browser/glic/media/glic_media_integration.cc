@@ -297,7 +297,7 @@ void GlicMediaIntegrationImpl::OnPrefChanged() {
       listener_ = nullptr;
 
       // Discard all transcripts when disabled.
-      for (base::LinkNode<glic::GlicMediaPageCache::Entry>* node =
+      for (base::UnsafeLinkNode<glic::GlicMediaPageCache::Entry>* node =
                page_cache_.head();
            node != page_cache_.end(); node = node->next()) {
         auto* entry = static_cast<glic::GlicMediaPageCache::Entry*>(node);

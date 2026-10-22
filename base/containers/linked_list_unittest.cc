@@ -21,7 +21,7 @@
 namespace base {
 namespace {
 
-class UnsafeNode : public LinkNode<UnsafeNode> {
+class UnsafeNode : public UnsafeLinkNode<UnsafeNode> {
  public:
   explicit UnsafeNode(int id) : id_(id) {}
   UnsafeNode(UnsafeNode&&) = default;
@@ -43,7 +43,7 @@ class SafeNode : public SafeLinkNode<SafeNode> {
   int id_;
 };
 
-using UnsafeList = LinkedList<UnsafeNode>;
+using UnsafeList = UnsafeLinkedList<UnsafeNode>;
 using SafeList = SafeLinkedList<SafeNode>;
 
 // Ensure that simple/unsafe list types are trivially destructible.
@@ -51,7 +51,7 @@ using SafeList = SafeLinkedList<SafeNode>;
 static_assert(std::is_trivially_destructible_v<UnsafeNode>,
               "Node must be trivially-destructible.");
 
-static_assert(std::is_trivially_destructible_v<LinkedList<UnsafeNode>>,
+static_assert(std::is_trivially_destructible_v<UnsafeLinkedList<UnsafeNode>>,
               "List must be trivially-destructible.");
 
 template <typename List>
@@ -513,7 +513,7 @@ class MultipleInheritanceNodeBase {
 
 class UnsafeMultipleInheritanceNode
     : public MultipleInheritanceNodeBase,
-      public LinkNode<UnsafeMultipleInheritanceNode> {
+      public UnsafeLinkNode<UnsafeMultipleInheritanceNode> {
  public:
   UnsafeMultipleInheritanceNode() = default;
 };

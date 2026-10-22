@@ -249,7 +249,8 @@ bool RestrictedCookieManager::SkipAccessNotificationForCookieItem(
   return false;
 }
 
-class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
+class RestrictedCookieManager::Listener
+    : public base::UnsafeLinkNode<Listener> {
  public:
   Listener(net::CookieStore* cookie_store,
            const RestrictedCookieManager* restricted_cookie_manager,
@@ -426,7 +427,7 @@ RestrictedCookieManager::~RestrictedCookieManager() {
     CallCookiesAccessed();
   }
 
-  base::LinkNode<Listener>* node = listeners_.head();
+  base::UnsafeLinkNode<Listener>* node = listeners_.head();
   while (node != listeners_.end()) {
     Listener* listener_reference = node->value();
     node = node->next();

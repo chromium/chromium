@@ -14,12 +14,14 @@ namespace glic {
 // around `LinkedList` that avoids shutdown order issues.  This can be
 // expanded to cache entries based on other properties, like document
 // pip-ness, in the future.
+//
+// TODO(https://crbug.com/571500505): consider migrating to SafeLinkedList.
 class GlicMediaPageCache {
  public:
   // Handy base class for cache entries.  It would be nice if this could be
   // private inheritance to `LinkNode`, but that's more boiler plate than it's
   // worth.  Simply don't call any `LinkNode` methods outside of the cache.
-  class Entry : public base::LinkNode<Entry> {
+  class Entry : public base::UnsafeLinkNode<Entry> {
    public:
     Entry();
     virtual ~Entry();
@@ -53,13 +55,15 @@ class GlicMediaPageCache {
     return !cache_.empty() ? static_cast<Entry*>(cache_.head()) : nullptr;
   }
 
-  base::LinkNode<Entry>* head() const { return cache_.head(); }
-  const base::LinkNode<Entry>* end() const { return cache_.end(); }
+  base::UnsafeLinkNode<Entry>* head() const { return cache_.head(); }
+  const base::UnsafeLinkNode<Entry>* end() const { return cache_.end(); }
 
-  const base::LinkedList<Entry>& cache_for_testing() const { return cache_; }
+  const base::UnsafeLinkedList<Entry>& cache_for_testing() const {
+    return cache_;
+  }
 
  private:
-  base::LinkedList<Entry> cache_;
+  base::UnsafeLinkedList<Entry> cache_;
 };
 
 }  // namespace glic

@@ -141,7 +141,7 @@ template <class T, class A>
 size_t EstimateMemoryUsage(const std::list<T, A>& list);
 
 template <class T>
-size_t EstimateMemoryUsage(const base::LinkedList<T>& list);
+size_t EstimateMemoryUsage(const base::UnsafeLinkedList<T>& list);
 
 template <class T, class C, class A>
 size_t EstimateMemoryUsage(const std::set<T, C, A>& set);
@@ -397,9 +397,9 @@ size_t EstimateMemoryUsage(const std::list<T, A>& list) {
 }
 
 template <class T>
-size_t EstimateMemoryUsage(const base::LinkedList<T>& list) {
+size_t EstimateMemoryUsage(const base::UnsafeLinkedList<T>& list) {
   size_t memory_usage = 0u;
-  for (base::LinkNode<T>* node = list.head(); node != list.end();
+  for (base::UnsafeLinkNode<T>* node = list.head(); node != list.end();
        node = node->next()) {
     // Since we increment by calling node = node->next() we know that node
     // isn't nullptr.

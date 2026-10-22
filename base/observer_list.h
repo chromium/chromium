@@ -503,7 +503,7 @@ class ObserverList {
 
   std::vector<ObserverStorageType> observers_;
 
-  base::LinkedList<internal::WeakLinkNode<ObserverList>> live_iterators_;
+  base::UnsafeLinkedList<internal::WeakLinkNode<ObserverList>> live_iterators_;
 
   size_t observers_count_{0};
 

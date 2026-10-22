@@ -341,7 +341,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
 
-  base::LinkedList<Listener> listeners_;
+  base::UnsafeLinkedList<Listener> listeners_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

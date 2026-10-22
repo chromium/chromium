@@ -12,24 +12,23 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
-// Simple LinkedList type. (See the Q&A section to understand how this
+// Simple linked list type. (See the Q&A section to understand how this
 // differs from std::list).
 //
 // To use, start by declaring the class which will be contained in the linked
-// list, as extending LinkNode or SafeLinkNode (this gives it next/previous
-// pointers).
+// list, as extending UnsafeLinkNode or SafeLinkedNode (this gives it
+// next/previous pointers).
 //
-//   class MyNodeType : public LinkNode<MyNodeType> {
+//   class MyNodeType : public UnsafeLinkNode<MyNodeType> {
 //     ...
 //   };
 //
-// Next, to keep track of the list's head/tail, use a LinkedList or
+// Next, to keep track of the list's head/tail, use an UnsafeLinkedList or
 // SafeLinkedList instance:
 //
-//   LinkedList<MyNodeType> list;
+//   UnsafeLinkedList<MyNodeType> list;
 //
-// To add elements to the list, use any of LinkedList::Append,
-// LinkNode::InsertBefore, or LinkNode::InsertAfter:
+// To add elements to the list, use any of Append, InsertBefore, or InsertAfter:
 //
 //   MyNodeType* n1 = ...;
 //   MyNodeType* n2 = ...;
@@ -59,44 +58,46 @@
 //
 // Questions and Answers:
 //
-// Q. Should I use std::list or base::LinkedList?
+// Q. Should I use std::list or base::(Safe|Unsafe)LinkedList?
 //
-// A. The main reason to use base::LinkedList over std::list is
+// A. The main reason to use base::(Safe|Unsafe)LinkedList over std::list is
 //    performance. If you don't care about the performance differences
 //    then use an STL container, as it makes for better code readability.
 //
-//    Comparing the performance of base::LinkedList<T> to std::list<T*>:
+//    Comparing the performance of base::UnsafeLinkedList<T> to std::list<T*>:
 //
-//    * Erasing an element of type T* from base::LinkedList<T> is
+//    * Erasing an element of type T* from base::UnsafeLinkedList<T> is
 //      an O(1) operation. Whereas for std::list<T*> it is O(n).
 //      That is because with std::list<T*> you must obtain an
 //      iterator to the T* element before you can call erase(iterator).
 //
-//    * Insertion operations with base::LinkedList<T> never require
+//    * Insertion operations with base::UnsafeLinkedList<T> never require
 //      heap allocations.
 //
-// Q. How does base::LinkedList implementation differ from std::list?
+// Q. How does base::(Safe|Unsafe)LinkedList implementation differ from
+//    std::list?
 //
 // A. Doubly-linked lists are made up of nodes that contain "next" and
 //    "previous" pointers that reference other nodes in the list.
 //
-//    With base::LinkedList<T>, the type being inserted already reserves
-//    space for the "next" and "previous" pointers (base::LinkNode<T>*).
-//    Whereas with std::list<T> the type can be anything, so the implementation
-//    needs to glue on the "next" and "previous" pointers using
-//    some internal node type.
+//    With base::(Safe|Unsafe)LinkedList<T>, the type being inserted already
+//    reserves space for the "next" and "previous" pointers
+//    (base::(Safe|Unsafe)LinkNode<T>*). Whereas with std::list<T> the type can
+//    be anything, so the implementation needs to glue on the "next" and
+//    "previous" pointers using some internal node type.
 //
-// Q. What are SafeLinkNode and SafeLinkedList and when should I use them?
+// Q. What is the difference between the "Safe" and "Unsafe" versions of the
+//    list and node?
 //
-// A. LinkNode and LinkedList allows you to do bulk allocation and deletion of
-//    a list and all of its nodes without having to individually remove the
-//    nodes from the list (they all have trivial destructors), so they're more
-//    efficient for some applications.
+// A. UnsafeLinkNode and UnsafeLinkedList allows you to do bulk allocation and
+//    deletion of a list and all of its nodes without having to individually
+//    remove the nodes from the list (they all have trivial destructors), so
+//    they're more efficient for some applications.
 //
 //    However, a node can be deleted without being removed from the list, which
 //    may introduce use-after-free bugs. Likewise a list may be deleted before
 //    its nodes, which would allow a freed root node to be accessed through
-//    LinkNode::next() or LinkNode::previous().
+//    UnsafeLinkNode::next() or UnsafeLinkNode::previous().
 //
 //    SafeLinkNode and SafeLinkedList guard against accessing dead nodes,
 //    by CHECKing that a node has been removed from the list on destruction, and
@@ -105,7 +106,7 @@
 //    safety.
 //
 //    In general, if you are block-allocating and deleting nodes and lists
-//    together and performance is paramount, use LinkedList; if you are
+//    together and performance is paramount, use UnsafeLinkedList; if you are
 //    dynamically creating and destroying nodes, SafeLinkedList is better.
 
 namespace base {
@@ -115,7 +116,7 @@ namespace internal {
 template <typename Node>
 class LinkedListBaseT;
 
-// Base class for LinkNode<T> and SafeLinkNode<T>.
+// Base class for UnsafeLinkNode<T> and SafeLinkNode<T>.
 class BASE_EXPORT LinkNodeBase {
  public:
   void RemoveFromList();
@@ -129,9 +130,9 @@ class BASE_EXPORT LinkNodeBase {
   LinkNodeBase(LinkNodeBase&& rhs);
   ~LinkNodeBase() = default;
 
-  // Calling these with |e| as a different LinkNode type as |this| is
-  // unsafe. These are protected and only called from LinkNode<T> to
-  // ensure safety.
+  // Calling these with |e| as a different link node type as |this| is
+  // unsafe. These are protected and only called from the derived template node
+  // classes to ensure safety.
   void InsertBeforeBase(LinkNodeBase* e);
   void InsertAfterBase(LinkNodeBase* e);
 
@@ -207,7 +208,7 @@ class LinkedListBaseT {
   // and root_->previous() wraps around to the end of the list).
   LinkedListBaseT() : root_(&root_, &root_) {}
 
-  // Use move constructor with care. Returning a LinkedList from a function may
+  // Use move constructor with care. Returning a linked list from a function may
   // be unsafe if the nodes are allocated on the stack. This operation is O(1)
   // as only head and tail nodes are modified. `other` is left empty.
   LinkedListBaseT(LinkedListBaseT&& other) : root_(std::move(other.root_)) {
@@ -221,30 +222,37 @@ class LinkedListBaseT {
 
 }  // namespace internal
 
-// Basic node in a LinkedList<T>.
+// Basic node in a UnsafeLinkedList<T>.
 //
 // This implementation is fast but provides no UAF protection if a node is
 // destroyed without removing it from a list first. If you want protection (at
 // the cost of some usage constraints) use SafeLinkNode/SafeLinkedList instead.
 template <typename T>
-class LinkNode : public internal::LinkNodeBaseT<T, LinkNode<T>> {
+class UnsafeLinkNode : public internal::LinkNodeBaseT<T, UnsafeLinkNode<T>> {
  public:
-  LinkNode() = default;
-  LinkNode(LinkNode<T>* previous, LinkNode<T>* next)
-      : internal::LinkNodeBaseT<T, LinkNode<T>>(previous, next) {}
-  LinkNode(LinkNode<T>&&) = default;
+  UnsafeLinkNode() = default;
+  UnsafeLinkNode(UnsafeLinkNode<T>* previous, UnsafeLinkNode<T>* next)
+      : internal::LinkNodeBaseT<T, UnsafeLinkNode<T>>(previous, next) {}
+  UnsafeLinkNode(UnsafeLinkNode<T>&&) = default;
 };
 
 // Basic linked list without any UAF protection.
 template <typename T>
-class LinkedList : public internal::LinkedListBaseT<LinkNode<T>> {
+class UnsafeLinkedList : public internal::LinkedListBaseT<UnsafeLinkNode<T>> {
  public:
   using NodeType = T;
 
-  LinkedList() = default;
-  LinkedList(LinkedList&& other) = default;
-  ~LinkedList() = default;
+  UnsafeLinkedList() = default;
+  UnsafeLinkedList(UnsafeLinkedList&& other) = default;
+  ~UnsafeLinkedList() = default;
 };
+
+// TODO(https://crbug.com/571500505): eliminate this once all instances are
+// renamed.
+template <typename T>
+using LinkNode = UnsafeLinkNode<T>;
+template <typename T>
+using LinkedList = UnsafeLinkedList<T>;
 
 // Linked list node for use in a SafeLinkedList<T>.
 //

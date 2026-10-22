@@ -151,7 +151,7 @@ class BASE_EXPORT CheckedObserverAdapter {
 // destructor of ObserverList. This invalidates all WeakLinkNodes. There is no
 // threading support.
 template <class ObserverList>
-class WeakLinkNode : public base::LinkNode<WeakLinkNode<ObserverList>> {
+class WeakLinkNode : public base::UnsafeLinkNode<WeakLinkNode<ObserverList>> {
  public:
   WeakLinkNode() = default;
   explicit WeakLinkNode(ObserverList* list) { SetList(list); }

@@ -27,7 +27,7 @@ class PrefetchCache;
 // then forward on the callbacks that were received.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchURLLoaderClient final
     : public mojom::URLLoaderClient,
-      public base::LinkNode<PrefetchURLLoaderClient> {
+      public base::UnsafeLinkNode<PrefetchURLLoaderClient> {
  public:
   // Use PrefetchCache::Emplace() to create a PrefetchURLLoaderClient object.
   PrefetchURLLoaderClient(base::PassKey<PrefetchCache>,
