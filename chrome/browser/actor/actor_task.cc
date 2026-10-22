@@ -842,6 +842,11 @@ void ActorTask::RecomputeHasVisibleTab() {
   // window occlusion in addition to WebContents visibility.
   bool has_any_visible_tab = false;
   for (const auto& [handle, controlled_state] : controlled_tabs_) {
+    // We don't want to show a surface without a tab to the user.
+    if (ActorSurface* actor_surface = handle.Get();
+        actor_surface && !actor_surface->IsTab()) {
+      continue;
+    }
     if (controlled_state->web_contents() &&
         controlled_state->web_contents()->GetVisibility() ==
             content::Visibility::VISIBLE) {
@@ -947,16 +952,19 @@ void ActorTask::DidTabEnterActorControl(
     // guarantees that.
     contents = actor_surface->GetWebContents();
   }
-  if (!tab || !contents) {
-    // A missing tab happens in unittests.
+  if (!contents) {
+    // Missing contents happens in unittests.
     return;
   }
   ActorControlledTabState* state = controlled_tabs_[actor_surface_handle].get();
 
-  // TODO(crbug.com/450524344)): Add a test for discarded content.
-  state->content_discarded_subscription =
-      tab->RegisterWillDiscardContents(base::BindRepeating(
-          &ActorTask::HandleDiscardContents, weak_ptr_factory_.GetWeakPtr()));
+  // Only tabs discard their contents.
+  if (tab) {
+    // TODO(crbug.com/450524344): Add a test for discarded content.
+    state->content_discarded_subscription =
+        tab->RegisterWillDiscardContents(base::BindRepeating(
+            &ActorTask::HandleDiscardContents, weak_ptr_factory_.GetWeakPtr()));
+  }
   DidContentsEnterActorControl(state, contents);
 
   RecomputeHasVisibleTab();

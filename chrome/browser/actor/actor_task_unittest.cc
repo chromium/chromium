@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_surface_tab_helper.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/actor_ui_mode.h"
 #include "components/actor/core/task_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -1031,6 +1033,36 @@ TEST_F(ActorTaskSurfaceTest, ObserveTabOnceThroughSurface) {
 
   task_->Pause(/*from_actor=*/false);
   EXPECT_FALSE(web_contents_->IsBeingCaptured());
+}
+
+// A surface without a tab comes under actor control like a tab, but doesn't
+// count as visible.
+TEST_F(ActorTaskSurfaceTest, ControlsSurfaceWithoutTab) {
+  ActorSurface* actor_surface = registry().CreateHeadlessWebContents();
+  ASSERT_TRUE(actor_surface);
+  ASSERT_FALSE(actor_surface->GetTabHandle());
+  const ActorSurfaceHandle actor_surface_handle = actor_surface->GetHandle();
+  content::WebContents* contents = actor_surface->GetWebContents();
+
+  base::test::TestFuture<mojom::ActionResultPtr> add_future;
+  task_->AddActorSurface(actor_surface_handle, /*stop_task_on_detach=*/true,
+                         add_future.GetCallback());
+  ASSERT_TRUE(add_future.Wait());
+  EXPECT_TRUE(task_->IsActingOnActorSurface(actor_surface_handle));
+  EXPECT_TRUE(contents->IsBeingCaptured());
+  EXPECT_EQ(task_->GetUiMode(), ActorUiMode::kBackground);
+
+  // Pausing and resuming exits and re-enters actor control.
+  task_->Pause(/*from_actor=*/false);
+  EXPECT_FALSE(contents->IsBeingCaptured());
+  task_->Resume();
+  EXPECT_TRUE(contents->IsBeingCaptured());
+
+  task_->RemoveActorSurface(actor_surface_handle);
+  EXPECT_FALSE(contents->IsBeingCaptured());
+
+  // Destroy the page before the test harness tears down.
+  registry().DestroySurface(actor_surface_handle);
 }
 
 }  // namespace
