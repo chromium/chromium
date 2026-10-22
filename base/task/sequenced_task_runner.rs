@@ -40,8 +40,6 @@ pub mod ffi {
 
         fn RunsTasksInCurrentSequence(runner: &SequencedTaskRunner) -> bool;
 
-        // TODO(crbug.com/472552387): Tweak `cxx` to make this `allow` obsolete.
-        #[allow(clippy::missing_safety_doc)]
         /// # Safety
         ///
         /// The caller must assert that it owns 1 ref-count of this

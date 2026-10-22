@@ -2114,6 +2114,7 @@ config("default_clippy_lints") {
     "-Wclippy::all",
 
     # Additional lints that we enable beyond the defaults
+    "-Wclippy::missing_safety_doc",
     "-Wclippy::undocumented_unsafe_blocks",
 
     # Lints disabled during the initial rollout period (when any objection

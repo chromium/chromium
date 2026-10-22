@@ -19,8 +19,6 @@ pub mod ffi {
 
         fn AddRef(&self);
 
-        // TODO(crbug.com/472552387): Tweak `cxx` to make this `allow` obsolete.
-        #[allow(clippy::missing_safety_doc)]
         /// # Safety
         /// Same requirements as in base::memory::scoped_refptr::CxxRefCounted.
         unsafe fn Release(&self);

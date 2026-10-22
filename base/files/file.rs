@@ -27,8 +27,6 @@ pub mod ffi {
         #[namespace = "base"]
         pub type File;
 
-        // TODO(crbug.com/472552387): Tweak `cxx` to make this `allow` obsolete.
-        #[allow(clippy::missing_safety_doc)]
         /// # Safety
         /// `fd` must be an open file descriptor that the caller owns. Ownership
         /// is transferred to the returned `File`.
@@ -37,8 +35,6 @@ pub mod ffi {
         #[cfg(target_family = "unix")]
         fn TakeRawFd(file: Pin<&mut File>) -> i32;
 
-        // TODO(crbug.com/472552387): Tweak `cxx` to make this `allow` obsolete.
-        #[allow(clippy::missing_safety_doc)]
         /// # Safety
         /// `handle` must be an open `HANDLE` that the caller owns. Ownership is
         /// transferred to the returned `File`.

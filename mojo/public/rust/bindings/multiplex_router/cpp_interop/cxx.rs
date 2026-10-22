@@ -112,8 +112,6 @@ pub mod ffi {
         /// Increments the group controller's ref-count.
         fn AddRef(self: &RustAssociatedGroupController);
 
-        // TODO(crbug.com/472552387): Tweak `cxx` to make this `allow` obsolete.
-        #[allow(clippy::missing_safety_doc)]
         /// Decrements the group controller's ref-count, possibly destroying it.
         ///
         /// # Safety
@@ -128,7 +126,6 @@ pub mod ffi {
         /// `handles` must contain only live, unowned raw handle values.
         /// Ownership of those handles is transferred to C++.
         /// Its type really should be Vec<UntypedHandle>, but cxx won't have it
-        #[allow(clippy::missing_safety_doc)]
         unsafe fn CreateOutgoingMessage(payload: &[u8], handles: Vec<usize>) -> UniquePtr<Message>;
 
         /// Constructs a C++ `mojo::Message` from an existing incoming message,
@@ -138,7 +135,6 @@ pub mod ffi {
         /// `handles` must contain only live, unowned raw handle values.
         /// Ownership of those handles is transferred to C++.
         /// Its type really should be Vec<UntypedHandle>, but cxx won't have it
-        #[allow(clippy::missing_safety_doc)]
         unsafe fn CreateIncomingMessage(
             raw_handle: UniquePtr<ScopedMessageHandleWrapper>,
             handles: Vec<usize>,
