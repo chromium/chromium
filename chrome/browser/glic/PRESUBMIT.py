@@ -7,6 +7,7 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+
 PRESUBMIT_VERSION = '2.0.0'
 
 
@@ -121,3 +122,23 @@ def CheckChangeOnCommit(input_api, output_api):
     + _CheckGlicApiTestRegistration(input_api, output_api)
     + _GlicCommonChecks(input_api, output_api)
   )
+
+
+def CheckGlicMetrics(input_api, output_api):
+  """Runs tools/check_glic_metrics.py on the C++ files in this change.
+
+  Only collects raw affected-file info; the script owns file filtering,
+  trigger detection and reading histograms.xml.
+  """
+  old_path = input_api.sys.path[:]
+  try:
+    tools_path = input_api.os_path.join(
+      input_api.change.RepositoryRoot(), 'chrome', 'browser', 'glic', 'tools'
+    )
+    input_api.sys.path.insert(0, tools_path)
+    import glic_metrics_presubmit_runner
+    return glic_metrics_presubmit_runner.RunGlicMetricsCheck(
+      input_api, output_api, ['cpp']
+    )
+  finally:
+    input_api.sys.path = old_path
