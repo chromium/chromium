@@ -1390,6 +1390,24 @@ inline constexpr char kMVTInBottomSheetDescription[] =
     "Places the Most Visited Tiles inside the bottom sheet card for the NTP "
     "Redesign.";
 
+inline constexpr char kMagicStackNTPCustomizationTipIosName[] =
+    "Magic Stack NTP Customization tip";
+inline constexpr char kMagicStackNTPCustomizationTipIosDescription[] =
+    "Enables the NTP Customization tip on iOS with Non-Actionable or "
+    "Actionable variations";
+
+inline constexpr char kMagicStackNTPThemeTipIosName[] =
+    "Magic Stack NTP Theme tip";
+inline constexpr char kMagicStackNTPThemeTipIosDescription[] =
+    "Enables the NTP Theme tip on iOS with Non-Actionable or Actionable "
+    "variations";
+
+inline constexpr char kMagicStackTipsNotificationTipIosName[] =
+    "Magic Stack Tips Notification tip";
+inline constexpr char kMagicStackTipsNotificationTipIosDescription[] =
+    "Enables the Tips Notification tip on iOS with Non-Actionable or "
+    "Actionable variations";
+
 inline constexpr char kMagicStackTipsV2IosName[] = "Magic Stack Tips V2";
 inline constexpr char kMagicStackTipsV2IosDescription[] =
     "Enables Magic Stack Tips V2 on iOS with Non-Actionable or Actionable "
