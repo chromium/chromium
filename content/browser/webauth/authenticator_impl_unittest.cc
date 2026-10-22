@@ -3423,13 +3423,11 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
 
   base::RunLoop usb_device_found_done;
   EXPECT_CALL(*mock_delegate_ptr, FidoAuthenticatorAdded(_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&usb_device_found_done]() { usb_device_found_done.Quit(); }));
+      .WillOnce([&usb_device_found_done]() { usb_device_found_done.Quit(); });
 
   base::RunLoop usb_device_lost_done;
   EXPECT_CALL(*mock_delegate_ptr, FidoAuthenticatorRemoved(_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&usb_device_lost_done]() { usb_device_lost_done.Quit(); }));
+      .WillOnce([&usb_device_lost_done]() { usb_device_lost_done.Quit(); });
 
   authenticator->GetCredential(std::move(options), future.GetCallback());
   fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();

@@ -999,8 +999,7 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
     EXPECT_CALL(*client, OnError).Times(0);
     // On started is called from the capture thread.
     EXPECT_CALL(*client, OnStarted)
-        .WillOnce(InvokeWithoutArgs([this, &task_runner,
-                                     &message_loop_task_runner] {
+        .WillOnce([this, &task_runner, &message_loop_task_runner] {
           message_loop_task_runner =
               base::SingleThreadTaskRunner::GetCurrentDefault();
           task_runner = new base::TestMockTimeTaskRunner(
@@ -1008,7 +1007,7 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
               base::TestMockTimeTaskRunner::Type::kStandalone);
           capture_device_->SetMockTimeForTesting(
               task_runner, task_runner->GetMockTickClock());
-        }));
+        });
 
     auto on_frame = [&done_event, &nb_frames, &task_runner,
                      &message_loop_task_runner,

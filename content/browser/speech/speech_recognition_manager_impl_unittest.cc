@@ -26,7 +26,6 @@
 namespace content {
 
 using testing::_;
-using testing::InvokeWithoutArgs;
 using testing::NiceMock;
 
 class SpeechRecognitionManagerImplTest
@@ -83,12 +82,11 @@ TEST_F(SpeechRecognitionManagerImplTest, MAYBE_SodaNotInstalled) {
   }
 
   // Set available languages of SODA to "en-US".
-  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
-      .WillOnce(InvokeWithoutArgs([]() {
-        std::vector<std::string> langs;
-        langs.push_back("en-US");
-        return langs;
-      }));
+  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages()).WillOnce([]() {
+    std::vector<std::string> langs;
+    langs.push_back("en-US");
+    return langs;
+  });
 
   EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kDownloadable);
@@ -102,8 +100,9 @@ TEST_F(SpeechRecognitionManagerImplTest, SodaLanguagesNotAvailable) {
   mock_soda_installer_.NotifySodaInstalledForTesting();
 
   // Set available languages of SODA to be empty.
-  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
-      .WillOnce(InvokeWithoutArgs([]() { return std::vector<std::string>(); }));
+  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages()).WillOnce([]() {
+    return std::vector<std::string>();
+  });
 
   EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kUnavailable);
@@ -117,12 +116,11 @@ TEST_F(SpeechRecognitionManagerImplTest, SodaLanguageNotInstalled) {
   mock_soda_installer_.NotifySodaInstalledForTesting();
 
   // Set available languages of SODA to "en-US".
-  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
-      .WillOnce(InvokeWithoutArgs([]() {
-        std::vector<std::string> langs;
-        langs.push_back("en-US");
-        return langs;
-      }));
+  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages()).WillOnce([]() {
+    std::vector<std::string> langs;
+    langs.push_back("en-US");
+    return langs;
+  });
 
   EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kDownloadable);
@@ -138,12 +136,11 @@ TEST_F(SpeechRecognitionManagerImplTest, SodaLanguageInstalled) {
       speech::LanguageCode::kEnUs);
 
   // Set available languages of SODA to "en-US".
-  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
-      .WillOnce(InvokeWithoutArgs([]() {
-        std::vector<std::string> langs;
-        langs.push_back("en-US");
-        return langs;
-      }));
+  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages()).WillOnce([]() {
+    std::vector<std::string> langs;
+    langs.push_back("en-US");
+    return langs;
+  });
 
   EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kAvailable);
@@ -159,12 +156,11 @@ TEST_F(SpeechRecognitionManagerImplTest, SodaLangcodeMatch) {
       speech::LanguageCode::kEnUs);
 
   // Set available languages of SODA to "en-US".
-  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
-      .WillOnce(InvokeWithoutArgs([]() {
-        std::vector<std::string> langs;
-        langs.push_back("en-US");
-        return langs;
-      }));
+  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages()).WillOnce([]() {
+    std::vector<std::string> langs;
+    langs.push_back("en-US");
+    return langs;
+  });
 
   EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kAvailable);
@@ -183,8 +179,7 @@ TEST_F(SpeechRecognitionManagerImplTest, LanguageNotSupportedError) {
 
   // Set available languages of SODA to be empty.
   EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
-      .WillRepeatedly(
-          InvokeWithoutArgs([]() { return std::vector<std::string>(); }));
+      .WillRepeatedly([]() { return std::vector<std::string>(); });
   EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kUnavailable);
 

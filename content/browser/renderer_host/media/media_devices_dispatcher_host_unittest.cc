@@ -65,7 +65,6 @@
 using blink::mojom::MediaDeviceType;
 using testing::_;
 using testing::SaveArg;
-using testing::InvokeWithoutArgs;
 
 namespace content {
 
@@ -779,7 +778,7 @@ TEST_P(MediaDevicesDispatcherHostTest, SubscribeDeviceChangeNoAccess) {
 TEST_P(MediaDevicesDispatcherHostTest, GetVideoInputCapabilities) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, MockVideoInputCapabilitiesCallback())
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   host_->GetVideoInputCapabilities(base::BindOnce(
       &MediaDevicesDispatcherHostTest::VideoInputCapabilitiesCallback,
       base::Unretained(this)));
@@ -789,7 +788,7 @@ TEST_P(MediaDevicesDispatcherHostTest, GetVideoInputCapabilities) {
 TEST_P(MediaDevicesDispatcherHostTest, GetAudioInputCapabilities) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, MockAudioInputCapabilitiesCallback())
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   host_->GetAudioInputCapabilities(base::BindOnce(
       &MediaDevicesDispatcherHostTest::AudioInputCapabilitiesCallback,
       base::Unretained(this)));
@@ -799,7 +798,7 @@ TEST_P(MediaDevicesDispatcherHostTest, GetAudioInputCapabilities) {
 TEST_P(MediaDevicesDispatcherHostTest, GetAllVideoInputDeviceFormats) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, MockAllVideoInputDeviceFormatsCallback())
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
   GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId(-1, -1),
                               future.GetCallback());
@@ -815,7 +814,7 @@ TEST_P(MediaDevicesDispatcherHostTest, GetAllVideoInputDeviceFormats) {
 TEST_P(MediaDevicesDispatcherHostTest, GetAvailableVideoInputDeviceFormats) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, MockAvailableVideoInputDeviceFormatsCallback())
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
   GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId(-1, -1),
                               future.GetCallback());
@@ -916,7 +915,7 @@ TEST_P(MediaDevicesDispatcherHostTest,
   // Expect an empty list of supported formats for an unfound device.
   ExpectVideoCaptureFormats({});
   EXPECT_CALL(*this, MockAvailableVideoInputDeviceFormatsCallback())
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   host_->GetAvailableVideoInputDeviceFormats(
       "UnknownHashedDeviceId",
       base::BindOnce(&MediaDevicesDispatcherHostTest::
@@ -931,7 +930,7 @@ TEST_P(MediaDevicesDispatcherHostTest,
   // Expect an empty list of supported formats for an unfound device.
   ExpectVideoCaptureFormats({});
   EXPECT_CALL(*this, MockAvailableVideoInputDeviceFormatsCallback())
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   host_->GetAllVideoInputDeviceFormats(
       "UnknownHashedDeviceId",
       base::BindOnce(&MediaDevicesDispatcherHostTest::

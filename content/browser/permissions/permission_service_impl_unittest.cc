@@ -36,7 +36,6 @@ namespace content {
 
 namespace {
 using testing::Eq;
-using testing::InvokeWithoutArgs;
 using testing::Not;
 
 constexpr char kTestUrl[] = "https://google.com";
@@ -204,7 +203,7 @@ TEST_F(PermissionServiceImplTest, AddPermissionObserver) {
   base::RepeatingClosure done = run_loop.QuitClosure();
   EXPECT_CALL(observer,
               OnPermissionStatusChange(Eq(std::ref(expected_new_status))))
-      .WillOnce(InvokeWithoutArgs([done]() { done.Run(); }));
+      .WillOnce([done]() { done.Run(); });
   run_loop.Run();
 }
 

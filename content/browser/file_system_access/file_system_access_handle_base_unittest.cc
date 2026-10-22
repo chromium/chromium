@@ -154,12 +154,12 @@ class FileSystemAccessHandleTestBase : public testing::Test {
     }
     EXPECT_CALL(grant,
                 RequestPermission_(kFrameId, UserActivationState::kRequired, _))
-        .WillOnce(
-            testing::DoAll(testing::InvokeWithoutArgs([&grant, new_status]() {
-                             EXPECT_CALL(grant, GetStatus())
-                                 .WillRepeatedly(testing::Return(new_status));
-                           }),
-                           RunOnceCallback<2>(outcome)));
+        .WillOnce(testing::DoAll(
+            [&grant, new_status]() {
+              EXPECT_CALL(grant, GetStatus())
+                  .WillRepeatedly(testing::Return(new_status));
+            },
+            RunOnceCallback<2>(outcome)));
   }
 
   // Creates a `TestFileSystemAccessHandle` in a frame or worker context with a

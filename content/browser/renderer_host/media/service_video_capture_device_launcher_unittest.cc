@@ -25,7 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::InvokeWithoutArgs;
 
 namespace content {
 
@@ -82,11 +81,10 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
               *out_provider = service_connection_;
             });
 
-    ON_CALL(release_connection_cb_, Run())
-        .WillByDefault(InvokeWithoutArgs([this]() {
-          launcher_has_released_source_provider_ = true;
-          wait_for_release_connection_cb_.Quit();
-        }));
+    ON_CALL(release_connection_cb_, Run()).WillByDefault([this]() {
+      launcher_has_released_source_provider_ = true;
+      wait_for_release_connection_cb_.Quit();
+    });
 
     ON_CALL(mock_source_provider_, DoGetVideoSource(kStubDeviceId, _))
         .WillByDefault(
@@ -162,9 +160,9 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest, LaunchingDeviceSucceeds) {
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchFailed(_)).Times(0);
   EXPECT_CALL(connection_lost_cb_, Run()).Times(0);
   base::RunLoop wait_for_done_cb;
-  EXPECT_CALL(done_cb_, Run())
-      .WillOnce(InvokeWithoutArgs(
-          [&wait_for_done_cb]() { wait_for_done_cb.Quit(); }));
+  EXPECT_CALL(done_cb_, Run()).WillOnce([&wait_for_done_cb]() {
+    wait_for_done_cb.Quit();
+  });
 
   // Exercise
   launcher_->LaunchDeviceAsync(
@@ -244,9 +242,9 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchAborted()).Times(1);
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchFailed(_)).Times(0);
   EXPECT_CALL(connection_lost_cb_, Run()).Times(0);
-  EXPECT_CALL(done_cb_, Run()).WillOnce(InvokeWithoutArgs([&step_2_run_loop]() {
+  EXPECT_CALL(done_cb_, Run()).WillOnce([&step_2_run_loop]() {
     step_2_run_loop.Quit();
-  }));
+  });
 
   // Exercise
   launcher_->LaunchDeviceAsync(
@@ -310,9 +308,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
                   media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest))
       .Times(1);
   EXPECT_CALL(connection_lost_cb_, Run()).Times(0);
-  EXPECT_CALL(done_cb_, Run()).WillOnce(InvokeWithoutArgs([&run_loop]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(done_cb_, Run()).WillOnce([&run_loop]() { run_loop.Quit(); });
 
   // Exercise
   launcher_->LaunchDeviceAsync(
@@ -330,9 +326,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchAborted()).Times(0);
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchFailed(_)).Times(1);
   EXPECT_CALL(connection_lost_cb_, Run()).Times(0);
-  EXPECT_CALL(done_cb_, Run()).WillOnce(InvokeWithoutArgs([&run_loop]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(done_cb_, Run()).WillOnce([&run_loop]() { run_loop.Quit(); });
 
   // Exercise
   service_connection_->ReleaseProviderForTesting();
@@ -374,9 +368,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   // Note: |connection_lost_cb_| is only meant to be called when the connection
   // to a successfully-launched device is lost, which is not the case here.
   EXPECT_CALL(connection_lost_cb_, Run()).Times(0);
-  EXPECT_CALL(done_cb_, Run()).WillOnce(InvokeWithoutArgs([&run_loop]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(done_cb_, Run()).WillOnce([&run_loop]() { run_loop.Quit(); });
 
   // Exercise
   launcher_->LaunchDeviceAsync(
@@ -425,9 +417,9 @@ void ServiceVideoCaptureDeviceLauncherTest::
         launched_device = std::move(*device);
       });
   base::RunLoop step_1_run_loop;
-  EXPECT_CALL(done_cb_, Run()).WillOnce(InvokeWithoutArgs([&step_1_run_loop]() {
+  EXPECT_CALL(done_cb_, Run()).WillOnce([&step_1_run_loop]() {
     step_1_run_loop.Quit();
-  }));
+  });
   // Exercise step 1
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,

@@ -48,7 +48,6 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::InSequence;
-using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -1094,7 +1093,7 @@ TEST_F(VideoCaptureManagerTest,
   EXPECT_CALL(*listener_,
               Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
                      video_session_id))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   vcm_->Close(video_session_id);
   run_loop.Run();
 
@@ -1123,8 +1122,7 @@ TEST_F(VideoCaptureManagerTest,
     EXPECT_CALL(*listener_,
                 Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
                        video_session_id))
-        .WillOnce(
-            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     StopClient(client_id);
     vcm_->Close(video_session_id);
     run_loop.Run();
@@ -1150,8 +1148,7 @@ TEST_F(VideoCaptureManagerTest,
     EXPECT_CALL(*listener_,
                 Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
                        video_session_id2))
-        .WillOnce(
-            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     vcm_->Close(video_session_id2);
     run_loop.Run();
   }
@@ -1213,8 +1210,7 @@ TEST_F(VideoCaptureManagerTest, ScreenLockAllowsAuthorizedOriginDeviceStart) {
                 Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _))
         .Times(2)
         .WillOnce(testing::Return())
-        .WillOnce(
-            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     vcm_->Close(video_session_id1);
     StopClient(client_id2);
     vcm_->Close(video_session_id2);

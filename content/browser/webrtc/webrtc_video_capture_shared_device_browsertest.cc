@@ -31,7 +31,6 @@
 
 using testing::_;
 using testing::AtLeast;
-using testing::InvokeWithoutArgs;
 using testing::Return;
 
 namespace content {
@@ -170,9 +169,9 @@ IN_PROC_BROWSER_TEST_F(
             ASSERT_EQ(expected_buffer_handle_tag, (*buffer_handle)->which());
           });
   EXPECT_CALL(*mock_video_frame_handler_, DoOnFrameReadyInBuffer(_, _, _))
-      .WillOnce(InvokeWithoutArgs([&receive_frame_from_service_wait_loop]() {
+      .WillOnce([&receive_frame_from_service_wait_loop]() {
         receive_frame_from_service_wait_loop.Quit();
-      }))
+      })
       .WillRepeatedly(Return());
 
   OpenDeviceViaService();
@@ -203,9 +202,9 @@ IN_PROC_BROWSER_TEST_F(
             ASSERT_EQ(expected_buffer_handle_tag, (*buffer_handle)->which());
           });
   EXPECT_CALL(*mock_video_frame_handler_, DoOnFrameReadyInBuffer(_, _, _))
-      .WillOnce(InvokeWithoutArgs([&receive_frame_from_service_wait_loop]() {
+      .WillOnce([&receive_frame_from_service_wait_loop]() {
         receive_frame_from_service_wait_loop.Quit();
-      }))
+      })
       .WillRepeatedly(Return());
 
   OpenDeviceInRendererAndWaitForPlaying();

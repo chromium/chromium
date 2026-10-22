@@ -415,7 +415,7 @@ TEST_F(AudioInputDeviceManagerNoDevicesTest,
   base::RunLoop run_loop;
   EXPECT_CALL(*audio_input_listener_,
               Closed(devices_[1].type, second_session_id))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   manager_->Close(second_session_id);
   run_loop.Run();
 }

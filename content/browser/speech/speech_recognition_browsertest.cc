@@ -76,7 +76,6 @@ using CaptureCallback = media::AudioCapturerSource::CaptureCallback;
 
 #if !BUILDFLAG(IS_FUCHSIA)
 using testing::_;
-using testing::InvokeWithoutArgs;
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 namespace content {
@@ -1039,11 +1038,11 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
   mock_soda_installer_.NotifySodaInstalledForTesting(
       speech::LanguageCode::kEnUs);
   EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
-      .WillRepeatedly(InvokeWithoutArgs([]() {
+      .WillRepeatedly([]() {
         std::vector<std::string> langs;
         langs.push_back("en-US");
         return langs;
-      }));
+      });
 
   bool has_reponsed = false;
   EXPECT_CALL(*mock_speech_service, SendAudioToSpeechRecognitionService(_, _))
@@ -1094,11 +1093,11 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
   mock_soda_installer_.NotifySodaInstalledForTesting(
       speech::LanguageCode::kEnUs);
   EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
-      .WillRepeatedly(InvokeWithoutArgs([]() {
+      .WillRepeatedly([]() {
         std::vector<std::string> langs;
         langs.push_back("en-US");
         return langs;
-      }));
+      });
 
   auto* browser_context = shell()->web_contents()->GetBrowserContext();
   auto storage_partition_config = StoragePartitionConfig::Create(

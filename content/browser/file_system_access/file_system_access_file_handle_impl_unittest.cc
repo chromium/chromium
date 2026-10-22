@@ -2164,12 +2164,12 @@ class FileSystemAccessFileHandleImplMockGrantTestBase
         RequestPermission_(
             kFrameId,
             FileSystemAccessPermissionGrant::UserActivationState::kRequired, _))
-        .WillOnce(
-            testing::DoAll(testing::InvokeWithoutArgs([&grant, new_status]() {
-                             EXPECT_CALL(grant, GetStatus())
-                                 .WillRepeatedly(testing::Return(new_status));
-                           }),
-                           base::test::RunOnceCallback<2>(outcome)));
+        .WillOnce(testing::DoAll(
+            [&grant, new_status]() {
+              EXPECT_CALL(grant, GetStatus())
+                  .WillRepeatedly(testing::Return(new_status));
+            },
+            base::test::RunOnceCallback<2>(outcome)));
   }
 
   const int kProcessId = 1;

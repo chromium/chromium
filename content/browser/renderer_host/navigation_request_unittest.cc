@@ -331,16 +331,15 @@ TEST_F(NavigationRequestTest,
 
   for (bool success : {false, true}) {
     SCOPED_TRACE(success);
-    EXPECT_CALL(browser_client, ShouldOverrideUrlLoading)
-        .WillOnce(testing::InvokeWithoutArgs([&]() {
-          auto* frame_tree_node = main_test_rfh()->frame_tree_node();
-          auto request = frame_tree_node->navigation_request()->GetWeakPtr();
-          EXPECT_EQ(NavigationRequest::WILL_START_NAVIGATION, request->state());
-          contents()->Stop();
-          EXPECT_FALSE(request);
-          // A false return models an exception thrown after stopping the load.
-          return success;
-        }));
+    EXPECT_CALL(browser_client, ShouldOverrideUrlLoading).WillOnce([&]() {
+      auto* frame_tree_node = main_test_rfh()->frame_tree_node();
+      auto request = frame_tree_node->navigation_request()->GetWeakPtr();
+      EXPECT_EQ(NavigationRequest::WILL_START_NAVIGATION, request->state());
+      contents()->Stop();
+      EXPECT_FALSE(request);
+      // A false return models an exception thrown after stopping the load.
+      return success;
+    });
 
     main_test_rfh()->SendRendererInitiatedNavigationRequest(
         GURL("https://example.com/"), /*has_user_gesture=*/false);
