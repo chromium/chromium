@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -1153,8 +1152,6 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
     shared_image_usages |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
-  gpu::raster::RasterInterface* raster_interface =
-      shared_context_wrapper->ContextProvider().RasterInterface();
   auto client_si =
       shared_context_wrapper->ContextProvider()
           .SharedImageInterface()
@@ -1162,28 +1159,13 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
               {format, size, GetColorSpace(), kTopLeft_GrSurfaceOrigin,
                GetAlphaType(), shared_image_usages, "CanvasResourceRaster"},
               gpu::kNullSurfaceHandle);
-  gpu::SyncToken sync_token = client_si->creation_sync_token();
-  auto access = client_si->BeginRasterAccess(raster_interface, sync_token,
-                                             /*readonly=*/false);
-  sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  client_si->UpdateDestructionSyncToken(sync_token);
 
-  std::optional<gpu::SyncToken> external_sync_token =
-      CopyTextureToSharedImage(texture, client_si, sync_token);
-  if (!external_sync_token) {
+  std::optional<gpu::SyncToken> sync_token = CopyTextureToSharedImage(
+      texture, client_si, client_si->creation_sync_token());
+  if (!sync_token) {
     return nullptr;
   }
-  sync_token = external_sync_token.value();
-  if (!shared_context_wrapper->ContextProvider().IsContextLost()) {
-    auto post_write_access = client_si->BeginRasterAccess(
-        raster_interface, sync_token, /*readonly=*/true);
-    sync_token =
-        gpu::RasterScopedAccess::EndAccess(std::move(post_write_access));
-    client_si->UpdateDestructionSyncToken(sync_token);
-  }
-  if (shared_context_wrapper->ContextProvider().IsContextLost()) {
-    return nullptr;
-  }
+  client_si->UpdateDestructionSyncToken(sync_token.value());
 
   auto release_callback = blink::BindOnce(
       [](scoped_refptr<gpu::ClientSharedImage> shared_image,
@@ -1195,7 +1177,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
       client_si);
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      std::move(client_si), sync_token, GetAlphaType(),
+      std::move(client_si), sync_token.value(), GetAlphaType(),
       swap_buffers_->GetHDRMetadata(), std::move(shared_context_wrapper),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
