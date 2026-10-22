@@ -25,7 +25,6 @@
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 using ::testing::_;
-using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -173,9 +172,9 @@ TEST_F(AnimationHostTest, FastLayerTreeMutatorUpdateTakesEffectInSameFrame) {
   host_impl_->SetLayerTreeMutator(
       base::WrapUnique<LayerTreeMutator>(mock_mutator));
   ON_CALL(*mock_mutator, HasMutators()).WillByDefault(Return(true));
-  ON_CALL(*mock_mutator, MutateRef(_))
-      .WillByDefault(InvokeWithoutArgs(
-          [this, local_time]() { this->SetOutputState(local_time); }));
+  ON_CALL(*mock_mutator, MutateRef(_)).WillByDefault([this, local_time]() {
+    this->SetOutputState(local_time);
+  });
 
   // Push the opacity animation to the impl thread.
   host_->PushPropertiesTo(host_impl_, delegate_.GetPropertyTrees());
@@ -343,12 +342,11 @@ TEST_F(AnimationHostTest,
 
   scoped_refptr<MockAnimation> mock_scroll_animation(
       new MockAnimation(animation_id1));
-  EXPECT_CALL(*mock_scroll_animation, Tick(_))
-      .WillOnce(InvokeWithoutArgs([&]() -> bool {
-        // Scroll to 20% of the max value.
-        SetScrollOffset(&property_trees, element_id, gfx::PointF(20, 20));
-        return true;
-      }));
+  EXPECT_CALL(*mock_scroll_animation, Tick(_)).WillOnce([&]() -> bool {
+    // Scroll to 20% of the max value.
+    SetScrollOffset(&property_trees, element_id, gfx::PointF(20, 20));
+    return true;
+  });
 
   // Ensure scroll animation is ticking.
   timeline_->AttachAnimation(mock_scroll_animation);
@@ -539,11 +537,10 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimationSmooth) {
 
   scoped_refptr<MockAnimation> mock_scroll_animation(
       new MockAnimation(scroll_animation_id));
-  EXPECT_CALL(*mock_scroll_animation, Tick(_))
-      .WillOnce(InvokeWithoutArgs([&]() -> bool {
-        SetScrollOffset(&property_trees, element_id, gfx::PointF(0, 50));
-        return true;
-      }));
+  EXPECT_CALL(*mock_scroll_animation, Tick(_)).WillOnce([&]() -> bool {
+    SetScrollOffset(&property_trees, element_id, gfx::PointF(0, 50));
+    return true;
+  });
   timeline_->AttachAnimation(mock_scroll_animation);
   host_impl_->AddToTicking(mock_scroll_animation);
 
@@ -587,12 +584,11 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   int animation_id = 11;
   scoped_refptr<MockAnimation> mock_scroll_animation(
       new MockAnimation(animation_id));
-  EXPECT_CALL(*mock_scroll_animation, Tick(_))
-      .WillOnce(InvokeWithoutArgs([&]() -> bool {
-        // Scroll to 20% of the max value.
-        SetScrollOffset(&property_trees, element_id_, gfx::PointF(0, 20));
-        return true;
-      }));
+  EXPECT_CALL(*mock_scroll_animation, Tick(_)).WillOnce([&]() -> bool {
+    // Scroll to 20% of the max value.
+    SetScrollOffset(&property_trees, element_id_, gfx::PointF(0, 20));
+    return true;
+  });
 
   // Ensure scroll animation is ticking.
   timeline_->AttachAnimation(mock_scroll_animation);
