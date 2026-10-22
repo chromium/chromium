@@ -60,7 +60,7 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromLocalProto(
 bool CryptographerImpl::IsLocalProtoValid(
     const sync_pb::CryptographerData& proto) {
   if (proto.default_key_name().empty()) {
-    return true;
+    return proto.key_bag().key_size() == 0;
   }
   return NigoriKeyBag::CreateFromProto(proto.key_bag())
       .HasKey(proto.default_key_name());
@@ -142,6 +142,11 @@ void CryptographerImpl::EmplaceAllNigoriKeysFrom(
 
 void CryptographerImpl::InvalidateDefaultEncryptionKey() {
   default_encryption_key_invalidated_ = true;
+}
+
+const std::string& CryptographerImpl::GetDefaultKeyNamePossiblyInvalidated()
+    const {
+  return default_encryption_key_name_;
 }
 
 void CryptographerImpl::ClearAllKeys() {

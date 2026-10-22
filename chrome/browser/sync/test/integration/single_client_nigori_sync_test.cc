@@ -1088,9 +1088,11 @@ IN_PROC_BROWSER_TEST_P(
   // cross_user_sharing_public_key.
   const KeyParamsForTesting kCustomPassphraseKeyParams =
       Pbkdf2PassphraseKeyParamsForTesting("passphrase");
-  SetNigoriInFakeServer(
-      BuildCustomPassphraseNigoriSpecifics(kCustomPassphraseKeyParams),
-      GetFakeServer());
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(
+                            kCustomPassphraseKeyParams,
+                            /*old_key_params=*/KeystoreKeyParamsForTesting(
+                                GetFakeServer()->GetKeystoreKeys().back())),
+                        GetFakeServer());
 
   EXPECT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
@@ -2143,9 +2145,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/trusted_vault::
               GetConstantTrustedVaultKey());
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
-                            /*trusted_vault_keys=*/{new_trusted_vault_key}),
-                        GetFakeServer());
+  SetNigoriInFakeServer(
+      BuildTrustedVaultNigoriSpecifics(
+          /*trusted_vault_keys=*/{GetFakeServer()->GetKeystoreKeys().back(),
+                                  new_trusted_vault_key}),
+      GetFakeServer());
 
   // Inject password encrypted with trusted vault key and verify client is able
   // to decrypt it.
@@ -2196,9 +2200,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
           /*last_trusted_vault_key=*/trusted_vault::
               GetConstantTrustedVaultKey());
   // Trigger following key rotation client-side.
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
-                            /*trusted_vault_keys=*/{new_trusted_vault_key}),
-                        GetFakeServer());
+  SetNigoriInFakeServer(
+      BuildTrustedVaultNigoriSpecifics(
+          /*trusted_vault_keys=*/{GetFakeServer()->GetKeystoreKeys().back(),
+                                  new_trusted_vault_key}),
+      GetFakeServer());
 
   const int kTestMethodTypeHint = 8;
 
@@ -2243,9 +2249,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/trusted_vault::
               GetConstantTrustedVaultKey());
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
-                            /*trusted_vault_keys=*/{trusted_vault_key1}),
-                        GetFakeServer());
+  SetNigoriInFakeServer(
+      BuildTrustedVaultNigoriSpecifics(
+          /*trusted_vault_keys=*/{GetFakeServer()->GetKeystoreKeys().back(),
+                                  trusted_vault_key1}),
+      GetFakeServer());
 
   // Ensure that client has finished following key rotation by verifying
   // passwords are decryptable.
@@ -2292,9 +2300,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/trusted_vault::
               GetConstantTrustedVaultKey());
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
-                            /*trusted_vault_keys=*/{trusted_vault_key2}),
-                        GetFakeServer());
+  SetNigoriInFakeServer(
+      BuildTrustedVaultNigoriSpecifics(
+          /*trusted_vault_keys=*/{GetFakeServer()->GetKeystoreKeys().back(),
+                                  trusted_vault_key2}),
+      GetFakeServer());
 
   const KeyParamsForTesting trusted_vault_key_params2 =
       TrustedVaultKeyParamsForTesting(trusted_vault_key2);

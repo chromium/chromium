@@ -127,7 +127,7 @@ class ModelError {
     kNigoriInvalidPassphraseTransition = 104,
     kNigoriInvalidSpecifics = 105,
     kNigoriMissingKeystoreKeysDuringInitialSync = 106,
-    kNigoriMissingLastTrustedVaultKeyInKeybag = 107,
+    kNigoriMissingLastDefaultKeyInKeybag = 107,
     kNigoriMissingNewDefaultKeyInKeybag = 108,
     // kPlusAddressAddOrUpdateProfileFailed = 121, // Deprecated.
     // kPlusAddressClearProfilesFailed = 122, // Deprecated.

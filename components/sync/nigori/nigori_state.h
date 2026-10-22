@@ -88,10 +88,6 @@ struct NigoriState {
   // keystore keys. May be set only for keystore Nigori.
   std::optional<sync_pb::EncryptedData> pending_keystore_decryptor_token;
 
-  // The name of the latest available trusted vault key that was used as the
-  // default encryption key.
-  std::optional<std::string> last_default_trusted_vault_key_name;
-
   // Some debug-only fields for passphrase type TRUSTED_VAULT_PASSPHRASE.
   sync_pb::NigoriSpecifics::TrustedVaultDebugInfo trusted_vault_debug_info;
 

@@ -95,6 +95,12 @@ class CryptographerImpl : public Cryptographer {
   // false. The default key name is still kept in memory.
   void InvalidateDefaultEncryptionKey();
 
+  // Returns the default encryption key name even if it was invalidated via
+  // InvalidateDefaultEncryptionKey().
+  // TODO(crbug.com/521061749): Remove once remote key rotation and key
+  // continuity enforcement are handled directly by CryptographerImpl.
+  const std::string& GetDefaultKeyNamePossiblyInvalidated() const;
+
   // Reverts the cryptographer to an empty one, i.e. what would be returned by
   // CreateEmpty(). The default key is also cleared.
   // The set of known encryption keys shouldn't decrease in general, since this

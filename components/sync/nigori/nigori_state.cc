@@ -168,11 +168,6 @@ NigoriState NigoriState::CreateFromLocalProto(
         proto.pending_keystore_decryptor_token();
   }
 
-  if (proto.has_last_default_trusted_vault_key_name()) {
-    state.last_default_trusted_vault_key_name =
-        proto.last_default_trusted_vault_key_name();
-  }
-
   state.trusted_vault_debug_info = proto.trusted_vault_debug_info();
 
   if (proto.has_cross_user_sharing_public_key()) {
@@ -239,10 +234,6 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
   if (pending_keystore_decryptor_token.has_value()) {
     *proto.mutable_pending_keystore_decryptor_token() =
         *pending_keystore_decryptor_token;
-  }
-  if (last_default_trusted_vault_key_name.has_value()) {
-    proto.set_last_default_trusted_vault_key_name(
-        *last_default_trusted_vault_key_name);
   }
   *proto.mutable_trusted_vault_debug_info() = trusted_vault_debug_info;
   if (cross_user_sharing_public_key.has_value() &&
@@ -330,8 +321,6 @@ NigoriState NigoriState::Clone() const {
   result.encrypt_everything = encrypt_everything;
   result.keystore_keys_cryptographer = keystore_keys_cryptographer->Clone();
   result.pending_keystore_decryptor_token = pending_keystore_decryptor_token;
-  result.last_default_trusted_vault_key_name =
-      last_default_trusted_vault_key_name;
   result.trusted_vault_debug_info = trusted_vault_debug_info;
   if (cross_user_sharing_public_key.has_value()) {
     result.cross_user_sharing_public_key =

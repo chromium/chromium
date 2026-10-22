@@ -214,6 +214,35 @@ bool UpdatePassphraseType(NigoriSpecifics::PassphraseType new_type,
   return true;
 }
 
+// Determines whether a newly decrypted remote keybag must contain the
+// previously known default encryption key (if any).
+//
+// Note that `new_passphrase_type` is the *latest* passphrase type (already
+// updated in `UpdateLocalState()` when `pending_keys` arrived, prior to
+// decryption, which may happen asynchronously or after a browser restart).
+// Because `IsValidPassphraseTransition()` only allows
+// `TRUSTED_VAULT_PASSPHRASE` and `CUSTOM_PASSPHRASE` (as well as
+// `FROZEN_IMPLICIT_PASSPHRASE`) to transition to `TRUSTED_VAULT_PASSPHRASE` or
+// `CUSTOM_PASSPHRASE`, returning true for these target passphrase types ensures
+// key continuity is enforced for all transitions originating from
+// `TRUSTED_VAULT_PASSPHRASE` or explicit passphrases (including
+// `TRUSTED_VAULT_PASSPHRASE -> CUSTOM_PASSPHRASE`).
+bool ShouldEnforceKeyContinuity(
+    NigoriSpecifics::PassphraseType new_passphrase_type) {
+  switch (new_passphrase_type) {
+    case NigoriSpecifics::UNKNOWN:
+      NOTREACHED();
+    case NigoriSpecifics::IMPLICIT_PASSPHRASE:
+    case NigoriSpecifics::KEYSTORE_PASSPHRASE:
+      return false;
+    case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
+    case NigoriSpecifics::CUSTOM_PASSPHRASE:
+    case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
+      return true;
+  }
+  NOTREACHED();
+}
+
 bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
                                      const NigoriSpecifics& specifics) {
   // We don't support relaxing the encryption requirements.
@@ -498,9 +527,6 @@ void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
   if (state_.pending_keys.has_value()) {
     return;
   }
-
-  state_.last_default_trusted_vault_key_name =
-      state_.cryptographer->GetDefaultEncryptionKeyName();
 
   storage_->StoreData(SerializeAsNigoriLocalData());
   observer_list_.NotifyCryptographerStateChanged(
@@ -818,11 +844,16 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
                       ModelError::Type::kNigoriMissingNewDefaultKeyInKeybag);
   }
 
-  if (state_.last_default_trusted_vault_key_name.has_value() &&
-      !new_key_bag.HasKey(*state_.last_default_trusted_vault_key_name)) {
+  // TODO(crbug.com/521061749): Move remote key rotation and key continuity
+  // enforcement into CryptographerImpl.
+  const std::string& last_default_key_name =
+      state_.cryptographer->GetDefaultKeyNamePossiblyInvalidated();
+  if (ShouldEnforceKeyContinuity(state_.passphrase_type) &&
+      !last_default_key_name.empty() &&
+      !new_key_bag.HasKey(last_default_key_name)) {
     // Protocol violation.
-    return ModelError(
-        FROM_HERE, ModelError::Type::kNigoriMissingLastTrustedVaultKeyInKeybag);
+    return ModelError(FROM_HERE,
+                      ModelError::Type::kNigoriMissingLastDefaultKeyInKeybag);
   }
 
   CrossUserSharingKeys new_cross_user_sharing_keys =
@@ -853,10 +884,6 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
         state_.cross_user_sharing_key_pair_version.value());
   }
 
-  // Reset `last_default_trusted_vault_key_name` as `state_` might go out of
-  // TRUSTED_VAULT passphrase type. The callers are responsible to set it again
-  // if needed.
-  state_.last_default_trusted_vault_key_name = std::nullopt;
   state_.cryptographer->EmplaceKeysFrom(new_key_bag);
   state_.cryptographer->SelectDefaultEncryptionKey(new_default_key_name);
   state_.pending_keys.reset();
@@ -891,7 +918,6 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
   state_.custom_passphrase_time = base::Time();
   state_.keystore_migration_time = base::Time();
   state_.custom_passphrase_key_derivation_params = std::nullopt;
-  state_.last_default_trusted_vault_key_name = std::nullopt;
   state_.trusted_vault_debug_info =
       sync_pb::NigoriSpecifics::TrustedVaultDebugInfo();
   state_.cross_user_sharing_public_key = std::nullopt;

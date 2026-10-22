@@ -496,6 +496,24 @@ TEST(CryptographerImplTest, ShouldReturnNullOnInvalidLocalProto) {
   EXPECT_THAT(restored, IsNull());
 }
 
+TEST(CryptographerImplTest,
+     ShouldReturnNullOnLocalProtoWithKeysButNoDefaultKey) {
+  std::unique_ptr<CryptographerImpl> original =
+      CryptographerImpl::CreateEmpty();
+  original->EmplaceKey("password", KeyDerivationParams::CreateForPbkdf2());
+
+  sync_pb::CryptographerData proto = original->ToLocalProto();
+  ASSERT_TRUE(proto.default_key_name().empty());
+  ASSERT_GT(proto.key_bag().key_size(), 0);
+
+  EXPECT_THAT(CryptographerImpl::FromLocalProto(
+                  proto, /*default_encryption_key_invalidated=*/false),
+              IsNull());
+  EXPECT_THAT(CryptographerImpl::FromLocalProto(
+                  proto, /*default_encryption_key_invalidated=*/true),
+              IsNull());
+}
+
 TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithOneKey) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
@@ -562,6 +580,8 @@ TEST(CryptographerImplTest, ShouldDisableAndEnableDefaultKey) {
   cryptographer->InvalidateDefaultEncryptionKey();
   EXPECT_FALSE(cryptographer->CanEncrypt());
   EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(""));
+  EXPECT_THAT(cryptographer->GetDefaultKeyNamePossiblyInvalidated(),
+              Eq(key_name));
   // Keys should still exist (we can still decrypt).
   EXPECT_TRUE(cryptographer->HasKey(key_name));
 
@@ -619,6 +639,7 @@ TEST(CryptographerImplTest, ShouldRestoreDisabledDefaultKey) {
   ASSERT_THAT(restored, NotNull());
   EXPECT_FALSE(restored->CanEncrypt());
   EXPECT_THAT(restored->GetDefaultEncryptionKeyName(), Eq(""));
+  EXPECT_THAT(restored->GetDefaultKeyNamePossiblyInvalidated(), Eq(key_name));
   EXPECT_TRUE(restored->HasKey(key_name));
 }
 

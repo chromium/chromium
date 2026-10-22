@@ -42,6 +42,7 @@ using syncer::DataTypeSet;
 using syncer::GetEncryptedBookmarkEntitySpecifics;
 using syncer::InitCustomPassphraseCryptographerFromNigori;
 using syncer::KeyParamsForTesting;
+using syncer::KeystoreKeyParamsForTesting;
 using syncer::LoopbackServerEntity;
 using syncer::PassphraseType;
 using syncer::Pbkdf2PassphraseKeyParamsForTesting;
@@ -383,7 +384,10 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupSync());
   const KeyParamsForTesting kKeyParams =
       ScryptPassphraseKeyParamsForTesting("hunter2");
-  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(
+                            kKeyParams,
+                            /*old_key_params=*/KeystoreKeyParamsForTesting(
+                                GetFakeServer()->GetKeystoreKeys().back())),
                         GetFakeServer());
   ASSERT_TRUE(WaitForPassphraseRequired());
   ASSERT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(

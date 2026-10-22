@@ -1634,7 +1634,7 @@ chromium-metrics-reviews@google.com.
   <int value="104" label="kNigoriInvalidPassphraseTransition"/>
   <int value="105" label="kNigoriInvalidSpecifics"/>
   <int value="106" label="kNigoriMissingKeystoreKeysDuringInitialSync"/>
-  <int value="107" label="kNigoriMissingLastTrustedVaultKeyInKeybag"/>
+  <int value="107" label="kNigoriMissingLastDefaultKeyInKeybag"/>
   <int value="108" label="kNigoriMissingNewDefaultKeyInKeybag"/>
   <int value="121" label="(Obsolete) kPlusAddressAddOrUpdateProfileFailed"/>
   <int value="122" label="(Obsolete) kPlusAddressClearProfilesFailed"/>
