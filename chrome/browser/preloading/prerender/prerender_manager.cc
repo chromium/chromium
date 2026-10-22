@@ -31,7 +31,9 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/page_load_metrics/browser/navigation_initiator.h"
+#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "components/page_load_metrics/google/browser/search_preload_process_data.h"
+#include "components/page_load_metrics/google/browser/search_prewarm_outcome.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
@@ -43,6 +45,7 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/prerender_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/replaced_navigation_entry_data.h"
 #include "content/public/browser/site_instance.h"
@@ -69,6 +72,8 @@ const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[] =
     "Prerender.Experimental.PredictionStatus.DefaultSearchEngine";
 const char kHistogramPrerenderPredictionStatusDirectUrlInput[] =
     "Prerender.Experimental.PredictionStatus.DirectUrlInput";
+const char kHistogramSearchPrewarmOutcome[] =
+    "PageLoad.Clients.GoogleSearch.PrewarmOutcome";
 }  // namespace internal
 
 namespace {
@@ -193,12 +198,17 @@ class PrerenderManager::SearchPrewarmTask
       : progress_service_(std::move(progress_service)),
         search_prewarm_handle_(std::move(search_prewarm_handle)) {
     CHECK(search_prewarm_handle_);
-    if (progress_service_ && search_prewarm_handle_->IsValid() &&
+    if (search_prewarm_handle_->IsValid() &&
         search_prewarm_handle_->IsWaitingForResponseHeaders()) {
       is_search_prewarm_ongoing_ = true;
       search_prewarm_handle_->AddObserver(this);
-      progress_service_->OnSearchPrewarmStarted(
-          search_prewarm_handle_->GetPrerenderHostId());
+      if (progress_service_) {
+        progress_service_->OnSearchPrewarmStarted(
+            search_prewarm_handle_->GetPrerenderHostId());
+      }
+    } else {
+      RecordOutcome(
+          page_load_metrics::SearchPrewarmOutcome::kFailedBeforeReady);
     }
   }
 
@@ -211,10 +221,40 @@ class PrerenderManager::SearchPrewarmTask
       NotifySearchPrewarmFinished(
           content::PrerenderLifecycleStatus::kCancelled);
     }
+    if (!outcome_.has_value()) {
+      RecordOutcome(page_load_metrics::SearchPrewarmOutcome::kUnused);
+    }
   }
 
   bool IsValid() const {
     return search_prewarm_handle_ && search_prewarm_handle_->IsValid();
+  }
+
+  bool has_outcome() const { return outcome_.has_value(); }
+
+  void RecordOutcome(page_load_metrics::SearchPrewarmOutcome outcome) {
+    CHECK(!outcome_.has_value());
+    outcome_ = outcome;
+    base::UmaHistogramEnumeration(internal::kHistogramSearchPrewarmOutcome,
+                                  *outcome_);
+  }
+
+  void OnPrimaryPageChanged(content::NavigationHandle* navigation_handle) {
+    if (outcome_.has_value() || navigation_handle->IsErrorPage()) {
+      return;
+    }
+    content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
+    const bool preload_process_reused =
+        rfh && page_load_metrics::SearchPreloadProcessData::Get(
+                   rfh->GetProcess()) != nullptr;
+    if (!preload_process_reused) {
+      return;
+    }
+    if (page_load_metrics::IsGoogleSearchResultUrl(
+            navigation_handle->GetURL())) {
+      RecordOutcome(page_load_metrics::SearchPrewarmOutcome::
+                        kProcessReusedByPrimarySearch);
+    }
   }
 
   // content::PrerenderHandle::Observer:
@@ -244,6 +284,17 @@ class PrerenderManager::SearchPrewarmTask
     CHECK(search_prewarm_handle_);
     is_search_prewarm_ongoing_ = false;
     search_prewarm_handle_->RemoveObserver(this);
+    if (!outcome_.has_value()) {
+      if (result == content::PrerenderLifecycleStatus::kHttpBadResponse ||
+          result == content::PrerenderLifecycleStatus::kOtherFailure ||
+          result == content::PrerenderLifecycleStatus::kStop) {
+        RecordOutcome(
+            page_load_metrics::SearchPrewarmOutcome::kFailedBeforeReady);
+      } else if (result == content::PrerenderLifecycleStatus::kCancelled) {
+        RecordOutcome(
+            page_load_metrics::SearchPrewarmOutcome::kCancelledBeforeReady);
+      }
+    }
     if (progress_service_) {
       progress_service_->OnSearchPrewarmFinished(
           search_prewarm_handle_->GetPrerenderHostId(), result);
@@ -253,6 +304,7 @@ class PrerenderManager::SearchPrewarmTask
   base::WeakPtr<SearchPreloadProgressService> progress_service_;
   std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
   bool is_search_prewarm_ongoing_ = false;
+  std::optional<page_load_metrics::SearchPrewarmOutcome> outcome_;
 };
 
 PrerenderManager::~PrerenderManager() = default;
@@ -356,7 +408,13 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
           content::PreloadingData::GetSameURLMatcher(prewarm_url),
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
-  search_prewarm_task_.reset();
+  if (search_prewarm_task_) {
+    if (!search_prewarm_task_->has_outcome()) {
+      search_prewarm_task_->RecordOutcome(
+          page_load_metrics::SearchPrewarmOutcome::kCancelledByNewPrewarm);
+    }
+    search_prewarm_task_.reset();
+  }
 
   std::unique_ptr<content::PrerenderHandle> search_prewarm_handle =
       web_contents()->StartPrerendering(
@@ -549,6 +607,10 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
     }
 
     search_prerender_task_.reset();
+  }
+
+  if (search_prewarm_task_) {
+    search_prewarm_task_->OnPrimaryPageChanged(navigation_handle);
   }
 }
 

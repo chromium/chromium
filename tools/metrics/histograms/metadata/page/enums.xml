@@ -362,6 +362,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/paid_content_page_load_metrics_observer.cc:PaidContentState) -->
 
+<!-- LINT.IfChange(SearchPrewarmOutcome) -->
+
+<enum name="SearchPrewarmOutcome">
+  <int value="0" label="Process reused by primary search navigation"/>
+  <int value="1" label="Unused (completed but not reused)"/>
+  <int value="2" label="Cancelled by new prewarm"/>
+  <int value="3" label="Failed before ready"/>
+  <int value="4" label="Cancelled before ready"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/search_prewarm_outcome.h:SearchPrewarmOutcome) -->
+
 <!-- LINT.IfChange(SearchPrewarmPrerenderCoverageStatus) -->
 
 <enum name="SearchPrewarmPrerenderCoverageStatus">

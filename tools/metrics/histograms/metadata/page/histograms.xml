@@ -3544,6 +3544,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.PrewarmOutcome"
+    enum="SearchPrewarmOutcome" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The lifecycle outcome of each DSE search prewarm attempt, measuring whether
+    the prewarm ultimately benefited a user navigation (primary search process
+    reuse) versus whether it was unused, cancelled by a new prewarm (emitted
+    only when prewarm revalidation is enabled), cancelled before ready, or
+    failed before becoming ready. Recorded once per prewarm attempt when its
+    lifecycle ends.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2{InitiatorOfNavigation}"
     enum="SearchPrewarmPrerenderCoverageStatus" expires_after="2027-04-11">

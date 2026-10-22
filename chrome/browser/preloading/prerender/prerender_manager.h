@@ -24,6 +24,7 @@ class NavigationHandle;
 namespace internal {
 extern const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[];
 extern const char kHistogramPrerenderPredictionStatusDirectUrlInput[];
+extern const char kHistogramSearchPrewarmOutcome[];
 }  // namespace internal
 
 // If you change this, please follow the process in
