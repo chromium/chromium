@@ -215,11 +215,6 @@ void RustAssociatedGroupController::RaiseError() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-// Rust only supports fully-serialized messages.
-bool RustAssociatedGroupController::PrefersSerializedMessages() {
-  return true;
-}
-
 bool RustAssociatedGroupController::AssociatePeer(
     mojo::ScopedInterfaceEndpointHandle handle,
     mojo::InterfaceId id) {

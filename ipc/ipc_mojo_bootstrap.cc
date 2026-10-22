@@ -478,8 +478,6 @@ class ChannelAssociatedGroupController
     // See https://crbug.com/861607 for additional discussion.
   }
 
-  bool PrefersSerializedMessages() override { return true; }
-
   void SetUrgentMessageObserver(UrgentMessageObserver* observer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(!was_bound_or_message_sent_);

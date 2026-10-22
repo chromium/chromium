@@ -476,11 +476,6 @@ void InterfaceEndpointClient::CloseWithReason(uint32_t custom_reason,
   handle.ResetWithReason(custom_reason, description);
 }
 
-bool InterfaceEndpointClient::PrefersSerializedMessages() {
-  auto* controller = handle_.group_controller();
-  return controller && controller->PrefersSerializedMessages();
-}
-
 void InterfaceEndpointClient::SendControlMessage(Message* message) {
   SendMessage(message, true /* is_control_message */);
 }

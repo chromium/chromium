@@ -105,8 +105,6 @@ class RustAssociatedGroupController : public mojo::AssociatedGroupController {
 
   void RaiseError() override;
 
-  bool PrefersSerializedMessages() override;
-
   // Associates `handle`'s peer with `id`. `handle` must still be pending
   // association, and `id` must be a valid non-primary ID.
   bool AssociatePeer(mojo::ScopedInterfaceEndpointHandle handle,

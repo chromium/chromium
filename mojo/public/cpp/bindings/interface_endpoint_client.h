@@ -135,7 +135,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // MessageReceiverWithResponder implementation:
   // They must only be called when the handle is not in pending association
   // state.
-  bool PrefersSerializedMessages() override;
   bool Accept(Message* message) override;
   bool AcceptWithResponder(Message* message,
                            std::unique_ptr<MessageReceiver> responder) override;

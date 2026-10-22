@@ -205,7 +205,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   void ResumeIncomingMethodCallProcessing();
 
   // MessageReceiver implementation:
-  bool PrefersSerializedMessages() override;
   bool Accept(Message* message) override;
 
   MojoResult AcceptAndGetResult(Message* message);

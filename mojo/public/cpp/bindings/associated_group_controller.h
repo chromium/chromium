@@ -90,10 +90,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) AssociatedGroupController
   // and notifies all interfaces running on this pipe.
   virtual void RaiseError() = 0;
 
-  // Indicates whether or this endpoint prefers to accept outgoing messages in
-  // serializaed form only.
-  virtual bool PrefersSerializedMessages() = 0;
-
  protected:
   friend class base::RefCountedThreadSafe<AssociatedGroupController>;
 

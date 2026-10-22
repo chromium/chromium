@@ -407,9 +407,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageReceiver {
  public:
   virtual ~MessageReceiver() = default;
 
-  // Indicates whether the receiver prefers to receive serialized messages.
-  virtual bool PrefersSerializedMessages();
-
   // The receiver may mutate the given message.  Returns true if the message
   // was accepted and false otherwise, indicating that the message was invalid
   // or malformed.

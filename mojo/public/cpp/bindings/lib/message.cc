@@ -765,10 +765,6 @@ int64_t Message::creation_timeticks_us() const {
   return header_v3()->creation_timeticks_us;
 }
 
-bool MessageReceiver::PrefersSerializedMessages() {
-  return false;
-}
-
 PassThroughFilter::PassThroughFilter() {}
 
 PassThroughFilter::~PassThroughFilter() {}

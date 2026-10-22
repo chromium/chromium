@@ -633,11 +633,6 @@ void MultiplexRouter::RaiseError() {
   }
 }
 
-bool MultiplexRouter::PrefersSerializedMessages() {
-  MayAutoLock locker(&lock_);
-  return connector_.PrefersSerializedMessages();
-}
-
 void MultiplexRouter::CloseMessagePipe() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   connector_.CloseMessagePipe();

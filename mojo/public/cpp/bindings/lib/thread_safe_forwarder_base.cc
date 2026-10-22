@@ -15,12 +15,6 @@ ThreadSafeForwarderBase::ThreadSafeForwarderBase(
 
 ThreadSafeForwarderBase::~ThreadSafeForwarderBase() = default;
 
-bool ThreadSafeForwarderBase::PrefersSerializedMessages() {
-  // NOTE: This means SharedRemote etc will ignore lazy serialization hints and
-  // will always eagerly serialize messages.
-  return true;
-}
-
 bool ThreadSafeForwarderBase::Accept(Message* message) {
   proxy_->SendMessage(*message);
   return true;

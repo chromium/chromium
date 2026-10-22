@@ -35,7 +35,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadSafeForwarderBase
   ~ThreadSafeForwarderBase() override;
 
   // MessageReceiverWithResponder implementation:
-  bool PrefersSerializedMessages() override;
   bool Accept(Message* message) override;
   bool AcceptWithResponder(Message* message,
                            std::unique_ptr<MessageReceiver> responder) override;

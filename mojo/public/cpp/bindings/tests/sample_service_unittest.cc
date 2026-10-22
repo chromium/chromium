@@ -294,8 +294,6 @@ class ServiceProxyImpl : public ServiceProxy {
 
 class SimpleMessageReceiver : public mojo::MessageReceiverWithResponder {
  public:
-  bool PrefersSerializedMessages() override { return true; }
-
   bool Accept(mojo::Message* message) override {
     // Imagine some IPC happened here.
 
