@@ -7,7 +7,7 @@ include_rules = [
   "+gpu/command_buffer/common",
   "+mojo/public/cpp/system/buffer.h",
   "+third_party/skia",
-  "+third_party/khronos/GLES2",
+  "+third_party/angle/include/GLES2",
 
   # Do not use mojo bindings in viz/client/. This library should be agnostic
   # about how to communicate with viz.

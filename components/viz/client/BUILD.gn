@@ -21,6 +21,7 @@ viz_component("client") {
     "//components/viz/common",
     "//mojo/public/cpp/system",
     "//skia",
+    "//third_party/angle:includes",
   ]
   deps = [
     "//cc/base",

@@ -9,7 +9,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/khronos/GLES2/gl2ext.h"
+#include "third_party/angle/include/GLES2/gl2ext.h"
 
 namespace viz {
 namespace {

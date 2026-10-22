@@ -36,8 +36,8 @@ include_rules = [
   "+mojo/public/cpp/system",
   "+skia",
   "+third_party/dawn/include",
-  "+third_party/khronos/GLES2/gl2.h",
-  "+third_party/khronos/GLES2/gl2ext.h",
+  "+third_party/angle/include/GLES2/gl2.h",
+  "+third_party/angle/include/GLES2/gl2ext.h",
   "+third_party/libyuv",
   "+third_party/skia",
   "+services/tracing/public/cpp/perfetto/flow_event_utils.h",
@@ -60,7 +60,7 @@ include_rules = [
 specific_include_rules = {
   ".*_unittest\\.cc": [
     "+cc/test",
-    "+third_party/khronos/GLES2",
+    "+third_party/angle/include/GLES2",
   ],
   "software_output_device_ozone_unittest.cc": [
     "+ui/compositor",

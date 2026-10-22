@@ -42,7 +42,7 @@
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/khronos/GLES2/gl2.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 
 namespace viz {
 namespace {

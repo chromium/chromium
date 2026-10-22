@@ -31,7 +31,7 @@ include_rules = [
   "+media/gpu/buildflags.h",
   "+mojo/public/cpp/system",
   "+skia",
-  "+third_party/khronos",
+  "+third_party/angle/include",
   "+third_party/libyuv",
   "+third_party/skia",
   "+third_party/perfetto/protos/perfetto/trace/track_event",

@@ -47,7 +47,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/khronos/GLES2/gl2ext.h"
+#include "third_party/angle/include/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"

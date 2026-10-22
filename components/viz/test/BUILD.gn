@@ -166,5 +166,6 @@ viz_source_set("unit_tests") {
     "//components/vrp_flags:buildflags",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
   ]
 }
