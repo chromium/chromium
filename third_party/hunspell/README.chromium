@@ -1,8 +1,8 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: 96466a6
+Version: v1.7.3
 Update Mechanism: Manual
-CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.2
+CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.3
 License: MPL-1.1
 License Android Compatible: yes
 License File: src/COPYING.MPL
@@ -10,7 +10,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell 96466a6 with the following changes:
+This is a partial copy of Hunspell v1.7.3 with the following changes:
 * Move README.md onto the README symlink.
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
   LineIterator.
@@ -24,11 +24,11 @@ The patch is in google.patch.
   replacement table from the bdict file for the secondary suggestion mechanism.
 * Avoid crash in SuggestMgr::forgotchar_utf() and SuggestMgr::forgotchar() on
   Windows by using a one-character larger buffer.
-* calloc buffers in SuggestMgr::lcs to avoid reads from uninintialized buffers.
 * Fix string OOB write in reverse_condition in src/hunspell/affixmgr.cxx
   Upstream issue: https://github.com/hunspell/hunspell/issues/714
 * Improve performance of HashMgr::InitHashEntry when BDICT file is used.
-* Remove NULL default values for const std::string& args because they don't compile.
+* Skip the per-candidate time limit check that upstream afde4d6 added to
+  SuggestMgr::checkword, under HUNSPELL_CHROME_CLIENT.
 
 Chromium-specific changes are in google.patch. To update the patch, follow these
 steps.
@@ -37,7 +37,7 @@ steps.
 2) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
-   $ git checkout 96466a6
+   $ git checkout v1.7.3
 3) Apply the existing patch:
    $ patch -p1 -i $CHROMIUM_HUNSPELL/google.patch
 4) Make your new changes inside the git hunspell directory.

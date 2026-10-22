@@ -72,7 +72,7 @@ TextParser::TextParser(const w_char* wordchars, int len) {
   init(wordchars, len);
 }
 
-TextParser::~TextParser() {}
+TextParser::~TextParser() = default;
 
 int TextParser::is_wordchar(const char* w) {
   if (*w == '\0')
@@ -96,12 +96,12 @@ int TextParser::is_wordchar(const char* w) {
 const char* TextParser::get_latin1(const char* s) {
   if (s[0] == '&') {
     unsigned int i = 0;
-    while ((i < LATIN1_LEN) && strncmp(LATIN1[i], s, strlen(LATIN1[i])))
+    while ((i < LATIN1_LEN) && strncmp(LATIN1[i], s, strlen(LATIN1[i])) != 0)
       i++;
     if (i != LATIN1_LEN)
       return LATIN1[i];
   }
-  return NULL;
+  return nullptr;
 }
 
 void TextParser::init(const char* wordchars) {
@@ -111,7 +111,7 @@ void TextParser::init(const char* wordchars) {
   state = 0;
   utf8 = 0;
   checkurl = 0;
-  wordchars_utf16 = NULL;
+  wordchars_utf16 = nullptr;
   wclen = 0;
   wordcharacters.resize(256, 0);
   if (!wordchars)
@@ -230,6 +230,7 @@ int TextParser::change_token(const char* word) {
     line[actual].append(word);
     line[actual].append(remainder);
     head = token;
+    check_urls();
     return 1;
   }
   return 0;
@@ -300,8 +301,7 @@ void TextParser::set_url_checking(int check) {
 }
 
 bool TextParser::alloc_token(size_t tokn, size_t* hd, std::string& t) {
-  size_t url_head = *hd;
-  if (get_url(tokn, &url_head))
+  if (get_url(tokn, hd))
     return false;
   t = line[actual].substr(tokn, *hd - tokn);
   // remove colon for Finnish and Swedish language

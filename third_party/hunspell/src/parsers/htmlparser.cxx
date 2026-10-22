@@ -69,7 +69,7 @@ static const char* PATTERN2[][2] = {
 
 #define PATTERN_LEN2 (sizeof(PATTERN2) / (sizeof(char*) * 2))
 
-static const char* (*PATTERN3)[2] = NULL;
+static const char* (*PATTERN3)[2] = nullptr;
 
 #define PATTERN_LEN3 0
 
@@ -85,4 +85,4 @@ bool HTMLParser::next_token(std::string& t) {
   return XMLParser::next_token(PATTERN, PATTERN_LEN, PATTERN2, PATTERN_LEN2, PATTERN3, PATTERN_LEN3, t);
 }
 
-HTMLParser::~HTMLParser() {}
+HTMLParser::~HTMLParser() = default;

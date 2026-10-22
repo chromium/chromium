@@ -74,7 +74,7 @@ class LIBHUNSPELL_DLL_EXPORTED Hunzip {
   int fail(const char* err, const std::string& par);
 
  public:
-  Hunzip(const char* filename, const char* key = NULL);
+  Hunzip(const char* filename, const char* key = nullptr);
   Hunzip(const Hunzip&) = delete;
   Hunzip& operator=(const Hunzip&) = delete;
   ~Hunzip();

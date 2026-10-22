@@ -73,6 +73,7 @@
 
 #include <cstdio>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -128,7 +129,7 @@ class AffixMgr {
   SfxEntry* sStart[SETSIZE];
   PfxEntry* pFlag[SETSIZE];
   SfxEntry* sFlag[SETSIZE];
-  const std::vector<HashMgr*>& alldic;
+  const std::vector<std::unique_ptr<HashMgr>>& alldic;
   const HashMgr* pHMgr;
   std::string keystring;
   std::string trystring;
@@ -190,7 +191,7 @@ class AffixMgr {
   std::string ignorechars; // letters + spec. word characters
   std::vector<w_char> ignorechars_utf16;
   std::string version;   // affix and dictionary file version string
-  std::string lang;	 // language
+  std::string lang; // language
   int langnum;
   FLAG lemma_present;
   FLAG circumfix;
@@ -213,9 +214,9 @@ class AffixMgr {
 
  public:
 #ifdef HUNSPELL_CHROME_CLIENT
-  AffixMgr(hunspell::BDictReader* reader, const std::vector<HashMgr*>& ptr);
+  AffixMgr(hunspell::BDictReader* reader, const std::vector<std::unique_ptr<HashMgr>>& ptr);
 #else
-  AffixMgr(const char* affpath, const std::vector<HashMgr*>& ptr, const char* key = NULL);
+  AffixMgr(const char* affpath, const std::vector<std::unique_ptr<HashMgr>>& ptr, const char* key = nullptr);
 #endif
   ~AffixMgr();
   struct hentry* affix_check(const std::string& word,
@@ -309,6 +310,7 @@ class AffixMgr {
                    const char affixed);
   int defcpd_check(hentry*** words,
                    short wnum,
+                   short maxwordnum,
                    hentry* rv,
                    hentry** rwords,
                    char all);
@@ -375,12 +377,12 @@ class AffixMgr {
   int get_maxdiff() const;
   int get_onlymaxdiff() const;
   int get_nosplitsugs() const;
-  int get_sugswithdots(void) const;
-  FLAG get_keepcase(void) const;
-  FLAG get_forceucase(void) const;
-  FLAG get_warn(void) const;
-  int get_forbidwarn(void) const;
-  int get_checksharps(void) const;
+  int get_sugswithdots() const;
+  FLAG get_keepcase() const;
+  FLAG get_forceucase() const;
+  FLAG get_warn() const;
+  int get_forbidwarn() const;
+  int get_checksharps() const;
   std::string encode_flag(unsigned short aflag) const;
   int get_fullstrip() const;
 

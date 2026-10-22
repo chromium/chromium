@@ -55,7 +55,7 @@ ManParser::ManParser(const w_char* wordchars, int len)
   : TextParser(wordchars, len) {
 }
 
-ManParser::~ManParser() {}
+ManParser::~ManParser() = default;
 
 bool ManParser::next_token(std::string& t) {
   for (;;) {

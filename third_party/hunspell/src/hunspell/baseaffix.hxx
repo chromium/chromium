@@ -43,12 +43,12 @@
 class AffEntry {
  public:
   AffEntry()
-      : numconds(0),
-        opts(0),
-        aflag(0),
-        morphcode(0),
-        contclass(NULL),
-        contclasslen(0) {}
+      : numconds(0)
+      , opts(0)
+      , aflag(0)
+      , morphcode(nullptr)
+      , contclass(nullptr)
+      , contclasslen(0) {}
   AffEntry(const AffEntry&) = delete;
   AffEntry& operator=(const AffEntry&) = delete;
   virtual ~AffEntry();

@@ -97,7 +97,7 @@ int Hunzip::getcode(const char* key) {
       return fail(MSG_KEY, filename);
     enc = key;
   } else
-    key = NULL;
+    key = nullptr;
 
   // read record count
   if (!fin.read(reinterpret_cast<char*>(c), 2))
@@ -166,8 +166,7 @@ int Hunzip::getcode(const char* key) {
   return 0;
 }
 
-Hunzip::~Hunzip() {
-}
+Hunzip::~Hunzip() = default;
 
 int Hunzip::getbuf() {
   int p = 0;
@@ -191,7 +190,7 @@ int Hunzip::getbuf() {
         }
         out[o++] = dec[oldp].c[0];
         out[o++] = dec[oldp].c[1];
-        if (o == BUFSIZE)
+        if (o >= BUFSIZE)
           return o;
         p = dec[p].v[b];
       }
@@ -210,7 +209,10 @@ bool Hunzip::getline(std::string& dest) {
   int l = 0, eol = 0, left = 0, right = 0;
   if (bufsiz == -1)
     return false;
-  while (l < bufsiz && !eol) {
+  // Stop one byte before BUFSIZE so the post-loop linebuf[l] = '\0' below
+  // (and the right-suffix path) always have room for the terminator without
+  // overflowing the stack buffer.
+  while (l < bufsiz && l < BUFSIZE - 1 && !eol) {
     linebuf[l++] = out[outc];
     switch (out[outc]) {
       case '\t':
@@ -237,7 +239,7 @@ bool Hunzip::getline(std::string& dest) {
           if (out[outc] == 30)
             left = 9;
           else
-            left = out[outc];
+            left = static_cast<unsigned char>(out[outc]);
           linebuf[l - 1] = '\n';
           eol = 1;
         }
@@ -247,10 +249,20 @@ bool Hunzip::getline(std::string& dest) {
       bufsiz = fin.is_open() ? getbuf() : -1;
     }
   }
-  if (right)
-    strcpy(linebuf + l - 1, line + strlen(line) - right - 1);
-  else
+  // append suffix from previous line
+  if (right) {
+    size_t prev_len = strlen(line);
+    size_t n = right + 1;
+    if (prev_len < n || l + n >= BUFSIZE)
+      return false;
+    strcpy(linebuf + l - 1, line + prev_len - n);
+  } else {
     linebuf[l] = '\0';
+  }
+
+  // copy into line with left-offset from previous line preserved
+  if (left + strlen(linebuf) >= sizeof(line))
+    return false;
   strcpy(line + left, linebuf);
   dest.assign(line);
   return true;

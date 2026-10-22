@@ -88,6 +88,7 @@
 #endif
 
 #define MAXSHARPS 5
+#define MAXBREAKDEPTH 10
 
 #ifndef MAXWORDLEN
 #define MAXWORDLEN 100
@@ -119,7 +120,7 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
 #ifdef HUNSPELL_CHROME_CLIENT
   explicit Hunspell(base::span<const unsigned char> bdict_data);
 #else
-  Hunspell(const char* affpath, const char* dpath, const char* key = NULL);
+  Hunspell(const char* affpath, const char* dpath, const char* key = nullptr);
 #endif
   Hunspell(const Hunspell&) = delete;
   Hunspell& operator=(const Hunspell&) = delete;
@@ -127,7 +128,7 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
 
 #ifndef HUNSPELL_CHROME_CLIENT
   /* load extra dictionaries (only dic files) */
-  int add_dic(const char* dpath, const char* key = NULL);
+  int add_dic(const char* dpath, const char* key = nullptr);
 #endif
 
   /* spell(word) - spellcheck word
@@ -139,8 +140,8 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
    *     SPELL_FORBIDDEN = an explicit forbidden word
    *   root: root (stem), when input is a word with affix(es)
    */
-  bool spell(const std::string& word, int* info = NULL, std::string* root = NULL);
-  H_DEPRECATED int spell(const char* word, int* info = NULL, char** root = NULL);
+  bool spell(const std::string& word, int* info = nullptr, std::string* root = nullptr);
+  H_DEPRECATED int spell(const char* word, int* info = nullptr, char** root = nullptr);
 
   /* suggest(suggestions, word) - search suggestions
    * input: pointer to an array of strings pointer and the (bad) word
@@ -208,7 +209,7 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
 
   int add(const std::string& word);
 
-  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc);
+  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc = "");
 
   /* add word to the run-time dictionary with affix flags of
    * the example (a dictionary word): Hunspell will recognize
@@ -228,8 +229,8 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
   const std::string& get_wordchars_cpp() const;
   const std::vector<w_char>& get_wordchars_utf16() const;
 
-  const struct cs_info* get_csconv() const;
-  
+  struct cs_info* get_csconv();
+
   const char* get_version() const;
   const std::string& get_version_cpp() const;
 

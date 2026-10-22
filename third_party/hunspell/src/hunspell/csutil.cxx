@@ -76,7 +76,7 @@
 #include <cctype>
 #include <iterator>
 #include <sstream>
-#if __cplusplus >= 202002L
+#if __cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 #include <bit>
 #endif
 
@@ -105,6 +105,7 @@
 using namespace mozilla;
 #endif
 
+#ifndef MOZILLA_CLIENT
 void myopen(std::ifstream& stream, const char* path, std::ios_base::openmode mode)
 {
 #if defined(_WIN32) && defined(_MSC_VER)
@@ -124,6 +125,7 @@ void myopen(std::ifstream& stream, const char* path, std::ios_base::openmode mod
 #endif
   stream.open(path, mode);
 }
+#endif
 
 std::string& u16_u8(std::string& dest, const std::vector<w_char>& src) {
   dest.clear();
@@ -199,7 +201,7 @@ int u8_u16(std::vector<w_char>& dest, const std::string& src, bool only_convert_
       }
       case 0xc0:
       case 0xd0: {  // 2-byte UTF-8 codes
-        if ((*(u8 + 1) & 0xc0) == 0x80) {
+        if (u8 + 1 < u8_max && (*(u8 + 1) & 0xc0) == 0x80) {
           u2.h = (*u8 & 0x1f) >> 2;
           u2.l = (static_cast<unsigned char>(*u8) << 6) + (*(u8 + 1) & 0x3f);
           ++u8;
@@ -215,10 +217,10 @@ int u8_u16(std::vector<w_char>& dest, const std::string& src, bool only_convert_
         break;
       }
       case 0xe0: {  // 3-byte UTF-8 codes
-        if ((*(u8 + 1) & 0xc0) == 0x80) {
+        if (u8 + 1 < u8_max && (*(u8 + 1) & 0xc0) == 0x80) {
           u2.h = ((*u8 & 0x0f) << 4) + ((*(u8 + 1) & 0x3f) >> 2);
           ++u8;
-          if ((*(u8 + 1) & 0xc0) == 0x80) {
+          if (u8 + 1 < u8_max && (*(u8 + 1) & 0xc0) == 0x80) {
             u2.l = (static_cast<unsigned char>(*u8) << 6) + (*(u8 + 1) & 0x3f);
             ++u8;
           } else {
@@ -421,7 +423,7 @@ bool copy_field(std::string& dest,
   std::string beg(morph.substr(pos + MORPH_TAG_LEN, std::string::npos));
 
   for (const char c : beg) {
-	if (c == ' ' || c == '\t' || c == '\n')
+    if (c == ' ' || c == '\t' || c == '\n')
       break;
     dest.push_back(c);
   }
@@ -449,8 +451,7 @@ size_t reverseword(std::string& word) {
 // reverse word
 size_t reverseword_utf(std::string& word) {
   std::reverse(word.begin(), word.end()); //1st step: we reverse the string
-	
-  size_t num_chars = word.size(); //in order to make sure there are enough characters at the end of the string when we process a multibyte character
+
   //2nd step: we process each multibyte character and reverse it
   for (auto it = word.rbegin(); it != word.rend(); ) {
     switch ((*it) & 0xf0) {
@@ -464,7 +465,6 @@ size_t reverseword_utf(std::string& word) {
       case 0x70:
         //one byte
         ++it;
-        --num_chars;
         break;
       case 0x80:
       case 0x90:
@@ -476,52 +476,45 @@ size_t reverseword_utf(std::string& word) {
                          static_cast<long>(std::distance(word.begin(), it.base()) - 1),
                          word.c_str());
         ++it;
-        --num_chars;
         break;
       case 0xc0:
       case 0xd0: {
-	//two bytes
-        if (num_chars >= 2) {
+        //two bytes
+        if (std::distance(it, word.rend()) >= 2) {
           std::iter_swap(it, it + 1);
           it += 2;
-          num_chars -= 2;
         } else {
           HUNSPELL_WARNING(stderr,
                          "UTF-8 encoding error. Missing character at the end\n%s\n",
                          word.c_str());
           ++it;
-          --num_chars;
         }
         break;
       }
       case 0xe0: {
         //three bytes
-        if (num_chars >= 3) {
+        if (std::distance(it, word.rend()) >= 3) {
           std::iter_swap(it, it + 2);
           it += 3;
-          num_chars -= 3;
         } else {
           HUNSPELL_WARNING(stderr,
                          "UTF-8 encoding error. Missing character at the end\n%s\n",
                          word.c_str());
           ++it;
-          --num_chars;
         }
         break;
       }
       default: {
         // 4 or more byte UTF-8 codes
-        if (num_chars >= 4) {
+        if (std::distance(it, word.rend()) >= 4) {
           std::iter_swap(it, it + 3);
           std::iter_swap(it + 1, it + 2);
           it += 4;
-          num_chars -= 4;
         } else {
           HUNSPELL_WARNING(stderr,
                          "UTF-8 encoding error. Missing character at the end\n%s\n",
                          word.c_str());
           ++it;
-          --num_chars;
         }
         break;
       }
@@ -563,14 +556,14 @@ unsigned char ccase(const struct cs_info* csconv, int nIndex) {
 }
 
 w_char upper_utf(w_char u, int langnum) {
-	
-#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+
+#if defined(_WIN32) || (defined(__BYTE_ORDER__) && (__BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__))  || defined(__LITTLE_ENDIAN__)
 
 //with these optimizations, msvc can optimize this function to one jmp instruction
 //but g++ remains in five instructions
 //maybe use inline asm for g++?
 
-#if __cplusplus >= 202002L
+#if __cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
   return std::bit_cast<w_char>(unicodetoupper((unsigned short)u, langnum));
 #else
   const auto us = unicodetoupper((unsigned short)u, langnum);
@@ -587,14 +580,14 @@ w_char upper_utf(w_char u, int langnum) {
 }
 
 w_char lower_utf(w_char u, int langnum) {
-	
-#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+
+#if defined(_WIN32) || (defined(__BYTE_ORDER__) && (__BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__))  || defined(__LITTLE_ENDIAN__)
 
 //with these optimizations, msvc can optimize this function to one jmp instruction
 //but g++ remains in five instructions
 //maybe use inline asm for g++?
 
-#if __cplusplus >= 202002L
+#if __cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
   return std::bit_cast<w_char>(unicodetolower((unsigned short)u, langnum));
 #else
   const auto us = unicodetolower((unsigned short)u, langnum);
@@ -649,7 +642,7 @@ std::string& mkinitcap(std::string& s, const struct cs_info* csconv) {
 
 std::vector<w_char>& mkinitcap_utf(std::vector<w_char>& u, int langnum) {
   if (!u.empty()) {
-	u[0] = upper_utf(u[0], langnum);
+    u[0] = upper_utf(u[0], langnum);
   }
   return u;
 }
@@ -663,7 +656,7 @@ std::string& mkinitsmall(std::string& s, const struct cs_info* csconv) {
 
 std::vector<w_char>& mkinitsmall_utf(std::vector<w_char>& u, int langnum) {
   if (!u.empty()) {
-	u[0] = lower_utf(u[0], langnum);
+    u[0] = lower_utf(u[0], langnum);
   }
   return u;
 }
@@ -2328,7 +2321,7 @@ const struct cs_info* get_current_cs(const std::string& es) {
   char* normalized_encoding = new char[es.size() + 1];
   toAsciiLowerAndRemoveNonAlphanumeric(es.c_str(), normalized_encoding);
 
-  const struct cs_info* ccs = NULL;
+  const struct cs_info* ccs = nullptr;
   for (const auto& encd : encds) {
     if (strcmp(normalized_encoding, encd.enc_name) == 0) {
       ccs = encd.cs_table;
@@ -2533,10 +2526,10 @@ int get_captype(const std::string& word, const cs_info* csconv) {
   size_t ncap = 0;
   size_t nneutral = 0;
   size_t firstcap = 0;
-  if (csconv == NULL)
+  if (csconv == nullptr)
     return NOCAP;
-  for (auto q = word.begin(); q != word.end(); ++q) {
-    const auto nIndex = static_cast<unsigned char>(*q);
+  for (char q : word) {
+    const auto nIndex = static_cast<unsigned char>(q);
     if (ccase(csconv, nIndex))
       ncap++;
     if (cupper(csconv, nIndex) == clower(csconv, nIndex))
@@ -2601,7 +2594,7 @@ size_t remove_ignored_chars_utf(std::string& word,
   std::vector<w_char> w2;
   u8_u16(w, word);
 
-  std::copy_if(w.begin(), w.end(), std::back_inserter(w2), 
+  std::copy_if(w.begin(), w.end(), std::back_inserter(w2),
   [&ignored_chars](w_char wc) {
     return !std::binary_search(ignored_chars.begin(), ignored_chars.end(), wc);
   });

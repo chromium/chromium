@@ -40,11 +40,10 @@
 
 #include <string>
 
-#if __cplusplus >= 202002L
+#if __cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 #include <bit>
-#else
-#include <cstring>
 #endif
+#include <cstring>
 
 #ifndef GCC
 struct w_char {
@@ -56,9 +55,9 @@ struct __attribute__((packed)) w_char {
 
   operator unsigned short() const
   {
-#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+#if defined(_WIN32) || (defined(__BYTE_ORDER__) && (__BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__))  || defined(__LITTLE_ENDIAN__)
     //use little-endian optimized version
-#if __cplusplus >= 202002L
+#if (__cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) && defined __cpp_lib_bit_cast && __cpp_lib_bit_cast >= 201806L
     return std::bit_cast<unsigned short>(*this);
 #else
     unsigned short u;

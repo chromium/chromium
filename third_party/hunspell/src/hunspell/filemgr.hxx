@@ -109,7 +109,7 @@ class FileMgr {
   int linenum;
 
  public:
-  FileMgr(const char* filename, const char* key = NULL);
+  FileMgr(const char* filename, const char* key = nullptr);
   FileMgr(const FileMgr&) = delete;
   FileMgr& operator=(const FileMgr&) = delete;
   ~FileMgr();

@@ -51,7 +51,7 @@ FirstParser::FirstParser(const char* wordchars)
   : TextParser(wordchars) {
 }
 
-FirstParser::~FirstParser() {}
+FirstParser::~FirstParser() = default;
 
 bool FirstParser::next_token(std::string& t) {
   t.clear();

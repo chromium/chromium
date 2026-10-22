@@ -97,6 +97,10 @@ Then run the following commands:
     sudo make install
     sudo ldconfig
 
+For a non-root install, use `DESTDIR` so libtool skips `ldconfig`:
+
+    make install DESTDIR="$HOME/hunspell-root"
+
 For dictionary development, use the `--with-warnings` option of
 configure.
 
@@ -126,6 +130,7 @@ Then run:
     autoreconf -vfi
     ./configure
     make
+    sudo make install
 
 # Compiling on Windows
 
@@ -134,10 +139,14 @@ Then run:
 Download Msys2, update everything and install the following
     packages:
 
-    pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
+    pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool \
+              mingw-w64-x86_64-libiconv mingw-w64-x86_64-gettext
 
 Open Mingw-w64 Win64 prompt and compile the same way as on Linux, see
-above.
+above. Without `mingw-w64-x86_64-libiconv` the build still succeeds but
+the `hunspell` tool cannot convert between dictionary encodings, so any
+test or dictionary that declares a non-UTF-8 `SET` (e.g. ISO8859-1/2/15)
+will fail at runtime.
 
 ## Compiling in Cygwin environment
 
@@ -294,6 +303,16 @@ Example for morphological generation:
     mouse cats
     generate(mouse, cats) = mice
     generate(mouse, cats) = mouses
+
+Note: morphological generation, stemming and analysis only work with
+dictionaries whose entries carry morphological description fields
+(`po:`, `st:`, `is:`, `ts:`, `al:`, `ds:`, `dp:` etc.; see man hunspell.5).
+The example above relies on the older en_US dictionary linked earlier in
+this README, which still ships these fields. Most current distributions
+of en_US, fr, nl and hu_HU do not, and `analyze`, `stem` and `generate`
+will return empty results for them. This is a dictionary property, not
+a library bug. See `tests/morph.aff` and `tests/morph.dic` for a minimal
+example.
 
 # Using Hunspell library with GCC
 

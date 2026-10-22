@@ -142,9 +142,7 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
 
   // make a new entry if none exists
   replentry* r = new replentry;
-  if (r == NULL)
-    return 1;
-  r->pattern = pat1;
+  r->pattern = std::move(pat1);
   r->outstrings[type] = pat2;
   mystrrep(r->outstrings[type], "_", " ");
   dat.push_back(r);
