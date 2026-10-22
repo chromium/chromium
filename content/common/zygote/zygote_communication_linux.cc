@@ -10,6 +10,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/platform_file.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
@@ -305,13 +306,22 @@ base::TerminationStatus ZygoteCommunication::GetTerminationStatus(
 
   static const unsigned kMaxMessageLength = 128;
   uint8_t buf[kMaxMessageLength];
-  ssize_t len;
+  ssize_t len = -1;
+  bool sent = false;
   {
     base::AutoLock lock(control_lock_);
     EnsureLaunchFinishedLocked();
-    if (!SendMessage(pickle, nullptr))
-      LOG(ERROR) << "Failed to send GetTerminationStatus message to zygote";
-    len = ReadReply(buf, sizeof(buf));
+    sent = SendMessage(pickle, nullptr);
+    if (sent) {
+      len = ReadReply(buf, sizeof(buf));
+    } else {
+      PLOG(ERROR) << "Failed to send GetTerminationStatus message to zygote";
+      // SendMessage() should very rarely fail, but if it does we return
+      // TERMINATION_STATUS_NORMAL_TERMINATION. If there are many dumps,
+      // investigate why SendMessage() is failing, and consider adding a
+      // TERMINATION_STATUS_UNKNOWN or similar.
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   // Set this now to handle the error cases.
@@ -319,7 +329,9 @@ base::TerminationStatus ZygoteCommunication::GetTerminationStatus(
     *exit_code = RESULT_CODE_NORMAL_EXIT;
   int status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
 
-  if (len == -1) {
+  if (!sent) {
+    // Error was already logged above.
+  } else if (len == -1) {
     PLOG(WARNING) << "Error reading message from zygote";
   } else if (len == 0) {
     LOG(WARNING) << "Socket closed prematurely.";
