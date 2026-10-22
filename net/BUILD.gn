@@ -7,6 +7,7 @@ import("//build/config/cast.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
+import("//build/rust/rust_static_library.gni")
 import("//crypto/features.gni")
 import("//net/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -169,6 +170,14 @@ source_set("chrome_root_store_data") {
     sources += [ "cert/internal/trust_store_chrome_data.cc" ]
     deps += [ "//net/data/ssl/chrome_root_store:gen_signer_set_inc" ]
   }
+}
+
+rust_static_library("http_chunked_decoder_rust") {
+  crate_root = "http/http_chunked_decoder.rs"
+  sources = [ "http/http_chunked_decoder.rs" ]
+  cxx_bindings = [ "http/http_chunked_decoder.rs" ]
+  visibility = [ ":*" ]
+  allow_unsafe = true
 }
 
 component("net") {
@@ -1249,6 +1258,7 @@ component("net") {
 
   deps = [
     ":cronet_buildflags",
+    ":http_chunked_decoder_rust",
     ":net_deps",
     "//components/network_time/time_tracker",
     "//components/unexportable_keys",
@@ -3359,6 +3369,7 @@ target(_test_target_type, "net_unittests") {
     "HostResolverCacheFuzzTest.SerializationDoesNotCrash",
     "HpackHeaderTableFuzzTest.CanCallMethodSequence",
     "HttpAuthHandlerDigestTest.DigestAuthDoesNotCrash",
+    "HttpChunkedDecoderParityTest.DecodeParity",
     "HttpNoVarySearchTest.AreEquivalentImplementationsMatch",
     "HttpUtilTest.ParseFetchSingleRangeNeverCrashes",
     "PickleTest.FuzzRoundTrip",

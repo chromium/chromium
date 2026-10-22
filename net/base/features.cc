@@ -1124,5 +1124,7 @@ BASE_FEATURE_ENUM_PARAM(DiskCacheBackend,
 
 BASE_FEATURE(kCookieMonsterPerKeyDelete, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHttpChunkedDecoderInRust, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features
 

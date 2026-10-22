@@ -47,12 +47,15 @@
 #include <algorithm>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_chunked_decoder.rs.h"
 
 namespace net {
 
@@ -60,9 +63,46 @@ namespace net {
 // extensions.
 const size_t HttpChunkedDecoder::kMaxLineBufLen = 16384;
 
-HttpChunkedDecoder::HttpChunkedDecoder() = default;
+struct HttpChunkedDecoder::Impl {
+  rust::Box<ffi::HttpChunkedDecoder> decoder = ffi::new_http_chunked_decoder();
+};
+
+HttpChunkedDecoder::HttpChunkedDecoder()
+    : HttpChunkedDecoder(
+          base::FeatureList::IsEnabled(features::kHttpChunkedDecoderInRust)) {}
+
+HttpChunkedDecoder::HttpChunkedDecoder(bool use_rust) {
+  if (use_rust) {
+    impl_ = std::make_unique<Impl>();
+  }
+}
+
+HttpChunkedDecoder::~HttpChunkedDecoder() = default;
+
+HttpChunkedDecoder HttpChunkedDecoder::CreateForTesting(bool use_rust) {
+  return HttpChunkedDecoder(use_rust);
+}
+
+bool HttpChunkedDecoder::reached_eof() const {
+  if (impl_) {
+    return impl_->decoder->reached_eof();
+  }
+  return reached_eof_;
+}
+
+int HttpChunkedDecoder::bytes_after_eof() const {
+  if (impl_) {
+    return impl_->decoder->bytes_after_eof();
+  }
+  return bytes_after_eof_;
+}
 
 int HttpChunkedDecoder::FilterBuf(base::span<uint8_t> buf) {
+  if (impl_) {
+    int result = impl_->decoder->filter_buf(rust::Slice<uint8_t>(buf));
+    return result < 0 ? ERR_INVALID_CHUNKED_ENCODING : result;
+  }
+
   size_t result = 0;
   while (buf.size() > 0) {
     if (chunk_remaining_ > 0) {

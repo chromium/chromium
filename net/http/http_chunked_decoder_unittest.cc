@@ -5,6 +5,7 @@
 #include "net/http/http_chunked_decoder.h"
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -14,10 +15,13 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -26,7 +30,23 @@ namespace net {
 
 namespace {
 
-typedef testing::Test HttpChunkedDecoderTest;
+class HttpChunkedDecoderTest : public testing::TestWithParam<bool> {
+ public:
+  HttpChunkedDecoderTest() {
+    feature_list_.InitWithFeatureState(features::kHttpChunkedDecoderInRust,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpChunkedDecoderTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Rust" : "Cpp";
+                         });
 
 void RunTest(base::span<const std::string_view> inputs,
              const char* expected_output,
@@ -74,18 +94,18 @@ void RunTestUntilFailure(base::span<const std::string_view> inputs,
   FAIL();  // We should have failed on the |fail_index| iteration of the loop.
 }
 
-TEST(HttpChunkedDecoderTest, Basic) {
+TEST_P(HttpChunkedDecoderTest, Basic) {
   const std::vector<std::string_view> inputs = {
       "B\r\nhello hello\r\n0\r\n\r\n"};
   RunTest(inputs, "hello hello", true, 0);
 }
 
-TEST(HttpChunkedDecoderTest, OneChunk) {
+TEST_P(HttpChunkedDecoderTest, OneChunk) {
   const std::vector<std::string_view> inputs = {"5\r\nhello\r\n"};
   RunTest(inputs, "hello", false, 0);
 }
 
-TEST(HttpChunkedDecoderTest, Typical) {
+TEST_P(HttpChunkedDecoderTest, Typical) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\r\nhello\r\n",
@@ -98,7 +118,7 @@ TEST(HttpChunkedDecoderTest, Typical) {
   RunTest(inputs, "hello world", true, 0);
 }
 
-TEST(HttpChunkedDecoderTest, Incremental) {
+TEST_P(HttpChunkedDecoderTest, Incremental) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5",
@@ -119,7 +139,7 @@ TEST(HttpChunkedDecoderTest, Incremental) {
 }
 
 // Same as above, but group carriage returns with previous input.
-TEST(HttpChunkedDecoderTest, Incremental2) {
+TEST_P(HttpChunkedDecoderTest, Incremental2) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\r",
@@ -135,7 +155,7 @@ TEST(HttpChunkedDecoderTest, Incremental2) {
   RunTest(inputs, "hello", true, 0);
 }
 
-TEST(HttpChunkedDecoderTest, LF_InsteadOf_CRLF) {
+TEST_P(HttpChunkedDecoderTest, LF_InsteadOf_CRLF) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\nhello\n",
@@ -148,7 +168,7 @@ TEST(HttpChunkedDecoderTest, LF_InsteadOf_CRLF) {
   RunTest(inputs, "hello world", true, 0);
 }
 
-TEST(HttpChunkedDecoderTest, Extensions) {
+TEST_P(HttpChunkedDecoderTest, Extensions) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5;x=0\r\nhello\r\n",
@@ -159,7 +179,7 @@ TEST(HttpChunkedDecoderTest, Extensions) {
   RunTest(inputs, "hello", true, 0);
 }
 
-TEST(HttpChunkedDecoderTest, Trailers) {
+TEST_P(HttpChunkedDecoderTest, Trailers) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\r\nhello\r\n",
@@ -173,7 +193,7 @@ TEST(HttpChunkedDecoderTest, Trailers) {
   RunTest(inputs, "hello", true, 0);
 }
 
-TEST(HttpChunkedDecoderTest, TrailersUnfinished) {
+TEST_P(HttpChunkedDecoderTest, TrailersUnfinished) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\r\nhello\r\n",
@@ -185,7 +205,7 @@ TEST(HttpChunkedDecoderTest, TrailersUnfinished) {
   RunTest(inputs, "hello", false, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TooBig) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_TooBig) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       // This chunked body is not terminated.
@@ -199,7 +219,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TooBig) {
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_0X) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_0X) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "0x5\r\nhello\r\n",
@@ -211,7 +231,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_0X) {
 }
 
 // Note that this test covers behavior contrary to RFC 7230.
-TEST(HttpChunkedDecoderTest, ChunkSize_TrailingSpace) {
+TEST_P(HttpChunkedDecoderTest, ChunkSize_TrailingSpace) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5      \r\nhello\r\n",
@@ -222,7 +242,7 @@ TEST(HttpChunkedDecoderTest, ChunkSize_TrailingSpace) {
   RunTest(inputs, "hello", true, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingTab) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_TrailingTab) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\t\r\nhello\r\n",
@@ -233,7 +253,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingTab) {
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingFormFeed) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_TrailingFormFeed) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\f\r\nhello\r\n",
@@ -244,7 +264,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingFormFeed) {
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingVerticalTab) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_TrailingVerticalTab) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\v\r\nhello\r\n",
@@ -255,7 +275,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingVerticalTab) {
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingNonHexDigit) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_TrailingNonHexDigit) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5H\r\nhello\r\n",
@@ -266,7 +286,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingNonHexDigit) {
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_LeadingSpace) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_LeadingSpace) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       " 5\r\nhello\r\n",
@@ -277,7 +297,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_LeadingSpace) {
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidLeadingSeparator) {
+TEST_P(HttpChunkedDecoderTest, InvalidLeadingSeparator) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
        "\r\n5\r\nhello\r\n",
@@ -288,7 +308,7 @@ TEST(HttpChunkedDecoderTest, InvalidLeadingSeparator) {
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_NoSeparator) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_NoSeparator) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\r\nhello",
@@ -300,7 +320,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_NoSeparator) {
   RunTestUntilFailure(inputs, 1);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_Negative) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_Negative) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "8\r\n12345678\r\n-5\r\nhello\r\n",
@@ -311,7 +331,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_Negative) {
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_Plus) {
+TEST_P(HttpChunkedDecoderTest, InvalidChunkSize_Plus) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "+5\r\nhello\r\n",
@@ -322,7 +342,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_Plus) {
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidConsecutiveCRLFs) {
+TEST_P(HttpChunkedDecoderTest, InvalidConsecutiveCRLFs) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\r\nhello\r\n",
@@ -334,7 +354,7 @@ TEST(HttpChunkedDecoderTest, InvalidConsecutiveCRLFs) {
   RunTestUntilFailure(inputs, 1);
 }
 
-TEST(HttpChunkedDecoderTest, ReallyBigChunks) {
+TEST_P(HttpChunkedDecoderTest, ReallyBigChunks) {
   // Number of bytes sent through the chunked decoder per loop iteration. To
   // minimize runtime, should be the square root of the chunk lengths, below.
   const size_t kWrittenBytesPerIteration = 0x10000;
@@ -391,27 +411,27 @@ TEST(HttpChunkedDecoderTest, ReallyBigChunks) {
   }
 }
 
-TEST(HttpChunkedDecoderTest, ExcessiveChunkLen) {
+TEST_P(HttpChunkedDecoderTest, ExcessiveChunkLen) {
   // Smallest number that can't be represented as a signed int64.
   const std::vector<std::string_view> inputs = {
       "8000000000000000\r\nhello\r\n"};
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, ExcessiveChunkLen2) {
+TEST_P(HttpChunkedDecoderTest, ExcessiveChunkLen2) {
   // Smallest number that can't be represented as an unsigned int64.
   const std::vector<std::string_view> inputs = {
       "10000000000000000\r\nhello\r\n"};
   RunTestUntilFailure(inputs, 0);
 }
 
-TEST(HttpChunkedDecoderTest, BasicExtraData) {
+TEST_P(HttpChunkedDecoderTest, BasicExtraData) {
   const std::vector<std::string_view> inputs = {
       "5\r\nhello\r\n0\r\n\r\nextra bytes"};
   RunTest(inputs, "hello", true, 11);
 }
 
-TEST(HttpChunkedDecoderTest, IncrementalExtraData) {
+TEST_P(HttpChunkedDecoderTest, IncrementalExtraData) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5",
@@ -431,7 +451,7 @@ TEST(HttpChunkedDecoderTest, IncrementalExtraData) {
   RunTest(inputs, "hello", true, 11);
 }
 
-TEST(HttpChunkedDecoderTest, MultipleExtraDataBlocks) {
+TEST_P(HttpChunkedDecoderTest, MultipleExtraDataBlocks) {
   // clang-format off
   const std::vector<std::string_view> inputs = {
       "5\r\nhello\r\n0\r\n\r\nextra",
@@ -443,7 +463,7 @@ TEST(HttpChunkedDecoderTest, MultipleExtraDataBlocks) {
 }
 
 // Test when the line with the chunk length is too long.
-TEST(HttpChunkedDecoderTest, LongChunkLengthLine) {
+TEST_P(HttpChunkedDecoderTest, LongChunkLengthLine) {
   const int kBigChunkLength = HttpChunkedDecoder::kMaxLineBufLen;
   std::vector<char> big_chunk(kBigChunkLength, '0');
   const std::vector<std::string_view> inputs = {base::as_string_view(big_chunk),
@@ -453,7 +473,7 @@ TEST(HttpChunkedDecoderTest, LongChunkLengthLine) {
 
 // Test when the extension portion of the line with the chunk length is too
 // long.
-TEST(HttpChunkedDecoderTest, LongLengthLengthLine) {
+TEST_P(HttpChunkedDecoderTest, LongLengthLengthLine) {
   const int kBigChunkLength = HttpChunkedDecoder::kMaxLineBufLen;
   std::vector<char> big_chunk(kBigChunkLength, '0');
   const std::vector<std::string_view> inputs = {
@@ -462,13 +482,44 @@ TEST(HttpChunkedDecoderTest, LongLengthLengthLine) {
 }
 
 // Test when a chunk is too big but it spans multiple reads.
-TEST(HttpChunkedDecoderTest, LongChunkLengthLineBypass) {
+TEST_P(HttpChunkedDecoderTest, LongChunkLengthLineBypass) {
   const int kLimit = HttpChunkedDecoder::kMaxLineBufLen;
   std::string part1(kLimit - 1, 'A');
   std::string part2 = "BC\n";
   const std::vector<std::string_view> inputs = {part1, part2};
   RunTestUntilFailure(inputs, 1);
 }
+
+TEST_P(HttpChunkedDecoderTest, LongExtensionInSingleBuffer) {
+  std::string input = "5;" +
+                      std::string(HttpChunkedDecoder::kMaxLineBufLen + 1, 'a') +
+                      "\r\nhello\r\n0\r\n\r\n";
+  const std::vector<std::string_view> inputs = {input};
+  RunTest(inputs, "hello", true, 0);
+}
+
+void DecodeParity(const std::vector<std::string>& inputs) {
+  HttpChunkedDecoder cpp_decoder = HttpChunkedDecoder::CreateForTesting(false);
+  HttpChunkedDecoder rust_decoder = HttpChunkedDecoder::CreateForTesting(true);
+
+  for (const std::string& input : inputs) {
+    std::vector<uint8_t> cpp_buf(std::from_range, input);
+    std::vector<uint8_t> rust_buf(std::from_range, input);
+
+    int cpp_res = cpp_decoder.FilterBuf(cpp_buf);
+    int rust_res = rust_decoder.FilterBuf(rust_buf);
+
+    ASSERT_EQ(cpp_res, rust_res);
+    ASSERT_EQ(cpp_decoder.reached_eof(), rust_decoder.reached_eof());
+    ASSERT_EQ(cpp_decoder.bytes_after_eof(), rust_decoder.bytes_after_eof());
+    ASSERT_EQ(cpp_buf, rust_buf);
+    if (cpp_res < 0) {
+      break;
+    }
+  }
+}
+
+FUZZ_TEST(HttpChunkedDecoderParityTest, DecodeParity);
 
 }  // namespace
 

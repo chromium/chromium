@@ -10,13 +10,17 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 // Entry point for LibFuzzer.
 DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
-  net::HttpChunkedDecoder decoder;
+  net::HttpChunkedDecoder cpp_decoder =
+      net::HttpChunkedDecoder::CreateForTesting(false);
+  net::HttpChunkedDecoder rust_decoder =
+      net::HttpChunkedDecoder::CreateForTesting(true);
 
   // Feed data to decoder.FilterBuf() by blocks of "random" size.
   size_t block_size = 0;
@@ -38,11 +42,16 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
     block_size = std::min(block_size, data.size() - offset);
 
     // Create new buffer with current block of data and feed it to the decoder.
-    std::vector<uint8_t> buffer =
+    std::vector<uint8_t> cpp_buffer =
         base::ToVector(data.subspan(offset, block_size));
-    int result = decoder.FilterBuf(buffer);
-    if (result < 0)
+    std::vector<uint8_t> rust_buffer =
+        base::ToVector(data.subspan(offset, block_size));
+    int cpp_result = cpp_decoder.FilterBuf(cpp_buffer);
+    int rust_result = rust_decoder.FilterBuf(rust_buffer);
+    CHECK_EQ(cpp_result, rust_result);
+    if (cpp_result < 0) {
       return 0;
+    }
   }
 
   return 0;

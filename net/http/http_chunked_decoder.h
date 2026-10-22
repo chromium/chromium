@@ -48,6 +48,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/containers/span.h"
@@ -86,12 +87,17 @@ class NET_EXPORT_PRIVATE HttpChunkedDecoder {
   static const size_t kMaxLineBufLen;
 
   HttpChunkedDecoder();
+  HttpChunkedDecoder(const HttpChunkedDecoder&) = delete;
+  HttpChunkedDecoder& operator=(const HttpChunkedDecoder&) = delete;
+  ~HttpChunkedDecoder();
+
+  static HttpChunkedDecoder CreateForTesting(bool use_rust);
 
   // Indicates that a previous call to FilterBuf encountered the final CRLF.
-  bool reached_eof() const { return reached_eof_; }
+  bool reached_eof() const;
 
   // Returns the number of bytes after the final CRLF.
-  int bytes_after_eof() const { return bytes_after_eof_; }
+  int bytes_after_eof() const;
 
   // Called to filter out the chunk markers from buf and to check for end-of-
   // file.  This method modifies |buf| inline if necessary to remove chunk
@@ -101,6 +107,10 @@ class NET_EXPORT_PRIVATE HttpChunkedDecoder {
   int FilterBuf(base::span<uint8_t> buf);
 
  private:
+  struct Impl;
+
+  explicit HttpChunkedDecoder(bool use_rust);
+
   // Scans |buf| for the next chunk delimiter.  This method returns the number
   // of bytes consumed from |buf|.  If found, |chunk_remaining_| holds the
   // value for the next chunk size.
@@ -110,6 +120,8 @@ class NET_EXPORT_PRIVATE HttpChunkedDecoder {
   // |buf| is a buffer containing a "chunk-size" (hex string).
   // If the conversion succeeds, returns true and places the result in |out|.
   static bool ParseChunkSize(base::span<const uint8_t> buf, uint64_t* out);
+
+  std::unique_ptr<Impl> impl_;
 
   // Indicates the number of bytes remaining for the current chunk.
   // Using uint64_t as it can exceed size_t.
