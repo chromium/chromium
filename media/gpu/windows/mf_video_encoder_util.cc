@@ -445,6 +445,7 @@ uint32_t CalculateMaxFramerateFromMacroBlocksPerSecond(
 
 std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
     VideoCodec codec,
+    DriverVendor vendor,
     IMFTransform* encoder,
     bool allow_set_output_type) {
   DCHECK(encoder);
@@ -487,7 +488,13 @@ std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
           max_level = eAVEncH264VLevel5_2;
           break;
         case VideoCodec::kAV1:
-          max_level = eAVEncAV1VLevel6_3;
+          // The AMD AV1 HMFT rejects levels above 6.0 in the first
+          // SetOutputType() call on a new instance, though it accepts 6.3 once
+          // any SetOutputType() call has succeeded. The level only needs to be
+          // accepted here, as the supported framerates and resolutions are
+          // derived from MF_VIDEO_MAX_MB_PER_SEC below.
+          max_level = vendor == DriverVendor::kAMD ? eAVEncAV1VLevel6
+                                                   : eAVEncAV1VLevel6_3;
           break;
         case VideoCodec::kHEVC:
           max_level = eAVEncH265VLevel6_2;

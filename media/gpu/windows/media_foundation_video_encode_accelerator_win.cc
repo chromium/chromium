@@ -562,11 +562,11 @@ EncoderStatus MediaFoundationVideoEncodeAccelerator::Initialize(
     const auto& max_framerate_and_resolutions =
         shared_state->GetMaxFramerateAndResolutions(activate_hash);
     const auto& min_resolution = shared_state->GetMinResolution(activate_hash);
-    max_framerate_and_resolutions_ =
-        !max_framerate_and_resolutions.empty()
-            ? max_framerate_and_resolutions
-            : GetMaxFramerateAndResolutionsFromMFT(
-                  codec_, encoder_.Get(), /*allow_set_output_type=*/false);
+    max_framerate_and_resolutions_ = !max_framerate_and_resolutions.empty()
+                                         ? max_framerate_and_resolutions
+                                         : GetMaxFramerateAndResolutionsFromMFT(
+                                               codec_, vendor_, encoder_.Get(),
+                                               /*allow_set_output_type=*/false);
     min_resolution_ = !min_resolution.IsEmpty()
                           ? min_resolution
                           : GetMinResolution(codec_, vendor_);

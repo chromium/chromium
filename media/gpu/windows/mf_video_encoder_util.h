@@ -163,11 +163,13 @@ std::vector<Microsoft::WRL::ComPtr<IMFActivate>> EnumerateHardwareEncoders(
     VideoCodec codec);
 
 // Get the maximum supported framerate and resolution combinations for the given
-// codec and HMFT. If |allow_set_output_type| is true, it will try to set the
-// output type to get the maximum supported framerate and resolution; otherwise,
-// we merely query the maximum supported macroblocks per second for calculation.
+// codec and HMFT from |vendor|. If |allow_set_output_type| is true, it will try
+// to set the output type to get the maximum supported framerate and resolution;
+// otherwise, we merely query the maximum supported macroblocks per second for
+// calculation.
 std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
     VideoCodec codec,
+    DriverVendor vendor,
     IMFTransform* encoder,
     bool allow_set_output_type);
 

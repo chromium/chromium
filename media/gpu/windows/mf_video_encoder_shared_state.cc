@@ -183,10 +183,10 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
 
       activate_hash = GetMFTGuidHash(activate);
       CHECK(encoder);
+      auto vendor = GetDriverVendor(activate);
       max_framerate_and_resolutions = GetMaxFramerateAndResolutionsFromMFT(
-          codec, encoder.Get(), /*allow_set_output_type=*/true);
-      min_resolution =
-          ::media::GetMinResolution(codec, GetDriverVendor(activate));
+          codec, vendor, encoder.Get(), /*allow_set_output_type=*/true);
+      min_resolution = ::media::GetMinResolution(codec, vendor);
       activate->ShutdownObject();
     }
 
