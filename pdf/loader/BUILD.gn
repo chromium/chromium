@@ -68,8 +68,6 @@ source_set("unit_tests") {
     "url_loader_wrapper_impl_unittest.cc",
   ]
 
-  configs += [ "//pdf:strict" ]
-
   deps = [
     ":loader",
     "//base",

@@ -27,7 +27,7 @@ if (is_win || enable_print_preview) {
 }
 
 config("strict") {
-  configs = [ "//build/config/compiler:wexit_time_destructors" ]
+  configs = [ "//build/config/compiler:wglobal_constructors" ]
 }
 
 # Lower-dependency base printing files which are needed by both :printing and
