@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -46,6 +47,7 @@ StatusChangeChecker::~StatusChangeChecker() = default;
 void StatusChangeChecker::WillStartWaiting() {}
 
 bool StatusChangeChecker::Wait(const base::Location& location) {
+  CHECK(!wait_done_called_);
   WillStartWaiting();
 
   std::ostringstream s;

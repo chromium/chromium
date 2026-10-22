@@ -24,8 +24,8 @@ inline constexpr char kStatusChangeCheckerTimeoutInSeconds[] =
 // This is a template that should be filled in by child classes so they can
 // observe specific kinds of changes and await specific conditions.
 //
-// The instances of this class are intended to be single-use.  It doesn't make
-// sense to call StartBlockingWait() more than once.
+// The instances of this class are single-use. Calling `Wait()` more than once
+// on the same instance is not allowed.
 //
 // |switches::kStatusChangeCheckerTimeoutInSeconds| can be passed to the command
 // line to override the timeout used by instances of this class.
@@ -33,10 +33,11 @@ class StatusChangeChecker {
  public:
   StatusChangeChecker();
 
-  // Block if IsExitConditionSatisfied() is currently false until TimedOut()
-  // becomes true. Checkers should call CheckExitCondition upon changes, which
-  // can cause Wait() to immediately return true if IsExitConditionSatisfied(),
-  // and continue to block if not. Returns false if and only if timeout occurs.
+  // Blocks if `IsExitConditionSatisfied()` is currently false until
+  // `TimedOut()` becomes true. Checkers should call `CheckExitCondition()`
+  // upon changes, which can cause `Wait()` to immediately return true if
+  // `IsExitConditionSatisfied()`, and continue to block if not. Returns false
+  // if and only if timeout occurs. Must be called at most once per instance.
   [[nodiscard]] bool Wait(const base::Location& location = FROM_HERE);
 
   // Returns true if the blocking wait was exited because of a timeout.
