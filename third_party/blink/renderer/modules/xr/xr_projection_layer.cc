@@ -22,6 +22,7 @@ XRProjectionLayer::XRProjectionLayer(XRSession* session,
   SetLayout(final_layout);
 
   CreateLayerBackend();
+  UpdateLayerBackend();
   // Ensure correct viewports are sent to the runtime on the first frame.
   SetModified(true);
 }

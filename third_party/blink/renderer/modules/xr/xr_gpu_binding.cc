@@ -105,20 +105,25 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
   gfx::SizeF scaled_size =
       gfx::ScaleSize(session()->RecommendedArrayTextureSize(), scale_factor);
 
-  // TODO(crbug.com/359418629): Remove once array Mailboxes are available.
-  scaled_size.set_width(scaled_size.width() *
-                        session()->array_texture_layers());
+  const uint32_t layers =
+      base::checked_cast<uint32_t>(session()->array_texture_layers());
 
   // If the scaled texture dimensions are larger than the max texture dimension
   // for the device scale it down till it fits.
+  // TODO(crbug.com/359418629): Stop multiplying width by `layers` once array
+  // Mailboxes are available.
   unsigned max_texture_size = device_->limits()->maxTextureDimension2D();
-  if (scaled_size.width() > max_texture_size ||
+  if (scaled_size.width() * layers > max_texture_size ||
       scaled_size.height() > max_texture_size) {
-    double max_dimension = std::max(scaled_size.width(), scaled_size.height());
+    double max_dimension =
+        std::max(scaled_size.width() * layers, scaled_size.height());
     scaled_size = gfx::ScaleSize(scaled_size, max_texture_size / max_dimension);
   }
 
+  // Floor the per-layer size before multiplying width by `layers` so that the
+  // side-by-side texture width is guaranteed to be a multiple of `layers`.
   gfx::Size texture_size = gfx::ToFlooredSize(scaled_size);
+  texture_size.set_width(texture_size.width() * layers);
 
   // Create the side-by-side color swap chain
   wgpu::TextureDescriptor color_desc = {};
@@ -145,8 +150,7 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
   // TODO(crbug.com/359418629): Remove once array Mailboxes are available.
   XRGPUTextureArraySwapChain* wrapped_swap_chain =
       MakeGarbageCollected<XRGPUTextureArraySwapChain>(
-          device_, color_swap_chain, AsDawnEnum(init->colorFormat()),
-          base::checked_cast<uint32_t>(session()->array_texture_layers()));
+          device_, color_swap_chain, AsDawnEnum(init->colorFormat()), layers);
 
   // Create the depth/stencil swap chain
   XRGPUStaticSwapChain* depth_stencil_swap_chain = nullptr;
