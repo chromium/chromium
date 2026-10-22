@@ -40,6 +40,11 @@ bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile) {
   if (profile->IsGuestSession()) {
     return false;
   }
+  // They are also disabled in profiles that have no policy connector, since it
+  // can't be checked whether policies allow them.
+  if (!profile->GetProfilePolicyConnector()) {
+    return false;
+  }
   return !profile->IsChild();
 }
 

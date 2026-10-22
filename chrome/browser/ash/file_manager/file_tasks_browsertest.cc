@@ -87,6 +87,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -1136,6 +1137,28 @@ class GuestMode : public MixinBasedInProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(GuestMode, IsEligibleAndEnabledUploadOfficeToCloud) {
   ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
       browser()->GetProfile()));
+}
+
+// A profile that has no policy connector.
+class TestingProfileWithoutPolicyConnector : public TestingProfile {
+ public:
+  policy::ProfilePolicyConnector* GetProfilePolicyConnector() override {
+    return nullptr;
+  }
+  const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
+      const override {
+    return nullptr;
+  }
+};
+
+using ProfileWithoutPolicyConnector = InProcessBrowserTest;
+
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false for a
+// profile that has no policy connector.
+IN_PROC_BROWSER_TEST_F(ProfileWithoutPolicyConnector,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
+  TestingProfileWithoutPolicyConnector profile;
+  ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(&profile));
 }
 
 // TODO(cassycc or petermarshall) share this class with other test files for

@@ -13,6 +13,7 @@ namespace chromeos {
 // Return True if user of the `profile` is eligible for Office files upload.
 // A user is eligible if:
 // - They are not in Guest mode.
+// - Their profile has a policy connector.
 // - They are not a child profile.
 bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile);
 
