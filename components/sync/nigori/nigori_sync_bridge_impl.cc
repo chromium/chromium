@@ -572,11 +572,7 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
 
   state_.keystore_keys_cryptographer =
       KeystoreKeysCryptographer::FromKeystoreKeys(Base64EncodeKeys(keys));
-  if (!state_.keystore_keys_cryptographer) {
-    state_.keystore_keys_cryptographer =
-        KeystoreKeysCryptographer::CreateEmpty();
-    return false;
-  }
+  CHECK(state_.keystore_keys_cryptographer, base::NotFatalUntil::M162);
 
   if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE &&
       state_.pending_keys.has_value()) {

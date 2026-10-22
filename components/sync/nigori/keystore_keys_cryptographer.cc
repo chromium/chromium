@@ -38,15 +38,8 @@ KeystoreKeysCryptographer::FromKeystoreKeys(
 
   for (const std::string& key : keystore_keys) {
     last_key_name = key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), key);
-
-    if (last_key_name.empty()) {
-      // TODO(crbug.com/40868132): this shouldn't be possible, clean up once
-      // lower-level Nigori code explicitly guarantees that.
-      return nullptr;
-    }
+    CHECK(!last_key_name.empty(), base::NotFatalUntil::M162);
   }
-
-  DCHECK(!last_key_name.empty());
 
   return base::WrapUnique(new KeystoreKeysCryptographer(
       std::move(key_bag), last_key_name, keystore_keys));
@@ -61,7 +54,6 @@ KeystoreKeysCryptographer::KeystoreKeysCryptographer(
       keystore_keys_(keystore_keys) {}
 
 KeystoreKeysCryptographer::~KeystoreKeysCryptographer() = default;
-
 
 bool KeystoreKeysCryptographer::IsEmpty() const {
   return keystore_keys_.empty();

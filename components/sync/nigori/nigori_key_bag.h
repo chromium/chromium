@@ -47,7 +47,7 @@ class NigoriKeyBag {
   sync_pb::NigoriKey ExportKey(const std::string& key_name) const;
 
   // Adds a new key to the keybag by deriving Nigori keys. Returns the name of
-  // the key or an empty string in case of failure.
+  // the key (never empty).
   std::string AddKey(const KeyDerivationParams& key_derivation_params,
                      const std::string& password);
 

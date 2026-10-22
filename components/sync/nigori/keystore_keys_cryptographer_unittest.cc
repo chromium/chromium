@@ -37,6 +37,17 @@ TEST(KeystoreKeysCryptographerTest, ShouldCreateEmpty) {
   EXPECT_FALSE(underlying_cryptographer->CanEncrypt());
 }
 
+// Verifies that `FromKeystoreKeys()` returns a non-null empty cryptographer
+// when given an empty vector of keystore keys.
+TEST(KeystoreKeysCryptographerTest, ShouldCreateEmptyFromEmptyKeystoreKeys) {
+  std::unique_ptr<KeystoreKeysCryptographer> keystore_keys_cryptographer =
+      KeystoreKeysCryptographer::FromKeystoreKeys({});
+
+  ASSERT_THAT(keystore_keys_cryptographer, NotNull());
+  EXPECT_TRUE(keystore_keys_cryptographer->IsEmpty());
+  EXPECT_TRUE(keystore_keys_cryptographer->keystore_keys().empty());
+}
+
 TEST(KeystoreKeysCryptographerTest, ShouldCreateNonEmpty) {
   const std::vector<std::string> kKeystoreKeys = {"key1", "key2"};
   const std::string keystore_key_name1 =

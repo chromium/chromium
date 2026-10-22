@@ -25,9 +25,8 @@ class CryptographerImpl;
 // last one as the default encryption key.
 class KeystoreKeysCryptographer {
  public:
-  // Factory methods.
+  // Factory methods. Never return null.
   static std::unique_ptr<KeystoreKeysCryptographer> CreateEmpty();
-  // Returns null if crypto error occurs.
   static std::unique_ptr<KeystoreKeysCryptographer> FromKeystoreKeys(
       const std::vector<std::string>& keystore_keys);
 

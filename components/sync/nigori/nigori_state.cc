@@ -155,13 +155,9 @@ NigoriState NigoriState::CreateFromLocalProto(
   state.encrypt_everything = proto.encrypt_everything();
 
   state.keystore_keys_cryptographer =
-      KeystoreKeysCryptographer::FromKeystoreKeys(base::ToVector(proto.keystore_key()));
-  if (!state.keystore_keys_cryptographer) {
-    // Crypto error occurs, create empty `keystore_keys_cryptographer`.
-    // Effectively it resets keystore keys.
-    state.keystore_keys_cryptographer =
-        KeystoreKeysCryptographer::CreateEmpty();
-  }
+      KeystoreKeysCryptographer::FromKeystoreKeys(
+          base::ToVector(proto.keystore_key()));
+  CHECK(state.keystore_keys_cryptographer, base::NotFatalUntil::M162);
 
   if (proto.has_pending_keystore_decryptor_token()) {
     state.pending_keystore_decryptor_token =
