@@ -380,6 +380,7 @@ class PdfInkModule {
 
   void HandleAnnotationRedoMessage(const base::DictValue& message);
   void HandleAnnotationUndoMessage(const base::DictValue& message);
+  void HandleDeleteTextAnnotationMessage(const base::DictValue& message);
   void HandleEditTextAnnotationMessage(const base::DictValue& message);
   void HandleFinishTextAnnotationMessage(const base::DictValue& message);
   void HandleGetAllTextAnnotationsMessage(const base::DictValue& message);
@@ -452,6 +453,10 @@ class PdfInkModule {
   // generator so those IDs can be reused. Does nothing if `lowest_discard` is
   // nullopt.
   void ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard);
+
+  // Removes the text annotation with `frontend_id`, if it exists. Returns
+  // the ID of the removed annotation, or std::nullopt if it does not exist.
+  std::optional<TextId> MaybeDeleteExistingTextAnnotation(int frontend_id);
 
   // Sets the cursor to a drawing/erasing brush cursor when necessary.
   void MaybeSetCursor();

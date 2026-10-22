@@ -571,13 +571,29 @@ export class Ink2Manager extends EventTarget {
     }
 
     const previous = pageAnnotations.get(annotation.id);
-    if (annotation.text === '') {
-      // Delete an existing annotation.
-      assert(pageAnnotations.delete(annotation.id));
-    } else {
-      pageAnnotations.set(annotation.id, annotation);
-    }
+    pageAnnotations.set(annotation.id, annotation);
     return previous || null;
+  }
+
+  /**
+   * Deletes the stored annotation with `id` on `pageIndex` and notifies the
+   * plugin of the deleted annotation.
+   */
+  deleteTextAnnotation(id: number, pageIndex: number) {
+    const pageAnnotations = this.annotations_.get(pageIndex);
+    assert(pageAnnotations);
+    const before = pageAnnotations.get(id);
+    assert(before, 'Tried to delete a non-existent annotation');
+    this.stack_.push({type: 'text', before, after: null});
+    assert(pageAnnotations.delete(id));
+    this.pluginController_.deleteTextAnnotation({
+      id,
+      pageIndex,
+      source: TextAnnotationSource.USER,
+    });
+    this.existingAnnotationAttributes_ = null;
+    this.dispatchEvent(new CustomEvent('annotations-updated'));
+    this.fireAttributesChanged_();
   }
 
   /**
@@ -588,19 +604,18 @@ export class Ink2Manager extends EventTarget {
       annotation: TextAnnotation, isEdited: boolean,
       newTypefaces: chrome.pdfViewerPrivate.Typeface[]) {
     assert(this.viewport_);
+    assert(annotation.text !== '');
     annotation.textBoxRect = screenToPageCoordinates(
         annotation.pageIndex, annotation.textBoxRect, this.viewport_);
 
     if (isEdited) {
       const before = this.updateStoredAnnotation_(annotation);
-      const after = annotation.text === '' ? null : structuredClone(annotation);
-      if (before !== null || after !== null) {
-        this.stack_.push({
-          type: 'text',
-          before,
-          after,
-        });
-      }
+      const after = structuredClone(annotation);
+      this.stack_.push({
+        type: 'text',
+        before,
+        after,
+      });
     }
 
     const messageData: TextAnnotationMessageData = {
@@ -691,20 +706,21 @@ export class Ink2Manager extends EventTarget {
     assert(pageAnnotations);
     if (isDeletion) {
       pageAnnotations.delete(annotation.id);
+      this.pluginController_.deleteTextAnnotation({
+        id: annotation.id,
+        pageIndex: annotation.pageIndex,
+        source,
+      });
     } else {
       pageAnnotations.set(annotation.id, annotation);
+      const messageData: TextAnnotationMessageData = {
+        ...annotation,
+        isEdited: true,
+        newTypefaces: [],
+        source,
+      };
+      this.pluginController_.finishTextAnnotation(messageData);
     }
-
-    const messageData: TextAnnotationMessageData = {
-      ...annotation,
-      isEdited: true,
-      newTypefaces: [],
-      source,
-    };
-    if (isDeletion) {
-      messageData.text = '';
-    }
-    this.pluginController_.finishTextAnnotation(messageData);
     this.dispatchEvent(new CustomEvent('annotations-updated'));
   }
 

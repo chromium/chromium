@@ -386,6 +386,14 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       return promise;
     }
 
+    if (!hasTextValue) {
+      // Text deleted.
+      Ink2Manager.getInstance().deleteTextAnnotation(this.id_, this.pageIndex_);
+      this.finishCommit_();
+      record(UserAction.DELETE_INK2_TEXT_ANNOTATION);
+      return promise;
+    }
+
     // Save the existing state with dummy mojoTextInfo.
     assert(this.attributes_);
     const isEdited = this.state_ === TextBoxState.EDITED;
@@ -415,7 +423,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       return promise;
     }
 
-    // Has edits.
+    // Addition or edit.
     (async () => {
       try {
         const result =
@@ -429,15 +437,9 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         annotation.mojoTextInfo = result.mojoTextInfo;
         Ink2Manager.getInstance().commitTextAnnotation(
             annotation, isEdited, result.typefaces);
-        let action;
-        if (this.existing_) {
-          action = hasTextValue ?
-              UserAction.EDIT_INK2_TEXT_ANNOTATION :
-              action = UserAction.DELETE_INK2_TEXT_ANNOTATION;
-        } else {
-          action = UserAction.ADD_INK2_TEXT_ANNOTATION;
-        }
-        record(action);
+        record(
+            this.existing_ ? UserAction.EDIT_INK2_TEXT_ANNOTATION :
+                             UserAction.ADD_INK2_TEXT_ANNOTATION);
       } catch (e) {
         console.error('Error committing text annotation:', e);
       } finally {

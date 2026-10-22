@@ -193,6 +193,9 @@ InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
   bool is_strikethrough = styles.FindBool("strikethrough").value();
   bool is_underline = styles.FindBool("underline").value();
 
+  const std::string& text = *data.FindString("text");
+  CHECK(!text.empty());
+
   return InkTextBoxAttributes{
       .rect = textbox,
       .color = GetColorFromDict(text_attributes),
@@ -205,7 +208,7 @@ InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
       .is_italic = is_italic,
       .is_strikethrough = is_strikethrough,
       .is_underline = is_underline,
-      .text = *data.FindString("text"),
+      .text = text,
   };
 }
 
@@ -385,6 +388,8 @@ bool PdfInkModule::OnMessage(const base::DictValue& message) {
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
           {"annotationRedo", &PdfInkModule::HandleAnnotationRedoMessage},
           {"annotationUndo", &PdfInkModule::HandleAnnotationUndoMessage},
+          {"deleteTextAnnotation",
+           &PdfInkModule::HandleDeleteTextAnnotationMessage},
           {"editTextAnnotation",
            &PdfInkModule::HandleEditTextAnnotationMessage},
           {"finishTextAnnotation",
@@ -1619,6 +1624,35 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
   MaybeSetCursor();
 }
 
+void PdfInkModule::HandleDeleteTextAnnotationMessage(
+    const base::DictValue& message) {
+  const base::DictValue& data = *message.FindDict("data");
+  const int frontend_id = data.FindInt("id").value();
+  const int page_index = data.FindInt("pageIndex").value();
+  const std::string& source = *data.FindString("source");
+  // Figure out if this message is for a user action, or for handling undo/redo.
+  // If this is for handling undo/redo, then do not modify `undo_redo_model_`.
+  const bool modify_undo_redo_model = source == "user";
+  if (modify_undo_redo_model) {
+    base::expected<std::optional<IdType>, std::monostate> lowest_discard =
+        undo_redo_model_.Start();
+    CHECK(lowest_discard.has_value());
+    ApplyUndoRedoDiscards(lowest_discard.value());
+  } else {
+    CHECK(source == "undo" || source == "redo");
+  }
+
+  std::optional<TextId> existing_id =
+      MaybeDeleteExistingTextAnnotation(frontend_id);
+  CHECK(existing_id.has_value());
+  if (modify_undo_redo_model) {
+    CHECK(undo_redo_model_.Remove(TextIdToIdType(existing_id.value())));
+    CHECK(undo_redo_model_.Finish());
+  }
+
+  RequestThumbnailUpdates({page_index});
+}
+
 void PdfInkModule::HandleEditTextAnnotationMessage(
     const base::DictValue& message) {
   int frontend_id = message.FindInt("data").value();
@@ -1662,35 +1696,11 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   // The edit can be one of the following, which breaks down into 1 or 2 steps:
   // - Addition: No existing annotation to delete. Only add new annotation.
   // - Modification: Delete existing annotation and add new annotation.
-  // - Deletion: Delete existing annotation only.
   // First do the deletion if needed.
-  if (auto it = text_id_map_.find(frontend_id); it != text_id_map_.end()) {
-    TextId existing_id = it->second;
-    // Make sure `existing_id` gets hidden before being discarded.
-    client_->UpdateTextActiveAndInvalidate(existing_id, /*active=*/false);
-    // "HandleFinishTextAnnotationMessageDiscard" note: This method will discard
-    // here before getting a new ID from `id_generator_` below. The block above
-    // this just called `ApplyUndoRedoDiscards()`. This complies with the
-    // assumptions `ApplyUndoRedoDiscards()` made regarding text annotation
-    // discards.
-    if (std::holds_alternative<InkTextId>(existing_id)) {
-      client_->DiscardText(std::get<InkTextId>(existing_id));
-    }
-    text_id_map_.erase(it);
-
-    if (modify_undo_redo_model) {
-      CHECK(undo_redo_model_.Remove(TextIdToIdType(existing_id)));
-    }
-
-    // Empty text means the annotation is being deleted. Return early since
-    // there is nothing to add.
-    if (data.FindString("text")->empty()) {
-      if (modify_undo_redo_model) {
-        CHECK(undo_redo_model_.Finish());
-      }
-      RequestThumbnailUpdates({page_index});
-      return;
-    }
+  std::optional<TextId> existing_id =
+      MaybeDeleteExistingTextAnnotation(frontend_id);
+  if (existing_id.has_value() && modify_undo_redo_model) {
+    CHECK(undo_redo_model_.Remove(TextIdToIdType(existing_id.value())));
   }
 
   std::optional<TextId> undo_redo_text_id;
@@ -1863,7 +1873,8 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     if (std::holds_alternative<InkTextId>(id) ||
         std::holds_alternative<InkLoadedTextId>(id)) {
       // No need to handle text objects. The frontend will separately send
-      // "finishTextAnnotation" messages and make changes there.
+      // "deleteTextAnnotation" and "finishTextAnnotation" messages and make
+      // changes there.
       continue;
     }
 
@@ -1979,8 +1990,9 @@ void PdfInkModule::ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard) {
   // Only discard Ink Strokes:
   // - InkModeledShapes cannot be discarded
   // - No need to discard text objects. The frontend will separately send
-  //   "finishTextAnnotation" messages and discard there. See the
-  //   "HandleFinishTextAnnotationMessageDiscard" comment in this file.
+  //   "deleteTextAnnotation" and "finishTextAnnotation" messages and discard
+  //   there. See the "HandleFinishTextAnnotationMessageDiscard" comment in this
+  //   file.
   CHECK(!std::holds_alternative<InkModeledShapeId>(lowest_discard.value()));
 
   const size_t lowest_discard_value = GetIdTypeValue(lowest_discard.value());
@@ -2011,6 +2023,29 @@ void PdfInkModule::ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard) {
   // Now that some annotations have been discarded, Let the IdGenerator know
   // there are IDs available for reuse.
   id_generator_.ResetIdTo(lowest_discard_value);
+}
+
+std::optional<TextId> PdfInkModule::MaybeDeleteExistingTextAnnotation(
+    int frontend_id) {
+  auto it = text_id_map_.find(frontend_id);
+  if (it == text_id_map_.end()) {
+    return std::nullopt;
+  }
+
+  TextId existing_id = it->second;
+  // Make sure `existing_id` gets hidden before being discarded.
+  client_->UpdateTextActiveAndInvalidate(existing_id, /*active=*/false);
+  // "HandleFinishTextAnnotationMessageDiscard" note: When called from
+  // `HandleDeleteTextAnnotationMessage()` or
+  // `HandleFinishTextAnnotationMessage()`, this method will discard here before
+  // getting a new ID from `id_generator_`. The caller just called
+  // `ApplyUndoRedoDiscards()`. This complies with the assumptions
+  // `ApplyUndoRedoDiscards()` made regarding text annotation discards.
+  if (std::holds_alternative<InkTextId>(existing_id)) {
+    client_->DiscardText(std::get<InkTextId>(existing_id));
+  }
+  text_id_map_.erase(it);
+  return existing_id;
 }
 
 bool PdfInkModule::MaybeSetDrawingBrush() {

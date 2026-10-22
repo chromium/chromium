@@ -39,6 +39,12 @@ export interface AnnotationBrush {
   size?: number;
 }
 
+export interface DeleteTextAnnotationMessageData {
+  id: number;
+  pageIndex: number;
+  source: TextAnnotationSource;
+}
+
 export interface TextAnnotation {
   id: number;
   // Stored because the backend requires it to be re-sent with every update.

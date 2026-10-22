@@ -2678,15 +2678,11 @@ TEST_F(PdfViewWebPluginInk2SaveInBlocksTest,
 
   plugin_->EnteredEditMode();
 
-  base::DictValue finish_data =
-      SampleFinishTextAnnotationData(/*frontend_id=*/0, FontId(123),
-                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
-  finish_data.Set("text", "");
-
   EXPECT_CALL(*engine_ptr_, UpdateTextActiveAndInvalidate(_, false));
   EXPECT_CALL(*engine_ptr_, RequestThumbnail(_, _, _));
 
-  plugin_->OnMessage(CreateFinishTextAnnotationMessage(std::move(finish_data)));
+  plugin_->OnMessage(
+      CreateDeleteTextAnnotationMessage(/*frontend_id=*/0, /*page_index=*/0));
 
   base::span data(TestPDFiumEngine::kSaveData);
   ExpectResponse(data, 0, data.size(), "token-1");
@@ -2956,15 +2952,11 @@ TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest,
 
   plugin_->EnteredEditMode();
 
-  base::DictValue finish_data =
-      SampleFinishTextAnnotationData(/*frontend_id=*/0, FontId(123),
-                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
-  finish_data.Set("text", "");
-
   EXPECT_CALL(*engine_ptr_, UpdateTextActiveAndInvalidate(_, false));
   EXPECT_CALL(*engine_ptr_, RequestThumbnail(_, _, _));
 
-  plugin_->OnMessage(CreateFinishTextAnnotationMessage(std::move(finish_data)));
+  plugin_->OnMessage(
+      CreateDeleteTextAnnotationMessage(/*frontend_id=*/0, /*page_index=*/0));
 
   base::HistogramTester histograms;
   base::span<const uint8_t> data(TestPDFiumEngine::kSaveData);
@@ -4360,15 +4352,11 @@ TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditModeMetricsRemoved) {
 
   plugin_->EnteredEditMode();
 
-  base::DictValue finish_data =
-      SampleFinishTextAnnotationData(/*frontend_id=*/0, FontId(123),
-                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
-  finish_data.Set("text", "");
-
   EXPECT_CALL(*engine_ptr_, UpdateTextActiveAndInvalidate(_, false));
   EXPECT_CALL(*engine_ptr_, RequestThumbnail(_, _, _));
 
-  plugin_->OnMessage(CreateFinishTextAnnotationMessage(std::move(finish_data)));
+  plugin_->OnMessage(
+      CreateDeleteTextAnnotationMessage(/*frontend_id=*/0, /*page_index=*/0));
 
   pdf_receiver_.FlushForTesting();
 

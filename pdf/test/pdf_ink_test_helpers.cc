@@ -104,6 +104,24 @@ base::DictValue CreateSetAnnotationUndoRedoMessageForTesting(
   NOTREACHED();
 }
 
+base::DictValue CreateDeleteTextAnnotationMessage(int frontend_id,
+                                                  int page_index) {
+  return CreateDeleteTextAnnotationMessageWithSource(frontend_id, page_index,
+                                                     "user");
+}
+
+base::DictValue CreateDeleteTextAnnotationMessageWithSource(
+    int frontend_id,
+    int page_index,
+    std::string_view source) {
+  return base::DictValue()
+      .Set("type", "deleteTextAnnotation")
+      .Set("data", base::DictValue()
+                       .Set("id", frontend_id)
+                       .Set("pageIndex", page_index)
+                       .Set("source", source));
+}
+
 base::DictValue CreateEditTextAnnotationMessage(int frontend_id) {
   return base::DictValue()
       .Set("type", "editTextAnnotation")

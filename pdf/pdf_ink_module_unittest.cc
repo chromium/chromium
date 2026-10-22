@@ -1104,12 +1104,9 @@ class PdfInkModuleTextTest : public testing::Test {
 
     {
       // Undo does not record any new histograms.
-      base::DictValue data = SampleFinishTextAnnotationDataWithSource(
-          frontend_id, font_id, page_index, pdf_zoom, /*source=*/"undo");
-      data.Set("text", "");
-
-      EXPECT_TRUE(ink_module().OnMessage(
-          CreateFinishTextAnnotationMessage(std::move(data))));
+      EXPECT_TRUE(
+          ink_module().OnMessage(CreateDeleteTextAnnotationMessageWithSource(
+              frontend_id, page_index, /*source=*/"undo")));
       PerformUndo();
 
       for (const auto& [metric_name, count] : expected_counts) {
@@ -1133,12 +1130,8 @@ class PdfInkModuleTextTest : public testing::Test {
 
     {
       // Deletion does not record any new histograms.
-      base::DictValue data = SampleFinishTextAnnotationData(
-          frontend_id, font_id, page_index, pdf_zoom);
-      data.Set("text", "");
-
       EXPECT_TRUE(ink_module().OnMessage(
-          CreateFinishTextAnnotationMessage(std::move(data))));
+          CreateDeleteTextAnnotationMessage(frontend_id, page_index)));
 
       for (const auto& [metric_name, count] : expected_counts) {
         histograms.ExpectTotalCount(metric_name, count);
@@ -1737,7 +1730,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageEdit) {
   }
 }
 
-TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageDelete) {
+TEST_F(PdfInkModuleTextTest, HandleDeleteTextAnnotationMessage) {
   static constexpr int kFrontendId = 5;
   static constexpr int kPageIndex = 3;
   static constexpr FontId kFontId(123);
@@ -1772,10 +1765,6 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageDelete) {
   }
 
   {
-    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
-                                                          kPageIndex, kPdfZoom);
-    data.Set("text", "");
-
     InSequence seq;
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId),
                                                         /*active=*/false));
@@ -1785,7 +1774,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageDelete) {
     EXPECT_CALL(client(), DrawText(_, _, _, _, _, _)).Times(0);
 
     EXPECT_TRUE(ink_module().OnMessage(
-        CreateFinishTextAnnotationMessage(std::move(data))));
+        CreateDeleteTextAnnotationMessage(kFrontendId, kPageIndex)));
     testing::Mock::VerifyAndClearExpectations(this);
   }
 }
@@ -1830,10 +1819,6 @@ TEST_F(PdfInkModuleTextTest,
   {
     // Undoing the text annotation is effectively a non-user deletion of
     // `kTextId0`.
-    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
-        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
-    data.Set("text", "");
-
     InSequence seq;
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
                                                         /*active=*/false));
@@ -1842,8 +1827,9 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _, _)).Times(0);
 
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateFinishTextAnnotationMessage(std::move(data))));
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateDeleteTextAnnotationMessageWithSource(
+            kFrontendId, kPageIndex, /*source=*/"undo")));
     PerformUndo();
     testing::Mock::VerifyAndClearExpectations(this);
   }
@@ -1920,10 +1906,6 @@ TEST_F(PdfInkModuleTextTest,
   {
     // Undoing the text annotation again is effectively another non-user
     // deletion of `kTextId0`.
-    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
-        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
-    data.Set("text", "");
-
     InSequence seq;
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
                                                         /*active=*/false));
@@ -1932,8 +1914,9 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _, _)).Times(0);
 
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateFinishTextAnnotationMessage(std::move(data))));
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateDeleteTextAnnotationMessageWithSource(
+            kFrontendId, kPageIndex, /*source=*/"undo")));
     PerformUndo();
     testing::Mock::VerifyAndClearExpectations(this);
   }
@@ -1999,10 +1982,6 @@ TEST_F(PdfInkModuleTextTest,
 
   {
     // Delete the text annotation.
-    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
-                                                          kPageIndex, kPdfZoom);
-    data.Set("text", "");
-
     InSequence seq;
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
                                                         /*active=*/false));
@@ -2011,7 +1990,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(client(), DrawText(_, _, _, _, _, _)).Times(0);
 
     EXPECT_TRUE(ink_module().OnMessage(
-        CreateFinishTextAnnotationMessage(std::move(data))));
+        CreateDeleteTextAnnotationMessage(kFrontendId, kPageIndex)));
     testing::Mock::VerifyAndClearExpectations(this);
   }
 
@@ -2037,10 +2016,6 @@ TEST_F(PdfInkModuleTextTest,
 
   {
     // Redoing the deletion is effectively a non-user deletion of `kTextId0`.
-    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
-        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"redo");
-    data.Set("text", "");
-
     InSequence seq;
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
                                                         /*active=*/false));
@@ -2048,8 +2023,9 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _, _)).Times(0);
 
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateFinishTextAnnotationMessage(std::move(data))));
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateDeleteTextAnnotationMessageWithSource(
+            kFrontendId, kPageIndex, /*source=*/"redo")));
     PerformRedo();
     testing::Mock::VerifyAndClearExpectations(this);
   }
@@ -2271,17 +2247,14 @@ TEST_F(PdfInkModuleTextTest,
 
   {
     // Undo.
-    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
-        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
-    data.Set("text", "");
-
     InSequence seq;
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
                                                         /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId0));
 
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateFinishTextAnnotationMessage(std::move(data))));
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateDeleteTextAnnotationMessageWithSource(
+            kFrontendId, kPageIndex, /*source=*/"undo")));
     PerformUndo();
     testing::Mock::VerifyAndClearExpectations(this);
   }
@@ -2353,17 +2326,14 @@ TEST_F(PdfInkModuleTextTest,
 
   {
     // Undo.
-    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
-        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
-    data.Set("text", "");
-
     InSequence seq;
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
                                                         /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId0));
 
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateFinishTextAnnotationMessage(std::move(data))));
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateDeleteTextAnnotationMessageWithSource(
+            kFrontendId, kPageIndex, /*source=*/"undo")));
     PerformUndo();
     testing::Mock::VerifyAndClearExpectations(this);
   }
@@ -2440,17 +2410,11 @@ TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveAdded) {
 TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveRemoved) {
   InitializeLoadedTextAnnotations(2);
 
-  static constexpr FontId kFontId(123);
-  base::DictValue finish_data =
-      SampleFinishTextAnnotationData(/*frontend_id=*/0, kFontId,
-                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
-  finish_data.Set("text", "");
-
   EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, false));
   EXPECT_CALL(client(), RequestThumbnail(_, _));
 
   EXPECT_TRUE(ink_module().OnMessage(
-      CreateFinishTextAnnotationMessage(std::move(finish_data))));
+      CreateDeleteTextAnnotationMessage(/*frontend_id=*/0, /*page_index=*/0)));
 
   base::HistogramTester histograms;
   ink_module().RecordMetricsOnSave();
@@ -2530,16 +2494,11 @@ TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveMultipleSaves) {
 
   {
     // Remove 1 annotation (total 7).
-    base::DictValue finish_data =
-        SampleFinishTextAnnotationData(/*frontend_id=*/10, kFontId,
-                                       /*page_index=*/0, /*pdf_zoom=*/1.0);
-    finish_data.Set("text", "");
-
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, false));
     EXPECT_CALL(client(), RequestThumbnail(_, _));
 
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateFinishTextAnnotationMessage(std::move(finish_data))));
+    EXPECT_TRUE(ink_module().OnMessage(CreateDeleteTextAnnotationMessage(
+        /*frontend_id=*/10, /*page_index=*/0)));
 
     base::HistogramTester histograms;
     ink_module().RecordMetricsOnSave();

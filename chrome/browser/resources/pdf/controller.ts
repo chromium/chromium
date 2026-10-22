@@ -7,7 +7,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 // clang-format off
 // <if expr="enable_pdf_ink2">
-import type {AnnotationBrush, AnnotationBrushType, AnnotationMode, TextAnnotation, TextAnnotationMessageData} from './constants.js';
+import type {AnnotationBrush, AnnotationBrushType, AnnotationMode, DeleteTextAnnotationMessageData, TextAnnotation, TextAnnotationMessageData} from './constants.js';
 // </if>
 import type {NamedDestinationMessageData, Rect} from './constants.js';
 // clang-format on
@@ -70,6 +70,12 @@ export interface AnnotationBrushMessage {
 interface AllTextAnnotationsMessage {
   type: 'getAllTextAnnotations';
   annotations: TextAnnotation[];
+}
+
+// deleteTextAnnotation goes from the viewer to the plugin.
+interface DeleteTextAnnotationMessage {
+  type: 'deleteTextAnnotation';
+  data: DeleteTextAnnotationMessageData;
 }
 
 interface EditTextAnnotationMessage {
@@ -252,7 +258,8 @@ export type PluginMessageWithoutReply = StopScrollingMessage|ViewportMessage|
     SetPresentationModeMessage|SaveMessage|GetSaveDataBlockMessage|
     ReleaseSaveInBlockBuffersMessage|FocusMessage
     // <if expr="enable_pdf_ink2">
-    |SetAnnotationModeMessage|AnnotationBrushMessage|EditTextAnnotationMessage|
+    |SetAnnotationModeMessage|AnnotationBrushMessage|
+    DeleteTextAnnotationMessage|EditTextAnnotationMessage|
     FinishTextAnnotationMessage|AnnotationRedoMessage|AnnotationUndoMessage
     // </if>
     ;
@@ -446,6 +453,15 @@ export class PluginController implements ContentController {
     return this.postMessageWithReply_({
       type: 'getAllTextAnnotations',
     });
+  }
+
+  deleteTextAnnotation(data: DeleteTextAnnotationMessageData) {
+    const message: DeleteTextAnnotationMessage = {
+      type: 'deleteTextAnnotation',
+      data,
+    };
+
+    this.postMessage_(message);
   }
 
   editTextAnnotation(id: number) {

@@ -11,7 +11,7 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertPositionAndSize, dragHandleWithKeyboard, getCtrlModifier, getStrikethroughKey, getStrikethroughModifiers, getTestAnnotation, initializeBox, reactivateBox, setupTextBoxTest, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
+import {assertPositionAndSize, dragHandleWithKeyboard, getCtrlModifier, getStrikethroughKey, getStrikethroughModifiers, getTestAnnotation, initializeBox, reactivateBox, setupTextBoxTest, verifyDeleteTextAnnotationMessage, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
 import {getRequiredElement} from './test_util.js';
 
 async function setUpExistingAnnotation(
@@ -262,8 +262,8 @@ chrome.test.runTests([
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
 
-    testAnnotation.text = '';
-    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true);
+    verifyDeleteTextAnnotationMessage(
+        mockPlugin, testAnnotation.id, testAnnotation.pageIndex);
 
     chrome.test.succeed();
   },
@@ -278,8 +278,8 @@ chrome.test.runTests([
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
 
-    testAnnotation.text = '';
-    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true);
+    verifyDeleteTextAnnotationMessage(
+        mockPlugin, testAnnotation.id, testAnnotation.pageIndex);
 
     chrome.test.succeed();
   },
@@ -450,14 +450,10 @@ chrome.test.runTests([
 
     await microtasksFinished();
 
-    // Verify cut immediately deletes the annotation (commits empty).
+    // Verify cut immediately deletes the annotation.
     chrome.test.assertTrue(textbox.hidden);
-    const expectedAnnotation = {
-      ...testAnnotation,
-      text: '',
-    };
-    verifyFinishTextAnnotationMessage(
-        mockPlugin, expectedAnnotation, /*expectedIsEdited=*/ true);
+    verifyDeleteTextAnnotationMessage(
+        mockPlugin, testAnnotation.id, testAnnotation.pageIndex);
 
     chrome.test.succeed();
   },

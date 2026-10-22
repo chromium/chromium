@@ -68,6 +68,14 @@ base::DictValue CreateSetAnnotationBrushMessageForTesting(
 base::DictValue CreateSetAnnotationUndoRedoMessageForTesting(
     TestAnnotationUndoRedoMessageType type);
 
+base::DictValue CreateDeleteTextAnnotationMessage(int frontend_id,
+                                                  int page_index);
+
+base::DictValue CreateDeleteTextAnnotationMessageWithSource(
+    int frontend_id,
+    int page_index,
+    std::string_view source);
+
 base::DictValue CreateEditTextAnnotationMessage(int frontend_id);
 
 base::DictValue CreateFinishTextAnnotationMessage(base::DictValue data);
