@@ -46,14 +46,20 @@ inline constexpr char kWebNNOrtDumpModel[] = "webnn-ort-dump-model";
 // --allow-third-party-modules
 inline constexpr char kWebNNOrtLibraryPathForTesting[] =
     "webnn-ort-library-path-for-testing";
-// Specify the ORT EP name and library path pair via this switch for testing
-// development EP builds. Libraries of the ORT EP specified by the EP name
-// are forced to be loaded from the specified path. This switch is not to be
-// used in shipping scenarios and is ignored by default.
-// The value should be in the format <ep_name>?<ep_library_path>.
+// Specify one or more ORT EP name and library path pairs via this switch for
+// testing development EP builds. Libraries of each ORT EP specified by the EP
+// name are forced to be loaded from the specified path. This switch is not to
+// be used in shipping scenarios and is ignored by default.
+// Each pair should be in the format <ep_name>?<ep_library_path>, and multiple
+// pairs are separated by ",", e.g.
+// <ep_name1>?<ep_library_path1>,<ep_name2>?<ep_library_path2>.
+// Library paths must not contain ",". Each EP name may only appear once. Any
+// invalid pair disables the whole switch.
 // Usage:
-// --webnn-ort-ep-library-path-for-testing=OpenVINOExecutionProvider?"C:\Program
-// Files\ONNXRuntime-EP\onnxruntime_providers_openvino_plugin.dll"
+// --webnn-ort-ep-library-path-for-testing="OpenVINOExecutionProvider?C:\Program
+// Files\ONNXRuntime-EP\onnxruntime_providers_openvino_plugin.dll,
+// WebGpuExecutionProvider?C:\Program
+// Files\ONNXRuntime-EP\onnxruntime_providers_webgpu.dll"
 // --allow-third-party-modules
 inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =
     "webnn-ort-ep-library-path-for-testing";

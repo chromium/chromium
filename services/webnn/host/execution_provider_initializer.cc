@@ -147,42 +147,58 @@ PACKAGE_VERSION GetMinPackageVersion(const std::string& ep_name) {
   };
 }
 
-// Parses the `kWebNNOrtEpLibraryPathForTesting` command-line switch and returns
-// the EP name and a fabricated `EpPackageInfo` with an empty `family_name` (so
-// that `Environment::Create()` skips `InitializePackageDependency` for it).
-// Returns nullopt if the switch is absent or its value is invalid.
-std::optional<std::pair<std::string, mojom::EpPackageInfoPtr>>
-ParseTestingEpLibraryPathSwitch() {
-  std::wstring value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
-          switches::kWebNNOrtEpLibraryPathForTesting);
+using TestingEp = std::pair<std::string, mojom::EpPackageInfoPtr>;
+
+// Parses the `kWebNNOrtEpLibraryPathForTesting` switch and returns the EP names
+// and fabricated `EpPackageInfo`s with an empty `family_name` (so that
+// `Environment::Create()` skips `InitializePackageDependency` for them).
+// Returns an empty vector if the switch is absent or any entry is invalid.
+std::vector<TestingEp> ParseTestingEpLibraryPathSwitch(
+    const base::CommandLine& command_line) {
+  std::wstring value = command_line.GetSwitchValueNative(
+      switches::kWebNNOrtEpLibraryPathForTesting);
   if (value.empty()) {
-    return std::nullopt;
+    return {};
   }
 
-  std::vector<std::wstring> parts = base::SplitString(
-      value, L"?", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (parts.size() != 2) {
-    LOG(WARNING) << "[WebNN] Invalid value of the switch "
-                 << switches::kWebNNOrtEpLibraryPathForTesting
-                 << ": Invalid format. It should be in the format of "
-                    "<ep_name>?<ep_library_path>. The switch will be ignored.";
-    return std::nullopt;
-  }
-  std::string ep_name = base::WideToUTF8(parts[0]);
-  if (!kKnownEPs.contains(ep_name)) {
-    LOG(WARNING) << "[WebNN] Invalid value of the switch "
-                 << switches::kWebNNOrtEpLibraryPathForTesting
-                 << ": The specified EP name is not recognized. "
-                    "The switch will be ignored.";
-    return std::nullopt;
-  }
+  std::vector<TestingEp> testing_eps;
+  for (const std::wstring& entry : base::SplitString(
+           value, L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+    std::vector<std::wstring> parts = base::SplitString(
+        entry, L"?", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (parts.size() != 2 || parts[0].empty() || parts[1].empty()) {
+      LOG(WARNING) << "[WebNN] Invalid value of the switch "
+                   << switches::kWebNNOrtEpLibraryPathForTesting
+                   << ": Invalid entry [" << base::WideToUTF8(entry)
+                   << "]. Each entry should be in the format of "
+                      "<ep_name>?<ep_library_path> and entries should be "
+                      "separated by \",\". The switch will be ignored.";
+      return {};
+    }
 
-  return std::make_pair(std::move(ep_name),
-                        mojom::EpPackageInfo::New(
-                            /*family_name=*/std::wstring(),
-                            /*version=*/PACKAGE_VERSION{},
-                            /*library_path=*/base::FilePath(parts[1])));
+    std::string ep_name = base::WideToUTF8(parts[0]);
+    if (!kKnownEPs.contains(ep_name)) {
+      LOG(WARNING) << "[WebNN] Invalid value of the switch "
+                   << switches::kWebNNOrtEpLibraryPathForTesting
+                   << ": The specified EP name [" << ep_name
+                   << "] is not recognized. The switch will be ignored.";
+      return {};
+    }
+    if (std::ranges::contains(testing_eps, ep_name, &TestingEp::first)) {
+      LOG(WARNING) << "[WebNN] Invalid value of the switch "
+                   << switches::kWebNNOrtEpLibraryPathForTesting
+                   << ": The EP name [" << ep_name
+                   << "] is specified more than once. The switch will be "
+                      "ignored.";
+      return {};
+    }
+    testing_eps.emplace_back(std::move(ep_name),
+                             mojom::EpPackageInfo::New(
+                                 /*family_name=*/std::wstring(),
+                                 /*version=*/PACKAGE_VERSION{},
+                                 /*library_path=*/base::FilePath(parts[1])));
+  }
+  return testing_eps;
 }
 
 auto CloneMap(const EpPackageInfoMap& map) {
@@ -563,13 +579,8 @@ class ExecutionProviderInitializer {
 
     state_ = State::kEpsEnsured;
 
-    // If `kWebNNOrtEpLibraryPathForTesting` switch exists, inject the testing
-    // EP into the map (overriding any real EP with the same name).
-    auto testing_ep = ParseTestingEpLibraryPathSwitch();
-    if (testing_ep.has_value()) {
-      ep_package_info_map_.insert_or_assign(std::move(testing_ep->first),
-                                            std::move(testing_ep->second));
-    }
+    AddTestingEpsFromCommandLine(*base::CommandLine::ForCurrentProcess(),
+                                 ep_package_info_map_);
 
     while (!pending_callbacks_.empty()) {
       std::move(pending_callbacks_.front()).Run(CloneMap(ep_package_info_map_));
@@ -604,6 +615,15 @@ class ExecutionProviderInitializer {
 };
 
 }  // namespace
+
+void AddTestingEpsFromCommandLine(const base::CommandLine& command_line,
+                                  EpPackageInfoMap& ep_package_info_map) {
+  for (auto& [ep_name, package_info] :
+       ParseTestingEpLibraryPathSwitch(command_line)) {
+    ep_package_info_map.insert_or_assign(std::move(ep_name),
+                                         std::move(package_info));
+  }
+}
 
 void EnsureExecutionProvidersReady(
     base::OnceCallback<void(EpPackageInfoMap)> callback) {

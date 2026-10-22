@@ -316,6 +316,7 @@ source_set("tests") {
 
   if (is_win) {
     sources += [
+      "host/execution_provider_initializer_unittest.cc",
       "ort/model_editor_test.cc",
       "ort/ort_session_options_test.cc",
       "ort/platform_functions_ort_test.cc",
@@ -341,6 +342,8 @@ source_set("tests") {
   if (is_win) {
     deps += [
       ":webnn_switches",
+      "//services/webnn/host",
+      "//services/webnn/public/cpp:win",
       "//third_party/windows_app_sdk_headers",
       "//ui/gl",
       "//ui/gl/init",
