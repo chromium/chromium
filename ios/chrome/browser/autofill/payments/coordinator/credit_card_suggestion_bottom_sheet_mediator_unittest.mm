@@ -179,9 +179,8 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
 // Tests that the mediator is correctly cleaned up when the WebStateList is
 // destroyed. There are a lot of checked observer lists that could potentially
 // cause a crash in the process, so this test ensures they're executed.
-// TODO(crbug.com/422436424): re-enable.
 TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
-       DISABLED_CleansUpWhenWebStateListDestroyed) {
+       CleansUpWhenWebStateListDestroyed) {
   CreateMediatorWithSuggestions();
   ASSERT_TRUE(mediator_);
   OCMExpect([consumer_ setCreditCardData:[OCMArg isNotNil]
