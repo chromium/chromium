@@ -18,7 +18,9 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /** Implementation for {@code RecentActivityActionHandler}. */
 @NullMarked
@@ -71,8 +73,16 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
         assert savedTabGroup.localId != null;
         TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
 
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        if (TabGroupSyncUtils.isSavableUrl(gurl)) {
+            loadUrlParams.setIsRendererInitiated(/* rendererInitiated= */ true);
+            loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        }
         TabGroupUtils.openUrlInGroup(
-                tabModel, url, savedTabGroup.localId.tabGroupId, TabLaunchType.FROM_TAB_GROUP_UI);
+                tabModel,
+                loadUrlParams,
+                savedTabGroup.localId.tabGroupId,
+                TabLaunchType.FROM_TAB_GROUP_UI);
     }
 
     @Override

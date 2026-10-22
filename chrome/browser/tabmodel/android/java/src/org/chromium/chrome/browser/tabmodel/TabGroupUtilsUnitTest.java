@@ -201,6 +201,27 @@ public class TabGroupUtilsUnitTest {
     }
 
     @Test
+    public void testOpenUrlInGroup_LoadUrlParams() {
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+
+        @TabLaunchType int launchType = TabLaunchType.FROM_TAB_GROUP_UI;
+        LoadUrlParams loadUrlParams = new LoadUrlParams(JUnitTestGURLs.URL_1.getSpec());
+
+        // Null group should do nothing.
+        TabGroupUtils.openUrlInGroup(mTabModel, loadUrlParams, /* tabGroupId= */ null, launchType);
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+
+        // Empty group should do nothing.
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID2)).thenReturn(List.of());
+        TabGroupUtils.openUrlInGroup(mTabModel, loadUrlParams, TAB_GROUP_ID2, launchType);
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+
+        TabGroupUtils.openUrlInGroup(mTabModel, loadUrlParams, TAB_GROUP_ID1, launchType);
+        verify(mTabCreator).createNewTab(loadUrlParams, launchType, mTab2);
+    }
+
+    @Test
     public void testAreAnyTabsPartOfSharedGroup_oneSharedGroup() {
         mSavedTabGroup1.collaborationId = "collaborationId";
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);

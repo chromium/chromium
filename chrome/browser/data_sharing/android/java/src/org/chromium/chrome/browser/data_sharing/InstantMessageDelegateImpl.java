@@ -54,10 +54,12 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -362,7 +364,13 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             return;
         }
 
-        TabGroupUtils.openUrlInGroup(tabModel, url, tabGroupId, TabLaunchType.FROM_TAB_GROUP_UI);
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        if (TabGroupSyncUtils.isSavableUrl(gurl)) {
+            loadUrlParams.setIsRendererInitiated(/* rendererInitiated= */ true);
+            loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        }
+        TabGroupUtils.openUrlInGroup(
+                tabModel, loadUrlParams, tabGroupId, TabLaunchType.FROM_TAB_GROUP_UI);
     }
 
     private void showTabChange(

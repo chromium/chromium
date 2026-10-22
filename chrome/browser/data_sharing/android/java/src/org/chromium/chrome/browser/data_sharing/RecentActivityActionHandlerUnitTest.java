@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,12 +16,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,6 +37,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.Origin;
 
 import java.util.List;
 
@@ -53,10 +58,14 @@ public class RecentActivityActionHandlerUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabCreator mTabCreator;
     @Mock private Tab mTab1;
+    @Mock private Origin mOpaqueOrigin;
+    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
     private RecentActivityActionHandlerImpl mRecentActivityActionHandler;
 
     @Before
     public void setUp() {
+        Origin.setOpaqueOriginFactoryForTesting(() -> mOpaqueOrigin);
+
         // Set up tab model with a single tab and as part of a tab group.
         when(mTab1.getId()).thenReturn(TAB_ID_1);
         when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
@@ -97,9 +106,22 @@ public class RecentActivityActionHandlerUnitTest {
     public void testReopenTab() {
         String url = "https://google.com";
         mRecentActivityActionHandler.reopenTab(url);
-        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
-        verify(mTabCreator, times(1)).createNewTab(captor.capture(), anyInt(), any());
-        Assert.assertEquals(url, captor.getValue().getUrl());
+        verify(mTabCreator, times(1)).createNewTab(mLoadUrlParamsCaptor.capture(), anyInt(), any());
+        LoadUrlParams params = mLoadUrlParamsCaptor.getValue();
+        assertEquals(url, params.getUrl());
+        assertTrue(params.getIsRendererInitiated());
+        assertEquals(mOpaqueOrigin, params.getInitiatorOrigin());
+    }
+
+    @Test
+    public void testReopenTab_AboutBlank() {
+        String url = "about:blank";
+        mRecentActivityActionHandler.reopenTab(url);
+        verify(mTabCreator, times(1)).createNewTab(mLoadUrlParamsCaptor.capture(), anyInt(), any());
+        LoadUrlParams params = mLoadUrlParamsCaptor.getValue();
+        assertEquals(url, params.getUrl());
+        assertFalse(params.getIsRendererInitiated());
+        assertNull(params.getInitiatorOrigin());
     }
 
     @Test
