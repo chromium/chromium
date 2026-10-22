@@ -174,6 +174,10 @@ BASE_DECLARE_FEATURE(kOmniboxSearchPrefetchOnEnterKeyDown);
 // the Android Tab Search overlay.
 BASE_DECLARE_FEATURE(kAndroidTabSearchRecentTabs);
 
+// Shows a close button on open tab suggestions in the Android Tab Search
+// overlay, allowing users to close tabs directly from the suggestions list.
+BASE_DECLARE_FEATURE(kAndroidTabSearchCloseTabButton);
+
 // Site search/Keyword mode related features.
 BASE_DECLARE_FEATURE(kOmniboxSiteSearch);
 BASE_DECLARE_FEATURE(kStarterPackExpansion);

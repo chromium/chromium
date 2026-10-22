@@ -8805,6 +8805,7 @@ from previous Chrome versions.
   <int value="-1862309711" label="ChromeNativeUrlOverriding:disabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
   <int value="-1861712507" label="MediaAppImageMantisMakeASticker:disabled"/>
+  <int value="-1861377581" label="AndroidTabSearchCloseTabButton:enabled"/>
   <int value="-1861278695" label="BulkTabRestore:enabled"/>
   <int value="-1860959988" label="Picker:disabled"/>
   <int value="-1860481724" label="ChromeHomeExpandButton:enabled"/>
@@ -12960,6 +12961,7 @@ from previous Chrome versions.
   <int value="-622474802" label="ReportUnsafeSite:disabled"/>
   <int value="-621774161"
       label="AutofillEnableWalletReminderNoticePublicPass:enabled"/>
+  <int value="-621767826" label="AndroidTabSearchCloseTabButton:disabled"/>
   <int value="-621382525" label="VizDisplayCompositor:enabled"/>
   <int value="-620902693" label="PageInfoHistory:disabled"/>
   <int value="-620801681" label="EnableCertManagementUIV2:disabled"/>

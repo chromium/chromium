@@ -586,6 +586,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-tab-search-close-tab-button",
+    "owners": [ "bjfong@google.com", "wylieb@google.com", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 166
+  },
+  {
     "name": "android-tab-search-recent-tabs",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 166

@@ -7184,6 +7184,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTabSearchRecentTabsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kAndroidTabSearchRecentTabs)},
 
+    {"android-tab-search-close-tab-button",
+     flag_descriptions::kAndroidTabSearchCloseTabButtonName,
+     flag_descriptions::kAndroidTabSearchCloseTabButtonDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kAndroidTabSearchCloseTabButton)},
+
     {"omnibox-diagnostics", flag_descriptions::kOmniboxDiagnosticsName,
      flag_descriptions::kOmniboxDiagnosticsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDiagnostics,

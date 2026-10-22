@@ -5643,6 +5643,12 @@ inline constexpr char kAndroidStartupImprovementsDescription[] =
     "recording) out of the Chrome Android startup path to reduce startup "
     "latency.";
 
+inline constexpr char kAndroidTabSearchCloseTabButtonName[] =
+    "Android Tab Search Close Tab Button";
+inline constexpr char kAndroidTabSearchCloseTabButtonDescription[] =
+    "Shows a close button on open tab suggestions in the Android Tab Search "
+    "overlay, allowing users to close tabs directly from the suggestions list";
+
 inline constexpr char kAndroidTabSearchRecentTabsName[] =
     "Android Tab Search Recent Tabs";
 inline constexpr char kAndroidTabSearchRecentTabsDescription[] =
