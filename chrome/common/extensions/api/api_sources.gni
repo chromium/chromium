@@ -111,7 +111,6 @@ if (enable_extensions) {
     schema_sources_ += [
       "accessibility_service_private.webidl",
       "document_scan.webidl",
-      "echo_private.json",
       "enterprise_device_attributes.webidl",
       "enterprise_kiosk_input.webidl",
       "enterprise_login.webidl",

@@ -11,6 +11,7 @@ chromeos_schema_sources_ = [
   "accessibility_private.json",
   "certificate_provider.webidl",
   "certificate_provider_internal.webidl",
+  "echo_private.json",
   "file_manager_private.idl",
   "file_manager_private_internal.webidl",
   "file_system_provider.webidl",

@@ -368,10 +368,6 @@
     "contexts": ["privileged_extension"],
     "dependencies": ["permission:downloads"]
   },
-  "echoPrivate": {
-    "dependencies": ["permission:echoPrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "enterprise.hardwarePlatform": {
     "dependencies": ["permission:enterprise.hardwarePlatform"],
     "contexts": ["privileged_extension"]

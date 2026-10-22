@@ -152,8 +152,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kDictationPrivate, "dictationPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kEchoPrivate, "echoPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kEnterprisePlatformKeysPrivate,
      "enterprise.platformKeysPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},

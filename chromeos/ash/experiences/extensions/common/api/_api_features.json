@@ -66,6 +66,10 @@
     "dependencies": ["permission:certificateProvider"],
     "contexts": ["privileged_extension"]
   },
+  "echoPrivate": {
+    "dependencies": ["permission:echoPrivate"],
+    "contexts": ["privileged_extension"]
+  },
   "fileBrowserHandler": {
     "dependencies": ["permission:fileBrowserHandler"],
     "contexts": ["privileged_extension"],

@@ -24,6 +24,8 @@ constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kCertificateProvider, "certificateProvider",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kEchoPrivate, "echoPrivate",
+     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kFileBrowserHandler, "fileBrowserHandler",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
