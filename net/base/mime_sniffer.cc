@@ -90,6 +90,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -107,90 +108,95 @@ static const size_t kBytesRequiredForMagic = 42;
 struct MagicNumber {
   const char* const mime_type;
   const std::string_view magic;
-  bool is_string;
-  const char* const mask;  // if set, must have same length as |magic|
-};
+  bool is_case_sensitive = true;
+  const char* mask = nullptr;  // if set, must have same length as |magic|
 
-#define MAGIC_NUMBER(mime_type, magic) \
-  { (mime_type), std::string_view((magic), sizeof(magic) - 1), false, nullptr }
-
-template <int MagicSize, int MaskSize>
-class VerifySizes {
-  static_assert(MagicSize == MaskSize, "sizes must be equal");
-
- public:
-  enum { SIZES = MagicSize };
-};
-
-#define verified_sizeof(magic, mask) \
-VerifySizes<sizeof(magic), sizeof(mask)>::SIZES
-
-#define MAGIC_MASK(mime_type, magic, mask)                                    \
-  {                                                                           \
-    (mime_type), std::string_view((magic), verified_sizeof(magic, mask) - 1), \
-        false, (mask)                                                         \
+  template <size_t N>
+  consteval MagicNumber(const char* mime_type, const char (&magic)[N])
+      : mime_type(mime_type), magic(magic, N - 1) {
+    CHECK(mime_type);
+    // Keep kBytesRequiredForMagic honest.
+    CHECK_LE(this->magic.length(), kBytesRequiredForMagic);
   }
 
-// Magic strings are case insensitive and must not include '\0' characters
-#define MAGIC_STRING(mime_type, magic) \
-  { (mime_type), std::string_view((magic), sizeof(magic) - 1), true, nullptr }
+  template <size_t N>
+  static consteval MagicNumber CaseInsensitive(const char* mime_type,
+                                               const char (&magic)[N]) {
+    MagicNumber out(mime_type, magic);
+    out.is_case_sensitive = false;
+    // Consistency check - case-insensitive entries should have no embedded
+    // nulls.
+    CHECK(!out.magic.contains('\0'));
+    return out;
+  }
 
-static const MagicNumber kMagicNumbers[] = {
-  // Source: HTML 5 specification
-  MAGIC_NUMBER("application/pdf", "%PDF-"),
-  MAGIC_NUMBER("application/postscript", "%!PS-Adobe-"),
-  MAGIC_NUMBER("image/gif", "GIF87a"),
-  MAGIC_NUMBER("image/gif", "GIF89a"),
-  MAGIC_NUMBER("image/png", "\x89" "PNG\x0D\x0A\x1A\x0A"),
-  MAGIC_NUMBER("image/jpeg", "\xFF\xD8\xFF"),
-  MAGIC_NUMBER("image/bmp", "BM"),
-  // Source: Mozilla
-  MAGIC_NUMBER("text/plain", "#!"),  // Script
-  MAGIC_NUMBER("text/plain", "%!"),  // Script, similar to PS
-  MAGIC_NUMBER("text/plain", "From"),
-  MAGIC_NUMBER("text/plain", ">From"),
-  // Chrome specific
-  MAGIC_NUMBER("application/x-gzip", "\x1F\x8B\x08"),
-  MAGIC_NUMBER("audio/x-pn-realaudio", "\x2E\x52\x4D\x46"),
-  MAGIC_NUMBER("video/x-ms-asf",
-      "\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C"),
-  MAGIC_NUMBER("image/tiff", "I I"),
-  MAGIC_NUMBER("image/tiff", "II*"),
-  MAGIC_NUMBER("image/tiff", "MM\x00*"),
-  MAGIC_NUMBER("audio/mpeg", "ID3"),
-  MAGIC_NUMBER("image/webp", "RIFF....WEBPVP"),
-  MAGIC_NUMBER("video/webm", "\x1A\x45\xDF\xA3"),
-  MAGIC_NUMBER("application/zip", "PK\x03\x04"),
-  MAGIC_NUMBER("application/x-rar-compressed", "Rar!\x1A\x07\x00"),
-  MAGIC_NUMBER("application/x-msmetafile", "\xD7\xCD\xC6\x9A"),
-  MAGIC_NUMBER("application/octet-stream", "MZ"),  // EXE
-  // Sniffing for Flash:
-  //
-  //   MAGIC_NUMBER("application/x-shockwave-flash", "CWS"),
-  //   MAGIC_NUMBER("application/x-shockwave-flash", "FLV"),
-  //   MAGIC_NUMBER("application/x-shockwave-flash", "FWS"),
-  //
-  // Including these magic number for Flash is a trade off.
-  //
-  // Pros:
-  //   * Flash is an important and popular file format
-  //
-  // Cons:
-  //   * These patterns are fairly weak
-  //   * If we mistakenly decide something is Flash, we will execute it
-  //     in the origin of an unsuspecting site.  This could be a security
-  //     vulnerability if the site allows users to upload content.
-  //
-  // On balance, we do not include these patterns.
+  template <size_t N>
+  static consteval MagicNumber Masked(const char* mime_type,
+                                      const char (&magic)[N],
+                                      const char (&mask)[N]) {
+    MagicNumber out(mime_type, magic);
+    out.mask = mask;
+    return out;
+  }
+};
+
+static constexpr MagicNumber kMagicNumbers[] = {
+    // Source: HTML 5 specification
+    {"application/pdf", "%PDF-"},
+    {"application/postscript", "%!PS-Adobe-"},
+    {"image/gif", "GIF87a"},
+    {"image/gif", "GIF89a"},
+    {"image/png", "\x89PNG\x0D\x0A\x1A\x0A"},
+    {"image/jpeg", "\xFF\xD8\xFF"},
+    {"image/bmp", "BM"},
+    // Source: Mozilla
+    {"text/plain", "#!"},  // Script
+    {"text/plain", "%!"},  // Script, similar to PS
+    {"text/plain", "From"},
+    {"text/plain", ">From"},
+    // Chrome specific
+    {"application/x-gzip", "\x1F\x8B\x08"},
+    {"audio/x-pn-realaudio", "\x2E\x52\x4D\x46"},
+    {"video/x-ms-asf",
+     "\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C"},
+    {"image/tiff", "I I"},
+    {"image/tiff", "II*"},
+    {"image/tiff", "MM\x00*"},
+    {"audio/mpeg", "ID3"},
+    {"image/webp", "RIFF....WEBPVP"},
+    {"video/webm", "\x1A\x45\xDF\xA3"},
+    {"application/zip", "PK\x03\x04"},
+    {"application/x-rar-compressed", "Rar!\x1A\x07\x00"},
+    {"application/x-msmetafile", "\xD7\xCD\xC6\x9A"},
+    {"application/octet-stream", "MZ"},  // EXE
+
+    // Sniffing for Flash:
+    //
+    //   {"application/x-shockwave-flash", "CWS"},
+    //   {"application/x-shockwave-flash", "FLV"},
+    //   {"application/x-shockwave-flash", "FWS"},
+    //
+    // Including these magic number for Flash is a trade off.
+    //
+    // Pros:
+    //   * Flash is an important and popular file format
+    //
+    // Cons:
+    //   * These patterns are fairly weak
+    //   * If we mistakenly decide something is Flash, we will execute it
+    //     in the origin of an unsuspecting site.  This could be a security
+    //     vulnerability if the site allows users to upload content.
+    //
+    // On balance, we do not include these patterns.
 };
 
 // The number of content bytes we need to use all our Microsoft Office magic
 // numbers.
 static const size_t kBytesRequiredForOfficeMagic = 8;
 
-static const MagicNumber kOfficeMagicNumbers[] = {
-  MAGIC_NUMBER("CFB", "\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"),
-  MAGIC_NUMBER("OOXML", "PK\x03\x04"),
+static constexpr MagicNumber kOfficeMagicNumbers[] = {
+    {"CFB", "\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"},
+    {"OOXML", "PK\x03\x04"},
 };
 
 enum OfficeDocType {
@@ -202,87 +208,85 @@ enum OfficeDocType {
 
 struct OfficeExtensionType {
   OfficeDocType doc_type;
-  const std::string_view extension;
+  std::string_view extension;
 };
 
-#define OFFICE_EXTENSION(type, extension) \
-  { (type), std::string_view((extension), sizeof(extension) - 1) }
-
-static const OfficeExtensionType kOfficeExtensionTypes[] = {
-  OFFICE_EXTENSION(DOC_TYPE_WORD, ".doc"),
-  OFFICE_EXTENSION(DOC_TYPE_EXCEL, ".xls"),
-  OFFICE_EXTENSION(DOC_TYPE_POWERPOINT, ".ppt"),
-  OFFICE_EXTENSION(DOC_TYPE_WORD, ".docx"),
-  OFFICE_EXTENSION(DOC_TYPE_EXCEL, ".xlsx"),
-  OFFICE_EXTENSION(DOC_TYPE_POWERPOINT, ".pptx"),
+static constexpr OfficeExtensionType kOfficeExtensionTypes[] = {
+    {DOC_TYPE_WORD, ".doc"},         //
+    {DOC_TYPE_EXCEL, ".xls"},        //
+    {DOC_TYPE_POWERPOINT, ".ppt"},   //
+    {DOC_TYPE_WORD, ".docx"},        //
+    {DOC_TYPE_EXCEL, ".xlsx"},       //
+    {DOC_TYPE_POWERPOINT, ".pptx"},  //
 };
 
-static const MagicNumber kExtraMagicNumbers[] = {
-  MAGIC_NUMBER("image/x-xbitmap", "#define"),
-  MAGIC_NUMBER("image/x-icon", "\x00\x00\x01\x00"),
-  MAGIC_NUMBER("audio/wav", "RIFF....WAVEfmt "),
-  MAGIC_NUMBER("video/avi", "RIFF....AVI LIST"),
-  MAGIC_NUMBER("audio/ogg", "OggS\0"),
-  MAGIC_MASK("video/mpeg", "\x00\x00\x01\xB0", "\xFF\xFF\xFF\xF0"),
-  MAGIC_MASK("audio/mpeg", "\xFF\xE0", "\xFF\xE0"),
-  MAGIC_NUMBER("video/3gpp", "....ftyp3g"),
-  MAGIC_NUMBER("video/3gpp", "....ftypavcl"),
-  MAGIC_NUMBER("video/mp4", "....ftyp"),
-  MAGIC_NUMBER("video/quicktime", "....moov"),
-  MAGIC_NUMBER("application/x-shockwave-flash", "CWS"),
-  MAGIC_NUMBER("application/x-shockwave-flash", "FWS"),
-  MAGIC_NUMBER("video/x-flv", "FLV"),
-  MAGIC_NUMBER("audio/x-flac", "fLaC"),
-  // Per https://tools.ietf.org/html/rfc3267#section-8.1
-  MAGIC_NUMBER("audio/amr", "#!AMR\n"),
+static constexpr MagicNumber kExtraMagicNumbers[] = {
+    {"image/x-xbitmap", "#define"},
+    {"image/x-icon", "\x00\x00\x01\x00"},
+    {"audio/wav", "RIFF....WAVEfmt "},
+    {"video/avi", "RIFF....AVI LIST"},
+    {"audio/ogg", "OggS\0"},
+    MagicNumber::Masked("video/mpeg", "\x00\x00\x01\xB0", "\xFF\xFF\xFF\xF0"),
+    MagicNumber::Masked("audio/mpeg", "\xFF\xE0", "\xFF\xE0"),
+    {"video/3gpp", "....ftyp3g"},
+    {"video/3gpp", "....ftypavcl"},
+    {"video/mp4", "....ftyp"},
+    {"video/quicktime", "....moov"},
+    {"application/x-shockwave-flash", "CWS"},
+    {"application/x-shockwave-flash", "FWS"},
+    {"video/x-flv", "FLV"},
+    {"audio/x-flac", "fLaC"},
+    // Per https://tools.ietf.org/html/rfc3267#section-8.1
+    {"audio/amr", "#!AMR\n"},
 
-  // RAW image types.
-  MAGIC_NUMBER("image/x-canon-cr2", "II\x2a\x00\x10\x00\x00\x00CR"),
-  MAGIC_NUMBER("image/x-canon-crw", "II\x1a\x00\x00\x00HEAPCCDR"),
-  MAGIC_NUMBER("image/x-minolta-mrw", "\x00MRM"),
-  MAGIC_NUMBER("image/x-olympus-orf", "MMOR"),  // big-endian
-  MAGIC_NUMBER("image/x-olympus-orf", "IIRO"),  // little-endian
-  MAGIC_NUMBER("image/x-olympus-orf", "IIRS"),  // little-endian
-  MAGIC_NUMBER("image/x-fuji-raf", "FUJIFILMCCD-RAW "),
-  MAGIC_NUMBER("image/x-panasonic-raw",
-               "IIU\x00\x08\x00\x00\x00"),  // Panasonic .raw
-  MAGIC_NUMBER("image/x-panasonic-raw",
-               "IIU\x00\x18\x00\x00\x00"),  // Panasonic .rw2
-  MAGIC_NUMBER("image/x-phaseone-raw", "MMMMRaw"),
-  MAGIC_NUMBER("image/x-x3f", "FOVb"),
+    // RAW image types.
+    {"image/x-canon-cr2", "II\x2a\x00\x10\x00\x00\x00CR"},
+    {"image/x-canon-crw", "II\x1a\x00\x00\x00HEAPCCDR"},
+    {"image/x-minolta-mrw", "\x00MRM"},
+    {"image/x-olympus-orf", "MMOR"},  // big-endian
+    {"image/x-olympus-orf", "IIRO"},  // little-endian
+    {"image/x-olympus-orf", "IIRS"},  // little-endian
+    {"image/x-fuji-raf", "FUJIFILMCCD-RAW "},
+    {"image/x-panasonic-raw", "IIU\x00\x08\x00\x00\x00"},  // Panasonic .raw
+    {"image/x-panasonic-raw", "IIU\x00\x18\x00\x00\x00"},  // Panasonic .rw2
+    {"image/x-phaseone-raw", "MMMMRaw"},
+    {"image/x-x3f", "FOVb"},
 };
 
 // Our HTML sniffer differs slightly from Mozilla.  For example, Mozilla will
 // decide that a document that begins "<!DOCTYPE SOAP-ENV:Envelope PUBLIC " is
 // HTML, but we will not.
 
-#define MAGIC_HTML_TAG(tag) \
-  MAGIC_STRING("text/html", "<" tag)
+template <size_t N>
+consteval MagicNumber MagicHTMLTag(const char (&magic)[N]) {
+  CHECK_EQ(magic[0], '<');
+  return MagicNumber::CaseInsensitive("text/html", magic);
+}
 
-static const MagicNumber kSniffableTags[] = {
-  // XML processing directive.  Although this is not an HTML mime type, we sniff
-  // for this in the HTML phase because text/xml is just as powerful as HTML and
-  // we want to leverage our white space skipping technology.
-  MAGIC_NUMBER("text/xml", "<?xml"),  // Mozilla
-  // DOCTYPEs
-  MAGIC_HTML_TAG("!DOCTYPE html"),  // HTML5 spec
-  // Sniffable tags, ordered by how often they occur in sniffable documents.
-  MAGIC_HTML_TAG("script"),  // HTML5 spec, Mozilla
-  MAGIC_HTML_TAG("html"),  // HTML5 spec, Mozilla
-  MAGIC_HTML_TAG("!--"),
-  MAGIC_HTML_TAG("head"),  // HTML5 spec, Mozilla
-  MAGIC_HTML_TAG("iframe"),  // Mozilla
-  MAGIC_HTML_TAG("h1"),  // Mozilla
-  MAGIC_HTML_TAG("div"),  // Mozilla
-  MAGIC_HTML_TAG("font"),  // Mozilla
-  MAGIC_HTML_TAG("table"),  // Mozilla
-  MAGIC_HTML_TAG("a"),  // Mozilla
-  MAGIC_HTML_TAG("style"),  // Mozilla
-  MAGIC_HTML_TAG("title"),  // Mozilla
-  MAGIC_HTML_TAG("b"),  // Mozilla
-  MAGIC_HTML_TAG("body"),  // Mozilla
-  MAGIC_HTML_TAG("br"),
-  MAGIC_HTML_TAG("p"),  // Mozilla
+static constexpr MagicNumber kSniffableTags[] = {
+    // XML processing directive.  Although this is not an HTML mime type, we
+    // sniff for this in the HTML phase because text/xml is just as powerful as
+    // HTML and we want to leverage our white space skipping technology.
+    {"text/xml", "<?xml"},  // Mozilla
+    // DOCTYPEs
+    MagicHTMLTag("<!DOCTYPE html"),  // HTML5 spec
+    // Sniffable tags, ordered by how often they occur in sniffable documents.
+    MagicHTMLTag("<script"),  // HTML5 spec, Mozilla
+    MagicHTMLTag("<html"),    // HTML5 spec, Mozilla
+    MagicHTMLTag("<!--"),
+    MagicHTMLTag("<head"),    // HTML5 spec, Mozilla
+    MagicHTMLTag("<iframe"),  // Mozilla
+    MagicHTMLTag("<h1"),      // Mozilla
+    MagicHTMLTag("<div"),     // Mozilla
+    MagicHTMLTag("<font"),    // Mozilla
+    MagicHTMLTag("<table"),   // Mozilla
+    MagicHTMLTag("<a"),       // Mozilla
+    MagicHTMLTag("<style"),   // Mozilla
+    MagicHTMLTag("<title"),   // Mozilla
+    MagicHTMLTag("<b"),       // Mozilla
+    MagicHTMLTag("<body"),    // Mozilla
+    MagicHTMLTag("<br"),
+    MagicHTMLTag("<p"),  // Mozilla
 };
 
 // Compare content header to a magic number where magic_entry can contain '.'
@@ -314,15 +318,9 @@ static bool MagicMaskCmp(std::string_view content,
 static bool MatchMagicNumber(std::string_view content,
                              const MagicNumber& magic_entry,
                              std::string* result) {
-  // Keep kBytesRequiredForMagic honest.
-  DCHECK_LE(magic_entry.magic.length(), kBytesRequiredForMagic);
-
   bool match = false;
   if (content.length() >= magic_entry.magic.length()) {
-    if (magic_entry.is_string) {
-      // Consistency check - string entries should have no embedded nulls.
-      DCHECK_EQ(std::string_view::npos, magic_entry.magic.find('\0'));
-
+    if (!magic_entry.is_case_sensitive) {
       // Do a case-insensitive prefix comparison.
       match = base::StartsWith(content, magic_entry.magic,
                                base::CompareCase::INSENSITIVE_ASCII);
@@ -503,9 +501,9 @@ static bool SniffForInvalidOfficeDocs(std::string_view content,
 }
 
 // Tags that indicate the content is likely XML.
-static const MagicNumber kMagicXML[] = {
-    MAGIC_STRING("application/atom+xml", "<feed"),
-    MAGIC_STRING("application/rss+xml", "<rss"),
+static constexpr MagicNumber kMagicXML[] = {
+    MagicNumber::CaseInsensitive("application/atom+xml", "<feed"),
+    MagicNumber::CaseInsensitive("application/rss+xml", "<rss"),
 };
 
 // Returns true and sets result if the content appears to contain XHTML or a
@@ -565,10 +563,10 @@ static bool SniffXML(std::string_view content,
 }
 
 // Byte order marks
-static const MagicNumber kByteOrderMark[] = {
-  MAGIC_NUMBER("text/plain", "\xFE\xFF"),  // UTF-16BE
-  MAGIC_NUMBER("text/plain", "\xFF\xFE"),  // UTF-16LE
-  MAGIC_NUMBER("text/plain", "\xEF\xBB\xBF"),  // UTF-8
+static constexpr MagicNumber kByteOrderMark[] = {
+    {"text/plain", "\xFE\xFF"},      // UTF-16BE
+    {"text/plain", "\xFF\xFE"},      // UTF-16LE
+    {"text/plain", "\xEF\xBB\xBF"},  // UTF-8
 };
 
 // Returns true and sets result to "application/octet-stream" if the content
@@ -643,9 +641,10 @@ static bool SniffCRX(std::string_view content,
   // are a version number which changes infrequently. Including it in the
   // sniffing gives us less room for error. If the version number ever changes,
   // we can just add an entry to this list.
-  static const struct MagicNumber kCRXMagicNumbers[] = {
-      MAGIC_NUMBER("application/x-chrome-extension", "Cr24\x02\x00\x00\x00"),
-      MAGIC_NUMBER("application/x-chrome-extension", "Cr24\x03\x00\x00\x00")};
+  static constexpr MagicNumber kCRXMagicNumbers[] = {
+      {"application/x-chrome-extension", "Cr24\x02\x00\x00\x00"},
+      {"application/x-chrome-extension", "Cr24\x03\x00\x00\x00"},
+  };
 
   // Only consider files that have the extension ".crx".
   if (!url.path().ends_with(".crx")) {
