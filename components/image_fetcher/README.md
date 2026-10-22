@@ -32,9 +32,9 @@ Call `destroy()` when the Java fetcher is no longer needed.
     metadata stores.
 *   [`android/`](android/) contains the Java API, JNI bridge, and Java tests.
 *   [`ios/`](ios/) contains iOS image decoding and data fetch wrappers.
-*   [`image_fetcher_bridge.cc`](image_fetcher_bridge.cc) implements the native
+*   [`image_fetcher_bridge.cc`](android/image_fetcher_bridge.cc) implements the native
     side of the Android bridge.
-*   [`image_fetcher_service_provider.cc`](image_fetcher_service_provider.cc)
+*   [`image_fetcher_service_provider.cc`](android/image_fetcher_service_provider.cc)
     provides Android embedder callbacks for the service and cache path.
 
 The C++ unit tests are alongside the code they cover in `core/` and
