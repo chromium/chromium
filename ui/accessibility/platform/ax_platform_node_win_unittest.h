@@ -83,8 +83,6 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
   void DestroyTree() override;
 
  protected:
-  static const std::u16string kEmbeddedCharacterAsString;
-
   AXPlatformNode* AXPlatformNodeFromNode(AXNode* node);
   template <typename T>
   Microsoft::WRL::ComPtr<T> QueryInterfaceFromNodeId(AXNodeID id);

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/pickle.h"
@@ -490,9 +491,9 @@ TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
 
 // Tests that different clipboard buffers have independent data.
 TEST_F(ClipboardNonBackedTest, ClipboardBufferTypes) {
-  static const struct ClipboardBufferInfo {
+  static constexpr struct ClipboardBufferInfo {
     ui::ClipboardBuffer buffer;
-    std::u16string paste_text;
+    std::u16string_view paste_text;
   } clipboard_buffers[] = {
       {ui::ClipboardBuffer::kCopyPaste, u"kCopyPaste"},
       {ui::ClipboardBuffer::kSelection, u"kSelection"},

@@ -4,8 +4,11 @@
 
 #include "ui/accessibility/platform/ax_platform_node_textchildprovider_win.h"
 
+#include <string>
+
 #include "base/win/scoped_bstr.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
@@ -259,9 +262,10 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
   // placed in their own paragraph for easier screen reader navigation.
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(base::WideToUTF16(text_content.Get()),
-            u"non text child of nontext.\ntext child of nontext.\n" +
-                kEmbeddedCharacterAsString);
+  EXPECT_EQ(
+      base::WideToUTF16(text_content.Get()),
+      std::u16string(u"non text child of nontext.\ntext child of nontext.\n") +
+          AXPlatformNodeBase::kEmbeddedCharacter);
 
   ComPtr<IRawElementProviderSimple> enclosing_element;
   text_range_provider->GetEnclosingElement(&enclosing_element);

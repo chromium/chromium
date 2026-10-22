@@ -43,14 +43,11 @@ using base::win::ScopedVariant;
 
 namespace ui {
 
-const std::u16string AXPlatformNodeWinTest::kEmbeddedCharacterAsString = {
-    AXPlatformNodeBase::kEmbeddedCharacter};
-
 namespace {
 
 // Most IAccessible functions require a VARIANT set to CHILDID_SELF as
 // the first argument.
-ScopedVariant SELF(CHILDID_SELF);
+constexpr VARIANT SELF = {.vt = VT_I4, .lVal = CHILDID_SELF};
 
 // Calls `Release()` on each of the `count` interface pointers in `pointers`.
 void ReleasePointers(IUnknown** pointers, LONG count) {
@@ -463,7 +460,7 @@ AXPlatformNodeWinTest::GetSupportedPatternsFromNodeId(AXNodeID id) {
   ComPtr<IRawElementProviderSimple> raw_element_provider_simple =
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(id);
   PatternSet supported_patterns;
-  static const std::vector<LONG> all_supported_patterns_ = {
+  static constexpr LONG kAllSupportedPatterns[] = {
       UIA_TextChildPatternId,  UIA_TextEditPatternId,
       UIA_TextPatternId,       UIA_WindowPatternId,
       UIA_InvokePatternId,     UIA_ExpandCollapsePatternId,
@@ -474,7 +471,7 @@ AXPlatformNodeWinTest::GetSupportedPatternsFromNodeId(AXNodeID id) {
       UIA_SelectionPatternId,  UIA_TogglePatternId,
       UIA_ValuePatternId,
   };
-  for (LONG property_id : all_supported_patterns_) {
+  for (LONG property_id : kAllSupportedPatterns) {
     ComPtr<IUnknown> provider;
     if (SUCCEEDED(raw_element_provider_simple->GetPatternProvider(property_id,
                                                                   &provider)) &&

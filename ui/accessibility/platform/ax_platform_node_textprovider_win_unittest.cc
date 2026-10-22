@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -11,6 +12,7 @@
 #include "base/win/scoped_safearray.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
@@ -253,7 +255,8 @@ TEST_F(AXPlatformNodeTextProviderTest,
       text_range_provider->GetText(-1, text_content.Receive()));
   // TODO(javiercon): change test back to spaces when we update the parser.
   EXPECT_EQ(base::WideToUTF16(text_content.Get()),
-            u"Dialog-label.Dialog-description.\n" + kEmbeddedCharacterAsString +
+            std::u16string(u"Dialog-label.Dialog-description.\n") +
+                AXPlatformNodeBase::kEmbeddedCharacter +
                 u"\nok.Some-more-detail-" + u"about-dialog.");
 
   // Check the reverse relationship that GetEnclosingElement on the text range
