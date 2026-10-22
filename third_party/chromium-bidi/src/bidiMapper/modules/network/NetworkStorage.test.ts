@@ -52,6 +52,7 @@ describe('NetworkStorage', () => {
     ChromiumBidi.Event['params'],
   ][] = [];
   let eventManager!: EventManager;
+  let browsingContextStorage!: BrowsingContextStorage;
   let networkStorage!: NetworkStorage;
   let cdpClient!: CdpClient;
   let processingQueue!: ProcessingQueue<OutgoingMessage>;
@@ -73,7 +74,7 @@ describe('NetworkStorage', () => {
 
   beforeEach(() => {
     processedEvents = [];
-    const browsingContextStorage = new BrowsingContextStorage();
+    browsingContextStorage = new BrowsingContextStorage();
     const cdpTarget = new MockCdpTarget(logger) as unknown as CdpTarget;
     const browsingContext = {
       cdpTarget,
@@ -200,6 +201,142 @@ describe('NetworkStorage', () => {
       assert.deepInclude(event, {
         isBlocked: false,
       });
+    });
+
+    it('should prefer browser Fetch.requestPaused metadata over renderer Network.requestWillBeSent', async () => {
+      const victimUrl = 'https://api.victim.example/v1/me';
+      const attackerUrl = 'http://evil.example/collect';
+      const attackerFrameId = 'ATTACKER_FRAME_ID';
+      browsingContextStorage.addContext({
+        id: attackerFrameId,
+      } as unknown as BrowsingContextImpl);
+      eventManager.subscriptionManager.subscribe(
+        [ChromiumBidi.BiDiModule.Network],
+        [attackerFrameId],
+        [],
+        null,
+      );
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: victimUrl},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: victimUrl,
+      });
+      // Renderer emits forged URL, method, frameId and headers in requestWillBeSent.
+      cdpClient.emit('Network.requestWillBeSent', {
+        requestId: request.requestId,
+        loaderId: 'LOADER_ID',
+        documentURL: victimUrl,
+        request: {
+          url: victimUrl,
+          urlFragment: '#forged',
+          method: 'POST',
+          headers: {
+            'X-Forged-Header': 'forged',
+          },
+          mixedContentType: 'none',
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+          isSameSite: true,
+        },
+        timestamp: 2111.55635,
+        wallTime: 1637315638.473634,
+        initiator: {type: 'script'},
+        redirectHasExtraInfo: false,
+        type: 'Fetch',
+        frameId: MockCdpNetworkEvents.defaultFrameId,
+        hasUserGesture: false,
+      });
+
+      // Browser emits authoritative URL, method, frameId and headers in requestPaused.
+      cdpClient.emit('Fetch.requestPaused', {
+        requestId: request.fetchId,
+        networkId: request.requestId,
+        frameId: attackerFrameId,
+        resourceType: 'Fetch',
+        request: {
+          url: attackerUrl,
+          method: 'GET',
+          headers: {
+            'X-Real-Header': 'real',
+          },
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+      });
+
+      // Because the real URL does not match the victim intercept, the request
+      // must not be blocked and waits for extraInfo before emitting.
+      let event = await getEvent('network.beforeRequestSent');
+      assert.notExists(event);
+
+      request.requestWillBeSentExtraInfo();
+      event = await getEvent('network.beforeRequestSent');
+      assert.exists(event);
+      assert.deepInclude(event, {
+        context: attackerFrameId,
+        isBlocked: false,
+      });
+      const beforeRequestSent = event as Network.BeforeRequestSentParameters;
+      assert.strictEqual(beforeRequestSent.request.url, attackerUrl);
+      assert.strictEqual(beforeRequestSent.request.method, 'GET');
+      assert.isUndefined(
+        beforeRequestSent.request.headers.find(
+          (h) => h.name === 'X-Forged-Header',
+        ),
+      );
+      assert.deepInclude(beforeRequestSent.request.headers, {
+        name: 'X-Real-Header',
+        value: {type: 'string', value: 'real'},
+      });
+    });
+
+    it('should block when browser Fetch.requestPaused URL matches intercept despite forged Network.requestWillBeSent URL', async () => {
+      const forgedUrl = 'http://innocent.example/ok';
+      const realUrl = 'http://evil.example/collect';
+      const interception = networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: realUrl},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: forgedUrl,
+      });
+      request.requestWillBeSent();
+      let event = await getEvent('network.beforeRequestSent');
+      assert.notExists(event);
+
+      // Browser reports the real URL matching the intercept.
+      cdpClient.emit('Fetch.requestPaused', {
+        requestId: request.fetchId,
+        networkId: request.requestId,
+        frameId: MockCdpNetworkEvents.defaultFrameId,
+        resourceType: 'XHR',
+        request: {
+          url: realUrl,
+          urlFragment: '#real',
+          method: 'POST',
+          headers: {},
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+      });
+
+      event = await getEvent('network.beforeRequestSent');
+      assert.exists(event);
+      assert.deepInclude(event, {
+        isBlocked: true,
+        intercepts: [interception],
+      });
+      const beforeRequestSent = event as Network.BeforeRequestSentParameters;
+      assert.strictEqual(beforeRequestSent.request.url, `${realUrl}#real`);
+      assert.strictEqual(beforeRequestSent.request.method, 'POST');
     });
 
     it('should work with non blocking interception and fail response', async () => {

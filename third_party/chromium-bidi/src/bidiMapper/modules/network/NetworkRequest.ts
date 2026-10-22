@@ -168,17 +168,22 @@ export class NetworkRequest {
   }
 
   get url(): string {
+    // Prefer browser-emitted Fetch events over renderer-emitted Network events
+    // (https://crbug.com/575090111).
     const fragment =
-      this.#request.info?.request.urlFragment ??
-      this.#request.paused?.request.urlFragment ??
-      '';
+      (
+        this.#response.paused ??
+        this.#request.auth ??
+        this.#request.paused ??
+        this.#request.info
+      )?.request.urlFragment ?? '';
     const url =
       this.#response.paused?.request.url ??
       this.#requestOverrides?.url ??
-      this.#response.info?.url ??
       this.#request.auth?.request.url ??
-      this.#request.info?.request.url ??
       this.#request.paused?.request.url ??
+      this.#response.info?.url ??
+      this.#request.info?.request.url ??
       NetworkRequest.unknownParameter;
 
     return `${url}${fragment}`;
@@ -224,12 +229,14 @@ export class NetworkRequest {
   }
 
   get #method(): string | undefined {
+    // Prefer browser-emitted Fetch events over renderer-emitted Network events
+    // (https://crbug.com/575090111).
     return (
+      this.#response.paused?.request.method ??
       this.#requestOverrides?.method ??
-      this.#request.info?.request.method ??
-      this.#request.paused?.request.method ??
       this.#request.auth?.request.method ??
-      this.#response.paused?.request.method
+      this.#request.paused?.request.method ??
+      this.#request.info?.request.method
     );
   }
 
@@ -307,11 +314,13 @@ export class NetworkRequest {
   }
 
   get #context(): string | null {
+    // Prefer browser-emitted Fetch events over renderer-emitted Network events
+    // (https://crbug.com/575090111).
     const result =
       this.#response.paused?.frameId ??
-      this.#request.info?.frameId ??
+      this.#request.auth?.frameId ??
       this.#request.paused?.frameId ??
-      this.#request.auth?.frameId;
+      this.#request.info?.frameId;
 
     if (result !== undefined) {
       return result;
@@ -328,7 +337,7 @@ export class NetworkRequest {
         this.#request?.info?.initiator.requestId,
       );
       if (maybeInitiator !== undefined) {
-        return maybeInitiator.#request.info?.frameId ?? null;
+        return maybeInitiator.#context;
       }
     }
 
@@ -362,11 +371,16 @@ export class NetworkRequest {
         });
       }
     } else {
+      // Prefer browser-emitted Fetch request headers over renderer-emitted
+      // Network.requestWillBeSent headers when available
+      // (https://crbug.com/575090111).
+      const requestHeaders =
+        this.#response.paused?.request.headers ??
+        this.#request.auth?.request.headers ??
+        this.#request.paused?.request.headers ??
+        this.#request.info?.request.headers;
       headers = bidiNetworkHeadersFromCdpNetworkHeaders({
-        ...this.#request.info?.request.headers,
-        // `Network.requestWillBeSentExtraInfo` is not emitted while paused in
-        // `beforeRequestSent`, so include headers from `Fetch.requestPaused`.
-        ...this.#request.paused?.request.headers,
+        ...requestHeaders,
         ...this.#request.extraInfo?.headers,
       });
     }
