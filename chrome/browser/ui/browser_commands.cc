@@ -547,59 +547,34 @@ BrowserWindowInterface* CreateNewBrowser(BrowserWindowInterface* browser,
   return new_browser;
 }
 
-struct MruTabResult {
-  raw_ptr<BrowserWindowInterface> browser;
-  int index;
-};
-
-std::optional<MruTabResult> GetGlobalMruTab(
-    BrowserCollection* collection,
-    BrowserWindowInterface* active_browser) {
-  BrowserWindowInterface* mru_browser = nullptr;
-  int mru_idx = -1;
+tabs::TabInterface* GetMruTab(BrowserWindowInterface* browser) {
+  tabs::TabInterface* mru_tab = nullptr;
   base::Time max_time = base::Time::Min();
 
-  collection->ForEach(
-      [&](BrowserWindowInterface* b) {
-        if (!WindowFeatureController::From(b)->CanSupportWindowFeature(
-                WindowFeatureController::WindowFeature::kFeatureTabStrip)) {
-          return true;
-        }
-        TabStripModel* model = b->GetTabStripModel();
-        int i = 0;
-        for (auto it = model->begin(); it != model->end(); ++it, ++i) {
-          if (b == active_browser && i == model->active_index()) {
-            continue;
-          }
-          content::WebContents* contents = (*it)->GetContents();
-          auto* lifecycle_unit =
-              resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                  contents);
-          if (!lifecycle_unit) {
-            continue;
-          }
-          base::Time last_active = lifecycle_unit->GetLastFocusedTime();
-          if (last_active > max_time) {
-            max_time = last_active;
-            mru_browser = b;
-            mru_idx = i;
-          }
-        }
-        return true;
-      },
-      BrowserCollection::Order::kActivation);
-
-  if (mru_browser) {
-    return MruTabResult{mru_browser, mru_idx};
+  for (tabs::TabInterface* tab : *browser->GetTabStripModel()) {
+    if (tab->IsActivated()) {
+      continue;
+    }
+    auto* lifecycle_unit =
+        resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+            tab->GetContents());
+    if (!lifecycle_unit) {
+      continue;
+    }
+    base::Time last_active = lifecycle_unit->GetLastFocusedTime();
+    if (last_active > max_time) {
+      max_time = last_active;
+      mru_tab = tab;
+    }
   }
-  return std::nullopt;
+
+  return mru_tab;
 }
 
-void ActivateTab(TabStripModel* model,
-                 int index,
+void ActivateTab(tabs::TabInterface* tab,
                  TabStripUserGestureDetails gesture_detail) {
-  std::optional<tab_groups::TabGroupId> group_id =
-      model->GetTabGroupForTab(index);
+  TabStripModel* model = tab->GetBrowserWindowInterface()->GetTabStripModel();
+  std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
   if (group_id.has_value() && model->IsGroupCollapsed(group_id.value())) {
     TabGroup* group = model->group_model()->GetTabGroup(group_id.value());
     tab_groups::TabGroupVisualData new_visual_data(
@@ -607,7 +582,7 @@ void ActivateTab(TabStripModel* model,
         /*is_collapsed=*/false);
     model->ChangeTabGroupVisuals(group_id.value(), std::move(new_visual_data));
   }
-  model->ActivateTabAt(index, gesture_detail);
+  model->ActivateTab(tab, gesture_detail);
 }
 
 bool IsTabSelectable(
@@ -1591,14 +1566,8 @@ bool IsCtrlTabMruEnabled(BrowserWindowInterface* browser) {
 
 void CycleToMruTab(BrowserWindowInterface* browser,
                    TabStripUserGestureDetails gesture_detail) {
-  auto mru_result = GetGlobalMruTab(
-      ProfileBrowserCollection::GetForProfile(browser->GetProfile()), browser);
-  if (mru_result) {
-    if (mru_result->browser != browser) {
-      mru_result->browser->GetWindow()->Activate();
-    }
-    ActivateTab(mru_result->browser->GetTabStripModel(), mru_result->index,
-                gesture_detail);
+  if (tabs::TabInterface* mru_tab = GetMruTab(browser)) {
+    ActivateTab(mru_tab, gesture_detail);
   }
 }
 

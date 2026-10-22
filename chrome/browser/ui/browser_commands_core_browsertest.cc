@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -167,11 +166,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, CycleToMruTab) {
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 }
 
-// Tests that non-tabbed app windows (such as standalone PWAs) are excluded from
-// global MRU cycling so Ctrl+Tab does not switch into a window where tab
-// cycling commands are disabled.
+// Tests that Ctrl+Tab MRU cycling stays within the currently focused browser
+// window even when another window has a more recently focused tab.
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest,
-                       CycleToMruTabExcludesNonTabbedAppWindow) {
+                       CycleToMruTabStaysInCurrentWindow) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
 
   auto* lifecycle_source = resource_coordinator::GetTabLifecycleUnitSource();
@@ -186,12 +184,16 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest,
   browser()->GetTabStripModel()->ActivateTabAt(1);
   scoped_focus.RunAndReset();
 
+  // Focus a second browser window and a standalone app window so their tabs
+  // have more recent last-focused timestamps than tab 0 in browser().
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
+  scoped_focus = lifecycle_source->SetFocusedTabStripModelForTesting(
+      second_browser->GetTabStripModel());
+  scoped_focus.RunAndReset();
+
   BrowserWindowInterface* app_browser =
       CreateBrowserForApp("test_app", browser()->GetProfile());
-  ASSERT_FALSE(
-      WindowFeatureController::From(app_browser)
-          ->CanSupportWindowFeature(
-              WindowFeatureController::WindowFeature::kFeatureTabStrip));
   scoped_focus = lifecycle_source->SetFocusedTabStripModelForTesting(
       app_browser->GetTabStripModel());
   scoped_focus.RunAndReset();
@@ -202,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest,
   CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
   updater->ExecuteCommand(IDC_CYCLE_TO_NEXT_TAB);
 
-  // Cycling MRU should skip the app window and switch back to tab 0.
+  // Cycling MRU should stay in browser() and switch back to tab 0.
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 }
 
