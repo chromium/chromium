@@ -1400,6 +1400,20 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
 
   WebGLFramebuffer* GetBoundFramebuffer(GLenum target) const;
 
+  String GetGLString(GLenum name) const;
+  // Helpers for getParameter.
+  ScriptValue GetBooleanParameter(ScriptState*, GLenum pname);
+  ScriptValue GetFloatParameter(ScriptState*, GLenum pname);
+  ScriptValue GetIntParameter(ScriptState*, GLenum pname);
+  ScriptValue GetInt64Parameter(ScriptState*, GLenum pname);
+  ScriptValue GetUnsignedIntParameter(ScriptState*, GLenum pname);
+  template <GLsizei N>
+  ScriptValue GetBooleanArrayParameter(ScriptState*, GLenum pname);
+  template <GLsizei N>
+  ScriptValue GetFloatArrayParameter(ScriptState*, GLenum pname);
+  template <GLsizei N>
+  ScriptValue GetIntArrayParameter(ScriptState*, GLenum pname);
+
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   std::unique_ptr<ProxyDawnInstanceForANGLE> proxy_instance_;
   wgpu::Instance instance_;

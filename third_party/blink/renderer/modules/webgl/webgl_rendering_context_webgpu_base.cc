@@ -6,6 +6,7 @@
 #include <dawn/dawn_proc.h>
 #include <dawn/wire/WireClient.h>
 
+#include <algorithm>
 #include <array>
 #include <type_traits>
 
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_active_info.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_attribute_helpers.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_debug_renderer_info.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_framebuffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
@@ -1370,24 +1372,142 @@ ScriptValue WebGLRenderingContextWebGPUBase::getParameter(
     return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
-  GLint int_value = 0;
-  switch (pname) {
-    case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
-    case GL_MAX_TEXTURE_SIZE:
-    case GL_PACK_ALIGNMENT:
-    case GL_PACK_ROW_LENGTH:
-    case GL_PACK_SKIP_PIXELS:
-    case GL_PACK_SKIP_ROWS:
-    case GL_UNPACK_ALIGNMENT:
-    case GL_UNPACK_IMAGE_HEIGHT:
-    case GL_UNPACK_ROW_LENGTH:
-    case GL_UNPACK_SKIP_IMAGES:
-    case GL_UNPACK_SKIP_PIXELS:
-    case GL_UNPACK_SKIP_ROWS: {
-      RETURN_IF_GL_ERROR(driver_gl_.fn.glGetIntegervFn(pname, &int_value),
-                         ScriptValue::CreateNull(script_state->GetIsolate()));
-      return WebGLAny(script_state, int_value);
+  // WebGL 2 parameters that must be 100% handled in Blink (because they return
+  // Blink JS wrapper objects or WebGL-specific values). Other WebGL 2
+  // parameters are handled in the shared switch below, where ANGLE validates
+  // the context version.
+  if (IsWebGL2()) {
+    switch (pname) {
+      // --- Wrapper objects ---
+      // WebGLBuffer:
+      case GL_COPY_READ_BUFFER_BINDING:
+        return WebGLAny(script_state, copy_read_buffer_binding_.Get());
+
+      case GL_COPY_WRITE_BUFFER_BINDING:
+        return WebGLAny(script_state, copy_write_buffer_binding_.Get());
+
+      case GL_PIXEL_PACK_BUFFER_BINDING:
+        return WebGLAny(script_state, pixel_pack_buffer_binding_.Get());
+
+      case GL_PIXEL_UNPACK_BUFFER_BINDING:
+        return WebGLAny(script_state, pixel_unpack_buffer_binding_.Get());
+
+      case GL_TRANSFORM_FEEDBACK_BUFFER_BINDING:
+        return WebGLAny(script_state, transform_feedback_buffer_binding_.Get());
+
+      case GL_UNIFORM_BUFFER_BINDING:
+        return WebGLAny(script_state, uniform_buffer_binding_.Get());
+
+      // WebGLFramebuffer:
+      case GL_READ_FRAMEBUFFER_BINDING:
+        return WebGLAny(script_state, read_framebuffer_binding_.Get());
+
+      // WebGLTexture:
+      case GL_TEXTURE_BINDING_2D_ARRAY:
+        return WebGLAny(script_state,
+                        bound_textures_[static_cast<size_t>(
+                            TextureTarget::k2DArray)][active_texture_unit_]
+                            .Get());
+
+      case GL_TEXTURE_BINDING_3D:
+        return WebGLAny(script_state,
+                        bound_textures_[static_cast<size_t>(TextureTarget::k3D)]
+                                       [active_texture_unit_]
+                                           .Get());
+
+      // --- Special cases (strings, WebGL-specific limits) ---
+      // Blocking the JS thread in clientWaitSync is not allowed, so the
+      // maximum timeout is 0.
+      case GC3D_MAX_CLIENT_WAIT_TIMEOUT_WEBGL:
+        return WebGLAny(script_state, int64_t{0});
+
+      case GL_SHADING_LANGUAGE_VERSION:
+        return WebGLAny(
+            script_state,
+            StrCat({"WebGL GLSL ES 3.00 (",
+                    GetGLString(GL_SHADING_LANGUAGE_VERSION), ")"}));
+
+      case GL_VERSION:
+        return WebGLAny(script_state,
+                        StrCat({"WebGL 2.0 (", GetGLString(GL_VERSION), ")"}));
+
+      // --- Unimplemented parameters ---
+      // TODO(413078308): Implement these parameters.
+      case GL_READ_BUFFER:
+      case GL_SAMPLER_BINDING:
+      case GL_TRANSFORM_FEEDBACK_BINDING:
+        NOTIMPLEMENTED();
+        return ScriptValue::CreateNull(script_state->GetIsolate());
     }
+  }
+
+  switch (pname) {
+    // --- Wrapper objects ---
+    // WebGLBuffer:
+    case GL_ARRAY_BUFFER_BINDING:
+      return WebGLAny(script_state, array_buffer_binding_.Get());
+
+    case GL_ELEMENT_ARRAY_BUFFER_BINDING:
+      return WebGLAny(script_state, element_array_buffer_binding_.Get());
+
+    // WebGLFramebuffer:
+    case GL_FRAMEBUFFER_BINDING:  // Also GL_DRAW_FRAMEBUFFER_BINDING.
+      return WebGLAny(script_state, draw_framebuffer_binding_.Get());
+
+    // WebGLProgram:
+    case GL_CURRENT_PROGRAM:
+      return WebGLAny(script_state, program_binding_.Get());
+
+    // WebGLTexture:
+    case GL_TEXTURE_BINDING_2D:
+      return WebGLAny(script_state,
+                      bound_textures_[static_cast<size_t>(TextureTarget::k2D)]
+                                     [active_texture_unit_]
+                                         .Get());
+
+    case GL_TEXTURE_BINDING_CUBE_MAP:
+      return WebGLAny(script_state,
+                      bound_textures_[static_cast<size_t>(
+                          TextureTarget::kCubeMap)][active_texture_unit_]
+                          .Get());
+
+    // --- Special cases (compressed formats, strings, Blink state) ---
+    case GL_COMPRESSED_TEXTURE_FORMATS: {
+      GLint count = 0;
+      RETURN_IF_GL_ERROR(
+          driver_gl_.fn.glGetIntegervRobustANGLEFn(
+              GL_NUM_COMPRESSED_TEXTURE_FORMATS, 1, nullptr, &count),
+          ScriptValue::CreateNull(script_state->GetIsolate()));
+      if (count <= 0) {
+        return WebGLAny(script_state, DOMUint32Array::Create(0));
+      }
+      // GLenum values are returned through glGetIntegerv, reinterpret them as
+      // unsigned.
+      Vector<GLuint> formats(base::checked_cast<wtf_size_t>(count));
+      RETURN_IF_GL_ERROR(driver_gl_.fn.glGetIntegervRobustANGLEFn(
+                             pname, formats.size(), nullptr,
+                             reinterpret_cast<GLint*>(formats.data())),
+                         ScriptValue::CreateNull(script_state->GetIsolate()));
+      return WebGLAny(script_state, DOMUint32Array::Create(formats));
+    }
+
+    case GL_RENDERER:
+      return WebGLAny(script_state, String("WebKit WebGL"));
+
+    case GL_SHADING_LANGUAGE_VERSION:
+      return WebGLAny(script_state,
+                      StrCat({"WebGL GLSL ES 1.0 (",
+                              GetGLString(GL_SHADING_LANGUAGE_VERSION), ")"}));
+
+    case GL_VENDOR:
+      return WebGLAny(script_state, String("WebKit"));
+
+    case GL_VERSION:
+      return WebGLAny(script_state,
+                      StrCat({"WebGL 1.0 (", GetGLString(GL_VERSION), ")"}));
+
+    case GC3D_UNPACK_COLORSPACE_CONVERSION_WEBGL:
+      return WebGLAny(script_state, unpack_colorspace_conversion_);
 
     case GC3D_UNPACK_FLIP_Y_WEBGL:
       return WebGLAny(script_state, unpack_flip_y_);
@@ -1395,15 +1515,199 @@ ScriptValue WebGLRenderingContextWebGPUBase::getParameter(
     case GC3D_UNPACK_PREMULTIPLY_ALPHA_WEBGL:
       return WebGLAny(script_state, unpack_premultiply_alpha_);
 
-    case GC3D_UNPACK_COLORSPACE_CONVERSION_WEBGL:
-      return WebGLAny(script_state, unpack_colorspace_conversion_);
+    // --- Unimplemented parameters ---
+    // TODO(413078308): Implement these parameters.
+    case GL_DRAW_BUFFER0:
+    case GL_DRAW_BUFFER1:
+    case GL_DRAW_BUFFER2:
+    case GL_DRAW_BUFFER3:
+    case GL_DRAW_BUFFER4:
+    case GL_DRAW_BUFFER5:
+    case GL_DRAW_BUFFER6:
+    case GL_DRAW_BUFFER7:
+    case GL_DRAW_BUFFER8:
+    case GL_DRAW_BUFFER9:
+    case GL_DRAW_BUFFER10:
+    case GL_DRAW_BUFFER11:
+    case GL_DRAW_BUFFER12:
+    case GL_DRAW_BUFFER13:
+    case GL_DRAW_BUFFER14:
+    case GL_DRAW_BUFFER15:
+    case GL_RENDERBUFFER_BINDING:
+    case GL_TIMESTAMP_EXT:
+    case GL_VERTEX_ARRAY_BINDING:
+    case WebGLDebugRendererInfo::kUnmaskedRendererWebgl:
+    case WebGLDebugRendererInfo::kUnmaskedVendorWebgl:
+      NOTIMPLEMENTED();
+      return ScriptValue::CreateNull(script_state->GetIsolate());
+
+    // --- Values wrapping the ANGLE return value in a JS object ---
+    case GL_BLEND:
+    case GL_CLIP_DISTANCE0_ANGLE:
+    case GL_CLIP_DISTANCE1_ANGLE:
+    case GL_CLIP_DISTANCE2_ANGLE:
+    case GL_CLIP_DISTANCE3_ANGLE:
+    case GL_CLIP_DISTANCE4_ANGLE:
+    case GL_CLIP_DISTANCE5_ANGLE:
+    case GL_CLIP_DISTANCE6_ANGLE:
+    case GL_CLIP_DISTANCE7_ANGLE:
+    case GL_CULL_FACE:
+    case GL_DEPTH_CLAMP_EXT:
+    case GL_DEPTH_TEST:
+    case GL_DEPTH_WRITEMASK:
+    case GL_DITHER:
+    case GL_GPU_DISJOINT_EXT:
+    case GL_POLYGON_OFFSET_FILL:
+    case GL_POLYGON_OFFSET_LINE_ANGLE:
+    case GL_RASTERIZER_DISCARD:
+    case GL_SAMPLE_ALPHA_TO_COVERAGE:
+    case GL_SAMPLE_COVERAGE:
+    case GL_SAMPLE_COVERAGE_INVERT:
+    case GL_SCISSOR_TEST:
+    case GL_STENCIL_TEST:
+    case GL_TRANSFORM_FEEDBACK_ACTIVE:
+    case GL_TRANSFORM_FEEDBACK_PAUSED:
+      return GetBooleanParameter(script_state, pname);
+
+    case GL_COLOR_WRITEMASK:
+      return GetBooleanArrayParameter<4>(script_state, pname);
+
+    case GL_ACTIVE_TEXTURE:
+    case GL_BLEND_DST_ALPHA:
+    case GL_BLEND_DST_RGB:
+    case GL_BLEND_EQUATION_ALPHA:
+    case GL_BLEND_EQUATION_RGB:  // Also GL_BLEND_EQUATION.
+    case GL_BLEND_SRC_ALPHA:
+    case GL_BLEND_SRC_RGB:
+    case GL_CLIP_DEPTH_MODE_EXT:
+    case GL_CLIP_ORIGIN_EXT:
+    case GL_CULL_FACE_MODE:
+    case GL_DEPTH_FUNC:
+    case GL_FRAGMENT_SHADER_DERIVATIVE_HINT:
+    case GL_FRONT_FACE:
+    case GL_GENERATE_MIPMAP_HINT:
+    case GL_IMPLEMENTATION_COLOR_READ_FORMAT:
+    case GL_IMPLEMENTATION_COLOR_READ_TYPE:
+    case GL_POLYGON_MODE_ANGLE:
+    case GL_PROVOKING_VERTEX_ANGLE:
+    case GL_STENCIL_BACK_FAIL:
+    case GL_STENCIL_BACK_FUNC:
+    case GL_STENCIL_BACK_PASS_DEPTH_FAIL:
+    case GL_STENCIL_BACK_PASS_DEPTH_PASS:
+    case GL_STENCIL_BACK_VALUE_MASK:
+    case GL_STENCIL_BACK_WRITEMASK:
+    case GL_STENCIL_FAIL:
+    case GL_STENCIL_FUNC:
+    case GL_STENCIL_PASS_DEPTH_FAIL:
+    case GL_STENCIL_PASS_DEPTH_PASS:
+    case GL_STENCIL_VALUE_MASK:
+    case GL_STENCIL_WRITEMASK:
+      return GetUnsignedIntParameter(script_state, pname);
+
+    case GL_ALPHA_BITS:
+    case GL_BLUE_BITS:
+    case GL_DEPTH_BITS:
+    case GL_FRAGMENT_INTERPOLATION_OFFSET_BITS_OES:
+    case GL_GREEN_BITS:
+    case GL_MAX_3D_TEXTURE_SIZE:
+    case GL_MAX_ARRAY_TEXTURE_LAYERS:
+    case GL_MAX_CLIP_DISTANCES_ANGLE:
+    case GL_MAX_COLOR_ATTACHMENTS:
+    case GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES_ANGLE:
+    case GL_MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_ANGLE:
+    case GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:
+    case GL_MAX_COMBINED_UNIFORM_BLOCKS:
+    case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
+    case GL_MAX_CULL_DISTANCES_ANGLE:
+    case GL_MAX_DRAW_BUFFERS:
+    case GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT:
+    case GL_MAX_ELEMENTS_INDICES:
+    case GL_MAX_ELEMENTS_VERTICES:
+    case GL_MAX_FRAGMENT_INPUT_COMPONENTS:
+    case GL_MAX_FRAGMENT_UNIFORM_BLOCKS:
+    case GL_MAX_FRAGMENT_UNIFORM_COMPONENTS:
+    case GL_MAX_FRAGMENT_UNIFORM_VECTORS:
+    case GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE:
+    case GL_MAX_PROGRAM_TEXEL_OFFSET:
+    case GL_MAX_RENDERBUFFER_SIZE:
+    case GL_MAX_SAMPLES:
+    case GL_MAX_TEXTURE_IMAGE_UNITS:
+    case GL_MAX_TEXTURE_SIZE:
+    case GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS:
+    case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS:
+    case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS:
+    case GL_MAX_UNIFORM_BUFFER_BINDINGS:
+    case GL_MAX_VARYING_COMPONENTS:
+    case GL_MAX_VARYING_VECTORS:
+    case GL_MAX_VERTEX_ATTRIBS:
+    case GL_MAX_VERTEX_OUTPUT_COMPONENTS:
+    case GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS:
+    case GL_MAX_VERTEX_UNIFORM_BLOCKS:
+    case GL_MAX_VERTEX_UNIFORM_COMPONENTS:
+    case GL_MAX_VERTEX_UNIFORM_VECTORS:
+    case GL_MAX_VIEWS_OVR:
+    case GL_MIN_PROGRAM_TEXEL_OFFSET:
+    case GL_PACK_ALIGNMENT:
+    case GL_PACK_ROW_LENGTH:
+    case GL_PACK_SKIP_PIXELS:
+    case GL_PACK_SKIP_ROWS:
+    case GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE:
+    case GL_RED_BITS:
+    case GL_SAMPLE_BUFFERS:
+    case GL_SAMPLES:
+    case GL_STENCIL_BACK_REF:
+    case GL_STENCIL_BITS:
+    case GL_STENCIL_CLEAR_VALUE:
+    case GL_STENCIL_REF:
+    case GL_SUBPIXEL_BITS:
+    case GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT:
+    case GL_UNPACK_ALIGNMENT:
+    case GL_UNPACK_IMAGE_HEIGHT:
+    case GL_UNPACK_ROW_LENGTH:
+    case GL_UNPACK_SKIP_IMAGES:
+    case GL_UNPACK_SKIP_PIXELS:
+    case GL_UNPACK_SKIP_ROWS:
+      return GetIntParameter(script_state, pname);
+
+    case GL_MAX_VIEWPORT_DIMS:
+      return GetIntArrayParameter<2>(script_state, pname);
+
+    case GL_SCISSOR_BOX:
+    case GL_VIEWPORT:
+      return GetIntArrayParameter<4>(script_state, pname);
+
+    case GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS:
+    case GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS:
+    case GL_MAX_ELEMENT_INDEX:
+    case GL_MAX_SERVER_WAIT_TIMEOUT:
+    case GL_MAX_UNIFORM_BLOCK_SIZE:
+      return GetInt64Parameter(script_state, pname);
+
+    case GL_DEPTH_CLEAR_VALUE:
+    case GL_LINE_WIDTH:
+    case GL_MAX_FRAGMENT_INTERPOLATION_OFFSET_OES:
+    case GL_MAX_TEXTURE_LOD_BIAS:
+    case GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT:
+    case GL_MIN_FRAGMENT_INTERPOLATION_OFFSET_OES:
+    case GL_POLYGON_OFFSET_CLAMP_EXT:
+    case GL_POLYGON_OFFSET_FACTOR:
+    case GL_POLYGON_OFFSET_UNITS:
+    case GL_SAMPLE_COVERAGE_VALUE:
+      return GetFloatParameter(script_state, pname);
+
+    case GL_ALIASED_LINE_WIDTH_RANGE:
+    case GL_ALIASED_POINT_SIZE_RANGE:
+    case GL_DEPTH_RANGE:
+      return GetFloatArrayParameter<2>(script_state, pname);
+
+    case GL_BLEND_COLOR:
+    case GL_COLOR_CLEAR_VALUE:
+      return GetFloatArrayParameter<4>(script_state, pname);
 
     default:
-      // TODO(413078308): Support other pnames.
-      NOTIMPLEMENTED();
+      InsertGLError(GL_INVALID_ENUM, "getParameter", "invalid parameter name");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
   }
-
-  return {};
 }
 
 ScriptValue WebGLRenderingContextWebGPUBase::getProgramParameter(
@@ -4669,6 +4973,97 @@ WebGLFramebuffer* WebGLRenderingContextWebGPUBase::GetBoundFramebuffer(
     default:
       return nullptr;
   }
+}
+
+String WebGLRenderingContextWebGPUBase::GetGLString(GLenum name) const {
+  return String(
+      reinterpret_cast<const char*>(driver_gl_.fn.glGetStringFn(name)));
+}
+
+ScriptValue WebGLRenderingContextWebGPUBase::GetBooleanParameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  GLboolean value = 0;
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetBooleanvRobustANGLEFn(pname, 1, nullptr, &value),
+      ScriptValue::CreateNull(script_state->GetIsolate()));
+  return WebGLAny(script_state, static_cast<bool>(value));
+}
+
+ScriptValue WebGLRenderingContextWebGPUBase::GetFloatParameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  GLfloat value = 0.0f;
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetFloatvRobustANGLEFn(pname, 1, nullptr, &value),
+      ScriptValue::CreateNull(script_state->GetIsolate()));
+  return WebGLAny(script_state, value);
+}
+
+ScriptValue WebGLRenderingContextWebGPUBase::GetIntParameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  GLint value = 0;
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetIntegervRobustANGLEFn(pname, 1, nullptr, &value),
+      ScriptValue::CreateNull(script_state->GetIsolate()));
+  return WebGLAny(script_state, value);
+}
+
+ScriptValue WebGLRenderingContextWebGPUBase::GetInt64Parameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  GLint64 value = 0;
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetInteger64vRobustANGLEFn(pname, 1, nullptr, &value),
+      ScriptValue::CreateNull(script_state->GetIsolate()));
+  return WebGLAny(script_state, value);
+}
+
+ScriptValue WebGLRenderingContextWebGPUBase::GetUnsignedIntParameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  GLint value = 0;
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetIntegervRobustANGLEFn(pname, 1, nullptr, &value),
+      ScriptValue::CreateNull(script_state->GetIsolate()));
+  return WebGLAny(script_state, static_cast<GLuint>(value));
+}
+
+template <GLsizei N>
+ScriptValue WebGLRenderingContextWebGPUBase::GetBooleanArrayParameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  std::array<GLboolean, N> values = {};
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glGetBooleanvRobustANGLEFn(pname, N, nullptr,
+                                                              values.data()),
+                     ScriptValue::CreateNull(script_state->GetIsolate()));
+  std::array<bool, N> bool_values;
+  std::ranges::transform(values, bool_values.begin(),
+                         [](GLboolean v) { return static_cast<bool>(v); });
+  return WebGLAny(script_state, bool_values);
+}
+
+template <GLsizei N>
+ScriptValue WebGLRenderingContextWebGPUBase::GetFloatArrayParameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  std::array<GLfloat, N> values = {};
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetFloatvRobustANGLEFn(pname, N, nullptr, values.data()),
+      ScriptValue::CreateNull(script_state->GetIsolate()));
+  return WebGLAny(script_state, DOMFloat32Array::Create(values));
+}
+
+template <GLsizei N>
+ScriptValue WebGLRenderingContextWebGPUBase::GetIntArrayParameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  std::array<GLint, N> values = {};
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glGetIntegervRobustANGLEFn(pname, N, nullptr,
+                                                              values.data()),
+                     ScriptValue::CreateNull(script_state->GetIsolate()));
+  return WebGLAny(script_state, DOMInt32Array::Create(values));
 }
 
 WebGLRenderingContextWebGPUBase::TextureTarget
