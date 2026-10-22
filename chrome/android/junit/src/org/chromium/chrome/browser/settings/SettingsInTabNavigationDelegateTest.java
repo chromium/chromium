@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +42,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -452,6 +454,26 @@ public class SettingsInTabNavigationDelegateTest {
         verify(mMockTab).loadUrl(captor.capture());
         assertEquals("chrome://settings/theme", captor.getValue().getUrl());
         assertNull(hostFragment.mShownFragment);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "w720dp-h1024dp")
+    public void testStartSettings_EnumWithRequiredArgs_WithSearchOpen_PassesArgsToFragment() {
+        RecordingHostFragment hostFragment = attachHostFragment();
+        hostFragment.setSearchOpenSupplier(() -> true);
+
+        mDelegate.startSettings(
+                hostFragment.requireActivity(),
+                SettingsFragment.CLEAR_BROWSING_DATA,
+                /* addToBackStack= */ true);
+
+        // Clear browsing data cannot be created without arguments. Opened by its enum from search,
+        // e.g. from All sites, it is shown on the fragment back stack rather than by a Url that
+        // would supply them, so the delegate must supply them itself.
+        verify(mMockTab, never()).loadUrl(any());
+        assertTrue(hostFragment.mShownFragment instanceof ClearBrowsingDataFragment);
+        assertNotNull(hostFragment.mShownFragment.getArguments());
     }
 
     /** Attaches a host fragment to a live activity and points the tab at it. */

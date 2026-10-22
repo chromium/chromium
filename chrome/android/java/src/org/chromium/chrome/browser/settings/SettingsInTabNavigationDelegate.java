@@ -53,7 +53,11 @@ public class SettingsInTabNavigationDelegate implements SettingsNavigation {
             Context context, @SettingsFragment int settingsFragment, boolean addToBackStack) {
         Class<? extends Fragment> fragmentClass =
                 SettingsNavigationImpl.getFragmentClassFromEnum(settingsFragment);
-        startSettings(context, fragmentClass, null, addToBackStack);
+        startSettings(
+                context,
+                fragmentClass,
+                SettingsNavigationImpl.getFragmentArgsFromEnum(context, settingsFragment),
+                addToBackStack);
     }
 
     @Override
