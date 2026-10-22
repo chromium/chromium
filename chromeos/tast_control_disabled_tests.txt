@@ -16,9 +16,6 @@
 # To disable on public builder only, modify chromeos/tast_control.gni.template
 # (for now)
 
-# https://crbug.com/1307940
-tast.policy.URLCheck.blocklist
-
 # http://crbug.com/1335213
 tast.arc.WindowState.clamshell
 
