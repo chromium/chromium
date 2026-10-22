@@ -6,16 +6,24 @@ source_set("coordinator") {
   sources = [
     "guided_tour_bubble_coordinator.h",
     "guided_tour_bubble_coordinator.mm",
+    "guided_tour_coordinator+Testing.h",
+    "guided_tour_coordinator.h",
+    "guided_tour_coordinator.mm",
     "guided_tour_promo_coordinator.h",
     "guided_tour_promo_coordinator.mm",
   ]
   deps = [
     "//base",
+    "//components/metrics",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bubble/ui_bundled/guided_tour",
     "//ios/chrome/browser/first_run/guided_tour/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -24,4 +32,24 @@ source_set("coordinator") {
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/buttons",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "guided_tour_coordinator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }

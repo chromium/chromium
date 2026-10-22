@@ -30,7 +30,6 @@
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
-#import "ios/chrome/app/profile/first_run_profile_agent.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
@@ -51,7 +50,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_bubble_coordinator.h"
+#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
@@ -131,15 +130,6 @@
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
-
-// Used to create PassKey to access the UIViewController through the
-// BrowserProvider interface (crbug.com/40606165).
-class SceneCoordinatorPassKeyFactory {
- public:
-  static BrowserProviderPassKey CreateKey() {
-    return base::PassKey<SceneCoordinatorPassKeyFactory>();
-  }
-};
 
 namespace layout_state {
 class SceneCoordinatorPassKeyFactory {
@@ -290,8 +280,8 @@ inline LayoutStateScenePassKey PassKey() {
   SettingsNavigationController* _settingsNavigationController;
   // Completion block called when Settings are dismissed.
   ProceduralBlock _settingsDismissalCompletion;
-  // Coordinator for the first step of the guided tour (NTP).
-  GuidedTourBubbleCoordinator* _guidedTourCoordinator;
+  // Coordinator for the Guided Tour.
+  GuidedTourCoordinator* _guidedTourCoordinator;
   // Coordinator for the undo sign-out flow.
   UndoSignoutCoordinator* _undoSignoutCoordinator;
 }
@@ -415,7 +405,8 @@ inline LayoutStateScenePassKey PassKey() {
   self.UIHandler = nil;
   self.tabGridDelegate = nil;
   self.sceneURLLoadingService = nullptr;
-  [self hideGuidedTourNTPStep];
+  _guidedTourCoordinator.completion = nil;
+  [self hideGuidedTour];
   [_geminiContainerCoordinator stop];
   _geminiContainerCoordinator = nil;
   [_geminiLiveFirstRunCoordinator stopWithCompletion:nil];
@@ -1226,31 +1217,23 @@ inline LayoutStateScenePassKey PassKey() {
   [_managedConfirmationScreenCoordinator start];
 }
 
-- (void)showGuidedTourNTPStepWithCompletion:(ProceduralBlock)completion {
-  UIViewController* baseViewController;
-  if (IsChromeNextIaEnabled()) {
-    baseViewController = _viewController;
-  } else {
-    id<BrowserProvider> presentingInterface =
-        self.sceneState.browserProviderInterface.currentBrowserProvider;
-    baseViewController = [presentingInterface
-        viewController:SceneCoordinatorPassKeyFactory::CreateKey()];
+- (void)showGuidedTourWithCompletion:
+    (void (^)(BOOL guidedTourStarted))completion {
+  CHECK(!_guidedTourCoordinator, base::NotFatalUntil::M162);
+  if (_guidedTourCoordinator) {
+    return;
   }
-  __weak __typeof(self) weakSelf = self;
-  _guidedTourCoordinator =
-      [[GuidedTourBubbleCoordinator alloc] initWithStep:GuidedTourStep::kNTP
-                                     baseViewController:baseViewController
-                                                browser:self.currentBrowser
-                                        completionBlock:^{
-                                          [weakSelf hideGuidedTourNTPStep];
-                                          if (completion) {
-                                            completion();
-                                          }
-                                        }];
+  UIViewController* baseViewController = IsUseSceneViewControllerEnabled()
+                                             ? _viewController
+                                             : self.activeViewController;
+  _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:self.currentBrowser];
+  _guidedTourCoordinator.completion = completion;
   [_guidedTourCoordinator start];
 }
 
-- (void)hideGuidedTourNTPStep {
+- (void)hideGuidedTour {
   [_guidedTourCoordinator stop];
   _guidedTourCoordinator = nil;
 }
@@ -2617,11 +2600,7 @@ inline LayoutStateScenePassKey PassKey() {
   [self stopPasswordSettingsCoordinator];
 
   // If the guided tour is active, stop it.
-  FirstRunProfileAgent* firstRunAgent =
-      [FirstRunProfileAgent agentFromProfile:self.sceneState.profileState];
-  if (firstRunAgent) {
-    [firstRunAgent stopGuidedTour];
-  }
+  [self hideGuidedTour];
 
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock resetAndDismiss = ^{

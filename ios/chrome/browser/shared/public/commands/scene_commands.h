@@ -205,9 +205,12 @@ enum class TabGridOpeningMode {
 // migration.
 - (void)showManagedProfileCreation;
 
-// Shows/Hides the guided tour "NTP" step.
-- (void)showGuidedTourNTPStepWithCompletion:(ProceduralBlock)completion;
-- (void)hideGuidedTourNTPStep;
+// Shows/Hides the Guided Tour promo and steps, executing `completion` when
+// finished with `guidedTourStarted` indicating whether the user started the
+// tour.
+- (void)showGuidedTourWithCompletion:
+    (void (^)(BOOL guidedTourStarted))completion;
+- (void)hideGuidedTour;
 
 @end
 

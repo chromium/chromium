@@ -24,76 +24,16 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
-#import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_utils.h"
-#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-@interface FakeTabGridToolbarCommands : NSObject <TabGridToolbarCommands>
-@property(nonatomic, copy) ProceduralBlock dismissalCompletion;
-@end
-
-@implementation FakeTabGridToolbarCommands
-- (void)showGuidedTourIncognitoStepWithDismissalCompletion:
-    (ProceduralBlock)completion {
-  self.dismissalCompletion = completion;
-}
-- (void)showGuidedTourTabGroupStepWithDismissalCompletion:
-    (ProceduralBlock)completion {
-  self.dismissalCompletion = completion;
-}
-- (void)showSavedTabGroupIPH {
-}
-- (void)hideTabGridToolbarGuidedTour {
-}
-@end
-
-@interface FakeTabGridCommands : NSObject <TabGridCommands>
-@property(nonatomic, copy) ProceduralBlock dismissalCompletion;
-@end
-
-@implementation FakeTabGridCommands
-- (void)showGuidedTourLongPressStepWithDismissalCompletion:
-    (ProceduralBlock)completion {
-  self.dismissalCompletion = completion;
-}
-- (void)bringGroupIntoView:(const TabGroup*)group animated:(BOOL)animated {
-}
-- (void)showHistoryForText:(NSString*)text {
-}
-- (void)showWebSearchForText:(NSString*)text {
-}
-- (void)showPage:(TabGridPage)page animated:(BOOL)animated {
-}
-- (void)prepareToExitTabGrid {
-}
-- (void)exitTabGrid {
-}
-- (void)hideTabGridGuidedTour {
-}
-- (void)presentPinTabBubble {
-}
-- (void)presentCreateTabGroupBubble {
-}
-- (void)showSwipeToIncognitoIPH {
-}
-- (void)showPageActionMenuFromTabGrid {
-}
-- (void)activateGridContainerConstraints {
-}
-- (void)deactivateGridContainerConstraints {
-}
-@end
 
 namespace {
 
@@ -152,80 +92,6 @@ class FirstRunProfileAgentTest : public PlatformTest {
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
 };
-
-// Validates that the correct metric is logged when the user rejects Guided Tour
-// promo.
-TEST_F(FirstRunProfileAgentTest, GuidedTourPromoMetrics) {
-  enabled_feature_list_.InitAndEnableFeatureWithParameters(
-      kBestOfAppFRE, {{kWelcomeBackParam, "4"}});
-  base::HistogramTester tester;
-  [profile_agent_ dismissGuidedTourPromo];
-  tester.ExpectTotalCount("IOS.GuidedTour.Promo.DidAccept", 1);
-}
-
-// Validates that the correct metric is logged when a step in the Guided Tour
-// finishes.
-TEST_F(FirstRunProfileAgentTest, GuidedTourStepMetrics) {
-  enabled_feature_list_.InitAndEnableFeatureWithParameters(
-      kBestOfAppFRE, {{kWelcomeBackParam, "4"}});
-
-  InitializeActiveSceneState();
-  [profile_agent_ profileState:profile_state_
-      firstSceneHasInitializedUI:scene_state_];
-
-  FakeTabGridToolbarCommands* fake_tab_grid_toolbar_commands =
-      [[FakeTabGridToolbarCommands alloc] init];
-  [browser()->GetCommandDispatcher()
-      startDispatchingToTarget:fake_tab_grid_toolbar_commands
-                   forProtocol:@protocol(TabGridToolbarCommands)];
-
-  FakeTabGridCommands* fake_tab_grid_commands =
-      [[FakeTabGridCommands alloc] init];
-  [browser()->GetCommandDispatcher()
-      startDispatchingToTarget:fake_tab_grid_commands
-                   forProtocol:@protocol(TabGridCommands)];
-
-  id scene_commands_handler = OCMProtocolMock(@protocol(SceneCommands));
-  [browser()->GetCommandDispatcher()
-      startDispatchingToTarget:scene_commands_handler
-                   forProtocol:@protocol(SceneCommands)];
-
-  id guided_tour_handler = OCMProtocolMock(@protocol(GuidedTourCommands));
-  [browser()->GetCommandDispatcher()
-      startDispatchingToTarget:guided_tour_handler
-                   forProtocol:@protocol(GuidedTourCommands)];
-
-  // NewTabPageCommands is required by maybePresentPostFREPromos when the Guided
-  // Tour completes.
-  id ntp_commands_handler = OCMProtocolMock(@protocol(NewTabPageCommands));
-  [browser()->GetCommandDispatcher()
-      startDispatchingToTarget:ntp_commands_handler
-                   forProtocol:@protocol(NewTabPageCommands)];
-
-  base::HistogramTester tester;
-
-  // Start and stop step 1 (NTP).
-  [profile_agent_ startGuidedTour];
-  [profile_agent_ guidedTourNTPStepCompleted];
-  tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 0, 1);
-
-  // Tab grid being presented is the signal to start step 2.
-  [profile_agent_ tabGridWasPresented];
-
-  ASSERT_NE(fake_tab_grid_toolbar_commands.dismissalCompletion, nil);
-  fake_tab_grid_toolbar_commands.dismissalCompletion();
-  tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 1, 1);
-
-  // Step 2 completion triggers step 3.
-  ASSERT_NE(fake_tab_grid_commands.dismissalCompletion, nil);
-  fake_tab_grid_commands.dismissalCompletion();
-  tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 2, 1);
-
-  // Step 3 completion triggers step 4.
-  ASSERT_NE(fake_tab_grid_toolbar_commands.dismissalCompletion, nil);
-  fake_tab_grid_toolbar_commands.dismissalCompletion();
-  tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 3, 1);
-}
 
 // Validates that the Synced Set Up flow does not trigger from an off-the-record
 // profile.
@@ -290,20 +156,22 @@ TEST_F(FirstRunProfileAgentTest, SyncedSetUpDoesNotTriggerInIncognito) {
   histogram_tester.ExpectTotalCount("IOS.SyncedSetUp.TriggerSource", 0);
 }
 
-// Validates that stopGuidedTour does not crash when the command dispatcher
-// is not dispatching for GuidedTourCommands or SceneCommands.
-TEST_F(FirstRunProfileAgentTest, StopGuidedTourWithoutHandlers) {
-  enabled_feature_list_.InitAndEnableFeatureWithParameters(
-      kBestOfAppFRE, {{kWelcomeBackParam, "4"}});
-
+// Validates that `showGuidedTourPrompt` dispatches the `SceneCommands` to show
+// the Guided Tour.
+TEST_F(FirstRunProfileAgentTest, ShowGuidedTourPromptDispatchesSceneCommand) {
   InitializeActiveSceneState();
   [profile_agent_ profileState:profile_state_
       firstSceneHasInitializedUI:scene_state_];
 
-  [profile_agent_ startGuidedTour];
+  id scene_commands_handler = OCMProtocolMock(@protocol(SceneCommands));
+  OCMExpect([scene_commands_handler showGuidedTourWithCompletion:[OCMArg any]]);
+  [browser()->GetCommandDispatcher()
+      startDispatchingToTarget:scene_commands_handler
+                   forProtocol:@protocol(SceneCommands)];
 
-  // This should not crash even if handlers are missing.
-  [profile_agent_ stopGuidedTour];
+  [profile_agent_ showGuidedTourPrompt];
+
+  EXPECT_OCMOCK_VERIFY(scene_commands_handler);
 }
 
 // Validates that maybePresentPostFREPromos correctly triggers the NTP command

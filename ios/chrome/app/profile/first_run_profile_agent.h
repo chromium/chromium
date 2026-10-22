@@ -10,13 +10,6 @@
 // ProfileAgent that displays the first run UI when needed and handles the
 // ProfileInitStage::kFirstRun stage (including the transition to next stage).
 @interface FirstRunProfileAgent : ObservingProfileAgent
-
-// Indicates to this class that the Tab Grid was presented.
-- (void)tabGridWasPresented;
-
-// Stops any in-progress guided tour.
-- (void)stopGuidedTour;
-
 @end
 
 #endif  // IOS_CHROME_APP_PROFILE_FIRST_RUN_PROFILE_AGENT_H_
