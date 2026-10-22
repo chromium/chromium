@@ -33,11 +33,6 @@
 #include "components/policy/test_support/test_server_helpers.h"
 #include "third_party/re2/src/re2/re2.h"
 
-#define RETURN_IF_FALSE(expr) \
-  if (!expr) {                \
-    return false;             \
-  }
-
 namespace fakedms {
 
 namespace {
@@ -1162,17 +1157,31 @@ bool FakeDMServer::ReadPolicyBlobFile() {
   ParseUserAffiliationIds(dict, policy_storage());
   ParseDirectoryApiId(dict, policy_storage());
   ParseRobotApiAuthCode(dict, policy_storage());
-  RETURN_IF_FALSE(ParseAllowSetDeviceAttributes(dict, policy_storage()));
-  RETURN_IF_FALSE(ParseUseUniversalSigningKeys(dict, policy_storage()));
-  RETURN_IF_FALSE(ParseRequestErrors(dict, this));
-  RETURN_IF_FALSE(ParseInitialEnrollmentState(dict, policy_storage()));
-  RETURN_IF_FALSE(ParseCurrentKeyIndex(dict, policy_storage()));
+  if (!ParseAllowSetDeviceAttributes(dict, policy_storage())) {
+    return false;
+  }
+  if (!ParseUseUniversalSigningKeys(dict, policy_storage())) {
+    return false;
+  }
+  if (!ParseRequestErrors(dict, this)) {
+    return false;
+  }
+  if (!ParseInitialEnrollmentState(dict, policy_storage())) {
+    return false;
+  }
+  if (!ParseCurrentKeyIndex(dict, policy_storage())) {
+    return false;
+  }
   if (dict->contains(kPoliciesKey) || dict->contains(kExternalPoliciesKey)) {
     LOG(INFO) << "Parsing policies from base64 blobs.";
-    RETURN_IF_FALSE(ParsePolicyBlobs(dict));
+    if (!ParsePolicyBlobs(dict)) {
+      return false;
+    }
   } else {
     LOG(INFO) << "Parsing policies from JSON.";
-    RETURN_IF_FALSE(ParsePoliciesJson(dict));
+    if (!ParsePoliciesJson(dict)) {
+      return false;
+    }
   }
   return true;
 }
