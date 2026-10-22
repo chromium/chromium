@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/formats/mp4/writable_box_definitions.h"
-#include "media/muxers/output_position_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -22,14 +21,11 @@ TEST(Mp4MuxerContextTest, Default) {
   std::vector<uint8_t> written_data;
   base::RunLoop run_loop;
 
-  auto output_position_tracker =
-      std::make_unique<OutputPositionTracker>(base::BindLambdaForTesting(
-          [&written_data, &run_loop](base::span<const uint8_t> data) {
-            std::ranges::copy(data, std::back_inserter(written_data));
-            run_loop.Quit();
-          }));
-
-  Mp4MuxerContext mp4_context(std::move(output_position_tracker));
+  Mp4MuxerContext mp4_context(base::BindLambdaForTesting(
+      [&written_data, &run_loop](base::span<const uint8_t> data) {
+        std::ranges::copy(data, std::back_inserter(written_data));
+        run_loop.Quit();
+      }));
   EXPECT_FALSE(mp4_context.GetVideoTrack().has_value());
   EXPECT_FALSE(mp4_context.GetAudioTrack().has_value());
 
@@ -37,7 +33,7 @@ TEST(Mp4MuxerContextTest, Default) {
   mp4_context.SetAudioTrack({2, 2222});
 
   std::string str1 = "abc";
-  mp4_context.GetOutputPositionTracker().WriteSpan(base::as_byte_span(str1));
+  mp4_context.WriteData(base::as_byte_span(str1));
   run_loop.Run();
 
   EXPECT_TRUE(mp4_context.GetVideoTrack().has_value());

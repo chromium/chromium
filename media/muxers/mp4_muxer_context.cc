@@ -4,14 +4,15 @@
 
 #include "media/muxers/mp4_muxer_context.h"
 
+#include "base/functional/callback.h"
 #include "media/formats/mp4/writable_box_definitions.h"
-#include "media/muxers/output_position_tracker.h"
 
 namespace media {
 
-Mp4MuxerContext::Mp4MuxerContext(
-    std::unique_ptr<OutputPositionTracker> output_position_tracker)
-    : output_position_tracker_(std::move(output_position_tracker)) {}
+Mp4MuxerContext::Mp4MuxerContext(Muxer::WriteDataCB write_data_callback)
+    : write_data_callback_(std::move(write_data_callback)) {
+  CHECK(write_data_callback_);
+}
 
 Mp4MuxerContext::~Mp4MuxerContext() = default;
 
@@ -40,8 +41,9 @@ std::optional<Mp4MuxerContext::Track> Mp4MuxerContext::GetAudioTrack() const {
   return audio_track_;
 }
 
-OutputPositionTracker& Mp4MuxerContext::GetOutputPositionTracker() const {
-  return *output_position_tracker_;
+void Mp4MuxerContext::WriteData(base::span<const uint8_t> data) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  write_data_callback_.Run(data);
 }
 
 }  // namespace media

@@ -6,23 +6,21 @@
 #define MEDIA_MUXERS_MP4_MUXER_CONTEXT_H_
 
 #include <map>
-#include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
+#include "media/muxers/muxer.h"
 
 namespace media {
-
-class OutputPositionTracker;
 
 // The class provides any additional data that isn't part of box.
 // Usually, the data will be set in the middle of box data creation, but
 // can be also set during writing box.
 class MEDIA_EXPORT Mp4MuxerContext {
  public:
-  explicit Mp4MuxerContext(
-      std::unique_ptr<OutputPositionTracker> output_position_tracker);
+  explicit Mp4MuxerContext(Muxer::WriteDataCB write_data_callback);
   ~Mp4MuxerContext();
   Mp4MuxerContext(const Mp4MuxerContext&) = delete;
   Mp4MuxerContext& operator=(const Mp4MuxerContext&) = delete;
@@ -45,13 +43,15 @@ class MEDIA_EXPORT Mp4MuxerContext {
   std::optional<Track> GetVideoTrack() const;
   std::optional<Track> GetAudioTrack() const;
 
-  OutputPositionTracker& GetOutputPositionTracker() const;
+  // Passes the written box data to the client.
+  void WriteData(base::span<const uint8_t> data) const;
 
  private:
   std::optional<Track> video_track_;
   std::optional<Track> audio_track_;
 
-  std::unique_ptr<OutputPositionTracker> output_position_tracker_;
+  const Muxer::WriteDataCB write_data_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

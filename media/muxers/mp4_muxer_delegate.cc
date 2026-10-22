@@ -21,7 +21,6 @@
 #include "media/muxers/mp4_movie_box_writer.h"
 #include "media/muxers/mp4_muxer_delegate_fragment.h"
 #include "media/muxers/mp4_type_conversion.h"
-#include "media/muxers/output_position_tracker.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
@@ -687,11 +686,7 @@ void Mp4MuxerDelegate::EnsureInitialized() {
   }
 
   // `write_callback_` continue to be used even after `Reset`.
-  auto output_position_tracker =
-      std::make_unique<OutputPositionTracker>(write_callback_);
-
-  context_ =
-      std::make_unique<Mp4MuxerContext>(std::move(output_position_tracker));
+  context_ = std::make_unique<Mp4MuxerContext>(write_callback_);
 
   moov_ = std::make_unique<mp4::writable_boxes::Movie>();
 

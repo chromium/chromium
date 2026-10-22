@@ -11,7 +11,6 @@
 
 #include "media/muxers/box_byte_stream.h"
 #include "media/muxers/mp4_muxer_context.h"
-#include "media/muxers/output_position_tracker.h"
 
 namespace media {
 
@@ -37,7 +36,7 @@ size_t Mp4BoxWriter::WriteAndFlush(BoxByteStream& writer) {
   std::vector<uint8_t> buffer = writer.Flush();
 
   // Write the entire boxes to the blob.
-  context().GetOutputPositionTracker().WriteSpan(buffer);
+  context().WriteData(buffer);
 
   return buffer.size();
 }

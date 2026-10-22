@@ -12,7 +12,6 @@
 #include "media/muxers/box_byte_stream.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/mp4_type_conversion.h"
-#include "media/muxers/output_position_tracker.h"
 
 namespace media {
 

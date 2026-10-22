@@ -31,7 +31,6 @@
 #include "media/muxers/mp4_movie_box_writer.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/mp4_type_conversion.h"
-#include "media/muxers/output_position_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -91,8 +90,9 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
   Mp4MuxerBoxWriterTest() = default;
 
  protected:
-  void CreateContext(std::unique_ptr<OutputPositionTracker> tracker) {
-    context_ = std::make_unique<Mp4MuxerContext>(std::move(tracker));
+  void CreateContext(Muxer::WriteDataCB write_data_callback) {
+    context_ =
+        std::make_unique<Mp4MuxerContext>(std::move(write_data_callback));
   }
 
   Mp4MuxerContext* context() const { return context_.get(); }
@@ -100,7 +100,7 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
   void Reset() { context_ = nullptr; }
 
   void CreateContext(std::vector<uint8_t>& written_data) {
-    auto tracker = std::make_unique<OutputPositionTracker>(base::BindRepeating(
+    auto write_data_callback = base::BindRepeating(
         [&](base::OnceClosure run_loop_quit, std::vector<uint8_t>* written_data,
             base::span<const uint8_t> mp4_data_string) {
           // Callback is called per box output.
@@ -108,10 +108,10 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
           std::ranges::copy(mp4_data_string, std::back_inserter(*written_data));
           std::move(run_loop_quit).Run();
         },
-        run_loop_.QuitClosure(), &written_data));
+        run_loop_.QuitClosure(), &written_data);
 
     // Initialize.
-    CreateContext(std::move(tracker));
+    CreateContext(std::move(write_data_callback));
   }
 
   void AddTrackWithSampleDescriptions(mp4::writable_boxes::Movie& movie_box) {
