@@ -234,6 +234,43 @@ void RecordUserActionAndHistogram(const std::string& metric_name) {
   base::UmaHistogramBoolean(metric_name, true);
 }
 
+std::vector<tabs::TabHandle> FilterValidTabHandlesForSharing(
+    const std::vector<tabs::TabHandle>& tab_handles) {
+  std::vector<tabs::TabHandle> valid_tab_handles;
+  for (tabs::TabHandle tab_handle : tab_handles) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (!tab || !tab->GetContents()) {
+      continue;
+    }
+    if (contextual_tasks::IsUrlValidForContextSharing(
+            tab->GetContents()->GetLastCommittedURL()) &&
+        !std::ranges::contains(valid_tab_handles, tab_handle)) {
+      valid_tab_handles.push_back(tab_handle);
+    }
+  }
+  return valid_tab_handles;
+}
+
+std::vector<tabs::TabHandle> BuildTabsToAttachWithActiveTab(
+    BrowserWindowInterface* browser_window,
+    const std::vector<tabs::TabHandle>& valid_tab_handles) {
+  std::vector<tabs::TabHandle> tabs_to_attach;
+  if (TabListInterface* tab_list = TabListInterface::From(browser_window)) {
+    if (tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+        active_tab && active_tab->GetContents() &&
+        contextual_tasks::IsUrlValidForContextSharing(
+            active_tab->GetContents()->GetLastCommittedURL())) {
+      tabs_to_attach.push_back(active_tab->GetHandle());
+    }
+  }
+  for (tabs::TabHandle tab_handle : valid_tab_handles) {
+    if (!std::ranges::contains(tabs_to_attach, tab_handle)) {
+      tabs_to_attach.push_back(tab_handle);
+    }
+  }
+  return tabs_to_attach;
+}
+
 }  // namespace
 
 namespace contextual_tasks {
@@ -682,18 +719,8 @@ void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(
     return;
   }
 
-  std::vector<tabs::TabHandle> valid_tab_handles;
-  for (tabs::TabHandle tab_handle : tab_handles) {
-    tabs::TabInterface* tab = tab_handle.Get();
-    if (!tab || !tab->GetContents()) {
-      continue;
-    }
-    const GURL& url = tab->GetContents()->GetLastCommittedURL();
-    if (IsUrlValidForContextSharing(url) &&
-        !std::ranges::contains(valid_tab_handles, tab_handle)) {
-      valid_tab_handles.push_back(tab_handle);
-    }
-  }
+  std::vector<tabs::TabHandle> valid_tab_handles =
+      FilterValidTabHandlesForSharing(tab_handles);
   if (valid_tab_handles.empty()) {
     return;
   }
@@ -708,20 +735,8 @@ void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(
     }
   }
 
-  std::vector<tabs::TabHandle> tabs_to_attach;
-  if (TabListInterface* tab_list = TabListInterface::From(browser_window_)) {
-    if (tabs::TabInterface* active_tab = tab_list->GetActiveTab();
-        active_tab && active_tab->GetContents() &&
-        IsUrlValidForContextSharing(
-            active_tab->GetContents()->GetLastCommittedURL())) {
-      tabs_to_attach.push_back(active_tab->GetHandle());
-    }
-  }
-  for (tabs::TabHandle tab_handle : valid_tab_handles) {
-    if (!std::ranges::contains(tabs_to_attach, tab_handle)) {
-      tabs_to_attach.push_back(tab_handle);
-    }
-  }
+  std::vector<tabs::TabHandle> tabs_to_attach =
+      BuildTabsToAttachWithActiveTab(browser_window_, valid_tab_handles);
 
   OpenInZeroState();
 
@@ -730,6 +745,52 @@ void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(
     return;
   }
   AttachTabsToTask(task->GetTaskId(), tabs_to_attach);
+}
+
+void ContextualTasksSidePanelCoordinator::ShareTabsWithExistingThread(
+    const base::Uuid& task_id,
+    const std::vector<tabs::TabHandle>& tab_handles,
+    omnibox::ChromeAimEntryPoint entry_point) {
+  if (!browser_window_ || !CanShareTabContext(browser_window_->GetProfile()) ||
+      !task_id.is_valid()) {
+    return;
+  }
+  if (const auto cache_it = task_id_to_web_contents_cache_.find(task_id);
+      cache_it == task_id_to_web_contents_cache_.end() || !cache_it->second) {
+    return;
+  }
+
+  std::vector<tabs::TabHandle> valid_tab_handles =
+      FilterValidTabHandlesForSharing(tab_handles);
+  if (valid_tab_handles.empty()) {
+    return;
+  }
+
+  std::vector<tabs::TabHandle> tabs_to_attach =
+      BuildTabsToAttachWithActiveTab(browser_window_, valid_tab_handles);
+
+  std::optional<ContextualTask> current_task = GetCurrentTask();
+  const bool switching_threads =
+      !current_task.has_value() || current_task->GetTaskId() != task_id;
+  if (switching_threads) {
+    if (active_task_context_provider_) {
+      active_task_context_provider_->ClearAllLocalTabUnderlines();
+    }
+    if (TabListInterface* tab_list = TabListInterface::From(browser_window_)) {
+      if (tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+          active_tab && active_tab->GetContents()) {
+        DisassociateTabFromTask(active_tab->GetContents());
+        if (ContextualTasksUiService* ui_service = GetUiService()) {
+          ui_service->AssociateWebContentsToTask(active_tab->GetContents(),
+                                                 task_id);
+        }
+      }
+    }
+  }
+
+  Show(/*transition_from_tab=*/false, entry_point);
+
+  AttachTabsToTask(task_id, tabs_to_attach);
 }
 
 std::vector<ContextualTasksPanelController::RecentThreadInfo>

@@ -99,6 +99,14 @@ class ContextualTasksPanelController {
   virtual void ShareTabsWithActiveOrNewThread(
       const std::vector<tabs::TabHandle>& tab_handles) = 0;
 
+  // Switches the side panel to the existing cached thread `task_id`, opens the
+  // side panel with `entry_point`, and attaches both the active tab (if valid
+  // for context sharing) and `tab_handles` as context.
+  virtual void ShareTabsWithExistingThread(
+      const base::Uuid& task_id,
+      const std::vector<tabs::TabHandle>& tab_handles,
+      omnibox::ChromeAimEntryPoint entry_point) = 0;
+
   // Returns up to 5 recent non-zero-state threads cached in this browser
   // window, ordered with the active side panel thread first followed by most
   // recently active threads.

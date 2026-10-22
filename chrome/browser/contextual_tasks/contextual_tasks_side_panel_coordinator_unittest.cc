@@ -2177,6 +2177,141 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
   coordinator_->ShareTabsWithActiveOrNewThread({invalid_tab->GetHandle()});
 }
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShareTabsWithExistingThread_SwitchesToThreadAndAttachesValidTabs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksForceEntryPointEligibility,
+       kContextualTasksSidePanelRearchitecture},
+      {});
+
+  tabs::TabInterface* active_tab = CreateMockTab();
+  tabs::TabInterface* valid_tab = CreateMockTab();
+  tabs::TabInterface* invalid_tab = CreateMockTab();
+  content::WebContentsTester::For(active_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/active"));
+  content::WebContentsTester::For(valid_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/shared"));
+  content::WebContentsTester::For(invalid_tab->GetContents())
+      ->NavigateAndCommit(GURL("chrome://version"));
+
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(active_tab));
+
+  base::Uuid previous_task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask previous_task(previous_task_id);
+  base::Uuid existing_task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask existing_task(existing_task_id);
+  CreateCachedWebContentsWithUrlForTesting(
+      existing_task_id, /*is_open=*/false,
+      GURL("https://www.google.com/search?udm=50&mtid=1&q=Existing+Thread"));
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillOnce(Return(previous_task))
+      .WillOnce(Return(previous_task))
+      .WillRepeatedly(Return(existing_task));
+  EXPECT_CALL(*mock_controller_,
+              DisassociateTabFromTask(previous_task_id,
+                                      sessions::SessionTabHelper::IdForTab(
+                                          active_tab->GetContents())))
+      .Times(1);
+  EXPECT_CALL(*mock_controller_,
+              AssociateTabWithTask(existing_task_id,
+                                   sessions::SessionTabHelper::IdForTab(
+                                       active_tab->GetContents())))
+      .Times(testing::AtLeast(1));
+  EXPECT_CALL(*mock_controller_,
+              AssociateTabWithTask(existing_task_id,
+                                   sessions::SessionTabHelper::IdForTab(
+                                       valid_tab->GetContents())))
+      .Times(0);
+  EXPECT_CALL(*mock_controller_,
+              AssociateTabWithTask(existing_task_id,
+                                   sessions::SessionTabHelper::IdForTab(
+                                       invalid_tab->GetContents())))
+      .Times(0);
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(active_tab->GetHandle()))
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(valid_tab->GetHandle()))
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(invalid_tab->GetHandle()))
+      .Times(0);
+
+  coordinator_->ShareTabsWithExistingThread(
+      existing_task_id, {valid_tab->GetHandle(), invalid_tab->GetHandle()},
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+  EXPECT_EQ(coordinator_->GetActiveWebContents(),
+            GetWebContentsForTaskForTesting(existing_task_id));
+  EXPECT_EQ(coordinator_->GetActiveEntrySource(),
+            ContextualTasksPanelController::EntrySource::kOther);
+}
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    ShareTabsWithExistingThread_SameThreadPreservesLocalTabUnderlinesAndIgnoresInvalidInputs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksForceEntryPointEligibility,
+       kContextualTasksSidePanelRearchitecture},
+      {});
+
+  tabs::TabInterface* active_tab = CreateMockTab();
+  tabs::TabInterface* valid_tab = CreateMockTab();
+  tabs::TabInterface* invalid_tab = CreateMockTab();
+  content::WebContentsTester::For(active_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/active"));
+  content::WebContentsTester::For(valid_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/shared"));
+  content::WebContentsTester::For(invalid_tab->GetContents())
+      ->NavigateAndCommit(GURL("chrome://version"));
+
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(active_tab));
+
+  base::Uuid existing_task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask existing_task(existing_task_id);
+  CreateCachedWebContentsWithUrlForTesting(
+      existing_task_id, /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50&mtid=1&q=Existing+Thread"));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(existing_task));
+
+  // Uncached `task_id` or empty valid tabs early-return without modifying
+  // panel state or local underlines.
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(0);
+  EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
+      .Times(0);
+  coordinator_->ShareTabsWithExistingThread(
+      base::Uuid::GenerateRandomV4(), {valid_tab->GetHandle()},
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+  coordinator_->ShareTabsWithExistingThread(
+      existing_task_id, {invalid_tab->GetHandle()},
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+
+  // Sharing into the already-active thread (`switching_threads == false`)
+  // preserves existing local tab underlines and keeps `active_tab` associated.
+  EXPECT_CALL(*mock_controller_, DisassociateTabFromTask(_, _)).Times(0);
+  EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
+      .Times(0);
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(active_tab->GetHandle()))
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(valid_tab->GetHandle()))
+      .Times(1);
+
+  coordinator_->ShareTabsWithExistingThread(
+      existing_task_id, {valid_tab->GetHandle()},
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
+  EXPECT_EQ(coordinator_->GetActiveEntrySource(),
+            ContextualTasksPanelController::EntrySource::kAskGoogle);
+}
 #endif
 
 TEST_F(
