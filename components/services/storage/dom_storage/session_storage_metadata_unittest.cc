@@ -28,6 +28,7 @@
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
@@ -114,11 +115,11 @@ class SessionStorageMetadataTest : public base::test::WithFeatureOverride,
   const DomStorageDatabase::Value kValue4 = StdStringToUint8Vector("data4");
 
   const std::string test_namespace1_id_ =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
+      blink::AllocateSessionStorageNamespaceId();
   const std::string test_namespace2_id_ =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
+      blink::AllocateSessionStorageNamespaceId();
   const std::string test_namespace3_id_ =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
+      blink::AllocateSessionStorageNamespaceId();
 
   const blink::StorageKey test_storage_key1_ =
       blink::StorageKey::CreateFromStringForTesting("http://host1:1/");

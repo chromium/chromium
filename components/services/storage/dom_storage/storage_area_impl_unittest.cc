@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -417,7 +418,7 @@ class StorageAreaImplTestBase : public testing::Test,
 
   scoped_refptr<DomStorageDatabase::SharedMapLocator> GenerateMapLocator(
       int64_t map_id) {
-    std::string session_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+    std::string session_id = blink::AllocateSessionStorageNamespaceId();
     return base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
         DomStorageDatabase::MapLocator(std::move(session_id), test_storage_key_,
                                        map_id));

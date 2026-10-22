@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -64,9 +65,8 @@ class SessionStorageAreaImplTest : public base::test::WithFeatureOverride,
  public:
   SessionStorageAreaImplTest()
       : base::test::WithFeatureOverride(kDomStorageSqlite),
-        test_namespace_id1_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
-        test_namespace_id2_(
-            base::Uuid::GenerateRandomV4().AsLowercaseString()) {
+        test_namespace_id1_(blink::AllocateSessionStorageNamespaceId()),
+        test_namespace_id2_(blink::AllocateSessionStorageNamespaceId()) {
     // Match the state of `kDomStorageSqliteInMemory` to the top level
     // kDomStorageSqlite. That way in-memory databases will use the backend
     // expected by the param state.

@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/uuid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -178,6 +179,15 @@ SessionStorageMetadata::GetOrCreateNamespaceEntry(
 }
 
 bool IsNamespaceIdValid(const std::string& namespace_id) {
+  if (namespace_id.size() != blink::kSessionStorageNamespaceIdLength) {
+    return false;
+  }
+
+  if (namespace_id[8] != '_' || namespace_id[13] != '_' ||
+      namespace_id[18] != '_' || namespace_id[23] != '_') {
+    return false;
+  }
+
   std::string namespace_uuid_string = namespace_id;
   std::ranges::replace(namespace_uuid_string, '_', '-');
 

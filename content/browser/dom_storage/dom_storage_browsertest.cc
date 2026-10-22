@@ -52,6 +52,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/origin.h"
@@ -192,8 +193,7 @@ class DOMStorageBrowserTest : public base::test::WithFeatureOverride,
   }
 
   std::string CreateSessionStorageNamespace() {
-    std::string namespace_id =
-        base::Uuid::GenerateRandomV4().AsLowercaseString();
+    std::string namespace_id = blink::AllocateSessionStorageNamespaceId();
     context_wrapper()->GetSessionStorageControl()->CreateNamespace(
         namespace_id);
     return namespace_id;
