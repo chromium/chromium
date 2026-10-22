@@ -595,12 +595,16 @@ Canvas2DResourceProvider::CreateWithClear(
       recorder.getRecordingCanvas().clear(SkColors::kTransparent);
     }
     provider->RasterRecord(recorder.ReleaseMainRecording(), {});
+
+    // An error might have occurred while clearing.
+    if (!provider->IsValid()) {
+      return nullptr;
+    }
   } else if (!provider->resource_) {
     return nullptr;
   }
 
-  // An error might have occurred while clearing.
-  return provider->IsValid() ? std::move(provider) : nullptr;
+  return provider;
 }
 
 std::unique_ptr<Canvas2DResourceProvider>
