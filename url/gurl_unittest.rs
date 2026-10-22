@@ -7,21 +7,21 @@ chromium::import! {
 }
 
 use rust_gtest_interop::prelude::*;
-use url_rust::gurl::ffi::{create_gurl_from_str, possibly_invalid_spec};
+use url_rust::gurl::ffi::create_gurl_from_str;
 
 #[gtest(GURLRustTest, CreationAndValidity)]
 fn test_creation_and_validity() {
     let valid = create_gurl_from_str("https://example.com/path");
     expect_true!(valid.is_valid());
-    expect_eq!(possibly_invalid_spec(&valid), "https://example.com/path");
+    expect_eq!(valid.possibly_invalid_spec(), "https://example.com/path");
 
     let empty = create_gurl_from_str("");
     expect_false!(empty.is_valid());
-    expect_eq!(possibly_invalid_spec(&empty), "");
+    expect_eq!(empty.possibly_invalid_spec(), "");
 
     let invalid = create_gurl_from_str("http://:invalid");
     expect_false!(invalid.is_valid());
-    expect_eq!(possibly_invalid_spec(&invalid), "http://:invalid/");
+    expect_eq!(invalid.possibly_invalid_spec(), "http://:invalid/");
 }
 
 #[gtest(GURLRustTest, SchemeAndSchemeIs)]

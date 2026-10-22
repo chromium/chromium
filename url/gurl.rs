@@ -49,6 +49,10 @@ pub mod ffi {
 }
 
 impl ffi::GURL {
+    pub fn possibly_invalid_spec(&self) -> &str {
+        ffi::possibly_invalid_spec(self)
+    }
+
     pub fn scheme(&self) -> &str {
         ffi::gurl_scheme(self)
     }
@@ -69,7 +73,7 @@ unsafe impl Send for ffi::GURL {}
 // and CXX has support for calling overload operators.
 impl PartialEq for ffi::GURL {
     fn eq(&self, other: &Self) -> bool {
-        ffi::possibly_invalid_spec(self) == ffi::possibly_invalid_spec(other)
+        self.possibly_invalid_spec() == other.possibly_invalid_spec()
     }
 }
 impl Eq for ffi::GURL {}
@@ -82,12 +86,12 @@ impl PartialOrd for ffi::GURL {
 
 impl Ord for ffi::GURL {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        ffi::possibly_invalid_spec(self).cmp(ffi::possibly_invalid_spec(other))
+        self.possibly_invalid_spec().cmp(other.possibly_invalid_spec())
     }
 }
 
 impl Debug for ffi::GURL {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("GURL").field("spec", &ffi::possibly_invalid_spec(self)).finish()
+        f.debug_struct("GURL").field("spec", &self.possibly_invalid_spec()).finish()
     }
 }
