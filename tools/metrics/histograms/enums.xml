@@ -9540,6 +9540,8 @@ from previous Chrome versions.
   <int value="-1632828661" label="PrivacyReorderedAndroid:disabled"/>
   <int value="-1631855392"
       label="GlicExperimentalTriggeringSuppressDoneNotification:enabled"/>
+  <int value="-1631671206"
+      label="ContextualTasksPinnedButtonActiveIndicator:disabled"/>
   <int value="-1631460935" label="face-retouch-override:enabled"/>
   <int value="-1631329950" label="ssl-version-max"/>
   <int value="-1631100739" label="PersonalizationJelly:disabled"/>
@@ -16076,6 +16078,8 @@ from previous Chrome versions.
   <int value="331845034" label="enable-webgl-developer-extensions"/>
   <int value="332391072" label="cs-contextual-cards-bar-integration"/>
   <int value="332960119" label="PdfXfaSupport:disabled"/>
+  <int value="332963116"
+      label="ContextualTasksPinnedButtonActiveIndicator:enabled"/>
   <int value="333014953" label="NonBlockingCommit:enabled"/>
   <int value="334330083" label="WebAuthenticationConditionalUI:disabled"/>
   <int value="334802038" label="OfflinePreviews:disabled"/>

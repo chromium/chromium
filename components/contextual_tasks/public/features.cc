@@ -74,6 +74,12 @@ BASE_FEATURE(kEnableContextualTasksPinButtonOnSrp,
 // toolbar buttons for the new right-hand Search in Chrome (SiC) side panel.
 BASE_FEATURE(kContextualTasksPinningV2, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Shows an active indicator (blue icon and underline pill) on the permanent
+// pinned contextual tasks toolbar button when the active tab has an ongoing
+// thread/session.
+BASE_FEATURE(kContextualTasksPinnedButtonActiveIndicator,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Keeps the ephemeral contextual tasks button visible even when the permanent
 // button is pinned in the toolbar.
 BASE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned,
@@ -849,6 +855,11 @@ bool IsContextualTasksPinningV2Enabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPinningV2);
 }
 
+bool IsContextualTasksPinnedButtonActiveIndicatorEnabled() {
+  return base::FeatureList::IsEnabled(
+      kContextualTasksPinnedButtonActiveIndicator);
+}
+
 bool IsContextualTasksPinButtonOnSrpEnabled() {
   return base::FeatureList::IsEnabled(kEnableContextualTasksPinButtonOnSrp);
 }
@@ -1185,6 +1196,13 @@ const char kContextualTasksPinningV2Name[] = "Contextual Tasks Pinning V2";
 const char kContextualTasksPinningV2Description[] =
     "Consolidates the pinning and ephemeral toolbar buttons for the new "
     "right-hand Search in Chrome (SiC) side panel.";
+
+const char kContextualTasksPinnedButtonActiveIndicatorName[] =
+    "Contextual Tasks Pinned Button Active Indicator";
+const char kContextualTasksPinnedButtonActiveIndicatorDescription[] =
+    "Highlights the permanent pinned contextual tasks toolbar button in blue "
+    "with an underline indicator when the active tab has an ongoing thread or "
+    "session.";
 
 const char kContextualTasksHideMenuOnAiPageName[] =
     "Contextual Tasks Hide Menu On AI Page";

@@ -23,6 +23,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -46,6 +49,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "ui/actions/actions.h"
 
 namespace {
 bool IsContextualTasksPage(const GURL& url) {
@@ -101,6 +105,7 @@ ContextualTasksEphemeralButtonController::
                               OnSidePanelAlignmentChanged,
                           base::Unretained(this)));
   UpdateActiveTabObservation();
+  UpdatePinnedButtonActiveIndicator();
 }
 
 ContextualTasksEphemeralButtonController::
@@ -143,6 +148,7 @@ void ContextualTasksEphemeralButtonController::OnWillBeDestroyed() {
   pref_change_registrar_.Reset();
   tab_discard_subscription_ = base::CallbackListSubscription();
   Observe(nullptr);
+  UpdatePinnedButtonActiveIndicator();
 }
 
 void ContextualTasksEphemeralButtonController::OnTaskAssociatedToTab(
@@ -308,6 +314,29 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
   }
 
   return should_show_button;
+}
+
+bool ContextualTasksEphemeralButtonController::
+    ShouldShowPinnedButtonActiveIndicator() {
+  if (!contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorEnabled() ||
+      !contextual_tasks::IsContextualTasksUIEnabled() ||
+      !contextual_task_observation_.IsObserving()) {
+    return false;
+  }
+
+  if (!contextual_tasks::GetEffectivePinState(
+          browser_window_interface_->GetProfile())) {
+    return false;
+  }
+
+  tabs::TabInterface* const tab_interface =
+      browser_window_interface_->GetActiveTabInterface();
+  if (!tab_interface || IsContextualTasksPage(tab_interface->GetURL())) {
+    return false;
+  }
+
+  return IsActiveTabAssociatedToTask();
 }
 
 void ContextualTasksEphemeralButtonController::
@@ -532,7 +561,30 @@ void ContextualTasksEphemeralButtonController::OnActiveTabChange(
 
 void ContextualTasksEphemeralButtonController::
     MaybeNotifyVisibilityShouldChange() {
+  UpdatePinnedButtonActiveIndicator();
   should_update_visibility_callbacks_.Notify(ShouldShowEphemeralButton());
+}
+
+void ContextualTasksEphemeralButtonController::
+    UpdatePinnedButtonActiveIndicator() {
+  if (!contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorEnabled() ||
+      !browser_window_interface_) {
+    return;
+  }
+  BrowserActions* const browser_actions =
+      BrowserActions::From(browser_window_interface_);
+  if (!browser_actions || !browser_actions->root_action_item()) {
+    return;
+  }
+  actions::ActionItem* const action_item =
+      actions::ActionManager::Get().FindAction(
+          kActionSidePanelShowContextualTasks,
+          browser_actions->root_action_item());
+  if (action_item) {
+    action_item->SetProperty(kActionItemUnderlineIndicatorKey,
+                             ShouldShowPinnedButtonActiveIndicator());
+  }
 }
 
 void ContextualTasksEphemeralButtonController::DisassociateNavigatedTab() {
@@ -590,12 +642,17 @@ void ContextualTasksEphemeralButtonController::PrimaryPageChanged(
       }
     }
     MaybeNotifyVisibilityShouldChange();
+  } else if (contextual_tasks::
+                 IsContextualTasksPinnedButtonActiveIndicatorEnabled()) {
+    MaybeNotifyVisibilityShouldChange();
   }
 }
 
 void ContextualTasksEphemeralButtonController::UpdateActiveTabObservation() {
   if (contextual_tasks::kShowEntryPoint.Get() !=
-      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded &&
+      !contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorEnabled()) {
     return;
   }
   tabs::TabInterface* const active_tab =

@@ -2494,6 +2494,11 @@
     "expiry_milestone": 159
   },
   {
+    "name": "contextual-tasks-pinned-button-active-indicator",
+    "owners": [ "dianaou@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "contextual-tasks-pinning-v2",
     "owners": [ "dianaou@google.com", "chrome-contextual-tasks-eng@google.com" ],
     "expiry_milestone": 160

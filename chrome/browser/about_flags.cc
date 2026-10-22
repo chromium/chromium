@@ -12505,6 +12505,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksPinningV2)},
 
+    {"contextual-tasks-pinned-button-active-indicator",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksPinnedButtonActiveIndicatorName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksPinnedButtonActiveIndicatorDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kContextualTasksPinnedButtonActiveIndicator)},
+
     {"contextual-tasks-enable-spatial-model-toolbar-layout",
      contextual_tasks::flag_descriptions::
          kContextualTasksEnableSpatialModelToolbarLayoutName,

@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -2430,4 +2431,74 @@ IN_PROC_BROWSER_TEST_F(
       WaitForShow(kPinnedActionToolbarCustomizeElementId),
       EnsureNotPresent(ContextualTasksButton::
                            kContextualTasksEphemeralButtonRemoveForTaskMenuItem));
+}
+
+class ContextualTasksPinnedButtonActiveIndicatorInteractiveTest
+    : public ContextualTasksEphemeralButtonPinningV2InteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ContextualTasksEphemeralButtonPinningV2InteractiveTest::
+            GetEnabledFeatures();
+    enabled_features.push_back(
+        {contextual_tasks::kContextualTasksPinnedButtonActiveIndicator, {}});
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksPinnedButtonActiveIndicatorInteractiveTest,
+    ShowsActiveIndicatorOnlyWhenActiveTabHasOngoingTask) {
+  raw_ptr<PinnedActionToolbarButton> pinned_button = nullptr;
+
+  auto VerifyActiveIndicator = [&](bool expected_active) {
+    ASSERT_NE(pinned_button, nullptr);
+    actions::ActionItem* const action_item =
+        actions::ActionManager::Get().FindAction(
+            kActionSidePanelShowContextualTasks,
+            BrowserActions::From(browser())->root_action_item());
+    ASSERT_NE(action_item, nullptr);
+    EXPECT_EQ(action_item->GetProperty(kActionItemUnderlineIndicatorKey),
+              expected_active);
+    ASSERT_NE(pinned_button->GetStatusIndicatorForTesting(), nullptr);
+    EXPECT_EQ(pinned_button->GetStatusIndicatorForTesting()->GetVisible(),
+              expected_active);
+  };
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      CheckView(kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+                [&pinned_button](PinnedActionToolbarButton* b) {
+                  pinned_button = b;
+                  return true;
+                }),
+      // In zero state (no ongoing task on Tab 0), the pinned button should not
+      // show the active indicator.
+      Do([&]() { VerifyActiveIndicator(false); }),
+      // Create an ongoing task on Tab 0 and open/close the side panel: the
+      // pinned button should show the active indicator (blue icon + underline).
+      CreateTaskForTab(0),
+      Do([&]() { VerifyActiveIndicator(true); }),
+      SimulateOpeningContextualTaskSidePanel(),
+      Do([&]() { VerifyActiveIndicator(true); }),
+      SimulateClosingContextualTaskSidePanel(),
+      Do([&]() { VerifyActiveIndicator(true); }),
+      // Switch to Tab 1 (no ongoing task, would lead to zero state): active
+      // indicator should be hidden.
+      SelectTab(kTabStripElementId, 1),
+      Do([&]() { VerifyActiveIndicator(false); }),
+      // Switch back to Tab 0 (ongoing task): active indicator should be
+      // restored.
+      SelectTab(kTabStripElementId, 0),
+      Do([&]() { VerifyActiveIndicator(true); }),
+      // Disassociate the task from Tab 0: active indicator should be cleared.
+      RemoveTaskFromTab(0),
+      Do([&]() { VerifyActiveIndicator(false); }));
 }

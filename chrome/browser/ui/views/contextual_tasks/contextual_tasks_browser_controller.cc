@@ -47,7 +47,8 @@ ContextualTasksBrowserController::ContextualTasksBrowserController(
           active_task_context_provider_.get(), eligibility_manager_.get());
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (kShowEntryPoint.Get() == EntryPointOption::kToolbarEphemeralBranded) {
+  if (kShowEntryPoint.Get() == EntryPointOption::kToolbarEphemeralBranded ||
+      IsContextualTasksPinnedButtonActiveIndicatorEnabled()) {
     ephemeral_button_controller_ =
         std::make_unique<ContextualTasksEphemeralButtonController>(
             browser_window_interface_);
