@@ -2032,6 +2032,65 @@ TEST_F(PdfInkModuleTextTest,
 }
 
 TEST_F(PdfInkModuleTextTest,
+       HandleFinishTextAnnotationMessageLoadedDeleteUndoRedo) {
+  static constexpr int kFrontendId = 0;
+  static constexpr int kPageIndex = 3;
+  static constexpr FontId kFontId(123);
+  static constexpr double kPdfZoom = 2.0;
+  static constexpr InkLoadedTextId kLoadedTextId(0);
+  static constexpr char kOriginalText[] = "hi";
+
+  LoadSampleTextAnnotation();
+
+  {
+    // Delete the loaded text annotation (User action).
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kLoadedTextId),
+                                                        /*active=*/false));
+    EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateDeleteTextAnnotationMessage(kFrontendId, kPageIndex)));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Undo the deletion (Non-user action).
+    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
+        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
+    data.Remove("mojoTextInfo");
+    data.Set("text", kOriginalText);
+
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kLoadedTextId),
+                                                        /*active=*/true));
+    EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    PerformUndo();
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Redo the deletion (Non-user action).
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kLoadedTextId),
+                                                        /*active=*/false));
+    EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _, _)).Times(0);
+
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateDeleteTextAnnotationMessageWithSource(
+            kFrontendId, kPageIndex, /*source=*/"redo")));
+    PerformRedo();
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+}
+
+TEST_F(PdfInkModuleTextTest,
        HandleFinishTextAnnotationMessageLoadedModifyUndoRedo) {
   static constexpr int kFrontendId = 0;
   static constexpr int kPageIndex = 3;
