@@ -265,6 +265,7 @@ class CORE_EXPORT CanvasRenderingContext
     NOTREACHED();
   }
   virtual void Reset() {}
+  virtual void ResetWithSize(gfx::Size size) {}
   virtual void RestoreFromInvalidSizeIfNeeded() {}
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}

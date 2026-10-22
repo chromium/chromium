@@ -230,6 +230,15 @@ void CanvasRenderingContext2D::ResetInternal() {
   BaseRenderingContext2D::ResetInternal();
 }
 
+void CanvasRenderingContext2D::ResetWithSize(gfx::Size size) {
+  if (IsHibernating()) {
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::kHibernationEndedOnReset);
+    GetHibernationHandler()->Clear();
+  }
+  BaseRenderingContext2D::ResetWithSize(size);
+}
+
 bool CanvasRenderingContext2D::IsComposited() const {
   // The following case is necessary for handling the special case of canvases
   // in the dev tools overlay.

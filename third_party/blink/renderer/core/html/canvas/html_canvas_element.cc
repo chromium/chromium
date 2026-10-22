@@ -887,7 +887,7 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
   }
 
   if (IsRenderingContext2D()) {
-    context_->Reset();
+    context_->ResetWithSize(size_);
     origin_clean_ = true;
 
     // For Canvas2D, reuse any existing backing buffer rather than dropping and
