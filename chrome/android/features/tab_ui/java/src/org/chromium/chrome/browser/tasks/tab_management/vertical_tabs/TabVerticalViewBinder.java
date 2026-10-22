@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListViewBinderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
@@ -48,6 +49,7 @@ import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.MotionEventUtils;
 
 /** View binder for the Vertical Tab List item rows. */
 @NullMarked
@@ -267,16 +269,47 @@ class TabVerticalViewBinder {
             // touch. This ensures standard Android view ripples and other touch handling remain
             // fully intact.
             final MotionEventInfo[] lastMotion = new MotionEventInfo[1];
+            // Capture BUTTON_TERTIARY on ACTION_DOWN because MotionEvent#getButtonState() is
+            // cleared on ACTION_UP before OnClickListener fires.
+            final boolean[] isTertiaryClick = new boolean[1];
             view.setOnTouchListener(
                     (View _, MotionEvent event) -> {
                         lastMotion[0] = MotionEventInfo.fromMotionEvent(event);
+                        int action = event.getActionMasked();
+                        if (action == MotionEvent.ACTION_DOWN) {
+                            isTertiaryClick[0] =
+                                    MotionEventUtils.isTertiaryButton(event.getButtonState());
+                        } else if (action == MotionEvent.ACTION_CANCEL) {
+                            isTertiaryClick[0] = false;
+                        } else if (action == MotionEvent.ACTION_UP) {
+                            float x = event.getX();
+                            float y = event.getY();
+                            if (x < 0 || y < 0 || x > view.getWidth() || y > view.getHeight()) {
+                                isTertiaryClick[0] = false;
+                            }
+                        }
                         return false;
                     });
 
             view.setOnClickListener(
-                    (View _) ->
-                            listener.run(
-                                    view, propertyModel.get(TabProperties.TAB_ID), lastMotion[0]));
+                    (View _) -> {
+                        boolean tertiaryClick = isTertiaryClick[0];
+                        isTertiaryClick[0] = false;
+                        if (tertiaryClick) {
+                            TabActionButtonData data =
+                                    propertyModel.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+                            if (data != null
+                                    && data.type == TabActionButtonType.CLOSE
+                                    && data.tabActionListener != null) {
+                                data.tabActionListener.run(
+                                        view,
+                                        propertyModel.get(TabProperties.TAB_ID),
+                                        lastMotion[0]);
+                            }
+                            return;
+                        }
+                        listener.run(view, propertyModel.get(TabProperties.TAB_ID), lastMotion[0]);
+                    });
         }
     }
 

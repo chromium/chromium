@@ -471,6 +471,111 @@ public class TabVerticalViewBinderUnitTest {
     }
 
     @Test
+    public void testBindClickListeners_TertiaryClickClosesTab() {
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ID, 123);
+        mModel.set(TabProperties.TAB_CLICK_LISTENER, mClickListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_CLICK_LISTENER);
+
+        MotionEvent downEvent =
+                createMouseTouchEvent(
+                        MotionEvent.ACTION_DOWN,
+                        MotionEvent.BUTTON_TERTIARY,
+                        /* x= */ 0f,
+                        /* y= */ 0f);
+        mItemView.dispatchTouchEvent(downEvent);
+        mItemView.performClick();
+        downEvent.recycle();
+
+        verify(mCloseListener).run(eq(mItemView), eq(123), any());
+        verifyNoInteractions(mClickListener);
+    }
+
+    @Test
+    public void testBindClickListeners_TertiaryClickCancelledFallsBackToPrimaryClick() {
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ID, 123);
+        mModel.set(TabProperties.TAB_CLICK_LISTENER, mClickListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_CLICK_LISTENER);
+
+        MotionEvent downEvent =
+                createMouseTouchEvent(
+                        MotionEvent.ACTION_DOWN,
+                        MotionEvent.BUTTON_TERTIARY,
+                        /* x= */ 0f,
+                        /* y= */ 0f);
+        MotionEvent cancelEvent =
+                createMouseTouchEvent(
+                        MotionEvent.ACTION_CANCEL, /* buttonState= */ 0, /* x= */ 0f, /* y= */ 0f);
+        mItemView.dispatchTouchEvent(downEvent);
+        mItemView.dispatchTouchEvent(cancelEvent);
+        mItemView.performClick();
+        downEvent.recycle();
+        cancelEvent.recycle();
+
+        verify(mClickListener).run(eq(mItemView), eq(123), any());
+        verifyNoInteractions(mCloseListener);
+    }
+
+    @Test
+    public void testBindClickListeners_TertiaryClickOutOfBoundsFallsBackToPrimaryClick() {
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ID, 123);
+        mModel.set(TabProperties.TAB_CLICK_LISTENER, mClickListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_CLICK_LISTENER);
+
+        MotionEvent downEvent =
+                createMouseTouchEvent(
+                        MotionEvent.ACTION_DOWN,
+                        MotionEvent.BUTTON_TERTIARY,
+                        /* x= */ 0f,
+                        /* y= */ 0f);
+        MotionEvent upOutOfBoundsEvent =
+                createMouseTouchEvent(
+                        MotionEvent.ACTION_UP,
+                        /* buttonState= */ 0,
+                        /* x= */ -100f,
+                        /* y= */ -100f);
+        mItemView.dispatchTouchEvent(downEvent);
+        mItemView.dispatchTouchEvent(upOutOfBoundsEvent);
+        mItemView.performClick();
+        downEvent.recycle();
+        upOutOfBoundsEvent.recycle();
+
+        verify(mClickListener).run(eq(mItemView), eq(123), any());
+        verifyNoInteractions(mCloseListener);
+    }
+
+    @Test
+    public void testBindClickListeners_TertiaryClickOnNonCloseActionDoesNothing() {
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.OVERFLOW, mCloseListener);
+        mModel.set(TabProperties.TAB_ID, 123);
+        mModel.set(TabProperties.TAB_CLICK_LISTENER, mClickListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_CLICK_LISTENER);
+
+        MotionEvent downEvent =
+                createMouseTouchEvent(
+                        MotionEvent.ACTION_DOWN,
+                        MotionEvent.BUTTON_TERTIARY,
+                        /* x= */ 0f,
+                        /* y= */ 0f);
+        mItemView.dispatchTouchEvent(downEvent);
+        mItemView.performClick();
+        downEvent.recycle();
+
+        verifyNoInteractions(mClickListener);
+        verifyNoInteractions(mCloseListener);
+    }
+
+    @Test
     public void testBindCloseButtonClickListener() {
         TabActionButtonData actionButtonData =
                 new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
@@ -2981,5 +3086,30 @@ public class TabVerticalViewBinderUnitTest {
                                         : R.dimen.vertical_tab_item_collapsed_size);
         return VerticalTabRailLayout.getCollapsedRailCenteringMarginStart(
                 context, collapsedItemWidth);
+    }
+
+    private static MotionEvent createMouseTouchEvent(
+            int action, int buttonState, float x, float y) {
+        MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+        properties.id = 0;
+        properties.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+        MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+        coords.x = x;
+        coords.y = y;
+        return MotionEvent.obtain(
+                /* downTime= */ 0,
+                /* eventTime= */ 0,
+                action,
+                /* pointerCount= */ 1,
+                new MotionEvent.PointerProperties[] {properties},
+                new MotionEvent.PointerCoords[] {coords},
+                /* metaState= */ 0,
+                buttonState,
+                /* xPrecision= */ 1f,
+                /* yPrecision= */ 1f,
+                /* deviceId= */ 0,
+                /* edgeFlags= */ 0,
+                InputDevice.SOURCE_MOUSE,
+                /* flags= */ 0);
     }
 }
