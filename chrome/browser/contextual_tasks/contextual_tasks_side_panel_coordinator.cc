@@ -641,6 +641,13 @@ void ContextualTasksSidePanelCoordinator::Show(
 
 void ContextualTasksSidePanelCoordinator::Close() {
   if (content::WebContents* active_web_contents = GetActiveWebContents()) {
+    if (auto* permission_request_manager =
+            permissions::PermissionRequestManager::FromWebContents(
+                active_web_contents);
+        permission_request_manager &&
+        permission_request_manager->IsRequestInProgress()) {
+      permission_request_manager->Ignore(/*prompt_options=*/std::monostate());
+    }
     if (WebContentsCacheItem* cache_item =
             GetWebContentsCacheItemForWebContents(active_web_contents)) {
       // Save the entry source so that it can be logged in

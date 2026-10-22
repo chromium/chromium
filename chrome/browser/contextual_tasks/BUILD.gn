@@ -831,6 +831,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content:page_embeddings",
+    "//components/permissions:test_support",
     "//components/search_engines:test_support",
     "//components/tabs:test_support",
     "//components/variations:test_support",
@@ -842,6 +843,7 @@ source_set("unit_tests") {
     "//ui/actions:actions_headers",
     "//ui/base/interaction:test_support",
     "//ui/base/unowned_user_data",
+    "//ui/display:test_support",
     "//ui/webui:buildflags",
     "//ui/webui/tracked_element",
   ]
