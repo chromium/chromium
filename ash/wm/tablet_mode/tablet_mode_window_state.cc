@@ -196,18 +196,19 @@ void TabletModeWindowState::UpdateWindowPosition(
       window_state->SetBoundsDirect(bounds_in_parent);
       break;
     case WindowState::BoundsChangeAnimationType::kCrossFade:
-      window_state->SetBoundsDirectCrossFade(bounds_in_parent);
+      window_state->SetBoundsDirectAnimated(bounds_in_parent,
+                                            kCrossFadeAnimationParams);
       break;
     case WindowState::BoundsChangeAnimationType::kAnimate:
       window_state->SetBoundsDirectAnimated(bounds_in_parent);
       break;
     case WindowState::BoundsChangeAnimationType::kCrossFadeFloat:
-      window_state->SetBoundsDirectCrossFade(bounds_in_parent,
-                                             /*float_state=*/true);
+      window_state->SetBoundsDirectAnimated(bounds_in_parent,
+                                            kFloatCrossFadeAnimationParams);
       break;
     case WindowState::BoundsChangeAnimationType::kCrossFadeUnfloat:
-      window_state->SetBoundsDirectCrossFade(bounds_in_parent,
-                                             /*float_state=*/false);
+      window_state->SetBoundsDirectAnimated(bounds_in_parent,
+                                            kUnfloatCrossFadeAnimationParams);
       break;
     case WindowState::BoundsChangeAnimationType::kAnimateZero:
       NOTREACHED();
@@ -584,7 +585,8 @@ void TabletModeWindowState::UpdateBounds(
         // duration for STEP_END. The animation will be stopped when the to
         // window's animation ends.
         window_state->SetBoundsDirectAnimated(
-            bounds_in_parent, base::Seconds(1), gfx::Tween::ZERO);
+            bounds_in_parent,
+            {.duration = base::Seconds(1), .tween_type = gfx::Tween::ZERO});
         return;
       }
 
@@ -593,15 +595,18 @@ void TabletModeWindowState::UpdateBounds(
       const bool previous_floated = previous_state == WindowStateType::kFloated;
       const bool current_floated = window_state->IsFloated();
       if (previous_floated ^ current_floated) {
-        window_state->SetBoundsDirectCrossFade(bounds_in_parent,
-                                               /*float_state=*/current_floated);
+        window_state->SetBoundsDirectAnimated(
+            bounds_in_parent, current_floated
+                                  ? kFloatCrossFadeAnimationParams
+                                  : kUnfloatCrossFadeAnimationParams);
         return;
       }
 
       // Use cross fade in some cases to avoid flashing and/or for better
       // performance.
       if (window_state->IsMaximized()) {
-        window_state->SetBoundsDirectCrossFade(bounds_in_parent);
+        window_state->SetBoundsDirectAnimated(bounds_in_parent,
+                                              kCrossFadeAnimationParams);
       } else {
         window_state->SetBoundsDirectAnimated(bounds_in_parent);
       }

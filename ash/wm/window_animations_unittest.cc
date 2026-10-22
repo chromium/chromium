@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_animations.h"
 
+#include <tuple>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -17,11 +19,13 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -31,6 +35,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
@@ -229,7 +234,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBounds) {
 
   // Cross fade to a larger size, as in a maximize animation.
   WindowState::Get(window.get())
-      ->SetBoundsDirectCrossFade(gfx::Rect(0, 0, 640, 480));
+      ->SetBoundsDirectAnimated({640, 480}, kCrossFadeAnimationParams);
   // Window's layer has been replaced.
   EXPECT_NE(old_layer, window->layer());
   // Original layer stays opaque and stretches to new size.
@@ -251,7 +256,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBounds) {
   // Cross fade to a smaller size, as in a restore animation.
   old_layer = window->layer();
   WindowState::Get(window.get())
-      ->SetBoundsDirectCrossFade(gfx::Rect(5, 10, 320, 240));
+      ->SetBoundsDirectAnimated({5, 10, 320, 240}, kCrossFadeAnimationParams);
   // Again, window layer has been replaced.
   EXPECT_NE(old_layer, window->layer());
   // Original layer fades out and stretches down to new size.
@@ -402,6 +407,153 @@ TEST_F(WindowAnimationsTest, SetBoundsDirectAnimated) {
   window->layer()->GetAnimator()->StopAnimating();
 }
 
+TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedFallbackParams) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kCrossFadeBoundsChangeAnimation};
+
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
+  window->SetBounds({20, 30, 400, 300});
+  window->Show();
+
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Animating only position (same size) with float params falls back to bounds
+  // animation while preserving the float duration and tween type.
+  Layer* old_layer = window->layer();
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated({30, 40, 400, 300},
+                                kFloatCrossFadeAnimationParams);
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(old_layer, window->layer());
+  EXPECT_EQ(gfx::Rect(30, 40, 400, 300), window->layer()->GetTargetBounds());
+  {
+    ui::LayerAnimatorTestController test_controller(
+        window->layer()->GetAnimator());
+    ui::LayerAnimationElement* bounds_element =
+        test_controller.GetRunningSequence(ui::LayerAnimationElement::BOUNDS)
+            ->FirstElement();
+    EXPECT_EQ(gfx::Tween::ACCEL_30_DECEL_20_85, bounds_element->tween_type());
+    EXPECT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
+                  BoundsChangeAnimationParams::kFloatUnfloatDuration,
+              bounds_element->duration());
+  }
+  window->layer()->GetAnimator()->StopAnimating();
+}
+
+TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedHistograms) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kCrossFadeBoundsChangeAnimation};
+
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
+  window->SetBounds({5, 10, 320, 240});
+  window->Show();
+
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Explicitly specifying `Type::kBounds` uses bounds animation even when
+  // resizing and the feature flag is enabled, and records `histogram_name` when
+  // specified.
+  base::HistogramTester histogram_tester;
+  constexpr char kTestBoundsHistogram[] = "Ash.Test.BoundsSmoothness";
+  Layer* old_layer = window->layer();
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated(
+          {20, 30, 500, 400},
+          {.type = BoundsChangeAnimationParams::Type::kBounds,
+           .duration = base::Milliseconds(2000),
+           .histogram_name = kTestBoundsHistogram});
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(old_layer, window->layer());
+  EXPECT_EQ(gfx::Rect(20, 30, 500, 400), window->layer()->GetTargetBounds());
+  ui::LayerAnimationStoppedWaiter().Wait(window->layer());
+  ui::Compositor* compositor = window->layer()->GetCompositor();
+  compositor->ScheduleFullRedraw();
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(100));
+  histogram_tester.ExpectTotalCount(kTestBoundsHistogram, 1);
+
+  // Falling back from `kCrossFade` to bounds animation (same size) does not
+  // record `histogram_name` since the animation type changed.
+  constexpr char kTestFallbackHistogram[] = "Ash.Test.FallbackSmoothness";
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated(
+          {30, 40, 500, 400},
+          {.type = BoundsChangeAnimationParams::Type::kCrossFade,
+           .duration = base::Milliseconds(2000),
+           .histogram_name = kTestFallbackHistogram});
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  ui::LayerAnimationStoppedWaiter().Wait(window->layer());
+  compositor->ScheduleFullRedraw();
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(100));
+  histogram_tester.ExpectTotalCount(kTestFallbackHistogram, 0);
+}
+
+TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedEmptyBounds) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kCrossFadeBoundsChangeAnimation};
+
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
+  window->SetBounds({20, 30, 500, 400});
+  window->Show();
+
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Target bounds with zero width and/or height clamp each zero dimension to 1.
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({10, 20, 0, 300});
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(gfx::Rect(10, 20, 1, 300), window->bounds());
+  EXPECT_EQ(gfx::Vector2dF(500.f, 400.f / 300.f),
+            window->layer()->transform().To2dScale());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({10, 20, 300, 0});
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(gfx::Rect(10, 20, 300, 1), window->bounds());
+  EXPECT_EQ(gfx::Vector2dF(1.f / 300.f, 300.f),
+            window->layer()->transform().To2dScale());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({10, 20, 0, 0});
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(gfx::Rect(10, 20, 1, 1), window->bounds());
+  EXPECT_EQ(gfx::Vector2dF(300.f, 1.f),
+            window->layer()->transform().To2dScale());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // Original bounds with zero width and/or height clamp each zero dimension
+  // to 1.
+  window->SetBounds({5, 6, 0, 250});
+  Layer* old_layer = window->layer();
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({10, 20, 100, 200});
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(gfx::Rect(5, 6, 1, 250), old_layer->bounds());
+  EXPECT_EQ(gfx::Vector2dF(100.f, 200.f / 250.f),
+            old_layer->GetTargetTransform().To2dScale());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  window->SetBounds({5, 6, 250, 0});
+  old_layer = window->layer();
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({10, 20, 100, 200});
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(gfx::Rect(5, 6, 250, 1), old_layer->bounds());
+  EXPECT_EQ(gfx::Vector2dF(100.f / 250.f, 200.f),
+            old_layer->GetTargetTransform().To2dScale());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  window->SetBounds({});
+  old_layer = window->layer();
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({10, 20, 100, 200});
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(gfx::Rect(1, 1), old_layer->bounds());
+  EXPECT_EQ(gfx::Vector2dF(100.f, 200.f),
+            old_layer->GetTargetTransform().To2dScale());
+  window->layer()->GetAnimator()->StopAnimating();
+}
+
 // Tests that when crossfading from a window which has a transform, the cross
 // fading animation should be ignored and the window should set to its desired
 // bounds directly.
@@ -422,7 +574,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBoundsFromTransform) {
 
   // Cross fade to a larger size, as in a maximize animation.
   WindowState::Get(window.get())
-      ->SetBoundsDirectCrossFade(gfx::Rect(0, 0, 640, 480));
+      ->SetBoundsDirectAnimated({640, 480}, kCrossFadeAnimationParams);
   // Window's layer has not been replaced.
   EXPECT_EQ(old_layer, window->layer());
   // Original layer stays opaque and set to new size directly.
@@ -725,9 +877,14 @@ TEST_F(WindowAnimationsTest, CrossFadeAnimateNewLayerOnly) {
   EXPECT_EQ(1.f, old_layer->GetTargetOpacity());
 
   const gfx::Rect target_bounds(40, 40, 400, 400);
-  CrossFadeAnimationAnimateNewLayerOnly(
-      window.get(), target_bounds, base::Milliseconds(200), gfx::Tween::LINEAR,
-      "test-histogram-name");
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated(
+          target_bounds,
+          {.type =
+               BoundsChangeAnimationParams::Type::kCrossFadeAnimateNewLayerOnly,
+           .duration = base::Milliseconds(200),
+           .tween_type = gfx::Tween::LINEAR,
+           .histogram_name = "test-histogram-name"});
 
   // Window's layer has been replaced.
   EXPECT_NE(old_layer, window->layer());

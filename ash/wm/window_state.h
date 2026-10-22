@@ -13,6 +13,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/drag_details.h"
 #include "ash/wm/multi_display/persistent_window_info.h"
+#include "ash/wm/window_animations.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
@@ -132,7 +133,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // The default duration for an animation between two sets of bounds.
   static constexpr base::TimeDelta kBoundsChangeSlideDuration =
-      base::Milliseconds(120);
+      BoundsChangeAnimationParams::kDefaultDuration;
 
   // Returns the WindowState for |window|. Creates WindowState if it doesn't
   // exist. The returned value is owned by |window| (you should not delete it).
@@ -530,12 +531,19 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   friend class LockWindowState;
   friend class ScopedBoundsChangeAnimation;
   friend class TabletModeWindowState;
+  friend class WorkspaceWindowResizer;
   friend class WorkspaceWindowResizerTest;
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, CrossFadeToBounds);
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, SetBoundsDirectAnimated);
-  FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, CrossFadeHistograms);
+  FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
+                           SetBoundsDirectAnimatedFallbackParams);
+  FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
+                           SetBoundsDirectAnimatedHistograms);
+  FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
+                           SetBoundsDirectAnimatedEmptyBounds);
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
                            CrossFadeToBoundsFromTransform);
+  FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, CrossFadeAnimateNewLayerOnly);
 
   // A class can temporarily change the window bounds change animation type.
   class ScopedBoundsChangeAnimation : public aura::WindowObserver {
@@ -622,17 +630,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   void SetBoundsConstrained(const gfx::Rect& bounds_in_parent);
 
   // Sets the window's `bounds_in_parent` and transitions to the new bounds with
-  // a scale animation, with duration specified by `duration`.
+  // an animation specified by `animation_params`.
   void SetBoundsDirectAnimated(
       const gfx::Rect& bounds_in_parent,
-      base::TimeDelta duration = kBoundsChangeSlideDuration,
-      gfx::Tween::Type animation_type = gfx::Tween::LINEAR);
-
-  // Sets the window's `bounds_in_parent` and transition to the new bounds with
-  // a cross fade animation. If `float_state` has a value, sets a custom
-  // float/unfloat cross fade animation.
-  void SetBoundsDirectCrossFade(const gfx::Rect& bounds_in_parent,
-                                std::optional<bool> float_state = std::nullopt);
+      const BoundsChangeAnimationParams& animation_params = {});
 
   // Called before the state change and update PIP related state, such as next
   // window animation type, upon state change.

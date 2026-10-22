@@ -4,7 +4,6 @@
 
 #include "ash/wm/default_state.h"
 
-#include "ash/public/cpp/metrics_util.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -30,7 +29,6 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
-#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -329,7 +327,8 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
         const gfx::Rect new_bounds =
             gfx::Rect(window->bounds().x(), work_area.y(),
                       window->bounds().width(), work_area.height());
-        window_state->SetBoundsDirectCrossFade(new_bounds);
+        window_state->SetBoundsDirectAnimated(new_bounds,
+                                              kCrossFadeAnimationParams);
         if (!window_state->HasRestoreBounds())
           window_state->SetRestoreBoundsInParent(restore_bounds);
       }
@@ -365,7 +364,8 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
         }
         if (!window_state->HasRestoreBounds())
           window_state->SetRestoreBoundsInParent(restore_bounds);
-        window_state->SetBoundsDirectCrossFade(new_bounds);
+        window_state->SetBoundsDirectAnimated(new_bounds,
+                                              kCrossFadeAnimationParams);
       }
       return;
     }
@@ -485,7 +485,7 @@ void DefaultState::SetBounds(WindowState* window_state,
   if (is_dragged || window_state->allow_set_bounds_direct()) {
     if (event->animate()) {
       window_state->SetBoundsDirectAnimated(event->requested_bounds_in_parent(),
-                                            event->duration());
+                                            {.duration = event->duration()});
     } else {
       // TODO(oshima|varkha): Is this still needed? crbug.com/485612.
       window_state->SetBoundsDirect(event->requested_bounds_in_parent());
@@ -493,7 +493,7 @@ void DefaultState::SetBounds(WindowState* window_state,
   } else if (!SetMaximizedOrFullscreenBounds(window_state)) {
     if (event->animate()) {
       window_state->SetBoundsDirectAnimated(event->requested_bounds_in_parent(),
-                                            event->duration());
+                                            {.duration = event->duration()});
     } else {
       window_state->SetBoundsConstrained(event->requested_bounds_in_parent());
       // Update the restore size if the bounds is updated by PIP itself.
@@ -737,7 +737,9 @@ void DefaultState::UpdateBoundsFromState(
   if (bool to_float = state_type_ == WindowStateType::kFloated;
       to_float || previous_state_type == WindowStateType::kFloated) {
     // Float and unfloat have their own animation.
-    window_state->SetBoundsDirectCrossFade(bounds_in_parent, to_float);
+    window_state->SetBoundsDirectAnimated(
+        bounds_in_parent, to_float ? kFloatCrossFadeAnimationParams
+                                   : kUnfloatCrossFadeAnimationParams);
   } else if (IsMinimizedWindowStateType(previous_state_type) ||
              window_state->IsFullscreen() || window_state->IsPinned() ||
              window_state->bounds_animation_type() ==
@@ -746,7 +748,8 @@ void DefaultState::UpdateBoundsFromState(
   } else if (window_state->IsMaximized() ||
              IsMaximizedOrFullscreenOrPinnedWindowStateType(
                  previous_state_type)) {
-    window_state->SetBoundsDirectCrossFade(bounds_in_parent);
+    window_state->SetBoundsDirectAnimated(bounds_in_parent,
+                                          kCrossFadeAnimationParams);
   } else if (window_state->is_dragged()) {
     // SetBoundsDirectAnimated does not work when the window gets reparented.
     // TODO(oshima): Consider fixing it and re-enable the animation.
@@ -754,18 +757,13 @@ void DefaultState::UpdateBoundsFromState(
   } else {
     // Record smoothness of the snapping animation if the size of the window
     // changes.
-    std::optional<ui::AnimationThroughputReporter> reporter;
+    BoundsChangeAnimationParams params;
     if (window_state->IsSnapped() &&
         bounds_in_parent.size() != window->bounds().size()) {
-      reporter.emplace(
-          window_state->window()->layer()->GetAnimator(),
-          metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
-            UMA_HISTOGRAM_PERCENTAGE(kSnapWindowSmoothnessHistogramName,
-                                     smoothness);
-          })));
+      params.histogram_name = kSnapWindowSmoothnessHistogramName;
     }
 
-    window_state->SetBoundsDirectAnimated(bounds_in_parent);
+    window_state->SetBoundsDirectAnimated(bounds_in_parent, params);
   }
 }
 

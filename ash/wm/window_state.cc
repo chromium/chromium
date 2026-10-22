@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <ranges>
+#include <string>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -15,6 +16,7 @@
 #include "ash/focus/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -32,7 +34,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -61,6 +62,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -714,7 +716,7 @@ bool WindowState::VerticallyShrinkWindow(const gfx::Rect& work_area) {
     ClearRestoreBounds();
   }
 
-  SetBoundsDirectCrossFade(new_bounds);
+  SetBoundsDirectAnimated(new_bounds, kCrossFadeAnimationParams);
   return true;
 }
 
@@ -736,7 +738,7 @@ bool WindowState::HorizontallyShrinkWindow(const gfx::Rect& work_area) {
   } else {
     ClearRestoreBounds();
   }
-  SetBoundsDirectCrossFade(new_bounds);
+  SetBoundsDirectAnimated(new_bounds, kCrossFadeAnimationParams);
   return true;
 }
 
@@ -1137,72 +1139,74 @@ void WindowState::SetBoundsConstrained(const gfx::Rect& bounds_in_parent) {
   SetBoundsDirect(child_bounds_in_parent);
 }
 
-void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds_in_parent,
-                                          base::TimeDelta duration,
-                                          gfx::Tween::Type tween_type) {
-  if (wm::WindowAnimationsDisabled(window_)) {
-    SetBoundsDirect(bounds_in_parent);
-    return;
-  }
-  // Use bounds animation if only the location changes, unless the window is in
-  // the middle of a cross-fade animation, in which case its visual size is
-  // different from its actual size so we should continue using cross-fade.
-  if (!features::IsCrossFadeBoundsChangeAnimationEnabled() ||
-      (window_->bounds().size() == bounds_in_parent.size() &&
-       !HasCrossFadeAnimation(window_)) ||
-      tween_type == gfx::Tween::ZERO ||
-      !window_->layer()->GetTargetTransform().IsIdentity()) {
-    if (HasCrossFadeAnimation(window_)) {
-      window_->layer()->GetAnimator()->StopAnimating();
-    }
-    ui::Layer* layer = window_->layer();
-    ui::ScopedLayerAnimationSettings slide_settings(layer->GetAnimator());
-    slide_settings.SetPreemptionStrategy(
-        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    slide_settings.SetTweenType(tween_type);
-    slide_settings.SetTransitionDuration(duration);
-    SetBoundsDirect(bounds_in_parent);
-    return;
-  }
-
+void WindowState::SetBoundsDirectAnimated(
+    const gfx::Rect& bounds_in_parent,
+    const BoundsChangeAnimationParams& animation_params) {
   // Some tests or state transitions update bounds while the window is not
-  // visible (or being hidden). No animation is necessary when the window is not
-  // visible, so set the bounds directly and return.
-  if (!window_->TargetVisibility()) {
-    SetBoundsDirect(bounds_in_parent);
-    return;
-  }
-
-  std::unique_ptr<ui::LayerTreeOwner> old_layer_owner =
-      wm::RecreateLayers(window_);
-  SetBoundsDirect(bounds_in_parent);
-  CrossFadeAnimation(window_, std::move(old_layer_owner), duration, tween_type);
-}
-
-void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& bounds_in_parent,
-                                           std::optional<bool> float_state) {
-  // Some test results in invoking CrossFadeToBounds when window is not visible.
-  // No animation is necessary in that case, thus just change the bounds and
-  // quit.
-  if (!window_->TargetVisibility()) {
-    SetBoundsConstrained(bounds_in_parent);
-    return;
-  }
-
-  // If the window already has a transform in place, do not use the cross fade
-  // animation, set the bounds directly instead, or animation is disabled.
-  if (!window_->layer()->GetTargetTransform().IsIdentity() ||
+  // visible (or being hidden), in which case no animation is necessary. Also
+  // skip the animation if the window already has a transform in place or if
+  // window animations are disabled.
+  if (!window_->TargetVisibility() ||
+      !window_->layer()->GetTargetTransform().IsIdentity() ||
       wm::WindowAnimationsDisabled(window_)) {
     SetBoundsDirect(bounds_in_parent);
     return;
   }
 
-  if (!float_state.has_value() &&
-      features::IsCrossFadeBoundsChangeAnimationEnabled() &&
-      window_->bounds().size() == bounds_in_parent.size() &&
-      !HasCrossFadeAnimation(window_)) {
-    SetBoundsDirectAnimated(bounds_in_parent);
+  // Use bounds animation if only the location changes (unless the window is in
+  // the middle of a cross-fade animation, in which case its visual size is
+  // different from its actual size so we should continue using cross-fade), or
+  // if it's zero tween.
+  // TODO(crbug.com/252543343): Use transform animation for fallback bounds
+  // animation.
+  if (animation_params.type == BoundsChangeAnimationParams::Type::kBounds ||
+      (animation_params.type == BoundsChangeAnimationParams::Type::kCrossFade &&
+       features::IsCrossFadeBoundsChangeAnimationEnabled() &&
+       window_->bounds().size() == bounds_in_parent.size() &&
+       !HasCrossFadeAnimation(window_)) ||
+      animation_params.tween_type == gfx::Tween::ZERO) {
+    if (HasCrossFadeAnimation(window_)) {
+      window_->layer()->GetAnimator()->StopAnimating();
+    }
+    ui::Layer* layer = window_->layer();
+    ui::ScopedLayerAnimationSettings slide_settings(layer->GetAnimator());
+    std::optional<ui::AnimationThroughputReporter> reporter;
+    // Only record `histogram_name` if the animation type did not change (i.e.
+    // `kBounds` was requested), as smoothness metrics are typically defined to
+    // measure a specific animation type.
+    if (animation_params.type == BoundsChangeAnimationParams::Type::kBounds &&
+        !animation_params.histogram_name.empty()) {
+      reporter.emplace(
+          slide_settings.GetAnimator(),
+          metrics_util::ForSmoothnessV3(base::BindRepeating(
+              [](const std::string& histogram_name, int smoothness) {
+                base::UmaHistogramPercentage(histogram_name, smoothness);
+              },
+              std::string(animation_params.histogram_name))));
+    }
+    slide_settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    slide_settings.SetTweenType(animation_params.tween_type);
+    slide_settings.SetTransitionDuration(
+        animation_params.duration.value_or(kBoundsChangeSlideDuration));
+    SetBoundsDirect(bounds_in_parent);
     return;
+  }
+
+  // TODO(crbug.com/252543343): Add `DUMP_WILL_BE_CHECK` once test windows have
+  // non-empty default bounds.
+  gfx::Rect target_bounds = bounds_in_parent;
+  if (target_bounds.IsEmpty()) {
+    gfx::Size size = target_bounds.size();
+    size.SetToMax({1, 1});
+    target_bounds.set_size(size);
+  }
+  if (window_->bounds().IsEmpty()) {
+    gfx::Rect current_bounds = window_->bounds();
+    gfx::Size size = current_bounds.size();
+    size.SetToMax({1, 1});
+    current_bounds.set_size(size);
+    SetBoundsDirect(current_bounds);
   }
 
   // Create fresh layers for the window and all its children to paint into.
@@ -1214,15 +1218,9 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& bounds_in_parent,
       wm::RecreateLayers(window_);
 
   // Resize the window to the new size, which will force a layout and paint.
-  SetBoundsDirect(bounds_in_parent);
+  SetBoundsDirect(target_bounds);
 
-  if (float_state) {
-    CrossFadeAnimationForFloatUnfloat(window_, std::move(old_layer_owner),
-                                      *float_state);
-    return;
-  }
-
-  CrossFadeAnimation(window_, std::move(old_layer_owner));
+  CrossFadeAnimation(window_, std::move(old_layer_owner), animation_params);
 }
 
 void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {

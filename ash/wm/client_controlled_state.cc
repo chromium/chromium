@@ -219,17 +219,20 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
             window_state->SetBoundsDirect(bounds);
             break;
           case WindowState::BoundsChangeAnimationType::kCrossFade:
-            window_state->SetBoundsDirectCrossFade(bounds);
+            window_state->SetBoundsDirectAnimated(bounds,
+                                                  kCrossFadeAnimationParams);
             break;
           case WindowState::BoundsChangeAnimationType::kCrossFadeFloat:
-            window_state->SetBoundsDirectCrossFade(bounds, true);
+            window_state->SetBoundsDirectAnimated(
+                bounds, kFloatCrossFadeAnimationParams);
             break;
           case WindowState::BoundsChangeAnimationType::kCrossFadeUnfloat:
-            window_state->SetBoundsDirectCrossFade(bounds, false);
+            window_state->SetBoundsDirectAnimated(
+                bounds, kUnfloatCrossFadeAnimationParams);
             break;
           case WindowState::BoundsChangeAnimationType::kAnimate:
             window_state->SetBoundsDirectAnimated(
-                bounds, bounds_change_animation_duration_);
+                bounds, {.duration = bounds_change_animation_duration_});
             break;
           case WindowState::BoundsChangeAnimationType::kAnimateZero:
             NOTREACHED();

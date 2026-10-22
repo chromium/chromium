@@ -194,7 +194,8 @@ void ClientControlledStateUtil::ApplyWindowStateRequest(
     gfx::Rect bounds_in_parent = *bounds;
     wm::ConvertRectFromScreen(window_state->window()->parent(),
                               &bounds_in_parent);
-    window_state->SetBoundsDirectCrossFade(bounds_in_parent, true);
+    window_state->SetBoundsDirectAnimated(bounds_in_parent,
+                                          kFloatCrossFadeAnimationParams);
   }
 }
 

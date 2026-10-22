@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -20,6 +21,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -60,10 +62,6 @@ const int kLayerAnimationsForMinimizeDurationMS = 200;
 constexpr base::TimeDelta kCrossFadeDuration = base::Milliseconds(200);
 
 constexpr base::TimeDelta kCrossFadeMaxDuration = base::Milliseconds(400);
-
-// The default duration for an animation to float or unfloat a window.
-static constexpr base::TimeDelta kFloatUnfloatDuration =
-    base::Milliseconds(400);
 
 // Durations for the brightness/grayscale fade animation, in milliseconds.
 const int kBrightnessGrayscaleFadeDurationMs = 1000;
@@ -119,7 +117,7 @@ class CrossFadeObserver : public aura::WindowObserver,
   // Takes ownership of |layer_owner| and its child layers.
   CrossFadeObserver(aura::Window* window,
                     std::unique_ptr<ui::LayerTreeOwner> layer_owner,
-                    std::optional<std::string> histogram_name)
+                    std::string_view histogram_name)
       : window_(window),
         layer_(window->layer()),
         layer_owner_(std::move(layer_owner)) {
@@ -130,16 +128,14 @@ class CrossFadeObserver : public aura::WindowObserver,
         layer_->GetCompositor()->RequestNewCompositorMetricsTracker();
     smoothness_tracker_->Start(
         metrics_util::ForSmoothnessV3(base::BindRepeating(
-            [](const std::optional<std::string>& histogram_name,
-               int smoothness) {
-              if (histogram_name) {
-                DCHECK(!histogram_name->empty());
-                base::UmaHistogramPercentage(*histogram_name, smoothness);
+            [](const std::string& histogram_name, int smoothness) {
+              if (!histogram_name.empty()) {
+                base::UmaHistogramPercentage(histogram_name, smoothness);
               } else {
                 UMA_HISTOGRAM_PERCENTAGE(kCrossFadeSmoothness, smoothness);
               }
             },
-            std::move(histogram_name))));
+            std::string(histogram_name))));
   }
   CrossFadeObserver(const CrossFadeObserver&) = delete;
   CrossFadeObserver& operator=(const CrossFadeObserver&) = delete;
@@ -210,7 +206,7 @@ class CrossFadeUpdateTransformObserver
   CrossFadeUpdateTransformObserver(
       aura::Window* window,
       std::unique_ptr<ui::LayerTreeOwner> layer_owner,
-      std::optional<std::string> histogram_name)
+      std::string_view histogram_name)
       : CrossFadeObserver(window, std::move(layer_owner), histogram_name) {
     compositor_ = window->layer()->GetCompositor();
     compositor_->AddAnimationObserver(this);
@@ -264,17 +260,16 @@ class CrossFadeUpdateTransformObserver
   raw_ptr<ui::Compositor> compositor_ = nullptr;
 };
 
-// Internal implementation of a cross fade animation. If
-// |animate_old_layer_transform| is true, both new and old layers will animate
-// their opacities and transforms. Otherwise, the old layer will on animate its
-// opacity; its transforms will be updated via an observer.
+// Internal implementation of a cross fade animation.
+// TODO(crbug.com/252543343): Merge this into `CrossFadeAnimation`.
 void CrossFadeAnimationInternal(
     aura::Window* window,
     std::unique_ptr<ui::LayerTreeOwner> old_layer_owner,
-    bool animate_old_layer_transform,
-    std::optional<base::TimeDelta> duration,
-    std::optional<gfx::Tween::Type> tween_type,
-    std::optional<std::string> histogram_name) {
+    const BoundsChangeAnimationParams& animation_params) {
+  CHECK_NE(animation_params.type, BoundsChangeAnimationParams::Type::kBounds);
+  const bool animate_old_layer_transform =
+      animation_params.type !=
+      BoundsChangeAnimationParams::Type::kCrossFadeAnimateNewLayerOnly;
   ui::Layer* old_layer = old_layer_owner->root();
 
   // The window's layer can get recreated within the stack of this function due
@@ -289,12 +284,14 @@ void CrossFadeAnimationInternal(
 
   DCHECK(old_layer);
   const gfx::Rect old_bounds(old_layer->bounds());
+  CHECK(!old_bounds.IsEmpty());
 
   gfx::Transform old_transform(old_layer->transform());
   gfx::RectF old_transformed_bounds =
       old_transform.MapRect(gfx::RectF(old_bounds.size())) +
       gfx::Vector2dF(old_bounds.OffsetFromOrigin());
   const gfx::Rect new_bounds(window->bounds());
+  CHECK(!new_bounds.IsEmpty());
   const bool old_on_top = (old_bounds.width() > new_bounds.width());
 
   // Ensure the higher-resolution layer is on top.
@@ -304,10 +301,9 @@ void CrossFadeAnimationInternal(
     old_layer->parent()->StackAbove(new_layer(), old_layer);
 
   // Shorten the animation if there's not much visual movement.
-  const base::TimeDelta animation_duration = duration.value_or(
+  const base::TimeDelta animation_duration = animation_params.duration.value_or(
       GetCrossFadeDuration(window, old_transformed_bounds, new_bounds));
-  const gfx::Tween::Type animation_tween_type =
-      tween_type.value_or(gfx::Tween::EASE_OUT);
+  const gfx::Tween::Type animation_tween_type = animation_params.tween_type;
 
   // Scale up the old layer while translating to new position.
   {
@@ -375,9 +371,10 @@ void CrossFadeAnimationInternal(
     CrossFadeObserver* observer =
         animate_old_layer_transform
             ? new CrossFadeObserver(window, std::move(old_layer_owner),
-                                    histogram_name)
+                                    animation_params.histogram_name)
             : new CrossFadeUpdateTransformObserver(
-                  window, std::move(old_layer_owner), histogram_name);
+                  window, std::move(old_layer_owner),
+                  animation_params.histogram_name);
 
     // Animate the new layer to the identity transform, so the window goes to
     // its newly set bounds.
@@ -647,41 +644,13 @@ bool AnimateHideWindow(aura::Window* window) {
 
 void CrossFadeAnimation(aura::Window* window,
                         std::unique_ptr<ui::LayerTreeOwner> old_layer_owner,
-                        std::optional<base::TimeDelta> duration,
-                        std::optional<gfx::Tween::Type> tween_type,
-                        std::optional<std::string> histogram_name) {
+                        const BoundsChangeAnimationParams& animation_params) {
   CrossFadeAnimationInternal(window, std::move(old_layer_owner),
-                             /*animate_old_layer_transform=*/true, duration,
-                             tween_type, std::move(histogram_name));
+                             animation_params);
 }
 
 bool HasCrossFadeAnimation(aura::Window* window) {
   return window->GetProperty(kHasCrossFadeAnimationKey);
-}
-
-void CrossFadeAnimationForFloatUnfloat(
-    aura::Window* window,
-    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner,
-    bool to_float) {
-  CrossFadeAnimationInternal(window, std::move(old_layer_owner),
-                             /*animate_old_layer_transform=*/true,
-                             kFloatUnfloatDuration,
-                             to_float ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
-                                      : gfx::Tween::Type::FAST_OUT_SLOW_IN_3,
-                             /*histogram_name=*/std::nullopt);
-}
-
-void CrossFadeAnimationAnimateNewLayerOnly(aura::Window* window,
-                                           const gfx::Rect& target_bounds,
-                                           base::TimeDelta duration,
-                                           gfx::Tween::Type tween_type,
-                                           const std::string& histogram_name) {
-  std::unique_ptr<ui::LayerTreeOwner> old_layer_owner =
-      ::wm::RecreateLayers(window);
-  window->SetBounds(target_bounds);
-  CrossFadeAnimationInternal(window, std::move(old_layer_owner),
-                             /*animate_old_layer=*/false, duration, tween_type,
-                             histogram_name);
 }
 
 bool AnimateOnChildWindowVisibilityChanged(aura::Window* window, bool visible) {

@@ -467,15 +467,16 @@ WorkspaceWindowResizer::SnapType GetSnapType(
   }
 }
 
-// If |maximize| is true, this is an animation to maximized bounds and an
-// animation from maximized bounds otherwise. This is used to determine which
-// metric to record.
-void CrossFadeAnimation(aura::Window* window,
-                        const gfx::Rect& target_bounds,
-                        bool maximize) {
-  CrossFadeAnimationAnimateNewLayerOnly(
-      window, target_bounds, kCrossFadeDuration, gfx::Tween::LINEAR,
-      maximize ? kDragMaximizeSmoothness : kDragUnmaximizeSmoothness);
+// Returns cross-fade animation parameters (animating only the new layer) for
+// dragging to maximized bounds when `maximize` is true, or from maximized
+// bounds otherwise. `maximize` determines which smoothness metric to record.
+BoundsChangeAnimationParams GetCrossFadeAnimationParams(bool maximize) {
+  return {
+      .type = BoundsChangeAnimationParams::Type::kCrossFadeAnimateNewLayerOnly,
+      .duration = kCrossFadeDuration,
+      .tween_type = gfx::Tween::LINEAR,
+      .histogram_name =
+          maximize ? kDragMaximizeSmoothness : kDragUnmaximizeSmoothness};
 }
 
 bool IsTransitionFromTopToMaximize(WorkspaceWindowResizer::SnapType from_type,
@@ -723,8 +724,8 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
             // restored (i.e. update the caption buttons and height of the
             // browser frame).
             window_state()->window()->SetProperty(kFrameRestoreLookKey, true);
-            CrossFadeAnimation(window_state()->window(), bounds,
-                               /*maximize=*/false);
+            window_state()->SetBoundsDirectAnimated(
+                bounds, GetCrossFadeAnimationParams(/*maximize=*/false));
 
             base::RecordAction(
                 base::UserMetricsAction("WindowDrag_Unmaximize"));
@@ -914,9 +915,9 @@ void WorkspaceWindowResizer::CompleteDrag() {
         // window is still maximized, telling window state to maximize will be a
         // no-op, so reset the bounds manually here.
         if (window_state()->IsMaximized()) {
-          CrossFadeAnimation(
-              window, screen_util::GetMaximizedWindowBoundsInParent(window),
-              /*maximize=*/true);
+          window_state()->SetBoundsDirectAnimated(
+              screen_util::GetMaximizedWindowBoundsInParent(window),
+              GetCrossFadeAnimationParams(/*maximize=*/true));
         }
 
         window_state()->TrackDragToMaximizeBehavior();

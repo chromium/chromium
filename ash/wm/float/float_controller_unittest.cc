@@ -246,9 +246,11 @@ TEST_F(WindowFloatTest, FloatToMaximizeWindowAnimates) {
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
   WindowState::Get(window.get())->OnWMEvent(&maximize_event);
-  // `WindowState::SetBoundsDirectCrossFade` still starts an animation if the
+  // When `kCrossFadeBoundsChangeAnimation` is disabled,
+  // `WindowState::SetBoundsDirectAnimated` with
+  // `kUnfloatCrossFadeAnimationParams` still starts an animation even if the
   // source and destination bounds are the same. Therefore, it is not enough to
-  // just check if its animating.
+  // just check if it is animating.
   EXPECT_TRUE(window->layer()->GetAnimator()->is_animating());
   EXPECT_NE(window->layer()->transform(),
             window->layer()->GetTargetTransform());
