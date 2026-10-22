@@ -306,6 +306,7 @@ suite('ContentController', () => {
       assertFalse(!!root);
       assertFalse(contentController.hasContent());
       assertTrue(contentController.isEmpty());
+      assertEquals(1, contentBrowserProxy.getCallCount('onNoTextContent'));
     });
 
     test('sets empty if whitespace content with tags in readability', () => {
@@ -319,7 +320,29 @@ suite('ContentController', () => {
       assertFalse(!!root);
       assertFalse(contentController.hasContent());
       assertTrue(contentController.isEmpty());
+      assertEquals(1, contentBrowserProxy.getCallCount('onNoTextContent'));
     });
+
+    test(
+        'requests redistill if readability text is removed by sanitizer',
+        () => {
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeReadability;
+          contentBrowserProxy.hasValidSelectionVal = false;
+          // The <dialog> and its text are removed by the sanitizer, leaving
+          // only an image, which isn't considered content without a selection.
+          contentBrowserProxy.htmlContent =
+              '<figure><img src="foo.png" alt=""></figure>' +
+              '<dialog open><p>Every bit of me is golden</p></dialog>';
+          contentController.setState(ContentType.LOADING);
+
+          const root = contentController.updateContent();
+
+          assertFalse(!!root);
+          assertFalse(contentController.hasContent());
+          assertTrue(contentController.isEmpty());
+          assertEquals(1, contentBrowserProxy.getCallCount('onNoTextContent'));
+        });
 
     test(
         'Readability replaces single newlines but keeps consecutive newlines',
@@ -1892,6 +1915,7 @@ suite('ContentController', () => {
         contentController.onImagesVisibilityChanged(container, shadowRoot);
 
         assertTrue(contentController.isEmpty());
+        assertEquals(0, contentBrowserProxy.getCallCount('onNoTextContent'));
       });
     });
   });
@@ -1900,6 +1924,7 @@ suite('ContentController', () => {
     setup(() => {
       contentBrowserProxy.activeDistillationMethod =
           contentBrowserProxy.distillationTypeReadability;
+      contentController.setState(ContentType.HAS_CONTENT);
     });
 
     test('extracts text blocks from container', () => {
@@ -1973,7 +1998,24 @@ suite('ContentController', () => {
       contentController.onRenderedTextBlocksAvailable(container);
 
       assertTrue(contentController.isEmpty());
+      assertEquals(1, contentBrowserProxy.getCallCount('onNoTextContent'));
     });
+
+    test(
+        'does not request redistill again if updateContent found no text',
+        () => {
+          contentBrowserProxy.htmlContent = '<div>   </div>';
+          contentController.setState(ContentType.LOADING);
+          assertFalse(!!contentController.updateContent());
+          assertEquals(1, contentBrowserProxy.getCallCount('onNoTextContent'));
+          const container = document.createElement('div');
+          document.body.appendChild(container);
+
+          contentController.onRenderedTextBlocksAvailable(container);
+
+          assertTrue(contentController.isEmpty());
+          assertEquals(1, contentBrowserProxy.getCallCount('onNoTextContent'));
+        });
   });
 
   suite('updateAnchorsForReadability', () => {
@@ -2244,6 +2286,7 @@ suite('ContentController', () => {
 
       container = document.createElement('div');
       document.body.appendChild(container);
+      contentController.setState(ContentType.HAS_CONTENT);
     });
 
     test('splits and maps a single node to multiple AX nodes', () => {

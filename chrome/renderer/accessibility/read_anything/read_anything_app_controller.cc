@@ -2384,6 +2384,14 @@ void ReadAnythingAppController::OnCopy() const {
 
 void ReadAnythingAppController::OnNoTextContent() {
   if (model_.is_readability_next_distillation_method()) {
+    // Fall back to Screen2x if the drawn Readability content has no text. When
+    // the current method is Screen2x, this is an empty selection instead.
+    if (model_.is_readability_current_distillation_method()) {
+      model_.set_readability_content_drawn(false);
+      model_.set_is_readability_mapping_in_progress(false);
+      model_.FallbackToScreen2x();
+      DistillNewTree();
+    }
     return;
   }
   Distill();
@@ -3242,6 +3250,13 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
     model_.ResetSelection();
   }
   DrawReadabilityContent();
+
+  // If the WebUI found no visible text in the Readability content, it has
+  // already fallen back to Screen2x via `OnNoTextContent()`. Don't process
+  // selections or log a successful Readability distillation in that case.
+  if (!model_.is_readability_next_distillation_method()) {
+    return;
+  }
 
   if (!IsUpdateProcessingPaused() && model_.ContainsActiveTree()) {
     PostProcessSelection();

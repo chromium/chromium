@@ -236,6 +236,11 @@ export class ContentController {
         this.currentState_.type === ContentType.NO_SELECTABLE_CONTENT;
   }
 
+  attemptToRedistill() {
+    this.setEmpty();
+    this.contentBrowserProxy_.onNoTextContent();
+  }
+
   setEmpty() {
     const noContentType = this.getNoContentType_();
     if (this.isEmpty() && this.currentState_.type === noContentType) {
@@ -312,7 +317,7 @@ export class ContentController {
       const contentHtml = this.contentBrowserProxy_.getHtmlContent();
 
       if (!contentHtml || !contentHtml.trim()) {
-        this.setEmpty();
+        this.attemptToRedistill();
         return null;
       }
 
@@ -375,7 +380,7 @@ export class ContentController {
           this.contentBrowserProxy_.hasValidSelection() && hasImages;
 
       if (!contentContainer.textContent?.trim() && !hasImagesAsContent) {
-        this.setEmpty();
+        this.attemptToRedistill();
         return null;
       }
 
@@ -435,8 +440,7 @@ export class ContentController {
       // content and also not showing the empty page sometimes. In this case,
       // send that info back to the controller.
       if (this.hasContent()) {
-        this.setEmpty();
-        this.contentBrowserProxy_.onNoTextContent();
+        this.attemptToRedistill();
       } else if (!this.isEmpty()) {
         // This is possible when the AXTree returns bad selection data and
         // reading mode believes it has selected content to distll but
@@ -930,10 +934,15 @@ export class ContentController {
 
     // Final check to ensure there are actually visible text nodes.
     // Otherwise, a blank screen may be shown instead of the empty state
-    // page.
-    this.setEmptyIfNoTextNodesAvailable(renderedTextNodes);
+    // page. Only attempt to redistill if Readability content is shown. If
+    // updateContent already found no text, it has already requested a
+    // redistill.
+    this.setEmptyIfNoTextNodesAvailable(
+        renderedTextNodes,
+        /*shouldAttemptToRedistill=*/ isDistilledByReadability() &&
+            this.hasContent());
 
-    if (!isDistilledByReadability()) {
+    if (!isDistilledByReadability() || !this.hasContent()) {
       return;
     }
 
@@ -949,9 +958,14 @@ export class ContentController {
     this.contentBrowserProxy_.onRenderedTextBlocksAvailable(blocks);
   }
 
-  setEmptyIfNoTextNodesAvailable(nodes: Node[]) {
+  setEmptyIfNoTextNodesAvailable(
+      nodes: Node[], shouldAttemptToRedistill: boolean) {
     if (!nodes || nodes.length === 0) {
-      this.setEmpty();
+      if (shouldAttemptToRedistill) {
+        this.attemptToRedistill();
+      } else {
+        this.setEmpty();
+      }
     }
   }
 
@@ -964,7 +978,12 @@ export class ContentController {
     // distillable content each time Images are toggled. This is called in
     // a wrapper for updateImages instead of in updateImages directly to
     // avoid creating new tree walkers each time updateImages is called.
-    this.setEmptyIfNoTextNodesAvailable(getReadingModeTextNodes(container));
+    // Reading mode should not redistill from an image toggle change, even if
+    // a different distillation method may be able to show content and the
+    // current distillation method cannot.
+    this.setEmptyIfNoTextNodesAvailable(
+        getReadingModeTextNodes(container),
+        /*shouldAttemptToRedistill=*/ false);
   }
 
   updateImages(shadowRoot?: ShadowRoot) {

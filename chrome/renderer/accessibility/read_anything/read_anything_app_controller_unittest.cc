@@ -5923,6 +5923,71 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
+       OnNoTextContent_ReadabilityContentDrawn_FallsBackToScreen2x) {
+  // Readability returns HTML with text, but the WebUI then reports that none of
+  // it is visible (e.g. it was removed by the sanitizer).
+  SetUpReadabilityArticlePage();
+  ASSERT_TRUE(model().readability_content_drawn());
+  ASSERT_TRUE(model().is_readability_mapping_in_progress());
+
+  Mock::VerifyAndClearExpectations(distiller_);
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+
+  controller().OnNoTextContent();
+
+  EXPECT_EQ(model().next_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  // The current method is only updated once the Screen2x content is drawn.
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+  EXPECT_FALSE(model().readability_content_drawn());
+  EXPECT_FALSE(model().requires_readability_distillation());
+  EXPECT_FALSE(model().requires_distillation());
+  // Mapping won't complete for the discarded Readability content, so it's
+  // cleared to avoid dropping side panel selection collapses on the Screen2x
+  // content.
+  EXPECT_FALSE(model().is_readability_mapping_in_progress());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       OnNoTextContent_InSelectionMode_DoesNotFallBack) {
+  SetUpReadabilityArticlePage();
+  MapRenderedReadabilityText();
+
+  // Selections on Readability pages are drawn from the AXTree, so an empty
+  // selection is reported through the Screen2x path.
+  SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
+  ASSERT_TRUE(controller().IsInSelectionMode());
+  ASSERT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  Mock::VerifyAndClearExpectations(distiller_);
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+
+  controller().OnNoTextContent();
+
+  EXPECT_EQ(model().next_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+  EXPECT_TRUE(model().readability_content_drawn());
+  EXPECT_FALSE(model().requires_distillation());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       OnNoTextContent_Screen2xContent_RedistillsWithScreen2x) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  model().set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  Mock::VerifyAndClearExpectations(distiller_);
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+
+  controller().OnNoTextContent();
+
+  EXPECT_EQ(model().next_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  EXPECT_FALSE(model().requires_distillation());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
        OnActiveAXTreeIDChanged_ResetsDistillationMethod) {
   // Simulate a failure on the first page switching to Screen2x.
   model().set_current_content_distillation_method(
