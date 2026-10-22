@@ -588,6 +588,43 @@ TEST_F(AppMenuSearchControllerTest,
   EXPECT_EQ(*row->GetProperty(AppMenuActionItem::kIconOverrideKey), icon);
 }
 
+TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreePreservesCheckable) {
+  scope_->AddChild(actions::ActionItem::Builder()
+                       .SetActionId(kActionBookmarkBarSubmenuAlwaysShow)
+                       .SetText(u"Always show")
+                       .SetChecked(true)
+                       .Build());
+  scope_->AddChild(actions::ActionItem::Builder()
+                       .SetActionId(kActionShowBookmarkBar)
+                       .SetText(u"Always show bookmarks bar")
+                       .Build());
+  menu_root_->AddChild(
+      AppMenuActionItem::CreateIndirect(kActionBookmarkBarSubmenuAlwaysShow,
+                                        scope_.get(), {.is_checkable = true}));
+  menu_root_->AddChild(
+      AppMenuActionItem::CreateIndirect(kActionShowBookmarkBar, scope_.get()));
+
+  controller_->InitializeSearchIndex();
+  const auto& items = controller_->search_items_for_testing();
+  ASSERT_EQ(items.size(), 2u);
+  EXPECT_TRUE(items[0]->IsCheckable());
+  EXPECT_FALSE(items[1]->IsCheckable());
+
+  const std::unique_ptr<actions::ActionItem> results_root =
+      controller_->Search(u"Always show");
+  ASSERT_NE(results_root, nullptr);
+  const auto& rows = results_root->GetChildren().children();
+  ASSERT_EQ(rows.size(), 2u);
+
+  for (const auto& row : rows) {
+    const bool is_checkable_row = row->GetActionItem()->GetActionId() ==
+                                  kActionBookmarkBarSubmenuAlwaysShow;
+    EXPECT_EQ(row->GetProperty(AppMenuActionItem::kIsCheckableKey),
+              is_checkable_row);
+    EXPECT_EQ(row->GetActionItem()->GetChecked(), is_checkable_row);
+  }
+}
+
 TEST_F(AppMenuSearchControllerTest, FlattenHierarchyExtractsSynonyms) {
   std::vector<std::u16string> synonyms = {u"private", u"secret"};
   auto action_item = actions::ActionItem::Builder()

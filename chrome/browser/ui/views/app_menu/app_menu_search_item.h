@@ -45,6 +45,7 @@ class AppMenuSearchItem : public FuzzySearchItem {
     Builder& SetTitle(std::u16string title);
     Builder& SetSecondaryText(std::u16string secondary_text);
     Builder& SetIconOverride(ui::ImageModel icon_override);
+    Builder& SetIsCheckable(bool is_checkable);
 
     [[nodiscard]] std::unique_ptr<AppMenuSearchItem> Build();
 
@@ -54,6 +55,7 @@ class AppMenuSearchItem : public FuzzySearchItem {
     std::optional<std::u16string> title_;
     std::u16string secondary_text_;
     std::optional<ui::ImageModel> icon_override_;
+    bool is_checkable_ = false;
   };
 
   AppMenuSearchItem();
@@ -71,6 +73,9 @@ class AppMenuSearchItem : public FuzzySearchItem {
   const std::optional<ui::ImageModel>& GetIconOverride() const {
     return icon_override_;
   }
+  // Whether the indexed menu row is a checkbox item (see
+  // AppMenuActionItem::kIsCheckableKey).
+  bool IsCheckable() const { return is_checkable_; }
 
   void SetType(Type type) { type_ = type; }
   void SetActionItem(actions::ActionItem* action_item);
@@ -81,6 +86,7 @@ class AppMenuSearchItem : public FuzzySearchItem {
   void SetIconOverride(std::optional<ui::ImageModel> icon_override) {
     icon_override_ = std::move(icon_override);
   }
+  void SetIsCheckable(bool is_checkable) { is_checkable_ = is_checkable; }
 
  private:
   Type type_;
@@ -88,6 +94,7 @@ class AppMenuSearchItem : public FuzzySearchItem {
   std::u16string title_;
   std::u16string secondary_text_;
   std::optional<ui::ImageModel> icon_override_;
+  bool is_checkable_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_ITEM_H_

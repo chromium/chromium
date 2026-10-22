@@ -32,6 +32,7 @@ TEST(AppMenuSearchItemTest, BasicProperties) {
                          .SetTitle(u"New Tab")
                          .SetSecondaryText(u"Tools")
                          .SetIconOverride(icon)
+                         .SetIsCheckable(true)
                          .Build();
 
   EXPECT_EQ(search_item->GetType(), AppMenuSearchItem::Type::kAction);
@@ -40,6 +41,7 @@ TEST(AppMenuSearchItemTest, BasicProperties) {
   EXPECT_EQ(search_item->GetSynonyms(), synonyms);
   EXPECT_EQ(search_item->GetActionItem(), action_item.get());
   EXPECT_EQ(search_item->GetIconOverride(), icon);
+  EXPECT_TRUE(search_item->IsCheckable());
 }
 
 TEST(AppMenuSearchItemTest, DefaultSecondaryTextAndSynonyms) {
@@ -59,6 +61,8 @@ TEST(AppMenuSearchItemTest, DefaultSecondaryTextAndSynonyms) {
   EXPECT_TRUE(search_item->GetSecondaryText().empty());
   EXPECT_TRUE(search_item->GetSynonyms().empty());
   EXPECT_EQ(search_item->GetActionItem(), action_item.get());
+  EXPECT_FALSE(search_item->GetIconOverride().has_value());
+  EXPECT_FALSE(search_item->IsCheckable());
 }
 
 TEST(AppMenuSearchItemTest, Types) {

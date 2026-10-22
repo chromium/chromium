@@ -93,6 +93,10 @@ class AppMenuSearchController {
       // The icon override of the indexed menu row, if any, displayed as the
       // item's icon in search results.
       std::optional<ui::ImageModel> icon_override;
+
+      // Whether the indexed menu row is a checkbox item, so the search result
+      // is rendered as one too, bound to the action's checked state.
+      bool is_checkable = false;
     };
 
     SearchResults();

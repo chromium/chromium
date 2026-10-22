@@ -249,7 +249,8 @@ void AppMenuSearchController::AddSearchItem(
   builder.SetType(type)
       .SetAction(action)
       .SetTitle(std::u16string(title))
-      .SetSecondaryText(std::u16string(secondary_text));
+      .SetSecondaryText(std::u16string(secondary_text))
+      .SetIsCheckable(action->GetProperty(AppMenuActionItem::kIsCheckableKey));
   if (const ui::ImageModel* icon_override =
           action->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
     builder.SetIconOverride(*icon_override);
@@ -279,6 +280,7 @@ AppMenuSearchController::ProcessSearchResults(
           .title = search_item->GetTitle(),
           .breadcrumb = search_item->GetSecondaryText(),
           .icon_override = search_item->GetIconOverride(),
+          .is_checkable = search_item->IsCheckable(),
       });
       --remaining_capacity;
     }
@@ -362,6 +364,9 @@ AppMenuSearchController::BuildSearchResultsTree(SearchResults results) const {
       if (item.icon_override) {
         indirect_item->SetProperty(AppMenuActionItem::kIconOverrideKey,
                                    *item.icon_override);
+      }
+      if (item.is_checkable) {
+        indirect_item->SetProperty(AppMenuActionItem::kIsCheckableKey, true);
       }
       container->AddChild(std::move(indirect_item));
     }

@@ -2137,6 +2137,65 @@ TEST_F(ActionAppMenuWithSearchTest, ChangingSearchQueryReplacesResults) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuWithSearchTest, SearchResultsPreserveCheckableItems) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  actions::ActionItem* always_show_action =
+      actions::ActionManager::Get().FindAction(
+          kActionBookmarkBarSubmenuAlwaysShow,
+          browser_actions_->root_action_item());
+  ASSERT_NE(always_show_action, nullptr);
+  always_show_action->SetChecked(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+
+  // The bookmark bar visibility rows are checkbox items in the normal menu,
+  // and stay checkbox items bound to their action's checked state in search.
+  search_bar->SetText(u"Always");
+
+  views::MenuItemView* always_show =
+      root->GetMenuItemByID(kActionBookmarkBarSubmenuAlwaysShow);
+  ASSERT_NE(always_show, nullptr);
+  EXPECT_EQ(always_show->GetType(), views::MenuItemView::Type::kCheckbox);
+  EXPECT_TRUE(menu.IsItemChecked(kActionBookmarkBarSubmenuAlwaysShow));
+  EXPECT_EQ(always_show->GetViewAccessibility().GetCheckedState(),
+            ax::mojom::CheckedState::kTrue);
+
+  views::MenuItemView* always_hide =
+      root->GetMenuItemByID(kActionBookmarkBarSubmenuAlwaysHide);
+  ASSERT_NE(always_hide, nullptr);
+  EXPECT_EQ(always_hide->GetType(), views::MenuItemView::Type::kCheckbox);
+  EXPECT_FALSE(menu.IsItemChecked(kActionBookmarkBarSubmenuAlwaysHide));
+  EXPECT_EQ(always_hide->GetViewAccessibility().GetCheckedState(),
+            ax::mojom::CheckedState::kFalse);
+
+  // The result row follows the checked state while the results are shown.
+  always_show_action->SetChecked(false);
+  EXPECT_FALSE(menu.IsItemChecked(kActionBookmarkBarSubmenuAlwaysShow));
+  EXPECT_EQ(always_show->GetViewAccessibility().GetCheckedState(),
+            ax::mojom::CheckedState::kFalse);
+
+  // Non-checkable results stay plain items.
+  search_bar->SetText(u"Downloads");
+  views::MenuItemView* downloads =
+      root->GetMenuItemByID(kActionShowDownloadsPage);
+  ASSERT_NE(downloads, nullptr);
+  EXPECT_EQ(downloads->GetType(), views::MenuItemView::Type::kNormal);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());

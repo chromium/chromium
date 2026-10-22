@@ -46,6 +46,12 @@ AppMenuSearchItem::Builder& AppMenuSearchItem::Builder::SetIconOverride(
   return *this;
 }
 
+AppMenuSearchItem::Builder& AppMenuSearchItem::Builder::SetIsCheckable(
+    bool is_checkable) {
+  is_checkable_ = is_checkable;
+  return *this;
+}
+
 std::unique_ptr<AppMenuSearchItem> AppMenuSearchItem::Builder::Build() {
   CHECK(type_.has_value());
   CHECK(action_);
@@ -60,6 +66,7 @@ std::unique_ptr<AppMenuSearchItem> AppMenuSearchItem::Builder::Build() {
   search_item->SetTitle(std::move(*title_));
   search_item->SetSecondaryText(std::move(secondary_text_));
   search_item->SetIconOverride(std::move(icon_override_));
+  search_item->SetIsCheckable(is_checkable_);
   return search_item;
 }
 
