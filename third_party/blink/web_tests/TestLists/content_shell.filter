@@ -444,6 +444,23 @@ external/wpt/html/semantics/interestfor/interestfor-invoker-descendants.tentativ
 # Touch long-press is disabled in TouchEmulator under headless_shell.
 external/wpt/html/semantics/interestfor/interestfor-pseudo-element.tentative.html
 
+# These reftests fail on Mac headless_shell when OS overlay scrollbars are
+# enabled because headless_shell runs with --disable-features=ScrollbarAnimations,
+# leaving the overlay scrollbar thumb permanently visible when only the test or
+# reference page scrolls programmatically. Do not remove based on testing in
+# environments without Mac overlay scrollbars. See https://crbug.com/573662745.
+external/wpt/css/CSS2/stacking-context/composite-change-after-scroll-preserves-stacking-order.html
+external/wpt/css/css-contain/content-visibility/content-visibility-096.html
+external/wpt/css/css-contain/content-visibility/content-visibility-097.html
+external/wpt/css/css-flexbox/scrollbars-auto.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-001.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-002.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-004.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-baseline-001.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-baseline-002.html
+external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-001.xht
+external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-004.xht
+
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation*
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-transition*
 virtual/dark-color-scheme/external/wpt/css/css-color/system-color-consistency.html
