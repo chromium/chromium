@@ -5,7 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {AddPasswordDialogElement, AuthTimedOutDialogElement, MovePasswordsDialogElement, PasswordListItemElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
-import {Page, PasswordManagerActionableError, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerActionableError, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, PrefsBrowserProxy, PrefService, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -13,6 +13,7 @@ import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_prox
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
@@ -64,6 +65,8 @@ function validatePasswordsSubsection(
 suite('PasswordsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
   let pluralString: TestPluralStringProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
   let syncProxy: TestSyncBrowserProxy;
 
   async function createPasswordsSection(): Promise<PasswordsSectionElement> {
@@ -76,17 +79,22 @@ suite('PasswordsSectionTest', function() {
     return section;
   }
 
-  function setSavingDisabledByMandatoryPolicy(
-      section: PasswordsSectionElement) {
-    section.prefs = makePasswordManagerPrefs();
-    const pref = section.getPref<boolean>('credentials_enable_service');
-    pref.value = false;
-    pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-    pref.controlledBy = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+  function setSavingDisabledByMandatoryPolicy() {
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'credentials_enable_service',
+      value: false,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+    }]);
   }
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    prefsBrowserProxy = new TestPrefsBrowserProxy(makePasswordManagerPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     pluralString = new TestPluralStringProxy();
@@ -420,11 +428,12 @@ suite('PasswordsSectionTest', function() {
   test('add button visible when extension turns saving off', async function() {
     const section: PasswordsSectionElement =
         document.createElement('passwords-section');
-    section.prefs = makePasswordManagerPrefs();
-    const prefObject = section.getPref<boolean>('credentials_enable_service');
-    prefObject.value = false;
-    prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-    prefObject.controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'credentials_enable_service',
+      value: false,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+    }]);
     document.body.appendChild(section);
     await flushTasks();
 
@@ -436,7 +445,7 @@ suite('PasswordsSectionTest', function() {
       async function() {
         const section: PasswordsSectionElement =
             document.createElement('passwords-section');
-        setSavingDisabledByMandatoryPolicy(section);
+        setSavingDisabledByMandatoryPolicy();
 
         document.body.appendChild(section);
         await flushTasks();
@@ -448,18 +457,16 @@ suite('PasswordsSectionTest', function() {
       'add button hidden when mandatory policy arrives after load',
       async function() {
         const section = document.createElement('passwords-section');
-        section.prefs = makePasswordManagerPrefs();
         document.body.appendChild(section);
         await flushTasks();
         assertTrue(isVisible(section.$.addPasswordButton));
 
-        section.set(
-            'prefs.credentials_enable_service.controlledBy',
-            chrome.settingsPrivate.ControlledBy.USER_POLICY);
-        section.set(
-            'prefs.credentials_enable_service.enforcement',
-            chrome.settingsPrivate.Enforcement.ENFORCED);
-        section.set('prefs.credentials_enable_service.value', false);
+        prefsBrowserProxy.fakeApi.sendPrefChanges([{
+          key: 'credentials_enable_service',
+          value: false,
+          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        }]);
         await flushTasks();
 
         assertFalse(isVisible(section.$.addPasswordButton));
@@ -468,9 +475,7 @@ suite('PasswordsSectionTest', function() {
   test('add button visible when no policy is set', async function() {
     const section: PasswordsSectionElement =
         document.createElement('passwords-section');
-    section.prefs = makePasswordManagerPrefs();
-    const prefObject = section.getPref<boolean>('credentials_enable_service');
-    prefObject.value = true;
+    prefService.setPrefValue('credentials_enable_service', true);
     document.body.appendChild(section);
     await flushTasks();
 
@@ -482,7 +487,7 @@ suite('PasswordsSectionTest', function() {
       async function() {
         const section: PasswordsSectionElement =
             document.createElement('passwords-section');
-        setSavingDisabledByMandatoryPolicy(section);
+        setSavingDisabledByMandatoryPolicy();
 
         document.body.appendChild(section);
         await flushTasks();
@@ -500,7 +505,7 @@ suite('PasswordsSectionTest', function() {
 
         const section: PasswordsSectionElement =
             document.createElement('passwords-section');
-        setSavingDisabledByMandatoryPolicy(section);
+        setSavingDisabledByMandatoryPolicy();
 
         document.body.appendChild(section);
         await passwordManager.whenCalled('getCredentialGroups');

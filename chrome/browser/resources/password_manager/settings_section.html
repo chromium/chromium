@@ -49,31 +49,31 @@
 <div class="card">
   <pref-toggle-button id="passwordToggle" no-extension-indicator
       label="$i18n{savePasswordsLabel}"
-      pref="{{prefs.credentials_enable_service}}">
+      pref-key="credentials_enable_service">
   </pref-toggle-button>
   <template is="dom-if"
-        if="[[prefs.credentials_enable_service.extensionId]]">
+        if="[[credentialsEnableServicePref_.extensionId]]">
     <div class="cr-row continuation">
       <extension-controlled-indicator
           id="passwordsExtensionIndicator"
-          extension-id="[[prefs.credentials_enable_service.extensionId]]"
+          extension-id="[[credentialsEnableServicePref_.extensionId]]"
           extension-name="[[
-              prefs.credentials_enable_service.controlledByName]]"
+              credentialsEnableServicePref_.controlledByName]]"
           extension-can-be-disabled="[[
-              prefs.credentials_enable_service.extensionCanBeDisabled]]">
+              credentialsEnableServicePref_.extensionCanBeDisabled]]">
       </extension-controlled-indicator>
     </div>
   </template>
   <pref-toggle-button id="passkeyUpgradeToggle"
       label="$i18n{passkeyUpgradeSettingsToggleLabel}"
       sub-label="$i18n{passkeyUpgradeSettingsToggleSubLabel}"
-      pref="{{prefs.credentials_enable_automatic_passkey_upgrades}}"
-      hidden="[[!prefs.credentials_enable_service.value]]">
+      pref-key="credentials_enable_automatic_passkey_upgrades"
+      hidden="[[!credentialsEnableServicePref_.value]]">
   </pref-toggle-button>
   <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
       sub-label="$i18n{autosigninDescription}"
-      pref="{{prefs.credentials_enable_autosignin}}">
+      pref-key="credentials_enable_autosignin">
   </pref-toggle-button>
   <if expr="is_win or is_macosx or is_chromeos">
     <template is="dom-if"
@@ -81,7 +81,7 @@
       <pref-toggle-button id="biometricAuthenticationToggle" class="hr"
           label="$i18n{biometricAuthenticationForFillingLabel}"
           sub-label="$i18n{biometricAuthenticationForFillingSubLabel}"
-          pref="{{prefs.password_manager.biometric_authentication_filling}}"
+          pref-key="password_manager.biometric_authentication_filling"
           change-requires-validation
           on-validate-and-change-pref="switchBiometricAuthBeforeFillingState_">
       </pref-toggle-button>

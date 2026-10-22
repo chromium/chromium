@@ -5,15 +5,16 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
-import {BatchUploadPasswordsEntryPoint, NotificationCardId, NotificationCardsProxyImpl, Page, PasswordManagerImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {BatchUploadPasswordsEntryPoint, NotificationCardId, NotificationCardsProxyImpl, Page, PasswordManagerImpl, PrefsBrowserProxy, PrefService, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestNotificationCardsProxy} from './test_notification_cards_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
-import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry} from './test_util.js';
+import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 suite('PasswordsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
@@ -30,8 +31,12 @@ suite('PasswordsSectionTest', function() {
     return section;
   }
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    PrefsBrowserProxy.setInstance(
+        new TestPrefsBrowserProxy(makePasswordManagerPrefs()));
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     notificationCardsProxy = new TestNotificationCardsProxy();

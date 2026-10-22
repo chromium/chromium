@@ -4,14 +4,15 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {CheckupSubpage, Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {CheckupSubpage, Page, PasswordManagerImpl, PrefsBrowserProxy, PrefService, Router} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {createCredentialGroup, createPasswordEntry, makeInsecureCredential, makePasswordCheckStatus} from './test_util.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+import {createCredentialGroup, createPasswordEntry, makeInsecureCredential, makePasswordCheckStatus, makePasswordManagerPrefs} from './test_util.js';
 
 suite('PasswordManagerAppTest', function() {
   const CompromiseType = chrome.passwordsPrivate.CompromiseType;
@@ -19,8 +20,12 @@ suite('PasswordManagerAppTest', function() {
 
   let passwordManager: TestPasswordManagerProxy;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    PrefsBrowserProxy.setInstance(
+        new TestPrefsBrowserProxy(makePasswordManagerPrefs()));
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     const query = new URLSearchParams();

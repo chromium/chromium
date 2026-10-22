@@ -145,50 +145,47 @@ export function createBlockedSiteEntry(
   };
 }
 
-export function makePasswordManagerPrefs() {
-  return {
-    credentials_enable_service: {
+export function makePasswordManagerPrefs():
+    chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
       key: 'credentials_enable_service',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
-    credentials_enable_autosignin: {
+    {
       key: 'credentials_enable_autosignin',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
-    credentials_enable_automatic_passkey_upgrades: {
+    {
       key: 'credentials_enable_automatic_passkey_upgrades',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
-    automated_password_change_enabled: {
+    {
       key: 'automated_password_change_enabled',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
-    profile: {
-      password_dismiss_compromised_alert: {
-        key: 'profile.password_dismiss_compromised_alert',
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: true,
-      },
+    {
+      key: 'profile.password_dismiss_compromised_alert',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
     },
-    password_manager: {
-      // <if expr="is_win or is_macosx or is_chromeos">
-      biometric_authentication_filling: {
-        key: 'password_manager.biometric_authentication_filling',
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: true,
-      },
-      // </if>
-      password_sharing_enabled: {
-        key: 'password_manager.password_sharing_enabled',
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: true,
-      },
+    // <if expr="is_win or is_macosx or is_chromeos">
+    {
+      key: 'password_manager.biometric_authentication_filling',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
     },
-  };
+    // </if>
+    {
+      key: 'password_manager.password_sharing_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+  ];
 }
 
 export interface InsecureCredentialsParams {

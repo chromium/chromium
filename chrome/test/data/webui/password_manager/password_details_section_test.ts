@@ -6,14 +6,15 @@ import 'chrome://password-manager/password_manager.js';
 
 // clang-format off
 import type {PasskeyDetailsCardElement, BackupPasswordDetailsCardElement, PasswordDetailsCardElement, PasswordDetailsSectionElement} from 'chrome://password-manager/password_manager.js';
-import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerImpl, PasswordViewPageInteractions, PrefsBrowserProxy, PrefService, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
-import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry} from './test_util.js';
+import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 // <if expr="_google_chrome">
 import {PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID} from 'chrome://password-manager/password_manager.js';
@@ -26,8 +27,12 @@ suite('PasswordDetailsSectionTest', function() {
   let syncProxy: TestSyncBrowserProxy;
 
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    PrefsBrowserProxy.setInstance(
+        new TestPrefsBrowserProxy(makePasswordManagerPrefs()));
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     syncProxy = new TestSyncBrowserProxy();

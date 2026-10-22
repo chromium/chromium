@@ -18,7 +18,7 @@ import './shared_style.css.js';
 import './site_favicon.js';
 import './user_utils_mixin.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -61,8 +61,9 @@ const PASSWORD_MANAGER_ADD_SHORTCUT_ELEMENT_ID =
 const PASSWORD_MANAGER_ADD_SHORTCUT_CUSTOM_EVENT_ID =
     'PasswordManagerUI::kAddShortcutCustomEventId';
 
-const SettingsSectionElementBase = HelpBubbleMixin(RouteObserverMixin(
-    PrefsMixin(UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))));
+const SettingsSectionElementBase =
+    HelpBubbleMixin(RouteObserverMixin(PrefServiceObserverMixin(
+        UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))));
 
 export class SettingsSectionElement extends SettingsSectionElementBase {
   static get is() {
@@ -135,10 +136,12 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: false,
       },
 
+      credentialsEnableServicePref_: Object,
+
       passwordSavingBlockedByPolicy_: {
         type: Boolean,
         computed: 'computePasswordSavingBlockedByPolicy_(' +
-            'prefs.credentials_enable_service.*)',
+            'credentialsEnableServicePref_)',
       },
 
       /** The visibility state of the trusted vault banner. */
@@ -214,6 +217,8 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   declare private isBiometricAuthenticationForFillingToggleVisible_: boolean;
   // </if>
   declare private hasPasskeys_: boolean;
+  declare private credentialsEnableServicePref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
   declare private passwordSavingBlockedByPolicy_: boolean;
   declare private hasPasswordsToExport_: boolean;
   declare private isAutomatedPasswordChangeVisible_: boolean;
@@ -246,6 +251,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.mirrorPref(
+        'credentials_enable_service', 'credentialsEnableServicePref_');
 
     const updateLocalPasswordCount = (localPasswordCount: number) => {
       this.updateLocalPasswordCount_(localPasswordCount);
@@ -464,8 +472,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   // </if>
 
   private computePasswordSavingBlockedByPolicy_(): boolean {
+    assert(this.credentialsEnableServicePref_);
     return isSavingNewPasswordsBlockedByMandatoryPolicy(
-        this.getPref<boolean>('credentials_enable_service'));
+        this.credentialsEnableServicePref_);
   }
 
   private computeShouldShowActorLoginPermissions_(

@@ -5,7 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {PasswordManagerAppElement, TrustedVaultErrorDialogElement} from 'chrome://password-manager/password_manager.js';
-import {OpenWindowProxyImpl, Page, PasswordManagerActionableError, PasswordManagerImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, Page, PasswordManagerActionableError, PasswordManagerImpl, PrefsBrowserProxy, PrefService, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -14,6 +14,7 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 suite('PasswordManagerAppTest', function() {
@@ -22,9 +23,13 @@ suite('PasswordManagerAppTest', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let passwordManager: TestPasswordManagerProxy;
 
-  setup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({enableTrustedVaultUnlock: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    PrefsBrowserProxy.setInstance(
+        new TestPrefsBrowserProxy(makePasswordManagerPrefs()));
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     passwordManager = new TestPasswordManagerProxy();
@@ -374,8 +379,6 @@ suite('PasswordManagerAppTest', function() {
 
     const passwordsSection = app.shadowRoot!.querySelector('passwords-section');
     assertTrue(!!passwordsSection);
-    passwordsSection.prefs = makePasswordManagerPrefs();
-    await flushTasks();
     const importLink = passwordsSection.$.importPasswords.querySelector('a');
     assertTrue(!!importLink);
 
@@ -386,7 +389,6 @@ suite('PasswordManagerAppTest', function() {
     assertEquals(Page.SETTINGS, Router.getInstance().currentRoute.page);
     const settingsSection = app.shadowRoot!.querySelector('settings-section');
     assertTrue(!!settingsSection);
-    settingsSection.prefs = makePasswordManagerPrefs();
     await flushTasks();
 
     const importer =
@@ -474,8 +476,12 @@ suite('WebuiRefresh2026', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let passwordManager: TestPasswordManagerProxy;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    PrefsBrowserProxy.setInstance(
+        new TestPrefsBrowserProxy(makePasswordManagerPrefs()));
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     passwordManager = new TestPasswordManagerProxy();

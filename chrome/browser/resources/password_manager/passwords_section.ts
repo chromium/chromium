@@ -12,7 +12,7 @@ import './user_utils_mixin.js';
 import './notification_cards/notification_card.js';
 import './notification_cards/notification_cards_browser_proxy.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -47,8 +47,8 @@ export interface PasswordsSectionElement {
   };
 }
 
-const PasswordsSectionElementBase =
-    PrefsMixin(UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
+const PasswordsSectionElementBase = PrefServiceObserverMixin(
+    UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
@@ -116,8 +116,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       passwordSavingBlockedByPolicy_: {
         type: Boolean,
-        computed: 'computePasswordSavingBlockedByPolicy_(' +
-            'prefs.credentials_enable_service.*)',
+        value: false,
       },
 
       shouldShowNotificationCard_: {
@@ -161,6 +160,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.addPrefObserver<boolean>('credentials_enable_service', pref => {
+      this.passwordSavingBlockedByPolicy_ =
+          isSavingNewPasswordsBlockedByMandatoryPolicy(pref);
+    });
     const updateGroups = () => {
       PasswordManagerImpl.getInstance().getCredentialGroups().then(groups => {
         this.groups_ = groups;
@@ -338,11 +342,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onCardClosed_() {
     this.notificationCard_ = null;
-  }
-
-  private computePasswordSavingBlockedByPolicy_(): boolean {
-    return isSavingNewPasswordsBlockedByMandatoryPolicy(
-        this.getPref<boolean>('credentials_enable_service'));
   }
 
   private computeShowPasswordsDescription_(): boolean {

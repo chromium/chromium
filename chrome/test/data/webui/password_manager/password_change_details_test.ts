@@ -5,27 +5,36 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {PasswordChangeDetailsElement, PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {makePasswordManagerPrefs} from './test_util.js';
 
 suite('PasswordChangeDetailsTest', function() {
   let element: PasswordChangeDetailsElement;
+  let prefService: PrefService;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const prefsBrowserProxy =
+        new TestPrefsBrowserProxy(makePasswordManagerPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
   });
 
-  test('renders pref-toggle-button when flag is enabled', function() {
+  test('renders pref-toggle-button when flag is enabled', async function() {
     loadTimeData.overrideValues({
       isPasswordChangeWithPrivateInferenceLoginCheckEnabled: true,
     });
     element = document.createElement('password-change-details');
-    element.prefs = makePasswordManagerPrefs();
     document.body.appendChild(element);
-    flush();
+    await flushTasks();
 
     const toggle = element.shadowRoot!.querySelector<PrefToggleButtonElement>(
         '#passwordChangeToggle');
@@ -41,16 +50,14 @@ suite('PasswordChangeDetailsTest', function() {
         header.textContent.trim());
   });
 
-  test('pref-toggle-button reflects disabled pref value', function() {
+  test('pref-toggle-button reflects disabled pref value', async function() {
     loadTimeData.overrideValues({
       isPasswordChangeWithPrivateInferenceLoginCheckEnabled: true,
     });
+    prefService.setPrefValue('automated_password_change_enabled', false);
     element = document.createElement('password-change-details');
-    const prefs = makePasswordManagerPrefs();
-    prefs.automated_password_change_enabled.value = false;
-    element.prefs = prefs;
     document.body.appendChild(element);
-    flush();
+    await flushTasks();
 
     const toggle = element.shadowRoot!.querySelector<PrefToggleButtonElement>(
         '#passwordChangeToggle');
@@ -64,7 +71,6 @@ suite('PasswordChangeDetailsTest', function() {
       isPasswordChangeWithPrivateInferenceLoginCheckEnabled: false,
     });
     element = document.createElement('password-change-details');
-    element.prefs = makePasswordManagerPrefs();
     document.body.appendChild(element);
     flush();
 

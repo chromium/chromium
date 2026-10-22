@@ -6,7 +6,6 @@ import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import '/shared/settings/prefs/prefs.js';
 import './checkup_section.js';
 import './checkup_details_section.js';
 import './cr_page_host_style.css.js';
@@ -24,7 +23,6 @@ import './dialogs/trusted_vault_error_dialog.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
 import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
@@ -76,7 +74,6 @@ export interface PasswordManagerAppElement {
     drawer: CrDrawerElement,
     drawerTemplate: DomIf,
     passwords: PasswordsSectionElement,
-    prefs: SettingsPrefsElement,
     toast: CrToastElement,
     scrollableShadow: HTMLElement,
     settings: SettingsSectionElement,
@@ -99,11 +96,6 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs_: Object,
-
       selectedPage_: {
         type: String,
         value: Page.PASSWORDS,
@@ -163,7 +155,6 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     ];
   }
 
-  declare private prefs_: {[key: string]: unknown};
   declare private selectedPage_: Page;
   declare private narrow_: boolean;
   declare private collapsed_: boolean;

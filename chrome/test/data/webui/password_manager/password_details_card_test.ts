@@ -5,7 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {EditPasswordDialogElement, PasswordDetailsCardElement} from 'chrome://password-manager/password_manager.js';
-import {OpenWindowProxyImpl, Page, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, Page, PasswordManagerImpl, PasswordViewPageInteractions, PrefsBrowserProxy, PrefService, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -15,6 +15,7 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createAffiliatedDomain, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
@@ -28,7 +29,6 @@ async function createCardElement(
 
   const card = document.createElement('password-details-card');
   card.password = password;
-  card.prefs = makePasswordManagerPrefs();
   document.body.appendChild(card);
   await flushTasks();
   return card;
@@ -37,11 +37,16 @@ async function createCardElement(
 suite('PasswordDetailsCardTest', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let passwordManager: TestPasswordManagerProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
   let syncProxy: TestSyncBrowserProxy;
   let metrics: MetricsTracker;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    prefsBrowserProxy = new TestPrefsBrowserProxy(makePasswordManagerPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     passwordManager = new TestPasswordManagerProxy();
@@ -404,15 +409,12 @@ suite('PasswordDetailsCardTest', function() {
       isSyncingPasswords: true,
     };
 
-    const card = document.createElement('password-details-card');
-    card.password = createPasswordEntry();
-    card.prefs = makePasswordManagerPrefs();
-    const prefObject =
-        card.getPref<boolean>('password_manager.password_sharing_enabled');
-    prefObject.value = false;
-    prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-    document.body.appendChild(card);
-    await flushTasks();
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'password_manager.password_sharing_enabled',
+      value: false,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    }]);
+    const card = await createCardElement();
 
     assertTrue(isVisible(card.$.shareButton));
     assertTrue(card.$.shareButton.disabled);

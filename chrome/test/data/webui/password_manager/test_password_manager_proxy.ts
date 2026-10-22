@@ -64,6 +64,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   private exportPasswordsResult_: ExportPasswordsResult =
       ExportPasswordsResult.kSuccess;
 
+  private actionableErrorListeners_:
+      Set<PasswordManagerActionableErrorChangedListener> = new Set();
+
   constructor() {
     super([
       'addPassword',
@@ -346,12 +349,20 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   addPasswordManagerActionableErrorChangedListener(
       listener: PasswordManagerActionableErrorChangedListener) {
-    this.listeners.passwordManagerActionableErrorChangedListener = listener;
+    this.actionableErrorListeners_.add(listener);
+    this.listeners.passwordManagerActionableErrorChangedListener = error => {
+      for (const l of this.actionableErrorListeners_) {
+        l(error);
+      }
+    };
   }
 
   removePasswordManagerActionableErrorChangedListener(
-      _listener: PasswordManagerActionableErrorChangedListener) {
-    this.listeners.passwordManagerActionableErrorChangedListener = null;
+      listener: PasswordManagerActionableErrorChangedListener) {
+    this.actionableErrorListeners_.delete(listener);
+    if (this.actionableErrorListeners_.size === 0) {
+      this.listeners.passwordManagerActionableErrorChangedListener = null;
+    }
   }
 
   extendAuthValidity() {

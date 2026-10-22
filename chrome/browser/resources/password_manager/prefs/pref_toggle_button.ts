@@ -184,12 +184,7 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
 
   /** Update the pref to the current |checked| value. */
   private updatePrefValue_() {
-    if (this.prefKey) {
-      PrefService.getInstance().setPrefValue(this.prefKey, this.checked);
-      return;
-    }
-
-    this.set('pref.value', this.checked);
+    PrefService.getInstance().setPrefValue(this.prefKey, this.checked);
   }
 
   /**

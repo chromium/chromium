@@ -19,7 +19,7 @@ import '../dialogs/multi_store_delete_password_dialog.js';
 import '../sharing/share_password_flow.js';
 import '../sharing/metrics_utils.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -72,7 +72,7 @@ export interface PasswordDetailsCardElement {
   };
 }
 
-const PasswordDetailsCardElementBase = PrefsMixin(HelpBubbleMixin(
+const PasswordDetailsCardElementBase = PrefServiceObserverMixin(HelpBubbleMixin(
     UserUtilMixin(ShowPasswordMixin(I18nMixin(PolymerElement)))));
 
 export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
@@ -106,8 +106,14 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         value: PasswordViewPageInteractions,
       },
 
-      showEditPasswordDialog_: Boolean,
-      showDeletePasswordDialog_: Boolean,
+      showEditPasswordDialog_: {
+        type: Boolean,
+        value: false,
+      },
+      showDeletePasswordDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
       showShareButton_: {
         type: Boolean,
@@ -120,9 +126,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
       passwordSharingDisabled_: {
         type: Boolean,
-        computed: 'computePasswordSharingDisabled_(' +
-            'prefs.password_manager.password_sharing_enabled.enforcement, ' +
-            'prefs.password_manager.password_sharing_enabled.value)',
+        value: false,
       },
 
       showShareFlow_: {
@@ -130,7 +134,10 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         value: false,
       },
 
-      isUsingAccountStore: Boolean,
+      isUsingAccountStore: {
+        type: Boolean,
+        value: false,
+      },
       trigger_: {
         type: Object,
         value: () =>
@@ -163,6 +170,16 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   declare private showShareButton_: boolean;
   declare private trigger_: MoveToAccountStoreTrigger;
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addPrefObserver<boolean>(
+        'password_manager.password_sharing_enabled', pref => {
+          this.passwordSharingDisabled_ = pref.enforcement ===
+                  chrome.settingsPrivate.Enforcement.ENFORCED &&
+              !pref.value;
+        });
+  }
 
   private isFederated_(): boolean {
     return !!this.password.federationText;
@@ -285,12 +302,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private computeShowShareButton_(): boolean {
     return !this.isFederated_() &&
         (this.isSyncingPasswords || this.isAccountStoreUser);
-  }
-
-  private computePasswordSharingDisabled_(): boolean {
-    const pref = this.getPref('password_manager.password_sharing_enabled');
-    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
-        !pref.value;
   }
 
   private getCredentialTypeString_(): string {

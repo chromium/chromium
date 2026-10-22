@@ -4,8 +4,10 @@
 
 import './password_manager_app.js';
 
-export {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
-export {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+export {PrefService} from '/shared/settings/prefs2/pref_service.js';
+export {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+export type {PrefServiceObserverMixinInterface} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+export {PrefsBrowserProxy} from '/shared/settings/prefs2/prefs_browser_proxy.js';
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
