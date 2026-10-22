@@ -38,7 +38,6 @@
 #include "net/cert/x509_certificate.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/feature_list.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #else
@@ -74,7 +73,7 @@ ConnectorsInternalsPageHandler::~ConnectorsInternalsPageHandler() = default;
 void ConnectorsInternalsPageHandler::GetDeviceTrustState(
     GetDeviceTrustStateCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(kDeviceTrustConnectorAndroid)) {
+  if (!IsDeviceTrustConnectorAndroidEnabled()) {
     std::move(callback).Run(utils::CreateUnsupportedDeviceTrustState());
     return;
   }
