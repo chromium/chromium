@@ -393,9 +393,13 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     if (isSelected) {
       this.selectedTabs = this.selectedTabs.filter(t => t.tabId !== tab.tabId);
       this.browserProxy_.deleteTabContext(tab.tabId);
+      this.recordUserActionMetric_(
+          'ContextualTasks.TabPicker.UserAction.TabDeselected');
     } else {
       this.selectedTabs = [tab, ...this.selectedTabs];
       this.browserProxy_.addTabContext(tab.tabId);
+      this.recordUserActionMetric_(
+          'ContextualTasks.TabPicker.UserAction.TabSelected');
       const hasActiveTab =
           this.tabSuggestions.some(t => t.showInCurrentTabChip);
       recordTabPickerTabSelected(
@@ -512,6 +516,13 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     const metricsService = chrome.histograms || chrome.metricsPrivate;
     if (metricsService) {
       metricsService.recordMediumTime(metricName, latencyMs);
+    }
+  }
+
+  private recordUserActionMetric_(metricName: string) {
+    const metricsService = chrome.histograms || chrome.metricsPrivate;
+    if (metricsService) {
+      metricsService.recordBoolean(metricName, true);
     }
   }
 

@@ -763,9 +763,19 @@ suite('TabPickerTest', () => {
           assertFalse(!!recordedBooleans.find(
               m => m.metricName ===
                   'ContextualSearch.TabPicker.SelectedTabIsActive.ContextualTasksExtension'));
+
+          const tabSelectedAction = recordedBooleans.find(
+              m => m.metricName ===
+                  'ContextualTasks.TabPicker.UserAction.TabSelected');
+          assertTrue(!!tabSelectedAction);
+          assertTrue(tabSelectedAction.value);
+          assertFalse(!!recordedBooleans.find(
+              m => m.metricName ===
+                  'ContextualTasks.TabPicker.UserAction.TabDeselected'));
         }
 
-        // Deselecting a tab should not record either metric.
+        // Deselecting a tab should not record ContextualSearch.TabPicker.*,
+        // and should record ContextualTasks.TabPicker.UserAction.TabDeselected.
         recordedMetrics = [];
         recordedBooleans = [];
         items[0]!.click();
@@ -775,6 +785,14 @@ suite('TabPickerTest', () => {
             m => m.metricName.startsWith('ContextualSearch.TabPicker.')));
         assertFalse(!!recordedBooleans.find(
             m => m.metricName.startsWith('ContextualSearch.TabPicker.')));
+        const tabDeselectedAction = recordedBooleans.find(
+            m => m.metricName ===
+                'ContextualTasks.TabPicker.UserAction.TabDeselected');
+        assertTrue(!!tabDeselectedAction);
+        assertTrue(tabDeselectedAction.value);
+        assertFalse(!!recordedBooleans.find(
+            m => m.metricName ===
+                'ContextualTasks.TabPicker.UserAction.TabSelected'));
       });
 
   test(

@@ -911,6 +911,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.TabPicker.UserAction{ActionType}"
+    enum="Boolean" expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time the user clicks on a tab item in the Contextual Tasks
+    tab picker flyout menu. {ActionType} Always recorded as true.
+  </summary>
+  <token key="ActionType">
+    <variant name=".TabDeselected"
+        summary="The user clicked a selected tab to remove it from context."/>
+    <variant name=".TabSelected"
+        summary="The user clicked an unselected tab to attach it as context."/>
+  </token>
+</histogram>
+
 <histogram
     name="ContextualTasks.ToolbarCloseTabButton.UserAction.CloseTabAndExpandSidePanel"
     enum="Boolean" expires_after="2027-06-18">
