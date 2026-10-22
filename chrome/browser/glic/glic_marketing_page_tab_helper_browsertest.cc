@@ -93,8 +93,9 @@ IN_PROC_BROWSER_TEST_F(GlicMarketingPageTabHelperBrowserTest,
   // Check pref was updated
   EXPECT_EQ(1, prefs->GetInteger(prefs::kGlicMarketingAutoOpenCount));
 
-  // Close the Glic UI to prepare for next run
-  instance->CloseAllEmbedders();
+  // Close the Glic UI to prepare for next run, preventing the 1s blank-instance
+  // cleanup timer from deleting `instance` if opening the next tab is slow.
+  CloseAllEmbeddersAndPreventDeletion(instance);
 
   // Navigate again. By default max_impressions=1, so it should not trigger
   // again.
