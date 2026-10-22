@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/dcheck_always_on.gni")
 
 declare_args() {
   # Enables the TTC WebUI evaluation harness and automation page handler.
-  # Enabled by default on Desktop; disabled on Android.
-  enable_ttc_webui = !is_android
+  # Enabled by default on Desktop and Desktop Android; disabled by default on
+  # Android Mobile (can be overridden via args.gn).
+  enable_ttc_webui = !is_android || is_desktop_android
 }
