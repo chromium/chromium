@@ -214,6 +214,14 @@ const auto kKeyId = std::to_array<uint8_t>({
     0x35,
 });
 
+constexpr uint8_t kAv1ObuSequenceHeaderType = 1;
+constexpr uint8_t kAv1ObuForbiddenBitMask = 0b1000'0000;
+constexpr uint8_t kAv1ObuTypeBitsMask = 0b0000'1111;
+constexpr uint8_t kAv1ObuExtensionFlagBitMask = 0b0000'0100;
+constexpr uint8_t kAv1ObuHasSizeFieldBitMask = 0b0000'0010;
+constexpr uint8_t kLeb128ValueBitsMask = 0b0111'1111;
+constexpr uint8_t kLeb128ContinuationBitMask = 0b1000'0000;
+
 }  // namespace
 
 // TODO(sandersd): Change the tests to use a more unique message.
@@ -281,6 +289,128 @@ scoped_refptr<DecoderBuffer> ReadTestDataFile(std::string_view name,
   auto buffer = ReadTestDataFile(name);
   buffer->set_timestamp(pts);
   return buffer;
+}
+
+scoped_refptr<DecoderBuffer> RewriteAv1SequenceHeaderOperatingPoint(
+    const DecoderBuffer& buffer,
+    uint16_t operating_point_idc,
+    uint8_t seq_level_idx) {
+  base::span<const uint8_t> stream(buffer);
+  std::vector<uint8_t> output;
+  size_t offset = 0;
+  bool rewrote_seq_header = false;
+  while (offset < stream.size()) {
+    const size_t obu_start = offset;
+    const uint8_t header_byte = stream[offset++];
+    CHECK_EQ(header_byte & kAv1ObuForbiddenBitMask, 0);
+    CHECK_NE(header_byte & kAv1ObuHasSizeFieldBitMask, 0);
+    const uint8_t obu_type = (header_byte >> 3) & kAv1ObuTypeBitsMask;
+    const bool has_extension = (header_byte & kAv1ObuExtensionFlagBitMask) != 0;
+    uint8_t extension_byte = 0;
+    if (has_extension) {
+      CHECK_LT(offset, stream.size());
+      extension_byte = stream[offset++];
+    }
+    uint64_t obu_size = 0;
+    for (int i = 0; i < 8; ++i) {
+      CHECK_LT(offset, stream.size());
+      const uint8_t byte = stream[offset++];
+      obu_size |= static_cast<uint64_t>(byte & kLeb128ValueBitsMask) << (i * 7);
+      if ((byte & kLeb128ContinuationBitMask) == 0) {
+        break;
+      }
+    }
+    CHECK_LE(obu_size, stream.size() - offset);
+    base::span<const uint8_t> payload =
+        stream.subspan(offset, static_cast<size_t>(obu_size));
+    offset += static_cast<size_t>(obu_size);
+
+    if (obu_type != kAv1ObuSequenceHeaderType) {
+      base::span<const uint8_t> raw_obu =
+          stream.subspan(obu_start, offset - obu_start);
+      output.insert(output.end(), raw_obu.begin(), raw_obu.end());
+      continue;
+    }
+
+    auto read_bit = [&](size_t bit_index) -> uint8_t {
+      return (payload[bit_index / 8] >> (7 - (bit_index % 8))) & 1;
+    };
+    auto read_bits = [&](size_t& bit_index, size_t count) -> uint32_t {
+      uint32_t value = 0;
+      for (size_t i = 0; i < count; ++i) {
+        value = (value << 1) | read_bit(bit_index++);
+      }
+      return value;
+    };
+
+    size_t bit_idx = 0;
+    read_bits(bit_idx, 3);                // seq_profile
+    read_bits(bit_idx, 1);                // still_picture
+    CHECK_EQ(read_bits(bit_idx, 1), 0u);  // reduced_still_picture_header
+    CHECK_EQ(read_bits(bit_idx, 1), 0u);  // timing_info_present_flag
+    CHECK_EQ(read_bits(bit_idx, 1), 0u);  // initial_display_delay_present_flag
+
+    const uint32_t operating_points_cnt_minus_1 = read_bits(bit_idx, 5);
+    for (uint32_t i = 0; i <= operating_points_cnt_minus_1; ++i) {
+      read_bits(bit_idx, 12);                          // operating_point_idc[i]
+      const uint32_t level_i = read_bits(bit_idx, 5);  // seq_level_idx[i]
+      if (level_i > 7) {
+        read_bits(bit_idx, 1);  // seq_tier[i]
+      }
+    }
+
+    size_t trailing_one_bit = payload.size() * 8;
+    while (trailing_one_bit > bit_idx) {
+      --trailing_one_bit;
+      if (read_bit(trailing_one_bit) == 1) {
+        break;
+      }
+    }
+    CHECK_EQ(read_bit(trailing_one_bit), 1u);
+
+    std::vector<uint8_t> new_payload;
+    size_t out_bit_idx = 0;
+    auto write_bit = [&](uint8_t bit) {
+      if (out_bit_idx % 8 == 0) {
+        new_payload.push_back(0);
+      }
+      new_payload.back() |= (bit & 1) << (7 - (out_bit_idx % 8));
+      ++out_bit_idx;
+    };
+    auto write_bits = [&](uint32_t value, size_t count) {
+      for (size_t i = 0; i < count; ++i) {
+        write_bit((value >> (count - 1 - i)) & 1);
+      }
+    };
+
+    for (size_t i = 0; i < 7; ++i) {
+      write_bit(read_bit(i));
+    }
+    write_bits(0, 5);  // operating_points_cnt_minus_1 = 0
+    write_bits(operating_point_idc, 12);
+    write_bits(seq_level_idx, 5);
+    if (seq_level_idx > 7) {
+      write_bits(0, 1);  // seq_tier[0] = 0
+    }
+    for (size_t i = bit_idx; i < trailing_one_bit; ++i) {
+      write_bit(read_bit(i));
+    }
+    write_bit(1);  // trailing 1 bit
+    while (out_bit_idx % 8 != 0) {
+      write_bit(0);
+    }
+
+    output.push_back(header_byte);
+    if (has_extension) {
+      output.push_back(extension_byte);
+    }
+    CHECK_LT(new_payload.size(), 128u);
+    output.push_back(static_cast<uint8_t>(new_payload.size()));
+    output.insert(output.end(), new_payload.begin(), new_payload.end());
+    rewrote_seq_header = true;
+  }
+  CHECK(rewrote_seq_header);
+  return DecoderBuffer::CopyFrom(output);
 }
 
 bool LookupTestKeyVector(const std::vector<uint8_t>& key_id,

@@ -201,6 +201,91 @@ TEST(ResolutionMonitorTestWithTruncatedH264, IncompleteSps) {
   EXPECT_EQ(resolution_monitor->GetResolution(*invalid_buffer), std::nullopt);
 }
 
+TEST(ResolutionMonitorTestAv1OperatingPoints, RtpWildcardSingleLayerAccepted) {
+  constexpr uint16_t kRtpWildcardOperatingPointIdc = 0b1111'1111'1111;
+  std::vector<scoped_refptr<media::DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L1T2.ivf");
+  ASSERT_FALSE(buffers.empty());
+  buffers[0] = media::RewriteAv1SequenceHeaderOperatingPoint(
+      *buffers[0], kRtpWildcardOperatingPointIdc, /*seq_level_idx=*/0);
+  buffers[0]->set_is_key_frame(true);
+
+  std::unique_ptr<ResolutionMonitor> resolution_monitor =
+      ResolutionMonitor::Create(media::VideoCodec::kAV1);
+  ASSERT_TRUE(resolution_monitor);
+  for (const scoped_refptr<media::DecoderBuffer>& buffer : buffers) {
+    EXPECT_EQ(resolution_monitor->GetResolution(*buffer), gfx::Size(640, 360));
+  }
+}
+
+TEST(ResolutionMonitorTestAv1OperatingPoints,
+     NonWildcardLevel20ExceedingMaxPicSizeRejected) {
+  constexpr uint16_t kL1T2OperatingPointIdc = 0b0001'0000'0011;
+  std::vector<scoped_refptr<media::DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L1T2.ivf");
+  ASSERT_FALSE(buffers.empty());
+  scoped_refptr<media::DecoderBuffer> buffer =
+      media::RewriteAv1SequenceHeaderOperatingPoint(
+          *buffers[0], kL1T2OperatingPointIdc, /*seq_level_idx=*/0);
+  buffer->set_is_key_frame(true);
+
+  std::unique_ptr<ResolutionMonitor> resolution_monitor =
+      ResolutionMonitor::Create(media::VideoCodec::kAV1);
+  ASSERT_TRUE(resolution_monitor);
+  EXPECT_EQ(resolution_monitor->GetResolution(*buffer), std::nullopt);
+}
+
+TEST(ResolutionMonitorTestAv1OperatingPoints,
+     RejectsExplicitSpatialLayerOperatingPoint) {
+  std::vector<scoped_refptr<media::DecoderBuffer>> svc_buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_FALSE(svc_buffers.empty());
+
+  std::unique_ptr<ResolutionMonitor> monitor =
+      ResolutionMonitor::Create(media::VideoCodec::kAV1);
+  EXPECT_EQ(monitor->GetResolution(*svc_buffers[0]), std::nullopt);
+}
+
+TEST(ResolutionMonitorTestAv1OperatingPoints,
+     RejectsSvcWithRtpWildcardOperatingPoint) {
+  constexpr uint16_t kRtpWildcardOperatingPointIdc = 0b1111'1111'1111;
+  std::vector<scoped_refptr<media::DecoderBuffer>> svc_buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_FALSE(svc_buffers.empty());
+
+  std::unique_ptr<ResolutionMonitor> monitor =
+      ResolutionMonitor::Create(media::VideoCodec::kAV1);
+  scoped_refptr<media::DecoderBuffer> buffer =
+      media::RewriteAv1SequenceHeaderOperatingPoint(
+          *svc_buffers[0], kRtpWildcardOperatingPointIdc, /*seq_level_idx=*/0);
+  EXPECT_EQ(monitor->GetResolution(*buffer), std::nullopt);
+}
+
+TEST(ResolutionMonitorTestAv1OperatingPoints,
+     RejectsSvcWithZeroOperatingPointIdc) {
+  std::vector<scoped_refptr<media::DecoderBuffer>> svc_buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_FALSE(svc_buffers.empty());
+
+  std::unique_ptr<ResolutionMonitor> monitor =
+      ResolutionMonitor::Create(media::VideoCodec::kAV1);
+  scoped_refptr<media::DecoderBuffer> buffer =
+      media::RewriteAv1SequenceHeaderOperatingPoint(
+          *svc_buffers[0], /*operating_point_idc=*/0, /*seq_level_idx=*/8);
+  EXPECT_EQ(monitor->GetResolution(*buffer), std::nullopt);
+}
+
+TEST(ResolutionMonitorTestAv1OperatingPoints,
+     RejectsMultipleSpatialLayersInSideData) {
+  std::unique_ptr<ResolutionMonitor> monitor =
+      ResolutionMonitor::Create(media::VideoCodec::kAV1);
+  scoped_refptr<media::DecoderBuffer> buffer =
+      media::ReadTestDataFile("av1-I-frame-320x240");
+  ASSERT_TRUE(buffer);
+  buffer->WritableSideData().spatial_layers = {1, 2};
+  EXPECT_EQ(monitor->GetResolution(*buffer), std::nullopt);
+}
+
 }  // namespace
 
 }  // namespace blink

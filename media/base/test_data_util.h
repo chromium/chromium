@@ -5,6 +5,8 @@
 #ifndef MEDIA_BASE_TEST_DATA_UTIL_H_
 #define MEDIA_BASE_TEST_DATA_UTIL_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -52,6 +54,14 @@ scoped_refptr<DecoderBuffer> ReadTestDataFile(std::string_view name);
 // timestamp on it.
 scoped_refptr<DecoderBuffer> ReadTestDataFile(std::string_view name,
                                               base::TimeDelta pts);
+
+// Rewrites the Sequence Header OBU in `buffer` so that it has a single
+// operating point (`operating_points_cnt_minus_1 = 0`) with the specified
+// `operating_point_idc` and `seq_level_idx`.
+scoped_refptr<DecoderBuffer> RewriteAv1SequenceHeaderOperatingPoint(
+    const DecoderBuffer& buffer,
+    uint16_t operating_point_idc,
+    uint8_t seq_level_idx);
 
 // If the provided |key_id| is that of a test key, returns true and fills the
 // |key|, otherwise returns false. If |allowRotation| is true, then other valid

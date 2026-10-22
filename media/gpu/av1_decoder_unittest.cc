@@ -517,6 +517,110 @@ TEST_F(AV1DecoderTest, DecodeSVCStream) {
   EXPECT_EQ(Decode(buffers[1]), expected);
 }
 
+// Verifies that single-spatial-layer streams whose sequence header uses the
+// AV1 RTP payload specification wildcard (operating_points_cnt_minus_1 = 0,
+// operating_point_idc[0] = 0xfff, seq_level_idx[0] = 0) are accepted and
+// decoded even when the frame resolution exceeds Level 2.0 (147,456 pixels).
+TEST_F(AV1DecoderTest, DecodeRtpWildcardOperatingPointSingleLayerStream) {
+  constexpr gfx::Size kFrameSize(640, 360);
+  constexpr gfx::Size kRenderSize(640, 360);
+  constexpr libgav1::BitstreamProfile kProfile =
+      libgav1::BitstreamProfile::kProfile0;
+  constexpr uint16_t kRtpWildcardOperatingPointIdc = 0b1111'1111'1111;
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L1T2.ivf");
+  ASSERT_FALSE(buffers.empty());
+  buffers[0] = RewriteAv1SequenceHeaderOperatingPoint(
+      *buffers[0], kRtpWildcardOperatingPointIdc, /*seq_level_idx=*/0);
+
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange};
+  std::vector<DecodeResult> results;
+  for (const scoped_refptr<DecoderBuffer>& buffer : buffers) {
+    ::testing::InSequence sequence;
+    auto av1_picture = base::MakeRefCounted<AV1Picture>();
+    EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(/*apply_grain=*/false))
+        .WillOnce(Return(av1_picture));
+    EXPECT_CALL(
+        *mock_accelerator_,
+        SubmitDecode(
+            MatchesFrameHeader(kFrameSize, kRenderSize,
+                               /*show_existing_frame=*/false,
+                               /*show_frame=*/true),
+            MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/8, kFrameSize,
+                                        /*film_grain_params_present=*/false),
+            _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
+        .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
+    EXPECT_CALL(*mock_accelerator_,
+                OutputPicture(SameAV1PictureInstance(av1_picture)))
+        .WillOnce(Return(true));
+    for (DecodeResult r : Decode(buffer)) {
+      results.push_back(r);
+    }
+    expected.push_back(DecodeResult::kRanOutOfStreamData);
+    testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+  }
+  EXPECT_EQ(results, expected);
+}
+
+TEST_F(AV1DecoderTest, DecodeNonWildcardLevel20ExceedingMaxPicSizeFails) {
+  constexpr uint16_t kL1T2OperatingPointIdc = 0b0001'0000'0011;
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L1T2.ivf");
+  ASSERT_FALSE(buffers.empty());
+  // operating_point_idc[0] = 0b0001'0000'0011 (non-wildcard) with
+  // seq_level_idx[0] = 0 (Level 2.0, max_pic_size = 147,456) must still fail
+  // level conformance for a 640x360 (230,400 pixels) frame.
+  buffers[0] = RewriteAv1SequenceHeaderOperatingPoint(
+      *buffers[0], kL1T2OperatingPointIdc, /*seq_level_idx=*/0);
+  std::vector<DecodeResult> expected = {DecodeResult::kDecodeError};
+  EXPECT_EQ(Decode(buffers[0]), expected);
+}
+
+TEST_F(AV1DecoderTest, DecodeSVCStreamWithRtpWildcardOperatingPoint) {
+  constexpr uint16_t kRtpWildcardOperatingPointIdc = 0b1111'1111'1111;
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_FALSE(buffers.empty());
+  buffers[0] = RewriteAv1SequenceHeaderOperatingPoint(
+      *buffers[0], kRtpWildcardOperatingPointIdc, /*seq_level_idx=*/0);
+  EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(_))
+      .WillOnce(Return(base::MakeRefCounted<FakeAV1Picture>()));
+  EXPECT_CALL(*mock_accelerator_, SubmitDecode(_, _, _, _, _))
+      .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
+  EXPECT_CALL(*mock_accelerator_, OutputPicture(_)).WillOnce(Return(true));
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange,
+                                        DecodeResult::kDecodeError};
+  EXPECT_EQ(Decode(buffers[0]), expected);
+}
+
+TEST_F(AV1DecoderTest, DecodeSVCStreamWithZeroOperatingPointIdc) {
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_FALSE(buffers.empty());
+  buffers[0] = RewriteAv1SequenceHeaderOperatingPoint(
+      *buffers[0], /*operating_point_idc=*/0, /*seq_level_idx=*/8);
+  EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(_))
+      .WillOnce(Return(base::MakeRefCounted<FakeAV1Picture>()));
+  EXPECT_CALL(*mock_accelerator_, SubmitDecode(_, _, _, _, _))
+      .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
+  EXPECT_CALL(*mock_accelerator_, OutputPicture(_)).WillOnce(Return(true));
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange,
+                                        DecodeResult::kDecodeError};
+  EXPECT_EQ(Decode(buffers[0]), expected);
+}
+
+TEST_F(AV1DecoderTest, DecodeStreamWithSpatialLayersSideData) {
+  scoped_refptr<DecoderBuffer> i_frame_buffer =
+      ReadDecoderBuffer("av1-I-frame-320x240");
+  ASSERT_TRUE(!!i_frame_buffer);
+  i_frame_buffer->WritableSideData().spatial_layers = {1, 2};
+  EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(_)).Times(0);
+  EXPECT_CALL(*mock_accelerator_, SubmitDecode(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_accelerator_, OutputPicture(_)).Times(0);
+  std::vector<DecodeResult> expected = {DecodeResult::kDecodeError};
+  EXPECT_EQ(Decode(i_frame_buffer), expected);
+}
+
 TEST_F(AV1DecoderTest, Decode8bProfile1) {
   const std::string kYUV444Stream("bear_av1_720p_444_8bit.ivf");
   std::vector<scoped_refptr<DecoderBuffer>> buffers = ReadIVF(kYUV444Stream);
