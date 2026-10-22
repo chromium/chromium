@@ -5,32 +5,23 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
-#include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
-#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
-#include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -40,62 +31,25 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "content/public/test/test_utils.h"
-#include "google_apis/gaia/core_account_id.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/interaction/interactive_views_test.h"
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
-#endif
+#include "url/gurl.h"
 
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kEmailConfirmationCompleted);
-
-// Synchronously waits for the Sync confirmation to be closed.
-class SyncConfirmationClosedObserver : public LoginUIService::Observer {
- public:
-  explicit SyncConfirmationClosedObserver(BrowserWindowInterface* browser)
-      : browser_(browser) {
-    CHECK(browser_, base::NotFatalUntil::M162);
-    login_ui_service_observation_.Observe(
-        LoginUIServiceFactory::GetForProfile(browser_->GetProfile()));
-  }
-
-  LoginUIService::SyncConfirmationUIClosedResult WaitForConfirmationClosed() {
-    run_loop_.Run();
-    return *result_;
-  }
-
- private:
-  // LoginUIService::Observer:
-  void OnSyncConfirmationUIClosed(
-      LoginUIService::SyncConfirmationUIClosedResult result) override {
-    login_ui_service_observation_.Reset();
-    result_ = result;
-    SigninViewController::From(browser_)->CloseModalSignin();
-    run_loop_.Quit();
-  }
-
-  const raw_ptr<BrowserWindowInterface> browser_;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
-      login_ui_service_observation_{this};
-  std::optional<LoginUIService::SyncConfirmationUIClosedResult> result_;
-};
 
 }  // namespace
 
@@ -108,10 +62,6 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
     // test.
     ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
         browser()->GetWindow()->GetNativeWindow()));
-  }
-
-  signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   }
 };
 
