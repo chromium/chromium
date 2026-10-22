@@ -27,7 +27,7 @@ declare_args() {
   # (chrome_public_apk, trichrome_chrome_bundle, etc. as well as the
   # *_bundle variants). This defaults to the Chromium browser package name.
   chrome_public_manifest_package = "org.chromium.chrome"
-  if (use_stable_package_name_for_trichrome) {
+  if (use_stable_package_name) {
     chrome_public_manifest_package += ".stable"
   } else if (android_channel != "default") {
     chrome_public_manifest_package += "." + android_channel
