@@ -388,7 +388,7 @@ bool ValidateAndSetPolicyValue(std::string_view policy_name,
       case policy::test::StringPolicyType::JSON: {
         // JSON values are converted to JSON, then encoded the same as
         // strings.
-        if (!value.is_dict()) {
+        if (!value.is_dict() && !value.is_list()) {
           LOG(WARNING) << "Failed to set policy " << policy_name
                        << " with type " << value.type();
           return false;
@@ -397,6 +397,7 @@ bool ValidateAndSetPolicyValue(std::string_view policy_name,
         CHECK(base::JSONWriter::Write(value, &json));
         auto* proto = access.get_proto_mutable(policy_settings);
         CHECK(proto);
+        proto->mutable_policy_options()->set_mode(em::PolicyOptions::MANDATORY);
         proto->set_value(json);
         return true;
       }

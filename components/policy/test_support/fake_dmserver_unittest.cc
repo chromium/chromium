@@ -1211,7 +1211,13 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithJsonFormatSucceeds) {
         ]
       },
       "user": {
-        "HomepageLocation": "http://example.com"
+        "HomepageLocation": "http://example.com",
+        "ManagedBookmarks": [
+          {
+            "name": "Google",
+            "url": "google.com"
+          }
+        ]
       }
     }
   )"));
@@ -1283,6 +1289,11 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithJsonFormatSucceeds) {
     ASSERT_TRUE(settings.ParseFromString(policy_data.policy_value()));
     EXPECT_TRUE(settings.has_homepagelocation());
     EXPECT_EQ(settings.homepagelocation().value(), "http://example.com");
+    EXPECT_TRUE(settings.has_managedbookmarks());
+    EXPECT_EQ(settings.managedbookmarks().value(),
+              R"([{"name":"Google","url":"google.com"}])");
+    EXPECT_EQ(settings.managedbookmarks().policy_options().mode(),
+              em::PolicyOptions::MANDATORY);
   }
 }
 
