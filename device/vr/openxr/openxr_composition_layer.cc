@@ -13,10 +13,11 @@
 
 namespace device {
 
-// Timeout for waiting for a swapchain image. 50ms is chosen to be long enough
-// to avoid false positives on slow frames, but short enough to avoid ANR.
+// Timeout for waiting for a swapchain image. 1000ms is chosen to be long enough
+// to avoid false positives on heavy GPU frames, but well below Android's 5s ANR
+// timeout.
 constexpr XrDuration kSwapchainWaitTimeout =
-    base::Milliseconds(50).InNanoseconds();
+    base::Milliseconds(1000).InNanoseconds();
 
 // static
 OpenXrCompositionLayer::Type OpenXrCompositionLayer::GetTypeFromMojomData(
