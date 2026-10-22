@@ -3926,7 +3926,7 @@ void MenuController::UpdateActiveMouseView(SubmenuView* event_source,
       target =
           ShouldDragActivateButton(event_source, button) ? button : nullptr;
     }
-    if (target == target_menu || !target->GetEnabled()) {
+    if (!target || target == target_menu || !target->GetEnabled()) {
       target = nullptr;
     }
   }

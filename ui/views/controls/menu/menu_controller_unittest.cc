@@ -4730,4 +4730,47 @@ TEST_F(MenuControllerTest, DragBetweenButtonsDefaultDoesNotActivate) {
   EXPECT_EQ(0, button2_clicks);
 }
 
+TEST_F(MenuControllerTest, DragFromMenuItemToButtonDefaultDoesNotActivate) {
+  MenuController::TurnOffMenuSelectionHoldForTest();
+  CreateMenu();
+  menu_delegate()->set_should_execute_command_without_closing_menu(true);
+  // Default is ShouldDragActivateChildButtons() == false.
+  ASSERT_FALSE(menu_delegate()->ShouldDragActivateChildButtons());
+  AddButtonMenuItems(/*single_child=*/false);
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  const View* const buttons_view = submenu->children()[4];
+  ASSERT_NE(nullptr, buttons_view);
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+  MenuItemView* const item1 = submenu->GetMenuItemAt(0);
+
+  int button1_clicks = 0;
+  button1->SetCallback(base::BindRepeating([](int* count) { ++(*count); },
+                                           base::Unretained(&button1_clicks)));
+
+  const gfx::Point loc_item1 = item1->bounds().CenterPoint();
+  const gfx::Point loc1 = View::ConvertPointToTarget(
+      button1, submenu, button1->GetLocalBounds().CenterPoint());
+
+  // Drag from item1 to button1 and release: button1 is NOT activated when
+  // ShouldDragActivateChildButtons is false, and this must not crash.
+  ProcessMousePressed(
+      submenu,
+      ui::MouseEvent(ui::EventType::kMousePressed, loc_item1, loc_item1,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_EQ(item1, pending_state_item());
+
+  ProcessMouseDragged(
+      submenu, ui::MouseEvent(ui::EventType::kMouseDragged, loc1, loc1,
+                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                              ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_EQ(nullptr, hot_button());
+
+  ProcessMouseReleased(
+      submenu, ui::MouseEvent(ui::EventType::kMouseReleased, loc1, loc1,
+                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                              ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_EQ(0, button1_clicks);
+}
+
 }  // namespace views
