@@ -220,6 +220,15 @@ TEST_F(CastMediaRouteProviderTest, StartObservingMediaSinks) {
   EXPECT_TRUE(app_discovery_service_.callbacks().empty());
 }
 
+TEST_F(CastMediaRouteProviderTest, DestroyWithActiveSinkQueries) {
+  EXPECT_CALL(app_discovery_service_, DoStartObservingMediaSinks(_));
+  provider_->StartObservingMediaSinks(kCastSource);
+  EXPECT_FALSE(app_discovery_service_.callbacks().empty());
+
+  provider_.reset();
+  EXPECT_TRUE(app_discovery_service_.callbacks().empty());
+}
+
 TEST_F(CastMediaRouteProviderTest, PresentationApiMirroringOriginAllowlist) {
   struct Case {
     const char* name;

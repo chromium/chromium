@@ -469,6 +469,20 @@ TEST_F(DialMediaRouteProviderTest, AddRemoveSinkQuery) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(DialMediaRouteProviderTest, DestroyWithActiveSinkQueries) {
+  std::string youtube_source("cast-dial:YouTube");
+  EXPECT_CALL(mock_sink_service_,
+              DoStartMonitoringAvailableSinksForApp("YouTube"));
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
+                                            youtube_source, IsEmpty(), _));
+  provider_->StartObservingMediaSinks(youtube_source);
+  task_environment_.RunUntilIdle();
+
+  provider_.reset();
+  mock_sink_service_.NotifyAvailableSinks("YouTube");
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(DialMediaRouteProviderTest, AddSinkQueryCaseInsensitive) {
   std::string youtube_source_lower("cast-dial:youtube");
   std::vector<url::Origin> youtube_origins = {
