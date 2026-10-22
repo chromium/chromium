@@ -52,3 +52,7 @@
 
 # TODO(crbug.com/40799125): Flaky.
 -PageLoadMetricsBrowserTest.SoftNavigation
+
+# TODO(crbug.com/576504456): Crashes with xdg_surface geometry protocol error.
+-BrowserTest.StartMaximized
+
