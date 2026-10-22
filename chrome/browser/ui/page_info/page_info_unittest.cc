@@ -749,39 +749,8 @@ class PageInfoRelatedWebsiteSetsTest : public PageInfoTest {
   }
 };
 
-TEST_F(PageInfoRelatedWebsiteSetsTest, ShowAutograntedRWSPermissions) {
-  std::set<ContentSettingsType> expected_visible_permissions;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
-  SetURL("https://firstparty.com");
-  constexpr char kToplevelURL[] = "https://firstparty.com";
-  constexpr char kEmbeddedURL[] = "https://embedded.com";
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  content_settings::ContentSettingConstraints constraint;
-  constraint.set_session_model(content_settings::mojom::SessionModel::DURABLE);
-  constraint.set_decided_by_related_website_sets(true);
-  map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
-                                     ContentSettingsType::STORAGE_ACCESS,
-                                     CONTENT_SETTING_BLOCK, constraint);
-  page_info()->PresentSitePermissionsForTesting();
-  expected_visible_permissions.insert(ContentSettingsType::STORAGE_ACCESS);
-#if BUILDFLAG(IS_ANDROID)
-  // Geolocation is always allowed to pass through to Android-specific logic to
-  // check for DSE settings (so expect 1 item), but isn't actually shown later
-  // on because this test isn't testing with a default search engine origin.
-  expected_visible_permissions.insert(
-      content_settings::GeolocationContentSettingsType());
-#endif
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-}
-
 TEST_F(PageInfoRelatedWebsiteSetsTest, HideAutograntedRWSPermissions) {
   std::set<ContentSettingsType> expected_visible_permissions;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
   SetURL("https://firstparty.com");
   constexpr char kToplevelURL[] = "https://firstparty.com";
   constexpr char kEmbeddedURL[] = "https://embedded.com";

@@ -932,40 +932,8 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   }
 }
 
-TEST_F(SiteSettingsHelperTest, ShowAutograntedRWSPermissions) {
-  TestingProfile profile;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(&profile);
-  content_settings::ContentSettingConstraints constraint;
-  constraint.set_session_model(content_settings::mojom::SessionModel::DURABLE);
-  constraint.set_decided_by_related_website_sets(true);
-  constexpr char kToplevelURL[] = "https://firstparty.com";
-  constexpr char kEmbeddedURL[] = "https://embedded.com";
-  map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
-                                     ContentSettingsType::STORAGE_ACCESS,
-                                     CONTENT_SETTING_BLOCK, constraint);
-
-  base::ListValue exceptions;
-  site_settings::GetExceptionsForContentType(
-      ContentSettingsType::STORAGE_ACCESS, &profile,
-      /*web_ui=*/nullptr,
-      /*incognito=*/false, &exceptions);
-  EXPECT_EQ(1U, exceptions.size());
-  EXPECT_EQ(exceptions[0].GetDict().Find("setting")->GetString(), "block");
-  EXPECT_EQ(exceptions[0].GetDict().Find("origin")->GetString(),
-            "https://[*.]embedded.com");
-  EXPECT_EQ(exceptions[0].GetDict().Find("embeddingOrigin")->GetString(),
-            "https://[*.]firstparty.com");
-}
-
 TEST_F(SiteSettingsHelperTest, HideAutograntedRWSPermissions) {
   TestingProfile profile;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
   content_settings::ContentSettingConstraints constraint;

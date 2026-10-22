@@ -4250,13 +4250,6 @@ inline constexpr char kReportNotificationContentDetectionDataDescription[] =
     "Enables reporting a notification's contents to Google, when the user taps "
     "the `Report` button on the notification.";
 
-inline constexpr char kShowRelatedWebsiteSetsPermissionGrantsName[] =
-    "Show permission grants from Related Website Sets";
-inline constexpr char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =
-    "Shows permission grants created by Related Website Sets in Chrome "
-    "Settings UI and Page Info Bubble, "
-    "default is hidden";
-
 inline constexpr char kSearchSettingsUpdateName[] = "Search Settings Update";
 inline constexpr char kSearchSettingsUpdateDescription[] =
     "Enables refactoring of the search settings pages in "

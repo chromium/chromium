@@ -87,12 +87,6 @@ BASE_FEATURE(kRecordChooserPermissionLastVisitedTimestamps,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// When enabled, blocks condition to exclude auto granted permissions for
-// storage access exceptions. This will allow RWS permission grants to be
-// visible in the Embedded content settings page.
-BASE_FEATURE(kShowRelatedWebsiteSetsPermissionGrants,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCpssUseTfliteSignatureRunner, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicActorPermissionsAutoReject, base::FEATURE_ENABLED_BY_DEFAULT);
