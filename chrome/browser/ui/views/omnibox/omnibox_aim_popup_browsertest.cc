@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -1333,6 +1337,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationLateEligibilityBrowserTest,
 // presentation, to test the paths that create it before the post-paint task.
 class OmniboxAimPopupDeferCreationPendingBrowserTest
     : public OmniboxAimPopupDeferCreationBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    OmniboxAimPopupDeferCreationBrowserTest::SetUpOnMainThread();
+    // No permission prompt shows here. `browser_tests` runs multiple browser
+    // processes at once, so another test window can take OS activation while
+    // the AIM page loads. Marking a prompt as showing keeps the popup open
+    // through that deactivation, as it does for a real prompt.
+    location_bar()->GetOmniboxPopupAimPresenter()->SetPermissionPromptShowing(
+        true);
+  }
+
  private:
   base::AutoReset<bool> ignore_presentation_ =
       OmniboxPopupPresenterBase::IgnoreBrowserWindowPresentationForTesting();
@@ -1383,4 +1398,52 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationPendingBrowserTest,
   auto* menu_controller = views::MenuController::GetActiveInstance();
   ASSERT_TRUE(menu_controller);
   menu_controller->Cancel(views::MenuController::ExitType::kAll);
+}
+
+namespace {
+
+// Returns a script that evaluates `expression` against the AIM page's
+// composebox element `box`, or returns `fallback` before the page renders it.
+std::string ComposeboxScript(std::string_view expression,
+                             std::string_view fallback) {
+  return base::StrCat(
+      {"(() => {"
+       "  const app = document.querySelector('omnibox-aim-app');"
+       "  const box = app && app.shadowRoot &&"
+       "              app.shadowRoot.querySelector('cr-omnibox-composebox');"
+       "  return box ? (",
+       expression, ") : ", fallback,
+       ";"
+       "})()"});
+}
+
+}  // namespace
+
+// The show that creates the AIM content runs before the page binds its
+// handler. The page still receives the omnibox text of that show.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationPendingBrowserTest,
+                       FirstShowTransfersOmniboxText) {
+  ASSERT_FALSE(
+      location_bar()->GetOmniboxPopupAimPresenter()->GetWebUIContent());
+  location_bar()->GetOmniboxView()->SetUserText(u"hello world",
+                                                /*update_popup=*/false);
+
+  auto* content = ShowPopupAndGetWebUIContent();
+  ASSERT_TRUE(content);
+  content::WebContents* aim_contents = content->GetWrappedWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(aim_contents));
+
+  const std::string script = ComposeboxScript("box.input", "''");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(aim_contents, script).ExtractString() ==
+           "hello world";
+  })) << "input: "
+      << content::EvalJs(aim_contents, script).ExtractString()
+      << ", popup state: "
+      << static_cast<int>(location_bar()
+                              ->GetOmniboxController()
+                              ->popup_state_manager()
+                              ->popup_state())
+      << ", presenter shown: "
+      << location_bar()->GetOmniboxPopupAimPresenter()->IsShown();
 }

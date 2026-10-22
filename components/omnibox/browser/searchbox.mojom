@@ -253,6 +253,8 @@ struct SearchContext {
   array<SearchContextAttachment> attachments;
   // The mode of the search query.
   composebox_query.mojom.ToolMode tool_mode;
+  // The AIM model of the search query.
+  composebox_query.mojom.ModelMode model_mode;
 };
 
 // Stages of the Omnibox Everywhere First Run Experience (FRE).

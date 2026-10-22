@@ -37,10 +37,9 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
 
   ~OmniboxPopupAimHandler() override;
 
-  void set_embedder(
-      base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
-    embedder_ = embedder;
-  }
+  // Sets the embedder. If the popup was shown before the page created this
+  // handler, also sends that show to the page.
+  void set_embedder(base::WeakPtr<TopChromeWebUIController::Embedder> embedder);
 
   // omnibox_popup_aim::mojom::PageHandler:
   // Forwards a close event from the page to the browser with the current input.

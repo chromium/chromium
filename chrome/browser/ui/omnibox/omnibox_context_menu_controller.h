@@ -314,6 +314,12 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void OpenAiMode(
       OmniboxEditModel::AimActivation activation,
       omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state);
+  // Selects `tool_mode` or `model_mode` in the searchbox handler and records
+  // the selection. Without a handler, which happens before the AI Mode page
+  // loads, adds the selection to the pending searchbox context, which the
+  // page receives and applies when it is shown.
+  void SetActiveToolMode(omnibox::ToolMode tool_mode);
+  void SetActiveModelMode(omnibox::ModelMode model_mode);
   virtual OmniboxPopupUI* GetOmniboxPopupUI() const;
   virtual bool IsLoomnibox() const;
   virtual ContextualSearchboxHandler* GetContextualSearchboxHandler() const;

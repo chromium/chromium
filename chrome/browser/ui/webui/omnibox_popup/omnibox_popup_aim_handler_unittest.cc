@@ -17,6 +17,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/geometry/point.h"
@@ -120,6 +121,21 @@ TEST_F(OmniboxPopupAimHandlerTest, OnPopupShown) {
       .WillOnce([&](searchbox::mojom::SearchContextPtr context_ptr) {
         EXPECT_EQ("test query", context_ptr->input);
         EXPECT_EQ(omnibox::TOOL_MODE_UNSPECIFIED, context_ptr->tool_mode);
+      });
+
+  handler_->OnPopupShown(std::move(context));
+}
+
+// The tool and model of the context reach the page, which applies them.
+TEST_F(OmniboxPopupAimHandlerTest, OnPopupShownSendsToolAndModel) {
+  auto context = std::make_unique<SearchboxContextData::Context>();
+  context->mode = omnibox::TOOL_MODE_DEEP_SEARCH;
+  context->model = omnibox::MODEL_MODE_GEMINI_PRO;
+
+  EXPECT_CALL(page_, OnPopupShown(testing::_))
+      .WillOnce([&](searchbox::mojom::SearchContextPtr context_ptr) {
+        EXPECT_EQ(omnibox::TOOL_MODE_DEEP_SEARCH, context_ptr->tool_mode);
+        EXPECT_EQ(omnibox::MODEL_MODE_GEMINI_PRO, context_ptr->model_mode);
       });
 
   handler_->OnPopupShown(std::move(context));

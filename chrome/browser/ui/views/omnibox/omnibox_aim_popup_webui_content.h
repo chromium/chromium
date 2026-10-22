@@ -67,6 +67,10 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // active.
   void UpdateLocationBarFocusForScreenReader();
 
+  // If the popup is shown, sends the current show to `handler`, with the
+  // pending searchbox context.
+  void SendShow(OmniboxPopupAimHandler& handler);
+
  protected:
   std::string_view GetMetricPrefix() const override;
 

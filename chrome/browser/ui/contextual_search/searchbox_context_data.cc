@@ -35,3 +35,12 @@ SearchboxContextData::TakePendingContext() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::move(pending_context_);
 }
+
+SearchboxContextData::Context&
+SearchboxContextData::GetOrCreatePendingContext() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pending_context_) {
+    pending_context_ = std::make_unique<Context>();
+  }
+  return *pending_context_;
+}

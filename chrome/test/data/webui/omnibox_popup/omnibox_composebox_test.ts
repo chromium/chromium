@@ -10,7 +10,7 @@ import {ComposeboxProxyImpl} from 'chrome://omnibox-popup.top-chrome/omnibox_pop
 import {ComposeboxFile, SingleTabType} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
-import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
@@ -303,6 +303,44 @@ suite('OmniboxComposeboxTest', () => {
     assertFalse(!!toolChip);
   });
 
+  test(
+      'addSearchContext applies the tool and model of the context',
+      async () => {
+        omniboxComposebox.addSearchContext({
+          input: '',
+          attachments: [],
+          toolMode: ToolMode.kDeepSearch,
+          modelMode: ModelMode.kGeminiPro,
+        });
+
+        const recordedTool =
+            await testProxy.handler.whenCalled('recordToolSelectionAction');
+        assertEquals(ToolMode.kDeepSearch, recordedTool);
+        const [activeTool, toolSetByAim] =
+            await testProxy.handler.whenCalled('setActiveToolMode');
+        assertEquals(ToolMode.kDeepSearch, activeTool);
+        assertFalse(toolSetByAim);
+        const recordedModel =
+            await testProxy.handler.whenCalled('recordModelSelectionAction');
+        assertEquals(ModelMode.kGeminiPro, recordedModel);
+        const [activeModel, modelSetByAim] =
+            await testProxy.handler.whenCalled('setActiveModelMode');
+        assertEquals(ModelMode.kGeminiPro, activeModel);
+        assertFalse(modelSetByAim);
+      });
+
+  test('addSearchContext leaves the tool and model unset by default', () => {
+    omniboxComposebox.addSearchContext({
+      input: 'query',
+      attachments: [],
+      toolMode: ToolMode.kUnspecified,
+      modelMode: ModelMode.kUnspecified,
+    });
+
+    assertEquals(0, testProxy.handler.getCallCount('setActiveToolMode'));
+    assertEquals(0, testProxy.handler.getCallCount('setActiveModelMode'));
+  });
+
   test('Add File Attachment (Unimodal) via addSearchContext', async () => {
     const mockToken = 'mock-file-token';
     const context = {
@@ -319,6 +357,7 @@ suite('OmniboxComposeboxTest', () => {
         },
       }],
       toolMode: 0,
+      modelMode: 0,
     };
     // Mock queryAutocomplete on element to verify clearMatches=true.
     let clearMatchesPassed = false;
@@ -358,6 +397,7 @@ suite('OmniboxComposeboxTest', () => {
         },
       }],
       toolMode: 0,
+      modelMode: 0,
     };
 
     omniboxComposebox.addSearchContext(context as unknown as SearchContext);
@@ -403,6 +443,7 @@ suite('OmniboxComposeboxTest', () => {
             },
           }],
           toolMode: 0,
+          modelMode: 0,
         });
         await microtasksFinished();
         await testProxy.handler.whenCalled('addTabContext');
@@ -429,6 +470,7 @@ suite('OmniboxComposeboxTest', () => {
             },
           }],
           toolMode: 0,
+          modelMode: 0,
         });
         await microtasksFinished();
         await testProxy.handler.whenCalled('addTabContext');
@@ -452,6 +494,7 @@ suite('OmniboxComposeboxTest', () => {
       files: [],
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     };
     omniboxComposebox.addSearchContext(context);
     await microtasksFinished();
@@ -485,6 +528,7 @@ suite('OmniboxComposeboxTest', () => {
             },
           }],
           toolMode: 0,
+          modelMode: 0,
         };
 
         omniboxComposebox.addSearchContext(context as unknown as SearchContext);
@@ -516,6 +560,7 @@ suite('OmniboxComposeboxTest', () => {
             },
           }],
           toolMode: 0,
+          modelMode: 0,
         };
 
         omniboxComposebox.addSearchContext(context as unknown as SearchContext);
@@ -544,6 +589,7 @@ suite('OmniboxComposeboxTest', () => {
             },
           }],
           toolMode: 0,
+          modelMode: 0,
         };
         omniboxComposebox.addSearchContext(context as unknown as SearchContext);
         await microtasksFinished();
@@ -584,6 +630,7 @@ suite('OmniboxComposeboxTest', () => {
             },
           }],
           toolMode: 0,
+          modelMode: 0,
         };
         omniboxComposebox.addSearchContext(context as unknown as SearchContext);
         await microtasksFinished();
@@ -624,6 +671,7 @@ suite('OmniboxComposeboxTest', () => {
             },
           }],
           toolMode: 0,
+          modelMode: 0,
         };
 
         omniboxComposebox.addSearchContext(context as unknown as SearchContext);
@@ -758,6 +806,7 @@ suite('OmniboxComposeboxTest', () => {
         },
       }],
       toolMode: 0,
+      modelMode: 0,
     };
 
     omniboxComposebox.addSearchContext(context);
@@ -788,6 +837,7 @@ suite('OmniboxComposeboxTest', () => {
             },
           }],
           toolMode: 0,
+          modelMode: 0,
         };
 
         omniboxComposebox.i18n = (key: string) => {
@@ -2313,6 +2363,7 @@ suite('OmniboxComposeboxTest', () => {
           },
         }],
         toolMode: 0,
+        modelMode: 0,
       };
 
       omniboxComposebox.addSearchContext(context as unknown as SearchContext);
@@ -2866,6 +2917,7 @@ suite('OmniboxComposeboxTest', () => {
           },
         }],
         toolMode: 0,
+        modelMode: 0,
       };
 
       omniboxComposebox.addSearchContext(context as unknown as SearchContext);
@@ -2891,6 +2943,7 @@ suite('OmniboxComposeboxTest', () => {
           },
         }],
         toolMode: 0,
+        modelMode: 0,
       };
 
       omniboxComposebox.addSearchContext(context as unknown as SearchContext);
@@ -2916,6 +2969,7 @@ suite('OmniboxComposeboxTest', () => {
           },
         }],
         toolMode: 0,
+        modelMode: 0,
       };
 
       omniboxComposebox.addSearchContext(context as unknown as SearchContext);
@@ -2946,6 +3000,7 @@ suite('OmniboxComposeboxTest', () => {
           },
         }],
         toolMode: 0,
+        modelMode: 0,
       };
 
       omniboxComposebox.addSearchContext(context as unknown as SearchContext);
@@ -3047,6 +3102,7 @@ suite('OmniboxComposeboxTest', () => {
           },
         }],
         toolMode: 0,
+        modelMode: 0,
       };
       omniboxComposebox.addSearchContext(context as unknown as SearchContext);
       await microtasksFinished();

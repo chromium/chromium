@@ -24,6 +24,7 @@ searchbox::mojom::SearchContextPtr ToSearchContext(
   search_context->input = context->text;
   search_context->attachments = std::move(context->file_infos);
   search_context->tool_mode = context->mode;
+  search_context->model_mode = context->model;
   return search_context;
 }
 
@@ -38,6 +39,14 @@ OmniboxPopupAimHandler::OmniboxPopupAimHandler(
       web_contents_(web_contents) {}
 
 OmniboxPopupAimHandler::~OmniboxPopupAimHandler() = default;
+
+void OmniboxPopupAimHandler::set_embedder(
+    base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
+  embedder_ = embedder;
+  if (auto* aim_popup_content = GetAimPopupContent()) {
+    aim_popup_content->SendShow(*this);
+  }
+}
 
 void OmniboxPopupAimHandler::RequestClose(const std::string& input) {
   cached_draft_text_ = input;
