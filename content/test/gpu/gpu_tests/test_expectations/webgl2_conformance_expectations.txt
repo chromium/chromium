@@ -847,7 +847,10 @@ crbug.com/446941342 [ android android-pixel-10 passthrough ] WebglExtension_WEBG
 crbug.com/446941342 [ android android-pixel-10 imagination-technologies ] WebglExtension_WEBGL_compressed_texture_s3tc [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 imagination-technologies ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Failure ]
 # misc
+crbug.com/576731809 [ android android-pixel-10 angle-opengles passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 imagination-technologies ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
+crbug.com/576731809 [ android android-pixel-10 angle-opengles passthrough ] conformance2/extensions/ext-color-buffer-float.html [ Failure ]
+crbug.com/576731809 [ android android-pixel-10 angle-opengles passthrough ] conformance2/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/extensions/oes-sample-variables.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/extensions/webgl-blend-func-extended.html [ Failure ]
@@ -861,6 +864,7 @@ crbug.com/40167875 [ android android-pixel-10 ] conformance2/reading/read-pixels
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/rendering/read-draw-when-missing-image.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/compressed-tex-image.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/copy-texture-image-same-texture.html [ Failure ]
+crbug.com/576731809 [ android android-pixel-10 angle-opengles passthrough ] conformance2/textures/misc/copy-texture-image.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/568282113 [ android android-pixel-10 ] conformance2/textures/misc/texel-fetch-undefined.html [ Failure ]
 crbug.com/551573368 [ android android-pixel-10 ] deqp/functional/gles3/integerstatequery.html [ Failure ]
