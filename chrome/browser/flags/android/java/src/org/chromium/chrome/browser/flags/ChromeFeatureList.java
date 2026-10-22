@@ -631,6 +631,7 @@ public abstract class ChromeFeatureList {
     public static final String GLIC_BACKGROUND_TRIGGERING = "GlicBackgroundTriggering";
     public static final String GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE =
             "GlicExperimentalOptInDialogNonScrollable";
+    public static final String GLIC_NO_WEBVIEW = "GlicNoWebview";
     public static final String GLIC_SHARE_IMAGE = "GlicShareImage";
     public static final String GLIC_VOICE = "GlicVoice";
     public static final String GMSCORE_BIND_SERVICE_OPTIMIZATION = "GmsCoreBindServiceOptimization";
@@ -1763,6 +1764,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE, true);
     public static final MutableFlagWithSafeDefault sFlyoutInBookmarksBar =
             newMutableFlagWithSafeDefault(FLYOUT_IN_BOOKMARKS_BAR, false);
+    public static final MutableFlagWithSafeDefault sGlicNoWebview =
+            newMutableFlagWithSafeDefault(GLIC_NO_WEBVIEW, false);
     public static final MutableFlagWithSafeDefault sHighPrioritySiteNotifications =
             newMutableFlagWithSafeDefault(HIGH_PRIORITY_SITE_NOTIFICATIONS, true);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =

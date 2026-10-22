@@ -215,6 +215,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kGlicBackgroundActuation,
     &features::kGlicBackgroundTriggering,
     &features::kGlicExperimentalOptInDialogNonScrollable,
+    &features::kGlicNoWebview,
     &features::kGlicShareImage,
     &features::kGlicVoice,
     &features::kHttpsFirstBalancedMode,

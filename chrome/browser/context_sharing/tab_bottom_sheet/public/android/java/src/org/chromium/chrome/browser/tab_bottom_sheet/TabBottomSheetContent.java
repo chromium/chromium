@@ -209,7 +209,9 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean coversBottomControls() {
-        return ChromeFeatureList.sTabBottomSheetEdgeToEdge.isEnabled()
+        return ChromeFeatureList.sTabBottomSheet.isEnabled()
+                && ChromeFeatureList.sTabBottomSheetEdgeToEdge.isEnabled()
+                && ChromeFeatureList.sGlicNoWebview.isEnabled()
                 && mCanCoverBottomControlsSupplier.getAsBoolean();
     }
 

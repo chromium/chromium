@@ -1156,7 +1156,8 @@ public class TabBottomSheetCoordinatorUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
     })
     public void testTopMarginRemovedWhenEdgeToEdgeEnabled() {
         simulateShowSuccessAndGetObserver();
@@ -1175,9 +1176,29 @@ public class TabBottomSheetCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
+    @EnableFeatures({ChromeFeatureList.TAB_BOTTOM_SHEET, ChromeFeatureList.GLIC_NO_WEBVIEW})
     @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE)
     public void testTopMarginPreservedWhenEdgeToEdgeDisabled() {
+        simulateShowSuccessAndGetObserver();
+        assertNotNull(mCoordinator.getSheetContentForTesting());
+        assertFalse(mCoordinator.getSheetContentForTesting().coversBottomControls());
+
+        int topMarginPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_web_ui_top_margin);
+        View webUiContainer = mView.findViewById(R.id.web_ui_container);
+        assertEquals(
+                topMarginPx,
+                ((ViewGroup.MarginLayoutParams) webUiContainer.getLayoutParams()).topMargin);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
+    })
+    @DisableFeatures(ChromeFeatureList.GLIC_NO_WEBVIEW)
+    public void testTopMarginPreservedWhenGlicNoWebviewDisabled() {
         simulateShowSuccessAndGetObserver();
         assertNotNull(mCoordinator.getSheetContentForTesting());
         assertFalse(mCoordinator.getSheetContentForTesting().coversBottomControls());

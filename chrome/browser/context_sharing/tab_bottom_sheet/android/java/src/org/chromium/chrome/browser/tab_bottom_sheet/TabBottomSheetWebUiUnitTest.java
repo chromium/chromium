@@ -992,7 +992,8 @@ public class TabBottomSheetWebUiUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
     })
     public void testSetWebContents_UpdatesSafeAreaInsetsWhenEdgeToEdgeEnabled() {
         when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
@@ -1013,7 +1014,8 @@ public class TabBottomSheetWebUiUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
     })
     public void testSetWebContents_UpdatesBottomSafeAreaInsetAndObservesChanges() {
         when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
@@ -1071,10 +1073,10 @@ public class TabBottomSheetWebUiUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
+    @EnableFeatures({ChromeFeatureList.TAB_BOTTOM_SHEET, ChromeFeatureList.GLIC_NO_WEBVIEW})
     @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE)
     public void testSetWebContents_DoesNotUpdateSafeAreaInsetsWhenEdgeToEdgeDisabled() {
-        mWebUi.setWebContents(mWebContents, false);
+        mWebUi.setWebContents(mWebContents, /* requestFocus= */ false);
 
         verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
     }
@@ -1083,6 +1085,19 @@ public class TabBottomSheetWebUiUnitTest {
     @EnableFeatures({
         ChromeFeatureList.TAB_BOTTOM_SHEET,
         ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
+    })
+    @DisableFeatures(ChromeFeatureList.GLIC_NO_WEBVIEW)
+    public void testSetWebContents_DoesNotUpdateSafeAreaInsetsWhenGlicNoWebviewDisabled() {
+        mWebUi.setWebContents(mWebContents, /* requestFocus= */ false);
+
+        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
     })
     public void testSetWebContents_SidePanel_DoesNotUpdateSafeAreaInsets() {
         Context context =
