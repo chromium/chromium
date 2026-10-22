@@ -5927,29 +5927,6 @@
             ]
         }
     ],
-    "DesktopDynamicAiModeButton": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "OmniboxDynamicColorAnimationRealboxDynamic_",
-                    "params": {
-                        "Omnibox_DynamicAnimation": "true",
-                        "Omnibox_DynamicColorScheme": "true"
-                    },
-                    "enable_features": [
-                        "NtpRealboxDynamicAiModeButton",
-                        "WebUIOmniboxDynamicAiModeButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpDriveModuleLink": [
         {
             "platforms": [

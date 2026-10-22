@@ -183,6 +183,15 @@ bool ShouldUseWebUIOmniboxFullHandler();
 // Returns true if `kWebUIOmniboxInBrowserView` is enabled.
 bool IsWebUIOmniboxInBrowserViewEnabled();
 
+// Returns true if `kWebUIOmniboxDynamicAiModeButton` is enabled and its
+// `kWebUIOmniboxDynamicAnimation` param is true. Use these rather than reading
+// the params directly, since a FeatureParam returns its (true) default value
+// even when the feature is disabled.
+bool IsWebUIOmniboxDynamicAnimationEnabled();
+// Returns true if `kWebUIOmniboxDynamicAiModeButton` is enabled and its
+// `kWebUIOmniboxDynamicColorScheme` param is true.
+bool IsWebUIOmniboxDynamicColorSchemeEnabled();
+
 // Returns true if the `kWebUIOmniboxAimPopup` base::Feature is enabled.
 // This does NOT include user eligibility checks. Most UI code should use the
 // profile-based `IsAimPopupEnabled()` function below instead.

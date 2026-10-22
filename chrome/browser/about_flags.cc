@@ -1001,26 +1001,6 @@ const FeatureEntry::FeatureVariation kAim3pEntrypointVariations[] = {
     {"with debug config", kAim3pEntrypointDebugEnabled, nullptr}};
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kWebUIOmniboxDynamicAiModeButton_AnimOnly[] = {
-    {"Omnibox_DynamicAnimation", "true"},
-    {"Omnibox_DynamicColorScheme", "false"}};
-
-const FeatureEntry::FeatureParam kWebUIOmniboxDynamicAiModeButton_ColorOnly[] =
-    {{"Omnibox_DynamicAnimation", "false"},
-     {"Omnibox_DynamicColorScheme", "true"}};
-
-const FeatureEntry::FeatureParam kWebUIOmniboxDynamicAiModeButton_Both[] = {
-    {"Omnibox_DynamicAnimation", "true"},
-    {"Omnibox_DynamicColorScheme", "true"}};
-
-const FeatureEntry::FeatureVariation
-    kWebUIOmniboxDynamicAiModeButtonVariations[] = {
-        {"Animation Only", kWebUIOmniboxDynamicAiModeButton_AnimOnly, nullptr},
-        {"Color Scheme Only", kWebUIOmniboxDynamicAiModeButton_ColorOnly,
-         nullptr},
-        {"Animation and Color Scheme", kWebUIOmniboxDynamicAiModeButton_Both,
-         nullptr}};
-
 const FeatureEntry::FeatureParam kOmniboxDynamicAimSubmitRhsHint[] = {
     {"Omnibox_ShowRhsAimHint", "true"},
 };
@@ -9763,9 +9743,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-dynamic-ai-mode-button",
      flag_descriptions::kDynamicAiModeButtonName,
      flag_descriptions::kDynamicAiModeButtonDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxDynamicAiModeButton,
-                                    kWebUIOmniboxDynamicAiModeButtonVariations,
-                                    "WebUIOmniboxDynamicAiModeButton")},
+     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxDynamicAiModeButton)},
 
     {"ntp-realbox-dynamic-ai-mode-button",
      flag_descriptions::kNtpRealboxDynamicAiModeButtonName,

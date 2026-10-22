@@ -166,9 +166,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   // TODO(b/474406096): Replace this NTP-specific flag with a generic flag.
   source->AddBoolean("isFuseboxEnabled", false);
   source->AddBoolean("searchboxDynamicColorScheme",
-                     omnibox::kWebUIOmniboxDynamicColorScheme.Get());
+                     omnibox::IsWebUIOmniboxDynamicColorSchemeEnabled());
   source->AddBoolean("searchboxDynamicAnimation",
-                     omnibox::kWebUIOmniboxDynamicAnimation.Get());
+                     omnibox::IsWebUIOmniboxDynamicAnimationEnabled());
   source->AddBoolean(
       "omniboxPopupDebugEnabled",
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug));

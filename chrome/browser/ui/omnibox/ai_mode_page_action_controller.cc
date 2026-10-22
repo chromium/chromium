@@ -292,7 +292,7 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
   page_action_controller->OverrideAccessibleName(kActionAiMode,
                                                  config->a11y_label);
 
-  if (omnibox::kWebUIOmniboxDynamicAnimation.Get()) {
+  if (omnibox::IsWebUIOmniboxDynamicAnimationEnabled()) {
     page_action_controller->SetAnimationStyle(
         kActionAiMode,
         page_actions::PageActionAnimationStyle::kSlideAndCrossfade);
@@ -309,7 +309,7 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
     page_action_controller->SetShowTrailingIcon(kActionAiMode, has_user_input);
   }
 
-  if (omnibox::kWebUIOmniboxDynamicColorScheme.Get()) {
+  if (omnibox::IsWebUIOmniboxDynamicColorSchemeEnabled()) {
     page_action_controller->OverrideBackgroundColor(
         kActionAiMode, kColorOmniboxComposeboxContextEntrypointBackground);
     page_action_controller->OverrideForegroundColor(
@@ -329,7 +329,7 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
 
   if (config->id == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
     ui::ColorId spark_color_id = kColorOmniboxIconForegroundTonal;
-    if (omnibox::kWebUIOmniboxDynamicColorScheme.Get()) {
+    if (omnibox::IsWebUIOmniboxDynamicColorSchemeEnabled()) {
       spark_color_id = kColorOmniboxContextEntrypointText;
     }
     ui::ImageModel image_model = ui::ImageModel::FromImageGenerator(
