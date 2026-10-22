@@ -52,15 +52,40 @@ external/wpt/client-hints/accept-ch/no-feature-policy.sub.https.html
 external/wpt/client-hints/sandbox/iframe-csp-same-origin.https.html
 external/wpt/client-hints/sandbox/iframe-same-origin.https.html
 external/wpt/cookies/attributes/max-age.html
+external/wpt/credential-management/credentialscontainer-prevent-silent-access.https.html
 external/wpt/fetch/fetch-later/new-window.https.window.html
+external/wpt/focus/activeelement-after-calling-window-focus.sub.html
+external/wpt/focus/activeelement-after-focusing-different-site-iframe-contentwindow.html
+external/wpt/focus/activeelement-after-focusing-different-site-iframe-then-immediately-focusing-back.html
+external/wpt/focus/activeelement-after-focusing-different-site-iframe.html
+external/wpt/focus/activeelement-after-focusing-same-site-iframe-contentwindow.html
+external/wpt/focus/activeelement-after-focusing-same-site-iframe.html
+external/wpt/focus/focus-event-after-focusing-iframes.html
+external/wpt/focus/focus-event-after-iframe-gets-focus.html
+external/wpt/focus/hasfocus-different-site.html
+external/wpt/focus/hasfocus-same-site.html
+external/wpt/focus/iframe-contentwindow-focus-with-different-site-intermediate-frame.html
+external/wpt/focus/iframe-contentwindow-focus-with-same-as-top-intermediate-frame.html
+external/wpt/focus/iframe-focus-with-different-site-intermediate-frame.html
+external/wpt/focus/iframe-focus-with-same-as-top-intermediate-frame.html
 external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html
 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html
 external/wpt/notifications/cross-origin-serviceworker.tentative.https.sub.html
 external/wpt/notifications/event-onclose.https.html
+external/wpt/notifications/icon-fetch.tentative.https.window.html
 external/wpt/notifications/instance.https.window.html
 external/wpt/notifications/permissions-non-secure.html
 external/wpt/notifications/shownotification-without-permission.https.window.html
 external/wpt/notifications/shownotification.https.window.html
+external/wpt/notifications/tag.https.html
+external/wpt/notifications/worker-gc.https.window.html
+external/wpt/pointerevents/pointerevent_touch-action-inherit_child-auto-child-none_touch.html
+external/wpt/pointerevents/pointerevent_touch-action-inherit_child-pan-x-child-pan-x_touch.html
+external/wpt/pointerevents/pointerevent_touch-action-inherit_child-pan-x-child-pan-y_touch.html
+external/wpt/pointerevents/pointerevent_touch-action-svg-none-test_touch.html
+external/wpt/push-api/cross-origin-same-site-request.tentative.https.sub.window.html
+external/wpt/push-api/cross-origin-serviceworker.tentative.https.sub.window.html
+external/wpt/push-api/subscribe-with-faulty-applicationServerKey.https.window.html
 external/wpt/service-workers/service-worker/controller-on-reload.https.html
 external/wpt/service-workers/service-worker/fetch-request-xhr.https.html
 external/wpt/speech-api/SpeechRecognition-availableOnDevice.https.html
@@ -91,6 +116,10 @@ external/wpt/web-extensions/*
 # Web Payments APIs (Payment Request, Payment Handler, Payment Method Manifest,
 # etc) rely on the `//chrome` layer.
 external/wpt/payment-method-manifest/*
+external/wpt/payment-request/constructor_convert_method_data.https.html
+external/wpt/payment-request/payment-request-disallowed-when-hidden.https.html
+external/wpt/payment-request/payment-request-hasenrolledinstrument-method-protection.tentative.https.html
+external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-app-manifest-blocked.https.window.html
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-head-blocked.https.window.html
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-manifests-allowed.https.window.html
@@ -99,3 +128,4 @@ virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-payment-manifest-redirect-blocked.https.window.html
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-sw-registration-allowed.https.window.html
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-sw-registration-blocked.https.window.html
+virtual/unified-autoplay/external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html

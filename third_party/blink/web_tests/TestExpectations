@@ -8610,3 +8610,9 @@ crbug.com/568614666 [ Linux ] fast/events/middleClickAutoscroll-nested-divs.html
 # Temporarily disabled to unblock https://webrtc-review.googlesource.com/c/src/+/510800
 crbug.com/576554678 external/wpt/webrtc/protocol/av1-profile-asymmetry.https.html [ Pass Failure ]
 
+# Expectations for chrome_wpt_tests entries in chrome.filter
+crbug.com/558819229 [ Win ] external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure ]
+crbug.com/558819229 [ Win ] virtual/unified-autoplay/external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure ]
+crbug.com/558819229 external/wpt/notifications/icon-fetch.tentative.https.window.html [ Pass Timeout ]
+crbug.com/558819229 external/wpt/notifications/tag.https.html [ Failure Pass ]
+
