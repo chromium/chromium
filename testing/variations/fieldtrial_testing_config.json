@@ -5539,21 +5539,6 @@
             ]
         }
     ],
-    "CrosSwitcher": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrosSwitcher"
-                    ]
-                }
-            ]
-        }
-    ],
     "CustomizeChromeJourney": [
         {
             "platforms": [
