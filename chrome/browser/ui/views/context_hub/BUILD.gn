@@ -6,19 +6,33 @@ import("//build/config/ui.gni")
 
 assert(toolkit_views)
 
-source_set("save_to_memory_bank_bubble_view") {
-  public = [ "save_to_memory_bank_bubble_view.h" ]
-  sources = [ "save_to_memory_bank_bubble_view.cc" ]
+source_set("memory_bank") {
+  public = [
+    "save_to_memory_bank_bubble_controller.h",
+    "save_to_memory_bank_bubble_view.h",
+  ]
   public_deps = [
+    "//base",
     "//content/public/browser",
     "//ui/views",
   ]
+}
+
+source_set("memory_bank_impl") {
+  sources = [
+    "save_to_memory_bank_bubble_controller.cc",
+    "save_to_memory_bank_bubble_view.cc",
+  ]
   deps = [
-    "//base",
+    ":memory_bank",
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/common",
+    "//components/tabs:public",
     "//ui/base",
     "//ui/base/mojom:ui_base_types",
     "//ui/gfx/geometry",
@@ -31,36 +45,13 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "save_to_memory_bank_bubble_view_unittest.cc" ]
   deps = [
-    ":save_to_memory_bank_bubble_view",
+    ":memory_bank",
+    ":memory_bank_impl",
     "//chrome/app:generated_resources",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
-    "//ui/views",
-  ]
-}
-
-source_set("save_to_memory_bank_bubble_controller") {
-  public = [ "save_to_memory_bank_bubble_controller.h" ]
-  public_deps = [
-    "//base",
-    "//content/public/browser",
-    "//ui/views",
-  ]
-}
-
-source_set("save_to_memory_bank_bubble_controller_impl") {
-  sources = [ "save_to_memory_bank_bubble_controller.cc" ]
-  public_deps = [ ":save_to_memory_bank_bubble_controller" ]
-  deps = [
-    ":save_to_memory_bank_bubble_view",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/views/frame:browser_view_header",
-    "//chrome/browser/ui/views/frame:toolbar_button_provider",
-    "//components/tabs:public",
-    "//content/public/browser",
     "//ui/views",
   ]
 }
