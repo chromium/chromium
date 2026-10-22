@@ -1161,6 +1161,14 @@ inline constexpr char kSyncEncryptionBootstrapToken[] =
 inline constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
     "sync.encryption_bootstrap_token_per_account_migration_done";
 
+// Deprecated 10/2026.
+inline constexpr char kTailoredSecuritySyncFlowLastRunTime[] =
+    "safebrowsing.aesb_sync_flow_start_timestamp";
+inline constexpr char kTailoredSecuritySyncFlowLastUserInteractionState[] =
+    "safebrowsing.aesb_sync_flow_last_user_interaction_state";
+inline constexpr char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
+    "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1651,6 +1659,14 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterStringPref(kSyncEncryptionBootstrapToken, std::string());
   registry->RegisterBooleanPref(
       kSyncEncryptionBootstrapTokenPerAccountMigrationDone, false);
+
+  // Deprecated 10/2026.
+  registry->RegisterTimePref(kTailoredSecuritySyncFlowLastRunTime,
+                             base::Time());
+  registry->RegisterIntegerPref(
+      kTailoredSecuritySyncFlowLastUserInteractionState, 0);
+  registry->RegisterTimePref(
+      kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp, base::Time());
 }
 
 }  // namespace
@@ -3099,6 +3115,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kSyncEncryptionBootstrapToken);
   profile_prefs->ClearPref(
       kSyncEncryptionBootstrapTokenPerAccountMigrationDone);
+
+  // Added 10/2026.
+  profile_prefs->ClearPref(kTailoredSecuritySyncFlowLastRunTime);
+  profile_prefs->ClearPref(kTailoredSecuritySyncFlowLastUserInteractionState);
+  profile_prefs->ClearPref(
+      kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

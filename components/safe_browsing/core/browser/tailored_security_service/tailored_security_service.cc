@@ -530,11 +530,6 @@ void TailoredSecurityService::Shutdown() {
 }
 
 void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
-  // TODO(crbug.com/40925236): remove sync flow last user interaction pref.
-  prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
-                     TailoredSecurityRetryState::UNKNOWN);
-  prefs_->SetTime(prefs::kTailoredSecuritySyncFlowLastRunTime,
-                  base::Time::Now());
   // If this method fails, then a retry is needed. If it succeeds, the
   // ChromeTailoredSecurityService will set this value to NO_RETRY_NEEDED for
   // us.

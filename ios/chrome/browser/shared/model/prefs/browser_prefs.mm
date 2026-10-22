@@ -237,6 +237,14 @@ inline constexpr char kSyncEncryptionBootstrapToken[] =
 inline constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
     "sync.encryption_bootstrap_token_per_account_migration_done";
 
+// Deprecated 10/2026.
+inline constexpr char kTailoredSecuritySyncFlowLastRunTime[] =
+    "safebrowsing.aesb_sync_flow_start_timestamp";
+inline constexpr char kTailoredSecuritySyncFlowLastUserInteractionState[] =
+    "safebrowsing.aesb_sync_flow_last_user_interaction_state";
+inline constexpr char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
+    "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
+
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
                        std::string_view source_pref_name,
@@ -927,6 +935,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kSyncEncryptionBootstrapToken, std::string());
   registry->RegisterBooleanPref(
       kSyncEncryptionBootstrapTokenPerAccountMigrationDone, false);
+
+  // Deprecated 10/2026.
+  registry->RegisterTimePref(kTailoredSecuritySyncFlowLastRunTime,
+                             base::Time());
+  registry->RegisterIntegerPref(
+      kTailoredSecuritySyncFlowLastUserInteractionState, 0);
+  registry->RegisterTimePref(
+      kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp, base::Time());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1005,17 +1021,22 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kInvalidationPerSenderRegisteredForInvalidation);
   prefs->ClearPref(kInvalidationPerSenderActiveRegistrationTokens);
 
-  // Deprecated 09/2026.
+  // Added 09/2026.
   prefs->ClearPref(kMigratedToQuickDeletePrefValues);
   prefs->ClearPref(kHomeCustomizationMagicStackSetUpListEnabled);
   prefs->ClearPref(kNTPFollowingFeedSortType);
-  // Deprecated 09/2026.
+  // Added 09/2026.
   prefs->ClearPref(kSigninHasAcceptedManagementDialog);
   prefs->ClearPref(kFingerprintingProtectionEnabled);
 
   // Added 10/2026.
   prefs->ClearPref(kSyncEncryptionBootstrapToken);
   prefs->ClearPref(kSyncEncryptionBootstrapTokenPerAccountMigrationDone);
+
+  // Added 10/2026.
+  prefs->ClearPref(kTailoredSecuritySyncFlowLastRunTime);
+  prefs->ClearPref(kTailoredSecuritySyncFlowLastUserInteractionState);
+  prefs->ClearPref(kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp);
 }
 
 void MigrateObsoleteUserDefault() {

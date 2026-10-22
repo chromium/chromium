@@ -79,23 +79,6 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
 };
 
 TEST_F(SafeBrowsingPrefsTest,
-       TailoredSecuritySyncFlowLastRunTimeIsInitialized) {
-  TestingPrefServiceSimple prefs;
-  RegisterProfilePrefs(prefs.registry());
-  EXPECT_EQ(prefs.GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
-            base::Time());
-}
-
-TEST_F(SafeBrowsingPrefsTest,
-       TailoredSecuritySyncLastUserInteractionStateIsInitialized) {
-  TestingPrefServiceSimple prefs;
-  RegisterProfilePrefs(prefs.registry());
-  EXPECT_EQ(
-      prefs.GetValue(prefs::kTailoredSecuritySyncFlowLastUserInteractionState),
-      TailoredSecurityRetryState::UNSET);
-}
-
-TEST_F(SafeBrowsingPrefsTest,
        TailoredSecurityNextSyncFlowTimestampIsInitialized) {
   TestingPrefServiceSimple prefs;
   RegisterProfilePrefs(prefs.registry());
@@ -108,15 +91,6 @@ TEST_F(SafeBrowsingPrefsTest, TailoredSecuritySyncFlowRetryStateIsInitialized) {
   RegisterProfilePrefs(prefs.registry());
   EXPECT_EQ(prefs.GetValue(prefs::kTailoredSecuritySyncFlowRetryState),
             TailoredSecurityRetryState::UNSET);
-}
-
-TEST_F(SafeBrowsingPrefsTest,
-       TailoredSecuritySyncUserObservedOutcomeUnsetTimestampIsInitialized) {
-  TestingPrefServiceSimple prefs;
-  RegisterProfilePrefs(prefs.registry());
-  EXPECT_EQ(prefs.GetTime(
-                prefs::kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp),
-            base::Time());
 }
 
 TEST_F(SafeBrowsingPrefsTest, GetSafeBrowsingExtendedReportingLevel) {

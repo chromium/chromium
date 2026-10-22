@@ -204,28 +204,10 @@ inline constexpr char kAccountTailoredSecurityUpdateTimestamp[] =
 inline constexpr char kTailoredSecurityNextSyncFlowTimestamp[] =
     "safebrowsing.aesb_next_sync_flow_timestamp";
 
-// Timestamp indicating the last time the tailored security sync flow ran.
-inline constexpr char kTailoredSecuritySyncFlowLastRunTime[] =
-    "safebrowsing.aesb_sync_flow_start_timestamp";
-
-// Integer that maps to TailoredSecurityUserInteractionState. Indicates the
-// last known state of the tailored security sync flow.
-// TODO(crbug.com/40925236): remove this preference value.
-inline constexpr char kTailoredSecuritySyncFlowLastUserInteractionState[] =
-    "safebrowsing.aesb_sync_flow_last_user_interaction_state";
-
 // Integer that maps to TailoredSecurityRetryState. Indicates the last
 // known state of the tailored security sync flow retry mechanism.
 inline constexpr char kTailoredSecuritySyncFlowRetryState[] =
     "safebrowsing.aesb_sync_flow_retry_state";
-
-// Timestamp indicating when the last user interaction state was observed as
-// having the value of `UNSET`. It is possible that this value will never be
-// set. This will only be set for syncing users where the retry detection logic
-// ran and no outcome was set -- indicating that tailored security with retry
-// capabilities had never run.
-inline constexpr char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
-    "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
 
 // Whether the user was shown the notification that they may want to enable
 // Enhanced Safe Browsing due to their account tailored security state.

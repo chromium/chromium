@@ -325,13 +325,8 @@ class TailoredSecurityServiceTest : public testing::Test {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
     prefs_.registry()->RegisterIntegerPref(
-        prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
-        TailoredSecurityRetryState::UNSET);
-    prefs_.registry()->RegisterIntegerPref(
         prefs::kTailoredSecuritySyncFlowRetryState,
         TailoredSecurityRetryState::UNSET);
-    prefs_.registry()->RegisterTimePref(
-        prefs::kTailoredSecuritySyncFlowLastRunTime, base::Time());
 
     tailored_security_service_ =
         std::make_unique<TestingTailoredSecurityService>(
@@ -592,21 +587,6 @@ TEST_F(TailoredSecurityServiceTest,
 
   EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
             TailoredSecurityRetryState::RETRY_NEEDED);
-}
-
-TEST_F(TailoredSecurityServiceTest,
-       RetryLogicTimestampUpdateCallbackRecordsStartTime) {
-  tailored_security_service()->SetExpectedURL(
-      GURL(kQueryTailoredSecurityServiceUrl));
-  tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
-
-  EXPECT_NE(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
-            base::Time::Now());
-
-  tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
-
-  EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
-            base::Time::Now());
 }
 
 TEST_F(TailoredSecurityServiceTest,
