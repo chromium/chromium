@@ -131,7 +131,13 @@ void CollectWidgets(views::MenuItemView* item,
   }
 }
 
-enum class MenuPartType { kNone, kMenuItem, kScrollUp, kScrollDown };
+enum class MenuPartType {
+  kNone,
+  kMenuItem,
+  kScrollUp,
+  kScrollDown,
+  kScrollBar
+};
 
 // The menu controller manages the AX index attributes inside menu items. This
 // property maintains a vector of menu children that were last assigned such
@@ -289,6 +295,10 @@ MenuPartType GetScrollButtonAt(SubmenuView* source,
     }
     if (child_under_mouse == scroll_view->scroll_down_button()) {
       return MenuPartType::kScrollDown;
+    }
+    if (scroll_view->scroll_bar() && scroll_view->scroll_bar()->GetVisible() &&
+        scroll_view->scroll_bar()->Contains(child_under_mouse)) {
+      return MenuPartType::kScrollBar;
     }
   }
   return MenuPartType::kNone;
@@ -1997,7 +2007,7 @@ void MenuController::SetSelectionOnPointerDown(SubmenuView* source,
   DCHECK(!active_mouse_view_tracker_->view());
 
   MenuPart part = GetMenuPart(source, event->location());
-  if (part.is_scroll()) {
+  if (part.is_scroll() || part.type == MenuPartType::kScrollBar) {
     return;  // Ignore presses on scroll buttons.
   }
 
@@ -2629,11 +2639,13 @@ bool MenuController::GetMenuPartByScreenCoordinateImpl(
   }
 
   // Not over the scroll button. Check the actual menu.
-  menu_loc = View::ConvertPointFromScreen(menu, screen_loc);
-  if (menu->GetVisibleBounds().Contains(menu_loc)) {
-    part->menu = GetMenuItemAt(menu, menu_loc);
+  MenuScrollViewContainer* const container = menu->GetScrollViewContainer();
+  const gfx::Point container_loc =
+      View::ConvertPointFromScreen(container, screen_loc);
+  if (container->GetContentsBounds().Contains(container_loc)) {
+    part->menu = GetMenuItemAt(container, container_loc);
     if (part->menu && !part->menu->children().empty()) {
-      for (View* v = menu->GetEventHandlerForPoint(menu_loc);
+      for (View* v = container->GetEventHandlerForPoint(container_loc);
            v && v != part->menu; v = v->parent()) {
         if (Button* button = Button::AsButton(v)) {
           if (MenuItemView* button_submenu =

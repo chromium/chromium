@@ -242,6 +242,7 @@ void ActionAppMenu::RunMenu(views::Widget* parent,
 
   root_->CreateSubmenu();
   PopulateMenu(root_, menu_manager_->GetAppMenuRoot());
+  root_->GetSubmenu()->set_use_scroll_bar(true);
 
   // Temporary code to test search functionality while the key event routing
   // design is aligned on. Prefills the search bar with the query from the
@@ -346,10 +347,12 @@ void ActionAppMenu::UpdateMenuItem(actions::BaseAction* action,
     return;
   }
 
-  size_t view_index =
-      prev_item
-          ? new_parent_menu->GetSubmenu()->GetIndexOf(prev_item).value() + 1
-          : 0;
+  // Indices are relative to the scrollable region (the SubmenuView's children).
+  // If `prev_item` is pinned in the header, insert at the top of that region.
+  const std::optional<size_t> prev_index =
+      prev_item ? new_parent_menu->GetSubmenu()->GetIndexOf(prev_item)
+                : std::nullopt;
+  const size_t view_index = prev_index ? *prev_index + 1 : 0;
 
   const auto& target_children = target_parent_action->GetChildren().children();
   views::MenuItemView* new_item =
@@ -667,15 +670,28 @@ void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,
 
 void ActionAppMenu::ClearItemsBelowSearchBar() {
   CHECK(search_bar_);
-  views::SubmenuView* submenu = root_->GetSubmenu();
+  views::SubmenuView* const submenu = root_->GetSubmenu();
   CHECK(submenu);
 
-  const std::optional<size_t> search_row_index =
-      submenu->GetIndexOf(search_bar_->parent());
-  CHECK(search_row_index);
-  const std::vector<views::View*> to_remove(
-      submenu->children().begin() + *search_row_index + 1,
-      submenu->children().end());
+  // Clear everything except the header (the search row and the rows above it).
+  // Once the menu is shown the header lives in the pinned header container, so
+  // the whole SubmenuView and the pinned footer are cleared. Before that, the
+  // header rows are still at the top of the SubmenuView, so skip past them.
+  const auto& children = submenu->children();
+  auto first_to_remove = children.begin();
+  if (const std::optional<size_t> search_row_index =
+          submenu->GetIndexOf(search_bar_->parent())) {
+    first_to_remove += *search_row_index + 1;
+  }
+  std::vector<views::View*> to_remove(first_to_remove, children.end());
+  if (const views::MenuScrollViewContainer* const container =
+          submenu->scroll_view_container();
+      container && container->footer_container()) {
+    const auto& footer_children = container->footer_container()->children();
+    to_remove.insert(to_remove.end(), footer_children.begin(),
+                     footer_children.end());
+  }
+
   for (views::View* child : to_remove) {
     root_->RemoveMenuItem(child);
   }
@@ -786,9 +802,6 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
                   : (is_checkable ? views::MenuItemView::Type::kCheckbox
                                   : views::MenuItemView::Type::kNormal);
 
-  if (display_type == AppMenuActionItem::DisplayType::kNotification) {
-    has_notification_header_ = true;
-  }
 
   views::MenuItemView* menu_item = parent_menu_item->AddMenuItemView(
       std::make_unique<AppMenuItemView>(parent_menu_item, command_id,
@@ -797,6 +810,11 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
       index, /*submenu_background_color=*/std::nullopt,
       /*foreground_color=*/std::nullopt, /*selected_color_id=*/std::nullopt,
       ui::kColorMenuIcon);
+
+  if (display_type == AppMenuActionItem::DisplayType::kNotification) {
+    has_notification_header_ = true;
+    menu_item->SetIsPinned(true);
+  }
 
   action_view_controller_.CreateActionViewRelationship(
       menu_item, action_item->GetAsWeakPtr());
@@ -883,6 +901,7 @@ void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
   search_item->SetTriggerActionWithNonIconChildViews(false);
   search_item->set_children_use_full_width(true);
   search_item->set_vertical_margin(0);
+  search_item->SetIsPinned(true);
 
   const auto* provider = ChromeLayoutProvider::Get();
   // The search bar applies its own insets, so only the gap below a
@@ -927,6 +946,7 @@ void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
   footer_item->set_children_use_full_width(true);
   footer_item->set_vertical_margin(0);
   footer_item->AddChildView(std::move(footer_view));
+  footer_item->SetIsPinned(true);
 }
 
 void ActionAppMenu::PopulateHeader(views::MenuItemView* view_parent,

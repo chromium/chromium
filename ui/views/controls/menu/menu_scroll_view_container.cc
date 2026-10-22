@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -38,7 +39,9 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/view.h"
@@ -61,6 +64,29 @@ bool ShouldApplyBackgroundBlur() {
 #else
   return true;
 #endif
+}
+
+// Creates an empty vertical container for pinned menu items.
+std::unique_ptr<View> CreatePinnedContainer() {
+  auto container = std::make_unique<View>();
+  container->SetLayoutManager(
+      std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
+  return container;
+}
+
+// Returns the MenuItemView children of `container`, skipping other views such
+// as separators.
+std::vector<MenuItemView*> GetMenuItemChildren(const View* container) {
+  std::vector<MenuItemView*> items;
+  if (!container) {
+    return items;
+  }
+  for (View* child : container->children()) {
+    if (auto* item = AsViewClass<MenuItemView>(child)) {
+      items.push_back(item);
+    }
+  }
+  return items;
 }
 
 // MenuScrollButton ------------------------------------------------------------
@@ -162,6 +188,88 @@ class MenuScrollButton : public View {
 BEGIN_METADATA(MenuScrollButton)
 END_METADATA
 
+class MenuScrollBar : public ScrollBar {
+  METADATA_HEADER(MenuScrollBar, ScrollBar)
+
+ public:
+  MenuScrollBar() : ScrollBar(Orientation::kVertical) {
+    auto thumb = std::make_unique<Thumb>(this);
+    thumb->SetX(kScrollBarHorizontalPadding);
+    SetThumb(thumb.release());
+  }
+  MenuScrollBar(const MenuScrollBar&) = delete;
+  MenuScrollBar& operator=(const MenuScrollBar&) = delete;
+  ~MenuScrollBar() override = default;
+
+  // ScrollBar:
+  gfx::Insets GetInsets() const override {
+    return gfx::Insets::VH(0, kScrollBarHorizontalPadding);
+  }
+  int GetThickness() const override { return kScrollBarThickness; }
+  bool OverlapsContent() const override { return true; }
+  gfx::Rect GetTrackBounds() const override { return GetContentsBounds(); }
+
+  // Whether the thumb is drawn while it isn't being dragged. Set by the owning
+  // MenuScrollViewContainer based on hover and keyboard navigation.
+  void SetThumbVisible(bool visible) {
+    if (thumb_visible_ == visible) {
+      return;
+    }
+    thumb_visible_ = visible;
+    SchedulePaint();
+  }
+  bool thumb_visible() const { return thumb_visible_; }
+
+ private:
+  static constexpr int kScrollBarThickness = 12;
+  static constexpr int kScrollBarThumbWidth = 4;
+  static constexpr int kScrollBarThumbMinHeight = 24;
+  static constexpr int kScrollBarHorizontalPadding =
+      (kScrollBarThickness - kScrollBarThumbWidth) / 2;
+
+  bool thumb_visible_ = false;
+
+  class Thumb : public BaseScrollBarThumb {
+    METADATA_HEADER(Thumb, BaseScrollBarThumb)
+
+   public:
+    explicit Thumb(ScrollBar* scroll_bar) : BaseScrollBarThumb(scroll_bar) {}
+    Thumb(const Thumb&) = delete;
+    Thumb& operator=(const Thumb&) = delete;
+    ~Thumb() override = default;
+
+   protected:
+    gfx::Size CalculatePreferredSize(
+        const SizeBounds& /*available_size*/) const override {
+      return gfx::Size(kScrollBarThumbWidth, kScrollBarThumbMinHeight);
+    }
+
+    void OnPaint(gfx::Canvas* canvas) override {
+      if (GetState() != Button::STATE_PRESSED &&
+          !static_cast<const MenuScrollBar*>(scroll_bar())->thumb_visible()) {
+        return;
+      }
+      cc::PaintFlags flags;
+      flags.setStyle(cc::PaintFlags::kFill_Style);
+      flags.setAntiAlias(true);
+      flags.setColor(GetColorProvider()->GetColor(
+          GetState() == Button::STATE_HOVERED ||
+                  GetState() == Button::STATE_PRESSED
+              ? ui::kColorSysOnSurfaceVariant
+              : ui::kColorSysOutline));
+      const gfx::RectF thumb_bounds(GetLocalBounds());
+      const float corner_radius = thumb_bounds.width() / 2.0f;
+      canvas->DrawRoundRect(thumb_bounds, corner_radius, flags);
+    }
+  };
+};
+
+BEGIN_METADATA(MenuScrollBar, Thumb)
+END_METADATA
+
+BEGIN_METADATA(MenuScrollBar)
+END_METADATA
+
 }  // namespace
 
 // MenuScrollView --------------------------------------------------------------
@@ -184,8 +292,36 @@ class MenuScrollViewContainer::MenuScrollView : public View {
   MenuScrollView(const MenuScrollView&) = delete;
   MenuScrollView& operator=(const MenuScrollView&) = delete;
 
+  void Layout(PassKey) override {
+    View* const contents = GetContents();
+    ScrollBar* const scroll_bar = owner_->scroll_bar();
+
+    // MenuScrollView has no layout manager, so the default layout lays out
+    // every child (the contents and the scroll bar).
+    LayoutSuperclass<View>(this);
+
+    // Size and place the scroll bar before laying out children. The contents'
+    // size is set by the owner, so it is already known here.
+    if (scroll_bar) {
+      const bool show_scrollbar = contents->height() > height();
+      scroll_bar->SetVisible(show_scrollbar);
+      if (show_scrollbar) {
+        const int sb_width = scroll_bar->GetThickness();
+        scroll_bar->SetBounds(width() - sb_width, 0, sb_width, height());
+      }
+    }
+
+    if (scroll_bar && scroll_bar->GetVisible()) {
+      scroll_bar->Update(height(), contents->height(), -contents->y());
+    }
+  }
+
   void ScrollRectToVisible(const gfx::Rect& rect) override {
     // NOTE: this assumes we only want to scroll in the y direction.
+
+    // Selecting an item scrolls it into view, so show the thumb while the user
+    // navigates the menu, e.g. with the keyboard.
+    owner_->SetScrollBarThumbVisible(true);
 
     // If the rect is already visible, do not scroll.
     if (GetLocalBounds().Contains(rect)) {
@@ -205,9 +341,15 @@ class MenuScrollViewContainer::MenuScrollView : public View {
     View* child = GetContents();
     int old_y = child->y();
     int y = -std::max(
-        0, std::min(child->GetPreferredSize({}).height() - this->height(),
-                    dy - child->y()));
+        0, std::min(child->height() - this->height(), dy - child->y()));
     child->SetY(y);
+
+    if (ScrollBar* scroll_bar = owner_->scroll_bar()) {
+      if (scroll_bar->GetVisible()) {
+        scroll_bar->Update(this->height(), child->height(), -y);
+      }
+      return;
+    }
 
     const int min_y = 0;
     const int max_y = -(child->GetPreferredSize({}).height() - this->height());
@@ -263,8 +405,14 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
       background_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
 
+  if (content_view_->use_scroll_bar()) {
+    header_container_ = background_view_->AddChildView(CreatePinnedContainer());
+    header_container_->GetViewAccessibility().SetIsIgnored(true);
+  }
+
   scroll_up_button_ = background_view_->AddChildView(
       std::make_unique<MenuScrollButton>(content_view, true));
+  scroll_up_button_->SetVisible(false);
 
   scroll_view_ = background_view_->AddChildView(
       std::make_unique<MenuScrollView>(content_view_, this));
@@ -273,8 +421,32 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded));
 
+  scroll_view_->GetViewAccessibility().SetIsIgnored(true);
+
+  if (content_view_->use_scroll_bar()) {
+    scroll_bar_ = scroll_view_->AddChildView(std::make_unique<MenuScrollBar>());
+    scroll_bar_->SetVisible(false);
+    scroll_bar_->set_controller(this);
+    scroll_bar_->set_context_menu_controller(nullptr);
+    for (View* child : scroll_bar_->children()) {
+      child->set_context_menu_controller(nullptr);
+    }
+    scroll_bar_->GetViewAccessibility().SetIsIgnored(true);
+    scroll_bar_->GetViewAccessibility().SetIsLeaf(true);
+    // Show the thumb while the mouse is anywhere over the menu.
+    SetNotifyEnterExitOnChild(true);
+  }
+
   scroll_down_button_ = background_view_->AddChildView(
       std::make_unique<MenuScrollButton>(content_view, false));
+  scroll_down_button_->SetVisible(false);
+
+  if (content_view_->use_scroll_bar()) {
+    footer_container_ = background_view_->AddChildView(CreatePinnedContainer());
+    footer_container_->GetViewAccessibility().SetIsIgnored(true);
+  }
+
+  UpdatePinnedItems();
 
   arrow_ = BubbleBorderTypeFromAnchor(
       content_view_->GetMenuItem()->GetMenuController()->GetAnchorPosition());
@@ -295,6 +467,78 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
 #endif
 }
 
+void MenuScrollViewContainer::UpdatePinnedItems() {
+  if (!header_container_ || !footer_container_) {
+    return;
+  }
+  bool changed = false;
+
+  // Find the last item in the contiguous run of pinned items at the top, then
+  // move everything up to and including it (so separators between pinned
+  // items come along too). New items are appended after any existing headers.
+  View* last_pinned_header = nullptr;
+  for (View* child : content_view_->children()) {
+    if (auto* item = AsViewClass<MenuItemView>(child)) {
+      if (!item->IsPinned()) {
+        break;
+      }
+      last_pinned_header = item;
+    }
+  }
+  if (last_pinned_header) {
+    View* moved = nullptr;
+    while (moved != last_pinned_header) {
+      moved = header_container_->AddChildView(
+          content_view_->RemoveChildViewT(content_view_->children().front()));
+    }
+    changed = true;
+  }
+
+  // Find the first item in the contiguous run of pinned items at the bottom,
+  // then move it and everything after it. New items are inserted before any
+  // existing footers, since they sat above them in the SubmenuView.
+  View* first_pinned_footer = nullptr;
+  for (View* child : base::Reversed(content_view_->children())) {
+    if (auto* item = AsViewClass<MenuItemView>(child)) {
+      if (!item->IsPinned()) {
+        break;
+      }
+      first_pinned_footer = item;
+    }
+  }
+  if (first_pinned_footer) {
+    const size_t start = content_view_->GetIndexOf(first_pinned_footer).value();
+    while (content_view_->children().size() > start) {
+      footer_container_->AddChildView(
+          content_view_->RemoveChildViewT(content_view_->children()[start]));
+    }
+    changed = true;
+  }
+
+  if (changed) {
+    PreferredSizeChanged();
+  }
+
+  DCHECK(std::ranges::none_of(content_view_->children(), [](const View* child) {
+    const auto* item = AsViewClass<MenuItemView>(child);
+    return item && item->IsPinned();
+  }));
+}
+
+std::vector<MenuItemView*> MenuScrollViewContainer::pinned_header_region()
+    const {
+  return GetMenuItemChildren(header_container_);
+}
+
+std::vector<MenuItemView*> MenuScrollViewContainer::pinned_footer_region()
+    const {
+  DCHECK(std::ranges::none_of(content_view_->children(), [](const View* child) {
+    const auto* item = AsViewClass<MenuItemView>(child);
+    return item && item->IsPinned();
+  }));
+  return GetMenuItemChildren(footer_container_);
+}
+
 bool MenuScrollViewContainer::HasBubbleBorder() const {
   return arrow_ != BubbleBorder::NONE ||
          MenuConfig::instance().ShouldUseBubbleBorderForMenu(
@@ -302,7 +546,9 @@ bool MenuScrollViewContainer::HasBubbleBorder() const {
 }
 
 MenuItemView* MenuScrollViewContainer::GetFootnote() const {
-  MenuItemView* const footnote = content_view_->GetLastItem();
+  const auto footers = pinned_footer_region();
+  MenuItemView* const footnote =
+      !footers.empty() ? footers.back() : content_view_->GetLastItem();
   return (footnote && footnote->GetType() == MenuItemView::Type::kHighlighted)
              ? footnote
              : nullptr;
@@ -335,8 +581,22 @@ gfx::Insets MenuScrollViewContainer::GetInsets() const {
 
 gfx::Size MenuScrollViewContainer::CalculatePreferredSize(
     const SizeBounds& available_size) const {
+  // SubmenuView computes the unified menu width; the pinned containers adopt
+  // that width and only contribute their height.
   gfx::Size prefsize =
       scroll_view_->GetContents()->GetPreferredSize(available_size);
+  if (header_container_ && !header_container_->children().empty()) {
+    prefsize.set_width(
+        std::max(prefsize.width(),
+                 header_container_->GetPreferredSize(available_size).width()));
+    prefsize.Enlarge(0, header_container_->GetHeightForWidth(prefsize.width()));
+  }
+  if (footer_container_ && !footer_container_->children().empty()) {
+    prefsize.set_width(
+        std::max(prefsize.width(),
+                 footer_container_->GetPreferredSize(available_size).width()));
+    prefsize.Enlarge(0, footer_container_->GetHeightForWidth(prefsize.width()));
+  }
   const gfx::Insets insets = GetInsets();
   prefsize.Enlarge(insets.width(), insets.height());
   return prefsize;
@@ -377,14 +637,49 @@ void MenuScrollViewContainer::OnThemeChanged() {
   CreateBorder();
 }
 
+void MenuScrollViewContainer::ScrollToPosition(ScrollBar* source,
+                                               int position) {
+  if (source != scroll_bar_) {
+    return;
+  }
+  View* contents = scroll_view_->GetContents();
+  const int max_pos = std::max(0, contents->height() - scroll_view_->height());
+  const int y = -std::clamp(position, 0, max_pos);
+  if (contents->y() != y) {
+    contents->SetY(y);
+  }
+}
+
+int MenuScrollViewContainer::GetScrollIncrement(ScrollBar* source,
+                                                bool is_page,
+                                                bool is_positive) {
+  return is_page ? scroll_view_->height()
+                 : content_view_->GetPreferredItemHeight();
+}
+
+void MenuScrollViewContainer::OnMouseEntered(const ui::MouseEvent& event) {
+  SetScrollBarThumbVisible(true);
+}
+
+void MenuScrollViewContainer::OnMouseExited(const ui::MouseEvent& event) {
+  SetScrollBarThumbVisible(false);
+}
+
+void MenuScrollViewContainer::SetScrollBarThumbVisible(bool visible) {
+  if (scroll_bar_) {
+    static_cast<MenuScrollBar*>(scroll_bar_.get())->SetThumbVisible(visible);
+  }
+}
+
 void MenuScrollViewContainer::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   // When the bounds on the MenuScrollViewContainer itself change, the scroll
   // offset is always reset to 0, so always hide the scroll-up control, and only
   // show the scroll-down control if it's going to be useful.
   scroll_up_button_->SetVisible(false);
-  scroll_down_button_->SetVisible(content_view_->GetPreferredSize({}).height() >
-                                  GetContentsBounds().height());
+  scroll_down_button_->SetVisible(!scroll_bar_ &&
+                                  content_view_->GetPreferredSize({}).height() >
+                                      GetContentsBounds().height());
 
   const bool any_scroll_button_visible =
       scroll_up_button_->GetVisible() || scroll_down_button_->GetVisible();

@@ -359,6 +359,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   // Returns true if the item is selected.
   bool IsSelected() const { return selected_; }
+  void SetIsPinned(bool is_pinned);
+  bool IsPinned() const { return is_pinned_; }
 
   // Adds a callback subscription associated with the above selected property.
   // The callback will be invoked whenever the selected property changes.
@@ -746,6 +748,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   // Whether we're selected.
   bool selected_ = false;
+
+  bool is_pinned_ = false;
 
   bool last_paint_as_selected_ = false;
 

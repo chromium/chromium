@@ -142,6 +142,19 @@
 namespace {
 
 using ::testing::_;
+// Adds `action` to `app_menu_root` just above the footer section, so the
+// pinned footer stays the last row of the menu like it is in production.
+actions::BaseAction* AddChildBeforeFooter(
+    actions::ActionItem* app_menu_root,
+    std::unique_ptr<actions::BaseAction> action) {
+  const auto& children = app_menu_root->GetChildren().children();
+  const auto footer = std::ranges::find_if(children, [](const auto& child) {
+    return child->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+           AppMenuActionItem::DisplayType::kFooter;
+  });
+  return app_menu_root->AddChildAt(std::move(action),
+                                   std::distance(children.begin(), footer));
+}
 
 class ActionAppMenuTest : public ActionAppMenuTestBase {
  public:
@@ -1993,7 +2006,7 @@ TEST_F(ActionAppMenuWithSearchTest, ClearItemsBelowSearchBarKeepsNotification) {
   // mapping. Nothing is left below the search bar row.
   EXPECT_EQ(root->GetMenuItemByID(kActionUpgradeDialog), upgrade_item);
   EXPECT_NE(menu.GetLabelFontList(kActionUpgradeDialog), nullptr);
-  EXPECT_EQ(submenu->children().back(),
+  EXPECT_EQ(submenu->GetMenuItems().back(),
             menu.search_bar_for_testing()->parent());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
@@ -2031,18 +2044,21 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
-  views::SubmenuView* submenu = root->GetSubmenu();
   AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
   ASSERT_NE(search_bar, nullptr);
+  // The search row is pinned in the header container, outside the SubmenuView.
+  views::View* const search_row = search_bar->parent();
+  views::View* const search_row_parent = search_row->parent();
   const std::optional<size_t> search_row_index =
-      submenu->GetIndexOf(search_bar->parent());
+      search_row_parent->GetIndexOf(search_row);
   ASSERT_TRUE(search_row_index.has_value());
   ASSERT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
 
   search_bar->SetText(u"Downloads");
 
   EXPECT_EQ(menu.search_bar_for_testing(), search_bar);
-  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()), search_row_index);
+  EXPECT_EQ(search_row->parent(), search_row_parent);
+  EXPECT_EQ(search_row_parent->GetIndexOf(search_row), search_row_index);
   EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
   EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
   EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
@@ -2069,15 +2085,19 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {
   views::SubmenuView* submenu = menu.root_menu_item_for_testing()->GetSubmenu();
   AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
   ASSERT_NE(search_bar, nullptr);
+  // The search row is pinned in the header container, outside the SubmenuView.
+  views::View* const search_row = search_bar->parent();
+  views::View* const search_row_parent = search_row->parent();
   const std::optional<size_t> search_row_index =
-      submenu->GetIndexOf(search_bar->parent());
+      search_row_parent->GetIndexOf(search_row);
   ASSERT_TRUE(search_row_index.has_value());
 
   search_bar->SetText(u"qzxjqzxj");
 
-  // A single "No results" row follows the search bar, and back is offered.
-  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()), search_row_index);
-  EXPECT_EQ(submenu->children().size(), *search_row_index + 2);
+  // A single "No results" row is the only scrollable row, and back is offered.
+  EXPECT_EQ(search_row->parent(), search_row_parent);
+  EXPECT_EQ(search_row_parent->GetIndexOf(search_row), search_row_index);
+  EXPECT_EQ(submenu->children().size(), 1u);
   EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
   EXPECT_FALSE(GetSearchIcon(search_bar)->GetVisible());
 
@@ -2093,11 +2113,13 @@ TEST_F(ActionAppMenuWithSearchTest, ChangingSearchQueryReplacesResults) {
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
-  views::SubmenuView* submenu = root->GetSubmenu();
   AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
   ASSERT_NE(search_bar, nullptr);
+  // The search row is pinned in the header container, outside the SubmenuView.
+  views::View* const search_row = search_bar->parent();
+  views::View* const search_row_parent = search_row->parent();
   const std::optional<size_t> search_row_index =
-      submenu->GetIndexOf(search_bar->parent());
+      search_row_parent->GetIndexOf(search_row);
   ASSERT_TRUE(search_row_index.has_value());
 
   search_bar->SetText(u"Print");
@@ -2107,7 +2129,8 @@ TEST_F(ActionAppMenuWithSearchTest, ChangingSearchQueryReplacesResults) {
   search_bar->SetText(u"Downloads");
   EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
   EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
-  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()), search_row_index);
+  EXPECT_EQ(search_row->parent(), search_row_parent);
+  EXPECT_EQ(search_row_parent->GetIndexOf(search_row), search_row_index);
   EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
@@ -2172,9 +2195,14 @@ TEST_F(ActionAppMenuWithSearchTest,
   views::MenuItemView* upgrade_item =
       root->GetMenuItemByID(kActionUpgradeDialog);
   ASSERT_NE(upgrade_item, nullptr);
+  // The notification and search rows are pinned in the header container,
+  // outside the SubmenuView, with the notification above the search row.
+  views::View* const search_row = search_bar->parent();
+  views::View* const header = search_row->parent();
+  ASSERT_EQ(upgrade_item->parent(), header);
   const std::optional<size_t> search_row_index_at_open =
-      submenu->GetIndexOf(search_bar->parent());
-  ASSERT_GT(search_row_index_at_open, 0u);
+      header->GetIndexOf(search_row);
+  ASSERT_GT(search_row_index_at_open, header->GetIndexOf(upgrade_item));
   const size_t row_count_at_open = submenu->children().size();
 
   // The same notification row stays above the search bar while the results
@@ -2182,8 +2210,9 @@ TEST_F(ActionAppMenuWithSearchTest,
   search_bar->SetText(u"Downloads");
   ASSERT_TRUE(GetBackButton(search_bar)->GetVisible());
   EXPECT_EQ(root->GetMenuItemByID(kActionUpgradeDialog), upgrade_item);
-  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()),
-            search_row_index_at_open);
+  EXPECT_EQ(upgrade_item->parent(), header);
+  EXPECT_EQ(search_row->parent(), header);
+  EXPECT_EQ(header->GetIndexOf(search_row), search_row_index_at_open);
 
   views::test::ButtonTestApi(GetBackButton(search_bar))
       .NotifyDefaultMouseClick();
@@ -2191,8 +2220,9 @@ TEST_F(ActionAppMenuWithSearchTest,
   // Back adds the normal rows below the search bar again, but not the
   // notification.
   EXPECT_EQ(root->GetMenuItemByID(kActionUpgradeDialog), upgrade_item);
-  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()),
-            search_row_index_at_open);
+  EXPECT_EQ(upgrade_item->parent(), header);
+  EXPECT_EQ(search_row->parent(), header);
+  EXPECT_EQ(header->GetIndexOf(search_row), search_row_index_at_open);
   EXPECT_EQ(submenu->children().size(), row_count_at_open);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
@@ -3208,13 +3238,15 @@ TEST_F(ActionAppMenuTest, MultipleNotificationsSeparatedBySpacingSeparator) {
   EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_padding, 0);
   EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_padding, 0);
 
-  ASSERT_GE(submenu->children().size(), 3u);
-  EXPECT_EQ(submenu->children()[0], upgrade_item);
+  views::View* header_container = upgrade_item->parent();
+  ASSERT_NE(header_container, nullptr);
+  ASSERT_GE(header_container->children().size(), 3u);
+  EXPECT_EQ(header_container->children()[0], upgrade_item);
   auto* separator =
-      views::AsViewClass<views::MenuSeparator>(submenu->children()[1]);
+      views::AsViewClass<views::MenuSeparator>(header_container->children()[1]);
   ASSERT_NE(separator, nullptr);
   EXPECT_EQ(separator->GetType(), ui::MenuSeparatorType::SPACING_SEPARATOR);
-  EXPECT_EQ(submenu->children()[2], global_error_item);
+  EXPECT_EQ(header_container->children()[2], global_error_item);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -3283,14 +3315,18 @@ TEST_F(ActionAppMenuTest,
   EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 12);
   EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 12);
 
-  ASSERT_GE(submenu->children().size(), 4u);
-  EXPECT_EQ(submenu->children()[0], upgrade_item);
-  EXPECT_EQ(submenu->children()[1], scheduled_restart_item);
+  // Notification rows are pinned, so they live in the header container rather
+  // than directly in the SubmenuView.
+  views::View* header_container = upgrade_item->parent();
+  ASSERT_NE(header_container, nullptr);
+  ASSERT_GE(header_container->children().size(), 4u);
+  EXPECT_EQ(header_container->children()[0], upgrade_item);
+  EXPECT_EQ(header_container->children()[1], scheduled_restart_item);
   auto* separator =
-      views::AsViewClass<views::MenuSeparator>(submenu->children()[2]);
+      views::AsViewClass<views::MenuSeparator>(header_container->children()[2]);
   ASSERT_NE(separator, nullptr);
   EXPECT_EQ(separator->GetType(), ui::MenuSeparatorType::SPACING_SEPARATOR);
-  EXPECT_EQ(submenu->children()[3], global_error_item);
+  EXPECT_EQ(header_container->children()[3], global_error_item);
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(mock_action_invoked_, Call(kActionScheduledRestartDialog, _, _));
@@ -3684,7 +3720,7 @@ TEST_F(ActionAppMenuTest, DragAndDropDelegateForwarding) {
 
   auto* item_a_action = submenu_action->AddChild(
       actions::ActionItem::Builder().SetText(u"Item A").Build());
-  app_menu_root->AddChild(std::move(submenu_action));
+  AddChildBeforeFooter(app_menu_root, std::move(submenu_action));
 
   menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
@@ -3791,7 +3827,7 @@ TEST_F(ActionAppMenuTest, UpdateMenuItem) {
               }))
           .Build());
   actions::BaseAction* submenu_action_ptr =
-      app_menu_root->AddChild(std::move(submenu_action));
+      AddChildBeforeFooter(app_menu_root, std::move(submenu_action));
 
   menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
