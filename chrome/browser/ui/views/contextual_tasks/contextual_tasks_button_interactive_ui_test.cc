@@ -1698,6 +1698,73 @@ IN_PROC_BROWSER_TEST_F(
       }));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
+                       LogsPermanentEphemeralMetricsForContinueVsNewThread) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0), Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      // Pressing the permanent button on tab 0 (no active task) starts a new
+      // thread and logs NewThread.
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "OpenSidePanel"));
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "OpenSidePanel.NewThread"));
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "OpenSidePanel.ContinueThread"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.PermanentToolbarButton.UserAction."
+            "OpenSidePanel.ThreadAction",
+            contextual_tasks::ContextualTasksPanelController::
+                PermanentToolbarButtonThreadAction::kNewThread,
+            1);
+      }),
+      // Close the side panel so the permanent button enters its ephemeral
+      // task-resumption state on tab 0.
+      SimulateClosingContextualTaskSidePanel(),
+      // Pressing the permanent button on tab 0 now continues the existing
+      // thread, logs ContinueThread, and does NOT log NewThread.
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        EXPECT_EQ(2, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "OpenSidePanel"));
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "OpenSidePanel.NewThread"));
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "OpenSidePanel.ContinueThread"));
+        histogram_tester.ExpectBucketCount(
+            "ContextualTasks.PermanentToolbarButton.UserAction."
+            "OpenSidePanel.ThreadAction",
+            contextual_tasks::ContextualTasksPanelController::
+                PermanentToolbarButtonThreadAction::kNewThread,
+            1);
+        histogram_tester.ExpectBucketCount(
+            "ContextualTasks.PermanentToolbarButton.UserAction."
+            "OpenSidePanel.ThreadAction",
+            contextual_tasks::ContextualTasksPanelController::
+                PermanentToolbarButtonThreadAction::kContinueThread,
+            1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.PermanentToolbarButton.UserAction."
+            "OpenSidePanel.ThreadAction",
+            2);
+      }));
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        ButtonShowsWhenSignedOutAndAimIneligible) {
   RunTestSequence(

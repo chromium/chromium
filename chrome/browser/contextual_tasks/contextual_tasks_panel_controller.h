@@ -59,8 +59,21 @@ class ContextualTasksPanelController {
     kAioToCobr = 3,
     kAskGoogle = 4,
     kEphemeralToolbarButton = 5,
-    kMaxValue = kEphemeralToolbarButton,
+    kPermanentToolbarButton = 6,
+    kMaxValue = kPermanentToolbarButton,
   };
+
+  // Whether clicking the permanently pinned toolbar button to open the side
+  // panel continues an existing thread or starts a new thread under Pinning v2.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ContextualTasksPermanentToolbarButtonThreadAction)
+  enum class PermanentToolbarButtonThreadAction {
+    kContinueThread = 0,
+    kNewThread = 1,
+    kMaxValue = kNewThread,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksPermanentToolbarButtonThreadAction)
 
   // Visibility commands.
   // Show the panel. If |transition_from_tab| is true, trigger the panel content

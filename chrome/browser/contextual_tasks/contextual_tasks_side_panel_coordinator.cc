@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
@@ -416,33 +417,6 @@ void ContextualTasksSidePanelCoordinator::Show(
     bool use_no_animation,
     std::optional<base::TimeTicks> open_time_ticks,
     std::optional<EntrySource> entry_source_override) {
-  ContextualTasksPanelController::EntrySource entry_source;
-  if (entry_source_override.has_value()) {
-    entry_source = *entry_source_override;
-  } else if (entry_point ==
-             omnibox::ChromeAimEntryPoint::
-                 DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT) {
-    entry_source = ContextualTasksPanelController::EntrySource::kLensOverlay;
-  } else if (entry_point ==
-             omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK) {
-    entry_source = ContextualTasksPanelController::EntrySource::kAioToCobr;
-  } else if (entry_point == omnibox::ChromeAimEntryPoint::
-                                DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE ||
-             entry_point == omnibox::ChromeAimEntryPoint::
-                                DESKTOP_CHROME_APP_MENU_ASK_GOOGLE ||
-             entry_point == omnibox::ChromeAimEntryPoint::
-                                DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON ||
-             entry_point ==
-                 omnibox::ChromeAimEntryPoint::
-                     DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP) {
-    entry_source = ContextualTasksPanelController::EntrySource::kAskGoogle;
-  } else if (transition_from_tab) {
-    entry_source =
-        ContextualTasksPanelController::EntrySource::kAiModeLinkClick;
-  } else {
-    entry_source = ContextualTasksPanelController::EntrySource::kOther;
-  }
-
   // Increment the impression count and attempt to show the HaTS survey.
   int impression_count =
       pref_service_->GetInteger(prefs::kContextualTasksNextPanelOpenCount);
@@ -477,8 +451,59 @@ void ContextualTasksSidePanelCoordinator::Show(
   tabs::TabInterface* active_tab_interface =
       TabListInterface::From(browser_window_)->GetActiveTab();
   CHECK(active_tab_interface);
+  std::optional<ContextualTask> existing_task = GetCurrentTask();
+  const bool is_new_ui_service_task =
+      existing_task.has_value() &&
+      !task_id_to_web_contents_cache_.contains(existing_task->GetTaskId()) &&
+      GetUiService() &&
+      (GetUiService()
+           ->GetCreationUrlForTask(existing_task->GetTaskId())
+           .has_value() ||
+       GetUiService()->IsTaskWaitingForUrl(existing_task->GetTaskId()) ||
+       GetUiService()->IsPendingErrorPage(existing_task->GetTaskId()));
+  const bool is_continuing_existing_thread =
+      contextual_tasks::IsContextualTasksPinningV2Enabled() &&
+      entry_point == omnibox::ChromeAimEntryPoint::
+                         DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON &&
+      !is_opening_in_zero_state_ && existing_task.has_value() &&
+      !is_new_ui_service_task;
+
+  ContextualTasksPanelController::EntrySource entry_source;
+  if (entry_source_override.has_value()) {
+    entry_source = *entry_source_override;
+  } else if (entry_point ==
+             omnibox::ChromeAimEntryPoint::
+                 DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT) {
+    entry_source = ContextualTasksPanelController::EntrySource::kLensOverlay;
+  } else if (entry_point ==
+             omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK) {
+    entry_source = ContextualTasksPanelController::EntrySource::kAioToCobr;
+  } else if (is_continuing_existing_thread) {
+    entry_source =
+        ContextualTasksPanelController::EntrySource::kPermanentToolbarButton;
+  } else if (entry_point == omnibox::ChromeAimEntryPoint::
+                                DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE ||
+             entry_point == omnibox::ChromeAimEntryPoint::
+                                DESKTOP_CHROME_APP_MENU_ASK_GOOGLE ||
+             entry_point == omnibox::ChromeAimEntryPoint::
+                                DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON ||
+             entry_point ==
+                 omnibox::ChromeAimEntryPoint::
+                     DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP) {
+    entry_source = ContextualTasksPanelController::EntrySource::kAskGoogle;
+  } else if (entry_point == omnibox::ChromeAimEntryPoint::
+                                DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON) {
+    entry_source =
+        ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton;
+  } else if (transition_from_tab) {
+    entry_source =
+        ContextualTasksPanelController::EntrySource::kAiModeLinkClick;
+  } else {
+    entry_source = ContextualTasksPanelController::EntrySource::kOther;
+  }
+
   CloseLensSessionIfActive(active_tab_interface, entry_point, entry_source);
-  if (!GetCurrentTask()) {
+  if (!existing_task) {
     // If no task is found, create a new task and associate it with the active
     // tab.
     ContextualTask task = contextual_tasks_service_->CreateTask();
@@ -488,7 +513,10 @@ void ContextualTasksSidePanelCoordinator::Show(
     }
   }
 
-  MaybeCreateCachedWebContents(entry_point);
+  MaybeCreateCachedWebContents(
+      is_continuing_existing_thread
+          ? omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT
+          : entry_point);
   if (std::optional<ContextualTask> task = GetCurrentTask()) {
     auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
     if (it != task_id_to_web_contents_cache_.end()) {
@@ -636,6 +664,7 @@ void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
       contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
       contextual_tasks::GetEffectivePinState(browser_window_->GetProfile());
 
+  base::AutoReset<bool> opening_in_zero_state(&is_opening_in_zero_state_, true);
   Show(/*transition_from_tab=*/false,
        is_pinned ? omnibox::ChromeAimEntryPoint::
                        DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON
@@ -1230,6 +1259,17 @@ void ContextualTasksSidePanelCoordinator::CleanUpUnusedWebContents() {
             base::TimeTicks::Now() - it->second->open_time_ticks;
         base::UmaHistogramLongTimes(
             "ContextualTasks.Session.Duration.EphemeralToolbarButton",
+            duration);
+        it->second->open_time_ticks = base::TimeTicks();
+      } else if (contextual_tasks::IsContextualTasksPinningV2Enabled() &&
+                 it->second->entry_source ==
+                     ContextualTasksPanelController::EntrySource::
+                         kPermanentToolbarButton &&
+                 !it->second->open_time_ticks.is_null()) {
+        base::TimeDelta duration =
+            base::TimeTicks::Now() - it->second->open_time_ticks;
+        base::UmaHistogramLongTimes(
+            "ContextualTasks.Session.Duration.PermanentToolbarButton",
             duration);
         it->second->open_time_ticks = base::TimeTicks();
       }
@@ -1918,6 +1958,16 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
                 "ContextualTasks.SidePanel.UserAction.Close."
                 "EphemeralToolbarButton");
             break;
+          case EntrySource::kPermanentToolbarButton:
+            if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+              RecordUserActionAndHistogram(
+                  "ContextualTasks.SidePanel.UserAction.Close."
+                  "PermanentToolbarButton");
+            } else {
+              RecordUserActionAndHistogram(
+                  "ContextualTasks.SidePanel.UserAction.Close.Other");
+            }
+            break;
           default:
             RecordUserActionAndHistogram(
                 "ContextualTasks.SidePanel.UserAction.Close.Other");
@@ -1995,6 +2045,15 @@ void ContextualTasksSidePanelCoordinator::RecordSessionEndMetrics() {
           base::TimeTicks::Now() - cache_item->open_time_ticks;
       base::UmaHistogramLongTimes(
           "ContextualTasks.Session.Duration.EphemeralToolbarButton", duration);
+      cache_item->open_time_ticks = base::TimeTicks();
+    } else if (contextual_tasks::IsContextualTasksPinningV2Enabled() &&
+               cache_item->entry_source ==
+                   ContextualTasksPanelController::EntrySource::
+                       kPermanentToolbarButton) {
+      base::TimeDelta duration =
+          base::TimeTicks::Now() - cache_item->open_time_ticks;
+      base::UmaHistogramLongTimes(
+          "ContextualTasks.Session.Duration.PermanentToolbarButton", duration);
       cache_item->open_time_ticks = base::TimeTicks();
     }
   }

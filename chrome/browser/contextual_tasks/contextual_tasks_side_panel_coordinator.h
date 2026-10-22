@@ -376,6 +376,7 @@ class ContextualTasksSidePanelCoordinator
       scoped_unowned_user_data_;
 
   bool in_cobrowsing_session_ = false;
+  bool is_opening_in_zero_state_ = false;
 
   // When true, PrimaryPageChanged() will not auto-hide the panel on a
   // contextual tasks URL navigation. Set only by interactive tests that drive

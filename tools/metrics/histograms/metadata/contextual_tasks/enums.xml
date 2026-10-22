@@ -48,6 +48,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_ui_service.cc:EntrypointSource) -->
 
+<!-- LINT.IfChange(ContextualTasksPermanentToolbarButtonThreadAction) -->
+
+<enum name="ContextualTasksPermanentToolbarButtonThreadAction">
+  <int value="0" label="ContinueThread"/>
+  <int value="1" label="NewThread"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h:ContextualTasksPermanentToolbarButtonThreadAction) -->
+
 <!-- LINT.IfChange(ContextualTasksTabCloseState) -->
 
 <enum name="ContextualTasksTabCloseState">

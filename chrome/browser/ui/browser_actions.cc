@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/search_engines/ai_mode_button_config.h"
 #include "components/search_engines/ai_mode_button_service.h"
@@ -709,6 +710,40 @@ void BrowserActions::InitializeSidePanelActions() {
                                   "OpenSidePanel";
                     base::RecordAction(base::UserMetricsAction(user_action));
                     base::UmaHistogramBoolean(user_action, true);
+                    if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+                      const char* aggregate_action =
+                          is_open ? "ContextualTasks.ToolbarButton.UserAction."
+                                    "CloseSidePanel"
+                                  : "ContextualTasks.ToolbarButton.UserAction."
+                                    "OpenSidePanel";
+                      base::RecordAction(
+                          base::UserMetricsAction(aggregate_action));
+                      base::UmaHistogramBoolean(aggregate_action, true);
+                      if (!is_open) {
+                        const bool has_current_task =
+                            controller->GetCurrentTask().has_value();
+                        const char* thread_action =
+                            has_current_task
+                                ? "ContextualTasks.PermanentToolbarButton."
+                                  "UserAction.OpenSidePanel.ContinueThread"
+                                : "ContextualTasks.PermanentToolbarButton."
+                                  "UserAction.OpenSidePanel.NewThread";
+                        base::RecordAction(
+                            base::UserMetricsAction(thread_action));
+                        base::UmaHistogramEnumeration(
+                            "ContextualTasks.PermanentToolbarButton."
+                            "UserAction.OpenSidePanel.ThreadAction",
+                            has_current_task
+                                ? contextual_tasks::
+                                      ContextualTasksPanelController::
+                                          PermanentToolbarButtonThreadAction::
+                                              kContinueThread
+                                : contextual_tasks::
+                                      ContextualTasksPanelController::
+                                          PermanentToolbarButtonThreadAction::
+                                              kNewThread);
+                      }
+                    }
                   }
                   if (contextual_tasks::
                           IsContextualTasksPinButtonInToolbarEnabled() &&

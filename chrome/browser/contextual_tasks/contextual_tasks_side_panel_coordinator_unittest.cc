@@ -1411,6 +1411,119 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelLogsMetrics_PermanentToolbarButton_PinningV2) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(kContextualTasksPinningV2);
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get()));
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  // Continuing an existing thread via the pinned toolbar button under Pinning
+  // v2 must NOT log AEP (DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON), and
+  // should instead pass UNKNOWN_AIM_ENTRY_POINT.
+  EXPECT_CALL(*mock_ui_service,
+              SetInitialEntryPointForTask(
+                  task.GetTaskId(),
+                  omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT))
+      .Times(1);
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
+
+  EXPECT_EQ(
+      coordinator_->GetActiveEntrySource(),
+      ContextualTasksPanelController::EntrySource::kPermanentToolbarButton);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.PermanentToolbarButton", 0);
+
+  coordinator_->Close();
+
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close."
+                   "PermanentToolbarButton"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.Close.PermanentToolbarButton", true,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.PermanentToolbarButton", 1);
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AskGoogle"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close."
+                   "EphemeralToolbarButton"));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       DestructorLogsMetrics_PermanentToolbarButton_PinningV2) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(kContextualTasksPinningV2);
+
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.PermanentToolbarButton", 0);
+
+  mock_panel_host_ = nullptr;
+  coordinator_.reset();
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.PermanentToolbarButton", 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CleanUpUnusedWebContentsLogsMetrics_PermanentToolbarButton_PinningV2) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(kContextualTasksPinningV2);
+
+  base::HistogramTester histogram_tester;
+  ClearCacheForTesting();
+
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(_))
+      .WillRepeatedly(Return(std::vector<SessionID>{}));
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillRepeatedly(Return(std::nullopt));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/false);
+  SetCacheItemEntrySourceForTesting(
+      task_id,
+      ContextualTasksPanelController::EntrySource::kPermanentToolbarButton,
+      base::TimeTicks::Now());
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.PermanentToolbarButton", 0);
+
+  CleanUpUnusedWebContents();
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.PermanentToolbarButton", 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
        CloseSidePanelNoLogging_NonUserAction) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;

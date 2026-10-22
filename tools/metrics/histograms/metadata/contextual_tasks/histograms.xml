@@ -617,6 +617,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="ContextualTasks.PermanentToolbarButton.UserAction.OpenSidePanel.ThreadAction"
+    enum="ContextualTasksPermanentToolbarButtonThreadAction"
+    expires_after="2027-04-15">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks the permanently pinned contextual tasks
+    toolbar button to open the side panel under Pinning v2. Records whether
+    clicking the button continues an existing thread associated with the active
+    tab or starts a new thread.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Session.Completed" enum="Boolean"
     expires_after="2027-03-07">
   <owner>sophiechang@chromium.org</owner>
@@ -651,6 +665,18 @@ chromium-metrics-reviews@google.com.
     (unpinned) toolbar button is closed or ended. Measures the time elapsed from
     when the side panel was opened via the ephemeral toolbar button until it was
     closed.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Session.Duration.PermanentToolbarButton"
+    units="ms" expires_after="2027-04-15">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a contextual tasks side panel session resumed via the
+    permanently pinned toolbar button (functioning ephemerally under Pinning v2)
+    is closed or ended. Measures the time elapsed from when the side panel was
+    reopened via the permanent toolbar button until it was closed.
   </summary>
 </histogram>
 
@@ -741,6 +767,22 @@ chromium-metrics-reviews@google.com.
     Recorded when the user clicks the side panel close button, for sessions
     where the entry point was not recorded as another histogram. Always recorded
     as true.
+  </summary>
+</histogram>
+
+<histogram
+    name="ContextualTasks.SidePanel.UserAction.Close.PermanentToolbarButton"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user closes the side panel (e.g. via the side panel close
+    button), for sessions that were resumed via the permanently pinned toolbar
+    button (functioning ephemerally under Pinning v2). Unlike
+    ContextualTasks.PermanentToolbarButton.UserAction.CloseSidePanel (which
+    records clicking the toolbar button itself to toggle any open side panel
+    closed), this slices side panel closures by the session's entry source.
+    Always recorded as true.
   </summary>
 </histogram>
 
