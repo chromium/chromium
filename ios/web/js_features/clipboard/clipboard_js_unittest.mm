@@ -202,13 +202,7 @@ TEST_F(ClipboardJsTest, TestWriteAndAllow) {
 }
 
 // Tests that a single readText request can be successfully fulfilled.
-// TODO(crbug.com/559140540): Re-enable this test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_TestReadTextAndAllow TestReadTextAndAllow
-#else
-#define MAYBE_TestReadTextAndAllow DISABLED_TestReadTextAndAllow
-#endif
-TEST_F(ClipboardJsTest, MAYBE_TestReadTextAndAllow) {
+TEST_F(ClipboardJsTest, TestReadTextAndAllow) {
   // First, write text to the clipboard to ensure there's something to read.
   WriteText("test");
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
@@ -249,13 +243,7 @@ TEST_F(ClipboardJsTest, MAYBE_TestReadTextAndAllow) {
 }
 
 // Tests that a single read request can be successfully fulfilled.
-// TODO(crbug.com/559140540): Re-enable this test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_TestReadAndAllow TestReadAndAllow
-#else
-#define MAYBE_TestReadAndAllow DISABLED_TestReadAndAllow
-#endif
-TEST_F(ClipboardJsTest, MAYBE_TestReadAndAllow) {
+TEST_F(ClipboardJsTest, TestReadAndAllow) {
   // First, write text to the clipboard to ensure there's something to read.
   WriteText("test");
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
