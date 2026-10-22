@@ -835,7 +835,7 @@ void Canvas2DRecorderContext::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
   ValidateStateStack(c);
 }
 
-void Canvas2DRecorderContext::ResetInternal() {
+void Canvas2DRecorderContext::ResetState() {
   ValidateStateStack();
   state_stack_.resize(1);
   state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
@@ -849,14 +849,21 @@ void Canvas2DRecorderContext::ResetInternal() {
 
   ValidateStateStack();
   origin_tainted_by_content_ = false;
+}
+
+void Canvas2DRecorderContext::ClearCanvas(gfx::Size size) {
+  if (cc::PaintCanvas* c = GetPaintCanvas()) {
+    WillDraw(gfx::Rect(size), CanvasPerformanceMonitor::DrawType::kOther);
+    c->drawRect(SkRect::MakeWH(size.width(), size.height()), GetClearFlags());
+  }
+}
+
+void Canvas2DRecorderContext::ResetInternal() {
+  ResetState();
 
   // Clear the frame in case a flush previously drew to the canvas surface.
-  if (cc::PaintCanvas* c = GetPaintCanvas()) {
-    int width = Width();  // Keeping results to avoid repetitive virtual calls.
-    int height = Height();
-    WillDraw(gfx::Rect(width, height),
-             CanvasPerformanceMonitor::DrawType::kOther);
-    c->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, width, height), GetClearFlags());
+  if (GetPaintCanvas()) {
+    ClearCanvas(gfx::Size(Width(), Height()));
   }
 }
 

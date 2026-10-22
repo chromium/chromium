@@ -179,6 +179,8 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   int LayerCount() const { return layer_count_; }
   virtual void reset();          // Called by the javascript interface
   virtual void ResetInternal();  // Called from within blink
+  void ClearCanvas(gfx::Size size);
+  void ResetState();
 
   void scale(double sx, double sy);
   void rotate(double angle_in_radians);
