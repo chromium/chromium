@@ -327,6 +327,7 @@ component("views") {
     "view_class_properties.h",
     "view_constants.h",
     "view_decoration.h",
+    "view_hierarchy_changed_details.h",
     "view_model.h",
     "view_model_utils.h",
     "view_observer.h",
