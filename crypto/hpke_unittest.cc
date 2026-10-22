@@ -393,5 +393,81 @@ TEST(HpkeTest, OpenKnownAnswerMlkem768) {
   EXPECT_THAT(*decrypted, testing::ElementsAreArray(expected_plaintext));
 }
 
+TEST(HpkeTest, AuthModeUnsupportedMlkem768) {
+  const HpkeParams params = {.kem = KemType::kMlkem768,
+                             .kdf = KdfType::kHkdfSha256,
+                             .aead = AeadType::kChaCha20Poly1305};
+  auto sender_key = crypto::keypair::PrivateKey::GenerateMlkem768();
+  auto sender_pub = crypto::keypair::PublicKey::FromPrivateKey(sender_key);
+  auto recipient_key = crypto::keypair::PrivateKey::GenerateMlkem768();
+  auto recipient_pub =
+      crypto::keypair::PublicKey::FromPrivateKey(recipient_key);
+
+  const auto plaintext = std::to_array<uint8_t>({1, 2, 3, 4, 5});
+  const auto info = std::to_array<uint8_t>({6, 7, 8});
+
+  // ML-KEM does not support Auth mode for HPKE.
+  EXPECT_FALSE(AuthSeal(params, sender_key, recipient_pub, plaintext, info, {})
+                   .has_value());
+
+  // Use a base-mode sealed payload (valid length >= 1088) to verify AuthOpen
+  // rejects ML-KEM due to mode incompatibility rather than buffer length.
+  auto base_encrypted = Seal(params, recipient_pub, plaintext, info, {});
+  ASSERT_TRUE(base_encrypted.has_value());
+  EXPECT_FALSE(
+      AuthOpen(params, recipient_key, sender_pub, *base_encrypted, info, {})
+          .has_value());
+}
+
+TEST(HpkeTest, OpenTooShortEncryptedDataMlkem768) {
+  const HpkeParams params = {.kem = KemType::kMlkem768,
+                             .kdf = KdfType::kHkdfSha256,
+                             .aead = AeadType::kChaCha20Poly1305};
+  auto recipient_key = crypto::keypair::PrivateKey::GenerateMlkem768();
+
+  // Less than 1088 bytes (ML-KEM-768 encapsulated shared secret length).
+  const std::vector<uint8_t> too_short_data(1087, 0);
+  EXPECT_FALSE(Open(params, recipient_key, too_short_data, {}, {}).has_value());
+}
+
+TEST(HpkeTest, MismatchedKeyTypes) {
+  const HpkeParams x25519_params = {.kem = KemType::kX25519HkdfSha256,
+                                    .kdf = KdfType::kHkdfSha256,
+                                    .aead = AeadType::kChaCha20Poly1305};
+  const HpkeParams mlkem_params = {.kem = KemType::kMlkem768,
+                                   .kdf = KdfType::kHkdfSha256,
+                                   .aead = AeadType::kChaCha20Poly1305};
+
+  auto x25519_priv = crypto::keypair::PrivateKey::GenerateX25519();
+  auto x25519_pub = crypto::keypair::PublicKey::FromPrivateKey(x25519_priv);
+  auto mlkem_priv = crypto::keypair::PrivateKey::GenerateMlkem768();
+  auto mlkem_pub = crypto::keypair::PublicKey::FromPrivateKey(mlkem_priv);
+
+  const auto plaintext = std::to_array<uint8_t>({1, 2, 3, 4, 5});
+  const std::vector<uint8_t> dummy_ciphertext(2000, 0);
+
+  // Base mode with mismatched key types.
+  EXPECT_FALSE(Seal(x25519_params, mlkem_pub, plaintext, {}, {}).has_value());
+  EXPECT_FALSE(Seal(mlkem_params, x25519_pub, plaintext, {}, {}).has_value());
+  EXPECT_FALSE(
+      Open(x25519_params, mlkem_priv, dummy_ciphertext, {}, {}).has_value());
+  EXPECT_FALSE(
+      Open(mlkem_params, x25519_priv, dummy_ciphertext, {}, {}).has_value());
+
+  // Auth mode with X25519 params but ML-KEM keys.
+  EXPECT_FALSE(
+      AuthSeal(x25519_params, mlkem_priv, x25519_pub, plaintext, {}, {})
+          .has_value());
+  EXPECT_FALSE(
+      AuthSeal(x25519_params, x25519_priv, mlkem_pub, plaintext, {}, {})
+          .has_value());
+  EXPECT_FALSE(
+      AuthOpen(x25519_params, mlkem_priv, x25519_pub, dummy_ciphertext, {}, {})
+          .has_value());
+  EXPECT_FALSE(
+      AuthOpen(x25519_params, x25519_priv, mlkem_pub, dummy_ciphertext, {}, {})
+          .has_value());
+}
+
 }  // namespace
 }  // namespace crypto::hpke

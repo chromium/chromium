@@ -25,6 +25,8 @@ namespace crypto::hpke {
 
 enum class KemType {
   kX25519HkdfSha256,
+  // ML-KEM-768 only supports Base mode (`Seal` and `Open`), not Auth mode
+  // (`AuthSeal` and `AuthOpen`).
   kMlkem768,
 };
 enum class KdfType { kHkdfSha256 };
@@ -38,8 +40,9 @@ struct HpkeParams {
 
 // One-shot encryption in Auth mode.
 // Returns a vector containing the encapsulated shared secret followed by the
-// ciphertext, or nullopt on failure. See RFC 9180 section 6.1 for a
-// description of this one-shot mode.
+// ciphertext, or nullopt on failure. Note that ML-KEM (`KemType::kMlkem768`)
+// does not support Auth mode and will return nullopt. See RFC 9180 section 6.1
+// for a description of this one-shot mode.
 CRYPTO_EXPORT std::optional<std::vector<uint8_t>> AuthSeal(
     const HpkeParams& params,
     const crypto::keypair::PrivateKey& sender,
@@ -49,7 +52,8 @@ CRYPTO_EXPORT std::optional<std::vector<uint8_t>> AuthSeal(
     base::span<const uint8_t> ad);
 
 // One-shot decryption in Auth mode.
-// Returns the decrypted plaintext, or nullopt on failure.
+// Returns the decrypted plaintext, or nullopt on failure. Note that ML-KEM
+// (`KemType::kMlkem768`) does not support Auth mode and will return nullopt.
 //
 // `encrypted_data` should contain the encapsulated shared secret followed by
 // the ciphertext. See RFC 9180 section 6.1.
