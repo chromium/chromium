@@ -36,6 +36,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -66,6 +67,26 @@ WebFilterMetricsOptions GetWebFilterMetricsOptions(
       .transition_type = navigation_handle.GetPageTransition(),
       .filtering_context = FilteringContext::kNavigationThrottle,
   };
+}
+
+// Returns the URL that a subframe navigation should be compared against when
+// applying the same-domain relaxation: the last committed URL of the outermost
+// main frame of the page that contains the navigating frame.
+//
+// This is derived from the navigating frame's own frame tree rather than from
+// the `WebContents`. In particular, `WebContents::GetVisibleURL()` must not be
+// used: it can return the URL of a pending, not yet committed, main frame
+// navigation, which is not the document that embeds the subframe.
+GURL GetMainFrameUrlForSubFrameNavigation(
+    content::NavigationHandle& navigation_handle) {
+  if (content::RenderFrameHost* parent =
+          navigation_handle.GetParentFrameOrOuterDocument()) {
+    return parent->GetOutermostMainFrame()->GetLastCommittedURL();
+  }
+  // Main frames of non-primary outermost pages (e.g. guest pages) have no
+  // parent or outer document. Fall back to the committed URL of the primary
+  // main frame, which never reflects a pending navigation.
+  return navigation_handle.GetWebContents()->GetLastCommittedURL();
 }
 
 }  // namespace
@@ -139,7 +160,7 @@ void ClassifyUrlNavigationThrottle::CheckURL() {
         GetWebFilterMetricsOptions(*navigation_handle()));
   } else {
     url_filtering_service()->GetFilteringBehaviorForSubFrame(
-        url, navigation_handle()->GetWebContents()->GetVisibleURL(),
+        url, GetMainFrameUrlForSubFrameNavigation(*navigation_handle()),
         base::BindOnce(&ClassifyUrlNavigationThrottle::OnURLCheckDone,
                        weak_ptr_factory_.GetWeakPtr(), key),
         GetWebFilterMetricsOptions(*navigation_handle()));

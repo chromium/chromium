@@ -982,6 +982,97 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
             "www.c.example2.com");
 }
 
+// The same-domain relaxation for subframes must be evaluated against the
+// committed document that embeds the subframe, not against the URL of a
+// pending main frame navigation (which `WebContents::GetVisibleURL()` returns
+// for browser-initiated navigations before they commit).
+IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
+                       IFrameSameDomainCheckIgnoresPendingMainFrameNavigation) {
+  supervised_user_test_util::SetWebFilterType(
+      browser()->GetProfile(), supervised_user::WebFilterType::kCertainSites);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Only `www.example.com` and `www.a.example2.com` are allowed; every other
+  // host is blocked by default. Anything that reaches the async checker is
+  // classified as allowed.
+  AllowlistHost(kExampleHost);
+  AllowlistHost("www.a.example2.com");
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+
+  GURL committed_url = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), committed_url));
+  EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  // Start a browser-initiated main frame navigation to another domain and
+  // hold it before it commits. While it is pending, the visible URL reflects
+  // the pending entry, but the previously committed page still hosts (and can
+  // create) subframes.
+  GURL pending_url = embedded_test_server()->GetURL(
+      "www.a.example2.com", "/supervised_user/simple.html");
+  content::TestNavigationManager main_frame_navigation(web_contents(),
+                                                       pending_url);
+  web_contents()->GetController().LoadURL(pending_url, content::Referrer(),
+                                          ui::PAGE_TRANSITION_TYPED,
+                                          std::string());
+  ASSERT_TRUE(main_frame_navigation.WaitForRequestStart());
+  ASSERT_EQ(pending_url, web_contents()->GetVisibleURL());
+  ASSERT_EQ(committed_url, web_contents()->GetLastCommittedURL());
+
+  // A default-blocked subframe that shares a domain with the pending
+  // navigation, but not with the committed page, must be blocked.
+  GURL cross_domain_frame_url = embedded_test_server()->GetURL(
+      "www.b.example2.com", "/supervised_user/simple.html");
+  {
+    content::TestNavigationObserver observer(cross_domain_frame_url);
+    observer.WatchExistingWebContents();
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(),
+        content::JsReplace("const frame = document.createElement('iframe');"
+                           "frame.src = $1;"
+                           "document.body.appendChild(frame);",
+                           cross_domain_frame_url),
+        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.WaitForNavigationFinished();
+    EXPECT_FALSE(observer.last_navigation_succeeded());
+  }
+  // The main frame navigation must still be pending.
+  ASSERT_EQ(pending_url, web_contents()->GetVisibleURL());
+  ASSERT_EQ(committed_url, web_contents()->GetLastCommittedURL());
+
+  std::vector<content::FrameTreeNodeId> blocked_frames = GetBlockedFrames();
+  ASSERT_EQ(blocked_frames.size(), 1u);
+  EXPECT_EQ(GetBlockedFrameURL(blocked_frames[0]).GetHost(),
+            "www.b.example2.com");
+
+  // A default-blocked subframe that shares a domain with the committed page is
+  // still eligible for the same-domain relaxation while the navigation to
+  // another domain is pending.
+  GURL same_domain_frame_url = embedded_test_server()->GetURL(
+      "www.a.example.com", "/supervised_user/simple.html");
+  {
+    content::TestNavigationObserver observer(same_domain_frame_url);
+    observer.WatchExistingWebContents();
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(),
+        content::JsReplace("const frame = document.createElement('iframe');"
+                           "frame.src = $1;"
+                           "document.body.appendChild(frame);",
+                           same_domain_frame_url),
+        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.WaitForNavigationFinished();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+  }
+  EXPECT_EQ(GetBlockedFrames().size(), 1u);
+  // The main frame navigation must still be pending.
+  ASSERT_EQ(pending_url, web_contents()->GetVisibleURL());
+  ASSERT_EQ(committed_url, web_contents()->GetLastCommittedURL());
+
+  // Let the pending main frame navigation complete.
+  ASSERT_TRUE(main_frame_navigation.WaitForNavigationFinished());
+}
+
 // The switches::kHostWindowBounds commandline flag doesn't appear to work
 // for tests on other platforms.
 // TODO(b/300426225): enable these tests on Linux/Mac/Windows.
