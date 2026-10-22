@@ -4,6 +4,8 @@
 
 package org.chromium.google_apis.gaia;
 
+import android.text.TextUtils;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -17,7 +19,7 @@ public class GaiaId {
     /** Constructs a new GaiaId from a String representation of the gaia ID. */
     @CalledByNative
     public GaiaId(@JniType("std::string") String value) {
-        assert value != null;
+        assert !TextUtils.isEmpty(value);
         mValue = value;
     }
 

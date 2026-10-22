@@ -152,10 +152,6 @@ public class StartupEnterpriseSignalsDisclaimerController
         }
 
         final GaiaId gaiaId = primaryAccountInfo.getGaiaId();
-        if (gaiaId.toString().isEmpty()) {
-            // If this happens something is very wrong.
-            return false;
-        }
         if (EnterpriseSignalsDisclaimerBridge.hasAccountAcknowledgedSignalsDisclaimer(gaiaId)) {
             return false;
         }
@@ -197,7 +193,6 @@ public class StartupEnterpriseSignalsDisclaimerController
     }
 
     private void onDisclaimerAccepted(CoreAccountInfo account) {
-        assert !account.getGaiaId().toString().isEmpty();
         EnterpriseSignalsDisclaimerBridge.setAccountAcknowledgedSignalsDisclaimer(
                 account.getGaiaId());
     }

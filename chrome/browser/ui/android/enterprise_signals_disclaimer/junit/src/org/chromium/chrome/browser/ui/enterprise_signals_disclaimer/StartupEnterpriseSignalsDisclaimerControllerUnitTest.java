@@ -51,11 +51,9 @@ import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSi
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator.PresentationMode;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.function.Consumer;
 
@@ -291,27 +289,6 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
         verifyCoordinatorCreated(times(1));
         verifyHostCreated(times(1));
         verify(mHost, times(1)).show();
-    }
-
-    @Test
-    public void maybeShow_emptyGaiaId_returnsFalse() {
-        mIdentityManager.setPrimaryAccount(null);
-
-        when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
-        mIdentityManager.setPrimaryAccount(
-                new AccountInfo.Builder(TestAccounts.MANAGED_ACCOUNT.getEmail(), new GaiaId(""))
-                        .fullName(TestAccounts.MANAGED_ACCOUNT.getFullName())
-                        .givenName(TestAccounts.MANAGED_ACCOUNT.getGivenName())
-                        .accountImage(TestAccounts.MANAGED_ACCOUNT.getAccountImage())
-                        .accountCapabilities(TestAccounts.MANAGED_ACCOUNT.getAccountCapabilities())
-                        .build());
-
-        StartupEnterpriseSignalsDisclaimerController controller = createController();
-        Assert.assertNotNull(controller);
-
-        Assert.assertFalse(controller.maybeShow(ShownOn.STARTUP));
-        verifyCoordinatorCreated(never());
-        verifyHostCreated(never());
     }
 
     @Test
