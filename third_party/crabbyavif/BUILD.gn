@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/rust/cargo_crate.gni")
 import("//build/rust/rust_bindgen_generator.gni")
 import("//build/rust/rust_static_library.gni")
 
@@ -28,7 +29,7 @@ rust_bindgen_generator("crabbyavif_dav1d_bindings") {
   ]
 }
 
-rust_static_library("crabbyavif_dav1d_sys") {
+cargo_crate("crabbyavif_dav1d_sys") {
   crate_root = "src/sys/dav1d-sys/src/lib.rs"
 
   # This is a wrapper interface to a C library. So unsafe has to be allowed.
@@ -37,6 +38,7 @@ rust_static_library("crabbyavif_dav1d_sys") {
   sources = [ "src/sys/dav1d-sys/src/lib.rs" ]
   bindgen_deps = [ ":crabbyavif_dav1d_bindings" ]
   features = [ "dav1d" ]
+  build_native_rust_unit_tests = false
 }
 
 rust_bindgen_generator("crabbyavif_libyuv_bindings") {
@@ -135,7 +137,7 @@ rust_bindgen_generator("crabbyavif_libyuv_bindings") {
   ]
 }
 
-rust_static_library("crabbyavif_libyuv_sys") {
+cargo_crate("crabbyavif_libyuv_sys") {
   crate_root = "src/sys/libyuv-sys/src/lib.rs"
 
   # This is a wrapper interface to a C++ library. So unsafe has to be allowed.
@@ -144,6 +146,7 @@ rust_static_library("crabbyavif_libyuv_sys") {
   sources = [ "src/sys/libyuv-sys/src/lib.rs" ]
   bindgen_deps = [ ":crabbyavif_libyuv_bindings" ]
   features = [ "libyuv" ]
+  build_native_rust_unit_tests = false
 }
 
 rust_static_library("crabbyavif") {
