@@ -1710,10 +1710,7 @@ export declare interface Point {
 
 /** An encoded journal. */
 export declare interface Journal {
-  /**
-   * Encoded journal data. ArrayBuffer is transferable, so it should be copied
-   * more efficiently over postMessage.
-   */
+  /** Encoded journal data. */
   data: ArrayBuffer;
 }
 

@@ -47,7 +47,6 @@ import {                     //
 import type {                            //
              ActivateTabOptions,         //
              AdditionalContext,          //
-             AnnotatedPageData,          //
              CaptureRegionParams,        //
              CaptureRegionResult,        //
              ChromeVersion,              //
@@ -67,8 +66,6 @@ import type {                            //
              GlicHostRegistry,           //
              GlicWebClient,              //
              ImageBytesResult,           //
-             ImageInfo,                  //
-             InvokeOptions,              //
              MicrophoneStatus,           //
              Observable,                 //
              ObservableValue,            //
@@ -79,13 +76,11 @@ import type {                            //
              PageMetadata,               //
              PanelOpeningData,           //
              PanelState,                 //
-             PdfDocumentData,            //
              PinCandidate,               //
              PinTabsOptions,             //
              Platform,                   //
              PromptType,                 //
              ResizeWindowOptions,        //
-             ResumeActorTaskResult,      //
              TabContextOptions,          //
              TabContextResult,           //
              TabData,                    //
@@ -134,18 +129,6 @@ import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/
 import {GlicBrowserHostGeic} from '../geic/geic_client.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 import {ErrorWithReasonImpl} from '../request_types.js';
-import type {                              //
-             AdditionalContextPrivate,     //
-             AnnotatedPageDataPrivate,     //
-             FocusedTabDataPrivate,        //
-             ImageBytesResultPrivate,      //
-             ImageInfoPrivate,             //
-             InvokeOptionsPrivate,         //
-             PdfDocumentDataPrivate,       //
-             ResumeActorTaskResultPrivate, //
-             TabContextResultPrivate,      //
-             TabDataPrivate,               //
-} from '../request_types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {GlicBrowserHostTools} from '../tools/tools_client.js';
 import {assertNever} from '../transport/messaging.js';
@@ -347,9 +330,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
         state.geminiEnterpriseSettings ?? undefined);
     this.zoomLevel.assignAndSignal(state.zoomFactor);
     this.panelState.assignAndSignal(panelStateToClient(state.panelState));
-    const focusedTabDataPrivate = focusedTabDataToClient(state.focusedTabData);
     this.focusedTabStateV2.assignAndSignal(
-        convertFocusedTabDataFromPrivate(focusedTabDataPrivate));
+        focusedTabDataToClient(state.focusedTabData));
     this.permissionStateMicrophone.assignAndSignal(
         state.microphonePermissionEnabled);
     this.permissionStateLocation.assignAndSignal(
@@ -522,8 +504,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   async invoke(options: InvokeOptionsMojo): Promise<void> {
     try {
-      const clientOptions =
-          convertInvokeOptionsFromPrivate(invokeOptionsToClient(options));
+      const clientOptions = invokeOptionsToClient(options);
       // Wait until notifyPanelWillOpen has resolved before invoking.
       await this.notifyPanelWillOpenCompleted.promise;
       await this.webClient.invoke?.(clientOptions);
@@ -593,9 +574,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   }
 
   notifyFocusedTabChanged(focusedTabData: FocusedTabDataMojo): void {
-    const focusedTabDataPrivate = focusedTabDataToClient(focusedTabData);
     this.focusedTabStateV2.assignAndSignal(
-        convertFocusedTabDataFromPrivate(focusedTabDataPrivate));
+        focusedTabDataToClient(focusedTabData));
   }
 
   notifyManualResizeChanged(resizing: boolean): void {
@@ -651,9 +631,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   }
 
   notifyAdditionalContext(context: AdditionalContextMojo): void {
-    const clientContext =
-        convertAdditionalContextFromPrivate(additionalContextToClient(context));
-    this.additionalContextSubject.next(clientContext);
+    this.additionalContextSubject.next(additionalContextToClient(context));
   }
 
   notifyActOnWebCapabilityChanged(canActOnWeb: boolean): void {
@@ -807,8 +785,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     if (!tabContext) {
       throw new Error(`getContextFromFocusedTab failed: ${errorReason}`);
     }
-    const tabContextResult = tabContextToClient(tabContext);
-    return convertTabContextResultFromPrivate(tabContextResult);
+    return tabContextToClient(tabContext);
   }
 
   async setMaximumNumberOfPinnedTabs?(requestedMax: number): Promise<number> {
@@ -825,8 +802,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     if (!tabContext) {
       throw new Error(`getContextFromTab failed: ${errorReason}`);
     }
-    const tabContextResult = tabContextToClient(tabContext);
-    return convertTabContextResultFromPrivate(tabContextResult);
+    return tabContextToClient(tabContext);
   }
 
   async getImageBytesFromTab?
@@ -842,7 +818,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     if (!result) {
       throw new Error('Failed to get image bytes');
     }
-    return convertImageBytesResultFromPrivate(result);
+    return result;
   }
 
   getTabById?(tabId: string): ObservableValueImpl<TabData> {
@@ -1634,135 +1610,4 @@ export class TabFaviconObservable extends TabObservable<Blob|undefined>
     }
     this.assignAndSignal(blob);
   }
-}
-
-export function convertTabDataFromPrivate(data: TabDataPrivate): TabData;
-export function convertTabDataFromPrivate(data: TabDataPrivate|undefined):
-    TabData|undefined;
-export function convertTabDataFromPrivate(data: TabDataPrivate|undefined):
-    TabData|undefined {
-  if (!data) {
-    return undefined;
-  }
-  let faviconResult: Promise<Blob>|undefined;
-  const dataFavicon = data.favicon;
-  async function getFavicon() {
-    if (dataFavicon && !faviconResult) {
-      faviconResult = Promise.resolve(rgbaImageToBlob(dataFavicon));
-    }
-    return faviconResult;
-  }
-
-  const favicon = dataFavicon && getFavicon;
-  return replaceProperties(data, {favicon});
-}
-
-function convertFocusedTabDataFromPrivate(data: FocusedTabDataPrivate):
-    FocusedTabData {
-  const result: FocusedTabData = {};
-  if (data.hasFocus) {
-    result.hasFocus = replaceProperties(data.hasFocus, {
-      tabData: convertTabDataFromPrivate(data.hasFocus.tabData),
-    });
-  }
-  if (data.hasNoFocus) {
-    result.hasNoFocus = replaceProperties(data.hasNoFocus, {
-      tabFocusCandidateData:
-          convertTabDataFromPrivate(data.hasNoFocus.tabFocusCandidateData),
-    });
-  }
-  return result;
-}
-
-function streamFromBuffer(buffer: Uint8Array): ReadableStream<Uint8Array> {
-  return new ReadableStream<Uint8Array>({
-    start(controller) {
-      controller.enqueue(buffer);
-      controller.close();
-    },
-  });
-}
-
-function convertPdfDocumentDataFromPrivate(data: PdfDocumentDataPrivate):
-    PdfDocumentData {
-  const pdfData =
-      data.pdfData && streamFromBuffer(new Uint8Array(data.pdfData));
-  return replaceProperties(data, {pdfData});
-}
-
-function convertAnnotatedPageDataFromPrivate(data: AnnotatedPageDataPrivate):
-    AnnotatedPageData {
-  const annotatedPageContent = data.annotatedPageContent &&
-      streamFromBuffer(new Uint8Array(data.annotatedPageContent));
-  return replaceProperties(data, {annotatedPageContent});
-}
-
-export function convertTabContextResultFromPrivate(
-    data: ResumeActorTaskResultPrivate): ResumeActorTaskResult;
-export function convertTabContextResultFromPrivate(
-    data: TabContextResultPrivate): TabContextResult;
-export function convertTabContextResultFromPrivate(
-    data: TabContextResultPrivate|
-    ResumeActorTaskResultPrivate): TabContextResult|ResumeActorTaskResult {
-  const tabData = convertTabDataFromPrivate(data.tabData);
-  const screenshotInfo = data.screenshotInfo &&
-      streamFromBuffer(new Uint8Array(data.screenshotInfo));
-  const pdfDocumentData = data.pdfDocumentData &&
-      convertPdfDocumentDataFromPrivate(data.pdfDocumentData);
-  const annotatedPageData = data.annotatedPageData &&
-      convertAnnotatedPageDataFromPrivate(data.annotatedPageData);
-  return replaceProperties(
-      data, {tabData, screenshotInfo, pdfDocumentData, annotatedPageData});
-}
-
-function convertAdditionalContextFromPrivate(context: AdditionalContextPrivate):
-    AdditionalContext {
-  const parts = context.parts.map(p => {
-    const annotatedPageData = p.annotatedPageData &&
-        convertAnnotatedPageDataFromPrivate(p.annotatedPageData);
-    const pdf = p.pdf && convertPdfDocumentDataFromPrivate(p.pdf);
-    const data = p.data && new Blob([p.data.data], {type: p.data.mimeType});
-    const filename = p.filename;
-    const tabContext =
-        p.tabContext && convertTabContextResultFromPrivate(p.tabContext);
-    return {
-      ...p,
-      data,
-      filename,
-      annotatedPageData,
-      pdf,
-      tabContext,
-    };
-  });
-  return {
-    ...context,
-    parts,
-  };
-}
-
-function convertInvokeOptionsFromPrivate(options: InvokeOptionsPrivate):
-    InvokeOptions {
-  return {
-    ...options,
-    context: options.context ?
-        convertAdditionalContextFromPrivate(options.context) :
-        undefined,
-  };
-}
-
-function convertImageInfoFromPrivate(data: ImageInfoPrivate): ImageInfo {
-  return {
-    caption: data.caption,
-    sourceOrigin: data.sourceOrigin,
-    url: data.url,
-    mimeType: data.mimeType,
-  };
-}
-
-function convertImageBytesResultFromPrivate(data: ImageBytesResultPrivate):
-    ImageBytesResult {
-  return {
-    bytes: data.bytes,
-    imageInfo: convertImageInfoFromPrivate(data.imageInfo),
-  };
 }

@@ -1,42 +1,43 @@
 ## Glic web client API implementation
 
-This directory contains the implementation of ../glic_api.
+This directory contains the implementation of `../glic_api`. This code is
+bundled into a single `.js` file and injected into the web client at startup,
+where it communicates directly with the browser via Mojo.
 
 ### client/
 
-Contains the web client side of the postMessage interface. Directly implements
-objects used by the web client. This code is bundled into a .js file and sent to
-the web client at startup for execution.
-
-### host/
-
-Contains the browser-side of the postMessage interface, which runs within a
-WebUI. Forwards requests from the web client to the browser via mojo.
-
-### request_types.ts
-
-The private postMessage API between the web client and WebUI.
-
-### transport/
-
-Shared utilities for message passing with postMessage.
+Contains the core web client API implementation (`GlicHostRegistryImpl` and
+`GlicBrowserHostImpl`).
 
 ### actor/
 
-The actor module. Contains the client implementation for actor related glic API
+Contains the client implementation for actor-related Glic API functions.
+
+### annotation/
+
+Contains the client implementation for scroll-to and highlight annotation
 functions.
-  actor_client.ts - client implementation.
-
-### zero_state_suggestions/
-
-The zero state suggestions module. Contains the client implementation for zero
-state suggestions related glic API functions.
-  zero_state_suggestions_client.ts - client implementation.
 
 ### experimental_triggering/
 
-The experimental triggering module. Contains the client implementation for
-experimental triggering related glic API functions.
-  experimental_triggering_client.ts - client implementation.
+Contains the client implementation for experimental triggering Glic API
+functions.
 
+### geic/
+
+Contains the client implementation for Gemini Enterprise in Chrome (GEIC) API
+functions.
+
+### skills/
+
+Contains the client implementation for skills-related Glic API functions.
+
+### tools/
+
+Contains the client implementation for Chrome tool execution functions.
+
+### zero_state_suggestions/
+
+Contains the client implementation for zero-state suggestions Glic API
+functions.
 

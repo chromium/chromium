@@ -6,15 +6,14 @@
  * @fileoverview Converts raw Mojom AST modules into intermediate TypeScript
  * model definitions.
  *
- * This stage parses raw Mojom types, structs, unions, and interfaces into
- * high-level intermediate TypeScript models (`Model`, `Interface`, `Enum`,
- * `BridgedInterface`). It handles:
+ * This stage parses raw Mojom types, structs, unions, and enums into
+ * intermediate TypeScript models (`MojomModel`, `Interface`, `Enum`). It
+ * handles:
  * - Parsing `@glic_*` comment annotations (e.g., `@glic_type`,
- * `@glic_optional`, `@glic_ignore`, `@glic_field`).
+ * `@glic_optional`, `@glic_ignore`).
  * - Mapping Mojom C++ primitive and system types to client-facing TypeScript
  * types.
- * - Resolving custom enum value mappings, public vs. private types, and
- * optional default annotations.
+ * - Resolving custom enum value mappings and optional default annotations.
  */
 
 import type {MojomEnum, MojomField, MojomModule, MojomStruct, MojomType, MojomUnion} from './mojom_types.js';

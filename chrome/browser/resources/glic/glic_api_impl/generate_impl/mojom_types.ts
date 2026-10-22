@@ -67,7 +67,6 @@ export interface MojomModule {
   enums: MojomEnum[];
   structs: MojomStruct[];
   unions: MojomUnion[];
-  interfaces: unknown[];
 }
 
 export interface MojomAst {

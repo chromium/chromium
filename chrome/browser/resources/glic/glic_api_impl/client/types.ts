@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Defines some types shared across files in host/.
+// Defines some types shared across files in client/.
 
 export enum PanelOpenState {
   OPEN,

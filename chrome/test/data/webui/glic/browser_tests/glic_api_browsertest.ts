@@ -1250,10 +1250,9 @@ class ApiTests extends ApiTestFixtureBase {
     request.onDialogClosed({response: {permissionGranted: false}});
 
     // TODO(b/477060111): This test fails without this. Because onDialogClosed
-    // resolves a promise, it doesn't actually postMessage the response until a
-    // yield to the event loop. It should probably return a promise which can be
-    // awaited. This await yields allowing the queued task that does the
-    // postMessage to schedule so that the response message is sent before
+    // resolves a promise, the Mojo response isn't sent until the promise's
+    // microtask runs. It should probably return a promise which can be
+    // awaited. This await yields so that the response message is sent before
     // uninterruptActorTask.
     await new Promise((resolve) => void setTimeout(resolve, 0));
 

@@ -188,7 +188,6 @@ def _ConvertModule(mojom_node, filename: str) -> dict:
     enums = []
     structs = []
     unions = []
-    interfaces: list[dict] = []
 
     for defn in mojom_node.definition_list:
         if isinstance(defn, ast.Enum):
@@ -204,7 +203,6 @@ def _ConvertModule(mojom_node, filename: str) -> dict:
         'enums': enums,
         'structs': structs,
         'unions': unions,
-        'interfaces': interfaces,
     }
 
 

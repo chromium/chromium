@@ -10,21 +10,19 @@ Runs the mojo parser and then the TypeScript generator.
 
 The generator parses special annotations in Mojom comments to customize the
 TypeScript generation. These annotations should be placed in comments
-immediately preceding the struct, enum, field, or interface definition.
+immediately preceding the struct, union, enum, or field definition.
 
 #### `@generate glic_api`
-Marks a struct, enum, or interface for generation.
-*   **For structs/enums**: Generates intermediate `Base` transport types.
-*   **For interfaces**: Generates postMessage bridges. Must be combined with
-    `bridge=<BridgeName>` parameter (e.g., `@generate glic_api bridge=PocHost`).
+Marks a struct, union, or enum for TypeScript generation in
+`glic_api_generated.ts` (and re-export in `glic_api.ts`).
 
 #### `@glic_type <TypeScriptType>`
 Overrides the generated TypeScript type for a field.
 Useful when a Mojom type maps to a custom type or a public API type rather than
-the default generated base type.
+the default generated type.
 Example:
 ```mojom
-// @glic_type glicApi.Point
+// @glic_type Point
 gfx.mojom.Point point;
 ```
 If the type ends with `?` (e.g., `@glic_type MyType?`), it also implies
@@ -35,7 +33,7 @@ Marks a field as optional in the generated TS interface (appending `?`
 to the field name), even if the field is not nullable in Mojom.
 
 #### `@glic_ignore`
-Ignores the field in the generated TS base interface.
+Ignores the field in the generated TS interface.
 """
 
 import os

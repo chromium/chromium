@@ -70,7 +70,6 @@ import {                      //
   PerformActionsErrorReason,  //
 } from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
-import {convertTabContextResultFromPrivate, convertTabDataFromPrivate} from '../client/glic_api_client.js';
 import {rgbaImageToBlob} from '../client/image_utils.js';
 import {                        //
   bitmapN32ToRGBAImage,         //
@@ -87,7 +86,6 @@ import {                        //
 } from '../conversions.js';
 import type {CheckEnumCompatibility} from '../legacy_enum_check.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
-import type {ResumeActorTaskResultPrivate} from '../request_types.js';
 import {ErrorWithReasonImpl} from '../request_types.js';
 import {assertNever} from '../transport/messaging.js';
 
@@ -246,8 +244,7 @@ export class GlicBrowserHostActor implements ActorClientInterface,
     if (!tabContext) {
       throw new Error(`tabContext failed: ${errorReason}`);
     }
-    const tabContextResult = tabContextToClient(tabContext);
-    return convertTabContextResultFromPrivate(tabContextResult);
+    return tabContextToClient(tabContext);
   }
 
   async createTask?(taskOptions?: TaskOptions): Promise<number> {
@@ -316,9 +313,8 @@ export class GlicBrowserHostActor implements ActorClientInterface,
       throw new Error(
           `resumeActorTask failed: ${getContextResult.errorReason}`);
     }
-    const resumeActorTaskResult = resumeActorTaskResultToClient(
+    return resumeActorTaskResultToClient(
         getContextResult.tabContext, actionResult);
-    return convertTabContextResultFromPrivate(resumeActorTaskResult);
   }
 
   interruptActorTask?
@@ -359,12 +355,12 @@ export class GlicBrowserHostActor implements ActorClientInterface,
     });
     const tabData = response.tabData;
     if (tabData) {
-      return convertTabDataFromPrivate({
+      return {
         tabId: idToClient(tabData.tabId),
         windowId: idToClient(tabData.windowId),
         url: urlToClient(tabData.url),
         title: optionalToClient(tabData.title),
-      });
+      };
     }
     throw new Error('createActorTab: failed');
   }
@@ -725,8 +721,7 @@ function taskOptionsToMojo(taskOptions?: TaskOptions): TaskOptionsMojo|null {
 }
 
 function resumeActorTaskResultToClient(
-    tabContext: TabContextMojo,
-    actionResult: number): ResumeActorTaskResultPrivate {
+    tabContext: TabContextMojo, actionResult: number): ResumeActorTaskResult {
   return {
     ...tabContextToClient(tabContext),
     actionResult,

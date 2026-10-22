@@ -1419,8 +1419,7 @@ export declare interface Screenshot {
   widthPixels: number;
   heightPixels: number;
   // Encoded image data. If `encryption_scheme` is not `kNone`, this contains
-  // the encrypted ciphertext payload. ArrayBuffer is transferable, so it should
-  // be copied more efficiently over postMessage.
+  // the encrypted ciphertext payload.
   data: ArrayBuffer;
   // The unencrypted source image format represented as a MIME type (e.g.,
   // "image/jpeg").

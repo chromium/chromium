@@ -22,16 +22,3 @@ interface GlicBrowserHost {
   ... // More removed fields and methods
 }
 ```
-
-In the request types list from
-[`request_types.ts`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/glic/glic_api_impl/request_types.ts),
-reserve the previously used identifier:
-
-```javascript
-export const RECORDED_REQUEST_IDS = {
-  WebClientCreated: 1,
-  ...
-  // Do not reuse deleted request ID: 19,
-  ...
-};
-```
