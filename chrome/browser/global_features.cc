@@ -14,9 +14,9 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/glic_profile_manager.h"               // nogncheck
-#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"  // nogncheck
-#include "chrome/browser/glic/public/glic_enabling.h"               // nogncheck
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/local_network_access/ip_address_space_overrides_prefs_observer.h"
@@ -36,23 +36,18 @@
 #include "ui/base/ui_base_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-// This causes a gn error on Android builds, because gn does not understand
-// buildflags, so we include it only on platforms where it is used.
-#include "chrome/browser/background/glic/glic_background_mode_manager.h"  // nogncheck
-#include "chrome/browser/child_module/child_module_manager.h"  // nogncheck
-#include "chrome/browser/child_module/features.h"              // nogncheck
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
+#include "chrome/browser/child_module/child_module_manager.h"
+#include "chrome/browser/child_module/features.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl/tab_drag_session_desktop_injector.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// This causes a gn error on Android builds, because gn does not understand
-// buildflags, so we include it only on platforms where it is used.
 #include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
-#include "components/user_education/common/user_education_features.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -82,8 +77,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "chrome/browser/signin/bound_session_credentials/unexportable_key_obsolete_profile_garbage_collector.h"  // nogncheck
-#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"  // nogncheck
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_obsolete_profile_garbage_collector.h"
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -93,10 +88,10 @@
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
-#include "chrome/browser/request_header_integrity/chrome_companero_host.h"  // nogncheck
-#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck
+#include "chrome/browser/request_header_integrity/chrome_companero_host.h"
+#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/request_header_integrity/platform_runtime_host.h"  // nogncheck
+#include "chrome/browser/request_header_integrity/platform_runtime_host.h"
 #endif
 #endif
 

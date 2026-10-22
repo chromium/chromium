@@ -1098,6 +1098,7 @@ source_set("core") {
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/back_forward_cache",
     "//chrome/browser/background",
+    "//chrome/browser/background/glic",
     "//chrome/browser/battery",
     "//chrome/browser/bluetooth",
     "//chrome/browser/browser_actuator/internals",

@@ -29,96 +29,99 @@ config("header_name_defines") {
   }
 }
 
-source_set("request_header_integrity") {
-  sources = [
-    "chrome_companero_loader.cc",
-    "chrome_companero_loader.h",
-    "platform_runtime_headers.cc",
-    "platform_runtime_headers.h",
-    "request_header_integrity_url_loader_throttle.cc",
-    "request_header_integrity_url_loader_throttle.h",
-  ]
+if (enable_request_header_integrity) {
+  source_set("request_header_integrity") {
+    sources = [
+      "chrome_companero_loader.cc",
+      "chrome_companero_loader.h",
+      "platform_runtime_headers.cc",
+      "platform_runtime_headers.h",
+      "request_header_integrity_url_loader_throttle.cc",
+      "request_header_integrity_url_loader_throttle.h",
+    ]
 
-  configs += [ ":header_name_defines" ]
+    configs += [ ":header_name_defines" ]
 
-  public_deps = [
-    ":buildflags",
-    ":mojom",
-  ]
+    public_deps = [
+      ":buildflags",
+      ":mojom",
+    ]
 
-  deps = [
-    "//base",
-    "//build:branding_buildflags",
-    "//chrome/common:channel_info",
-    "//chrome/common:non_code_constants",
-    "//components/embedder_support:user_agent",
-    "//components/google/core/common",
-    "//content/public/common",
-    "//google_apis",
-    "//net",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-    "//third_party/blink/public/common:headers",
-  ]
+    deps = [
+      "//base",
+      "//build:branding_buildflags",
+      "//chrome/common:channel_info",
+      "//chrome/common:non_code_constants",
+      "//components/embedder_support:user_agent",
+      "//components/google/core/common",
+      "//content/public/common",
+      "//google_apis",
+      "//net",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//third_party/blink/public/common:headers",
+    ]
 
-  if (is_chrome_branded) {
-    sources += [ "internal/google_header_names.h" ]
-    deps += [ "internal:build_derived_values" ]
-    public_deps += [ "internal:internal_header_integrity_seed" ]
+    if (is_chrome_branded) {
+      sources += [ "internal/google_header_names.h" ]
+      deps += [ "internal:build_derived_values" ]
+      public_deps += [ "internal:internal_header_integrity_seed" ]
+    }
   }
-}
 
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [
-    "chrome_companero_loader_unittest.cc",
-    "platform_runtime_headers_unittest.cc",
-    "request_header_integrity_url_loader_throttle_unittest.cc",
-  ]
-
-  deps = [
-    ":request_header_integrity",
-    "//base/test:test_support",
-    "//build:branding_buildflags",
-    "//net",
-    "//services/network/public/cpp",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//url",
-  ]
-
-  if (is_chrome_branded) {
-    sources += [ "internal/google_header_names.h" ]
-    deps += [ "//chrome/test:test_support" ]
-    data_deps = [ "internal:chromecompaneros" ]
-  }
-}
-
-if (!is_android) {
-  source_set("browser_tests") {
+  source_set("unit_tests") {
     testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = [ "request_header_integrity_url_loader_throttle_browsertest.cc" ]
+    sources = [
+      "chrome_companero_loader_unittest.cc",
+      "platform_runtime_headers_unittest.cc",
+      "request_header_integrity_url_loader_throttle_unittest.cc",
+    ]
 
     deps = [
       ":request_header_integrity",
-      "//base",
       "//base/test:test_support",
       "//build:branding_buildflags",
-      "//chrome/test:test_support_ui",
-      "//components/network_session_configurator/common",
-      "//content/test:test_support",
-      "//net:test_support",
-      "//services/network/public/mojom",
+      "//net",
+      "//services/network/public/cpp",
+      "//testing/gmock",
+      "//testing/gtest",
       "//url",
     ]
 
     if (is_chrome_branded) {
       sources += [ "internal/google_header_names.h" ]
+      deps += [ "//chrome/test:test_support" ]
       data_deps = [ "internal:chromecompaneros" ]
+    }
+  }
+
+  if (!is_android) {
+    source_set("browser_tests") {
+      testonly = true
+
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+      sources =
+          [ "request_header_integrity_url_loader_throttle_browsertest.cc" ]
+
+      deps = [
+        ":request_header_integrity",
+        "//base",
+        "//base/test:test_support",
+        "//build:branding_buildflags",
+        "//chrome/test:test_support_ui",
+        "//components/network_session_configurator/common",
+        "//content/test:test_support",
+        "//net:test_support",
+        "//services/network/public/mojom",
+        "//url",
+      ]
+
+      if (is_chrome_branded) {
+        sources += [ "internal/google_header_names.h" ]
+        data_deps = [ "internal:chromecompaneros" ]
+      }
     }
   }
 }
