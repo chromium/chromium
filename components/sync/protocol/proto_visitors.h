@@ -561,7 +561,6 @@ VISIT_PROTO_FIELDS(const sync_pb::CommitResponse::EntryResponse& proto) {
   VISIT(id_string);
   VISIT(version);
   VISIT(error_message);
-  VISIT(mtime);
   VISIT(attachment_modification_time_unix_epoch_millis);
 }
 

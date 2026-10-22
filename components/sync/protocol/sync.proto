@@ -368,10 +368,8 @@ message CommitResponse {
 
     optional string error_message = 9;
 
-    // Last modification time (in milliseconds since Unix epoch).  Allows the
-    // server to override the client-supplied mtime during a commit operation.
-    // TODO(crbug.com/40751358): Delete this field too.
-    optional int64 mtime = 10 [deprecated = true];
+    reserved 10;
+    reserved "mtime";
 
     message DatatypeSpecificError {
       oneof datatype_error {
