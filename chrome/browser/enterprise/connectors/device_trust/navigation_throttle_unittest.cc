@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -42,11 +41,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/device_info.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using content::NavigationThrottle;
 using ::testing::_;
@@ -727,17 +724,6 @@ TEST_F(DeviceTrustNavigationThrottleTest, NoThrottleWhenFeatureDisabled) {
   scoped_feature_list_.InitAndDisableFeature(kDeviceTrustConnectorAndroid);
   test_prefs_->SetBoolean(
       device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled, true);
-
-  EXPECT_EQ(0u, CountCreatedThrottles());
-}
-
-TEST_F(DeviceTrustNavigationThrottleTest, NoThrottleOnDesktopFormFactor) {
-  scoped_feature_list_.InitAndEnableFeature(kDeviceTrustConnectorAndroid);
-  test_prefs_->SetBoolean(
-      device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled, true);
-  base::android::device_info::set_is_desktop_for_testing(true);
-  base::ScopedClosureRunner reset_is_desktop(base::BindOnce(
-      &base::android::device_info::reset_is_desktop_for_testing));
 
   EXPECT_EQ(0u, CountCreatedThrottles());
 }
