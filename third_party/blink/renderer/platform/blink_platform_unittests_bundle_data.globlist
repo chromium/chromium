@@ -9,6 +9,7 @@
 # current directory or a subdirectory, but since we don't want to add globlist
 # machinery to ../../webtests_external/wpt, we make an exception here.
 # push(ignore-relative)
+../../web_tests/dark-mode/images/resources/country-flags-sprite.png
 ../../web_tests/external/wpt/css/css-fonts/resources/COLR-palettes-test-font.ttf
 ../../web_tests/external/wpt/css/css-fonts/resources/avar/DesignSpaceWarpTestAvar*.ttf
 ../../web_tests/external/wpt/css/css-fonts/resources/vs/*.ttf
