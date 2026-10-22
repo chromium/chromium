@@ -887,18 +887,10 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
     frame_dispatcher_->Reshape(new_size);
   }
 
-  if (IsRenderingContext2D()) {
-    context_->Reshape(old_size, new_size);
-  } else if (IsWebGL()) {
-    context_->Reshape(old_size, new_size);
-  } else if (IsWebGPU()) {
-    context_->Reshape(old_size, new_size);
-  } else if (IsImageBitmapRenderingContext()) {
+  if (context_) {
     context_->Reshape(old_size, new_size);
   } else {
     UpdateMemoryUsage();
-
-    CHECK(!context_);
   }
 
   if (IsRenderingContext2D()) {
