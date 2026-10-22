@@ -1874,6 +1874,138 @@ class RollProtobufPlanTest(unittest.TestCase):
             clean_after_first_patch_blob_id,
             patch_chain.patches[4].preimage_blobs[_PLAN_CLEAN_PATH])
 
+    def _CreateNewUpstreamCheckout(self, prefix: str = '') -> str:
+        checkout_directory = os.path.join(self.temporary_directory, 'replay')
+        _InitializeGitRepositoryWithFiles(
+            checkout_directory,
+            {
+                f'{prefix}/{path}' if prefix else path: content
+                for path, content in _PLAN_NEW_UPSTREAM_FILES.items()
+            },
+        )
+        return checkout_directory
+
+    def testCopyPreimageBlobsCopiesOnlyBlobsTheDestinationLacks(self):
+        patch_chain = self._BuildPatchChain()
+        replay_directory = self._CreateNewUpstreamCheckout()
+        old_upstream_preimage_blob_ids = [
+            blob_id for chain_patch in patch_chain.patches[:4]
+            for blob_id in chain_patch.preimage_blobs.values()
+        ]
+
+        first_copied_blob_ids = roll_protobuf.CopyPreimageBlobs(
+            patch_chain.repository_directory,
+            replay_directory,
+            [
+                *reversed(old_upstream_preimage_blob_ids),
+                *old_upstream_preimage_blob_ids,
+            ],
+        )
+        second_copied_blob_ids = roll_protobuf.CopyPreimageBlobs(
+            patch_chain.repository_directory,
+            replay_directory,
+            old_upstream_preimage_blob_ids,
+        )
+
+        expected_copied_blob_ids = tuple(
+            sorted(blob_id for chain_patch in patch_chain.patches[:3]
+                   for blob_id in chain_patch.preimage_blobs.values()))
+        self.assertEqual((expected_copied_blob_ids, ()),
+                         (first_copied_blob_ids, second_copied_blob_ids))
+
+    def testApplyChainPatchThreeWayClassifiesCleanEmptyAndConflictingPatches(
+            self):
+        patch_chain = self._BuildPatchChain()
+        replay_directory = self._CreateNewUpstreamCheckout()
+
+        patch_results = []
+        for chain_patch in patch_chain.patches[:3]:
+            roll_protobuf.CopyPreimageBlobs(
+                patch_chain.repository_directory,
+                replay_directory,
+                chain_patch.preimage_blobs.values(),
+            )
+            patch_results.append(
+                roll_protobuf.ApplyChainPatchThreeWay(replay_directory,
+                                                      chain_patch))
+            _RunGitCommand(replay_directory,
+                           ['reset', '--quiet', '--hard', 'HEAD'])
+
+        self.assertEqual([
+            roll_protobuf.PatchReplayResult(
+                patch_name=_PLAN_CLEAN_PATCH,
+                status=roll_protobuf.PatchReplayStatus.CLEAN,
+                changed_line_count_before=4,
+                changed_line_count_after=2,
+            ),
+            roll_protobuf.PatchReplayResult(
+                patch_name=_PLAN_EMPTY_PATCH,
+                status=roll_protobuf.PatchReplayStatus.EMPTY,
+                changed_line_count_before=2,
+            ),
+            roll_protobuf.PatchReplayResult(
+                patch_name=_PLAN_CONFLICT_PATCH,
+                status=roll_protobuf.PatchReplayStatus.CONFLICT,
+                changed_line_count_before=2,
+                conflicted_files=(roll_protobuf.ConflictedFile(
+                    path=_PLAN_CONFLICT_PATH, conflict_region_count=1), ),
+            ),
+        ], patch_results)
+
+    def testApplyChainPatchThreeWayAppliesUnderDirectoryPrefix(self):
+        patch_chain = self._BuildPatchChain()
+        checkout_directory = self._CreateNewUpstreamCheckout(
+            'third_party/protobuf')
+        clean_patch = patch_chain.patches[0]
+        roll_protobuf.CopyPreimageBlobs(
+            patch_chain.repository_directory,
+            checkout_directory,
+            clean_patch.preimage_blobs.values(),
+        )
+
+        patch_result = roll_protobuf.ApplyChainPatchThreeWay(
+            checkout_directory,
+            clean_patch,
+            directory_prefix='./third_party/protobuf/',
+        )
+
+        self.assertEqual((roll_protobuf.PatchReplayStatus.CLEAN,
+                          f'third_party/protobuf/{_PLAN_CLEAN_PATH}'),
+                         (patch_result.status,
+                          _RunGitCommand(checkout_directory,
+                                         ['diff', '--cached', '--name-only'])))
+
+    def testApplyChainPatchThreeWayNamesUpstreamRelativePathWhenMissing(self):
+        patch_chain = self._BuildPatchChain()
+        checkout_directory = self._CreateNewUpstreamCheckout(
+            'third_party/protobuf')
+
+        patch_result = roll_protobuf.ApplyChainPatchThreeWay(
+            checkout_directory,
+            patch_chain.patches[3],
+            directory_prefix='./third_party/protobuf/',
+        )
+
+        self.assertEqual((roll_protobuf.PatchReplayStatus.MISSING_FILE,
+                          (_PLAN_RENAMED_PATH, )),
+                         (patch_result.status, patch_result.missing_files))
+
+    def testApplyChainPatchThreeWayReportsErrorWithGitDiagnostics(self):
+        unparseable_patch = roll_protobuf.ChainPatch(
+            patch_name='0009-unparseable.patch',
+            diff=b'this is not a diff\n',
+            preimage_blobs={},
+            changed_line_count=0,
+        )
+        replay_directory = self._CreateNewUpstreamCheckout()
+
+        patch_result = roll_protobuf.ApplyChainPatchThreeWay(
+            replay_directory, unparseable_patch)
+
+        self.assertEqual((roll_protobuf.PatchReplayStatus.ERROR, True),
+                         (patch_result.status, 'No valid patches in input'
+                          in (patch_result.error_message or '')))
+
 
 if __name__ == '__main__':
     unittest.main()
