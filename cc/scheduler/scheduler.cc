@@ -29,7 +29,6 @@
 #include "cc/metrics/compositor_timing_history.h"
 #include "cc/scheduler/headless_scheduler_state_machine.h"
 #include "cc/scheduler/scheduler_state_machine.h"
-#include "cc/scheduler/slim_scheduler_state_machine.h"
 #include "cc/scheduler/webview_scheduler_state_machine.h"
 #include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/features.h"
@@ -69,9 +68,6 @@ Scheduler::Scheduler(
              base::FeatureList::IsEnabled(
                  features::kWebviewSchedulerStateMachine)) {
     state_machine_ = std::make_unique<WebviewSchedulerStateMachine>(settings);
-  } else if (base::FeatureList::IsEnabled(features::kSlimScheduler) &&
-             !settings_.single_threaded_proxy) {
-    state_machine_ = std::make_unique<SlimSchedulerStateMachine>(settings);
   } else {
     state_machine_ = std::make_unique<SchedulerStateMachine>(settings);
   }

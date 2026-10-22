@@ -65,8 +65,7 @@ class CC_EXPORT SchedulerSettings {
 
   // When true SingleThreadedProxy is in use, which typically combines
   // `commit_to_active_tree` and disables `main_frame_before_commit_enabled`.
-  // However those two settings are also changed by Blink WebTests. The
-  // SlimScheduler currently does not support SingleThreadedProxy.
+  // However those two settings are also changed by Blink WebTests.
   bool single_threaded_proxy = false;
 
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
