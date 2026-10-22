@@ -560,7 +560,7 @@ TEST_F(RtcTransportMultithreadedTest, SetRemoteDtlsParameters) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_sync_connection_, SetRemoteDtlsParameters(_, _, _, _))
-      .WillOnce(testing::InvokeWithoutArgs([&] { run_loop.Quit(); }));
+      .WillOnce([&] { run_loop.Quit(); });
 
   transport->setRemoteDtlsParameters(CreateRtcDtlsParameters());
   run_loop.Run();

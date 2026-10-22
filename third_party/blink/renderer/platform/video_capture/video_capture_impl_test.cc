@@ -232,12 +232,11 @@ class VideoCaptureImplTest : public ::testing::Test {
     video_capture_impl_->SetVideoCaptureHostForTesting(
         &mock_video_capture_host_);
 
-    ON_CALL(mock_video_capture_host_, DoStart(_, _, _))
-        .WillByDefault(InvokeWithoutArgs([this]() {
-          video_capture_impl_->OnStateChanged(
-              media::mojom::blink::VideoCaptureResult::NewState(
-                  media::mojom::VideoCaptureState::STARTED));
-        }));
+    ON_CALL(mock_video_capture_host_, DoStart(_, _, _)).WillByDefault([this]() {
+      video_capture_impl_->OnStateChanged(
+          media::mojom::blink::VideoCaptureResult::NewState(
+              media::mojom::VideoCaptureState::STARTED));
+    });
 
     platform_->SetGpuCapabilities(&fake_capabilities_);
   }
@@ -655,12 +654,13 @@ TEST_F(VideoCaptureImplTest, AlreadyStarted) {
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED))
       .Times(2);
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_))
-      .WillOnce(DoAll(InvokeWithoutArgs([this]() {
-                        video_capture_impl_->OnStateChanged(
-                            media::mojom::blink::VideoCaptureResult::NewState(
-                                media::mojom::VideoCaptureState::STARTED));
-                      }),
-                      SaveArg<2>(&params)));
+      .WillOnce(DoAll(
+          [this]() {
+            video_capture_impl_->OnStateChanged(
+                media::mojom::blink::VideoCaptureResult::NewState(
+                    media::mojom::VideoCaptureState::STARTED));
+          },
+          SaveArg<2>(&params)));
   EXPECT_CALL(mock_video_capture_host_, Stop(_));
 
   StartCapture(0, params_small_);
@@ -854,10 +854,9 @@ TEST_F(VideoCaptureImplTest, StartTimeout) {
               OnStateUpdate(blink::VIDEO_CAPTURE_STATE_ERROR_START_TIMEOUT));
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
 
-  ON_CALL(mock_video_capture_host_, DoStart(_, _, _))
-      .WillByDefault(InvokeWithoutArgs([]() {
-        // Do nothing.
-      }));
+  ON_CALL(mock_video_capture_host_, DoStart(_, _, _)).WillByDefault([]() {
+    // Do nothing.
+  });
 
   StartCapture(0, params_small_);
   task_environment_.FastForwardBy(VideoCaptureImpl::kCaptureStartTimeout);
@@ -875,13 +874,12 @@ TEST_F(VideoCaptureImplTest, ErrorBeforeStart) {
 
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_ERROR));
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
-  ON_CALL(mock_video_capture_host_, DoStart(_, _, _))
-      .WillByDefault(InvokeWithoutArgs([this]() {
-        // Go straight to Failed. Do not pass Go. Do not collect £200.
-        video_capture_impl_->OnStateChanged(
-            media::mojom::blink::VideoCaptureResult::NewErrorCode(
-                media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest));
-      }));
+  ON_CALL(mock_video_capture_host_, DoStart(_, _, _)).WillByDefault([this]() {
+    // Go straight to Failed. Do not pass Go. Do not collect £200.
+    video_capture_impl_->OnStateChanged(
+        media::mojom::blink::VideoCaptureResult::NewErrorCode(
+            media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest));
+  });
 
   StartCapture(0, params_small_);
 

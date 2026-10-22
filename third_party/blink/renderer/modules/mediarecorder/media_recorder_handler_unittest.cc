@@ -56,7 +56,6 @@ using ::testing::AtLeast;
 using ::testing::Ge;
 using ::testing::Gt;
 using ::testing::InSequence;
-using ::testing::InvokeWithoutArgs;
 using ::testing::Lt;
 using ::testing::Mock;
 using ::testing::Return;
@@ -1675,10 +1674,10 @@ TEST_F(MediaRecorderHandlerPassthroughTest, ErrorsOutOnCodecSwitch) {
   // The expectation here works around this issue.
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
 
-  EXPECT_CALL(*recorder, OnError).WillOnce(InvokeWithoutArgs([&]() {
+  EXPECT_CALL(*recorder, OnError).WillOnce([&]() {
     // Simulate MediaRecorder behavior which is to Stop() the handler on error.
     media_recorder_handler_->Stop();
-  }));
+  });
   OnVideoFrameForTesting(FakeEncodedVideoFrame::Builder()
                              .WithKeyFrame(true)
                              .WithCodec(media::VideoCodec::kVP8)

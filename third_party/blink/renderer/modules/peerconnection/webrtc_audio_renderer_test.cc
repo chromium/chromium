@@ -67,7 +67,6 @@
 using testing::_;
 using testing::AnyNumber;
 using testing::DoAll;
-using testing::InvokeWithoutArgs;
 using testing::Return;
 using testing::SaveArg;
 
@@ -300,9 +299,9 @@ class WebRtcAudioRendererTest : public testing::Test {
         MockNewAudioRendererSink(blink::WebAudioDeviceSourceType::kWebRtc,
                                  web_local_frame_.get(), _))
         .Times(testing::AtLeast(1))
-        .WillRepeatedly(DoAll(SaveArg<2>(&params), InvokeWithoutArgs([&]() {
-                                EXPECT_EQ(params.device_id, device_id.Utf8());
-                              })));
+        .WillRepeatedly(DoAll(SaveArg<2>(&params), [&]() {
+          EXPECT_EQ(params.device_id, device_id.Utf8());
+        }));
 
     EXPECT_CALL(*source_.get(), SetOutputDeviceForAec(device_id));
     EXPECT_TRUE(renderer_->Initialize(source_.get()));
@@ -670,13 +669,13 @@ TEST_F(WebRtcAudioRendererTest,
   EXPECT_CALL(*audio_device_factory_platform_,
               MockNewAudioRendererSink(blink::WebAudioDeviceSourceType::kWebRtc,
                                        web_local_frame_.get(), _))
-      .WillOnce(InvokeWithoutArgs([&]() {
+      .WillOnce([&]() {
         // Simulate Terminate() and dropping the last external reference while
         // SetAudioRenderer() has released its lock to run Initialize().
         adm->Terminate();
         adm = nullptr;
         audio_device = nullptr;
-      }));
+      });
 
   // Hold a raw pointer only for the call; SetAudioRenderer() must keep `this`
   // alive across Initialize(), detect that Terminate() intervened, and

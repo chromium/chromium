@@ -296,7 +296,7 @@ TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
   // callbacks we are adding should not be executed.
   EXPECT_CALL(*callback_function, Call(testing::_, testing::_))
       .Times(kNumberCallbacks)
-      .WillRepeatedly(testing::InvokeWithoutArgs(add_callback_lambda));
+      .WillRepeatedly(add_callback_lambda);
 
   remote_playback.AvailabilityChangedForTesting(true);
 
@@ -307,7 +307,7 @@ TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
   // twice as many calls, but no more.
   EXPECT_CALL(*callback_function, Call(testing::_, testing::_))
       .Times(kNumberCallbacks * 2)
-      .WillRepeatedly(testing::InvokeWithoutArgs(add_callback_lambda));
+      .WillRepeatedly(add_callback_lambda);
 
   remote_playback.AvailabilityChangedForTesting(false);
 

@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
-using testing::InvokeWithoutArgs;
 using testing::ElementsAre;
 using testing::Return;
 using testing::WhenSorted;
@@ -163,8 +162,9 @@ TEST_F(ScriptRunnerTest, QueueMultipleScripts_InOrder) {
   }
 
   for (wtf_size_t i = 0; i < pending_scripts.size(); ++i) {
-    EXPECT_CALL(*pending_scripts[i], ExecuteScriptBlock())
-        .WillOnce(InvokeWithoutArgs([this, i] { order_.push_back(i + 1); }));
+    EXPECT_CALL(*pending_scripts[i], ExecuteScriptBlock()).WillOnce([this, i] {
+      order_.push_back(i + 1);
+    });
   }
 
   for (int i = 2; i >= 0; i--) {
@@ -193,16 +193,21 @@ TEST_F(ScriptRunnerTest, QueueMixedScripts) {
   NotifyScriptReady(pending_script3);
   NotifyScriptReady(pending_script5);
 
-  EXPECT_CALL(*pending_script1, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(1); }));
-  EXPECT_CALL(*pending_script2, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(2); }));
-  EXPECT_CALL(*pending_script3, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(3); }));
-  EXPECT_CALL(*pending_script4, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(4); }));
-  EXPECT_CALL(*pending_script5, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(5); }));
+  EXPECT_CALL(*pending_script1, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(1);
+  });
+  EXPECT_CALL(*pending_script2, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(2);
+  });
+  EXPECT_CALL(*pending_script3, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(3);
+  });
+  EXPECT_CALL(*pending_script4, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(4);
+  });
+  EXPECT_CALL(*pending_script5, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(5);
+  });
 
   task_environment_.RunUntilIdle();
   document_->domWindow()->SetLifecycleState(
@@ -238,27 +243,27 @@ TEST_F(ScriptRunnerTest, QueueReentrantScript_Async) {
   base::RunLoop run_loop1;
   auto* pending_script = pending_script2;
   EXPECT_CALL(*pending_script1, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([pending_script, this, &run_loop1] {
+      .WillOnce([pending_script, this, &run_loop1] {
         order_.push_back(1);
         NotifyScriptReady(pending_script);
         run_loop1.Quit();
-      }));
+      });
 
   base::RunLoop run_loop2;
   pending_script = pending_script3;
   EXPECT_CALL(*pending_script2, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([pending_script, this, &run_loop2] {
+      .WillOnce([pending_script, this, &run_loop2] {
         order_.push_back(2);
         NotifyScriptReady(pending_script);
         run_loop2.Quit();
-      }));
+      });
 
   base::RunLoop run_loop3;
   EXPECT_CALL(*pending_script3, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this, &run_loop3] {
+      .WillOnce([this, &run_loop3] {
         order_.push_back(3);
         run_loop3.Quit();
-      }));
+      });
 
   // Make sure that re-entrant calls to notifyScriptReady don't cause
   // ScriptRunner::execute to do more work than expected.
@@ -283,31 +288,29 @@ TEST_F(ScriptRunnerTest, QueueReentrantScript_InOrder) {
   base::RunLoop run_loop1;
   MockPendingScript* pending_script = pending_script2;
   EXPECT_CALL(*pending_script1, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs(
-          [pending_script, &pending_script2, this, &run_loop1] {
-            order_.push_back(1);
-            QueueScriptForExecution(pending_script);
-            NotifyScriptReady(pending_script2);
-            run_loop1.Quit();
-          }));
+      .WillOnce([pending_script, &pending_script2, this, &run_loop1] {
+        order_.push_back(1);
+        QueueScriptForExecution(pending_script);
+        NotifyScriptReady(pending_script2);
+        run_loop1.Quit();
+      });
 
   base::RunLoop run_loop2;
   pending_script = pending_script3;
   EXPECT_CALL(*pending_script2, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs(
-          [pending_script, &pending_script3, this, &run_loop2] {
-            order_.push_back(2);
-            QueueScriptForExecution(pending_script);
-            NotifyScriptReady(pending_script3);
-            run_loop2.Quit();
-          }));
+      .WillOnce([pending_script, &pending_script3, this, &run_loop2] {
+        order_.push_back(2);
+        QueueScriptForExecution(pending_script);
+        NotifyScriptReady(pending_script3);
+        run_loop2.Quit();
+      });
 
   base::RunLoop run_loop3;
   EXPECT_CALL(*pending_script3, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this, &run_loop3] {
+      .WillOnce([this, &run_loop3] {
         order_.push_back(3);
         run_loop3.Quit();
-      }));
+      });
 
   // Make sure that re-entrant calls to queueScriptForExecution don't cause
   // ScriptRunner::execute to do more work than expected.
@@ -333,7 +336,7 @@ TEST_F(ScriptRunnerTest, QueueReentrantScript_ManyAsyncScripts) {
 
     if (i > 0) {
       EXPECT_CALL(*pending_scripts[i], ExecuteScriptBlock())
-          .WillOnce(InvokeWithoutArgs([this, i] { order_.push_back(i); }));
+          .WillOnce([this, i] { order_.push_back(i); });
     }
   }
 
@@ -341,12 +344,12 @@ TEST_F(ScriptRunnerTest, QueueReentrantScript_ManyAsyncScripts) {
   NotifyScriptReady(pending_scripts[1]);
 
   EXPECT_CALL(*pending_scripts[0], ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([&pending_scripts, this] {
+      .WillOnce([&pending_scripts, this] {
         for (int i = 2; i < 20; i++) {
           NotifyScriptReady(pending_scripts[i]);
         }
         order_.push_back(0);
-      }));
+      });
 
   task_environment_.RunUntilIdle();
 
@@ -365,12 +368,15 @@ TEST_F(ScriptRunnerTest, ResumeAndSuspend_InOrder) {
   QueueScriptForExecution(pending_script2);
   QueueScriptForExecution(pending_script3);
 
-  EXPECT_CALL(*pending_script1, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(1); }));
-  EXPECT_CALL(*pending_script2, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(2); }));
-  EXPECT_CALL(*pending_script3, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(3); }));
+  EXPECT_CALL(*pending_script1, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(1);
+  });
+  EXPECT_CALL(*pending_script2, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(2);
+  });
+  EXPECT_CALL(*pending_script3, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(3);
+  });
 
   NotifyScriptReady(pending_script1);
   NotifyScriptReady(pending_script2);
@@ -399,12 +405,15 @@ TEST_F(ScriptRunnerTest, ResumeAndSuspend_Async) {
   NotifyScriptReady(pending_script2);
   NotifyScriptReady(pending_script3);
 
-  EXPECT_CALL(*pending_script1, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(1); }));
-  EXPECT_CALL(*pending_script2, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(2); }));
-  EXPECT_CALL(*pending_script3, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(3); }));
+  EXPECT_CALL(*pending_script1, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(1);
+  });
+  EXPECT_CALL(*pending_script2, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(2);
+  });
+  EXPECT_CALL(*pending_script3, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(3);
+  });
 
   document_->domWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kPaused);
@@ -423,10 +432,12 @@ TEST_F(ScriptRunnerTest, LateNotifications) {
   QueueScriptForExecution(pending_script1);
   QueueScriptForExecution(pending_script2);
 
-  EXPECT_CALL(*pending_script1, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(1); }));
-  EXPECT_CALL(*pending_script2, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(2); }));
+  EXPECT_CALL(*pending_script1, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(1);
+  });
+  EXPECT_CALL(*pending_script2, ExecuteScriptBlock()).WillOnce([this] {
+    order_.push_back(2);
+  });
 
   NotifyScriptReady(pending_script1);
   task_environment_.RunUntilIdle();

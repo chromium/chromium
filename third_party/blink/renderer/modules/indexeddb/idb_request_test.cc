@@ -1238,7 +1238,7 @@ TEST_F(IDBRequestTestWithDeduplication, Basic) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 1, _, _, _, false))
-        .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+        .WillOnce([&]() { run_loop.Quit(); });
 
     factory->open(scope.GetScriptState(), "db1", 1, scope.GetExceptionState());
     ASSERT_TRUE(!scope.GetExceptionState().HadException());
@@ -1249,7 +1249,7 @@ TEST_F(IDBRequestTestWithDeduplication, Basic) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 1, _, _, _, true))
-        .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+        .WillOnce([&]() { run_loop.Quit(); });
 
     factory->open(scope.GetScriptState(), "db1", 1, scope.GetExceptionState());
     ASSERT_TRUE(!scope.GetExceptionState().HadException());
@@ -1323,7 +1323,7 @@ TEST_F(IDBRequestTestWithDeduplication, UpgradeInvalidatesCache) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 2, _, _, _, false))
-        .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+        .WillOnce([&]() { run_loop.Quit(); });
 
     Persistent<IDBOpenDBRequest> request = factory->open(
         scope.GetScriptState(), "db1", 2, scope.GetExceptionState());
@@ -1336,7 +1336,7 @@ TEST_F(IDBRequestTestWithDeduplication, UpgradeInvalidatesCache) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 1, _, _, _, false))
-        .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+        .WillOnce([&]() { run_loop.Quit(); });
 
     Persistent<IDBOpenDBRequest> request = factory->open(
         scope.GetScriptState(), "db1", 1, scope.GetExceptionState());
@@ -1407,7 +1407,7 @@ TEST_F(IDBRequestTestWithDeduplication, ShareCachedConnection) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 1, _, _, _, true))
-        .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+        .WillOnce([&]() { run_loop.Quit(); });
 
     Persistent<IDBOpenDBRequest> request = factory->open(
         scope.GetScriptState(), "db1", 1, scope.GetExceptionState());
@@ -1485,7 +1485,7 @@ TEST_F(IDBRequestTestWithDeduplication, LowerVersionDoesNotInvalidateCache) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 1, _, _, _, false))
-        .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+        .WillOnce([&]() { run_loop.Quit(); });
 
     Persistent<IDBOpenDBRequest> request = factory->open(
         scope.GetScriptState(), "db1", 1, scope.GetExceptionState());
@@ -1497,7 +1497,7 @@ TEST_F(IDBRequestTestWithDeduplication, LowerVersionDoesNotInvalidateCache) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 2, _, _, _, true))
-        .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+        .WillOnce([&]() { run_loop.Quit(); });
 
     Persistent<IDBOpenDBRequest> request = factory->open(
         scope.GetScriptState(), "db1", 2, scope.GetExceptionState());
@@ -1602,7 +1602,7 @@ TEST_F(IDBRequestTestWithDeduplication,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_idb_factory, DeleteDatabase(_, String("db1"), _))
-        .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+        .WillOnce([&]() { run_loop.Quit(); });
 
     factory->deleteDatabase(scope.GetScriptState(), "db1",
                             scope.GetExceptionState());
@@ -1614,7 +1614,7 @@ TEST_F(IDBRequestTestWithDeduplication,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 1, _, _, _, false))
-        .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+        .WillOnce([&]() { run_loop.Quit(); });
 
     Persistent<IDBOpenDBRequest> request3 = factory->open(
         scope.GetScriptState(), "db1", 1, scope.GetExceptionState());
