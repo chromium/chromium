@@ -7081,6 +7081,10 @@ inline constexpr char kNtpCalendarModuleName[] = "NTP Calendar Module";
 inline constexpr char kNtpCalendarModuleDescription[] =
     "Shows the Google Calendar module on the New Tab Page.";
 
+inline constexpr char kNtpComponentExtensionName[] = "NTP Component Extension";
+inline constexpr char kNtpComponentExtensionDescription[] =
+    "When enabled, registers the New Tab Page as a component extension.";
+
 inline constexpr char kNtpComposeboxName[] = "NTP Composebox";
 inline constexpr char kNtpComposeboxDescription[] =
     "Shows the Composebox on the New Tab Page Searchbox upon clicking the "

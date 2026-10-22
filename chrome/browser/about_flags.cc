@@ -7574,6 +7574,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpThreadsRailVariations,
                                     "NtpThreadsRail")},
 
+    {"ntp-component-extension", flag_descriptions::kNtpComponentExtensionName,
+     flag_descriptions::kNtpComponentExtensionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpComponentExtension)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"chrome-dark-neutrals-26", flag_descriptions::kChromeDarkNeutrals26Name,
      flag_descriptions::kChromeDarkNeutrals26Description, kOsDesktop,

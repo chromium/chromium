@@ -10514,6 +10514,7 @@ from previous Chrome versions.
   <int value="-1348040371" label="ScanAppStickySettings:disabled"/>
   <int value="-1346817340" label="EarlyBodyLoad:disabled"/>
   <int value="-1346722635" label="gesture-selection"/>
+  <int value="-1346360917" label="NtpComponentExtension:enabled"/>
   <int value="-1346261029" label="PageInfoAboutThisSiteMoreLangs:disabled"/>
   <int value="-1346055284" label="WebSerialWiredDevicesAndroid:enabled"/>
   <int value="-1345931804" label="TabbedAppOverflowMenuIcons:disabled"/>
@@ -10991,6 +10992,7 @@ from previous Chrome versions.
   <int value="-1203742042" label="enable-gesture-selection"/>
   <int value="-1202556733" label="PermissionStorageAccessAPI:disabled"/>
   <int value="-1201741587" label="DataReductionProxyDecidesTransform:disabled"/>
+  <int value="-1201632303" label="NtpComponentExtension:disabled"/>
   <int value="-1201183153" label="enable-centered-app-list"/>
   <int value="-1200367807" label="DesktopFlingCurveOnAndroid:enabled"/>
   <int value="-1200367345" label="SyncAutofillWalletCredentialData:enabled"/>
