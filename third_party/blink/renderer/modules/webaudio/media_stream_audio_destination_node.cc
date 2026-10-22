@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
 
-#include <inttypes.h>
-
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
@@ -85,14 +83,11 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
   SetHandler(MediaStreamAudioDestinationHandler::Create(
       *this, number_of_channels, audio_source_ptr->Consumer()));
 
-  SendLogMessage(
-      __func__,
-      Format("({{context.state={}}}, {{context.sampleRate={:.0f}}}, "
-             "{{number_of_channels={}}}, {{handler=0x{:X}}}, [this=0x{:X}])",
-             context.GetStateStringForLogMessage().c_str(),
-             context.sampleRate(), number_of_channels,
-             reinterpret_cast<uintptr_t>(&Handler()),
-             reinterpret_cast<uintptr_t>(this)));
+  SendLogMessage(__func__,
+                 Format("({{context.state={}}}, {{context.sampleRate={:.0f}}}, "
+                        "{{number_of_channels={}}})",
+                        context.GetStateStringForLogMessage().c_str(),
+                        context.sampleRate(), number_of_channels));
 }
 
 MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(

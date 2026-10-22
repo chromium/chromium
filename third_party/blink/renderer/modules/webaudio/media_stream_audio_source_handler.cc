@@ -4,14 +4,13 @@
 
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_handler.h"
 
-#include <inttypes.h>
-
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -125,9 +124,7 @@ void MediaStreamAudioSourceHandler::Process(uint32_t number_of_frames) {
 
 void MediaStreamAudioSourceHandler::SendLogMessage(const String& function_name,
                                                    const String& message) {
-  WebRtcLogMessage(Format("[WA]MSASH::{} {} [this=0x{:X}]", function_name,
-                          message, reinterpret_cast<uintptr_t>(this))
-                       .Utf8());
+  WebRtcLogMessage(StrCat({"[WA]MSASH::", function_name, " ", message}).Utf8());
 }
 
 }  // namespace blink

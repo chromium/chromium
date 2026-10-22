@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 
-#include <inttypes.h>
-
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_channel_count_mode.h"
@@ -206,13 +204,12 @@ AudioNode* AudioNode::connect(AudioNode* destination,
     return nullptr;
   }
 
-  SendLogMessage(__func__,
-                 Format("({{output=[index:{}, type:{}, handler:0x{:X}]}} --> "
-                        "{{input=[index:{}, type:{}, handler:0x{:X}]}})",
-                        output_index, Handler().NodeTypeName(),
-                        reinterpret_cast<uintptr_t>(&Handler()), input_index,
-                        destination->Handler().NodeTypeName(),
-                        reinterpret_cast<uintptr_t>(&destination->Handler())));
+  SendLogMessage(
+      __func__,
+      Format(
+          "({{output=[index:{}, type:{}]}} --> {{input=[index:{}, type:{}]}})",
+          output_index, Handler().NodeTypeName(), input_index,
+          destination->Handler().NodeTypeName()));
 
   AudioNodeWiring::Connect(Handler().Output(output_index),
                            destination->Handler().Input(input_index));
