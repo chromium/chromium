@@ -20142,6 +20142,7 @@
             "platforms": [
                 "chromeos",
                 "linux",
+                "mac",
                 "windows",
                 "android",
                 "ios"
