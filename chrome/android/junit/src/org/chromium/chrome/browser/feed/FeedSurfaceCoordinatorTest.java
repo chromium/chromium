@@ -38,6 +38,7 @@ import android.widget.FrameLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -168,6 +169,11 @@ public class FeedSurfaceCoordinatorTest {
 
     // Mocked JNI.
     @Mock private FeedSurfaceRendererBridge.Natives mFeedSurfaceRendererBridgeJniMock;
+
+    @Mock
+    private JniUniquePtr<FeedSurfaceRendererBridge.NativeFeedSurfaceRendererBridge>
+            mNativeSurfaceRenderer;
+
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private FeedProcessScopeDependencyProvider.Natives mProcessScopeJniMock;
     @Mock private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
@@ -216,6 +222,8 @@ public class FeedSurfaceCoordinatorTest {
         mLayoutManager = new LinearLayoutManager(mActivity);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         FeedSurfaceRendererBridgeJni.setInstanceForTesting(mFeedSurfaceRendererBridgeJniMock);
+        when(mFeedSurfaceRendererBridgeJniMock.init(any(), any(), anyInt(), anyLong()))
+                .thenReturn(mNativeSurfaceRenderer);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedProcessScopeDependencyProviderJni.setInstanceForTesting(mProcessScopeJniMock);
         FeedReliabilityLoggingBridgeJni.setInstanceForTesting(mFeedReliabilityLoggingBridgeJniMock);

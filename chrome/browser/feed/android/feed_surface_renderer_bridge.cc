@@ -24,6 +24,7 @@
 #include "components/feed/core/v2/public/types.h"
 #include "components/variations/variations_ids_provider.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 
 // Must come after headers that provide symbols used by @JniType.
@@ -48,16 +49,17 @@ SurfaceId FromJavaSurfaceId(int32_t surface_id) {
 
 }  // namespace
 
-static int64_t JNI_FeedSurfaceRendererBridge_Init(
+static jni_zero::JniUniquePtr<FeedSurfaceRendererBridge>
+JNI_FeedSurfaceRendererBridge_Init(
     JNIEnv* env,
     const JavaRef<jobject>& j_this,
     Profile* profile,
     int32_t stream_kind,
     int64_t native_feed_reliability_logging_bridge) {
-  return reinterpret_cast<intptr_t>(new FeedSurfaceRendererBridge(
+  return jni_zero::MakeUnique<FeedSurfaceRendererBridge>(
       j_this, profile, stream_kind,
       reinterpret_cast<FeedReliabilityLoggingBridge*>(
-          native_feed_reliability_logging_bridge)));
+          native_feed_reliability_logging_bridge));
 }
 
 FeedSurfaceRendererBridge::FeedSurfaceRendererBridge(
@@ -85,10 +87,6 @@ FeedSurfaceRendererBridge::~FeedSurfaceRendererBridge() {
     }
     feed_stream_api_->DestroySurface(surface_id_);
   }
-}
-
-void FeedSurfaceRendererBridge::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 ReliabilityLoggingBridge&

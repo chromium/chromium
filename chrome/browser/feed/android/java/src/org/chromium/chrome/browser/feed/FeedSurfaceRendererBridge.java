@@ -8,7 +8,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -24,9 +27,12 @@ import java.util.List;
 @JNINamespace("feed::android")
 @NullMarked
 public class FeedSurfaceRendererBridge {
+    @JniType("::feed::android::FeedSurfaceRendererBridge")
+    interface NativeFeedSurfaceRendererBridge extends JniTypeToken {}
+
     private final Profile mProfile;
     private final int mSurfaceId;
-    private long mNativeSurfaceRenderer;
+    private @Nullable JniUniquePtr<NativeFeedSurfaceRendererBridge> mNativeSurfaceRenderer;
     private @Nullable Renderer mRenderer;
 
     /**
@@ -74,8 +80,10 @@ public class FeedSurfaceRendererBridge {
 
     public void destroy() {
         assert mRenderer != null;
-        FeedSurfaceRendererBridgeJni.get().destroy(mNativeSurfaceRenderer);
-        mNativeSurfaceRenderer = 0;
+        if (mNativeSurfaceRenderer != null) {
+            mNativeSurfaceRenderer.destroy();
+            mNativeSurfaceRenderer = null;
+        }
         mRenderer = null;
     }
 
@@ -110,7 +118,7 @@ public class FeedSurfaceRendererBridge {
 
     void loadMore(Callback<Boolean> callback) {
         // Cancel if destroyed.
-        if (mRenderer == null) {
+        if (mRenderer == null || mNativeSurfaceRenderer == null) {
             return;
         }
         FeedSurfaceRendererBridgeJni.get().loadMore(mNativeSurfaceRenderer, callback);
@@ -118,7 +126,7 @@ public class FeedSurfaceRendererBridge {
 
     void manualRefresh(Callback<Boolean> callback) {
         // Cancel if destroyed.
-        if (mRenderer == null) {
+        if (mRenderer == null || mNativeSurfaceRenderer == null) {
             return;
         }
         FeedSurfaceRendererBridgeJni.get().manualRefresh(mNativeSurfaceRenderer, callback);
@@ -126,7 +134,7 @@ public class FeedSurfaceRendererBridge {
 
     void surfaceOpened() {
         // Cancel if destroyed.
-        if (mRenderer == null) {
+        if (mRenderer == null || mNativeSurfaceRenderer == null) {
             return;
         }
         FeedSurfaceRendererBridgeJni.get().surfaceOpened(mNativeSurfaceRenderer);
@@ -134,7 +142,7 @@ public class FeedSurfaceRendererBridge {
 
     void surfaceClosed() {
         // Cancel if destroyed.
-        if (mRenderer == null) {
+        if (mRenderer == null || mNativeSurfaceRenderer == null) {
             return;
         }
         FeedSurfaceRendererBridgeJni.get().surfaceClosed(mNativeSurfaceRenderer);
@@ -248,28 +256,26 @@ public class FeedSurfaceRendererBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         // Constructors.
-        long init(
+        JniUniquePtr<NativeFeedSurfaceRendererBridge> init(
                 FeedSurfaceRendererBridge self,
                 @JniType("Profile*") Profile profile,
                 @StreamKind int streamKind,
                 long nativeFeedReliabilityLoggingBridge);
 
         // Member functions, must not be called after destroy().
-        void destroy(long nativeFeedSurfaceRendererBridge);
-
         void loadMore(
-                long nativeFeedSurfaceRendererBridge,
+                JniPtr<NativeFeedSurfaceRendererBridge> self,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void manualRefresh(
-                long nativeFeedSurfaceRendererBridge,
+                JniPtr<NativeFeedSurfaceRendererBridge> self,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
-        int getSurfaceId(long nativeFeedSurfaceRendererBridge);
+        int getSurfaceId(JniPtr<NativeFeedSurfaceRendererBridge> self);
 
-        void surfaceOpened(long nativeFeedSurfaceRendererBridge);
+        void surfaceOpened(JniPtr<NativeFeedSurfaceRendererBridge> self);
 
-        void surfaceClosed(long nativeFeedSurfaceRendererBridge);
+        void surfaceClosed(JniPtr<NativeFeedSurfaceRendererBridge> self);
 
         // Static functions, can be called after creation, and destroy().
         void reportFeedViewed(@JniType("Profile*") Profile profile, int surfaceId);

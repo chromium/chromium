@@ -38,8 +38,6 @@ class FeedSurfaceRendererBridge : public ::feed::SurfaceRenderer {
 
   ~FeedSurfaceRendererBridge() override;
 
-  void Destroy(JNIEnv* env);
-
   // SurfaceRenderer implementation.
   void StreamUpdate(const feedui::StreamUpdate& update) override;
   void ReplaceDataStoreEntry(std::string_view key,
