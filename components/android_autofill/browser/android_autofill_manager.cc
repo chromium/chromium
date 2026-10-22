@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "components/android_autofill/browser/android_form_event_logger.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -94,15 +96,25 @@ bool AndroidAutofillManager::ShouldClearPreviewedForm() {
 void AndroidAutofillManager::OnFormSubmittedImpl(
     const FormData& form,
     mojom::SubmissionSource source) {
+  const FormStructure* submitted_form = FindCachedFormById(form.global_id());
+  const password_manager::PasswordForm* pw_form =
+      submitted_form ? FindCachedPasswordForm(*submitted_form) : nullptr;
+  // A form being hidden or removed after autofill is a weak submission signal
+  // because filling can itself add or remove fields (e.g., after filling a
+  // country). It is therefore only accepted for password forms, whose
+  // mutations are rarer, and only if the feature is enabled.
+  if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL &&
+      (!pw_form ||
+       !base::FeatureList::IsEnabled(
+           features::kAutofillAcceptDomMutationAfterAutofillSubmission))) {
+    return;
+  }
   if (auto* provider = GetAutofillProvider()) {
     provider->OnFormSubmitted(this, form, source);
   }
-  const FormStructure* submitted_form = FindCachedFormById(form.global_id());
   if (!submitted_form) {
     return;
   }
-  const password_manager::PasswordForm* pw_form =
-      FindCachedPasswordForm(*submitted_form);
   for (FormType form_type : GetFormTypesForLogging(
            *submitted_form, pw_form, GetAcUnrecognizedBehavior(client()))) {
     if (auto* logger = GetEventFormLogger(form_type)) {

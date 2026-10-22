@@ -881,6 +881,7 @@ TEST_F(AndroidAutofillProviderTest,
 // DOM_MUTATION_AFTER_AUTOFILL is propagated to Java for password forms.
 TEST_F(AndroidAutofillProviderTest,
        DomMutationAfterAutofillFormSubmission_PasswordForm) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillAcceptDomMutationAfterAutofillSubmission};
   FormData form =
@@ -899,12 +900,17 @@ TEST_F(AndroidAutofillProviderTest,
   android_autofill_manager().OnFormSubmitted(
       form, mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL,
       AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.Password", false, 1);
 }
 
 // Tests that a form submission of an ongoing Autofill session with source
 // DOM_MUTATION_AFTER_AUTOFILL is not propagated to Java for non-password forms.
 TEST_F(AndroidAutofillProviderTest,
        DomMutationAfterAutofillFormSubmission_NonPasswordForm) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillAcceptDomMutationAfterAutofillSubmission};
   FormData form = CreateFormDataForFrame(
@@ -923,6 +929,41 @@ TEST_F(AndroidAutofillProviderTest,
   android_autofill_manager().OnFormSubmitted(
       form, mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL,
       AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", 0);
+}
+
+// Tests that a form submission with source DOM_MUTATION_AFTER_AUTOFILL is
+// neither propagated to Java nor recorded as a submission for password forms if
+// `kAutofillAcceptDomMutationAfterAutofillSubmission` is disabled.
+TEST_F(AndroidAutofillProviderTest,
+       DomMutationAfterAutofillFormSubmission_PasswordFormFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillAcceptDomMutationAfterAutofillSubmission);
+  FormData form =
+      CreateFormDataForFrame(CreateTestPasswordFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // Start an Autofill session.
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[0].global_id());
+
+  EXPECT_CALL(
+      provider_bridge(),
+      OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL))
+      .Times(0);
+  android_autofill_manager().OnFormSubmitted(
+      form, mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.Password", 0);
 }
 
 // Tests that a form submission of an ongoing Autofill session is propagated to

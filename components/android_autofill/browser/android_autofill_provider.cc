@@ -556,16 +556,6 @@ void AndroidAutofillProvider::OnFormSubmitted(AndroidAutofillManager* manager,
   }
   CHECK(session_state_ && session_state_->manager);
 
-  if (const FormStructure* form_structure =
-          session_state_->manager->FindCachedFormById(form.global_id());
-      source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL &&
-      (!form_structure ||
-       !base::FeatureList::IsEnabled(
-           features::kAutofillAcceptDomMutationAfterAutofillSubmission) ||
-       !ParseToPasswordForm(*form_structure))) {
-    return;
-  }
-
   FireSuccessfulSubmission(source);
 }
 
