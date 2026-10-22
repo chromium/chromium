@@ -14,11 +14,12 @@ GpuMemoryBufferTrackerApple::GpuMemoryBufferTrackerApple(
     gfx::ScopedIOSurface io_surface)
     : is_external_io_surface_(true), io_surface_(std::move(io_surface)) {}
 
-GpuMemoryBufferTrackerApple::~GpuMemoryBufferTrackerApple() {}
+GpuMemoryBufferTrackerApple::~GpuMemoryBufferTrackerApple() = default;
 
 bool GpuMemoryBufferTrackerApple::Init(const gfx::Size& dimensions,
                                        VideoPixelFormat format,
-                                       const mojom::PlaneStridesPtr& strides) {
+                                       const mojom::PlaneStridesPtr& strides,
+                                       const gfx::ColorSpace& color_space) {
   DCHECK(!io_surface_);
   if (format != PIXEL_FORMAT_NV12) {
     NOTREACHED() << "Unsupported VideoPixelFormat "
@@ -46,7 +47,8 @@ bool GpuMemoryBufferTrackerApple::IsSameGpuMemoryBuffer(
 bool GpuMemoryBufferTrackerApple::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
-    const mojom::PlaneStridesPtr& strides) {
+    const mojom::PlaneStridesPtr& strides,
+    const gfx::ColorSpace& color_space) {
   if (is_external_io_surface_) {
     return false;
   }

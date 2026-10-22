@@ -111,11 +111,12 @@ VideoCaptureBufferPoolImpl::ReserveForProducer(
     const mojom::PlaneStridesPtr& strides,
     int frame_feedback_id,
     int* buffer_id,
-    int* buffer_id_to_drop) {
+    int* buffer_id_to_drop,
+    const gfx::ColorSpace& color_space) {
   base::AutoLock lock(lock_);
   return ReserveForProducerInternal(dimensions, format, strides,
                                     frame_feedback_id, buffer_id,
-                                    buffer_id_to_drop);
+                                    buffer_id_to_drop, color_space);
 }
 
 void VideoCaptureBufferPoolImpl::RelinquishProducerReservation(int buffer_id) {
@@ -256,7 +257,8 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
     const mojom::PlaneStridesPtr& strides,
     int frame_feedback_id,
     int* buffer_id,
-    int* buffer_id_to_drop) {
+    int* buffer_id_to_drop,
+    const gfx::ColorSpace& color_space) {
   lock_.AssertAcquired();
 
   // Look for a tracker that's allocated, big enough, and not in use. Track the
@@ -269,7 +271,8 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
     VideoCaptureBufferTracker* const tracker = it->second.get();
     if (!tracker->IsHeldByProducerOrConsumer()) {
       if (it->first > last_invalidated_id_ &&
-          tracker->IsReusableForFormat(dimensions, pixel_format, strides)) {
+          tracker->IsReusableForFormat(dimensions, pixel_format, strides,
+                                       color_space)) {
         // Reuse this buffer
         tracker->SetHeldByProducer(true);
         tracker->set_frame_feedback_id(frame_feedback_id);
@@ -313,7 +316,8 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
 #endif
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
       buffer_tracker_factory_->CreateTracker(buffer_type);
-  if (!tracker || !tracker->Init(dimensions, pixel_format, strides)) {
+  if (!tracker ||
+      !tracker->Init(dimensions, pixel_format, strides, color_space)) {
     DLOG(ERROR) << "Error initializing VideoCaptureBufferTracker";
     return VideoCaptureDevice::Client::ReserveResult::kAllocationFailed;
   }

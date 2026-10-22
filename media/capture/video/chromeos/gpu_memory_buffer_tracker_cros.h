@@ -33,10 +33,12 @@ class CAPTURE_EXPORT GpuMemoryBufferTrackerCros final
   // Implementation of VideoCaptureBufferTracker:
   bool Init(const gfx::Size& dimensions,
             VideoPixelFormat format,
-            const mojom::PlaneStridesPtr& strides) override;
+            const mojom::PlaneStridesPtr& strides,
+            const gfx::ColorSpace& color_space) override;
   bool IsReusableForFormat(const gfx::Size& dimensions,
                            VideoPixelFormat format,
-                           const mojom::PlaneStridesPtr& strides) override;
+                           const mojom::PlaneStridesPtr& strides,
+                           const gfx::ColorSpace& color_space) override;
 
   uint32_t GetMemorySizeInBytes() override;
 

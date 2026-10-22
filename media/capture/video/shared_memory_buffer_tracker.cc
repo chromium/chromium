@@ -63,7 +63,8 @@ SharedMemoryBufferTracker::~SharedMemoryBufferTracker() = default;
 
 bool SharedMemoryBufferTracker::Init(const gfx::Size& dimensions,
                                      VideoPixelFormat format,
-                                     const mojom::PlaneStridesPtr& strides) {
+                                     const mojom::PlaneStridesPtr& strides,
+                                     const gfx::ColorSpace& color_space) {
   DCHECK(!region_.IsValid());
   const size_t buffer_size =
       CalculateRequiredBufferSize(dimensions, format, strides);
@@ -76,7 +77,8 @@ bool SharedMemoryBufferTracker::Init(const gfx::Size& dimensions,
 bool SharedMemoryBufferTracker::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
-    const mojom::PlaneStridesPtr& strides) {
+    const mojom::PlaneStridesPtr& strides,
+    const gfx::ColorSpace& color_space) {
   return (!strict_pixel_format_ || format == format_) &&
          GetMemorySizeInBytes() >=
              CalculateRequiredBufferSize(dimensions, format, strides);

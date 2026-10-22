@@ -60,7 +60,8 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
       const mojom::PlaneStridesPtr& strides,
       int frame_feedback_id,
       int* buffer_id,
-      int* buffer_id_to_drop) override;
+      int* buffer_id_to_drop,
+      const gfx::ColorSpace& color_space) override;
   void RelinquishProducerReservation(int buffer_id) override;
   VideoCaptureDevice::Client::ReserveResult ReserveIdForExternalBuffer(
       CapturedExternalVideoBuffer buffer,
@@ -81,7 +82,8 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
       const mojom::PlaneStridesPtr& strides,
       int frame_feedback_id,
       int* buffer_id,
-      int* tracker_id_to_drop);
+      int* tracker_id_to_drop,
+      const gfx::ColorSpace& color_space);
 
   VideoCaptureBufferTracker* GetTracker(int buffer_id)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

@@ -19,7 +19,8 @@ GpuMemoryBufferTrackerCros::~GpuMemoryBufferTrackerCros() = default;
 
 bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
                                       VideoPixelFormat format,
-                                      const mojom::PlaneStridesPtr& strides) {
+                                      const mojom::PlaneStridesPtr& strides,
+                                      const gfx::ColorSpace& color_space) {
   std::optional<viz::SharedImageFormat> si_format =
       VideoPixelFormatToVizSIFormat(format);
   if (!si_format) {
@@ -41,7 +42,8 @@ bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
 bool GpuMemoryBufferTrackerCros::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
-    const mojom::PlaneStridesPtr& strides) {
+    const mojom::PlaneStridesPtr& strides,
+    const gfx::ColorSpace& color_space) {
   std::optional<viz::SharedImageFormat> si_format =
       VideoPixelFormatToVizSIFormat(format);
   if (!si_format) {

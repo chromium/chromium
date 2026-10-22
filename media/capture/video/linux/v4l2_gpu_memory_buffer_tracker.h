@@ -48,15 +48,19 @@ class CAPTURE_EXPORT V4L2GpuMemoryBufferTracker final
   ~V4L2GpuMemoryBufferTracker() override;
 
   // VideoCaptureBufferTracker implementation.
+  using VideoCaptureBufferTracker::Init;
+  using VideoCaptureBufferTracker::IsReusableForFormat;
   bool Init(const gfx::Size& dimensions,
             VideoPixelFormat format,
-            const mojom::PlaneStridesPtr& strides) override;
+            const mojom::PlaneStridesPtr& strides,
+            const gfx::ColorSpace& color_space) override;
 
   // Returns true if |this| matches the specified parameters and the GPU context
   // is not lost.
   bool IsReusableForFormat(const gfx::Size& dimensions,
                            VideoPixelFormat format,
-                           const mojom::PlaneStridesPtr& strides) override;
+                           const mojom::PlaneStridesPtr& strides,
+                           const gfx::ColorSpace& color_space) override;
 
   uint32_t GetMemorySizeInBytes() override;
 

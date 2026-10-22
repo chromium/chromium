@@ -81,13 +81,27 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
   // On occasion, this call will decide to free an old buffer to make room for a
   // new allocation at a larger size. If so, the ID of the destroyed buffer is
   // returned via |buffer_id_to_drop|.
+  // Convenience overload with a default color space. Default arguments are
+  // not allowed on virtual functions, so the virtual method below takes the
+  // color space explicitly.
+  VideoCaptureDevice::Client::ReserveResult ReserveForProducer(
+      const gfx::Size& dimensions,
+      VideoPixelFormat format,
+      const mojom::PlaneStridesPtr& strides,
+      int frame_feedback_id,
+      int* buffer_id,
+      int* buffer_id_to_drop) {
+    return ReserveForProducer(dimensions, format, strides, frame_feedback_id,
+                              buffer_id, buffer_id_to_drop, gfx::ColorSpace());
+  }
   virtual VideoCaptureDevice::Client::ReserveResult ReserveForProducer(
       const gfx::Size& dimensions,
       VideoPixelFormat format,
       const mojom::PlaneStridesPtr& strides,
       int frame_feedback_id,
       int* buffer_id,
-      int* buffer_id_to_drop) = 0;
+      int* buffer_id_to_drop,
+      const gfx::ColorSpace& color_space) = 0;
 
   // Indicate that a buffer held for the producer should be returned back to the
   // pool without passing on to the consumer. This effectively is the opposite

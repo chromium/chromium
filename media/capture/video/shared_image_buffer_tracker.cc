@@ -19,7 +19,8 @@ SharedImageBufferTracker::~SharedImageBufferTracker() = default;
 
 bool SharedImageBufferTracker::Init(const gfx::Size& dimensions,
                                     VideoPixelFormat format,
-                                    const mojom::PlaneStridesPtr& strides) {
+                                    const mojom::PlaneStridesPtr& strides,
+                                    const gfx::ColorSpace& color_space) {
   if (!client_shared_image_) {
     return false;
   }
@@ -32,7 +33,8 @@ bool SharedImageBufferTracker::Init(const gfx::Size& dimensions,
 bool SharedImageBufferTracker::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
-    const mojom::PlaneStridesPtr& strides) {
+    const mojom::PlaneStridesPtr& strides,
+    const gfx::ColorSpace& color_space) {
   return false;
 }
 

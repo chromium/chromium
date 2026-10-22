@@ -114,7 +114,8 @@ MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
       .WillByDefault(
           [](const gfx::Size& dimensions, VideoPixelFormat format, int,
              VideoCaptureDevice::Client::Buffer* buffer,
-             int* require_new_buffer_id, int* retire_old_buffer_id) {
+             int* require_new_buffer_id, int* retire_old_buffer_id,
+             const gfx::ColorSpace& color_space) {
             EXPECT_GT(dimensions.GetArea(), 0);
             gfx::GpuMemoryBufferHandle gmb_handle;
             auto si_format = VideoPixelFormatToSharedImageFormat(format);

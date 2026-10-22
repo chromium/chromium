@@ -281,13 +281,28 @@ class CAPTURE_EXPORT VideoCaptureDevice
     //
     // The buffer stays reserved for use by the caller as long as it
     // holds on to the contained |buffer_read_write_permission|.
+    // Convenience overload with a default color space. Default arguments are
+    // not allowed on virtual functions, so the virtual method below takes the
+    // color space explicitly.
+    [[nodiscard]] ReserveResult ReserveOutputBuffer(
+        const gfx::Size& dimensions,
+        VideoPixelFormat format,
+        int frame_feedback_id,
+        Buffer* buffer,
+        int* require_new_buffer_id,
+        int* retire_old_buffer_id) {
+      return ReserveOutputBuffer(dimensions, format, frame_feedback_id, buffer,
+                                 require_new_buffer_id, retire_old_buffer_id,
+                                 gfx::ColorSpace());
+    }
     [[nodiscard]] virtual ReserveResult ReserveOutputBuffer(
         const gfx::Size& dimensions,
         VideoPixelFormat format,
         int frame_feedback_id,
         Buffer* buffer,
         int* require_new_buffer_id,
-        int* retire_old_buffer_id) = 0;
+        int* retire_old_buffer_id,
+        const gfx::ColorSpace& color_space) = 0;
 
     // Provides VCD::Client with a populated Buffer containing the content of
     // the next video frame. The |buffer| must originate from an earlier call to

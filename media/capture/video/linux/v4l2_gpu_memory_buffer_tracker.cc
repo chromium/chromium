@@ -43,7 +43,8 @@ V4L2GpuMemoryBufferTracker::~V4L2GpuMemoryBufferTracker() {
 
 bool V4L2GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
                                       VideoPixelFormat format,
-                                      const mojom::PlaneStridesPtr& strides) {
+                                      const mojom::PlaneStridesPtr& strides,
+                                      const gfx::ColorSpace& color_space) {
   std::optional<viz::SharedImageFormat> si_format = ToSharedImageFormat(format);
   if (!si_format) {
     DLOG(ERROR) << "Unsupported VideoPixelFormat "
@@ -79,7 +80,8 @@ bool V4L2GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
 bool V4L2GpuMemoryBufferTracker::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
-    const mojom::PlaneStridesPtr& strides) {
+    const mojom::PlaneStridesPtr& strides,
+    const gfx::ColorSpace& color_space) {
   if (!is_valid_) {
     return false;
   }

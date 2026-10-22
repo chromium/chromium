@@ -735,12 +735,14 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
 }
 
 VideoCaptureDevice::Client::ReserveResult
-VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
-                                              VideoPixelFormat pixel_format,
-                                              int frame_feedback_id,
-                                              Buffer* buffer,
-                                              int* require_new_buffer_id,
-                                              int* retire_old_buffer_id) {
+VideoCaptureDeviceClient::ReserveOutputBuffer(
+    const gfx::Size& frame_size,
+    VideoPixelFormat pixel_format,
+    int frame_feedback_id,
+    Buffer* buffer,
+    int* require_new_buffer_id,
+    int* retire_old_buffer_id,
+    const gfx::ColorSpace& color_space) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
 
   CHECK_GT(frame_size.width(), 0);
@@ -757,7 +759,7 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
   int buffer_id = VideoCaptureBufferPool::kInvalidId;
   auto reservation_result_code = buffer_pool_->ReserveForProducer(
       frame_size, pixel_format, nullptr, frame_feedback_id, &buffer_id,
-      &buffer_id_to_drop);
+      &buffer_id_to_drop, color_space);
   if (buffer_id_to_drop != VideoCaptureBufferPool::kInvalidId) {
     // |buffer_pool_| has decided to release a buffer. Notify receiver in case
     // the buffer has already been shared with it.

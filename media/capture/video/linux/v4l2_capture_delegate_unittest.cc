@@ -273,13 +273,14 @@ class MockV4l2GpuClient : public VideoCaptureDevice::Client {
 
   void OnCaptureConfigurationChanged() override {}
 
-  MOCK_METHOD6(ReserveOutputBuffer,
+  MOCK_METHOD7(ReserveOutputBuffer,
                ReserveResult(const gfx::Size&,
                              VideoPixelFormat,
                              int,
                              Buffer*,
                              int*,
-                             int*));
+                             int*,
+                             const gfx::ColorSpace&));
 
   MOCK_METHOD8(OnIncomingCapturedBufferExt,
                void(Buffer,
@@ -446,7 +447,8 @@ TEST_P(V4l2CaptureDelegateGPUMemoryBufferTest, CameraCaptureOneCopy) {
       .WillRepeatedly(
           [](const gfx::Size& size, VideoPixelFormat format, int feedback_id,
              VideoCaptureDevice::Client::Buffer* capture_buffer,
-             int* require_new_buffer_id, int* retire_old_buffer_id) {
+             int* require_new_buffer_id, int* retire_old_buffer_id,
+             const gfx::ColorSpace& color_space) {
             EXPECT_EQ(format, PIXEL_FORMAT_NV12);
             capture_buffer->handle_provider =
                 std::make_unique<MockCaptureHandleProvider>(

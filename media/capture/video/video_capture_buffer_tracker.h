@@ -15,6 +15,7 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/system/buffer.h"
+#include "ui/gfx/color_space.h"
 
 namespace gfx {
 struct GpuMemoryBufferHandle;
@@ -27,10 +28,20 @@ namespace media {
 class CAPTURE_EXPORT VideoCaptureBufferTracker {
  public:
   VideoCaptureBufferTracker() = default;
+  virtual ~VideoCaptureBufferTracker() = default;
+
+  // Convenience overload with a default color space. Default arguments are
+  // not allowed on virtual functions, so the virtual method below takes the
+  // color space explicitly.
+  bool Init(const gfx::Size& dimensions,
+            VideoPixelFormat format,
+            const mojom::PlaneStridesPtr& strides) {
+    return Init(dimensions, format, strides, gfx::ColorSpace());
+  }
   virtual bool Init(const gfx::Size& dimensions,
                     VideoPixelFormat format,
-                    const mojom::PlaneStridesPtr& strides) = 0;
-  virtual ~VideoCaptureBufferTracker() {}
+                    const mojom::PlaneStridesPtr& strides,
+                    const gfx::ColorSpace& color_space) = 0;
 
   bool IsHeldByProducerOrConsumer() const {
     return held_by_producer_ || consumer_hold_count_ > 0;
@@ -49,9 +60,17 @@ class CAPTURE_EXPORT VideoCaptureBufferTracker {
 
   // Returns true if |this| matches the specified parameters. This is used to
   // reuse buffers that were internally allocated.
-  virtual bool IsReusableForFormat(const gfx::Size& dimensions,
-                                   VideoPixelFormat format,
-                                   const mojom::PlaneStridesPtr& strides) = 0;
+  // Convenience overload with a default color space (see Init above).
+  bool IsReusableForFormat(const gfx::Size& dimensions,
+                           VideoPixelFormat format,
+                           const mojom::PlaneStridesPtr& strides) {
+    return IsReusableForFormat(dimensions, format, strides, gfx::ColorSpace());
+  }
+  virtual bool IsReusableForFormat(
+      const gfx::Size& dimensions,
+      VideoPixelFormat format,
+      const mojom::PlaneStridesPtr& strides,
+      const gfx::ColorSpace& color_space) = 0;
 
   virtual uint32_t GetMemorySizeInBytes() = 0;
 

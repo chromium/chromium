@@ -112,7 +112,8 @@ GpuMemoryBufferTrackerWin::~GpuMemoryBufferTrackerWin() = default;
 
 bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
                                      VideoPixelFormat format,
-                                     const mojom::PlaneStridesPtr& strides) {
+                                     const mojom::PlaneStridesPtr& strides,
+                                     const gfx::ColorSpace& color_space) {
   // Only support NV12
   if (format != PIXEL_FORMAT_NV12) {
     NOTREACHED() << "Unsupported VideoPixelFormat " << format;
@@ -187,7 +188,8 @@ bool GpuMemoryBufferTrackerWin::IsD3DDeviceChanged() {
 bool GpuMemoryBufferTrackerWin::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
-    const mojom::PlaneStridesPtr& strides) {
+    const mojom::PlaneStridesPtr& strides,
+    const gfx::ColorSpace& color_space) {
   // External buffer is never reused.
   return !IsD3DDeviceChanged() && (format == PIXEL_FORMAT_NV12) &&
          (dimensions == dimensions_) && !is_external_dxgi_handle_;

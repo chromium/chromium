@@ -71,12 +71,14 @@ class MockVideoCaptureClient : public VideoCaptureDevice::Client {
       const gfx::Size& natural_size,
       const std::optional<media::VideoFrameMetadata>& metadata) override;
   // Trampoline methods to workaround GMOCK problems with std::unique_ptr<>.
-  ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,
-                                    VideoPixelFormat format,
-                                    int frame_feedback_id,
-                                    Buffer* buffer,
-                                    int* require_new_buffer_id,
-                                    int* retire_old_buffer_id) override;
+  ReserveResult ReserveOutputBuffer(
+      const gfx::Size& dimensions,
+      VideoPixelFormat format,
+      int frame_feedback_id,
+      Buffer* buffer,
+      int* require_new_buffer_id,
+      int* retire_old_buffer_id,
+      const gfx::ColorSpace& color_space) override;
   void OnIncomingCapturedBufferExt(
       Buffer buffer,
       const VideoCaptureFormat& format,
