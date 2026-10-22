@@ -30,8 +30,6 @@ struct DisplayStrings {
 // autofillable promo codes. Merchants are determined by `merchant_origins`.
 class AutofillOfferData {
  public:
-  // TODO(crbug.com/546252995): Deprecate `OfferType` since we will only have
-  // `WALLET_DIRECT_OFFER`.
   // The specific type of offer.
   enum class OfferType {
     // Default value, should not be used.
@@ -40,17 +38,7 @@ class AutofillOfferData {
     WALLET_DIRECT_OFFER,
   };
 
-  // TODO(crbug.com/546252995): Deprecate static factory methods in favor of the
-  // constructor.
-  // Returns an AutofillOfferData for a Google Wallet direct offer.
-  static AutofillOfferData WalletDirectOffer(
-      std::string offer_id,
-      base::Time expiry,
-      const std::vector<GURL>& merchant_origins,
-      const GURL& offer_details_url,
-      const DisplayStrings& display_strings,
-      const std::string& promo_code);
-
+  // Constructs an AutofillOfferData for a Google Wallet direct offer.
   AutofillOfferData(std::string offer_id,
                     base::Time expiry,
                     std::vector<GURL> merchant_origins,
@@ -117,15 +105,6 @@ class AutofillOfferData {
 #endif
 
  private:
-  // Constructs an AutofillOfferData for a Wallet direct offer.
-  AutofillOfferData(OfferType offer_type,
-                    std::string offer_id,
-                    base::Time expiry,
-                    const std::vector<GURL>& merchant_origins,
-                    const GURL& offer_details_url,
-                    const DisplayStrings& display_strings,
-                    const std::string& promo_code);
-
   // The specific type of offer, which informs decisions made by other classes,
   // such as UI rendering or metrics.
   OfferType offer_type_ = OfferType::UNKNOWN;
@@ -152,8 +131,7 @@ class AutofillOfferData {
   DisplayStrings display_strings_;
 
   // TODO(crbug.com/546252995): Rename `offer_reward_amount_` to
-  // `offer_short_title_` once `OfferType` is deprecated, since direct offers
-  // store their short title here.
+  // `offer_short_title_`, since direct offers store their short title here.
   // The string including the reward details of the offer. Could be either
   // percentage off (XXX%) or fixed amount off ($XXX).
   std::string offer_reward_amount_;

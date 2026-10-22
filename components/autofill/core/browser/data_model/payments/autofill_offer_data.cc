@@ -14,19 +14,6 @@
 
 namespace autofill {
 
-// static
-AutofillOfferData AutofillOfferData::WalletDirectOffer(
-    std::string offer_id,
-    base::Time expiry,
-    const std::vector<GURL>& merchant_origins,
-    const GURL& offer_details_url,
-    const DisplayStrings& display_strings,
-    const std::string& promo_code) {
-  return AutofillOfferData(OfferType::WALLET_DIRECT_OFFER, std::move(offer_id),
-                           expiry, merchant_origins, offer_details_url,
-                           display_strings, promo_code);
-}
-
 AutofillOfferData::AutofillOfferData(std::string offer_id,
                                      base::Time expiry,
                                      std::vector<GURL> merchant_origins,
@@ -142,20 +129,5 @@ bool AutofillOfferData::IsEligibleForOrigin(const GURL& origin) const {
                                                                origin, {});
       });
 }
-
-AutofillOfferData::AutofillOfferData(OfferType offer_type,
-                                     std::string offer_id,
-                                     base::Time expiry,
-                                     const std::vector<GURL>& merchant_origins,
-                                     const GURL& offer_details_url,
-                                     const DisplayStrings& display_strings,
-                                     const std::string& promo_code)
-    : offer_type_(offer_type),
-      offer_id_(std::move(offer_id)),
-      expiry_(expiry),
-      offer_details_url_(offer_details_url),
-      merchant_origins_(merchant_origins),
-      display_strings_(display_strings),
-      promo_code_(promo_code) {}
 
 }  // namespace autofill

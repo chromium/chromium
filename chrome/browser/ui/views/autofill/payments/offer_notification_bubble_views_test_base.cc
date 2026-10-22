@@ -110,8 +110,6 @@ OfferNotificationBubbleViewsTestBase::CreateWalletDirectOfferDataWithDomains(
   for (auto url : domains) {
     merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
   }
-  // Note: The constructor is used instead of the `WalletDirectOffer()` factory
-  // method because the offer short title is needed for the bubble title.
   return std::make_unique<AutofillOfferData>(
       offer_id, expiry, merchant_origins,
       GURL(GetDefaultTestDetailsUrlString()), DisplayStrings(),

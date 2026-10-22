@@ -78,12 +78,7 @@ OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
           CHECK_DEREF(tabs::TabInterface::GetFromContents(web_contents))) {}
 
 std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
-  switch (offer_.GetOfferType()) {
-    case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
-      return base::UTF8ToUTF16(offer_.GetOfferRewardAmount());
-    case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
-  }
+  return base::UTF8ToUTF16(offer_.GetOfferRewardAmount());
 }
 
 AutofillBubbleBase*

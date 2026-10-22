@@ -60,8 +60,6 @@ class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
   void WindowClosing() override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  void InitWithWalletDirectOfferContent();
-
   // Called when the link of the offer's body text is clicked. Browser will
   // switch to a new tab with the offer details url.
   void OnOfferDetailsLinkClicked();

@@ -60,70 +60,7 @@ void OfferNotificationBubbleViews::Hide() {
 }
 
 void OfferNotificationBubbleViews::Init() {
-  switch (controller_->GetOffer()->GetOfferType()) {
-    case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
-      InitWithWalletDirectOfferContent();
-      return;
-    case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
-  }
-}
-
-void OfferNotificationBubbleViews::AddedToWidget() {
-  const AutofillOfferData* offer = controller_->GetOffer();
-  CHECK(offer);
-
-  // Wallet direct offers are surfaced from the user's Google Wallet, so they
-  // show the Google Wallet logo next to the title. Legacy GPay offers keep the
-  // Google super G.
-  const TitleWithIconAfterLabelView::Icon icon =
-      offer->GetOfferType() == AutofillOfferData::OfferType::WALLET_DIRECT_OFFER
-          ? TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET
-          : TitleWithIconAfterLabelView::Icon::GOOGLE_G;
-
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(GetWindowTitle(), icon));
-
-  // The Google Wallet logo is shown next to the title, so include it in the
-  // accessible title.
-  if (icon == TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET) {
-    SetAccessibleTitle(l10n_util::GetStringFUTF16(
-        IDS_CONCAT_TWO_STRINGS_WITH_COMMA, GetWindowTitle(),
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)));
-  }
-}
-
-views::View* OfferNotificationBubbleViews::GetInitiallyFocusedView() {
-  // The bubble has no dialog buttons, so focus the close button.
-  views::BubbleFrameView* frame_view = GetBubbleFrameView();
-  return frame_view ? frame_view->close_button() : nullptr;
-}
-
-std::u16string OfferNotificationBubbleViews::GetWindowTitle() const {
-  return controller_ ? controller_->GetWindowTitle() : std::u16string();
-}
-
-void OfferNotificationBubbleViews::WindowClosing() {
-  if (controller_) {
-    controller_->OnBubbleClosed(
-        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
-    controller_ = nullptr;
-  }
-}
-
-void OfferNotificationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
-  LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
-  if (!widget->IsClosed()) {
-    return;
-  }
-  CHECK_NE(widget->closed_reason(),
-           views::Widget::ClosedReason::kCancelButtonClicked,
-           base::NotFatalUntil::M162);
-}
-
-void OfferNotificationBubbleViews::InitWithWalletDirectOfferContent() {
-  // Wallet direct offers have no CTA buttons.
+  // Offers have no CTA buttons.
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // Create bubble content:
@@ -155,6 +92,49 @@ void OfferNotificationBubbleViews::InitWithWalletDirectOfferContent() {
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &OfferNotificationBubbleViews::OnOfferDetailsLinkClicked,
           base::Unretained(this))));
+}
+
+void OfferNotificationBubbleViews::AddedToWidget() {
+  // Offers are surfaced from the user's Google Wallet, so they show the Google
+  // Wallet logo next to the title.
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET));
+
+  // The Google Wallet logo is shown next to the title, so include it in the
+  // accessible title.
+  SetAccessibleTitle(l10n_util::GetStringFUTF16(
+      IDS_CONCAT_TWO_STRINGS_WITH_COMMA, GetWindowTitle(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)));
+}
+
+views::View* OfferNotificationBubbleViews::GetInitiallyFocusedView() {
+  // The bubble has no dialog buttons, so focus the close button.
+  views::BubbleFrameView* frame_view = GetBubbleFrameView();
+  return frame_view ? frame_view->close_button() : nullptr;
+}
+
+std::u16string OfferNotificationBubbleViews::GetWindowTitle() const {
+  return controller_ ? controller_->GetWindowTitle() : std::u16string();
+}
+
+void OfferNotificationBubbleViews::WindowClosing() {
+  if (controller_) {
+    controller_->OnBubbleClosed(
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
+    controller_ = nullptr;
+  }
+}
+
+void OfferNotificationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
+  LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
+  if (!widget->IsClosed()) {
+    return;
+  }
+  CHECK_NE(widget->closed_reason(),
+           views::Widget::ClosedReason::kCancelButtonClicked,
+           base::NotFatalUntil::M162);
 }
 
 void OfferNotificationBubbleViews::OnOfferDetailsLinkClicked() {

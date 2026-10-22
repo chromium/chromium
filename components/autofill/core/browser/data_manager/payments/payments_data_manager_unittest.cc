@@ -1213,35 +1213,41 @@ TEST_P(PaymentsDataManagerServerTest,
   display_strings.value_prop_text = "5% off on shoes";
 
   // Expired wallet direct offers should not be returned.
-  AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
+  AddOfferDataForTest(AutofillOfferData(
       /*offer_id=*/"111", AutofillClock::Now() - base::Days(1),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
-      display_strings, "CODE111"));
+      display_strings, "CODE111", /*offer_reward_amount=*/"",
+      /*issue_time=*/base::Time()));
 
   // Active wallet direct offers for a different site should not be returned.
-  AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
+  AddOfferDataForTest(AutofillOfferData(
       /*offer_id=*/"222", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.some-other-merchant.com")},
-      GURL("https://pay.google.com"), display_strings, "CODE222"));
+      GURL("https://pay.google.com"), display_strings, "CODE222",
+      /*offer_reward_amount=*/"",
+      /*issue_time=*/base::Time()));
 
   // Active wallet direct offers with empty value prop should still be returned.
   DisplayStrings empty_display_strings;
-  AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
+  AddOfferDataForTest(AutofillOfferData(
       /*offer_id=*/"333", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
-      empty_display_strings, "CODE333"));
+      empty_display_strings, "CODE333", /*offer_reward_amount=*/"",
+      /*issue_time=*/base::Time()));
 
   // Invalid wallet direct offers (empty promo code) should not be returned.
-  AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
+  AddOfferDataForTest(AutofillOfferData(
       /*offer_id=*/"444", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
-      display_strings, ""));
+      display_strings, "", /*offer_reward_amount=*/"",
+      /*issue_time=*/base::Time()));
 
   // Active wallet direct offers for example.com should be returned.
-  AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
+  AddOfferDataForTest(AutofillOfferData(
       /*offer_id=*/"555", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
-      display_strings, "CODE555"));
+      display_strings, "CODE555", /*offer_reward_amount=*/"",
+      /*issue_time=*/base::Time()));
 
   // Active matching offers for example.com should be returned.
   auto offers =
