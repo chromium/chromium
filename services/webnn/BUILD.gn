@@ -6,7 +6,6 @@ import("//build/buildflag_header.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//services/on_device_model/on_device_model.gni")
 import("//services/webnn/features.gni")
-import("//third_party/litert/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
 
@@ -200,9 +199,6 @@ component("webnn_service") {
         "//third_party/litert",
         "//third_party/litert:buildflags",
       ]
-      if (build_litert_with_ml_drift) {
-        deps += [ "//third_party/litert:ml_drift_webgpu_accelerator" ]
-      }
     }
 
     if (enable_ml_internal) {
