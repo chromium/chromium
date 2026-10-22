@@ -4169,21 +4169,6 @@
             ]
         }
     ],
-    "ChromeOSRawPSIMetrics": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledGroup10s_20220107",
-                    "enable_features": [
-                        "ArcVmMemoryPSIReports"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeRefreshTokenBindingUpgrade": [
         {
             "platforms": [
