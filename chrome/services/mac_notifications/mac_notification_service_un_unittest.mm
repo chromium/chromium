@@ -77,6 +77,9 @@ InvocationBlock invokeClosure(base::OnceClosure closure) {
 class MacNotificationServiceUNTest : public testing::Test {
  public:
   MacNotificationServiceUNTest() {
+    MacNotificationServiceUN::SetOpenSystemSettingsCallbackForTesting(
+        open_system_settings_future_.GetRepeatingCallback());
+
     mock_notification_center_ =
         [OCMockObject mockForClass:[UNUserNotificationCenter class]];
     // Expect the MacNotificationServiceUN ctor to register a delegate with
@@ -120,6 +123,8 @@ class MacNotificationServiceUNTest : public testing::Test {
     base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
     service_->RequestPermission(permission_result.GetCallback());
     EXPECT_TRUE(permission_result.Wait());
+    EXPECT_TRUE(open_system_settings_future_.Wait());
+    open_system_settings_future_.Clear();
     EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
 
@@ -127,6 +132,8 @@ class MacNotificationServiceUNTest : public testing::Test {
     if (service_) {
       ResetService();
     }
+    MacNotificationServiceUN::SetOpenSystemSettingsCallbackForTesting(
+        base::NullCallback());
   }
 
   void ResetService() {
@@ -354,9 +361,17 @@ class MacNotificationServiceUNTest : public testing::Test {
         handler_receiver.BindNewPipeAndPassRemote(), base::DoNothing(),
         mock_notification_center);
     service->Bind(service_remote.BindNewPipeAndPassReceiver());
+    open_system_settings_future_.Clear();
     base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
     service->RequestPermission(permission_result.GetCallback());
     EXPECT_EQ(result, permission_result.Get());
+    if (result ==
+        mojom::RequestPermissionResult::kPermissionPreviouslyGranted) {
+      EXPECT_FALSE(open_system_settings_future_.IsReady());
+    } else {
+      EXPECT_TRUE(open_system_settings_future_.Wait());
+      open_system_settings_future_.Clear();
+    }
     if (on_create)
       std::move(on_create).Run(service.get());
 
@@ -375,6 +390,7 @@ class MacNotificationServiceUNTest : public testing::Test {
   id<UNUserNotificationCenterDelegate> notification_center_delegate_ = nullptr;
   std::unique_ptr<MacNotificationServiceUN> service_;
   unsigned int category_count_ = 0u;
+  base::test::TestFuture<void> open_system_settings_future_;
 };
 
 TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
@@ -1492,6 +1508,7 @@ TEST_F(MacNotificationServiceUNTest,
   EXPECT_EQ(permission_result.Get(),
             mojom::RequestPermissionResult::kPermissionGranted);
   EXPECT_EQ(status.Take(), mojom::PermissionStatus::kGranted);
+  EXPECT_TRUE(open_system_settings_future_.Wait());
 }
 
 TEST_F(MacNotificationServiceUNTest,
@@ -1524,6 +1541,8 @@ TEST_F(MacNotificationServiceUNTest,
     EXPECT_EQ(permission_result.Get(),
               mojom::RequestPermissionResult::kPermissionPreviouslyDenied);
     EXPECT_EQ(status, mojom::PermissionStatus::kDenied);
+    EXPECT_TRUE(open_system_settings_future_.Wait());
+    open_system_settings_future_.Clear();
   }
 
   // Calling `RequestPermission` again after the status is already synchronized
@@ -1534,6 +1553,8 @@ TEST_F(MacNotificationServiceUNTest,
     EXPECT_EQ(permission_result.Get(),
               mojom::RequestPermissionResult::kPermissionPreviouslyDenied);
     EXPECT_EQ(status, mojom::PermissionStatus::kDenied);
+    EXPECT_TRUE(open_system_settings_future_.Wait());
+    open_system_settings_future_.Clear();
   }
 }
 

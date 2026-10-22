@@ -598,8 +598,9 @@ void AppShimManager::ShowNotificationPermissionRequest(
     RequestNotificationPermissionCallback callback) {
   CHECK(web_app::UseNotificationAttributionForWebAppShims());
 
-  if (notification_permission_result_for_testing_.has_value()) {
-    std::move(callback).Run(*notification_permission_result_for_testing_);
+  if (notification_permission_request_handler_for_testing_) {
+    notification_permission_request_handler_for_testing_.Run(
+        app_id, std::move(callback));
     return;
   }
 

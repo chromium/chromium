@@ -201,22 +201,41 @@ class AppShimManager
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
   LaunchNotificationProvider(const webapps::AppId& app_id);
 
-  // Triggers an OS-level notification permission request prompt to be shown by
-  // the app shim corresponding to `app_id`. Returns the current state without
-  // showing a prompt if permission has already been granted and/or denied to
-  // the app shim.
+  // Asks the app shim corresponding to `app_id` to request OS-level
+  // notification permission, launching the app shim in the background if
+  // needed. If permission hasn't been determined yet, the app shim shows the
+  // macOS permission prompt and opens the app's notification settings in macOS
+  // System Settings. If permission was previously denied, the app shim opens
+  // System Settings without showing a prompt. If permission was previously
+  // granted, this just reports that.
   using RequestNotificationPermissionCallback =
       chrome::mojom::AppShim::RequestNotificationPermissionCallback;
   void ShowNotificationPermissionRequest(
       const webapps::AppId& app_id,
       RequestNotificationPermissionCallback callback);
 
+  // Causes ShowNotificationPermissionRequest() to immediately invoke `handler`
+  // rather than trying to request permission from the app shim.
+  using NotificationPermissionRequestHandlerForTesting =
+      base::RepeatingCallback<void(const webapps::AppId&,
+                                   RequestNotificationPermissionCallback)>;
+  void SetNotificationPermissionRequestHandlerForTesting(
+      NotificationPermissionRequestHandlerForTesting handler) {
+    notification_permission_request_handler_for_testing_ = std::move(handler);
+  }
+
   // Causes ShowNotificationPermissionRequest() to immediately call its callback
   // with the given `result`, rather than trying to request permission from the
   // app shim.
   void SetNotificationPermissionResponseForTesting(
       mac_notifications::mojom::RequestPermissionResult result) {
-    notification_permission_result_for_testing_ = result;
+    SetNotificationPermissionRequestHandlerForTesting(base::BindRepeating(
+        [](mac_notifications::mojom::RequestPermissionResult result,
+           const webapps::AppId&,
+           RequestNotificationPermissionCallback callback) {
+          std::move(callback).Run(result);
+        },
+        result));
   }
 
   // Opens the given app in the given profile in response to the user picking
@@ -539,8 +558,8 @@ class AppShimManager
       bootstraps_pending_notification_actions_;
 
   // Set in some tests to short-circuit ShowNotificationPermissionRequest.
-  std::optional<mac_notifications::mojom::RequestPermissionResult>
-      notification_permission_result_for_testing_;
+  NotificationPermissionRequestHandlerForTesting
+      notification_permission_request_handler_for_testing_;
 
   raw_ptr<AppShimObserver> app_shim_observer_ = nullptr;
 

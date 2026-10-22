@@ -358,9 +358,9 @@ class PageSpecificContentSettings
     return geolocation_was_just_granted_on_site_level_;
   }
 
-  // Called when notifications permission was auto-denied because the system
-  // level permission for a PWA was previously denied. This is currently only
-  // possible/used on macOS.
+  // Called when notifications are blocked because the system level permission
+  // for a PWA is denied, to auto-open the blocked-on-system-level indicator's
+  // bubble. This is currently only possible/used on macOS.
   void SetNotificationsWasDeniedBecauseOfSystemPermission();
 
   bool notifications_was_denied_because_of_system_permission() {

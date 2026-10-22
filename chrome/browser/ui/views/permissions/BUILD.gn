@@ -75,11 +75,6 @@ if (toolkit_views) {
         "//components/media_effects",
       ]
     }
-
-    if (is_mac) {
-      public += [ "permission_prompt_notifications_mac.h" ]
-      public_deps += [ "//chrome/browser/apps/app_shim" ]
-    }
   }
 
   # frame/browser_view.h, frame/contents_web_view.h,
@@ -173,11 +168,6 @@ if (toolkit_views) {
         "//chrome/browser/ui/views/extensions:extensions_views_utils",
         "//chrome/browser/ui/views/frame:toolbar_button_provider",
       ]
-    }
-
-    if (is_mac) {
-      sources += [ "permission_prompt_notifications_mac.cc" ]
-      deps += [ "//chrome/browser/permissions/system" ]
     }
   }
 

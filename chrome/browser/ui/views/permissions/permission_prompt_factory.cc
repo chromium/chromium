@@ -39,11 +39,6 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/views/permissions/permission_prompt_notifications_mac.h"
-#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
-#endif
-
 namespace {
 
 BrowserWindowInterface* GetBrowser(content::WebContents* web_contents) {
@@ -317,21 +312,6 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   if (ShouldIgnorePermissionRequest(web_contents, delegate)) {
     return nullptr;
   }
-
-#if BUILDFLAG(IS_MAC)
-  // If this is a notification permission request coming from a PWA (or a PWA
-  // associated tab), and this is the first time we show a permission prompt for
-  // this request, try using a OS-native permission prompt. If showing the
-  // prompt fails, it will trigger the view to be recreated for the request, at
-  // which point we end up in the normal code path below.
-  if (web_app::UseNotificationAttributionForWebAppShims() &&
-      !delegate->WasCurrentRequestAlreadyDisplayed() &&
-      PermissionPromptNotificationsMac::CanHandleRequest(web_contents,
-                                                         delegate)) {
-    return std::make_unique<PermissionPromptNotificationsMac>(web_contents,
-                                                              delegate);
-  }
-#endif
 
   if (web_app::AppBrowserController::IsWebApp(GetBrowser(web_contents))) {
     return CreatePwaPrompt(web_contents, delegate);

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,8 +21,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/mac/mac_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,6 +46,11 @@
 @end
 
 namespace {
+
+base::RepeatingClosure& GetOpenSystemSettingsCallbackOverride() {
+  static base::NoDestructor<base::RepeatingClosure> callback;
+  return *callback;
+}
 
 NotificationOperation GetNotificationOperationFromAction(
     NSString* actionIdentifier) {
@@ -544,11 +552,15 @@ void MacNotificationServiceUN::RequestPermission(
     RequestPermissionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // If there already is a pending permission request, just return. Since the
-  // outcome of the permission request isn't reported back, there is no point
-  // in doing more than this.
+  // If there already is a pending permission request, just add the callback to
+  // the list of callbacks to run when the request completes. If the macOS
+  // permission prompt is currently showing, also (re-)open System Settings to
+  // bring the app's notification settings to the front.
   pending_permission_requests_.push_back(std::move(callback));
   if (pending_permission_requests_.size() > 1) {
+    if (is_permission_prompt_pending_) {
+      OpenSystemSettings();
+    }
     return;
   }
 
@@ -562,6 +574,7 @@ void MacNotificationServiceUN::RequestPermission(
     DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
     switch (status) {
       case UNAuthorizationStatusDenied:
+        service->OpenSystemSettings();
         service->ReportRequestPermissionResult(
             mojom::RequestPermissionResult::kPermissionPreviouslyDenied);
         break;
@@ -579,6 +592,12 @@ void MacNotificationServiceUN::RequestPermission(
                             UNNotificationSettings* settings) {
     std::move(block_callback).Run(settings.authorizationStatus);
   }];
+}
+
+// static
+void MacNotificationServiceUN::SetOpenSystemSettingsCallbackForTesting(
+    base::RepeatingClosure callback) {
+  GetOpenSystemSettingsCallbackOverride() = std::move(callback);
 }
 
 void MacNotificationServiceUN::ReportRequestPermissionResult(
@@ -631,6 +650,39 @@ void MacNotificationServiceUN::DoRequestPermission() {
 
   [notification_center_ requestAuthorizationWithOptions:authOptions
                                       completionHandler:resultHandler];
+
+  // Besides showing the macOS permission prompt, also open the app's
+  // notification settings in macOS System Settings. The macOS prompt is easy
+  // to miss, and System Settings gives users a more discoverable place to
+  // grant permission.
+  //
+  // System Settings only lists the app once `usernoted` has processed the
+  // authorization request above, so the settings are opened from the
+  // completion handler of a `getNotificationSettingsWithCompletionHandler:`
+  // call. This is a best-effort heuristic: it relies on
+  // `UNUserNotificationCenter` sending both requests to `usernoted` in order
+  // over the same serial XPC connection, which is an implementation detail
+  // rather than a documented guarantee.
+  __block auto open_settings_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&MacNotificationServiceUN::OpenSystemSettings,
+                     weak_factory_.GetWeakPtr()));
+  [notification_center_ getNotificationSettingsWithCompletionHandler:^(
+                            UNNotificationSettings* settings) {
+    if (settings.authorizationStatus != UNAuthorizationStatusAuthorized) {
+      std::move(open_settings_callback).Run();
+    }
+  }];
+}
+
+void MacNotificationServiceUN::OpenSystemSettings() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (auto& callback = GetOpenSystemSettingsCallbackOverride()) {
+    callback.Run();  // IN-TEST
+    return;
+  }
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kNotifications,
+      base::apple::MainBundleIdentifier());
 }
 
 void MacNotificationServiceUN::InitializeDeliveredNotifications() {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/notifications/notification_permission_context.h"
 
+#include <optional>
 #include <variant>
 
 #include "base/functional/bind.h"
@@ -41,6 +42,16 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/webapps/installable/installed_webapp_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC)
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/notifications/notifier_state_tracker.h"
@@ -267,3 +278,67 @@ void NotificationPermissionContext::UpdateTabContext(
     content_settings->OnContentBlocked(ContentSettingsType::NOTIFICATIONS);
   }
 }
+
+#if BUILDFLAG(IS_MAC)
+void NotificationPermissionContext::UserMadePermissionDecision(
+    const permissions::PermissionRequestID& id,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    PermissionDecision decision) {
+  permissions::ContentSettingPermissionContextBase::UserMadePermissionDecision(
+      id, requesting_origin, embedding_origin, decision);
+
+  if (!web_app::UseNotificationAttributionForWebAppShims()) {
+    return;
+  }
+  if (decision != PermissionDecision::kAllow) {
+    return;
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(id.global_render_frame_host_id()));
+  if (!web_contents) {
+    return;
+  }
+  std::optional<webapps::AppId> app_id =
+      web_app::WebAppTabHelper::GetAppIdForNotificationAttribution(
+          web_contents);
+  if (!app_id.has_value()) {
+    return;
+  }
+
+  // Always ask the app shim to request macOS permission, even if
+  // `AppShimRegistry` thinks permission was already granted: the registry can
+  // be stale (e.g. if permission was revoked in System Settings while the app
+  // shim wasn't running), and if permission really was granted the app shim
+  // just reports that without showing any UI.
+  //
+  // The outcome of the macOS permission request is reflected in
+  // `AppShimRegistry` (which drives the blocked-on-system-level indicator) by
+  // the app shim reporting its permission status, so the callback only records
+  // metrics.
+  //
+  // If a request for this app is already in flight (e.g. because the page
+  // called `requestPermission()` multiple times and all duplicate requests were
+  // granted at once), don't send another one.
+  apps::AppShimManager* app_shim_manager = apps::AppShimManager::Get();
+  if (!app_shim_manager ||
+      !apps_with_pending_os_permission_request_.insert(*app_id).second) {
+    return;
+  }
+  app_shim_manager->ShowNotificationPermissionRequest(
+      *app_id,
+      base::BindOnce(
+          &NotificationPermissionContext::OnOSPermissionRequestFinished,
+          weak_factory_ui_thread_.GetWeakPtr(), *app_id));
+}
+
+void NotificationPermissionContext::OnOSPermissionRequestFinished(
+    const webapps::AppId& app_id,
+    mac_notifications::mojom::RequestPermissionResult result) {
+  apps_with_pending_os_permission_request_.erase(app_id);
+  base::UmaHistogramEnumeration(
+      "Notifications.Permissions.AppShim.OSPermissionRequestResult", result);
+}
+#endif  // BUILDFLAG(IS_MAC)

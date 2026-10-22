@@ -182,6 +182,14 @@ void AppShimHost::SetOnShimConnectedForTesting(base::OnceClosure closure) {
   on_shim_connected_for_testing_ = std::move(closure);
 }
 
+void AppShimHost::SetNotificationPermissionStatusForTesting(
+    mac_notifications::mojom::PermissionStatus status) {
+  notification_permission_status_overridden_for_testing_ = true;
+  client_->OnNotificationPermissionStatusChanged(
+      this, last_notification_permission_status_, status);
+  last_notification_permission_status_ = status;
+}
+
 base::ProcessId AppShimHost::GetAppShimPid() const {
   if (bootstrap_) {
     return bootstrap_->GetAppShimPid();
@@ -301,6 +309,9 @@ void AppShimHost::ApplicationWillTerminate() {
 
 void AppShimHost::NotificationPermissionStatusChanged(
     mac_notifications::mojom::PermissionStatus status) {
+  if (notification_permission_status_overridden_for_testing_) {
+    return;
+  }
   client_->OnNotificationPermissionStatusChanged(
       this, last_notification_permission_status_, status);
   last_notification_permission_status_ = status;

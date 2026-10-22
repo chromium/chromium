@@ -47,11 +47,18 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   void Bind(mojo::PendingReceiver<mojom::MacNotificationService> service);
 
   // Requests notification permissions from the system. This will ask the user
-  // to accept permissions if not granted or denied already. If a permission
-  // request is already pending, this does nothing.
+  // to accept permissions if not granted or denied already, and open macOS
+  // System Settings to the app's notification settings pane if permissions are
+  // not already granted. If a permission request is already pending, the
+  // `callback` is run when that request completes.
   using RequestPermissionCallback =
       base::OnceCallback<void(mojom::RequestPermissionResult)>;
   void RequestPermission(RequestPermissionCallback callback);
+
+  // Overrides the default behavior of opening macOS System Settings during
+  // `RequestPermission()` in tests.
+  static void SetOpenSystemSettingsCallbackForTesting(
+      base::RepeatingClosure callback);
 
   // mojom::MacNotificationService:
   void DisplayNotification(mojom::NotificationPtr notification) override;
@@ -99,6 +106,7 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
 
   void ReportRequestPermissionResult(mojom::RequestPermissionResult result);
   void DoRequestPermission();
+  void OpenSystemSettings();
 
   // Initializes the |delivered_notifications_| with notifications currently
   // shown in the macOS notification center.

@@ -121,8 +121,11 @@ interface AppShim {
   BindNotificationProvider(
       pending_receiver<mac_notifications.mojom.MacNotificationProvider> provider);
 
-  // Requests notification permissions from the system. This will ask the user
-  // to accept permissions if not granted or denied already.
+  // Requests notification permissions from the system. If permission hasn't
+  // been granted or denied yet, this shows the macOS permission prompt and
+  // opens the app's notification settings in macOS System Settings. If
+  // permission was previously denied, this opens System Settings without a
+  // prompt. If permission was previously granted, this just returns that.
   RequestNotificationPermission()
       => (mac_notifications.mojom.RequestPermissionResult result);
 

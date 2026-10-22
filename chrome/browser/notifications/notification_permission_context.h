@@ -8,9 +8,17 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/content_setting_permission_context_base.h"
+#include "components/permissions/permission_decision.h"
 #include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/containers/flat_set.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom-forward.h"
+#include "components/webapps/common/web_app_id.h"
+#endif
 
 class GURL;
 
@@ -120,6 +128,28 @@ class NotificationPermissionContext
       permissions::BrowserPermissionCallback callback) override;
   void UpdateTabContext(const permissions::PermissionRequestData& request_data,
                         bool allowed) override;
+#if BUILDFLAG(IS_MAC)
+  // When the user grants notification permission to an installed web app whose
+  // notifications are attributed to its app shim, and the app shim hasn't been
+  // granted notification permission by macOS yet, this also asks the app shim
+  // to request notification permission from macOS. The app shim may show the
+  // macOS permission prompt and/or open macOS System Settings.
+  void UserMadePermissionDecision(const permissions::PermissionRequestID& id,
+                                  const GURL& requesting_origin,
+                                  const GURL& embedding_origin,
+                                  PermissionDecision decision) override;
+
+  // Called when the app shim for `app_id` finished requesting notification
+  // permission from macOS.
+  void OnOSPermissionRequestFinished(
+      const webapps::AppId& app_id,
+      mac_notifications::mojom::RequestPermissionResult result);
+
+  // Apps for which an OS permission request is currently in flight. Used to
+  // coalesce requests, e.g. when a page called `requestPermission()` multiple
+  // times and all the duplicate requests are granted at once.
+  base::flat_set<webapps::AppId> apps_with_pending_os_permission_request_;
+#endif
 
   base::WeakPtrFactory<NotificationPermissionContext> weak_factory_ui_thread_{
       this};

@@ -139,6 +139,11 @@ class AppShimHost : public chrome::mojom::AppShimHost,
 
   void SetOnShimConnectedForTesting(base::OnceClosure closure);
 
+  // Overrides the notification permission status for this host and ignores any
+  // subsequent status updates reported by the app shim process.
+  void SetNotificationPermissionStatusForTesting(
+      mac_notifications::mojom::PermissionStatus status);
+
   // Returns kNullProcessId if no process has connected to this host yet.
   base::ProcessId GetAppShimPid() const;
 
@@ -254,6 +259,7 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   // shim hasn't reported a status yet.
   std::optional<mac_notifications::mojom::PermissionStatus>
       last_notification_permission_status_;
+  bool notification_permission_status_overridden_for_testing_ = false;
 
   // This weak factory is used for launch callbacks only.
   base::WeakPtrFactory<AppShimHost> launch_weak_factory_;
