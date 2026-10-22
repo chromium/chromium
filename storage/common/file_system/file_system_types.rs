@@ -6,8 +6,8 @@
 pub mod ffi {
     #[repr(i32)]
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-    // TODO(crbug.com/522247731): add linter to here to ensure that when this enum
-    // is modified the C++ one is modified as well.
+    // TODO(crbug.com/522247731): add linter to here to ensure that when this
+    // enum is modified the C++ one is modified as well.
     pub enum FileSystemType {
         #[cxx_name = "kFileSystemTypeUnknown"]
         Unknown = -1,
@@ -53,8 +53,10 @@ pub mod ffi {
         SmbFs = 115,
         #[cxx_name = "kFileSystemTypeFuseBox"]
         FuseBox = 116,
+        #[cxx_name = "kFileSystemTypeInMemory"]
+        InMemory = 117,
         #[cxx_name = "kFileSystemInternalTypeEnumEnd"]
-        InternalTypeEnumEnd = 117,
+        InternalTypeEnumEnd = 118,
     }
 
     unsafe extern "C++" {

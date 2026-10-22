@@ -121,6 +121,7 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     // don't have their own permission policies.
     case kFileSystemTypeDragged:
     case kFileSystemTypeForTransientFile:
+    case kFileSystemTypeInMemory:
       return FILE_PERMISSION_ALWAYS_DENY;
 
     // Following types only appear as mount_type, and will not be

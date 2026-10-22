@@ -74,6 +74,10 @@ HoldingSpaceFile::FileSystemType ToHoldingSpaceFileSystemType(
       return HoldingSpaceFile::FileSystemType::kTest;
     case storage::FileSystemType::kFileSystemTypeUnknown:
       return HoldingSpaceFile::FileSystemType::kUnknown;
+    // In-memory files are only ever created for transient browser-internal
+    // uploads and are never surfaced in holding space.
+    case storage::FileSystemType::kFileSystemTypeInMemory:
+      return HoldingSpaceFile::FileSystemType::kUnknown;
     case storage::FileSystemType::kFileSystemInternalTypeEnumStart:
     case storage::FileSystemType::kFileSystemInternalTypeEnumEnd:
       NOTREACHED();

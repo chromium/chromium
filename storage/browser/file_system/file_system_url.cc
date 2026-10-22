@@ -147,6 +147,7 @@ bool FileSystemURL::TypeImpliesPathIsReal(FileSystemType type) {
     case kFileSystemTypeDeviceMediaAsFileStorage:
     case kFileSystemTypeArcContent:
     case kFileSystemTypeArcDocumentsProvider:
+    case kFileSystemTypeInMemory:
       break;
 
       // We don't use a "default:" case. Whenever `FileSystemType` gains a

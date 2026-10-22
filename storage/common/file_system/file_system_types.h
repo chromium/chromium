@@ -128,7 +128,13 @@ enum FileSystemType {
   // Indicates a FUSE filesystem which provides access to virtual files.
   kFileSystemTypeFuseBox = 116,
 
-  kFileSystemTypeLast = kFileSystemTypeFuseBox,
+  // A filesystem whose file contents live only in browser process memory and
+  // are never written to disk. Files of this type are registered with
+  // IsolatedContext and are therefore only reachable through
+  // kFileSystemTypeIsolated URLs.
+  kFileSystemTypeInMemory = 117,
+
+  kFileSystemTypeLast = kFileSystemTypeInMemory,
 
   // --------------------------------------------------------------------
   // Marks the end of internal type enum. (This is not the actual fs type)

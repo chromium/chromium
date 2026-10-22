@@ -194,6 +194,7 @@ blink::mojom::FileSystemType ToMojoFileSystemType(
     case storage::FileSystemType::kFileSystemTypeDriveFs:
     case storage::FileSystemType::kFileSystemTypeSmbFs:
     case storage::FileSystemType::kFileSystemTypeFuseBox:
+    case storage::FileSystemType::kFileSystemTypeInMemory:
     case storage::FileSystemType::kFileSystemInternalTypeEnumEnd:
       NOTREACHED();
   }

@@ -418,6 +418,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/indexed_db/status.h:Type) -->
 
+<!-- LINT.IfChange(InMemoryFileRegistryFindResult) -->
+
+<enum name="InMemoryFileRegistryFindResult">
+  <int value="0" label="Found"/>
+  <int value="1" label="Not found"/>
+  <int value="2" label="Evicted under memory pressure"/>
+</enum>
+
+<!-- LINT.ThenChange(//storage/browser/file_system/in_memory_file_registry.h:InMemoryFileRegistryFindResult) -->
+
+<!-- LINT.IfChange(InMemoryFileRegistryRegisterResult) -->
+
+<enum name="InMemoryFileRegistryRegisterResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Exceeds memory limit"/>
+  <int value="2" label="File system registration failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//storage/browser/file_system/in_memory_file_registry.h:InMemoryFileRegistryRegisterResult) -->
+
 <!-- LINT.IfChange(InterestGroupStorageInitializationResult) -->
 
 <enum name="InterestGroupStorageInitializationResult">

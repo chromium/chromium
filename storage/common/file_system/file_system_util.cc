@@ -280,6 +280,8 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "SmbFs";
     case kFileSystemTypeFuseBox:
       return "FuseBox";
+    case kFileSystemTypeInMemory:
+      return "InMemory";
     case kFileSystemInternalTypeEnumStart:
     case kFileSystemInternalTypeEnumEnd:
       NOTREACHED();
