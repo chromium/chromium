@@ -67,7 +67,7 @@ bool IsPeerAuthorized(base::PlatformFile fd) {
 ssize_t SocketWrite(base::PlatformFile socket,
                     const void* bytes,
                     size_t num_bytes) {
-  return send(socket, bytes, num_bytes, MSG_NOSIGNAL);
+  return HANDLE_EINTR(send(socket, bytes, num_bytes, MSG_NOSIGNAL));
 }
 
 ssize_t SendmsgWithHandles(base::PlatformFile socket,
