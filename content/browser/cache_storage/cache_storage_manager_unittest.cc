@@ -2913,7 +2913,13 @@ TEST_P(CacheStorageQuotaClientTestP,
   EXPECT_EQ(1u, QuotaGetDefaultStorageKeys());
 }
 
-TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteBucketData) {
+// TODO(crbug.com/575611984): Re-enable on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_QuotaDeleteBucketData DISABLED_QuotaDeleteBucketData
+#else
+#define MAYBE_QuotaDeleteBucketData QuotaDeleteBucketData
+#endif
+TEST_P(CacheStorageQuotaClientTestP, MAYBE_QuotaDeleteBucketData) {
   EXPECT_EQ(0, QuotaGetBucketUsage(bucket_locator1_));
   EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   // Call put to test that initialized caches are properly deleted too.
