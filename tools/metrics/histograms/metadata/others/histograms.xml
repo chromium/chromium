@@ -3769,38 +3769,6 @@ chromium-metrics-reviews@google.com.
   <token key="ClientId" variants="PageImageServiceClientId"/>
 </histogram>
 
-<histogram name="PeriodicBackgroundSync.Event.BatchSize" units="events"
-    expires_after="2022-07-31">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the number of `periodicsync` events which were fired in a batch. A
-    batch is defined as the set of `periodicsync` events dispatched at the same
-    time by the BackgroundSyncManager. Periodic syncs usually run in a batch.
-  </summary>
-</histogram>
-
-<histogram name="PeriodicBackgroundSync.Event.FromWakeupTask"
-    enum="BackgroundSyncWakeupTask" expires_after="2023-04-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records whether the fired `periodicsync` events upon completion orginated
-    from a background wakeup task or the foreground.
-  </summary>
-</histogram>
-
-<histogram name="PeriodicBackgroundSync.Event.Time" units="ms"
-    expires_after="2023-09-03">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Time taken to execute a batch of periodicsync events. A batch is defined as
-    the set of `periodicsync` events dispatched at the same time by the
-    BackgroundSyncManager. Periodic syncs often run in a batch.
-  </summary>
-</histogram>
-
 <histogram name="PLT.iOS.BrowserInitiatedPageLoadTime2" units="ms"
     expires_after="2027-04-04">
   <owner>michaeldo@chromium.org</owner>

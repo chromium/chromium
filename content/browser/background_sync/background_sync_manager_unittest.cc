@@ -24,6 +24,7 @@
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "content/browser/background_sync/background_sync_launcher.h"
+#include "content/browser/background_sync/background_sync_metrics.h"
 #include "content/browser/background_sync/background_sync_network_observer.h"
 #include "content/browser/background_sync/background_sync_status.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
@@ -2485,8 +2486,8 @@ TEST_F(BackgroundSyncManagerTest, HistogramsRecordedAtCompletion) {
     EXPECT_FALSE(GetRegistration(sync_options_1_));
 
     histogram_tester.ExpectBucketCount(
-        "BackgroundSync.Registration.OneShot.EventSucceededAtCompletion", true,
-        1);
+        "BackgroundSync.Event.OneShotResultPattern",
+        BackgroundSyncMetrics::RESULT_PATTERN_SUCCESS_FOREGROUND, 1);
   }
 
   SetMaxSyncAttemptsAndRestartManager(1);
@@ -2501,8 +2502,8 @@ TEST_F(BackgroundSyncManagerTest, HistogramsRecordedAtCompletion) {
     EXPECT_FALSE(GetRegistration(sync_options_2_));
 
     histogram_tester.ExpectBucketCount(
-        "BackgroundSync.Registration.OneShot.EventSucceededAtCompletion", false,
-        1);
+        "BackgroundSync.Event.OneShotResultPattern",
+        BackgroundSyncMetrics::RESULT_PATTERN_FAILED_FOREGROUND, 1);
   }
 }
 

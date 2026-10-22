@@ -410,14 +410,6 @@ class CONTENT_EXPORT BackgroundSyncManager
                              base::OnceClosure callback,
                              blink::ServiceWorkerStatusCode status_code);
 
-  // Called when all sync events have completed.
-  static void OnAllSyncEventsCompleted(
-      blink::mojom::BackgroundSyncType sync_type,
-      const base::TimeTicks& start_time,
-      bool from_wakeup_task,
-      int number_of_batched_sync_events,
-      base::OnceClosure callback);
-
   // OnRegistrationDeleted callbacks
   void OnRegistrationDeletedImpl(int64_t sw_registration_id,
                                  base::OnceClosure callback);

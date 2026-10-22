@@ -22,29 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="BackgroundSync.Event.BatchSize" units="units"
-    expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the number of `sync` events which were fired in a batch. A batch is
-    defined as the set of `sync` events dispatched at the same time by the
-    BackgroundSyncManager. One-shots usually run individually (a batch of one),
-    unless the device was offline and multiple are waiting for the device to go
-    back online.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Event.FromWakeupTask"
-    enum="BackgroundSyncWakeupTask" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records whether the fired `sync` events upon completion orginated from a
-    background wakeup task or the foreground.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundSync.Event.OneShotResultPattern"
     enum="BackgroundSyncResultPattern" expires_after="2027-04-04">
   <owner>nator@chromium.org</owner>
@@ -55,54 +32,6 @@ chromium-metrics-reviews@google.com.
 
     A `sync` event finished in the foreground if the associated Service Worker
     Registration has a client at the time that the event finished.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Event.OneShotStartedInForeground"
-    enum="BooleanInForeground" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records whether a one-shot sync started firing in the foreground or
-    background. Called shortly before the event is fired.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Event.PeriodicResultPattern"
-    enum="BackgroundSyncResultPattern" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether a periodic sync event succeeded or failed and whether the
-    sync event finished in the foreground or background.
-
-    A sync event finished in the foreground if the associated Service Worker
-    Registration has a client at the time that the event finished.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Event.PeriodicStartedInForeground"
-    enum="BooleanInForeground" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether a periodic sync event started firing in the foreground or
-    background. Called shortly before the event is fired.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Event.Time" units="ms"
-    expires_after="2024-04-28">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Time taken to execute a batch of one-shot sync events. A batch is defined as
-    the set of sync events dispatched at the same time by the
-    BackgroundSyncManager. One-shots usually run individually (a batch of one),
-    unless the device was offline and multiple are waiting for the device to go
-    back online.
   </summary>
 </histogram>
 
@@ -141,87 +70,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackgroundSync.Registration.OneShot"
-    enum="BackgroundSyncStatus" expires_after="2025-02-16">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the result of attempting to register a one-shot sync.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Registration.OneShot.CouldFire"
-    enum="BooleanCouldFireImmediately" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the result of attempting to register a one-shot sync in a situation
-    where the sync could fire immediately.
-  </summary>
-</histogram>
-
-<histogram
-    name="BackgroundSync.Registration.OneShot.EventSucceededAtCompletion"
-    enum="BooleanSuccess" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether the dispatched sync event succeeded at the completion of the
-    one-shot Background Sync registration.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Registration.OneShot.IsDuplicate"
-    enum="BooleanRegistrationIsDuplicate" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records whether a one-shot sync registration exactly duplicates an existing
-    registered sync.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Registration.Periodic"
-    enum="BackgroundSyncStatus" expires_after="2024-06-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the result of attempting to register a periodic sync. This is called
-    at each successful registration.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Registration.Periodic.IsDuplicate"
-    enum="BooleanRegistrationIsDuplicate" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records whether a periodic sync registration duplicates the tag of an
-    existing registered sync. Recorded upon each successful periodic Background
-    Sync registration.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Registration.Periodic.MinInterval"
-    units="seconds" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the minInterval requested, in seconds, when a periodic sync is
-    successfully registered.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.Unregistration.Periodic"
-    enum="BackgroundSyncStatus" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>
-    Records the result of attempting to unregister a periodic sync.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundSync.Wakeup.DelayTime" units="ms"
     expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
@@ -232,32 +80,6 @@ chromium-metrics-reviews@google.com.
     records the time elapsed since the soonest expected wake-up time. Recorded
     whenever a BackgroundSync background task is called after loading the native
     parts of the browser.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.WakeupTaskFiredEvents.OneShot"
-    enum="BackgroundSyncFiredEvents" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    If Chrome is woken up by the one shot Background Sync Background task, this
-    records whether any sync events were fired as a result. Recorded whenever
-    Chrome is woken up to process one-shot Background Sync registrations on
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundSync.WakeupTaskFiredEvents.Periodic"
-    enum="BackgroundSyncFiredEvents" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    If Chrome is woken up by the periodic Background Sync Background task,this
-    records whether any periodicsync events were fired as a result. Recorded
-    whenever Chrome is woken up to process periodic Background Sync
-    registrations on Android.
   </summary>
 </histogram>
 

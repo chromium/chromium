@@ -689,30 +689,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="196627" label="kEmbedder-kPrivilegedWebContents"/>
 </enum>
 
-<enum name="BackgroundSyncFiredEvents">
-  <int value="0" label="No events fired"/>
-  <int value="1" label="Some events fired"/>
-</enum>
-
 <enum name="BackgroundSyncResultPattern">
   <int value="0" label="Success Foreground"/>
   <int value="1" label="Success Background"/>
   <int value="2" label="Failed Foreground"/>
   <int value="3" label="Failed Background"/>
-</enum>
-
-<enum name="BackgroundSyncStatus">
-  <int value="0" label="Action completed successfully"/>
-  <int value="1" label="Back-end error"/>
-  <int value="2" label="Registration was not found"/>
-  <int value="3" label="No active service worker"/>
-  <int value="4" label="Action not allowed"/>
-  <int value="5" label="Permission denied"/>
-</enum>
-
-<enum name="BackgroundSyncWakeupTask">
-  <int value="0" label="Originated from Foreground"/>
-  <int value="1" label="Originated from Background"/>
 </enum>
 
 <enum name="BackgroundTracingScenarioNameHash">
@@ -1077,11 +1058,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Correct"/>
 </enum>
 
-<enum name="BooleanCouldFireImmediately">
-  <int value="0" label="Could not fire immediately"/>
-  <int value="1" label="Could fire immediately"/>
-</enum>
-
 <enum name="BooleanCreated">
   <int value="0" label="Not created"/>
   <int value="1" label="Created"/>
@@ -1182,11 +1158,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Incognito"/>
 </enum>
 
-<enum name="BooleanInForeground">
-  <int value="0" label="Background"/>
-  <int value="1" label="Foreground"/>
-</enum>
-
 <enum name="BooleanKnown">
   <int value="0" label="Unknown"/>
   <int value="1" label="Known"/>
@@ -1270,11 +1241,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="BooleanReceived">
   <int value="0" label="Not Received"/>
   <int value="1" label="Received"/>
-</enum>
-
-<enum name="BooleanRegistrationIsDuplicate">
-  <int value="0" label="Registration is not a duplicate"/>
-  <int value="1" label="Registration is a duplicate"/>
 </enum>
 
 <enum name="BooleanRejected">
