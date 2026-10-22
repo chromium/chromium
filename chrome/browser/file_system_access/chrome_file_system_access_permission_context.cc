@@ -441,9 +441,40 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       // And limit access to ~/.gnupg as well.
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".gnupg"),
                                 BlockType::kBlockAllChildren),
+      // ~/.config holds configuration for many cross-platform tools, so block
+      // it on all platforms, see crbug.com/569012015.
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".config"),
+                                BlockType::kBlockAllChildren),
+      // Shell startup files in the home directory, including the ones read by
+      // Git Bash on Windows, see crbug.com/558362029.
+      BlockPath::CreateRelative(base::DIR_HOME,
+                                FILE_PATH_LITERAL(".bash_profile"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME,
+                                FILE_PATH_LITERAL(".bash_login"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".bashrc"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".profile"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".zshenv"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".zprofile"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".zshrc"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".zlogin"),
+                                BlockType::kBlockAllChildren),
       // Block write access to */.git/hooks, see crbug.com/465668234 and
       // crbug.com/553115714.
       BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/hooks"),
+                              BlockType::kBlockWrite),
+      // Block write access to the repository config and to submodule git
+      // directories, which have their own hooks and config, see
+      // crbug.com/572269631 and crbug.com/571913154.
+      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/config"),
+                              BlockType::kBlockWrite),
+      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/modules"),
                               BlockType::kBlockWrite),
 #if BUILDFLAG(IS_WIN)
       // Some Windows specific directories to block, basically all apps, the
@@ -474,6 +505,10 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       // Block access to /System/Volumes (internal system and container
       // volumes).
       BlockPath::CreateAbsolute(FILE_PATH_LITERAL("/System/Volumes"),
+                                BlockType::kBlockAllChildren),
+      // Block access to devices via /dev, matching Linux, see
+      // crbug.com/569012543.
+      BlockPath::CreateAbsolute(FILE_PATH_LITERAL("/dev"),
                                 BlockType::kBlockAllChildren),
       BlockPath::CreateRelative(base::DIR_APP_DATA,
                                 BlockType::kBlockAllChildren),
@@ -525,13 +560,24 @@ GenerateBlockPaths(bool should_normalize_file_path) {
                                 BlockType::kBlockAllChildren),
       BlockPath::CreateAbsolute(FILE_PATH_LITERAL("/etc"),
                                 BlockType::kBlockAllChildren),
-      // And block all of ~/.config, matching the similar restrictions on mac
-      // and windows.
-      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".config"),
-                                BlockType::kBlockAllChildren),
       // Block ~/.dbus as well, just in case, although there probably isn't much
       // a website can do with access to that directory and its contents.
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".dbus"),
+                                BlockType::kBlockAllChildren),
+      // Block per-user application data, see crbug.com/561996724.
+      BlockPath::CreateRelative(base::DIR_HOME,
+                                FILE_PATH_LITERAL(".local/share"),
+                                BlockType::kBlockAllChildren),
+      // Block the legacy per-user fontconfig configuration, see
+      // crbug.com/559780982. The current location is under ~/.config.
+      BlockPath::CreateRelative(base::DIR_HOME,
+                                FILE_PATH_LITERAL(".fonts.conf"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME,
+                                FILE_PATH_LITERAL(".fonts.conf.d"),
+                                BlockType::kBlockAllChildren),
+      // Block the per-user NSS database, see crbug.com/557367241.
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".pki"),
                                 BlockType::kBlockAllChildren),
       // And block all of ~/.cache, matching the similar restrictions on mac
       // and windows.
