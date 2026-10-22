@@ -158,18 +158,18 @@ void ImeServiceConnector::MaybeTriggerDownload(
     return;
   }
 
-  // If the currently active request does not match the url being requested,
-  // then revert to the previous logic of dropping new requests while the
-  // current request is in progress.
+  // Switching input methods tears down the previous decoder instance and its
+  // pending download in the IME service while leaving `url_loader_` running in
+  // the browser process (e.g. a background download of `en-840` started at
+  // login). Abort the superseded download and notify its listeners before
+  // starting the new request so the newly activated input method's language
+  // pack download is not rejected.
   if (url_loader_) {
-    base::FilePath empty_path;
-    std::move(callback).Run(empty_path);
-    return;
+    NotifyAllDownloadListeners(base::FilePath());
   }
 
-  // Reset the download context before triggering a new download request.
+  // Start the new download request.
   active_request_url_ = url.spec();
-  download_callbacks_.clear();
   download_callbacks_.emplace_back(std::move(callback));
   url_loader_ = CreateUrlLoader(url);
   url_loader_->SetOnRedirectCallback(base::BindRepeating(
@@ -182,22 +182,23 @@ void ImeServiceConnector::MaybeTriggerDownload(
 }
 
 void ImeServiceConnector::HandleDownloadResponse(base::FilePath file_path) {
-  // Notify any download callbacks registered for the current request.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ImeServiceConnector::NotifyAllDownloadListeners,
-                     weak_ptr_factory_.GetWeakPtr(), file_path));
+  // Notify listeners and reset `url_loader_` synchronously rather than via
+  // PostTask so a `MaybeTriggerDownload` task already queued on the sequence
+  // does not see a stale `url_loader_` or get clobbered by a trailing task.
+  NotifyAllDownloadListeners(std::move(file_path));
 }
 
 void ImeServiceConnector::NotifyAllDownloadListeners(base::FilePath file_path) {
-  while (!download_callbacks_.empty()) {
-    std::move(download_callbacks_.back()).Run(file_path);
-    download_callbacks_.pop_back();
-  }
-
-  // Clear the currently active request info.
+  // Clear the currently active request info before running callbacks in case a
+  // listener synchronously triggers a new download request.
   url_loader_.reset();
   active_request_url_ = std::nullopt;
+  std::vector<DownloadImeFileToCallback> callbacks =
+      std::exchange(download_callbacks_, {});
+
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(file_path);
+  }
 }
 
 void ImeServiceConnector::OnRedirect(

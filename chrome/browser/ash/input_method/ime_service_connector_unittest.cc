@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_profile.h"
@@ -165,21 +166,106 @@ TEST_F(ImeServiceConnectorTest, SimultaneousRequestsDifferentURL) {
   base::FilePath relative_path2 = base::FilePath(ime::kInputMethodsDirName)
                                       .Append(ime::kLanguageDataDirName)
                                       .Append("test2.dict");
+  base::FilePath expected_full_path2 =
+      profile_->GetPath().Append(relative_path2);
+  ASSERT_TRUE(base::CreateDirectory(expected_full_path2.DirName()));
 
   base::test::TestFuture<base::FilePath> future1;
+  base::test::TestFuture<base::FilePath> future1_coalesced;
   base::test::TestFuture<base::FilePath> future2;
 
   connector_->DownloadImeFileTo(url1, relative_path1,
                                 future1.GetCallback<const base::FilePath&>());
+  connector_->DownloadImeFileTo(
+      url1, relative_path1,
+      future1_coalesced.GetCallback<const base::FilePath&>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.IsPending(url1.spec()); }));
+
   connector_->DownloadImeFileTo(url2, relative_path2,
                                 future2.GetCallback<const base::FilePath&>());
 
-  // The second request with a different URL should fail immediately with an
-  // empty path
-  EXPECT_TRUE(future2.Get().empty());
+  // All listeners on the first request should be superseded by the second
+  // request for a different URL and return an empty path immediately.
+  EXPECT_TRUE(future1.Get().empty());
+  EXPECT_TRUE(future1_coalesced.Get().empty());
 
-  // The first request should still be pending
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return test_url_loader_factory_.IsPending(url2.spec()) &&
+           !test_url_loader_factory_.IsPending(url1.spec());
+  }));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(url2.spec(),
+                                                             "test contents");
+  EXPECT_EQ(future2.Get(), expected_full_path2);
+}
+
+TEST_F(ImeServiceConnectorTest, SynchronousDownloadRequestFromCallback) {
+  GURL url1("https://dl.google.com/test1.dict");
+  GURL url2("https://dl.google.com/test2.dict");
+  GURL url3("https://dl.google.com/test3.dict");
+  base::FilePath relative_path1 = base::FilePath(ime::kInputMethodsDirName)
+                                      .Append(ime::kLanguageDataDirName)
+                                      .Append("test1.dict");
+  base::FilePath relative_path2 = base::FilePath(ime::kInputMethodsDirName)
+                                      .Append(ime::kLanguageDataDirName)
+                                      .Append("test2.dict");
+  base::FilePath relative_path3 = base::FilePath(ime::kInputMethodsDirName)
+                                      .Append(ime::kLanguageDataDirName)
+                                      .Append("test3.dict");
+  base::FilePath expected_full_path1 =
+      profile_->GetPath().Append(relative_path1);
+  base::FilePath expected_full_path3 =
+      profile_->GetPath().Append(relative_path3);
+  ASSERT_TRUE(base::CreateDirectory(expected_full_path1.DirName()));
+
+  base::FilePath callback1_path;
+  base::FilePath callback3_path;
+  base::test::TestFuture<base::FilePath> future2;
+  base::test::TestFuture<base::FilePath> future1_retry;
+
+  // When `url1` is superseded by `url2`, its callback synchronously requests
+  // `url3`; when `url3` completes, its callback synchronously retries `url1`.
+  connector_->DownloadImeFileTo(
+      url1, relative_path1,
+      base::BindLambdaForTesting([&](const base::FilePath& path) {
+        callback1_path = path;
+        connector_->DownloadImeFileTo(
+            url3, relative_path3,
+            base::BindLambdaForTesting([&](const base::FilePath& path3) {
+              callback3_path = path3;
+              connector_->DownloadImeFileTo(
+                  url1, relative_path1,
+                  future1_retry.GetCallback<const base::FilePath&>());
+            }));
+      }));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.IsPending(url1.spec()); }));
+
+  // Supersede `url1` with `url2`, which synchronously queues `url3` from
+  // `url1`'s cancellation callback and supersedes `url2`.
+  connector_->DownloadImeFileTo(url2, relative_path2,
+                                future2.GetCallback<const base::FilePath&>());
+  EXPECT_TRUE(future2.Get().empty());
+  EXPECT_TRUE(callback1_path.empty());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return test_url_loader_factory_.IsPending(url3.spec()) &&
+           !test_url_loader_factory_.IsPending(url1.spec()) &&
+           !test_url_loader_factory_.IsPending(url2.spec());
+  }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(url3.spec(),
+                                                             "test contents 3");
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.IsPending(url1.spec()); }));
+  EXPECT_EQ(callback3_path, expected_full_path3);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(url1.spec(),
+                                                             "test contents 1");
+  EXPECT_EQ(future1_retry.Get(), expected_full_path1);
 }
 
 TEST_F(ImeServiceConnectorTest, DownloadBlocksMaliciousRedirect) {
