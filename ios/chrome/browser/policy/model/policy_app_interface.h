@@ -48,7 +48,8 @@
 // Sets the browser cloud policy data with a domain.
 + (void)setBrowserCloudPolicyDataWithDomain:(NSString*)domain;
 
-// Sets the user cloud policy data with a domain.
+// Sets the user cloud policy data with a domain, or clears it if `domain` is
+// nil.
 + (void)setUserCloudPolicyDataWithDomain:(NSString*)domain;
 
 // Removes the whole directory where the device management token file is stored.

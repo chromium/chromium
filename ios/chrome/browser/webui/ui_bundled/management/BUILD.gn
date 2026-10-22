@@ -9,6 +9,7 @@ source_set("management") {
   ]
   deps = [
     "//base",
+    "//components/device_signals/core/browser",
     "//components/enterprise",
     "//components/enterprise/connectors/core",
     "//components/policy/core/common",
@@ -19,6 +20,7 @@ source_set("management") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/connectors:util",
+    "//ios/chrome/browser/enterprise/signals/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/ui_bundled:management_util",
     "//ios/chrome/browser/shared/model/application_context",

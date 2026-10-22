@@ -8,8 +8,8 @@
 
 #import "base/strings/strcat.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/device_signals/core/browser/user_permission_service.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
-#import "components/enterprise/browser/reporting/reporting_features.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/grit/management_resources.h"
 #import "components/grit/management_resources_map.h"
@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
+#import "ios/chrome/browser/enterprise/signals/model/ios_user_permission_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -98,12 +99,11 @@ bool IsProfileReportingEnabled(PrefService* profile_prefs) {
 }
 
 // Whether the Device Signals disclosure should be displayed.
-bool IsDeviceSignalsDisclosureEnabled(PrefService* profile_prefs,
-                                      PrefService* local_state) {
-  return base::FeatureList::IsEnabled(
-             enterprise_reporting::kIOSSignalSharingEnabled) &&
-         (IsBrowserReportingEnabled(local_state) ||
-          IsProfileReportingEnabled(profile_prefs));
+bool IsDeviceSignalsDisclosureEnabled(
+    const device_signals::UserPermissionService* user_permission_service) {
+  return user_permission_service &&
+         user_permission_service->CanCollectSignals() ==
+             device_signals::UserPermission::kGranted;
 }
 
 // Whether the "Page is visited" event subsection under Chrome Enteprise
@@ -281,7 +281,7 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
   source->AddBoolean(
       "deviceSignalsDisclosureEnabled",
       IsDeviceSignalsDisclosureEnabled(
-          profile->GetPrefs(), GetApplicationContext()->GetLocalState()));
+          IOSUserPermissionServiceFactory::GetForProfile(profile)));
 
   // Connectors Section
   auto* connectors_service =

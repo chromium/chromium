@@ -18,14 +18,20 @@ function populateConnectorsSection() {
       loadTimeData.getBoolean('browserReportingEnabled');
   const profileReportingEnabled =
       loadTimeData.getBoolean('profileReportingEnabled');
+  const deviceSignalsDisclosureEnabled =
+      loadTimeData.getBoolean('deviceSignalsDisclosureEnabled');
   if (browserReportingEnabled) {
     getRequiredElement('browser-reporting-info').classList.remove('hidden');
   } else if (profileReportingEnabled) {
     getRequiredElement('profile-reporting-info').classList.remove('hidden');
+  } else if (deviceSignalsDisclosureEnabled) {
+    getRequiredElement('browser-reporting-info').classList.remove('hidden');
+    for (const item of document.querySelectorAll<HTMLElement>(
+             '.browser-reporting-item')) {
+      item.classList.add('hidden');
+    }
   }
 
-  const deviceSignalsDisclosureEnabled =
-      loadTimeData.getBoolean('deviceSignalsDisclosureEnabled');
   if (deviceSignalsDisclosureEnabled) {
     getRequiredElement('browser-signals-disclosure').classList.remove('hidden');
     getRequiredElement('profile-signals-disclosure').classList.remove('hidden');

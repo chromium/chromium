@@ -205,6 +205,11 @@ void MergePolicyValue(NSString* jsonValue,
   policy::CloudPolicyStore* store = manager->core()->store();
   DCHECK(store);
 
+  if (!domain) {
+    store->set_policy_data_for_testing(nullptr);
+    return;
+  }
+
   auto policy_data = std::make_unique<enterprise_management::PolicyData>();
   policy_data->set_managed_by(base::SysNSStringToUTF8(domain));
   store->set_policy_data_for_testing(std::move(policy_data));
