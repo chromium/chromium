@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -27,6 +28,7 @@
 #include "components/fcm/base/fcm_backoff_policy.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
 #include "google_apis/gcm/base/encryptor.h"
+#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/engine/checkin_request.h"
@@ -81,6 +83,13 @@ const char kSendMessageFromValue[] = "gcm@chrome.com";
 const int64_t kDefaultUserSerialNumber = 0LL;
 const int kDestroyGCMStoreDelayMS = 5 * 60 * 1000;  // 5 minutes.
 constexpr base::TimeDelta kTokenInvalidationInterval = base::Days(7);
+
+// Previously, GCMAccountMapper registered with this app ID. Any persisted
+// registration for it in GCMStore is obsolete and removed on load.
+// Deprecated in October 2026.
+// TODO(crbug.com/384891711): Remove this constant and its cleanup logic after
+// October 2027.
+constexpr char kDeprecatedGCMAccountMapperAppId[] = "com.google.android.gms";
 
 GCMClient::Result ToGCMClientResult(MCSClient::MessageSendStatus status) {
   switch (status) {
@@ -265,6 +274,8 @@ void GCMClientImpl::OnLoadCompleted(
   last_checkin_time_ = result->last_checkin_time;
   gservices_settings_.UpdateFromLoadResult(*result);
 
+  RemoveDeprecatedData(*result);
+
   for (const auto& [key, value] : result->registrations) {
     std::string registration_id;
     scoped_refptr<RegistrationInfo> registration =
@@ -305,6 +316,18 @@ void GCMClientImpl::OnLoadCompleted(
   }
 
   StartGCM();
+}
+
+void GCMClientImpl::RemoveDeprecatedData(GCMStore::LoadResult& result) {
+  if (!base::FeatureList::IsEnabled(features::kGCMRemoveDeprecatedStoreData)) {
+    return;
+  }
+  if (result.registrations.erase(kDeprecatedGCMAccountMapperAppId)) {
+    gcm_store_->RemoveRegistration(
+        kDeprecatedGCMAccountMapperAppId,
+        base::BindOnce(&GCMClientImpl::UpdateRegistrationCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void GCMClientImpl::StartGCM() {

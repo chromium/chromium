@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -25,6 +26,7 @@
 #include "components/fcm/engine/chrome_build_info.h"
 #include "components/fcm/engine/fcm_internals_builder.h"
 #include "google_apis/gcm/base/fake_encryptor.h"
+#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/engine/checkin_request.h"
@@ -1457,6 +1459,70 @@ TEST_F(GCMClientImplStartAndStopTest, DelayedStart) {
   gcm_client()->Start(GCMClient::DELAYED_START);
   PumpLoopUntilIdle();
   EXPECT_EQ(GCMClientImpl::READY, gcm_client_state());
+}
+
+TEST_F(GCMClientImplStartAndStopTest,
+       DelayedStartWithDeprecatedAccountMapperRegistration) {
+  base::test::ScopedFeatureList feature_list(
+      features::kGCMRemoveDeprecatedStoreData);
+
+  // Start the GCM immediately and complete the checkin.
+  gcm_client()->Start(GCMClient::IMMEDIATE_START);
+  PumpLoopUntilIdle();
+  EXPECT_EQ(GCMClientImpl::INITIAL_DEVICE_CHECKIN, gcm_client_state());
+  ASSERT_NO_FATAL_FAILURE(DefaultCompleteCheckin());
+  EXPECT_EQ(GCMClientImpl::READY, gcm_client_state());
+
+  // Persist a registration under the deprecated GCMAccountMapper app ID.
+  Register("com.google.android.gms", {"sender"});
+  ASSERT_NO_FATAL_FAILURE(CompleteRegistration("reg_id"));
+  EXPECT_TRUE(ExistsRegistration("com.google.android.gms"));
+
+  // Stop the GCM.
+  gcm_client()->Stop();
+  PumpLoopUntilIdle();
+  EXPECT_EQ(GCMClientImpl::INITIALIZED, gcm_client_state());
+
+  // Delay start the GCM. The deprecated GCMAccountMapper registration should be
+  // removed on load and should not cause GCM to start.
+  BuildGCMClient(base::TimeDelta());
+  InitializeGCMClient();
+  gcm_client()->Start(GCMClient::DELAYED_START);
+  PumpLoopUntilIdle();
+  EXPECT_EQ(GCMClientImpl::LOADED, gcm_client_state());
+  EXPECT_FALSE(ExistsRegistration("com.google.android.gms"));
+}
+
+TEST_F(GCMClientImplStartAndStopTest,
+       DelayedStartWithDeprecatedAccountMapperRegistrationWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGCMRemoveDeprecatedStoreData);
+
+  // Start the GCM immediately and complete the checkin.
+  gcm_client()->Start(GCMClient::IMMEDIATE_START);
+  PumpLoopUntilIdle();
+  EXPECT_EQ(GCMClientImpl::INITIAL_DEVICE_CHECKIN, gcm_client_state());
+  ASSERT_NO_FATAL_FAILURE(DefaultCompleteCheckin());
+  EXPECT_EQ(GCMClientImpl::READY, gcm_client_state());
+
+  // Persist a registration under the deprecated GCMAccountMapper app ID.
+  Register("com.google.android.gms", {"sender"});
+  ASSERT_NO_FATAL_FAILURE(CompleteRegistration("reg_id"));
+  EXPECT_TRUE(ExistsRegistration("com.google.android.gms"));
+
+  // Stop the GCM.
+  gcm_client()->Stop();
+  PumpLoopUntilIdle();
+  EXPECT_EQ(GCMClientImpl::INITIALIZED, gcm_client_state());
+
+  // Delay start the GCM. When the kill switch is disabled, the deprecated
+  // registration is retained on load and causes GCM to start.
+  BuildGCMClient(base::TimeDelta());
+  InitializeGCMClient();
+  gcm_client()->Start(GCMClient::DELAYED_START);
+  PumpLoopUntilIdle();
+  EXPECT_EQ(GCMClientImpl::READY, gcm_client_state());
+  EXPECT_TRUE(ExistsRegistration("com.google.android.gms"));
 }
 
 class GCMClientInstanceIDTest : public GCMClientImplTest {

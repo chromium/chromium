@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -26,6 +27,7 @@
 #include "base/time/time.h"
 #include "google_apis/gcm/base/encryptor.h"
 #include "google_apis/gcm/base/gcm_constants.h"
+#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -116,20 +118,19 @@ const char kInstanceIDKeyStart[] = "iid1-";
 const char kInstanceIDKeyEnd[] = "iid2-";
 
 // ---- Deprecated LevelDB keys. ----
-// TODO(crbug.com/384891711): Clean up deprecated keys from the store on load,
-// and remove these constants after October 2027 (deprecated in October 2026).
+// Deprecated in October 2026.
+// TODO(crbug.com/384891711): Remove these deprecated keys and their cleanup
+// logic after October 2027.
 // Key used to indicate how many accounts were last checked in with this device.
-[[maybe_unused]] const char kDeprecatedLastCheckinAccountsKey[] =
-    "last_checkin_accounts_count";
+const char kDeprecatedLastCheckinAccountsKey[] = "last_checkin_accounts_count";
 // Lowest lexicographically ordered account key.
 // Used for prefixing account information.
-[[maybe_unused]] const char kDeprecatedAccountKeyStart[] = "account1-";
+const char kDeprecatedAccountKeyStart[] = "account1-";
 // Key guaranteed to be higher than all account keys.
 // Used for limiting iteration.
-[[maybe_unused]] const char kDeprecatedAccountKeyEnd[] = "account2-";
+const char kDeprecatedAccountKeyEnd[] = "account2-";
 // Key used for last token fetch time.
-[[maybe_unused]] const char kDeprecatedLastTokenFetchTimeKey[] =
-    "last_token_fetch_time";
+const char kDeprecatedLastTokenFetchTimeKey[] = "last_token_fetch_time";
 
 std::string MakeRegistrationKey(const std::string& app_id) {
   return kRegistrationKeyStart + app_id;
@@ -257,6 +258,8 @@ class GCMStoreImpl::Backend
                              std::string* digest);
   bool LoadHeartbeatIntervals(std::map<std::string, int>* heartbeat_intervals);
   bool LoadInstanceIDData(std::map<std::string, std::string>* instance_id_data);
+  // Removes deprecated entries from the database on load.
+  void RemoveDeprecatedData();
 
   const base::FilePath path_;
   scoped_refptr<base::SequencedTaskRunner> foreground_task_runner_;
@@ -329,12 +332,12 @@ LoadStatus GCMStoreImpl::Backend::OpenStoreAndLoadData(StoreOpenMode open_mode,
                              &result->gservices_digest)) {
     return load_status = LOADING_GSERVICE_SETTINGS_FAILED;
   }
-  // TODO(crbug.com/384891711): Clean up deprecated account mappings and
-  // last_token_fetch_time from the store on load.
   if (!LoadHeartbeatIntervals(&result->heartbeat_intervals))
     return LOADING_HEARTBEAT_INTERVALS_FAILED;
   if (!LoadInstanceIDData(&result->instance_id_data))
     return LOADING_INSTANCE_ID_DATA_FAILED;
+
+  RemoveDeprecatedData();
 
   return LOADING_SUCCEEDED;
 }
@@ -1047,6 +1050,53 @@ bool GCMStoreImpl::Backend::LoadInstanceIDData(
   }
 
   return true;
+}
+
+void GCMStoreImpl::Backend::RemoveDeprecatedData() {
+  if (!base::FeatureList::IsEnabled(features::kGCMRemoveDeprecatedStoreData)) {
+    return;
+  }
+
+  leveldb::ReadOptions read_options;
+  read_options.verify_checksums = true;
+
+  leveldb::WriteBatch write_batch;
+  bool has_deprecated_data = false;
+
+  std::unique_ptr<leveldb::Iterator> iter(db_->NewIterator(read_options));
+  for (iter->Seek(MakeSlice(kDeprecatedAccountKeyStart));
+       iter->Valid() && iter->key().ToString() < kDeprecatedAccountKeyEnd;
+       iter->Next()) {
+    write_batch.Delete(iter->key());
+    has_deprecated_data = true;
+  }
+
+  std::string value;
+  if (db_->Get(read_options, MakeSlice(kDeprecatedLastTokenFetchTimeKey),
+               &value)
+          .ok()) {
+    write_batch.Delete(MakeSlice(kDeprecatedLastTokenFetchTimeKey));
+    has_deprecated_data = true;
+  }
+
+  if (db_->Get(read_options, MakeSlice(kDeprecatedLastCheckinAccountsKey),
+               &value)
+          .ok()) {
+    write_batch.Delete(MakeSlice(kDeprecatedLastCheckinAccountsKey));
+    has_deprecated_data = true;
+  }
+
+  if (!has_deprecated_data) {
+    return;
+  }
+
+  leveldb::WriteOptions write_options;
+  write_options.sync = true;
+  leveldb::Status status = db_->Write(write_options, &write_batch);
+  if (!status.ok()) {
+    LOG(ERROR) << "LevelDB deprecated data removal failed: "
+               << status.ToString();
+  }
 }
 
 GCMStoreImpl::GCMStoreImpl(
