@@ -682,7 +682,9 @@ void AppActivityRegistry::SaveAppActivity() {
     for (base::Value& entry : list) {
       std::optional<AppId> app_id =
           policy::AppIdFromAppInfoDict(entry.GetIfDict());
-      CHECK(app_id.has_value(), base::NotFatalUntil::M160);
+      // TODO(crbug.com/576424768): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(app_id.has_value());
 
       if (!activity_registry_.contains(app_id.value())) {
         std::optional<AppState> state =
