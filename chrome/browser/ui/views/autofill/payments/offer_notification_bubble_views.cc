@@ -18,6 +18,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/styled_label.h"
@@ -82,6 +83,21 @@ void OfferNotificationBubbleViews::AddedToWidget() {
 
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(GetWindowTitle(), icon));
+
+  // The Google Wallet logo is shown next to the title, so include it in the
+  // accessible title.
+  if (icon == TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET) {
+    SetAccessibleTitle(l10n_util::GetStringFUTF16(
+        IDS_CONCAT_TWO_STRINGS_WITH_COMMA, GetWindowTitle(),
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)));
+  }
+}
+
+views::View* OfferNotificationBubbleViews::GetInitiallyFocusedView() {
+  // The bubble has no dialog buttons, so focus the close button.
+  views::BubbleFrameView* frame_view = GetBubbleFrameView();
+  return frame_view ? frame_view->close_button() : nullptr;
 }
 
 std::u16string OfferNotificationBubbleViews::GetWindowTitle() const {

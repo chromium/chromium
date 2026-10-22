@@ -33,9 +33,12 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -281,11 +284,39 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
           IDS_AUTOFILL_WALLET_DIRECT_OFFER_REMINDER_BODY_TEXT, std::u16string(),
           std::u16string(), &offsets));
 
+  // The accessible title includes the Google Wallet logo.
+  EXPECT_EQ(GetOfferNotificationBubbleViews()
+                ->GetWidget()
+                ->widget_delegate()
+                ->GetAccessibleWindowTitle(),
+            l10n_util::GetStringFUTF16(
+                IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
+                base::ASCIIToUTF16(GetDefaultTestOfferShortTitle()),
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)));
+
   // Simulate clicking on the terms and conditions link.
   GetOfferNotificationBubbleViews()->OnOfferDetailsLinkClicked();
   EXPECT_EQ(
       browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GURL(GetDefaultTestDetailsUrlString()));
+}
+
+// The accessibility shortcut to focus an inactive bubble focuses the bubble's
+// close button.
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
+                       FocusInactivePopupForAccessibility_FocusesBubble) {
+  ShowBubbleForOfferAndVerify();
+  OfferNotificationBubbleViews* bubble = GetOfferNotificationBubbleViews();
+  ASSERT_TRUE(bubble);
+  views::Button* close_button = bubble->GetBubbleFrameView()->close_button();
+  ASSERT_TRUE(close_button);
+  EXPECT_FALSE(close_button->HasFocus());
+
+  chrome::FocusInactivePopupForAccessibility(browser());
+  views::test::WaitForWidgetActive(bubble->GetWidget(), true);
+
+  EXPECT_TRUE(close_button->HasFocus());
 }
 
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,

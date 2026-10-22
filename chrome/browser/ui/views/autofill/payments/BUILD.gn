@@ -394,6 +394,7 @@ source_set("offer_notification_bubble_views") {
     "//components/strings:components_strings",
     "//net",
     "//ui/base/mojom:ui_base_types",
+    "//ui/strings",
   ]
 }
 
