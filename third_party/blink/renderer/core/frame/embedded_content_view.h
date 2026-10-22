@@ -50,7 +50,6 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   virtual void UpdateGeometry() = 0;
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  virtual void Dispose() = 0;
 
   virtual void SetFrameRect(const gfx::Rect&);
 

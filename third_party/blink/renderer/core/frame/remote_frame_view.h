@@ -50,7 +50,7 @@ class CORE_EXPORT RemoteFrameView final
     return *remote_frame_;
   }
 
-  void Dispose() override;
+  void Dispose();
   void SetFrameRect(const gfx::Rect&) override;
   void ZoomFactorChanged(float zoom_factor) override;
   void Paint(const PaintInfo&,

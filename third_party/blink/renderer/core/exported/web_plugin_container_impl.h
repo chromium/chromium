@@ -75,7 +75,7 @@ class CORE_EXPORT WebPluginContainerImpl final
     : public GarbageCollected<WebPluginContainerImpl>,
       public EmbeddedContentView,
       public WebPluginContainer {
-  USING_PRE_FINALIZER(WebPluginContainerImpl, PreFinalize);
+  USING_PRE_FINALIZER(WebPluginContainerImpl, Dispose);
 
  public:
   // Check if plugins support a given command |name|.
@@ -185,10 +185,7 @@ class CORE_EXPORT WebPluginContainerImpl final
   void DidFailLoading(const ResourceError&);
 
   void Trace(Visitor*) const override;
-  // USING_PRE_FINALIZER does not allow for virtual dispatch from the finalizer
-  // method. Here we call Dispose() which does the correct virtual dispatch.
-  void PreFinalize() { Dispose(); }
-  void Dispose() override;
+  void Dispose();
   void SetFrameRect(const gfx::Rect& frame_rect) override;
 
   void MaybeLostMouseLock();

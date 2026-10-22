@@ -4151,6 +4151,9 @@ void LocalFrameView::RemoveScrollableAreaWithScrollNode(
 
 void LocalFrameView::AttachToLayout() {
   CHECK(!IsAttached());
+#if DCHECK_IS_ON()
+  DCHECK(!has_been_disposed_);
+#endif
   if (frame_->GetDocument())
     CHECK_NE(Lifecycle().GetState(), DocumentLifecycle::kStopping);
   SetAttached(true);

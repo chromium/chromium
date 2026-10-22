@@ -14057,13 +14057,27 @@ TEST_F(WebFrameSimTest, DisplayNoneIFrameHasNoLayoutObjects) {
   element->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kBlock);
   Compositor().BeginFrame();
   EXPECT_TRUE(iframe_doc->documentElement()->GetLayoutObject());
+  LocalFrameView* iframe_view = iframe_doc->View();
+  LayoutView* iframe_layout_view = iframe_doc->GetLayoutView();
+  EXPECT_TRUE(iframe_view->IsAttached());
 
   // Changing the display from 'block' -> 'none' should cause layout objects to
-  // disappear.
+  // disappear, except for the LayoutView itself.
   element->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
 
   Compositor().BeginFrame();
   EXPECT_FALSE(iframe_doc->documentElement()->GetLayoutObject());
+  EXPECT_EQ(iframe_view, iframe_doc->View());
+  EXPECT_EQ(iframe_layout_view, iframe_doc->GetLayoutView());
+  EXPECT_FALSE(iframe_view->IsAttached());
+
+  // Redisplaying the iframe will reattach the existing LocalFrameView.
+  element->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kBlock);
+  Compositor().BeginFrame();
+  EXPECT_TRUE(iframe_doc->documentElement()->GetLayoutObject());
+  EXPECT_EQ(iframe_view, iframe_doc->View());
+  EXPECT_EQ(iframe_layout_view, iframe_doc->GetLayoutView());
+  EXPECT_TRUE(iframe_view->IsAttached());
 }
 
 // Although it is not spec compliant, many websites intentionally call
