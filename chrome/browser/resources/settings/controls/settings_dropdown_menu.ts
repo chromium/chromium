@@ -19,9 +19,9 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrPolicyPrefMixinLit} from '/shared/settings/controls/cr_policy_pref_mixin_lit.js';
 import {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
+import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 
-import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 import {getCss} from './settings_dropdown_menu.css.js';
 import {getHtml} from './settings_dropdown_menu.html.js';
 

@@ -35,6 +35,8 @@ build_webui("build") {
     "prefs/prefs_mixin.ts",
     "prefs/prefs_types.ts",
     "prefs2/prefs_browser_proxy.ts",
+    "prefs2/pref_key_observer_mixin.ts",
+    "prefs2/pref_key_observer_mixin_lit.ts",
     "prefs2/pref_service.ts",
     "prefs2/pref_service_observer_mixin.ts",
     "prefs2/pref_service_observer_mixin_lit.ts",

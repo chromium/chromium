@@ -273,8 +273,6 @@ build_webui("build") {
     "clear_browsing_data_dialog/other_google_data_dialog.ts",
     "controls/controlled_button.html.ts",
     "controls/controlled_button.ts",
-    "controls/pref_key_observer_mixin.ts",
-    "controls/pref_key_observer_mixin_lit.ts",
     "controls/settings_boolean_control_mixin.ts",
     "controls/settings_dropdown_menu.html.ts",
     "controls/settings_dropdown_menu.ts",

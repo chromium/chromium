@@ -205,8 +205,8 @@ def CheckNoNewPolymer(input_api, output_api):
     'chrome/browser/resources/ash/',
     'chrome/browser/resources/chromeos/',
     'chrome/browser/resources/password_manager/',
-    # TODO(rbpotter): Remove this in next CL.
-    'chrome/browser/resources/settings/controls/',
+    # TODO(crbug.com/393471368): Remove settings* exceptions in next CL.
+    'chrome/browser/resources/settings_shared/prefs2/',
   ]
 
   normalized_excluded_paths = []

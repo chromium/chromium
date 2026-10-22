@@ -9,10 +9,10 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrPolicyPrefMixinLit} from '/shared/settings/controls/cr_policy_pref_mixin_lit.js';
+import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
 
 import {getCss} from './controlled_button.css.js';
 import {getHtml} from './controlled_button.html.js';
-import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 
 export interface ControlledButtonElement {
   $: {

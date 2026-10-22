@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
+import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {CrRadioButtonMixinLit} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin_lit.js';
 import {CrRippleMixin} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple_mixin.js';
@@ -16,7 +17,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './collapse_radio_button.css.js';
 import {getHtml} from './collapse_radio_button.html.js';
-import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 
 export interface SettingsCollapseRadioButtonElement {
   $: {

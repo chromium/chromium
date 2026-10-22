@@ -31,7 +31,7 @@ suite('PasswordChangeDetailsTest', function() {
         '#passwordChangeToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
-    assertTrue(toggle.pref.value);
+    assertTrue(toggle.pref!.value);
     const fallbackDiv = element.shadowRoot!.querySelector('.cr-row.first');
     assertFalse(!!fallbackDiv);
     const header = element.shadowRoot!.querySelector('#descriptionHeader');
@@ -56,7 +56,7 @@ suite('PasswordChangeDetailsTest', function() {
         '#passwordChangeToggle');
     assertTrue(!!toggle);
     assertFalse(toggle.checked);
-    assertFalse(toggle.pref.value);
+    assertFalse(toggle.pref!.value);
   });
 
   test('renders fallback description when flag is disabled', function() {

@@ -17,11 +17,11 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrPolicyPrefMixinLit} from '/shared/settings/controls/cr_policy_pref_mixin_lit.js';
+import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 import {getCss} from './settings_slider.css.js';
 import {getHtml} from './settings_slider.html.js';
 

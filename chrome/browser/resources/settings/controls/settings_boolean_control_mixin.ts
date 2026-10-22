@@ -10,13 +10,12 @@
 
 import type {CrPolicyPrefMixinInterface} from '/shared/settings/controls/cr_policy_pref_mixin.js';
 import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';
+import type {PrefKeyObserverMixinInterface} from '/shared/settings/prefs2/pref_key_observer_mixin.js';
+import {PrefKeyObserverMixin} from '/shared/settings/prefs2/pref_key_observer_mixin.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import type {PrefKeyObserverMixinInterface} from './pref_key_observer_mixin.js';
-import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
 
 export const DEFAULT_UNCHECKED_VALUE = 0;
 export const DEFAULT_CHECKED_VALUE = 1;

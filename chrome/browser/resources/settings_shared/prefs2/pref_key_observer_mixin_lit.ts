@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
-import type {PrefServiceObserverMixinLitInterface} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+
+import {PrefServiceObserverMixinLit} from './pref_service_observer_mixin_lit.js';
+import type {PrefServiceObserverMixinLitInterface} from './pref_service_observer_mixin_lit.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 

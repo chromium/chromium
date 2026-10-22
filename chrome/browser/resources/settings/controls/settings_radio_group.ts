@@ -18,10 +18,10 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
+import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 import {getCss} from './settings_radio_group.css.js';
 import {getHtml} from './settings_radio_group.html.js';
 

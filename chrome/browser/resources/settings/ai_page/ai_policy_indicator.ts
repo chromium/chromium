@@ -9,9 +9,8 @@
  */
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
+import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-
-import {PrefKeyObserverMixinLit} from '../controls/pref_key_observer_mixin_lit.js';
 
 import {getCss} from './ai_policy_indicator.css.js';
 import {getHtml} from './ai_policy_indicator.html.js';

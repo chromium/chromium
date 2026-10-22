@@ -9,10 +9,10 @@ import {CrRippleMixin} from '//resources/cr_elements/cr_ripple/cr_ripple_mixin.j
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {prefToString} from '/shared/settings/prefs/pref_util.js';
+import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
 
 import {getCss} from './controlled_radio_button.css.js';
 import {getHtml} from './controlled_radio_button.html.js';
-import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 
 const ControlledRadioButtonElementBase =
     PrefKeyObserverMixinLit(CrRippleMixin(CrRadioButtonMixinLit(CrLitElement)));

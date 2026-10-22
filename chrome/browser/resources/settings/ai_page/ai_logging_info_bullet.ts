@@ -13,9 +13,9 @@ import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../icons.html.js';
 
+import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PrefKeyObserverMixinLit} from '../controls/pref_key_observer_mixin_lit.js';
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getCss} from './ai_logging_info_bullet.css.js';
