@@ -448,6 +448,9 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
               base::Unretained(this)),
           base::BindRepeating(
               &ReadAnythingUntrustedPageHandler::SendTranslationState,
+              base::Unretained(this)),
+          base::BindRepeating(
+              &ReadAnythingUntrustedPageHandler::SendTranslationFailed,
               base::Unretained(this))) {
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
@@ -2173,6 +2176,13 @@ void ReadAnythingUntrustedPageHandler::MaybeTriggerPendingPdfTranslation() {
     driver->MaybeTriggerPendingPdfTranslation();
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
+}
+
+void ReadAnythingUntrustedPageHandler::SendTranslationFailed() {
+  if (!base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)) {
+    return;
+  }
+  page_->OnTranslationFailed();
 }
 
 void ReadAnythingUntrustedPageHandler::LogExtensionState() {

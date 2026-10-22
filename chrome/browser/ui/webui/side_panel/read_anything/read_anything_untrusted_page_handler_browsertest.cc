@@ -58,6 +58,7 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_errors.h"
 #include "components/translate/core/common/translate_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
@@ -174,6 +175,7 @@ class MockPage : public read_anything::mojom::UntrustedPage {
               OnTranslationStateChanged,
               (bool is_translated),
               (override));
+  MOCK_METHOD(void, OnTranslationFailed, (), (override));
 
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 };
@@ -2562,6 +2564,14 @@ class ReadAnythingUntrustedPageHandlerPdfTranslationStateTest
   // Makes the tab's language state report that the tab is translated.
   void TranslateTab() { Translate(GetReadAnythingWebContents()); }
 
+  // Makes the tab's translate driver report that a translation finished with
+  // `error`, as it does when the translate agents report the result.
+  void FinishTabTranslation(translate::TranslateErrors error) {
+    ChromeTranslateClient::FromWebContents(GetReadAnythingWebContents())
+        ->translate_driver()
+        ->OnPageTranslated(/*cancelled=*/false, "fr", "en", error);
+  }
+
   // Dispatches the messages sent to `page_` so far, then verifies and clears
   // its expectations.
   void FlushAndVerifyPage() {
@@ -2599,6 +2609,28 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerPdfTranslationStateTest,
   // Reverting to the original language, e.g. via "Show original".
   EXPECT_CALL(page_, OnTranslationStateChanged(false)).Times(1);
   GetTabLanguageState()->SetCurrentLanguage("fr");
+  FlushAndVerifyPage();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerPdfTranslationStateTest,
+                       TabTranslationFailed_SendsTranslationFailed) {
+  handler_ = CreateHandler();
+  FlushAndVerifyPage();
+
+  EXPECT_CALL(page_, OnTranslationFailed()).Times(1);
+  EXPECT_CALL(page_, OnTranslationStateChanged).Times(0);
+  FinishTabTranslation(translate::TranslateErrors::TRANSLATION_ERROR);
+  FlushAndVerifyPage();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerPdfTranslationStateTest,
+                       TabTranslationSucceeded_DoesNotSendTranslationFailed) {
+  handler_ = CreateHandler();
+  FlushAndVerifyPage();
+
+  EXPECT_CALL(page_, OnTranslationFailed()).Times(0);
+  EXPECT_CALL(page_, OnTranslationStateChanged(true)).Times(1);
+  FinishTabTranslation(translate::TranslateErrors::NONE);
   FlushAndVerifyPage();
 }
 
@@ -2661,9 +2693,11 @@ IN_PROC_BROWSER_TEST_F(
     ReadAnythingUntrustedPageHandlerPdfTranslationStateDisabledTest,
     DoesNotSendTranslationState) {
   EXPECT_CALL(page_, OnTranslationStateChanged).Times(0);
+  EXPECT_CALL(page_, OnTranslationFailed).Times(0);
 
   handler_ = CreateHandler();
   TranslateTab();
+  FinishTabTranslation(translate::TranslateErrors::TRANSLATION_ERROR);
   FlushAndVerifyPage();
 }
 

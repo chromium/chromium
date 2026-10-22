@@ -18,6 +18,7 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_errors.h"
 #include "components/translate/core/common/translate_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -103,13 +104,26 @@ class ReadAnythingTranslateObserverTest
     language_state.SetCurrentLanguage("en");
   }
 
+  // Makes the translate driver of `contents` report that a translation
+  // finished with `error`, as it does when the translate agents report the
+  // result.
+  void FinishTranslation(content::WebContents& contents,
+                         translate::TranslateErrors error) {
+    ChromeTranslateClient::FromWebContents(&contents)
+        ->translate_driver()
+        ->OnPageTranslated(/*cancelled=*/false, "fr", "en", error);
+  }
+
   base::MockCallback<ReadAnythingTranslateObserver::LanguageCallback>
       language_callback_;
   testing::NiceMock<base::MockCallback<
       ReadAnythingTranslateObserver::TranslationStateCallback>>
       translation_state_callback_;
+  base::MockCallback<ReadAnythingTranslateObserver::TranslationFailedCallback>
+      translation_failed_callback_;
   ReadAnythingTranslateObserver observer_{language_callback_.Get(),
-                                          translation_state_callback_.Get()};
+                                          translation_state_callback_.Get(),
+                                          translation_failed_callback_.Get()};
 
  private:
   std::vector<mojo::PendingReceiver<translate::mojom::TranslateAgent>>
@@ -183,9 +197,12 @@ TEST_F(ReadAnythingTranslateObserverTest,
 TEST_F(ReadAnythingTranslateObserverTest,
        TranslatePdfDisabled_DoesNotReportTranslationState) {
   EXPECT_CALL(translation_state_callback_, Run(_)).Times(0);
+  EXPECT_CALL(translation_failed_callback_, Run()).Times(0);
 
   observer_.Observe(*web_contents(), *web_contents());
   Translate(*web_contents());
+  FinishTranslation(*web_contents(),
+                    translate::TranslateErrors::TRANSLATION_ERROR);
 }
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -304,6 +321,36 @@ TEST_F(ReadAnythingTranslateObserverTranslationStateTest,
 
   EXPECT_CALL(translation_state_callback_, Run(_)).Times(0);
   Translate(*web_contents());
+}
+
+TEST_F(ReadAnythingTranslateObserverTranslationStateTest,
+       TranslationFailed_ReportsTranslationFailed) {
+  observer_.Observe(*web_contents(), *web_contents());
+
+  EXPECT_CALL(translation_failed_callback_, Run());
+  // The page stays untranslated, so the translation state doesn't change.
+  EXPECT_CALL(translation_state_callback_, Run(_)).Times(0);
+  FinishTranslation(*web_contents(),
+                    translate::TranslateErrors::TRANSLATION_ERROR);
+}
+
+TEST_F(ReadAnythingTranslateObserverTranslationStateTest,
+       TranslationSucceeded_ReportsTranslatedOnly) {
+  observer_.Observe(*web_contents(), *web_contents());
+
+  EXPECT_CALL(translation_failed_callback_, Run()).Times(0);
+  EXPECT_CALL(translation_state_callback_, Run(true));
+  FinishTranslation(*web_contents(), translate::TranslateErrors::NONE);
+}
+
+TEST_F(ReadAnythingTranslateObserverTranslationStateTest,
+       Reset_StopsReportingTranslationFailed) {
+  observer_.Observe(*web_contents(), *web_contents());
+  observer_.Reset();
+
+  EXPECT_CALL(translation_failed_callback_, Run()).Times(0);
+  FinishTranslation(*web_contents(),
+                    translate::TranslateErrors::TRANSLATION_ERROR);
 }
 
 }  // namespace

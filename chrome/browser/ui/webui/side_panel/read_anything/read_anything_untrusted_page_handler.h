@@ -387,6 +387,10 @@ class ReadAnythingUntrustedPageHandler :
   // pending until it's triggered, Reading Mode is closed, or the page changes.
   void MaybeTriggerPendingPdfTranslation();
 
+  // Tells the page that a translation of the tab failed. Only sent when
+  // translate::kEnableTranslatePdf is enabled.
+  void SendTranslationFailed();
+
   void SetUpPdfObserver();
   void CheckIfActiveAXTreeChangedToPdf();
 

@@ -508,4 +508,10 @@ interface UntrustedPage {
   // translated (translate::LanguageState::IsPageTranslated()). Only sent when
   // translate::kEnableTranslatePdf is enabled.
   OnTranslationStateChanged(bool is_translated);
+
+  // Notifies the WebUI that a translation of the active tab's contents
+  // finished with an error, so the contents aren't translated and no
+  // OnTranslationStateChanged(true) will follow for this translation. Only
+  // sent when translate::kEnableTranslatePdf is enabled.
+  OnTranslationFailed();
 };

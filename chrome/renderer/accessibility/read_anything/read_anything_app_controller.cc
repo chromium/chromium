@@ -2838,6 +2838,14 @@ void ReadAnythingAppController::OnTranslationStateChanged(bool is_translated) {
   ExecuteJavaScript("chrome.readingMode.onTranslationStateChanged();");
 }
 
+void ReadAnythingAppController::OnTranslationFailed() {
+  // The browser only reports translation failures when PDF translation is
+  // enabled. See ReadAnythingTranslateObserver::OnPageTranslated().
+  CHECK(IsTranslatePdfEnabled());
+  // TODO(crbug.com/564944482): Notify the WebUI so it can stop waiting for the
+  // translation and show an error.
+}
+
 void ReadAnythingAppController::SetDefaultLanguageCode(
     const std::string& code) {
   std::string default_lang = std::string(language::ExtractBaseLanguage(code));

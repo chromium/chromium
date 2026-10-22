@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_TRANSLATE_OBSERVER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/core/browser/translate_driver.h"
+#include "components/translate/core/common/translate_errors.h"
 
 class ChromeTranslateClient;
 
@@ -39,10 +41,15 @@ class ReadAnythingTranslateObserver
   using LanguageCallback = base::RepeatingCallback<void(const std::string&)>;
   // Called with whether the page is translated.
   using TranslationStateCallback = base::RepeatingCallback<void(bool)>;
+  // Called when a translation of the page finished with an error. A
+  // successful translation is reported through TranslationStateCallback
+  // instead, since it changes whether the page is translated.
+  using TranslationFailedCallback = base::RepeatingClosure;
 
   ReadAnythingTranslateObserver(
       LanguageCallback on_language_determined,
-      TranslationStateCallback on_translation_state_changed);
+      TranslationStateCallback on_translation_state_changed,
+      TranslationFailedCallback on_translation_failed);
   ReadAnythingTranslateObserver(const ReadAnythingTranslateObserver&) = delete;
   ReadAnythingTranslateObserver& operator=(
       const ReadAnythingTranslateObserver&) = delete;
@@ -75,6 +82,9 @@ class ReadAnythingTranslateObserver
 
   // translate::ContentTranslateDriver::TranslationObserver:
   void OnIsPageTranslatedChanged(content::WebContents* source) override;
+  void OnPageTranslated(std::string_view source_lang,
+                        std::string_view translated_lang,
+                        translate::TranslateErrors error_type) override;
 
  private:
   // Observes the source language through `translate_client`, or stops
@@ -85,6 +95,7 @@ class ReadAnythingTranslateObserver
 
   LanguageCallback on_language_determined_;
   TranslationStateCallback on_translation_state_changed_;
+  TranslationFailedCallback on_translation_failed_;
 
   base::ScopedObservation<translate::TranslateDriver,
                           translate::TranslateDriver::LanguageDetectionObserver>

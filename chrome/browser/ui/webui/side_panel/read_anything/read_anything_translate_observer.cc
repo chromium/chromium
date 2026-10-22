@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_translate_observer.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_errors.h"
 #include "components/translate/core/common/translate_features.h"
 #include "pdf/buildflags.h"
 
@@ -32,9 +34,11 @@ ChromeTranslateClient& GetTabTranslateClient(
 
 ReadAnythingTranslateObserver::ReadAnythingTranslateObserver(
     LanguageCallback on_language_determined,
-    TranslationStateCallback on_translation_state_changed)
+    TranslationStateCallback on_translation_state_changed,
+    TranslationFailedCallback on_translation_failed)
     : on_language_determined_(std::move(on_language_determined)),
-      on_translation_state_changed_(std::move(on_translation_state_changed)) {}
+      on_translation_state_changed_(std::move(on_translation_state_changed)),
+      on_translation_failed_(std::move(on_translation_failed)) {}
 
 ReadAnythingTranslateObserver::~ReadAnythingTranslateObserver() = default;
 
@@ -87,6 +91,21 @@ void ReadAnythingTranslateObserver::OnIsPageTranslatedChanged(
   // Only the tab's driver is observed for translation state, and a driver
   // always has its contents while it's alive.
   ReportTranslationState(GetTabTranslateClient(CHECK_DEREF(source)));
+}
+
+void ReadAnythingTranslateObserver::OnPageTranslated(
+    std::string_view source_lang,
+    std::string_view translated_lang,
+    translate::TranslateErrors error_type) {
+  // Translation state is only observed when the feature is enabled (see
+  // ObserveTranslationState()).
+  CHECK(base::FeatureList::IsEnabled(translate::kEnableTranslatePdf));
+  // A successful translation makes the page translated, which is reported
+  // through OnIsPageTranslatedChanged(). A failed one leaves the page
+  // untranslated, so this is the only signal that the translation is over.
+  if (error_type != translate::TranslateErrors::NONE) {
+    on_translation_failed_.Run();
+  }
 }
 
 void ReadAnythingTranslateObserver::ObserveLanguage(

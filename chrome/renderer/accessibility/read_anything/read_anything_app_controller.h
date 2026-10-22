@@ -186,6 +186,7 @@ class ReadAnythingAppController
       read_anything::mojom::ReadAnythingDistillationState new_state) override;
   void OnMainFrameSameDocumentNavigation(const GURL& url) override;
   void OnTranslationStateChanged(bool is_translated) override;
+  void OnTranslationFailed() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnDeviceLocked() override;
