@@ -118,6 +118,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
     base::TimeTicks last_active;
     bool is_active_tab = false;
     bool is_checked = false;
+    bool from_single_tab_menu_item = false;
   };
 
   OmniboxContextMenuController(const OmniboxContextMenuController&) = delete;
