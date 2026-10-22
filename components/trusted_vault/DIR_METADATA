@@ -1,1 +1,9 @@
 mixins: "//components/sync/COMMON_METADATA"
+
+agentic_review {
+  capability_groups {
+    review_capability_skills: [
+      "internal/agents/skills/trusted-vault-docs/SKILL.md"
+    ]
+  }
+}
