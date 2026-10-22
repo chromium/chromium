@@ -296,6 +296,11 @@ BASE_DECLARE_FEATURE(kEnterprisePasswordReuseUiRefresh);
 // Use a new URL for the enterprise real-time URL check.
 BASE_DECLARE_FEATURE(kEnterpriseRealTimeUrlCheckNewUrl);
 
+// Skips enterprise real-time URL lookups for URLs in
+// `ChromeEnterpriseRealTimeUrlLookupService::CanCheckUrl` (about:blank on
+// Android, chrome-native://newtab/ and the search warmup URL).
+BASE_DECLARE_FEATURE(kEnterpriseRealTimeUrlCheckUrlSkiplist);
+
 // Makes the Enhanced Protection a syncable setting.
 // Check the design doc (go/esb-as-a-synced-setting-dd) for further details.
 BASE_DECLARE_FEATURE(kEsbAsASyncedSetting);
