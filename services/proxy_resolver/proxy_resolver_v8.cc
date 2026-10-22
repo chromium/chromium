@@ -5,6 +5,7 @@
 #include "services/proxy_resolver/proxy_resolver_v8.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cstdio>
 #include <memory>
 #include <utility>
@@ -94,10 +95,41 @@ const char kPacResourceName[] = "proxy-pac-script.js";
 // Pseudo-name for the PAC utility script.
 const char kPacUtilityResourceName[] = "proxy-pac-utility-script.js";
 
+// Base class for external string resources that tracks V8's Lock() / Unlock()
+// calls, and crashes if the resource is destroyed while V8 still holds a lock.
+// V8 locks a resource while it holds raw pointers to it (e.g., while parsing
+// it). This catches cases where V8 incorrectly destroys a resource it
+// considers locked, to harden against V8 resource tracking issues.
+//
+// TODO(crbug.com/562847435): This mirrors temporary hardening in
+// blink::StringResourceBase, and should be removed once V8 has an
+// architectural fix for resource lifetimes.
+template <typename ResourceBase>
+class DisposalLockedExternalStringResource : public ResourceBase {
+ public:
+  DisposalLockedExternalStringResource() = default;
+  DisposalLockedExternalStringResource(
+      const DisposalLockedExternalStringResource&) = delete;
+  DisposalLockedExternalStringResource& operator=(
+      const DisposalLockedExternalStringResource&) = delete;
+
+  ~DisposalLockedExternalStringResource() override {
+    CHECK_EQ(disposal_lock_count_.load(), 0);
+  }
+
+  // v8::String::ExternalStringResourceBase:
+  void Lock() const override { disposal_lock_count_.fetch_add(1); }
+  void Unlock() const override { disposal_lock_count_.fetch_sub(1); }
+
+ private:
+  mutable std::atomic_int disposal_lock_count_{0};
+};
+
 // External string wrapper so V8 can access the UTF16 string wrapped by
 // net::PacFileData.
 class V8ExternalStringFromScriptData
-    : public v8::String::ExternalStringResource {
+    : public DisposalLockedExternalStringResource<
+          v8::String::ExternalStringResource> {
  public:
   explicit V8ExternalStringFromScriptData(
       const scoped_refptr<net::PacFileData>& script_data)
@@ -119,8 +151,8 @@ class V8ExternalStringFromScriptData
 };
 
 // External string wrapper so V8 can access a string literal.
-class V8ExternalASCIILiteral
-    : public v8::String::ExternalOneByteStringResource {
+class V8ExternalASCIILiteral : public DisposalLockedExternalStringResource<
+                                   v8::String::ExternalOneByteStringResource> {
  public:
   // |ascii| must be a NULL-terminated C string, and must remain valid
   // throughout this object's lifetime.
