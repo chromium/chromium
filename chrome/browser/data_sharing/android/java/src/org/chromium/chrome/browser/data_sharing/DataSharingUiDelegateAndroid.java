@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -109,7 +110,7 @@ public class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
 
     @Override
     @CalledByNative
-    public void handleShareURLIntercepted(GURL url) {
+    public void handleShareURLIntercepted(@JniType("GURL") GURL url) {
         Context context = ContextUtils.getApplicationContext();
         Intent invitationIntent = DataSharingIntentUtils.createInvitationIntent(context, url);
         IntentUtils.safeStartActivity(context, invitationIntent);

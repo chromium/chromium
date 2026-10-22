@@ -24,8 +24,8 @@ void DataSharingUIDelegateAndroid::HandleShareURLIntercepted(
     std::unique_ptr<ShareURLInterceptionContext> context) {
   LazyInitializeIfNeeded();
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_DataSharingUiDelegateAndroid_handleShareURLIntercepted(
-      env, java_obj_, url::GURLAndroid::FromNativeGURL(env, url));
+  Java_DataSharingUiDelegateAndroid_handleShareURLIntercepted(env, java_obj_,
+                                                              url);
 }
 
 ScopedJavaLocalRef<jobject> DataSharingUIDelegateAndroid::GetJavaObject() {
