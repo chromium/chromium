@@ -68,7 +68,10 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteBridge.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteBridge.java",
+    "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteControllerProvider.java",
+  ]
 }
 
 android_resources("java_resources") {
@@ -91,6 +94,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.quick_delete"
   sources = [
+    "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteControllerProviderUnitTest.java",
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegateUnitTest.java",
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMediatorTest.java",
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMetricsDelegateTest.java",

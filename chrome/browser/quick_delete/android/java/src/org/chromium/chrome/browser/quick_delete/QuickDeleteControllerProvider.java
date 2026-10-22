@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
+import android.app.Activity;
+
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -53,6 +57,27 @@ public final class QuickDeleteControllerProvider {
      */
     public static void detach(Supplier<QuickDeleteController> factory) {
         KEY.detachFromAllHosts(factory);
+    }
+
+    /**
+     * Shows the Quick Delete dialog using the factory attached to the given {@link WindowAndroid},
+     * if present.
+     *
+     * @param window The {@link WindowAndroid} to look up the factory from.
+     */
+    @CalledByNative
+    public static void showDialog(@Nullable WindowAndroid window) {
+        if (window == null) {
+            return;
+        }
+        @Nullable Activity activity = window.getActivity().get();
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+            return;
+        }
+        @Nullable Supplier<QuickDeleteController> factory = from(window);
+        if (factory != null) {
+            factory.get().showDialog();
+        }
     }
 
     private QuickDeleteControllerProvider() {}

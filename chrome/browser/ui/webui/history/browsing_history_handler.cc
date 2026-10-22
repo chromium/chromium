@@ -102,7 +102,7 @@
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/settings/jni_headers/SettingsNavigationFactory_jni.h"
+#include "chrome/browser/quick_delete/jni_headers/QuickDeleteControllerProvider_jni.h"
 #endif
 
 using bookmarks::BookmarkModel;
@@ -668,7 +668,7 @@ void BrowsingHistoryHandler::OpenClearBrowsingDataDialog() {
   ui::WindowAndroid* window =
       web_contents_ ? web_contents_->GetTopLevelNativeWindow() : nullptr;
   if (window) {
-    Java_SettingsNavigationFactory_showClearBrowsingData(
+    Java_QuickDeleteControllerProvider_showDialog(
         base::android::AttachCurrentThread(), window->GetJavaObject());
   } else {
     DLOG(WARNING)
