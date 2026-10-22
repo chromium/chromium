@@ -524,11 +524,7 @@ fn is_valid_webview_exemption_origin(origin: &ffi::Origin) -> bool {
     // LoadDataWithBaseURL and file origins with
     // allow_universal_access_from_file_urls.
     //
-    // TODO(crbug.com/471021577): Expose `Origin::scheme()` in `url/origin.rs`
-    // and use `origin.scheme()` here instead of
-    // `origin.get_tuple_or_precursor_tuple_if_opaque().scheme()`.
-    //
     // TODO(crbug.com/40226863): Use Crubit to access `url::kFileScheme` instead
     // of a string literal (as CXX does not support C++ constants).
-    origin.opaque() || origin.get_tuple_or_precursor_tuple_if_opaque().scheme() == "file"
+    origin.opaque() || origin.scheme() == "file"
 }

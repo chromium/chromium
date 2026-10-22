@@ -72,6 +72,14 @@ impl ffi::SchemeHostPort {
 }
 
 impl ffi::Origin {
+    pub fn scheme(&self) -> &str {
+        if self.opaque() {
+            ""
+        } else {
+            self.get_tuple_or_precursor_tuple_if_opaque().scheme()
+        }
+    }
+
     pub fn host(&self) -> &str {
         if self.opaque() {
             ""
