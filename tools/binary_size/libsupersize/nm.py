@@ -134,6 +134,14 @@ def CollectAliasesByAddress(elf_path):
     name = '** outlined function' + (' * %d' % count if count > 1 else '')
     names_by_address[address].add(name)
 
+  # Pre-filter to aliased addresses before demangling to avoid demangling ~750k
+  # single-symbol addresses.
+  names_by_address = {
+    addr: names
+    for addr, names in names_by_address.items()
+    if len(names) > 1 or num_outlined_functions_at_address.get(addr, 0) > 1
+  }
+
   # Demangle all names.
   demangle.DemangleSetsInDictsInPlace(names_by_address)
 
