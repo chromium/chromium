@@ -155,7 +155,9 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     GURL change_password_url,
     password_manager::PasswordForm credentials,
     tabs::TabInterface* tab_interface)
-    : change_password_url_(std::move(change_password_url)),
+    : change_password_url_(change_password_url.is_empty()
+                               ? credentials.url
+                               : std::move(change_password_url)),
       password_form_info_(std::move(credentials)),
       originator_(tab_interface->GetContents()),
       profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())),
@@ -300,8 +302,7 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   flow_start_time_ = base::Time::Now();
 
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(
-      originator_, change_password_url_.is_empty() ? password_form_info_.url
-                                                   : change_password_url_);
+      originator_, change_password_url_);
   logs_uploader_->SetLoginPasswordFormInfo(password_form_info_);
 
   if (!actuator_) {
@@ -485,11 +486,8 @@ void PasswordChangeDelegateImpl::OpenPasswordDetails() {
     return;
   }
 
-  const GURL& target_url = change_password_url_.is_empty()
-                               ? password_form_info_.url
-                               : change_password_url_;
   bool is_same_domain = affiliations::IsExtendedPublicSuffixDomainMatch(
-      target_url, originator_->GetLastCommittedURL(), {});
+      change_password_url_, originator_->GetLastCommittedURL(), {});
 
   if (is_same_domain) {
     ManagePasswordsUIController::FromWebContents(originator_)
@@ -605,9 +603,7 @@ bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
 
 std::u16string PasswordChangeDelegateImpl::GetDisplayOrigin() const {
   return url_formatter::FormatUrlForSecurityDisplay(
-      change_password_url_.is_empty() ? password_form_info_.url
-                                      : change_password_url_,
-      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+      change_password_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 
 void PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected() {
