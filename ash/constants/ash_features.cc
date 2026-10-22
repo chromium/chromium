@@ -714,10 +714,6 @@ BASE_FEATURE(kForceOnDeviceAppControlsForAllRegions,
 // For more info, see go/crosforest.
 BASE_FEATURE(kForestFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables low priority hint instead of overlay candidate override in
-// `FastInkHost`.
-BASE_FEATURE(kFastInkHostLowPriorityHint, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, there will be an alert bubble showing up when the device
 // returns from low brightness (e.g., sleep, closed cover) without a lock screen
 // and the active window is in fullscreen.
@@ -2257,10 +2253,6 @@ bool ShouldForceEnableServerSideSpeechRecognition() {
 
 bool IsFullscreenAlertBubbleEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenAlertBubble);
-}
-
-bool IsFastInkHostLowPriorityHintEnabled() {
-  return base::FeatureList::IsEnabled(kFastInkHostLowPriorityHint);
 }
 
 bool IsBlockFwupdClientEnabled() {

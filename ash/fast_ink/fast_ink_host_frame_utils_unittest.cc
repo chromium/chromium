@@ -195,62 +195,26 @@ TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOn) {
             gfx::Rect(frame->size_in_pixels()));
 }
 
-TEST_F(FastInkHostCreateFrameUtilTest, LowPriorityHintKillswitch) {
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kFastInkHostLowPriorityHint);
+TEST_F(FastInkHostCreateFrameUtilTest, LowPriorityHint) {
+  auto frame_no_auto = fast_ink_internal::CreateCompositorFrame(
+      viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
+      kTestTotalDamageRectInDIP, /*auto_update=*/false, *host_window_,
+      client_resource_provider_, shared_image_, gpu::SyncToken());
 
-    auto frame_no_auto = fast_ink_internal::CreateCompositorFrame(
-        viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
-        kTestTotalDamageRectInDIP, /*auto_update=*/false, *host_window_,
-        client_resource_provider_, shared_image_, gpu::SyncToken());
+  auto* texture_quad_no_auto = viz::TextureDrawQuad::MaterialCast(
+      frame_no_auto->render_pass_list.front()->quad_list.back());
+  EXPECT_EQ(texture_quad_no_auto->overlay_priority_hint,
+            viz::OverlayPriority::kNone);
 
-    EXPECT_FALSE(frame_no_auto->resource_list.back().GetIsOverlayCandidate());
-    auto* texture_quad_no_auto = viz::TextureDrawQuad::MaterialCast(
-        frame_no_auto->render_pass_list.front()->quad_list.back());
-    EXPECT_EQ(texture_quad_no_auto->overlay_priority_hint,
-              viz::OverlayPriority::kRegular);
+  auto frame_auto = fast_ink_internal::CreateCompositorFrame(
+      viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
+      kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
+      client_resource_provider_, shared_image_, gpu::SyncToken());
 
-    auto frame_auto = fast_ink_internal::CreateCompositorFrame(
-        viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
-        kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
-        client_resource_provider_, shared_image_, gpu::SyncToken());
-
-    EXPECT_TRUE(frame_auto->resource_list.back().GetIsOverlayCandidate());
-    auto* texture_quad_auto = viz::TextureDrawQuad::MaterialCast(
-        frame_auto->render_pass_list.front()->quad_list.back());
-    EXPECT_EQ(texture_quad_auto->overlay_priority_hint,
-              viz::OverlayPriority::kRegular);
-  }
-
-  client_resource_provider_.ShutdownAndReleaseAllResources();
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kFastInkHostLowPriorityHint);
-
-    auto frame_no_auto = fast_ink_internal::CreateCompositorFrame(
-        viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
-        kTestTotalDamageRectInDIP, /*auto_update=*/false, *host_window_,
-        client_resource_provider_, shared_image_, gpu::SyncToken());
-
-    auto* texture_quad_no_auto = viz::TextureDrawQuad::MaterialCast(
-        frame_no_auto->render_pass_list.front()->quad_list.back());
-    EXPECT_EQ(texture_quad_no_auto->overlay_priority_hint,
-              viz::OverlayPriority::kNone);
-
-    auto frame_auto = fast_ink_internal::CreateCompositorFrame(
-        viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
-        kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
-        client_resource_provider_, shared_image_, gpu::SyncToken());
-
-    auto* texture_quad_auto = viz::TextureDrawQuad::MaterialCast(
-        frame_auto->render_pass_list.front()->quad_list.back());
-    EXPECT_EQ(texture_quad_auto->overlay_priority_hint,
-              viz::OverlayPriority::kRegular);
-  }
+  auto* texture_quad_auto = viz::TextureDrawQuad::MaterialCast(
+      frame_auto->render_pass_list.front()->quad_list.back());
+  EXPECT_EQ(texture_quad_auto->overlay_priority_hint,
+            viz::OverlayPriority::kRegular);
 }
 
 }  // namespace

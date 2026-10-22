@@ -65,7 +65,7 @@ void AppendQuad(const viz::TransferableResource& resource,
       /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
       /*is_tex_coords_normalized=*/false);
 
-  if (features::IsFastInkHostLowPriorityHintEnabled() && !auto_update) {
+  if (!auto_update) {
     texture_quad->overlay_priority_hint = viz::OverlayPriority::kNone;
   }
 }
@@ -175,17 +175,10 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
       shared_image->BackingWasExternallyUpdated(sync_token);
   sii->VerifySyncToken(updated_sync_token);
 
-  viz::TransferableResource transferable_resource;
-  if (!features::IsFastInkHostLowPriorityHintEnabled()) {
-    transferable_resource = viz::TransferableResource::Make(
-        shared_image, viz::TransferableResource::ResourceSource::kUI,
-        updated_sync_token,
-        /*override=*/{.is_overlay_candidate = auto_update});
-  } else {
-    transferable_resource = viz::TransferableResource::Make(
-        shared_image, viz::TransferableResource::ResourceSource::kUI,
-        updated_sync_token);
-  }
+  viz::TransferableResource transferable_resource =
+      viz::TransferableResource::Make(
+          shared_image, viz::TransferableResource::ResourceSource::kUI,
+          updated_sync_token);
 
   viz::ResourceId resource_id = client_resource_provider.ImportResource(
       transferable_resource,

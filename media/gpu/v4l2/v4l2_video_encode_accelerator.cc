@@ -92,8 +92,6 @@ static void CopyNALUPrependingStartCode(const uint8_t* src,
 
 namespace media {
 
-BASE_FEATURE(kV4L2VEAUseCorrectColorSpace, base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 // Convert VideoFrameLayout to ImageProcessor::PortConfig.
 std::optional<ImageProcessor::PortConfig> VideoFrameLayoutToPortConfig(
@@ -587,13 +585,9 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
         CHECK(sii_);
         const VideoPixelFormat output_format =
             output_config.fourcc.ToVideoPixelFormat();
-        // TODO(crbug.com/425634684): Set default color space for output frames
-        // and remove set_color_space from
+        // TODO(crbug.com/425634684): Remove set_color_space from
         // LibYUVImageProcessorBackend::Process.
-        gfx::ColorSpace color_space =
-            base::FeatureList::IsEnabled(kV4L2VEAUseCorrectColorSpace)
-                ? input_color_space_
-                : gfx::ColorSpace();
+        gfx::ColorSpace color_space = input_color_space_;
         image_processor_output_buffers_[i] =
             CreateMappableSharedImageVideoFrame(
                 output_format, color_space, output_config.size,
@@ -1034,13 +1028,9 @@ bool V4L2VideoEncodeAccelerator::ReconfigureFormatIfNeeded(
     input_natural_size_ = frame.natural_size();
   }
 
-  bool color_space_changed = false;
-  if (base::FeatureList::IsEnabled(kV4L2VEAUseCorrectColorSpace)) {
-    if (image_processor_ && (input_buffer_map_.empty() ||
-                             frame.ColorSpace() != input_color_space_)) {
-      color_space_changed = true;
-    }
-  }
+  bool color_space_changed =
+      image_processor_ &&
+      (input_buffer_map_.empty() || frame.ColorSpace() != input_color_space_);
 
   if (!native_input_mode_) {
     // frame.coded_size() must be the size specified in
@@ -1117,14 +1107,10 @@ bool V4L2VideoEncodeAccelerator::ReconfigureFormatIfNeeded(
   // succeeding frames' dimensions are not different from the current one.
   input_frame_size_ = frame.coded_size();
 
-  // Store the color space of the input frame used later for allocating output
-  // buffers.
-  if (base::FeatureList::IsEnabled(kV4L2VEAUseCorrectColorSpace)) {
-    // TODO(crbug.com/425634684): Default to BT.709 if frame ColorSpace is
-    // invalid, as SharedImages should always have a valid ColorSpace on
-    // creation.
-    input_color_space_ = frame.ColorSpace();
-  }
+  // TODO(crbug.com/425634684): Default to BT.709 if frame ColorSpace is
+  // invalid, as SharedImages should always have a valid ColorSpace on
+  // creation.
+  input_color_space_ = frame.ColorSpace();
   if (!CreateImageProcessor(frame.layout(), device_input_layout_->format(),
                             device_input_layout_->coded_size(),
                             frame.visible_rect(),

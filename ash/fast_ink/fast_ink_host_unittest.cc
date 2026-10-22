@@ -119,14 +119,9 @@ TEST_P(FastInkHostFrameSubmissionTest,
             params.expected_quad_layer_rect);
 
   auto* texture_quad = viz::TextureDrawQuad::MaterialCast(quad);
-  if (features::IsFastInkHostLowPriorityHintEnabled()) {
-    EXPECT_EQ(texture_quad->overlay_priority_hint,
-              params.auto_update ? viz::OverlayPriority::kRegular
-                                 : viz::OverlayPriority::kNone);
-  } else {
-    EXPECT_EQ(frame.resource_list.back().GetIsOverlayCandidate(),
-              params.auto_update);
-  }
+  EXPECT_EQ(texture_quad->overlay_priority_hint,
+            params.auto_update ? viz::OverlayPriority::kRegular
+                               : viz::OverlayPriority::kNone);
 }
 
 INSTANTIATE_TEST_SUITE_P(
