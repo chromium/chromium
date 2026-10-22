@@ -432,7 +432,7 @@
     {
         "name": "datastore",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-android",
@@ -447,17 +447,17 @@
     {
         "name": "datastore-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-core-okio",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-core-okio-jvm",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences",
@@ -467,27 +467,27 @@
     {
         "name": "datastore-preferences-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences-external-protobuf",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences-proto",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "documentfile",
@@ -687,7 +687,7 @@
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-livedata",
@@ -722,7 +722,7 @@
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -742,7 +742,7 @@
     {
         "name": "lifecycle-runtime-ktx-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-service",
@@ -757,7 +757,7 @@
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -782,7 +782,7 @@
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "loader",
@@ -1362,7 +1362,7 @@
     {
         "name": "caffeine",
         "group": "com.github.ben-manes.caffeine",
-        "version": "3.0.5"
+        "version": "3.3.0"
     },
     {
         "name": "software-and-algorithms",
@@ -1562,22 +1562,22 @@
     {
         "name": "error_prone_annotation",
         "group": "com.google.errorprone",
-        "version": "2.50.0"
+        "version": "2.51.0"
     },
     {
         "name": "error_prone_annotations",
         "group": "com.google.errorprone",
-        "version": "2.50.0"
+        "version": "2.51.0"
     },
     {
         "name": "error_prone_check_api",
         "group": "com.google.errorprone",
-        "version": "2.50.0"
+        "version": "2.51.0"
     },
     {
         "name": "error_prone_test_helpers",
         "group": "com.google.errorprone",
-        "version": "2.50.0"
+        "version": "2.51.0"
     },
     {
         "name": "firebase-annotations",
@@ -1637,12 +1637,12 @@
     {
         "name": "firebase-messaging",
         "group": "com.google.firebase",
-        "version": "26.0.0"
+        "version": "26.0.1"
     },
     {
         "name": "google-java-format",
         "group": "com.google.googlejavaformat",
-        "version": "1.35.0"
+        "version": "1.37.0"
     },
     {
         "name": "failureaccess",
@@ -1667,7 +1667,7 @@
     {
         "name": "jimfs",
         "group": "com.google.jimfs",
-        "version": "1.3.0"
+        "version": "1.3.2"
     },
     {
         "name": "common",
@@ -1862,7 +1862,7 @@
     {
         "name": "java-diff-utils",
         "group": "io.github.java-diff-utils",
-        "version": "4.12"
+        "version": "4.17"
     },
     {
         "name": "grpc-api",
@@ -1945,6 +1945,16 @@
         "version": "1.28"
     },
     {
+        "name": "commonmark",
+        "group": "org.commonmark",
+        "version": "0.29.0"
+    },
+    {
+        "name": "commonmark-ext-gfm-tables",
+        "group": "org.commonmark",
+        "version": "0.29.0"
+    },
+    {
         "name": "conscrypt-openjdk-uber",
         "group": "org.conscrypt",
         "version": "2.6.2"
@@ -1952,12 +1962,12 @@
     {
         "name": "hamcrest",
         "group": "org.hamcrest",
-        "version": "2.2"
+        "version": "3.0"
     },
     {
         "name": "hamcrest-core",
         "group": "org.hamcrest",
-        "version": "2.2"
+        "version": "3.0"
     },
     {
         "name": "hamcrest-integration",
@@ -1967,7 +1977,7 @@
     {
         "name": "hamcrest-library",
         "group": "org.hamcrest",
-        "version": "2.2"
+        "version": "3.0"
     },
     {
         "name": "kotlin-bom",
@@ -2193,6 +2203,11 @@
         "name": "utils-reflector",
         "group": "org.robolectric",
         "version": "4.17"
+    },
+    {
+        "name": "safere",
+        "group": "org.safere",
+        "version": "1.0.0"
     },
     {
         "name": "snakeyaml",

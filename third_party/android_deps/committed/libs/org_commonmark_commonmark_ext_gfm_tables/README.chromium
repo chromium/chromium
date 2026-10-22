@@ -1,0 +1,16 @@
+Name: commonmark-java extension for tables
+Short Name: commonmark-ext-gfm-tables
+URL: https://repo.maven.apache.org/maven2/org/commonmark/commonmark-ext-gfm-tables/0.29.0/commonmark-ext-gfm-tables-0.29.0.jar
+Version: 0.29.0
+Update Mechanism: Autoroll
+License: BSD-2-Clause
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+commonmark-java extension for GFM tables using "|" pipes (GitHub Flavored Markdown)
+
+Local Modifications:
+No modifications.

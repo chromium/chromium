@@ -1,7 +1,7 @@
 Name: Google Java Format
 Short Name: google-java-format
-URL: https://repo.maven.apache.org/maven2/com/google/googlejavaformat/google-java-format/1.35.0/google-java-format-1.35.0.jar
-Version: 1.35.0
+URL: https://repo.maven.apache.org/maven2/com/google/googlejavaformat/google-java-format/1.37.0/google-java-format-1.37.0.jar
+Version: 1.37.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

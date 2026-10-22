@@ -1,0 +1,19 @@
+Name: SafeRE
+Short Name: safere
+URL: https://repo.maven.apache.org/maven2/org/safere/safere/1.0.0/safere-1.0.0.jar
+Version: 1.0.0
+Update Mechanism: Autoroll
+License: BSD-3-Clause
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Linear-time regular expression matching library for Java
+
+See also: https://safere.org/safere
+
+
+Local Modifications:
+No modifications.

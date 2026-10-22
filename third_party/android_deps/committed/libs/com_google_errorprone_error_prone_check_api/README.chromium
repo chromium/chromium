@@ -1,7 +1,7 @@
 Name: error-prone check api
 Short Name: error_prone_check_api
-URL: https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_check_api/2.50.0/error_prone_check_api-2.50.0.jar
-Version: 2.50.0
+URL: https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_check_api/2.51.0/error_prone_check_api-2.51.0.jar
+Version: 2.51.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

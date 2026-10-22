@@ -108,6 +108,8 @@
     "cipd/libs/org_checkerframework_checker_qual",
     "cipd/libs/org_checkerframework_checker_util",
     "cipd/libs/org_codehaus_mojo_animal_sniffer_annotations",
+    "cipd/libs/org_commonmark_commonmark",
+    "cipd/libs/org_commonmark_commonmark_ext_gfm_tables",
     "cipd/libs/org_conscrypt_conscrypt_openjdk_uber",
     "cipd/libs/org_jetbrains_annotations",
     "cipd/libs/org_jetbrains_kotlin_kotlin_parcelize_runtime",
@@ -142,5 +144,6 @@
     "cipd/libs/org_robolectric_shadows_framework",
     "cipd/libs/org_robolectric_utils",
     "cipd/libs/org_robolectric_utils_reflector",
+    "cipd/libs/org_safere_safere",
     "cipd/libs/org_yaml_snakeyaml"
 ]

@@ -1,7 +1,7 @@
 Name: Caffeine cache
 Short Name: caffeine
-URL: https://repo.maven.apache.org/maven2/com/github/ben-manes/caffeine/caffeine/3.0.5/caffeine-3.0.5.jar
-Version: 3.0.5
+URL: https://repo.maven.apache.org/maven2/com/github/ben-manes/caffeine/caffeine/3.3.0/caffeine-3.3.0.jar
+Version: 3.3.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
