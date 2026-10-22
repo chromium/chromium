@@ -1227,7 +1227,15 @@ void ClientTagBasedDataTypeProcessor::ConsumeDataBatch(
         entity_tracker_->GetEntityForStorageKey(storage_key);
     // If the entity wasn't deleted or updated with new commit.
     if (entity != nullptr && entity->RequiresCommitData()) {
+      CHECK(data) << DataTypeToDebugString(type_);
+      CHECK(!data->is_deleted(), base::NotFatalUntil::M162)
+          << DataTypeToDebugString(type_);
       CHECK(base::IsStringUTF8(data->name), base::NotFatalUntil::M162)
+          << DataTypeToDebugString(type_);
+      CHECK(!data->specifics.has_encrypted(), base::NotFatalUntil::M162)
+          << DataTypeToDebugString(type_);
+      CHECK_EQ(type_, GetDataTypeFromSpecifics(data->specifics),
+               base::NotFatalUntil::M162)
           << DataTypeToDebugString(type_);
       // Commit-only bridges do not receive remote updates and implement
       // `IsEntityDataValid()` as `NOTREACHED()`.
