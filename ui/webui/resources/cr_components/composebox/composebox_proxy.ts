@@ -17,8 +17,8 @@ export function createAutocompleteMatch(
     allowedToBeDefaultMatch: false,
     isSearchType: false,
     isEnterpriseSearchAggregatorPeopleType: false,
-    showContextualDescription: false,
     descriptionIconPath: '',
+    showSecondaryTextOnlyOnSelection: false,
     supportsDeletion: false,
     suggestionGroupId: -1,
     destinationUrl: '',
@@ -28,7 +28,6 @@ export function createAutocompleteMatch(
     iconUrl: '',
     removeButtonA11yLabel: '',
     type: '',
-    isContextualSuggestion: false,
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     suggestTemplate: {

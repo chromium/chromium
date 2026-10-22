@@ -80,7 +80,11 @@ export class SearchboxMatchElement extends CrLitElement {
         reflect: true,
       },
 
-      showContextualDescription: {
+      /**
+       * Whether the secondary text is only shown while the match is selected
+       * or hovered.
+       */
+      showSecondaryTextOnlyOnSelection: {
         type: Boolean,
         reflect: true,
       },
@@ -138,11 +142,6 @@ export class SearchboxMatchElement extends CrLitElement {
       // Private properties
       //========================================================================
 
-      isContextualSuggestion_: {
-        type: Boolean,
-        reflect: true,
-      },
-
       isTopChromeSearchbox_: {
         type: Boolean,
         reflect: true,
@@ -181,7 +180,7 @@ export class SearchboxMatchElement extends CrLitElement {
 
   override accessor ariaLabel: string = '';
   accessor hasAction: boolean = false;
-  accessor showContextualDescription: boolean = false;
+  accessor showSecondaryTextOnlyOnSelection: boolean = false;
   accessor hasImage: boolean = false;
   accessor hasKeywordChip: boolean = false;
   accessor isEntitySuggestion: boolean = false;
@@ -194,7 +193,6 @@ export class SearchboxMatchElement extends CrLitElement {
   accessor showEllipsis: boolean = false;
   accessor virtualFocusEnabled: boolean = false;
   accessor resultSequenceId: number = 0;
-  private accessor isContextualSuggestion_: boolean = false;
   private accessor isTopChromeSearchbox_: boolean =
       loadTimeData.getBoolean('isTopChromeSearchbox');
   private accessor isLensSearchbox_: boolean =
@@ -230,7 +228,8 @@ export class SearchboxMatchElement extends CrLitElement {
       this.hasAction = this.computeHasAction_();
       this.hasKeywordChip = this.computeHasKeywordChip_();
       this.hasImage = this.computeHasImage_();
-      this.isContextualSuggestion_ = this.computeIsContextualSuggestion_();
+      this.showSecondaryTextOnlyOnSelection =
+          this.match.showSecondaryTextOnlyOnSelection;
       this.isEntitySuggestion = this.computeIsEntitySuggestion_();
       this.secondaryTextPlacement = this.computeSecondaryTextPlacement_();
       this.removeButtonAriaLabel_ = this.computeRemoveButtonAriaLabel_();
@@ -421,10 +420,6 @@ export class SearchboxMatchElement extends CrLitElement {
 
   private computeHasImage_(): boolean {
     return this.match && !!this.match.suggestTemplate.image?.url;
-  }
-
-  private computeIsContextualSuggestion_(): boolean {
-    return this.match.isContextualSuggestion;
   }
 
   private computeIsEntitySuggestion_(): boolean {

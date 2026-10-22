@@ -121,7 +121,8 @@ export class SearchboxDropdownElement extends CrLitElement {
   private hideDuplicateDescriptions_: boolean =
       loadTimeData.valueExists('askGSuggestionSidePanelDescription') &&
       loadTimeData.getBoolean('askGSuggestionSidePanelDescription');
-  // Descriptions shown by both a contextual and a non-contextual match.
+  // Descriptions shown both by a match that only shows its description on
+  // selection (e.g. a contextual suggestion) and by one that always shows it.
   private duplicateDescriptions_: Set<string> = new Set();
 
   /** The list of selectable match elements. */
@@ -311,17 +312,18 @@ export class SearchboxDropdownElement extends CrLitElement {
   }
 
   private computeDuplicateDescriptions_(): Set<string> {
-    const contextual = new Set<string>();
-    const other = new Set<string>();
+    const onSelection = new Set<string>();
+    const always = new Set<string>();
     if (this.hideDuplicateDescriptions_) {
       for (const match of this.result?.matches ?? []) {
         const description = match.suggestTemplate.secondaryText?.text;
         if (description) {
-          (match.isContextualSuggestion ? contextual : other).add(description);
+          (match.showSecondaryTextOnlyOnSelection ? onSelection : always)
+              .add(description);
         }
       }
     }
-    return new Set([...contextual].filter(d => other.has(d)));
+    return new Set([...onSelection].filter(d => always.has(d)));
   }
 
   protected isSelected_(match: AutocompleteMatch): boolean {
@@ -331,9 +333,9 @@ export class SearchboxDropdownElement extends CrLitElement {
   }
 
   /**
-   * Whether a match of the other kind (contextual or not) has the same
-   * description as the match. The CSS uses this to show only one copy at a
-   * time.
+   * Whether a match of the other kind (showing its description only on
+   * selection or always) has the same description as the match. The CSS uses
+   * this to show only one copy at a time.
    */
   protected hasDuplicateDescription_(match: AutocompleteMatch): boolean {
     return this.duplicateDescriptions_.has(

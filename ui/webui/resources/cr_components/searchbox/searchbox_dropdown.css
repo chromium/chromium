@@ -45,12 +45,12 @@ cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
       var(--color-searchbox-results-foreground));
 }
 
-/* Shows one copy of a duplicate description at a time: the hovered contextual
- * match's, else the keyboard-selected contextual match's. */
-#content:has(cr-searchbox-match[duplicate-description][is-contextual-suggestion_]:hover)
+/* Shows one copy of a duplicate description at a time: the hovered match's
+ * that only shows it on selection, else the keyboard-selected one's. */
+#content:has(cr-searchbox-match[duplicate-description][show-secondary-text-only-on-selection]:hover)
     cr-searchbox-match[duplicate-description]:not(:hover),
-#content:has(cr-searchbox-match[duplicate-description][is-contextual-suggestion_]:is(:focus-within, [selected]))
-    cr-searchbox-match[duplicate-description]:not([is-contextual-suggestion_]) {
+#content:has(cr-searchbox-match[duplicate-description][show-secondary-text-only-on-selection]:is(:focus-within, [selected]))
+    cr-searchbox-match[duplicate-description]:not([show-secondary-text-only-on-selection]) {
   --cr-searchbox-match-description-visibility: hidden;
 }
 

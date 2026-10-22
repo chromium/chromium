@@ -1132,6 +1132,7 @@ TEST_F(RealboxHandlerTest, ForceShowDescriptionNeverEnabledForRealbox) {
   AutocompleteMatch match(provider.get(), 1000, false,
                           omnibox::AutocompleteMatchType::kSearchSuggest);
   match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH;
+  match.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
   match.description = u"Description 1";
 
   auto fake_autocomplete_controller =
@@ -1155,7 +1156,8 @@ TEST_F(RealboxHandlerTest, ForceShowDescriptionNeverEnabledForRealbox) {
 
   ASSERT_TRUE(received_result);
   ASSERT_EQ(1u, received_result->matches.size());
-  EXPECT_FALSE(received_result->matches[0]->show_contextual_description);
+  EXPECT_TRUE(
+      received_result->matches[0]->show_secondary_text_only_on_selection);
 }
 
 class LensSearchboxHandlerTest : public SearchboxHandlerTest {
@@ -2511,11 +2513,13 @@ TEST_F(WebuiOmniboxHandlerTest,
   AutocompleteMatch match1(provider.get(), 1000, false,
                            omnibox::AutocompleteMatchType::kSearchSuggest);
   match1.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH;
+  match1.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
   match1.description = u"Description 1";
 
   AutocompleteMatch match2(provider.get(), 900, false,
                            omnibox::AutocompleteMatchType::kSearchSuggest);
   match2.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH;
+  match2.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
   match2.description = u"Description 2";
 
   auto fake_autocomplete_controller =
@@ -2540,10 +2544,10 @@ TEST_F(WebuiOmniboxHandlerTest,
 
   ASSERT_TRUE(received_result);
   ASSERT_EQ(2u, received_result->matches.size());
-  EXPECT_TRUE(received_result->matches[0]
-                  ->show_contextual_description);  // First match -> True
-  EXPECT_FALSE(received_result->matches[1]
-                   ->show_contextual_description);  // Second match -> False
+  EXPECT_FALSE(
+      received_result->matches[0]->show_secondary_text_only_on_selection);
+  EXPECT_TRUE(
+      received_result->matches[1]->show_secondary_text_only_on_selection);
 }
 
 TEST_F(WebuiOmniboxHandlerTest,
@@ -2562,6 +2566,7 @@ TEST_F(WebuiOmniboxHandlerTest,
   AutocompleteMatch match1(provider.get(), 1000, false,
                            omnibox::AutocompleteMatchType::kSearchSuggest);
   match1.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH;
+  match1.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
   match1.description = u"Description 1";
 
   auto fake_autocomplete_controller =
@@ -2592,8 +2597,8 @@ TEST_F(WebuiOmniboxHandlerTest,
 
   ASSERT_TRUE(received_result);
   ASSERT_EQ(1u, received_result->matches.size());
-  EXPECT_FALSE(received_result->matches[0]
-                   ->show_contextual_description);  // Header not empty -> False
+  EXPECT_TRUE(
+      received_result->matches[0]->show_secondary_text_only_on_selection);
 }
 
 // Verifies that `show_aim_activity_link` is set on the result only when a

@@ -889,8 +889,8 @@ SearchboxHandler::CreateAutocompleteMatches(
     bookmarks::BookmarkModel* bookmark_model,
     const omnibox::GroupConfigMap& suggestion_groups_map,
     const TemplateURLService* turl_service) const {
-  // Tracks whether the first contextual match has been flagged to force show
-  // its description, ensuring only the first one gets flagged.
+  // Tracks whether the first contextual match has been flagged to always show
+  // its secondary text, ensuring only the first one gets flagged.
   bool flagged_contextual = false;
   std::vector<searchbox::mojom::AutocompleteMatchPtr> matches;
   for (size_t line = 0; line < result.size(); ++line) {
@@ -901,7 +901,7 @@ SearchboxHandler::CreateAutocompleteMatches(
       if (!flagged_contextual && ShouldShowFirstContextualDescription() &&
           match.suggestion_group_id ==
               omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH) {
-        mojom_match.value()->show_contextual_description = true;
+        mojom_match.value()->show_secondary_text_only_on_selection = false;
         flagged_contextual = true;
       }
       std::u16string emphasis_text = match.fill_into_edit;
@@ -1055,7 +1055,6 @@ SearchboxHandler::CreateAutocompleteMatch(
   mojom_match->fill_into_edit = match.fill_into_edit;
   mojom_match->inline_autocompletion = match.inline_autocompletion;
   mojom_match->is_search_type = AutocompleteMatch::IsSearchType(match.type);
-  mojom_match->show_contextual_description = false;
   mojom_match->type = omnibox::AutocompleteMatchTypeToString(match.type);
   mojom_match->supports_deletion = match.SupportsDeletion();
   mojom_match->suggest_template =
@@ -1087,7 +1086,10 @@ SearchboxHandler::CreateAutocompleteMatch(
 
   mojom_match->tail_suggest_common_prefix = match.tail_suggest_common_prefix;
 
-  mojom_match->is_contextual_suggestion = match.IsContextualSearchSuggestion();
+  // Contextual suggestions only show their secondary text on selection or
+  // hover. `CreateAutocompleteMatches()` may override this for the first one.
+  mojom_match->show_secondary_text_only_on_selection =
+      match.IsContextualSearchSuggestion();
 
   if (SupportsKeywordMode()) {
     KeywordState keyword_state;

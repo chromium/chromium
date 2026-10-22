@@ -121,8 +121,6 @@ struct AutocompleteMatch {
   // The url for the suggestion icon. |icon_url| is an external url or
   // a data URI.
   url.mojom.Url icon_url;
-  // Used to determine if the match is a contextual suggestion.
-  bool is_contextual_suggestion;
   // Presentation template for this match. Populated for every match, including
   // matches without a server-provided SuggestTemplateInfo.
   suggest_template_info.mojom.SuggestTemplateInfo suggest_template;
@@ -133,13 +131,14 @@ struct AutocompleteMatch {
   bool is_enterprise_search_aggregator_people_type;
   string type;  // Result of omnibox::AutocompleteMatchTypeToString().
   mojo_base.mojom.String16 remove_button_a11y_label;
-  // Whether to show the description for a contextual match.
-  bool show_contextual_description;
   // Optional path for an icon rendered in front of the description (secondary
   // text). Empty if no icon should be shown.
   // The icon path will be pointed to a relative url pointing to a bundled
   // resource and is used directly in CSS to show the icon.
   string description_icon_path;
+  // Whether `suggest_template.secondary_text` is only shown while the match is
+  // selected or hovered.
+  bool show_secondary_text_only_on_selection;
   // ID of the group the suggestion belongs to. 0 if it does not belong to any.
   int32 suggestion_group_id;
   bool supports_deletion;

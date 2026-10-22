@@ -231,15 +231,15 @@
   font-size: .875em;
 }
 
-:host([is-contextual-suggestion_]:not([show-contextual-description])) #secondaryText,
-:host([is-contextual-suggestion_]:not([show-contextual-description])) #separator {
+:host([show-secondary-text-only-on-selection]) #secondaryText,
+:host([show-secondary-text-only-on-selection]) #separator {
   display: none;
 }
 
-:host([is-contextual-suggestion_]) .container:not(.actions):hover #secondaryText,
-:host([is-contextual-suggestion_]) .container:not(.actions):hover #separator,
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-contextual-suggestion_]) #secondaryText,
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-contextual-suggestion_]) #separator {
+:host([show-secondary-text-only-on-selection]) .container:not(.actions):hover #secondaryText,
+:host([show-secondary-text-only-on-selection]) .container:not(.actions):hover #separator,
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([show-secondary-text-only-on-selection]) #secondaryText,
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([show-secondary-text-only-on-selection]) #separator {
   display: inline;
 }
 

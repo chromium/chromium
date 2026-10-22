@@ -105,11 +105,11 @@ suite('SearchboxDropdown', () => {
         createSearchMatchForTesting(
             {suggestTemplate: withDescription('Opens in side panel')}),
         createSearchMatchForTesting({
-          isContextualSuggestion: true,
+          showSecondaryTextOnlyOnSelection: true,
           suggestTemplate: withDescription('Opens in side panel'),
         }),
         createSearchMatchForTesting({
-          isContextualSuggestion: true,
+          showSecondaryTextOnlyOnSelection: true,
           suggestTemplate: withDescription('Ask Google about this page'),
         }),
       ],
