@@ -104,7 +104,7 @@ void ManageSharingRow::RebuildChildren() {
   manage_group_label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP)));
   manage_group_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  manage_group_label_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  manage_group_label_->SetTextStyle(views::style::STYLE_BODY_3);
   manage_group_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
