@@ -25,6 +25,7 @@
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/wm/core/cursor_util.h"
 
 namespace ash {
 
@@ -80,6 +81,10 @@ class MouseShakeToLocateController::ScopedEnlargedCursor
 
     cursor_setter_.reset();
     Shell::Get()->UpdateCursorCompositingEnabled();
+
+    // Drop the cached Lottie cursor animation so Skia purges the intermediate
+    // drop-shadow bitmaps accumulated in `SkImageFilterCache` during shrinking.
+    wm::ClearCursorAnimationCache();
   }
 
   // Animates the cursor from its enlarged size back down to the target size.
