@@ -14,8 +14,10 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -120,6 +122,24 @@ public class WebAppHeaderLayoutCoordinator
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
     private int mUIControlsMinWidthPx;
     private int mAppHeaderUnoccludedWidthPx;
+    // The least width the app name needs to be worth showing, including its horizontal margins;
+    // 0 if there is no app name. Short names must fit in full; long names may be ellipsized down
+    // to web_app_header_app_name_min_width.
+    private int mAppNameWidthPx;
+    private int mAppNameMarginsPx;
+    private int mAppNameMaxWidthPx;
+    private int mButtonBottomInsetPx;
+
+    // The right-aligned controls change width after construction (origin text arrives on
+    // navigation, extensions toolbar inflates), so re-evaluate the app name whenever they do.
+    private final View.OnLayoutChangeListener mRightControlsLayoutListener =
+            (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                if (right - left == oldRight - oldLeft) return;
+                // Changing visibility or max width inside a layout pass would requestLayout()
+                // mid-layout, so defer.
+                v.post(this::updateAppNameVisibility);
+            };
+
     private final Callback<Integer> mOnUnoccludedWidthCallback;
     private final SettableNonNullObservableSupplier<Boolean> mControlsEnabledSupplier =
             ObservableSuppliers.createNonNull(true);
@@ -141,6 +161,7 @@ public class WebAppHeaderLayoutCoordinator
     private final @Nullable String mClientPackageName;
     private @Nullable ChromeImageButton mToggleButtonView;
     private @Nullable TextView mAppOriginView;
+    private @Nullable TextView mAppNameView;
     private @Nullable String mAppOrigin;
     private @Nullable Tab mObservedTab;
     private final Callback<@Nullable Tab> mOnTabUpdate;
@@ -294,7 +315,7 @@ public class WebAppHeaderLayoutCoordinator
                         headerMinHeight,
                         headerButtonSize,
                         mDisplayMode,
-                        mSetHeaderAsOverlayCallback,
+                        this::onHeaderAsOverlayChanged,
                         mClientPackageName);
 
         // Initial visibility state must be initialized after mediator is initialized.
@@ -323,6 +344,8 @@ public class WebAppHeaderLayoutCoordinator
             }
         }
 
+        initAppName();
+
         if (mDisplayMode == DisplayMode.MINIMAL_UI) {
             initMinUiControls();
         }
@@ -340,6 +363,139 @@ public class WebAppHeaderLayoutCoordinator
         mMediator
                 .getUnoccludedWidthSupplier()
                 .addSyncObserverAndPostIfNonNull(mOnUnoccludedWidthCallback);
+    }
+
+    /**
+     * Whether the app name feature is enabled for this header. The header only exists in desktop
+     * windowing, so no additional form-factor check is needed; whether the name actually fits is
+     * decided per-layout by {@link #updateAppNameVisibility()}.
+     */
+    private boolean shouldShowAppName() {
+        return ChromeFeatureList.sDesktopAndroidWebAppHeaderAppName.isEnabled();
+    }
+
+    /**
+     * Shows the web app's name at the start of the header. WebAPKs already carry the name in their
+     * intent extras; for TWAs the client app's label is loaded off the UI thread, since resolving
+     * it may read the client APK from disk. The view stays gone until a name is known.
+     */
+    private void initAppName() {
+        assert mView != null;
+
+        if (!shouldShowAppName()) return;
+
+        if (mBrowserServicesIntentDataProvider.isWebApkActivity()) {
+            setAppName(WebAppHeaderUtils.getWebApkName(mBrowserServicesIntentDataProvider));
+            return;
+        }
+
+        if (mClientPackageName == null) return;
+        WebAppHeaderUtils.getTwaAppName(mClientPackageName, this::onClientAppLabelLoaded);
+    }
+
+    /**
+     * Applies the label resolved by {@link WebAppHeaderUtils#getTwaAppName}. Runs on the UI thread
+     * like the rest of this class, but asynchronously, so the coordinator may already have been
+     * destroyed by the time it runs.
+     */
+    private void onClientAppLabelLoaded(@Nullable CharSequence label) {
+        if (mIsDestroyed || mView == null) return;
+        setAppName(label);
+    }
+
+    /** Binds the label to the app-name view and computes its width and visibility. */
+    private void setAppName(@Nullable CharSequence label) {
+        assert mView != null;
+        if (TextUtils.isEmpty(label)) return;
+        // Only one name is ever set per header; a second call would re-register the layout
+        // listener, which destroy() only removes once.
+        if (mAppNameView != null) return;
+
+        mAppNameView = mView.findViewById(R.id.app_name);
+        mAppNameView.setPadding(0, 0, 0, mButtonBottomInsetPx);
+        mAppNameView.setText(label);
+        mAppNameMaxWidthPx =
+                mAppNameView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.web_app_header_app_name_max_width);
+        if (mAppNameView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams params) {
+            mAppNameMarginsPx = params.getMarginStart() + params.getMarginEnd();
+        }
+        mAppNameWidthPx = measureAppNameWidth(mAppNameView) + mAppNameMarginsPx;
+        mView.findViewById(R.id.right_aligned_wrapper)
+                .addOnLayoutChangeListener(mRightControlsLayoutListener);
+        updateAppNameVisibility();
+        setTextThemeColor(mAppNameView, mThemeColorProvider.getActivityFocusTint());
+    }
+
+    /**
+     * Called by the mediator whenever the header switches between being drawn as a window controls
+     * overlay and being a regular opaque header.
+     */
+    private void onHeaderAsOverlayChanged(boolean isHeaderAsOverlay) {
+        updateAppNameVisibility();
+        mSetHeaderAsOverlayCallback.onResult(isHeaderAsOverlay);
+    }
+
+    private void updateAppNameVisibility() {
+        if (mIsDestroyed || mAppNameView == null || mMediator == null) return;
+        int roomPx = calculateRoomForAppNamePx();
+        boolean showAppName = !mMediator.isHeaderAsOverlay() && roomPx >= mAppNameWidthPx;
+        if (showAppName) {
+            // Bound the name to the room actually available so it ellipsizes instead of
+            // overlapping the controls; RelativeLayout alone won't constrain it.
+            int maxWidthPx = Math.min(mAppNameMaxWidthPx, roomPx - mAppNameMarginsPx);
+            if (mAppNameView.getMaxWidth() != maxWidthPx) mAppNameView.setMaxWidth(maxWidthPx);
+        }
+        mAppNameView.setVisibility(showAppName ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * @return The header width left over for the app name once the controls are accounted for, in
+     *     px. Uses the right-aligned controls' live width when they have been laid out, since the
+     *     static estimate in {@link #calculateUIControlsMinWidth()} counts the origin text as 0 and
+     *     omits the extensions toolbar.
+     */
+    private int calculateRoomForAppNamePx() {
+        assert mView != null;
+        View rightAlignedWrapper = mView.findViewById(R.id.right_aligned_wrapper);
+        int liveControlsPx = 0;
+        if (rightAlignedWrapper.getWidth() > 0) {
+            liveControlsPx = rightAlignedWrapper.getWidth();
+            if (rightAlignedWrapper.getLayoutParams()
+                    instanceof ViewGroup.MarginLayoutParams params) {
+                liveControlsPx += params.getMarginStart();
+            }
+            // Count the start-aligned buttons by existence rather than visibility, so hiding the
+            // name can never feed back into this calculation.
+            if (mBackButtonCoordinator != null) liveControlsPx += mHeaderControlButtonWidthPx;
+            if (mReloadButtonCoordinator != null) liveControlsPx += mHeaderControlButtonWidthPx;
+        }
+        // Never be more permissive than the buttons' own threshold: the name should not appear
+        // while the controls are hidden for lack of space.
+        int controlsPx = Math.max(liveControlsPx, mUIControlsMinWidthPx);
+        return mAppHeaderUnoccludedWidthPx - controlsPx;
+    }
+
+    /**
+     * @return The width in px reserved for the app name, including its horizontal margins, or 0
+     *     until a name has been bound.
+     */
+    int getAppNameWidthPxForTesting() {
+        return mAppNameWidthPx;
+    }
+
+    private static int measureAppNameWidth(TextView appNameView) {
+        CharSequence text = appNameView.getText();
+        int textWidthPx =
+                (int) Math.ceil(appNameView.getPaint().measureText(text, 0, text.length()));
+        // The layout ellipsizes names that don't fit, so only require enough room for a
+        // recognisable prefix of long names.
+        int minWidthPx =
+                appNameView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.web_app_header_app_name_min_width);
+        return Math.min(textWidthPx, minWidthPx);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -401,6 +557,9 @@ public class WebAppHeaderLayoutCoordinator
         }
         if (mAppOriginView != null) {
             mAppOriginView.setTextColor(activityFocusTint);
+        }
+        if (mAppNameView != null) {
+            mAppNameView.setTextColor(activityFocusTint);
         }
     }
 
@@ -536,6 +695,9 @@ public class WebAppHeaderLayoutCoordinator
         boolean wasShowingButtons = mShowButtons;
         mAppHeaderUnoccludedWidthPx = newUnoccludedWidthPx;
         mShowButtons = mAppHeaderUnoccludedWidthPx >= mUIControlsMinWidthPx;
+        // The app name has its own width threshold, so update it on every width change, even when
+        // the buttons' visibility doesn't change.
+        updateAppNameVisibility();
 
         if (wasShowingButtons == mShowButtons) return;
 
@@ -701,6 +863,7 @@ public class WebAppHeaderLayoutCoordinator
     }
 
     private void onButtonBottomInsetChanged(int bottomInset) {
+        mButtonBottomInsetPx = bottomInset;
         if (mReloadButtonCoordinator != null) {
             mReloadButtonCoordinator.setBackgroundInsets(Insets.of(0, 0, 0, bottomInset));
         }
@@ -715,6 +878,10 @@ public class WebAppHeaderLayoutCoordinator
 
         if (mAppOriginView != null) {
             mAppOriginView.setPadding(0, 0, 0, bottomInset);
+        }
+
+        if (mAppNameView != null) {
+            mAppNameView.setPadding(0, 0, 0, bottomInset);
         }
     }
 
@@ -756,6 +923,8 @@ public class WebAppHeaderLayoutCoordinator
         mThemeColorProvider.removeTintObserver(this);
 
         if (mView != null) {
+            mView.findViewById(R.id.right_aligned_wrapper)
+                    .removeOnLayoutChangeListener(mRightControlsLayoutListener);
             mView.destroy();
         }
 
@@ -833,7 +1002,7 @@ public class WebAppHeaderLayoutCoordinator
         mAppOrigin = originSpec;
         String domain = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(origin);
         mAppOriginView.setText(domain);
-        setTextThemeColor();
+        setTextThemeColor(mAppOriginView, mThemeColorProvider.getActivityFocusTint());
         runDomainTextAnimation();
     }
 
@@ -878,18 +1047,13 @@ public class WebAppHeaderLayoutCoordinator
     }
 
     // This helps ensure that the presubmit warning to set a pre-defined text appearance
-    // no longer occurs, as the origin text is set according to the theme color, and
-    // a predefined text appearance style cannot be used in a dynamic context like this.
-    // Same for wherever else mAppOriginView.setTextColor() is called in this file.
+    // no longer occurs, as the header text (origin and app name) is set according to the theme
+    // color, and a predefined text appearance style cannot be used in a dynamic context like this.
+    // Same for wherever else setTextColor() is called in this file.
     @SuppressWarnings("SetTextColorAndSetTextSizeCheck")
-    private void setTextThemeColor() {
-        if (mAppOriginView == null) return;
-
-        final ColorStateList textColorList =
-                mThemeColorProvider.getActivityFocusTint() == null
-                        ? mAppOriginView.getTextColors()
-                        : mThemeColorProvider.getActivityFocusTint();
-        mAppOriginView.setTextColor(textColorList);
+    private void setTextThemeColor(@Nullable TextView textView, @Nullable ColorStateList tint) {
+        if (textView == null) return;
+        textView.setTextColor(tint != null ? tint : textView.getTextColors());
     }
 
     private void onMenuButtonClicked() {

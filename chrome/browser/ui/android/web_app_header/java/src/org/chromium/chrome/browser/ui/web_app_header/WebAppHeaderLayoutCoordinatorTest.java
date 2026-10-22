@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -19,11 +20,16 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -49,6 +55,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -59,6 +66,8 @@ import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -78,6 +87,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -98,11 +108,23 @@ public class WebAppHeaderLayoutCoordinatorTest {
     private static final int SYS_APP_HEADER_HEIGHT = 40;
     private static final int LEFT_INSET = 50;
     private static final int RIGHT_INSET = 60;
+    private static final String CLIENT_PACKAGE_NAME = "Package name";
+    private static final String TEST_APP_PACKAGE = "com.example.twa";
+    private static final String TEST_APP_LABEL = "Example App";
+    // Longer than web_app_header_app_name_max_width in px. Robolectric's default Paint measures
+    // 1px per character, so this name is wider than both the min and max width thresholds.
+    private static final String LONG_APP_LABEL = "A".repeat(200);
     private static final Rect WINDOW_RECT = new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     private static final Rect WIDEST_UNOCCLUDED_RECT =
             new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, SYS_APP_HEADER_HEIGHT);
     private static final int HEADER_CONTROL_BUTTON_DP = 48;
     private static final int BUTTON_PADDING_DP = 4;
+    // With the default fixture the caption bar (SYS_APP_HEADER_HEIGHT) is shorter than the header
+    // buttons, so the mediator asks controls to inset their content by the difference to stay
+    // vertically aligned with the system caption icons. Robolectric runs at density 1.0, so
+    // dp == px.
+    private static final int EXPECTED_BUTTON_BOTTOM_INSET_PX =
+            HEADER_CONTROL_BUTTON_DP - SYS_APP_HEADER_HEIGHT;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -118,6 +140,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Mock public NavigationPopup.HistoryDelegate mHistoryDelegate;
     @Mock public WebappExtras mWebAppExtras;
     @Mock public Tab mTab;
+    @Mock public WebContents mWebContents;
     @Mock public Callback<Boolean> mSetHeaderAsOverlayCallback;
     @Mock public BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private Runnable mRequestRenderRunnable;
@@ -163,6 +186,10 @@ public class WebAppHeaderLayoutCoordinatorTest {
     }
 
     private void createCoordinator() {
+        createCoordinator(CLIENT_PACKAGE_NAME);
+    }
+
+    private void createCoordinator(String clientPackageName) {
         mCoordinator =
                 new WebAppHeaderLayoutCoordinator(
                         mActivity,
@@ -179,7 +206,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         null,
                         mWindowAndroid,
                         mRequestRenderRunnable,
-                        "Package name",
+                        clientPackageName,
                         mChromeAndroidTaskSupplier,
                         mTabModelSelector,
                         mTabCreator,
@@ -209,6 +236,14 @@ public class WebAppHeaderLayoutCoordinatorTest {
     }
 
     private void setupDisplayMode(@DisplayMode.EnumType int displayMode) {
+        setupDisplayMode(displayMode, /* shortName= */ "");
+    }
+
+    /**
+     * Stubs the intent data provider as a WebAPK with the given display mode and short name. A
+     * non-null {@link WebappExtras} is what makes the coordinator treat the app as a WebAPK.
+     */
+    private void setupDisplayMode(@DisplayMode.EnumType int displayMode, String shortName) {
         mWebAppExtras =
                 new WebappExtras(
                         "",
@@ -216,7 +251,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         "",
                         new WebappIcon(),
                         "",
-                        "",
+                        shortName,
                         displayMode,
                         0,
                         0,
@@ -229,6 +264,79 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
         when(mIntentDataProvider.getWebappExtras()).thenReturn(mWebAppExtras);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(displayMode);
+    }
+
+    /**
+     * Stubs the intent data provider as a TWA. Unlike WebAPKs, TWAs carry no {@link WebappExtras},
+     * which is what makes the coordinator resolve the app name from the client package instead.
+     */
+    private void setupTwa() {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(mIntentDataProvider.getWebappExtras()).thenReturn(null);
+    }
+
+    /**
+     * Sets up a WebAPK in WINDOW_CONTROLS_OVERLAY mode with every precondition the mediator needs
+     * to actually enter overlay mode: desktop window, WCO display mode, browser controls hidden,
+     * and a tab with {@link WebContents}. Without the last two the mediator either vetoes the
+     * overlay or flips its state without notifying the coordinator.
+     */
+    private void setupWcoWithAppName() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.WINDOW_CONTROLS_OVERLAY, TEST_APP_LABEL);
+        when(mBrowserControlsStateProvider.getAndroidControlsVisibility())
+                .thenReturn(View.INVISIBLE);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+    }
+
+    /** The toggle reacts to ACTION_UP via an OnTouchListener, so performClick() won't fire it. */
+    private void tapWcoToggle() {
+        View toggle = mActivity.findViewById(R.id.wco_toggle_button);
+        assertEquals("Toggle must be visible to be tapped", View.VISIBLE, toggle.getVisibility());
+        MotionEvent up = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+        toggle.dispatchTouchEvent(up);
+        up.recycle();
+        mShadowLooper.idle();
+    }
+
+    /**
+     * Registers a fake installed app with Robolectric's PackageManager.
+     *
+     * @param packageName The package to register.
+     * @param label The app's android:label, or null to simulate an app without a label.
+     */
+    private void installApp(String packageName, String label) {
+        ApplicationInfo appInfo = new ApplicationInfo();
+        appInfo.packageName = packageName;
+        appInfo.nonLocalizedLabel = label;
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = packageName;
+        packageInfo.applicationInfo = appInfo;
+        shadowOf(mActivity.getPackageManager()).installPackage(packageInfo);
+    }
+
+    private TextView getAppNameView() {
+        return mActivity.findViewById(R.id.app_name);
+    }
+
+    private int getDimenPx(int id) {
+        return mActivity.getResources().getDimensionPixelSize(id);
+    }
+
+    /**
+     * Emulates the right-aligned controls being laid out at {@code widthPx}, e.g. after the origin
+     * text or extensions toolbar appears. Mirrors how the extensions tests drive geometry with
+     * {@link View#layout}. Explicit layout params keep the width stable across any relayout.
+     */
+    private void layoutRightControls(int widthPx) {
+        View wrapper = mActivity.findViewById(R.id.right_aligned_wrapper);
+        ViewGroup.LayoutParams lp = wrapper.getLayoutParams();
+        lp.width = widthPx;
+        wrapper.setLayoutParams(lp);
+        wrapper.layout(0, 0, widthPx, SYS_APP_HEADER_HEIGHT);
+        // The layout listener defers the re-evaluation with View#post.
+        mShadowLooper.idle();
     }
 
     private void setupTab(boolean isLoading, boolean canGoBack) {
@@ -1362,5 +1470,531 @@ public class WebAppHeaderLayoutCoordinatorTest {
                 "Non-draggable areas should include both menu button and extensions container",
                 nonDraggableAreasWithExtensions.size() >= 2);
         verifyHeaderContainsNonDraggableAreas(nonDraggableAreasWithExtensions);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_TwaClientWithLabel_IsShown() {
+        installApp(TEST_APP_PACKAGE, TEST_APP_LABEL);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupTwa();
+
+        createCoordinator(TEST_APP_PACKAGE);
+        // Run the background label lookup and deliver its result along with the initial
+        // unoccluded width, both of which are posted to the main looper.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextView appNameView = getAppNameView();
+        assertNotNull("App name view should be inflated", appNameView);
+        assertEquals(
+                "App name should be visible for a TWA client with a label",
+                View.VISIBLE,
+                appNameView.getVisibility());
+        assertEquals(
+                "App name should show the client app's label",
+                TEST_APP_LABEL,
+                appNameView.getText().toString());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_WebApk_ShowsShortNameFromIntentExtras() {
+        // TEST_APP_PACKAGE is intentionally not installed: the WebAPK path must not consult
+        // PackageManager and instead use the name already carried in the intent extras.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE, TEST_APP_LABEL);
+
+        // WebAPKs have no Custom Tabs session, so no client package is passed in.
+        createCoordinator(/* clientPackageName= */ null);
+        // Deliver the initial unoccluded width, which is posted to the main looper.
+        mShadowLooper.idle();
+
+        TextView appNameView = getAppNameView();
+        assertEquals(
+                "App name should be visible for a WebAPK with a short name",
+                View.VISIBLE,
+                appNameView.getVisibility());
+        assertEquals(
+                "App name should show the WebAPK's short name",
+                TEST_APP_LABEL,
+                appNameView.getText().toString());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_WebApkWithoutShortName_IsHidden() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE, /* shortName= */ "");
+
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+
+        TextView appNameView = getAppNameView();
+        assertEquals(
+                "App name should be gone when the WebAPK has no short name",
+                View.GONE,
+                appNameView.getVisibility());
+        assertTrue(
+                "No text should be set when the WebAPK has no short name",
+                TextUtils.isEmpty(appNameView.getText()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_PackageNotInstalled_IsHidden() {
+        // TEST_APP_PACKAGE is intentionally not installed.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupTwa();
+
+        createCoordinator(TEST_APP_PACKAGE);
+        // Let the background label lookup fail and deliver its (null) result.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextView appNameView = getAppNameView();
+        assertEquals(
+                "App name should be gone, not just invisible, when the package is not found",
+                View.GONE,
+                appNameView.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_AppWithoutLabel_IsHidden() {
+        // Without android:label, PackageManager falls back to the package name as the label.
+        installApp(TEST_APP_PACKAGE, /* label= */ null);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupTwa();
+
+        createCoordinator(TEST_APP_PACKAGE);
+        // Run the background label lookup and deliver its result.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextView appNameView = getAppNameView();
+        assertEquals(
+                "App name should be gone when the app has no label",
+                View.GONE,
+                appNameView.getVisibility());
+        assertTrue(
+                "Raw package name should never be shown as the app name",
+                TextUtils.isEmpty(appNameView.getText()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_TintChange_UpdatesTextColor() {
+        installApp(TEST_APP_PACKAGE, TEST_APP_LABEL);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupTwa();
+        createCoordinator(TEST_APP_PACKAGE);
+        // Run the background label lookup and deliver its result.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        ColorStateList tint = ColorStateList.valueOf(Color.RED);
+        mCoordinator.onTintChanged(tint, tint, BrandedColorScheme.APP_DEFAULT);
+
+        assertEquals(
+                "Tint change should be propagated to the app name",
+                tint,
+                getAppNameView().getTextColors());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_TwaLabelArrivesAfterDestroy_IsIgnored() {
+        installApp(TEST_APP_PACKAGE, TEST_APP_LABEL);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupTwa();
+        createCoordinator(TEST_APP_PACKAGE);
+
+        // Tear the coordinator down while the background label lookup is still pending, then let
+        // the lookup complete.
+        mCoordinator.destroy();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextView appNameView = getAppNameView();
+        assertEquals(
+                "A label arriving after destroy() must not be applied",
+                View.GONE,
+                appNameView.getVisibility());
+        assertTrue(
+                "A label arriving after destroy() must not be applied",
+                TextUtils.isEmpty(appNameView.getText()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_WcoToggledOnAndOff_HidesAndShowsName() {
+        setupWcoWithAppName();
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+
+        TextView appNameView = getAppNameView();
+        assertEquals(
+                "App name should be visible while the header is opaque",
+                View.VISIBLE,
+                appNameView.getVisibility());
+        verifyControlsVisibility(DisplayMode.WINDOW_CONTROLS_OVERLAY, View.VISIBLE);
+
+        // Overlay on: the web content draws under the header, so the name must yield.
+        // Clear first: the constructor already reported onResult(false).
+        clearInvocations((Object) mSetHeaderAsOverlayCallback);
+        tapWcoToggle();
+        verify(mSetHeaderAsOverlayCallback, atLeastOnce()).onResult(true);
+        verify(mSetHeaderAsOverlayCallback, never()).onResult(false);
+        assertEquals(
+                "App name should be hidden when the header is drawn as an overlay",
+                View.GONE,
+                appNameView.getVisibility());
+        // Controls still fit, so the name was hidden by the overlay, not by width.
+        verifyControlsVisibility(DisplayMode.WINDOW_CONTROLS_OVERLAY, View.VISIBLE);
+
+        // Overlay off again: the name comes back without needing a width change.
+        clearInvocations((Object) mSetHeaderAsOverlayCallback);
+        tapWcoToggle();
+        verify(mSetHeaderAsOverlayCallback, atLeastOnce()).onResult(false);
+        verify(mSetHeaderAsOverlayCallback, never()).onResult(true);
+        assertEquals(
+                "App name should be visible again after the overlay is turned off",
+                View.VISIBLE,
+                appNameView.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_WcoEnabledFromPrefsAtStartup_StartsHidden() {
+        // The user turned on the overlay for this client package in a previous session.
+        ChromeSharedPreferences.getInstance()
+                .addToStringSet(
+                        ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
+                        TEST_APP_PACKAGE);
+        try {
+            setupWcoWithAppName();
+            createCoordinator(TEST_APP_PACKAGE);
+            mShadowLooper.idle();
+
+            TextView appNameView = getAppNameView();
+            assertEquals(
+                    "App name should start hidden when the overlay is already enabled",
+                    View.GONE,
+                    appNameView.getVisibility());
+            assertEquals(
+                    "App name text should still be bound so it can appear once overlay is off",
+                    TEST_APP_LABEL,
+                    appNameView.getText().toString());
+
+            // Turning the overlay off at the same width shows the name. That proves the
+            // start-hidden state came from the overlay, not from a lack of room.
+            clearInvocations((Object) mSetHeaderAsOverlayCallback);
+            tapWcoToggle();
+            assertEquals(
+                    "App name should appear when the user turns the overlay off",
+                    View.VISIBLE,
+                    appNameView.getVisibility());
+        } finally {
+            // Don't leak the persisted toggle into other tests.
+            ChromeSharedPreferences.getInstance()
+                    .removeFromStringSet(
+                            ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
+                            TEST_APP_PACKAGE);
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_WcoOverlay_WinsOverAvailableWidth() {
+        setupWcoWithAppName();
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+
+        int roomyWidthPx =
+                mCoordinator.calculateUIControlsMinWidth()
+                        + mCoordinator.getAppNameWidthPxForTesting()
+                        + 200;
+        resizeFlexibleArea(roomyWidthPx);
+        assertEquals(
+                "Precondition: the name fits at this width",
+                View.VISIBLE,
+                getAppNameView().getVisibility());
+
+        tapWcoToggle();
+        assertEquals(View.GONE, getAppNameView().getVisibility());
+
+        // A real width change while in overlay must not bring the name back.
+        resizeFlexibleArea(roomyWidthPx + 100);
+        assertEquals(
+                "Width updates must not show the name while the overlay is on",
+                View.GONE,
+                getAppNameView().getVisibility());
+        verifyControlsVisibility(DisplayMode.WINDOW_CONTROLS_OVERLAY, View.VISIBLE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_MinimizeWindow_ControlsFitButNameDoesNot_HideNameKeepControls() {
+        // Init header in a window with enough space for both the controls and the app name.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI, TEST_APP_LABEL);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+        int appNameWidth = mCoordinator.getAppNameWidthPxForTesting();
+        assertTrue("App name should have a non-zero width", appNameWidth > 0);
+
+        // Emulate minimizing the window so the controls still fit but the app name doesn't.
+        resizeFlexibleArea(getMinButtonWidth(DisplayMode.MINIMAL_UI) + appNameWidth - 1);
+
+        // The app name yields first; the controls stay usable.
+        assertEquals(
+                "App name should be hidden when there is no room for it",
+                View.GONE,
+                getAppNameView().getVisibility());
+        verifyControlsVisibility(DisplayMode.MINIMAL_UI, View.VISIBLE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_MaximizeWindow_NameFits_ShowName() {
+        // Init header in a window where only the controls fit.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI, TEST_APP_LABEL);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+        int appNameWidth = mCoordinator.getAppNameWidthPxForTesting();
+        resizeFlexibleArea(getMinButtonWidth(DisplayMode.MINIMAL_UI) + appNameWidth - 1);
+        assertEquals(View.GONE, getAppNameView().getVisibility());
+
+        // Emulate maximizing the window.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        assertEquals(
+                "App name should be shown again once there is room for it",
+                View.VISIBLE,
+                getAppNameView().getVisibility());
+        verifyControlsVisibility(DisplayMode.MINIMAL_UI, View.VISIBLE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_MinimizeWindow_WidthMatchesThreshold_KeepNameVisible() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI, TEST_APP_LABEL);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+        int appNameWidth = mCoordinator.getAppNameWidthPxForTesting();
+
+        // Emulate a window with exactly enough room for the controls and the app name.
+        resizeFlexibleArea(getMinButtonWidth(DisplayMode.MINIMAL_UI) + appNameWidth);
+
+        assertEquals(
+                "App name should stay visible when it exactly fits",
+                View.VISIBLE,
+                getAppNameView().getVisibility());
+        verifyControlsVisibility(DisplayMode.MINIMAL_UI, View.VISIBLE);
+    }
+
+    /** Emulates resizing the window so that the header's unoccluded area is {@code width} px. */
+    private void resizeFlexibleArea(int width) {
+        setupDesktopWindowing(
+                new Rect(0, 0, LEFT_INSET + width + RIGHT_INSET, SCREEN_HEIGHT),
+                new Rect(LEFT_INSET, 0, LEFT_INSET + width, SYS_APP_HEADER_HEIGHT),
+                /* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_FlagDisabled_IsNeverShown() {
+        // TWA client is installed with a label and the window is wide. The only
+        // thing standing between us and a visible name is the flag.
+        installApp(TEST_APP_PACKAGE, TEST_APP_LABEL);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupTwa();
+
+        createCoordinator(TEST_APP_PACKAGE);
+        RobolectricUtil.runAllBackgroundAndUi();
+        TextView appNameView = getAppNameView();
+        assertEquals(
+                "App name should be gone when the flag is disabled",
+                View.GONE,
+                appNameView.getVisibility());
+        assertTrue(
+                "App name text should never be set when the flag is disabled",
+                TextUtils.isEmpty(appNameView.getText()));
+        assertEquals(
+                "No header width should be reserved for the app name when the flag is disabled",
+                0,
+                mCoordinator.getAppNameWidthPxForTesting());
+    }
+
+    @Test
+    public void testGetClientAppLabel() {
+        assertNull(
+                "Uninstalled package should yield no label",
+                WebAppHeaderUtils.getClientAppLabel(TEST_APP_PACKAGE));
+
+        installApp(TEST_APP_PACKAGE, /* label= */ null);
+        assertNull(
+                "Package name fallback should be treated as no label",
+                WebAppHeaderUtils.getClientAppLabel(TEST_APP_PACKAGE));
+
+        installApp(TEST_APP_PACKAGE, TEST_APP_LABEL);
+        assertEquals(
+                TEST_APP_LABEL, WebAppHeaderUtils.getClientAppLabel(TEST_APP_PACKAGE).toString());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_WebApk_AppliesButtonBottomInset() {
+        // WebAPK: the name is bound synchronously during init, before the mediator delivers the
+        // initial inset, so the padding must come from onButtonBottomInsetChanged().
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE, TEST_APP_LABEL);
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+
+        assertTrue("Fixture should produce a non-zero inset", EXPECTED_BUTTON_BOTTOM_INSET_PX > 0);
+        assertEquals(
+                "App name should be inset like the other header controls",
+                EXPECTED_BUTTON_BOTTOM_INSET_PX,
+                getAppNameView().getPaddingBottom());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_TwaLabelArrivesAfterInset_AppliesButtonBottomInset() {
+        // TWA: the label resolves asynchronously, after the mediator has already delivered the
+        // inset, so the padding must be applied when the view is bound in setAppName().
+        installApp(TEST_APP_PACKAGE, TEST_APP_LABEL);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupTwa();
+        createCoordinator(TEST_APP_PACKAGE);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(
+                "App name bound after the inset callback should still be inset",
+                EXPECTED_BUTTON_BOTTOM_INSET_PX,
+                getAppNameView().getPaddingBottom());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_InsetChange_UpdatesPadding() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE, TEST_APP_LABEL);
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+        assertEquals(EXPECTED_BUTTON_BOTTOM_INSET_PX, getAppNameView().getPaddingBottom());
+
+        // The caption bar grows to the button height: no inset is needed any more.
+        setupDesktopWindowing(
+                WINDOW_RECT,
+                new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, HEADER_CONTROL_BUTTON_DP),
+                /* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        assertEquals(
+                "App name padding should follow inset changes",
+                0,
+                getAppNameView().getPaddingBottom());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_LongName_RequiredWidthCappedAtMinWidth() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE, LONG_APP_LABEL);
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+
+        int minWidthPx = getDimenPx(R.dimen.web_app_header_app_name_min_width);
+        int marginsPx = 2 * getDimenPx(R.dimen.header_button_padding);
+        assertEquals(
+                "A long name should only reserve the ellipsizable minimum plus its margins",
+                minWidthPx + marginsPx,
+                mCoordinator.getAppNameWidthPxForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_LongName_MaxWidthClampsToAvailableRoom() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE, LONG_APP_LABEL);
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+
+        int minWidthPx = getDimenPx(R.dimen.web_app_header_app_name_min_width);
+        int maxWidthPx = getDimenPx(R.dimen.web_app_header_app_name_max_width);
+        int marginsPx = 2 * getDimenPx(R.dimen.header_button_padding);
+        int controlsPx = getMinButtonWidth(DisplayMode.STANDALONE);
+        TextView appNameView = getAppNameView();
+
+        // Plenty of room: the name is bounded by its design maximum, not by the window.
+        resizeFlexibleArea(controlsPx + marginsPx + maxWidthPx + 300);
+        assertEquals(View.VISIBLE, appNameView.getVisibility());
+        assertEquals("Wide window should cap at max width", maxWidthPx, appNameView.getMaxWidth());
+
+        // Room between min and max: the name shrinks to exactly what is left for it.
+        int midWidthPx = (minWidthPx + maxWidthPx) / 2;
+        resizeFlexibleArea(controlsPx + marginsPx + midWidthPx);
+        assertEquals(View.VISIBLE, appNameView.getVisibility());
+        assertEquals(
+                "Mid-size window should bound the name to the remaining room",
+                midWidthPx,
+                appNameView.getMaxWidth());
+
+        // Exactly the minimum: still shown, at the ellipsizable floor.
+        resizeFlexibleArea(controlsPx + marginsPx + minWidthPx);
+        assertEquals(View.VISIBLE, appNameView.getVisibility());
+        assertEquals(
+                "Narrow window should floor at min width", minWidthPx, appNameView.getMaxWidth());
+
+        // One px below the minimum: hidden rather than ellipsized further.
+        resizeFlexibleArea(controlsPx + marginsPx + minWidthPx - 1);
+        assertEquals(
+                "Below min width the name should hide, not shrink",
+                View.GONE,
+                appNameView.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME)
+    public void testAppName_RightControlsGrow_HidesAndRestoresName() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE, TEST_APP_LABEL);
+        createCoordinator(/* clientPackageName= */ null);
+        mShadowLooper.idle();
+
+        // Size the window so there is room for the name plus a small slack beyond the static
+        // controls estimate, which counts the origin text and extensions toolbar as 0.
+        int appNameWidthPx = mCoordinator.getAppNameWidthPxForTesting();
+        int slackPx = 20;
+        resizeFlexibleArea(getMinButtonWidth(DisplayMode.STANDALONE) + appNameWidthPx + slackPx);
+        TextView appNameView = getAppNameView();
+        assertEquals(
+                "Name should fit before the right controls expand",
+                View.VISIBLE,
+                appNameView.getVisibility());
+
+        // The right-aligned controls grow past the slack (e.g. origin text appears). No
+        // unoccluded-width change happens, so only the layout listener can catch this.
+        int wrapperMarginPx = getDimenPx(R.dimen.header_button_padding);
+        layoutRightControls(slackPx + wrapperMarginPx + 1);
+        assertEquals(
+                "Layout listener should hide the name once the controls eat its room",
+                View.GONE,
+                appNameView.getVisibility());
+
+        // The controls shrink back (e.g. origin text fades out): the name returns.
+        layoutRightControls(0);
+        assertEquals(
+                "Layout listener should restore the name once room is available again",
+                View.VISIBLE,
+                appNameView.getVisibility());
     }
 }

@@ -405,6 +405,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDesktopAndroidTWADeleteBrowserData,
     &kDesktopAndroidTWADisclosures,
     &kDesktopAndroidTWADisclosuresHelpLink,
+    &kDesktopAndroidWebAppHeaderAppName,
     &kDesktopUAOnConnectedDisplay,
     &kDisableGridTabSwitcher,
     &kDisablePartnerHomepageAndroid,
@@ -831,6 +832,7 @@ BASE_FEATURE(kDesktopAndroidLinkCapturing, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDesktopAndroidTWADeleteBrowserData, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDesktopAndroidTWADisclosures, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDesktopAndroidTWADisclosuresHelpLink, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDesktopAndroidWebAppHeaderAppName, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDesktopUAOnConnectedDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDisableGridTabSwitcher, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDisablePartnerHomepageAndroid, base::FEATURE_DISABLED_BY_DEFAULT);

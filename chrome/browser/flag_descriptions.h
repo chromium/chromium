@@ -6184,6 +6184,12 @@ inline constexpr char kDesktopAndroidTWADisclosuresHelpLinkDescription[] =
     "desktop Android. This is a follow up feature to Desktop Android TWA "
     "Disclosures Suppression.";
 
+inline constexpr char kDesktopAndroidWebAppHeaderAppNameName[] =
+    "Desktop Android Web App Header App Name";
+inline constexpr char kDesktopAndroidWebAppHeaderAppNameDescription[] =
+    "Shows the installed app's name at the start of the web app window "
+    "header for TWAs and WebAPKs on desktop Android.";
+
 inline constexpr char kDesktopFlingCurveOnAndroidName[] =
     "Desktop Fling Curve on Android";
 inline constexpr char kDesktopFlingCurveOnAndroidDescription[] =

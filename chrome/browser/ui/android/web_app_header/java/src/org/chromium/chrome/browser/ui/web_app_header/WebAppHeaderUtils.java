@@ -4,18 +4,27 @@
 
 package org.chromium.chrome.browser.ui.web_app_header;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
+import android.text.TextUtils;
 
 import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -215,6 +224,55 @@ public class WebAppHeaderUtils {
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         return isMinimalUiEnabled(intentDataProvider)
                 && AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager);
+    }
+
+    /**
+     * @param intentDataProvider provides information about the web app.
+     * @return The WebAPK's manifest short_name as shown by the launcher, or null if the app is not
+     *     a WebAPK or has no short name.
+     */
+    public static @Nullable String getWebApkName(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        WebappExtras webappExtras = intentDataProvider.getWebappExtras();
+        if (webappExtras == null) return null;
+        return webappExtras.shortName;
+    }
+
+    /**
+     * Resolves a TWA client app's user-visible label. The lookup runs off the UI thread, since
+     * {@link PackageManager#getApplicationLabel} may read the client APK from disk.
+     *
+     * @param packageName The client app's package name.
+     * @param callback Invoked on the UI thread with the label, or null if the package cannot be
+     *     resolved or has no label.
+     */
+    public static void getTwaAppName(
+            String packageName, Callback<@Nullable CharSequence> callback) {
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE,
+                () -> {
+                    CharSequence label = getClientAppLabel(packageName);
+                    PostTask.postTask(TaskTraits.UI_USER_VISIBLE, callback.bind(label));
+                });
+    }
+
+    /**
+     * @param packageName The client app's package name.
+     * @return The user-visible label of the app, or null if it cannot be resolved.
+     */
+    @VisibleForTesting
+    static @Nullable CharSequence getClientAppLabel(String packageName) {
+        PackageManager packageManager = ContextUtils.getApplicationContext().getPackageManager();
+        try {
+            ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
+            CharSequence label = packageManager.getApplicationLabel(appInfo);
+            // getApplicationLabel() falls back to the package name when the app has no label;
+            // treat that as "no label" rather than showing e.g. "com.example.app".
+            if (TextUtils.equals(label, packageName)) return null;
+            return label;
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
     }
 
     /**

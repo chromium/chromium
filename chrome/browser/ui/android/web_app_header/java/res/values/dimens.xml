@@ -12,4 +12,6 @@ found in the LICENSE file.
     <dimen name="header_button_size_desktop">40dp</dimen>
     <dimen name="web_app_header_height">48dp</dimen>
     <dimen name="web_app_header_height_desktop">40dp</dimen>
+    <dimen name="web_app_header_app_name_max_width">160dp</dimen>
+    <dimen name="web_app_header_app_name_min_width">96dp</dimen>
 </resources>

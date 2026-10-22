@@ -183,6 +183,11 @@ class WebAppHeaderLayoutMediator
         return mUserToggleHeaderAsOverlay;
     }
 
+    /** Returns whether the header is currently drawn as a window controls overlay. */
+    boolean isHeaderAsOverlay() {
+        return mHeaderAsOverlay;
+    }
+
     public void didChangeToggleButtonVisiblity(boolean visible) {
         mToggleButtonVisible = visible;
         updateHeaderAsOverlay();

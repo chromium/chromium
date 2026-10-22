@@ -13005,6 +13005,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kDesktopAndroidTWADisclosuresHelpLink)},
+    {"desktop-android-web-app-header-app-name",
+     flag_descriptions::kDesktopAndroidWebAppHeaderAppNameName,
+     flag_descriptions::kDesktopAndroidWebAppHeaderAppNameDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDesktopAndroidWebAppHeaderAppName)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

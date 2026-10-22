@@ -11196,6 +11196,7 @@ from previous Chrome versions.
   <int value="-1145905507" label="SendTabToSelfWhenSignedIn:disabled"/>
   <int value="-1145871257"
       label="AttachLogsToAutofillRaterExtensionReport:enabled"/>
+  <int value="-1145780928" label="DesktopAndroidWebAppHeaderAppName:disabled"/>
   <int value="-1145702446" label="ChromeHomeInactivitySheetExpansion:enabled"/>
   <int value="-1145246849" label="ThirdPartyDoodles:enabled"/>
   <int value="-1144754105" label="ScalableStatusArea:enabled"/>
@@ -11918,6 +11919,7 @@ from previous Chrome versions.
   <int value="-923318290"
       label="autofill-ai-wallet-pass-branding-2026:disabled"/>
   <int value="-921755651" label="EnableManagedByParentUi:disabled"/>
+  <int value="-921625842" label="DesktopAndroidWebAppHeaderAppName:enabled"/>
   <int value="-921465196" label="glic-zero-state-suggestions:disabled"/>
   <int value="-920794084" label="PickerFlip:disabled"/>
   <int value="-920483976" label="AccessCodeCastRememberDevices:disabled"/>

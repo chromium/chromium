@@ -21,6 +21,19 @@ found in the LICENSE file.
         android:layout_height="?attr/webAppHeaderHeight"
         android:minHeight="@dimen/web_app_header_min_height">
 
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/webAppHeaderButtonSize"
+            android:gravity="center_vertical"
+            android:layout_alignParentStart="true"
+            android:layout_marginHorizontal="@dimen/header_button_padding"
+            android:maxWidth="@dimen/web_app_header_app_name_max_width"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+            android:visibility="gone" />
+
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/back_button"
             style="@style/HeaderButton"
@@ -28,7 +41,8 @@ found in the LICENSE file.
             android:contentDescription="@string/accessibility_toolbar_btn_back"
             android:tooltipText="@string/accessibility_toolbar_btn_back"
             android:visibility="gone"
-            android:layout_alignParentStart="true"
+            android:layout_toEndOf="@id/app_name"
+            android:layout_alignWithParentIfMissing="true"
             android:layout_centerVertical="true"
             app:tint="@color/default_icon_color_tint_list" />
 

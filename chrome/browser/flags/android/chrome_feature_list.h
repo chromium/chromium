@@ -188,6 +188,7 @@ BASE_DECLARE_FEATURE(kDesktopAndroidLinkCapturing);
 BASE_DECLARE_FEATURE(kDesktopAndroidTWADeleteBrowserData);
 BASE_DECLARE_FEATURE(kDesktopAndroidTWADisclosures);
 BASE_DECLARE_FEATURE(kDesktopAndroidTWADisclosuresHelpLink);
+BASE_DECLARE_FEATURE(kDesktopAndroidWebAppHeaderAppName);
 BASE_DECLARE_FEATURE(kDesktopUAOnConnectedDisplay);
 BASE_DECLARE_FEATURE(kDeviceAuthenticatorAndroidx);
 BASE_DECLARE_FEATURE(kDisableGridTabSwitcher);

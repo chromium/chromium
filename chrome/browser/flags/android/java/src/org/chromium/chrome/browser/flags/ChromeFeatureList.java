@@ -549,6 +549,8 @@ public abstract class ChromeFeatureList {
     public static final String DESKTOP_ANDROID_TWA_DISCLOSURES = "DesktopAndroidTWADisclosures";
     public static final String DESKTOP_ANDROID_TWA_DISCLOSURES_HELP_LINK =
             "DesktopAndroidTWADisclosuresHelpLink";
+    public static final String DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME =
+            "DesktopAndroidWebAppHeaderAppName";
     public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DEVICE_REAUTH_REFACTOR = "DeviceReauthRefactor";
@@ -1165,6 +1167,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(DESKTOP_ANDROID_TWA_DISCLOSURES, true);
     public static final CachedFlag sDesktopAndroidTWADisclosuresHelpLink =
             newCachedFlag(DESKTOP_ANDROID_TWA_DISCLOSURES_HELP_LINK, true);
+    public static final CachedFlag sDesktopAndroidWebAppHeaderAppName =
+            newCachedFlag(DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME, false);
     public static final CachedFlag sDesktopUAOnConnectedDisplay =
             newCachedFlag(
                     DESKTOP_UA_ON_CONNECTED_DISPLAY,
@@ -1569,6 +1573,7 @@ public abstract class ChromeFeatureList {
                     sDesktopAndroidTWADeleteBrowserData,
                     sDesktopAndroidTWADisclosures,
                     sDesktopAndroidTWADisclosuresHelpLink,
+                    sDesktopAndroidWebAppHeaderAppName,
                     sDesktopUAOnConnectedDisplay,
                     sDisablePartnerHomepageAndroid,
                     sDocumentPictureInPictureAPI,
