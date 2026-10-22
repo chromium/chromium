@@ -350,17 +350,16 @@ ______________________________________________________________________
 
 ## Step 7: Evaluate Results & Autonomous Decision
 
-1. Check comparison results once the job completes:
+1. Evaluate the job once it completes:
 
    ```bash
    vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action evaluate --job-id <JOB_ID>
    ```
 
-   Or inspect the comparison table directly:
-
-   ```bash
-   pp s <JOB_ID>
-   ```
+   The script's `Decision:` line is the verdict. The raw table
+   (`pp s --show-all <JOB_ID>`) is for diagnostics only: it has no
+   multiple-testing correction, and without `--show-all` it hides rows with
+   `p >= 0.01`, usually including `Score`.
 
 2. **Metric Direction Interpretation**:
 
@@ -368,16 +367,34 @@ ______________________________________________________________________
      Direction is `smaller-better` (duration/latency in ms).
      - **Negative change (`-X.X%`)**: Faster / Improvement (Win).
      - **Positive change (`+X.X%`)**: Slower / Regression (Loss).
-   - **Composite Score (`Score`)**: Direction is `larger-better` (higher score =
-     faster).
+   - **Composite Score (`Score`)**: Direction is `bigger-better` /
+     `larger-better` (higher score = faster).
      - **Positive change (`+X.X%`)**: Improvement (Win).
      - **Negative change (`-X.X%`)**: Regression (Loss).
 
-3. **Decision Rules**:
+3. **Statistical Evaluation** (as implemented by `pinpoint_evaluator.py`, with
+   `alpha = 0.05`):
 
-   - ✅ **Statistically Significant Improvement ($p < 0.05$)**:
-     - Significant reduction in subtest durations (`-X%` on `smaller-better`) or
-       increase in composite `Score` with zero significant regressions.
+   - `Score` (`Total` for JetStream) is the primary endpoint: it counts as
+     improved or regressed at unadjusted `p < 0.05`.
+   - Subtests are corrected for testing all `m` of them at once: an improvement
+     or a regression is confirmed by directional Benjamini-Hochberg
+     (`q_BH < 0.05`, FDR), applied separately to each direction. Subtests with
+     raw `p < 0.05` that fail the correction are listed as noise and ignored.
+   - Veto: a `Score` drop of more than 0.05% with `p < 0.20` rejects the CL even
+     if subtests improved.
+   - The output includes 95% confidence intervals and the minimum detectable
+     effect (`MDE`) at 80% power. A non-significant result does not rule out
+     effects smaller than the `MDE`.
+   - A win confined to subtests with a non-significant `Score` is tentative, and
+     the `Decision:` line says so: some subtests (notably `Editor-TipTap`) vary
+     more between jobs than the within-job error suggests. State this when
+     proposing such a CL.
+
+4. **Decision Actions**:
+
+   - ✅ **Keep** (`Decision: Propose / Keep CL`): `Score` or a subtest improved,
+     nothing regressed, and no `Score` veto.
      - Mark the CL as accepted on Gerrit:
        ```bash
        vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action accept
@@ -387,9 +404,8 @@ ______________________________________________________________________
        git cl upload -m "Add Pinpoint M1 benchmark results (+X.X% improvement)"
        ```
      - Propose the change to the user and reviewers.
-   - ❌ **Neutral or Regressed**:
-     - Positive delta (`+X%`) on `smaller-better` metrics indicates a
-       **regression**, or no metric reaches $p < 0.05$.
+   - ❌ **Abandon** (`Decision: Abandon CL`): no improvement survives the
+     correction, `Score` or a subtest regressed, or the `Score` veto fired.
      - Mark as rejected on Gerrit and abandon the CL:
        ```bash
        vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action reject

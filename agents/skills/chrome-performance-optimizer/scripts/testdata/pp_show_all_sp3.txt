@@ -1,0 +1,27 @@
+bot: m1  benchmark: sp3  date: 2026-10-15 17:09
+base: ec7484662bae942dd42da2499f29c01e08224f63
+patch: https://chromium-review.googlesource.com/c/chromium/src/+/1234567/1  "Skip re-running style recalc for queued nodes"
+
+  metric                                          base±std       exp±std     chg%        p   sig   direction
+ ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  Editor-CodeMirror                            19.26 ±0.25   19.31 ±0.28   +0.28%   0.0238         smaller-better
+  Perf-Dashboard                               38.51 ±0.60   38.59 ±0.58   +0.21%   0.1889         smaller-better
+  React-Stockcharts-SVG                        63.81 ±0.85   63.93 ±1.12   +0.19%   0.7223         smaller-better
+  Charts-observable-plot                       38.92 ±0.81   38.98 ±0.90   +0.16%   0.5461         smaller-better
+  Score                                        32.45 ±0.29   32.50 ±0.29   +0.16%   0.0597         bigger-better
+  TodoMVC-Preact-Complex-DOM                   11.37 ±0.19   11.38 ±0.20   +0.08%   0.4389         smaller-better
+  TodoMVC-React-Redux                          31.07 ±0.27   31.09 ±0.30   +0.08%   0.7079         smaller-better
+  TodoMVC-React-Complex-DOM                    27.85 ±0.25   27.86 ±0.31   +0.02%   0.5716         smaller-better
+  TodoMVC-Svelte-Complex-DOM                   10.09 ±0.15   10.09 ±0.16   +0.01%   0.9448         smaller-better
+  Charts-chartjs                               36.08 ±0.41   36.09 ±0.48   +0.01%   0.5523         smaller-better
+  TodoMVC-Backbone                             24.45 ±0.25   24.44 ±0.25   -0.02%   0.9326         smaller-better
+  TodoMVC-Vue                                  20.25 ±0.17   20.24 ±0.17   -0.05%   0.6595         smaller-better
+  NewsSite-Next                                73.90 ±0.47   73.81 ±0.44   -0.13%   0.0598         smaller-better
+  NewsSite-Nuxt                                62.60 ±0.56   62.50 ±0.64   -0.16%   0.1799         smaller-better
+  TodoMVC-WebComponents                        17.70 ±0.26   17.66 ±0.26   -0.18%   0.2551         smaller-better
+  TodoMVC-JavaScript-ES5                       37.73 ±1.22   37.63 ±1.16   -0.29%   0.4568         smaller-better
+  TodoMVC-Lit-Complex-DOM                      14.98 ±0.20   14.93 ±0.17   -0.30%   0.0410         smaller-better
+  TodoMVC-Angular-Complex-DOM                  25.81 ±0.54   25.72 ±0.47   -0.34%   0.3728         smaller-better
+  Editor-TipTap                                54.42 ±0.32   54.22 ±0.29   -0.37%   0.0000     *   smaller-better
+  TodoMVC-JavaScript-ES6-Webpack-Complex-DOM   33.85 ±0.93   33.51 ±0.89   -1.01%   0.0001     *   smaller-better
+  TodoMVC-jQuery                               92.91 ±3.18   91.83 ±3.19   -1.16%   0.0007     *   smaller-better
