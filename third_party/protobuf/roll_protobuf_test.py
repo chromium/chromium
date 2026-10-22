@@ -765,6 +765,57 @@ class RollProtobufTest(unittest.TestCase):
                 applied_patches=('0001-update-value.patch', ),
             ), verification_result)
 
+    def testCheckTreeIgnoresDeveloperGlobalGitConfiguration(self):
+        # core.autocrlf writes CRLF in `git archive` output and
+        # apply.whitespace=fix strips trailing whitespace from patches.
+        patched_message_header = ('int Value() { return 1; }\n'
+                                  'int Other() { return 2; }   \n')
+        patch_content = ('diff --git a/src/google/protobuf/message.h '
+                         'b/src/google/protobuf/message.h\n'
+                         '--- a/src/google/protobuf/message.h\n'
+                         '+++ b/src/google/protobuf/message.h\n'
+                         '@@ -1 +1,2 @@\n'
+                         ' int Value() { return 1; }\n'
+                         '+int Other() { return 2; }   \n')
+        upstream_directory, chromium_directory, commit_hash = (
+            _CreateUpstreamAndChromiumRepositories(
+                self.temporary_directory,
+                upstream_files={
+                    'src/google/protobuf/message.h':
+                    ('int Value() { return 1; }\n'),
+                },
+                chromium_files={
+                    'patches/0001-add-other.patch': patch_content,
+                    'src/google/protobuf/message.h': patched_message_header,
+                },
+            ))
+        _WriteFilesToDirectory(
+            self.temporary_directory,
+            {
+                'gitconfig': ('[core]\n\tautocrlf = true\n'
+                              '[apply]\n\twhitespace = fix\n'),
+            },
+        )
+
+        with mock.patch.dict(
+                os.environ, {
+                    'GIT_CONFIG_GLOBAL':
+                    os.path.join(self.temporary_directory, 'gitconfig'),
+                }):
+            verification_result = (
+                roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                    protobuf_directory=chromium_directory,
+                    upstream_repository_path=upstream_directory,
+                ))
+
+        self.assertEqual(
+            roll_protobuf.TreeVerificationResult(
+                upstream_revision=commit_hash,
+                applied_patches=('0001-add-other.patch', ),
+            ),
+            verification_result,
+        )
+
     def testCheckTreeDetectsSourceModificationWhenPatchFileIsMissing(self):
         # Simulate https://crrev.com/c/8422202: message.h was updated in the
         # Chromium tree, but the corresponding .patch file is missing.

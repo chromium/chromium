@@ -139,6 +139,36 @@ def _IsolatedGitEnvironment() -> dict[str, str]:
     }
 
 
+def _ScratchGitEnvironment() -> dict[str, str]:
+    """Returns the environment for git commands whose output must not vary.
+
+    Used to extract upstream, apply patches, and in throwaway repositories, so
+    `check` and `plan` come out the same for every developer. All global,
+    system and environment-injected config is dropped: `core.autocrlf` would
+    rewrite `git archive` line endings, `apply.whitespace` would reject
+    patches, and `core.hooksPath`, `commit.gpgsign`, `diff.noprefix` or
+    `merge.conflictStyle` would change commits, diffs and conflict markers.
+    """
+    environment = {
+        name: value
+        for name, value in _IsolatedGitEnvironment().items()
+        if name != 'GIT_CONFIG_PARAMETERS' and not name.startswith(
+            ('GIT_CONFIG_COUNT', 'GIT_CONFIG_KEY_', 'GIT_CONFIG_VALUE_'))
+    }
+    environment.update(
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_CONFIG_NOSYSTEM='1',
+        # Paths after `--` are file names, never glob patterns.
+        GIT_LITERAL_PATHSPECS='1',
+        # Commits in throwaway repositories work without a configured user.
+        GIT_AUTHOR_NAME='roll_protobuf.py',
+        GIT_AUTHOR_EMAIL='roll_protobuf@chromium.invalid',
+        GIT_COMMITTER_NAME='roll_protobuf.py',
+        GIT_COMMITTER_EMAIL='roll_protobuf@chromium.invalid',
+    )
+    return environment
+
+
 def _GitCommandForRepository(repository_path: str,
                              git_arguments: Sequence[str]) -> list[str]:
     """Returns a git command line for a working-tree or bare repository.
@@ -285,7 +315,7 @@ def ExtractUpstreamArchive(repository_path: str, commit_revision: str,
     extraction_error = None
     with tempfile.TemporaryFile() as stderr_file:
         with subprocess.Popen(command,
-                              env=_IsolatedGitEnvironment(),
+                              env=_ScratchGitEnvironment(),
                               stdout=subprocess.PIPE,
                               stderr=stderr_file) as archive_process:
             try:
@@ -336,7 +366,7 @@ def ApplyPatchFile(patch_path: str, target_directory: str) -> str | None:
         ['git', 'apply', '-p1', '--unidiff-zero',
          os.path.abspath(patch_path)],
         env={
-            **_IsolatedGitEnvironment(),
+            **_ScratchGitEnvironment(),
             'GIT_CEILING_DIRECTORIES':
             os.path.dirname(target_directory),
         },
