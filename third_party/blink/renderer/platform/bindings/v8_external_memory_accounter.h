@@ -23,7 +23,8 @@ class V8ExternalMemoryAccounter {
   }
 
   void Set(v8::Isolate* isolate, size_t size) {
-    int64_t delta = size - amount_of_external_memory_;
+    int64_t delta = static_cast<int64_t>(size) -
+                    static_cast<int64_t>(amount_of_external_memory_);
     if (delta != 0) {
       amount_of_external_memory_ = size;
       memory_accounter_base_.Update(isolate, delta);

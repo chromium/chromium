@@ -267,6 +267,7 @@ source_set("blink_unittests_sources") {
   testonly = true
 
   sources = [
+    "//third_party/blink/renderer/platform/bindings/v8_external_memory_accounter_test.cc",
     "//third_party/blink/renderer/platform/testing/main_thread_isolate_unittest.cc",
     "//third_party/blink/renderer/platform/testing/task_environment_unittest.cc",
     "crash_memory_metrics_reporter_impl_test.cc",
