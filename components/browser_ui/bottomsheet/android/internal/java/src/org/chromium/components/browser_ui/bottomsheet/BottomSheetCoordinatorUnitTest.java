@@ -2992,10 +2992,13 @@ public class BottomSheetCoordinatorUnitTest {
         mBottomSheet.showContent(mSheetContent);
         mBottomSheet.setSheetState(SheetState.FULL, false);
 
-        // Content view measured 124px (which includes 24px e2eBottomInset), so desired offset above
-        // the bottom inset is 100px, and translationY = 200 - 100 - 24 = 76f (leaving 124px visible
-        // on screen, matching the 124px contentView with 0 bottom padding).
-        assertEquals(100f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        // Content view measured 124px (which includes 24px e2eBottomInset). Because the layout
+        // bottom inset is 0 in FULL state when contentCoversBottomControls() is true, desired
+        // height is 124px and translationY = 200 - 124 - 0 = 76f (leaving 124px visible on screen
+        // with 0 bottom padding, while getEdgeToEdgeBottomInset() still returns 24px for safe-area
+        // callers).
+        assertEquals(24, mBottomSheet.getEdgeToEdgeBottomInset());
+        assertEquals(124f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
         assertEquals(76f, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
         View mobileContentContainer =
                 mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
@@ -3047,7 +3050,32 @@ public class BottomSheetCoordinatorUnitTest {
         decorView.layout(0, 0, SHEET_CONTAINER_WIDTH, 800);
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, 800);
         mBottomSheet.setSheetContainerForTesting(mSheetContainer);
-        mBottomSheet.setSheetOffsetFromBottom(800f, BottomSheetController.StateChangeReason.NONE);
+
+        // In PEEK state, getEffectiveEdgeToEdgeBottomInset() still returns e2eBottomInset (24) so
+        // the peek view remains lifted above the navigation bar.
+        mBottomSheet.setSheetState(SheetState.PEEK, false);
+        int peekHeight = mBottomSheet.getPeekHeightPx();
+        assertEquals(
+                800f - peekHeight - 24f,
+                mBottomSheet.getView().getTranslationY(),
+                MathUtils.EPSILON);
+
+        // During a manual drag (shouldAnimate = false, SheetState.SCROLLING) from PEEK toward HALF,
+        // getTargetOrCurrentState() resolves to FULL so getEffectiveEdgeToEdgeBottomInset() is 0.
+        mBottomSheet.setSheetOffset(300f, /* shouldAnimate= */ false);
+        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
+        assertEquals(800f - 300f, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // When animating from PEEK to HALF (animate = true), target state is HALF before settle
+        // animation frames run, so getEffectiveEdgeToEdgeBottomInset() is 0.
+        mBottomSheet.setSheetState(SheetState.PEEK, false);
+        mBottomSheet.setSheetState(SheetState.HALF, true);
+        assertEquals(SheetState.HALF, mBottomSheet.getTargetSheetState());
+        mBottomSheet.setSheetOffsetFromBottom(350f, BottomSheetController.StateChangeReason.NONE);
+        assertEquals(800f - 350f, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
+        mBottomSheet.endAnimations();
+
+        mBottomSheet.setSheetState(SheetState.FULL, false);
 
         WindowInsetsCompat windowInsets =
                 new WindowInsetsCompat.Builder()
@@ -3061,9 +3089,32 @@ public class BottomSheetCoordinatorUnitTest {
         assertEquals(30, mBottomSheet.getVisibleViewportRectForTesting().top);
         assertEquals(800, mBottomSheet.getVisibleViewportRectForTesting().bottom);
         View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
+        // At FULL (offset 800px), container height is clamped by visibleViewportRect.height()
+        // (800 - 30 status bar = 770).
         assertEquals(770, contentContainer.getLayoutParams().height);
 
+        // At an intermediate offset (500px), layout bottom inset is 0 when coversBottomControls()
+        // is true, so translationY (300) + height (500) == 800 (bottom of the screen).
+        mBottomSheet.setSheetOffsetFromBottom(500f, BottomSheetController.StateChangeReason.NONE);
+        assertEquals(500, contentContainer.getLayoutParams().height);
+        assertEquals(
+                800f,
+                mBottomSheet.getView().getTranslationY()
+                        + contentContainer.getLayoutParams().height,
+                MathUtils.EPSILON);
+
+        // At HALF (400px), layout bottom inset is 0 so translationY (400) + height (400) == 800
+        // (bottom of the screen).
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+        assertEquals(400, contentContainer.getLayoutParams().height);
+        assertEquals(
+                800f,
+                mBottomSheet.getView().getTranslationY()
+                        + contentContainer.getLayoutParams().height,
+                MathUtils.EPSILON);
+
         // When IME is visible, IME bottom inset (300) still reduces the viewport bottom.
+        mBottomSheet.setSheetState(SheetState.FULL, false);
         WindowInsetsCompat imeInsets =
                 new WindowInsetsCompat.Builder()
                         .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(0, 30, 0, 0))

@@ -758,7 +758,7 @@ class BottomSheetMediator implements TouchHandler {
      * Updates the vertical layout properties of the bottom sheet content container and background
      * in the model in a single pass.
      *
-     * @param viewportBottomInset The viewport bottom inset in pixels.
+     * @param e2eBottomInset The edge-to-edge bottom inset in pixels.
      * @param visibleViewportRect The visible viewport bounds.
      * @param decorHeight The window decor view height in pixels.
      * @param handlebarHeight The measured handlebar height in pixels.
@@ -770,7 +770,7 @@ class BottomSheetMediator implements TouchHandler {
      * @param stateHeightPx The sheet height for the target or current state in pixels.
      */
     void updateVerticalLayout(
-            @Px int viewportBottomInset,
+            @Px int e2eBottomInset,
             Rect visibleViewportRect,
             @Px int decorHeight,
             @Px int handlebarHeight,
@@ -793,9 +793,7 @@ class BottomSheetMediator implements TouchHandler {
                         handlebarHeight));
         setContentBottomPadding(
                 calculateContentBottomPadding(
-                        isLargeFormFactorUiEnabled,
-                        isFullHeightResizeContent,
-                        viewportBottomInset));
+                        isLargeFormFactorUiEnabled, isFullHeightResizeContent, e2eBottomInset));
         setBackgroundHeight(
                 calculateTargetBackgroundHeight(isLargeFormFactorUiEnabled, fullHeightPx));
         setKeyboardCurtainHeight(decorHeight);
@@ -851,12 +849,8 @@ class BottomSheetMediator implements TouchHandler {
     int calculateContentBottomPadding(
             boolean isLargeFormFactorUiEnabled,
             boolean isFullHeightResizeContent,
-            @Px int viewportBottomInset) {
-        return (isFullHeightResizeContent
-                        || isLargeFormFactorUiEnabled
-                        || (mSheetContent != null && mSheetContent.coversBottomControls()))
-                ? 0
-                : viewportBottomInset;
+            @Px int e2eBottomInset) {
+        return (isFullHeightResizeContent || isLargeFormFactorUiEnabled) ? 0 : e2eBottomInset;
     }
 
     int calculateTargetBackgroundHeight(boolean isLargeFormFactorUiEnabled, float fullHeightPx) {

@@ -1017,7 +1017,7 @@ public class BottomSheetMediatorUnitTest {
         mMediator.setSheetTranslationY(123f);
 
         mMediator.updateVerticalLayout(
-                /* viewportBottomInset= */ 48,
+                /* e2eBottomInset= */ 48,
                 viewport,
                 /* decorHeight= */ 1920,
                 /* handlebarHeight= */ 16,
@@ -1105,7 +1105,7 @@ public class BottomSheetMediatorUnitTest {
         mMediator.setInternalCurrentState(SheetState.FULL);
 
         mMediator.updateVerticalLayout(
-                /* viewportBottomInset= */ 250,
+                /* e2eBottomInset= */ 250,
                 viewport,
                 /* decorHeight= */ 1920,
                 /* handlebarHeight= */ 12,
@@ -1129,7 +1129,7 @@ public class BottomSheetMediatorUnitTest {
         mMediator.setInternalCurrentState(SheetState.HALF);
 
         mMediator.updateVerticalLayout(
-                /* viewportBottomInset= */ 0,
+                /* e2eBottomInset= */ 0,
                 viewport,
                 /* decorHeight= */ 1080,
                 /* handlebarHeight= */ 20,
@@ -1148,7 +1148,7 @@ public class BottomSheetMediatorUnitTest {
         // Wrap content on LFF sets CONTAINER_HEIGHT to WRAP_CONTENT.
         when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.WRAP_CONTENT);
         mMediator.updateVerticalLayout(
-                /* viewportBottomInset= */ 0,
+                /* e2eBottomInset= */ 0,
                 viewport,
                 /* decorHeight= */ 1080,
                 /* handlebarHeight= */ 20,
@@ -1172,28 +1172,19 @@ public class BottomSheetMediatorUnitTest {
                 mMediator.calculateContentBottomPadding(
                         /* isLargeFormFactorUiEnabled= */ false,
                         /* isFullHeightResizeContent= */ false,
-                        /* viewportBottomInset= */ 48));
+                        /* e2eBottomInset= */ 48));
         assertEquals(
                 0,
                 mMediator.calculateContentBottomPadding(
                         /* isLargeFormFactorUiEnabled= */ true,
                         /* isFullHeightResizeContent= */ false,
-                        /* viewportBottomInset= */ 48));
+                        /* e2eBottomInset= */ 48));
         assertEquals(
                 0,
                 mMediator.calculateContentBottomPadding(
                         /* isLargeFormFactorUiEnabled= */ false,
                         /* isFullHeightResizeContent= */ true,
-                        /* viewportBottomInset= */ 48));
-
-        when(mContent.coversBottomControls()).thenReturn(true);
-        mMediator.setSheetContent(mContent);
-        assertEquals(
-                0,
-                mMediator.calculateContentBottomPadding(
-                        /* isLargeFormFactorUiEnabled= */ false,
-                        /* isFullHeightResizeContent= */ false,
-                        /* viewportBottomInset= */ 48));
+                        /* e2eBottomInset= */ 48));
 
         mMediator.updateVisibleBackgroundHeight(
                 /* isLargeFormFactorUiEnabled= */ true,

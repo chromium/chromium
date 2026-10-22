@@ -372,7 +372,19 @@ class BottomSheetCoordinator
         return mMediator.calculateContentBottomPadding(
                 isLargeFormFactorUiEnabled(),
                 isFullHeightResizeContent(),
-                getEdgeToEdgeBottomInset());
+                getEffectiveEdgeToEdgeBottomInset());
+    }
+
+    /**
+     * Returns the bottom inset used to offset the sheet vertically. Sheets that cover the bottom
+     * controls handle the bottom safe-area inset internally when expanded (HALF/FULL), so 0 is
+     * returned there; in PEEK mode, the full edge-to-edge bottom inset is still applied so the peek
+     * view remains lifted above the navigation bar.
+     */
+    private @Px int getEffectiveEdgeToEdgeBottomInset() {
+        return contentCoversBottomControls() && getTargetOrCurrentState() != SheetState.PEEK
+                ? 0
+                : getEdgeToEdgeBottomInset();
     }
 
     @Px
@@ -746,7 +758,7 @@ class BottomSheetCoordinator
             float offset, @StateChangeReason int reason, boolean reportOpenClosed) {
         mCurrentOffsetPx = offset;
 
-        @Px int bottomInset = getEdgeToEdgeBottomInset();
+        @Px int bottomInset = getEffectiveEdgeToEdgeBottomInset();
         boolean isSheetOpen = isSheetOpen();
         float translationY =
                 mMediator.calculateSheetTranslationY(
@@ -1293,9 +1305,6 @@ class BottomSheetCoordinator
                 MeasureSpec.makeMeasureSpec(maxContentHeight, MeasureSpec.AT_MOST));
         mContentDesiredHeight =
                 Math.min(getMaxSheetHeight(), contentView.getMeasuredHeight() + handlebarHeight);
-        if (content.coversBottomControls()) {
-            mContentDesiredHeight = Math.max(0, mContentDesiredHeight - getEdgeToEdgeBottomInset());
-        }
     }
 
     private int getHandlebarHeight() {
@@ -1460,7 +1469,7 @@ class BottomSheetCoordinator
 
     private void updateContentContainerHeight() {
         assert mWindow != null;
-        @Px int e2eBottomInset = getEdgeToEdgeBottomInset();
+        @Px int e2eBottomInset = getEffectiveEdgeToEdgeBottomInset();
         updateViewport(e2eBottomInset);
 
         boolean isLargeFormFactorUiEnabled = isLargeFormFactorUiEnabled();
