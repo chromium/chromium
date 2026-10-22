@@ -66,7 +66,8 @@ class ProjectorXhrSenderTest : public testing::Test {
   void SetUp() override {
     sender_ = std::make_unique<ProjectorXhrSender>(
         mock_app_client_.identity_manager(),
-        mock_app_client_.GetUrlLoaderFactory());
+        mock_app_client_.GetUrlLoaderFactory(),
+        AccountId::FromUserEmail(kTestUserEmail));
     mock_app_client_.AddSecondaryAccount(kTestUserSecondaryEmail);
   }
 
@@ -207,7 +208,9 @@ TEST_F(ProjectorXhrSenderTest, NetworkError) {
 }
 
 TEST_F(ProjectorXhrSenderTest, TokenFetchFailure) {
-  EXPECT_CALL(mock_app_client(), HandleAccountReauth(kTestUserEmail));
+  EXPECT_CALL(mock_app_client(),
+              HandleAccountReauth(AccountId::FromUserEmail(kTestUserEmail),
+                                  kTestUserEmail));
   SendRequestFuture future;
   sender()->Send(
       GURL(kTestDriveRequestUrl),

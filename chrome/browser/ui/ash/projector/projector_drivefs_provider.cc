@@ -70,24 +70,36 @@ ProjectorDriveFsProvider::~ProjectorDriveFsProvider() = default;
 
 void ProjectorDriveFsProvider::OnUserProfileLoaded(
     const AccountId& account_id) {
-  OnActiveUserSwitch(account_id);
+  const user_manager::User* active_user =
+      user_manager::UserManager::IsInitialized()
+          ? user_manager::UserManager::Get()->GetActiveUser()
+          : nullptr;
+  if (active_user && active_user->GetAccountId() == account_id) {
+    OnActiveUserSwitch(account_id);
+  }
 }
 
 void ProjectorDriveFsProvider::ActiveUserChanged(
     user_manager::User* active_user) {
   // After user login, the first ActiveUserChanged() might be called before
-  // profile is loaded.
-  if (active_user->is_profile_created()) {
-    OnActiveUserSwitch(active_user->GetAccountId());
+  // profile is loaded. Clear prior user observation immediately until the new
+  // active profile finishes loading.
+  if (!active_user || !active_user->is_profile_created()) {
+    on_drivefs_observation_change_.Run(EmptyAccountId());
+    return;
   }
+  OnActiveUserSwitch(active_user->GetAccountId());
 }
 
 void ProjectorDriveFsProvider::OnActiveUserSwitch(const AccountId& account_id) {
   content::BrowserContext* const context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id);
+      account_id.is_valid()
+          ? ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                account_id)
+          : nullptr;
   if (!context ||
       !IsProjectorAllowedForProfile(Profile::FromBrowserContext(context))) {
+    on_drivefs_observation_change_.Run(EmptyAccountId());
     return;
   }
 

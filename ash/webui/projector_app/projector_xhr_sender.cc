@@ -180,13 +180,14 @@ inline std::string RequestTypeToString(projector::mojom::RequestType method) {
 // is an arbitrary number to start with.
 const int kMaxRetries = 3;
 
-void HandleAccessTokenErrorState(const std::string& email,
+void HandleAccessTokenErrorState(const AccountId& account_id,
+                                 const std::string& email,
                                  const GoogleServiceAuthError& error) {
   LOG(ERROR) << "Failed to request access token, error state:" << error.state()
              << ", error detail:" << error.ToString();
   if (error.state() ==
       GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS) {
-    ProjectorAppClient::Get()->HandleAccountReauth(email);
+    ProjectorAppClient::Get()->HandleAccountReauth(account_id, email);
   }
 }
 
@@ -223,9 +224,11 @@ projector::mojom::XhrResponsePtr CreateXhrResposne(
 
 ProjectorXhrSender::ProjectorXhrSender(
     signin::IdentityManager* identity_manager,
-    network::mojom::URLLoaderFactory* url_loader_factory)
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    const AccountId& account_id)
     : oauth_token_fetcher_(identity_manager),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      account_id_(account_id) {}
 ProjectorXhrSender::~ProjectorXhrSender() = default;
 
 void ProjectorXhrSender::Send(
@@ -294,7 +297,7 @@ void ProjectorXhrSender::OnAccessTokenRequestCompleted(
   if (error.state() != GoogleServiceAuthError::State::NONE) {
     std::move(callback).Run(CreateXhrResposne(
         std::string(), projector::mojom::XhrResponseCode::kTokenFetchFailure));
-    HandleAccessTokenErrorState(email, error);
+    HandleAccessTokenErrorState(account_id_, email, error);
     return;
   }
 

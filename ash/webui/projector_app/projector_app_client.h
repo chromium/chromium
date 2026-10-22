@@ -14,12 +14,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/values.h"
-
-namespace network {
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
-}  // namespace network
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -36,6 +31,10 @@ class ProjectorAppClient {
   // Interface for observing events on the ProjectorAppClient.
   class Observer : public base::CheckedObserver {
    public:
+    // Returns the account associated with this observer. Notifications from
+    // `ProjectorAppClient` are only delivered while this account is active.
+    virtual const AccountId& GetAccountId() const = 0;
+
     // Used to notify the Projector SWA app on whether it can start a new
     // screencast session.
     virtual void OnNewScreencastPreconditionChanged(
@@ -65,17 +64,19 @@ class ProjectorAppClient {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Returns the URLLoaderFactory for the primary user profile.
-  virtual network::mojom::URLLoaderFactory* GetUrlLoaderFactory() = 0;
+  // Returns true iff `account_id` belongs to the currently active ChromeOS user
+  // session.
+  virtual bool IsActiveAccount(const AccountId& account_id) const = 0;
 
   // Used to notify the Projector SWA app on whether it can start a new
   // screencast session.
   virtual void OnNewScreencastPreconditionChanged(
       const NewScreencastPrecondition& precondition) = 0;
 
-  // Returns pending screencast uploaded by primary user.
-  virtual const PendingScreencastContainerSet& GetPendingScreencasts()
-      const = 0;
+  // Returns pending screencasts uploaded by `account_id` if `account_id` is the
+  // active user whose DriveFS is currently tracked, or an empty set otherwise.
+  virtual const PendingScreencastContainerSet& GetPendingScreencasts(
+      const AccountId& account_id) const = 0;
 
   // Checks if device is eligible to trigger SODA installer.
   virtual bool ShouldDownloadSoda() const = 0;
@@ -95,28 +96,32 @@ class ProjectorAppClient {
   // language pack has finished.
   virtual void OnSodaInstalled() = 0;
 
-  // Triggers the opening of the Chrome feedback dialog.
-  virtual void OpenFeedbackDialog() const = 0;
+  // Triggers the opening of the Chrome feedback dialog for `account_id` if
+  // active.
+  virtual void OpenFeedbackDialog(const AccountId& account_id) const = 0;
 
-  // Launches the given DriveFS video file with `video_file_id` into the
-  // Projector app. The `resource_key` is an additional security token needed to
-  // gain access to link-shared files. Since the `resource_key` is currently
-  // only used by Googlers, the `resource_key` might be empty.
-  virtual void GetVideo(const std::string& video_file_id,
+  // Launches the given DriveFS video file with `video_file_id` from
+  // `account_id`'s DriveFS into the Projector app. The `resource_key` is an
+  // additional security token needed to gain access to link-shared files. Since
+  // the `resource_key` is currently only used by Googlers, the `resource_key`
+  // might be empty.
+  virtual void GetVideo(const AccountId& account_id,
+                        const std::string& video_file_id,
                         const std::optional<std::string>& resource_key,
                         OnGetVideoCallback callback) const = 0;
 
   // Called with true by the initiation and false by the destruction of
-  // projector trusted UI .
-  virtual void NotifyAppUIActive(bool active) = 0;
+  // projector UI owned by `account_id`.
+  virtual void NotifyAppUIActive(const AccountId& account_id, bool active) = 0;
 
   // Toggles to suppress/resume the system notification for `screencast_paths`.
   virtual void ToggleFileSyncingNotificationForPaths(
       const std::vector<base::FilePath>& screencast_paths,
       bool suppress) = 0;
 
-  // Triggers reauth dialog for the given `email`.
-  virtual void HandleAccountReauth(const std::string& email) = 0;
+  // Triggers reauth dialog for `account_id` with the given `email` if active.
+  virtual void HandleAccountReauth(const AccountId& account_id,
+                                   const std::string& email) = 0;
 
  protected:
   ProjectorAppClient();

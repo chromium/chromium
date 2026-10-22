@@ -33,9 +33,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
+#include "components/account_id/account_id.h"
 #include "components/drive/file_errors.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -54,6 +56,10 @@ constexpr char kTestFileContents[] = "This is some test content.";
 // Name and duration of a real video file located at //media/test/data.
 constexpr char kTestVideoFile[] = "tulip2.webm";
 constexpr double kTestVideoDurationMillisecond = 16682;
+
+AccountId GetAccountId(Profile* profile) {
+  return *ash::AnnotatedAccountId::Get(profile);
+}
 
 #if !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 
@@ -219,7 +225,7 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTest, NoDriveFsMountPoint) {
   base::RunLoop run_loop;
   ProjectorAppClient::Get()->GetVideo(
-      kVideoFileId, /*resource_key=*/"",
+      GetAccountId(browser()->GetProfile()), kVideoFileId, /*resource_key=*/"",
       base::BindLambdaForTesting(
           [&run_loop](ash::projector::mojom::GetVideoResultPtr result) {
             EXPECT_EQ(result->get_error_message(),
@@ -238,7 +244,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTest, NoDriveFsMountPoint) {
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, FileNotFound) {
   base::RunLoop run_loop;
   ProjectorAppClient::Get()->GetVideo(
-      kVideoFileId, kResourceKey,
+      GetAccountId(browser()->GetProfile()), kVideoFileId, kResourceKey,
       base::BindLambdaForTesting(
           [&run_loop](ash::projector::mojom::GetVideoResultPtr result) {
             EXPECT_EQ(
@@ -260,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideo) {
 
   base::RunLoop run_loop;
   ProjectorAppClient::Get()->GetVideo(
-      kVideoFileId, /*resource_key=*/"",
+      GetAccountId(browser()->GetProfile()), kVideoFileId, /*resource_key=*/"",
       base::BindLambdaForTesting(
           [&run_loop](ash::projector::mojom::GetVideoResultPtr result) {
             EXPECT_EQ(result->get_error_message(),
@@ -280,10 +286,11 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
                                   kProjectorMediaMimeType, false);
 
   const base::FilePath test_path = GetTestFile(kVideoFileName, true);
+  const AccountId account_id = GetAccountId(browser()->GetProfile());
 
   base::RunLoop run_loop;
   ProjectorAppClient::Get()->GetVideo(
-      kVideoFileId, kResourceKey,
+      account_id, kVideoFileId, kResourceKey,
       base::BindLambdaForTesting(
           [&](ash::projector::mojom::GetVideoResultPtr result) {
             const auto& video = result->get_video();
@@ -308,7 +315,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
   run_loop.Run();
 
   // Verifies the notification shows up again if app closed:
-  ProjectorAppClient::Get()->NotifyAppUIActive(false);
+  ProjectorAppClient::Get()->NotifyAppUIActive(account_id, false);
   MockDriveSyncingStatusUpdateForPaths({test_path.value()});
   // Expects 1 notification is shown:
   VerifyNotificationSize(0);
@@ -322,7 +329,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
                                   kProjectorMediaMimeType, true);
   base::RunLoop run_loop;
   ProjectorAppClient::Get()->GetVideo(
-      kVideoFileId, kResourceKey,
+      GetAccountId(browser()->GetProfile()), kVideoFileId, kResourceKey,
       base::BindLambdaForTesting(
           [&](ash::projector::mojom::GetVideoResultPtr result) {
             EXPECT_EQ(result->get_error_message(),
@@ -335,6 +342,27 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
 
             // Expects the notification is suppressed.
             VerifyNotificationSize(0);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+// Verifies that an inactive secondary profile cannot read a video from the
+// currently active user's DriveFS via ProjectorAppClient::GetVideo().
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
+                       RejectsInactiveAccountGetVideo) {
+  AddTestMediaFileToDefaultFolder(kTestVideoFile, kVideoFileName,
+                                  kProjectorMediaMimeType, false);
+
+  base::RunLoop run_loop;
+  ProjectorAppClient::Get()->GetVideo(
+      AccountId::FromUserEmail("inactive-user@example.com"), kVideoFileId,
+      kResourceKey,
+      base::BindLambdaForTesting(
+          [&](ash::projector::mojom::GetVideoResultPtr result) {
+            ASSERT_TRUE(result->is_error_message());
+            EXPECT_EQ(result->get_error_message(),
+                      "Cannot fetch video for inactive user session");
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -379,7 +407,8 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   base::FilePath fake_path(kVideoFileId);
   base::FilePath absolute_path =
       GetTestFile(kVideoFileName, /*relative=*/false);
-  SendFilesToProjectorApp({fake_path, absolute_path});
+  SendFilesToProjectorApp(GetAccountId(browser()->GetProfile()),
+                          {fake_path, absolute_path});
 
   BrowserWindowInterface* second_browser =
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
@@ -446,7 +475,8 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   base::FilePath fake_path(kVideoFileId);
   base::FilePath absolute_path =
       GetTestFile("NotFoundError.file", /*relative=*/false);
-  SendFilesToProjectorApp({fake_path, absolute_path});
+  SendFilesToProjectorApp(GetAccountId(browser()->GetProfile()),
+                          {fake_path, absolute_path});
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
   content::EvalJsResult result = EvalJs(app, script);
@@ -468,7 +498,8 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideoMimeType) {
   base::FilePath fake_path(kVideoFileId);
   base::FilePath absolute_path =
       GetTestFile("MyTestScreencast.txt", /*relative=*/false);
-  SendFilesToProjectorApp({fake_path, absolute_path});
+  SendFilesToProjectorApp(GetAccountId(browser()->GetProfile()),
+                          {fake_path, absolute_path});
 
   AddTestMediaFileToDefaultFolder(kTestVideoFile, kVideoFileName, "text/plain",
                                   /*shared_with_me=*/true);

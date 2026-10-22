@@ -37,30 +37,42 @@ class MockAppClient : public ProjectorAppClient {
   }
 
   signin::IdentityManager* identity_manager();
+  network::mojom::URLLoaderFactory* GetUrlLoaderFactory();
 
   // ProjectorAppClient:
-  network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
-
-  MOCK_METHOD1(AddObserver, void(Observer*));
-  MOCK_METHOD1(RemoveObserver, void(Observer*));
-  MOCK_METHOD1(OnNewScreencastPreconditionChanged,
-               void(const NewScreencastPrecondition&));
-  MOCK_CONST_METHOD0(GetPendingScreencasts,
-                     const PendingScreencastContainerSet&());
-  MOCK_CONST_METHOD0(ShouldDownloadSoda, bool());
-  MOCK_METHOD0(InstallSoda, void());
-  MOCK_METHOD1(OnSodaInstallProgress, void(int));
-  MOCK_METHOD0(OnSodaInstallError, void());
-  MOCK_METHOD0(OnSodaInstalled, void());
-  MOCK_CONST_METHOD0(OpenFeedbackDialog, void());
-  MOCK_CONST_METHOD3(GetVideo,
-                     void(const std::string&,
-                          const std::optional<std::string>&,
-                          ProjectorAppClient::OnGetVideoCallback));
-  MOCK_METHOD1(NotifyAppUIActive, void(bool active));
-  MOCK_METHOD2(ToggleFileSyncingNotificationForPaths,
-               void(const std::vector<base::FilePath>&, bool));
-  MOCK_METHOD1(HandleAccountReauth, void(const std::string&));
+  MOCK_METHOD(void, AddObserver, (Observer*), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
+  MOCK_METHOD(bool, IsActiveAccount, (const AccountId&), (const, override));
+  MOCK_METHOD(void,
+              OnNewScreencastPreconditionChanged,
+              (const NewScreencastPrecondition&),
+              (override));
+  MOCK_METHOD(const PendingScreencastContainerSet&,
+              GetPendingScreencasts,
+              (const AccountId&),
+              (const, override));
+  MOCK_METHOD(bool, ShouldDownloadSoda, (), (const, override));
+  MOCK_METHOD(void, InstallSoda, (), (override));
+  MOCK_METHOD(void, OnSodaInstallProgress, (int), (override));
+  MOCK_METHOD(void, OnSodaInstallError, (), (override));
+  MOCK_METHOD(void, OnSodaInstalled, (), (override));
+  MOCK_METHOD(void, OpenFeedbackDialog, (const AccountId&), (const, override));
+  MOCK_METHOD(void,
+              GetVideo,
+              (const AccountId&,
+               const std::string&,
+               const std::optional<std::string>&,
+               ProjectorAppClient::OnGetVideoCallback),
+              (const, override));
+  MOCK_METHOD(void, NotifyAppUIActive, (const AccountId&, bool), (override));
+  MOCK_METHOD(void,
+              ToggleFileSyncingNotificationForPaths,
+              (const std::vector<base::FilePath>&, bool),
+              (override));
+  MOCK_METHOD(void,
+              HandleAccountReauth,
+              (const AccountId&, const std::string&),
+              (override));
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);

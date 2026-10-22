@@ -22,9 +22,10 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/media_gallery_util/local_media_data_source_factory.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "components/media_gallery_util/safe_media_metadata_parser.h"
@@ -38,6 +39,7 @@ namespace {
 constexpr int kOneSecondInMillisecond = 1000;
 
 void OnMediaMetadataParsed(
+    const AccountId& account_id,
     projector::mojom::VideoInfoPtr video,
     ProjectorAppClient::OnGetVideoCallback callback,
     const base::FilePath& video_path,
@@ -70,7 +72,7 @@ void OnMediaMetadataParsed(
   // Even though the video file id is not a file path, we need to pass it to the
   // launch event to match up with the original request.
   base::FilePath video_id_as_path(video->file_id);
-  SendFilesToProjectorApp({video_id_as_path, video_path});
+  SendFilesToProjectorApp(account_id, {video_id_as_path, video_path});
   std::move(callback).Run(
       projector::mojom::GetVideoResult::NewVideo(std::move(video)));
 }
@@ -78,7 +80,8 @@ void OnMediaMetadataParsed(
 // Caller of this method requires a sequenced context. Gets video metadata for
 // `video_path`, triggers the flow to set `duration_millis` in the given video
 // object and triggers the callback. Should not be called on UI thread.
-void GetVideoMetadata(const base::FilePath& video_path,
+void GetVideoMetadata(const AccountId& account_id,
+                      const base::FilePath& video_path,
                       projector::mojom::VideoInfoPtr video,
                       ProjectorAppClient::OnGetVideoCallback callback) {
   CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
@@ -107,7 +110,7 @@ void GetVideoMetadata(const base::FilePath& video_path,
   SafeMediaMetadataParser* parser_ptr = parser.get();
   parser_ptr->Start(base::BindPostTask(
       content::GetUIThreadTaskRunner({}),
-      base::BindOnce(&OnMediaMetadataParsed, std::move(video),
+      base::BindOnce(&OnMediaMetadataParsed, account_id, std::move(video),
                      std::move(callback), video_path, std::move(parser))));
 }
 
@@ -130,6 +133,12 @@ void ScreencastManager::GetVideo(
 
   drive::DriveIntegrationService* integration_service =
       ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
+  if (!integration_service) {
+    std::move(callback).Run(projector::mojom::GetVideoResult::NewErrorMessage(
+        base::StringPrintf("Failed to find DriveFS path with video file id=%s",
+                           video_file_id.c_str())));
+    return;
+  }
   integration_service->LocateFilesByItemIds(
       {video_file_id},
       base::BindOnce(&ScreencastManager::OnVideoFilePathLocated,
@@ -171,6 +180,15 @@ void ScreencastManager::OnVideoFilePathLocated(
     return;
   }
 
+  content::BrowserContext* context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
+  if (!context) {
+    std::move(callback).Run(projector::mojom::GetVideoResult::NewErrorMessage(
+        base::StringPrintf("Failed to fetch video file with video file id=%s",
+                           video_id.c_str())));
+    return;
+  }
+
   const base::FilePath& mounted_path =
       ProjectorDriveFsProvider::GetDriveFsMountPointPath(account_id);
   const base::FilePath& video_path = mounted_path.Append(relative_drivefs_path);
@@ -179,7 +197,7 @@ void ScreencastManager::OnVideoFilePathLocated(
   // trigger file syncing event that triggers Drive notifications.
   suppress_drive_notifications_for_path_ =
       std::make_unique<file_manager::ScopedSuppressDriveNotificationsForPath>(
-          ProfileManager::GetActiveUserProfile(),
+          Profile::FromBrowserContext(context),
           base::FilePath("/").Append(relative_drivefs_path));
 
   // Post task to:
@@ -190,8 +208,8 @@ void ScreencastManager::OnVideoFilePathLocated(
   auto video = projector::mojom::VideoInfo::New();
   video->file_id = video_id;
   video_metadata_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GetVideoMetadata, video_path, std::move(video),
-                                std::move(callback)));
+      FROM_HERE, base::BindOnce(&GetVideoMetadata, account_id, video_path,
+                                std::move(video), std::move(callback)));
 }
 
 }  // namespace ash

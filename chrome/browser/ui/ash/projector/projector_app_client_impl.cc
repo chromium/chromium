@@ -14,18 +14,20 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
 #include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/soda/constants.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 
 namespace {
 
@@ -95,30 +97,47 @@ void ProjectorAppClientImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-network::mojom::URLLoaderFactory*
-ProjectorAppClientImpl::GetUrlLoaderFactory() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  return profile->GetDefaultStoragePartition()
-      ->GetURLLoaderFactoryForBrowserProcess()
-      .get();
+bool ProjectorAppClientImpl::IsActiveAccount(
+    const AccountId& account_id) const {
+  if (!account_id.is_valid() || !user_manager::UserManager::IsInitialized()) {
+    return false;
+  }
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  return active_user && active_user->GetAccountId() == account_id;
 }
 
 void ProjectorAppClientImpl::OnNewScreencastPreconditionChanged(
     const ash::NewScreencastPrecondition& precondition) {
   for (auto& observer : observers_) {
-    observer.OnNewScreencastPreconditionChanged(precondition);
+    if (IsActiveAccount(observer.GetAccountId())) {
+      observer.OnNewScreencastPreconditionChanged(precondition);
+    }
   }
 }
 
 const ash::PendingScreencastContainerSet&
-ProjectorAppClientImpl::GetPendingScreencasts() const {
+ProjectorAppClientImpl::GetPendingScreencasts(
+    const AccountId& account_id) const {
+  static const base::NoDestructor<ash::PendingScreencastContainerSet>
+      kEmptyScreencasts;
+  if (!IsActiveAccount(account_id) ||
+      pending_screencast_manager_.account_id() != account_id) {
+    return *kEmptyScreencasts;
+  }
   return pending_screencast_manager_.GetPendingScreencasts();
 }
 
 void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
     const ash::PendingScreencastContainerSet& pending_screencast_containers) {
+  const AccountId& observed_account = pending_screencast_manager_.account_id();
+  if (!IsActiveAccount(observed_account)) {
+    return;
+  }
   for (auto& observer : observers_) {
-    observer.OnScreencastsPendingStatusChanged(pending_screencast_containers);
+    if (observer.GetAccountId() == observed_account) {
+      observer.OnScreencastsPendingStatusChanged(pending_screencast_containers);
+    }
   }
 }
 
@@ -136,26 +155,42 @@ void ProjectorAppClientImpl::InstallSoda() {
 
 void ProjectorAppClientImpl::OnSodaInstallProgress(int combined_progress) {
   for (auto& observer : observers_) {
-    observer.OnSodaProgress(combined_progress);
+    if (IsActiveAccount(observer.GetAccountId())) {
+      observer.OnSodaProgress(combined_progress);
+    }
   }
 }
 
 void ProjectorAppClientImpl::OnSodaInstallError() {
   for (auto& observer : observers_) {
-    observer.OnSodaError();
+    if (IsActiveAccount(observer.GetAccountId())) {
+      observer.OnSodaError();
+    }
   }
 }
 
 void ProjectorAppClientImpl::OnSodaInstalled() {
   for (auto& observer : observers_) {
-    observer.OnSodaInstalled();
+    if (IsActiveAccount(observer.GetAccountId())) {
+      observer.OnSodaInstalled();
+    }
   }
 }
 
-void ProjectorAppClientImpl::OpenFeedbackDialog() const {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+void ProjectorAppClientImpl::OpenFeedbackDialog(
+    const AccountId& account_id) const {
+  if (!IsActiveAccount(account_id)) {
+    return;
+  }
+  content::BrowserContext* context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  if (!context) {
+    return;
+  }
   constexpr char kProjectorAppFeedbackCategoryTag[] = "FromProjectorApp";
-  chrome::ShowFeedbackPage(GURL(ash::kChromeUIUntrustedProjectorUrl), profile,
+  chrome::ShowFeedbackPage(GURL(ash::kChromeUIUntrustedProjectorUrl),
+                           Profile::FromBrowserContext(context),
                            feedback::kFeedbackSourceProjectorApp,
                            /*description_template=*/std::string(),
                            /*description_placeholder_text=*/std::string(),
@@ -166,16 +201,28 @@ void ProjectorAppClientImpl::OpenFeedbackDialog() const {
 }
 
 void ProjectorAppClientImpl::GetVideo(
+    const AccountId& account_id,
     const std::string& video_file_id,
     const std::optional<std::string>& resource_key,
     ash::ProjectorAppClient::OnGetVideoCallback callback) const {
-  screencast_manager_.GetVideo(pending_screencast_manager_.account_id(),
-                               video_file_id, resource_key,
+  if (!IsActiveAccount(account_id)) {
+    std::move(callback).Run(
+        ash::projector::mojom::GetVideoResult::NewErrorMessage(
+            "Cannot fetch video for inactive user session"));
+    return;
+  }
+  screencast_manager_.GetVideo(account_id, video_file_id, resource_key,
                                std::move(callback));
 }
 
-void ProjectorAppClientImpl::NotifyAppUIActive(bool active) {
-  pending_screencast_manager_.OnAppActiveStatusChanged(active);
+void ProjectorAppClientImpl::NotifyAppUIActive(const AccountId& account_id,
+                                               bool active) {
+  if (!IsActiveAccount(account_id)) {
+    return;
+  }
+  if (pending_screencast_manager_.account_id() == account_id) {
+    pending_screencast_manager_.OnAppActiveStatusChanged(active);
+  }
   if (!active) {
     screencast_manager_.ResetScopeSuppressDriveNotifications();
   }
@@ -188,7 +235,16 @@ void ProjectorAppClientImpl::ToggleFileSyncingNotificationForPaths(
       screencast_paths, suppress);
 }
 
-void ProjectorAppClientImpl::HandleAccountReauth(const std::string& email) {
-  ShowProjectorAccountReauthDialog(ProfileManager::GetActiveUserProfile(),
-                                   email);
+void ProjectorAppClientImpl::HandleAccountReauth(const AccountId& account_id,
+                                                 const std::string& email) {
+  if (!IsActiveAccount(account_id)) {
+    return;
+  }
+  content::BrowserContext* context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  if (!context) {
+    return;
+  }
+  ShowProjectorAccountReauthDialog(context, email);
 }

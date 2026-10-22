@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/account_id/account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 class GURL;
@@ -47,7 +48,8 @@ class ProjectorXhrSender {
       base::OnceCallback<void(projector::mojom::XhrResponsePtr)>;
 
   ProjectorXhrSender(signin::IdentityManager* identity_manager,
-                     network::mojom::URLLoaderFactory* url_loader_factory);
+                     network::mojom::URLLoaderFactory* url_loader_factory,
+                     const AccountId& account_id = EmptyAccountId());
   ProjectorXhrSender(const ProjectorXhrSender&) = delete;
   ProjectorXhrSender& operator=(const ProjectorXhrSender&) = delete;
   virtual ~ProjectorXhrSender();
@@ -110,6 +112,7 @@ class ProjectorXhrSender {
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
   raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_ = nullptr;
+  const AccountId account_id_;
 
   // Next request ID.
   int next_request_id_ = 0;

@@ -74,5 +74,6 @@ UntrustedProjectorUIConfig::CreateWebUIController(content::WebUI* web_ui,
       ash::IdentityManagerProvider::Get().Find(account_id),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+          .get(),
+      account_id);
 }

@@ -11,6 +11,7 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+class AccountId;
 class Profile;
 
 // Returns whether Projector is allowed for given `profile`.
@@ -26,11 +27,11 @@ bool IsMediaFile(const base::FilePath& path);
 // ".projector" for v1 screencast, ".screencast" for v2
 bool IsMetadataFile(const base::FilePath& path);
 
-// Sends the specified `files` to the Projector SWA. The app must be already
-// open as a prerequisite before calling this function.
+// Sends the specified `files` to `account_id`'s open Projector SWA window.
 // Note: this function passes by value to avoid a copy in the implementation.
 // Transfer ownership using std::move() if you want to avoid a copy when calling
 // this function.
-void SendFilesToProjectorApp(std::vector<base::FilePath> files);
+void SendFilesToProjectorApp(const AccountId& account_id,
+                             std::vector<base::FilePath> files);
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_UTILS_H_

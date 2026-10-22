@@ -345,8 +345,10 @@ void ProjectorClientImpl::OnUserSessionStarted(bool is_primary_user) {
 void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation(
     const AccountId& account_id) {
   drive::DriveIntegrationService* const service =
-      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
-  if (!service || service == drive_observation_.GetSource()) {
+      account_id.is_valid()
+          ? ProjectorDriveFsProvider::GetDriveIntegrationService(account_id)
+          : nullptr;
+  if (account_id_ == account_id && service == drive_observation_.GetSource()) {
     return;
   }
 
@@ -355,7 +357,9 @@ void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation(
   account_id_ = account_id;
 
   drive_observation_.Reset();
-  drive_observation_.Observe(service);
+  if (service) {
+    drive_observation_.Observe(service);
+  }
 }
 
 void ProjectorClientImpl::SpeechRecognitionEnded(bool forced) {

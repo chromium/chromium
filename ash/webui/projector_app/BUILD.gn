@@ -44,7 +44,10 @@ static_library("projector_app") {
     "//ui/webui",
   ]
 
-  public_deps = [ "//ash/webui/projector_app/public/cpp" ]
+  public_deps = [
+    "//ash/webui/projector_app/public/cpp",
+    "//components/account_id",
+  ]
 }
 
 source_set("test_support") {

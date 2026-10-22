@@ -33,6 +33,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
 
 namespace {
@@ -493,21 +494,25 @@ void PendingScreencastManager::SetProjectorXhrSenderForTest(
 void PendingScreencastManager::MaybeSwitchDriveFsObservation(
     const AccountId& account_id) {
   drive::DriveIntegrationService* const service =
-      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
-  if (!service) {
+      account_id.is_valid()
+          ? ProjectorDriveFsProvider::GetDriveIntegrationService(account_id)
+          : nullptr;
+  drivefs::DriveFsHost* const host =
+      service ? service->GetDriveFsHost() : nullptr;
+  if (account_id_ == account_id && GetHost() == host) {
     return;
   }
 
-  drivefs::DriveFsHost* const host = service->GetDriveFsHost();
-  if (!host || GetHost() == host) {
-    return;
-  }
-
-  // Past the guard above, `host` is a DriveFS that was not being observed, so
-  // the screencasts now belong to a different user than everything tracked so
-  // far. That state is all per-user, so drop it.
+  // Detach from any previously observed DriveFS and drop all per-user state
+  // (including in-flight async replies bound to `weak_ptr_factory_`) even if
+  // the newly active user has no mounted DriveFS host.
+  Reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
   pending_screencast_cache_.clear();
   error_syncing_files_.clear();
+  syncing_metadata_files_.clear();
+  paths_notifications_suppressors_.clear();
+  last_pending_screencast_change_tick_ = base::TimeTicks();
   // `xhr_sender_` is created once and holds the previous user's
   // IdentityManager; the next request rebuilds it from `account_id_`.
   xhr_sender_.reset();
@@ -516,7 +521,9 @@ void PendingScreencastManager::MaybeSwitchDriveFsObservation(
   // is.
   account_id_ = account_id;
 
-  Observe(host);
+  if (host) {
+    Observe(host);
+  }
 }
 
 void PendingScreencastManager::ToggleFileSyncingNotificationForPaths(
@@ -647,9 +654,16 @@ void PendingScreencastManager::SendDrivePatchRequest(
   }
 
   if (!xhr_sender_) {
+    Profile* const profile = GetProfileForAccount(account_id_);
+    if (!profile) {
+      return;
+    }
     xhr_sender_ = std::make_unique<ash::ProjectorXhrSender>(
         ash::IdentityManagerProvider::Get().Find(account_id_),
-        ash::ProjectorAppClient::Get()->GetUrlLoaderFactory());
+        profile->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess()
+            .get(),
+        account_id_);
   }
 
   // TODO(b/288457397): Pass the primary account email after email become

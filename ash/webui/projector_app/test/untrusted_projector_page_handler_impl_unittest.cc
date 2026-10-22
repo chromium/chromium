@@ -105,7 +105,7 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
         page().page_handler().BindNewPipeAndPassReceiver(),
         page().receiver().BindNewPipeAndPassRemote(), &pref_service_,
         mock_app_client_.identity_manager(),
-        mock_app_client_.GetUrlLoaderFactory());
+        mock_app_client_.GetUrlLoaderFactory(), account_id_);
   }
 
   void TearDown() override {
@@ -118,6 +118,7 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
   UntrustedProjectorPageHandlerImpl& handler() { return *handler_impl_; }
   MockAppClient& mock_app_client() { return mock_app_client_; }
   TestingPrefServiceSimple& pref_service() { return pref_service_; }
+  const AccountId& account_id() const { return account_id_; }
 
  protected:
   void TestUserPref(projector::mojom::PrefsThatProjectorCanAskFor pref,
@@ -126,6 +127,7 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
+  const AccountId account_id_ = AccountId::FromUserEmail(kTestUserEmail);
   MockProjectorController mock_controller_;
   MockAppClient mock_app_client_;
   std::unique_ptr<MockUntrustedProjectorPageJs> page_;
@@ -220,7 +222,7 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetPendingScreencasts) {
           /*container_dir=*/base::FilePath(path), /*name=*/name,
           /*total_size_in_bytes=*/1, /*bytes_transferred=*/0)};
 
-  ON_CALL(mock_app_client(), GetPendingScreencasts())
+  ON_CALL(mock_app_client(), GetPendingScreencasts(account_id()))
       .WillByDefault(testing::ReturnRef(expected_screencasts));
 
   base::test::TestFuture<
@@ -261,7 +263,7 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, TestPrefs) {
 }
 
 TEST_F(UntrustedProjectorPageHandlerImplUnitTest, OpenFeedbackDialog) {
-  EXPECT_CALL(mock_app_client(), OpenFeedbackDialog()).Times(1);
+  EXPECT_CALL(mock_app_client(), OpenFeedbackDialog(account_id())).Times(1);
   base::test::TestFuture<void> open_feedback_future;
   page().page_handler()->OpenFeedbackDialog(open_feedback_future.GetCallback());
   EXPECT_TRUE(open_feedback_future.Wait());
@@ -458,7 +460,8 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest,
   auto other_handler = std::make_unique<UntrustedProjectorPageHandlerImpl>(
       other_page.page_handler().BindNewPipeAndPassReceiver(),
       other_page.receiver().BindNewPipeAndPassRemote(), &pref_service(),
-      owning_identity_env.identity_manager(), &owning_url_loader_factory);
+      owning_identity_env.identity_manager(), &owning_url_loader_factory,
+      AccountId::FromUserEmail(kOtherUserEmail));
 
   // GetAccounts() must resolve the primary account from the owning profile's
   // identity manager.
@@ -496,10 +499,10 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetVideo) {
   expected_video->file_id = kVideoFileId;
 
   EXPECT_CALL(mock_app_client(),
-              GetVideo(kVideoFileId, std::optional<std::string>(kResourceKey),
-                       testing::_))
+              GetVideo(account_id(), kVideoFileId,
+                       std::optional<std::string>(kResourceKey), testing::_))
       .WillOnce([&expected_video](
-                    const std::string& video_file_id,
+                    const AccountId&, const std::string& video_file_id,
                     const std::optional<std::string>& resource_key,
                     ProjectorAppClient::OnGetVideoCallback callback) {
         std::move(callback).Run(
@@ -517,8 +520,9 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetVideo) {
 }
 
 TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetVideoFail) {
-  EXPECT_CALL(mock_app_client(), GetVideo(kVideoFileId, testing::_, testing::_))
-      .WillOnce([](const std::string& video_file_id,
+  EXPECT_CALL(mock_app_client(),
+              GetVideo(account_id(), kVideoFileId, testing::_, testing::_))
+      .WillOnce([](const AccountId&, const std::string& video_file_id,
                    const std::optional<std::string>& resource_key,
                    ProjectorAppClient::OnGetVideoCallback callback) {
         EXPECT_FALSE(resource_key);
@@ -533,6 +537,91 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetVideoFail) {
   const auto& result = get_video_future.Get<0>();
   EXPECT_TRUE(result->is_error_message());
   EXPECT_EQ(result->get_error_message(), "error1");
+}
+
+// Verifies that requests originating from an inactive secondary profile's page
+// handler cannot inspect or mutate active-session Projector state and always
+// tag ProjectorAppClient calls with their own AccountId rather than the active
+// user's AccountId.
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest,
+       IsolatesInactiveAccountRequests) {
+  const AccountId inactive_account_id =
+      AccountId::FromUserEmail("inactive@gmail.com");
+
+  signin::IdentityTestEnvironment inactive_identity_env;
+  network::TestURLLoaderFactory inactive_url_loader_factory;
+
+  MockUntrustedProjectorPageJs inactive_page;
+  auto inactive_handler = std::make_unique<UntrustedProjectorPageHandlerImpl>(
+      inactive_page.page_handler().BindNewPipeAndPassReceiver(),
+      inactive_page.receiver().BindNewPipeAndPassRemote(), &pref_service(),
+      inactive_identity_env.identity_manager(), &inactive_url_loader_factory,
+      inactive_account_id);
+
+  EXPECT_EQ(inactive_handler->GetAccountId(), inactive_account_id);
+
+  ON_CALL(mock_app_client(), IsActiveAccount(inactive_account_id))
+      .WillByDefault(testing::Return(false));
+
+  // Even when the active user's session precondition is enabled, an inactive
+  // profile handler must not query or expose the active user's precondition.
+  EXPECT_CALL(controller(), GetNewScreencastPrecondition()).Times(0);
+  base::test::TestFuture<const NewScreencastPrecondition&> precondition_future;
+  inactive_page.page_handler()->GetNewScreencastPrecondition(
+      precondition_future.GetCallback());
+  const auto& precondition = precondition_future.Get();
+  EXPECT_EQ(precondition.state, NewScreencastPreconditionState::kDisabled);
+  ASSERT_EQ(precondition.reasons.size(), 1u);
+  EXPECT_EQ(precondition.reasons[0], NewScreencastPreconditionReason::kOthers);
+
+  // Inactive handler cannot trigger SODA installation.
+  EXPECT_CALL(mock_app_client(), InstallSoda()).Times(0);
+  base::test::TestFuture<bool> install_soda_future;
+  inactive_page.page_handler()->InstallSoda(install_soda_future.GetCallback());
+  EXPECT_FALSE(install_soda_future.Get());
+
+  // Inactive handler cannot start a Projector session in the active user's UI.
+  const auto folder_id = base::SafeBaseName::Create("folderId").value();
+  EXPECT_CALL(controller(), StartProjectorSession(testing::_)).Times(0);
+  base::test::TestFuture<bool> start_session_future;
+  inactive_page.page_handler()->StartProjectorSession(
+      folder_id, start_session_future.GetCallback());
+  EXPECT_FALSE(start_session_future.Get());
+
+  // GetPendingScreencasts, OpenFeedbackDialog, and GetVideo pass the inactive
+  // handler's own AccountId rather than the active user's AccountId.
+  const PendingScreencastContainerSet empty_screencasts;
+  EXPECT_CALL(mock_app_client(), GetPendingScreencasts(inactive_account_id))
+      .WillOnce(testing::ReturnRef(empty_screencasts));
+  base::test::TestFuture<
+      std::vector<ash::projector::mojom::PendingScreencastPtr>>
+      pending_future;
+  inactive_page.page_handler()->GetPendingScreencasts(
+      pending_future.GetCallback());
+  EXPECT_TRUE(pending_future.Get().empty());
+
+  EXPECT_CALL(mock_app_client(), OpenFeedbackDialog(inactive_account_id))
+      .Times(1);
+  base::test::TestFuture<void> feedback_future;
+  inactive_page.page_handler()->OpenFeedbackDialog(
+      feedback_future.GetCallback());
+  EXPECT_TRUE(feedback_future.Wait());
+
+  EXPECT_CALL(mock_app_client(), GetVideo(inactive_account_id, kVideoFileId,
+                                          testing::_, testing::_))
+      .WillOnce([](const AccountId&, const std::string&,
+                   const std::optional<std::string>&,
+                   ProjectorAppClient::OnGetVideoCallback callback) {
+        std::move(callback).Run(
+            projector::mojom::GetVideoResult::NewErrorMessage(
+                "Cannot fetch video for inactive user session"));
+      });
+  base::test::TestFuture<projector::mojom::GetVideoResultPtr> video_future;
+  inactive_page.page_handler()->GetVideo(kVideoFileId, kResourceKey,
+                                         video_future.GetCallback());
+  EXPECT_TRUE(video_future.Get()->is_error_message());
+
+  inactive_handler.reset();
 }
 
 }  // namespace ash

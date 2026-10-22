@@ -42,6 +42,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "components/account_id/account_id.h"
@@ -80,8 +81,9 @@ apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
 // ProjectorAppClient::Observer::OnDriveFsMountStatusChanged().
 class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
  public:
-  explicit DriveFsMountStatusWaiter(drive::DriveIntegrationService* service)
-      : service_(service) {
+  DriveFsMountStatusWaiter(const AccountId& account_id,
+                           drive::DriveIntegrationService* service)
+      : account_id_(account_id), service_(service) {
     GetProjectorAppClientImpl()->AddObserver(this);
   }
 
@@ -93,6 +95,7 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
   }
 
   // ProjectorAppClient::Observer:
+  const AccountId& GetAccountId() const override { return account_id_; }
   void OnNewScreencastPreconditionChanged(
       const NewScreencastPrecondition& condition) override {
     std::move(quit_closure_).Run();
@@ -115,6 +118,7 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
   }
 
  private:
+  const AccountId account_id_;
   base::OnceClosure quit_closure_;
   raw_ptr<drive::DriveIntegrationService> service_;
 };
@@ -235,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
   base::FilePath file1("test1"), file2("test2");
   // Launch the app again with files. This operation should recycle the same
   // window.
-  SendFilesToProjectorApp({file1, file2});
+  SendFilesToProjectorApp(*ash::AnnotatedAccountId::Get(profile),
+                          {file1, file2});
 
   // Verify that the Projector App is still open.
   ash::BrowserDelegate* app_browser2 = FindSystemWebAppBrowser(
@@ -315,7 +320,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DriveUnmountedAndRemounted) {
           browser()->GetProfile());
   EXPECT_TRUE(service->is_enabled());
 
-  DriveFsMountStatusWaiter observer{service};
+  DriveFsMountStatusWaiter observer{
+      *ash::AnnotatedAccountId::Get(browser()->GetProfile()), service};
 
   {
     base::RunLoop run_loop;
@@ -340,7 +346,17 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest,
   auto* profile = browser()->GetProfile();
   test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(profile);
 
-  ProjectorAppClient::Get()->HandleAccountReauth(kReauthEmail);
+  // Requests from an inactive secondary profile must not open a reauth dialog
+  // in the active user's session.
+  ProjectorAppClient::Get()->HandleAccountReauth(
+      AccountId::FromUserEmail("inactive@example.com"), kReauthEmail);
+  EXPECT_EQ(0, fake_account_manager_dialog
+                   ->show_account_reauthentication_dialog_calls());
+  histogram_tester.ExpectTotalCount(
+      account_manager::kAccountAdditionSourceHistogramName, 0);
+
+  ProjectorAppClient::Get()->HandleAccountReauth(
+      *ash::AnnotatedAccountId::Get(profile), kReauthEmail);
 
   EXPECT_EQ(1, fake_account_manager_dialog
                    ->show_account_reauthentication_dialog_calls());

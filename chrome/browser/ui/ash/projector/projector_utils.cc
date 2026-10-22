@@ -13,12 +13,13 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
@@ -81,8 +82,17 @@ bool IsMetadataFile(const base::FilePath& path) {
          path.MatchesExtension(ash::kProjectorV2MetadataFileExtension);
 }
 
-void SendFilesToProjectorApp(std::vector<base::FilePath> files) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+void SendFilesToProjectorApp(const AccountId& account_id,
+                             std::vector<base::FilePath> files) {
+  content::BrowserContext* context =
+      account_id.is_valid()
+          ? ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                account_id)
+          : nullptr;
+  if (!context) {
+    return;
+  }
+  Profile* profile = Profile::FromBrowserContext(context);
   ash::BrowserDelegate* browser = ash::FindSystemWebAppBrowser(
       profile, ash::SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   if (!browser) {

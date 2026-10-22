@@ -15,6 +15,7 @@ const char kTestUserEmail[] = "testuser1@gmail.com";
 namespace ash {
 
 MockAppClient::MockAppClient() {
+  ON_CALL(*this, IsActiveAccount).WillByDefault(testing::Return(true));
   identity_test_environment_.MakePrimaryAccountAvailable(
       kTestUserEmail, signin::ConsentLevel::kSignin);
   identity_test_environment_.SetRefreshTokenForPrimaryAccount();
