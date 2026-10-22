@@ -21,11 +21,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Process;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
@@ -47,6 +50,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowMimeTypeMap;
+import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -1390,6 +1394,65 @@ public class SelectFileDialogTest {
                         new Uri[] {Uri.parse("file:////SAF/doc.pdf")});
         assertNull(postResolveUriTask.doInBackground());
         Mockito.verify(mFileUtilsMocks, Mockito.times(2)).getAbsoluteFilePath("//SAF/doc.pdf");
+    }
+
+    @Test
+    @DisableFeatures({UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION})
+    public void testContentSchemeRejectsOpaqueAndSameAppUris() {
+        Context context = ContextUtils.getApplicationContext();
+        String pkg = context.getPackageName();
+        String sameAppAuthority = pkg + ".TestProvider";
+        ShadowPackageManager shadowPm = Shadows.shadowOf(context.getPackageManager());
+        shadowPm.getInternalMutablePackageInfo(pkg).applicationInfo.uid = Process.myUid();
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = sameAppAuthority;
+        providerInfo.packageName = pkg;
+        providerInfo.name = "TestProvider";
+        providerInfo.applicationInfo = shadowPm.getInternalMutablePackageInfo(pkg).applicationInfo;
+        shadowPm.addOrUpdateProvider(providerInfo);
+
+        Uri[] rejectedUris =
+                new Uri[] {
+                    new Uri.Builder()
+                            .scheme("content")
+                            .encodedOpaquePart("//com.example.app.provider/files/doc.txt")
+                            .build(),
+                    new Uri.Builder()
+                            .scheme("CONTENT")
+                            .encodedOpaquePart("//com.example.app.provider/files/doc.txt")
+                            .build(),
+                    new Uri.Builder()
+                            .scheme("content")
+                            .encodedPath("//com.example.external/doc.txt")
+                            .build(),
+                    Uri.parse("content:///files/doc.txt"),
+                    Uri.parse("content://" + sameAppAuthority + "/files/missing.txt"),
+                };
+
+        TestSelectFileDialog testDialog = new TestSelectFileDialog(null);
+        for (Uri uri : rejectedUris) {
+            Intent dataIntent = new Intent(Intent.ACTION_VIEW, uri);
+            testDialog.onIntentCompleted(Activity.RESULT_OK, dataIntent);
+            runAllAsyncTasks();
+            assertEquals("Expected 0 successes for " + uri, 0, testDialog.mFileSelectionSuccess);
+            assertEquals("Expected 1 abort for " + uri, 1, testDialog.mFileSelectionAborted);
+            testDialog.resetFileSelectionAttempts();
+
+            Intent clipIntent = new Intent();
+            clipIntent.setClipData(new ClipData("label", new String[0], new ClipData.Item(uri)));
+            testDialog.onIntentCompleted(Activity.RESULT_OK, clipIntent);
+            runAllAsyncTasks();
+            assertEquals("Expected 0 successes for " + uri, 0, testDialog.mFileSelectionSuccess);
+            assertEquals("Expected 1 abort for " + uri, 1, testDialog.mFileSelectionAborted);
+            testDialog.resetFileSelectionAttempts();
+        }
+
+        Uri externalUri = Uri.parse("content://com.example.external/doc.txt");
+        testDialog.onIntentCompleted(
+                Activity.RESULT_OK, new Intent(Intent.ACTION_VIEW, externalUri));
+        runAllAsyncTasks();
+        assertEquals(1, testDialog.mFileSelectionSuccess);
+        assertEquals(0, testDialog.mFileSelectionAborted);
     }
 
     @Test

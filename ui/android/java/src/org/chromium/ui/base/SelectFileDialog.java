@@ -1059,8 +1059,19 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     public static boolean isContentUriUnderAppDir(Uri uri, Context context) {
         assert !ThreadUtils.runningOnUiThread();
-        try (ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r")) {
-            assumeNonNull(pfd);
+        // Re-parse the URI string since native opens the string form via Uri.parse().
+        Uri normalized = uri.normalizeScheme();
+        Uri parsed = Uri.parse(normalized.toString());
+        if (uri.isOpaque()
+                || parsed.isOpaque()
+                || TextUtils.isEmpty(parsed.getAuthority())
+                || !TextUtils.equals(normalized.getAuthority(), parsed.getAuthority())
+                || ContentUriUtils.isUriFromThisApp(parsed, context)) {
+            return true;
+        }
+        try (ParcelFileDescriptor pfd =
+                context.getContentResolver().openFileDescriptor(parsed, "r")) {
+            if (pfd == null) return false;
             int fd = pfd.getFd();
             // Use the file descriptor to find out the read file path thru symbolic link.
             Path fdPath = Paths.get("/proc/self/fd/" + fd);
