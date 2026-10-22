@@ -474,7 +474,7 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageRoutesControlCommand) {
       ExpectedTypeUrl(PayloadType::kControl), serialized_command)));
 
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Downstream.PayloadDropped", 0);
+      "Browser.Actuator.Transport.Downstream.PayloadDropped", 0);
 }
 
 // Regression test for crbug.com/560176806.
@@ -572,7 +572,7 @@ TEST(TransportSessionImplTest,
       ExpectedTypeUrl(PayloadType::kExperimentalTriggering), kTestPayload)));
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Downstream.PayloadDropped",
+      "Browser.Actuator.Transport.Downstream.PayloadDropped",
       DownstreamPayloadDropReason::kTypeUrlMismatch, 1);
 }
 
@@ -601,7 +601,7 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageAcceptsEmptyTypeUrl) {
                             /*type_url=*/"", kTestPayload)));
 
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Downstream.PayloadDropped", 0);
+      "Browser.Actuator.Transport.Downstream.PayloadDropped", 0);
 }
 
 TEST(TransportSessionImplTest,
@@ -625,7 +625,7 @@ TEST(TransportSessionImplTest,
                             /*type_url=*/"", kTestPayload)));
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Downstream.PayloadDropped",
+      "Browser.Actuator.Transport.Downstream.PayloadDropped",
       DownstreamPayloadDropReason::kUnknownType, 1);
 }
 
@@ -654,7 +654,7 @@ TEST(TransportSessionImplTest,
   EXPECT_OK(session.ProcessDownstreamMessage(message));
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Downstream.PayloadDropped",
+      "Browser.Actuator.Transport.Downstream.PayloadDropped",
       DownstreamPayloadDropReason::kUnknownType, 1);
 }
 
@@ -673,7 +673,7 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageReportsMissingHandler) {
       ExpectedTypeUrl(PayloadType::kExperimentalTriggering), kTestPayload)));
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Downstream.PayloadDropped",
+      "Browser.Actuator.Transport.Downstream.PayloadDropped",
       DownstreamPayloadDropReason::kNoHandler, 1);
 }
 
@@ -698,7 +698,7 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageReportsDispatchFailure) {
       ExpectedTypeUrl(PayloadType::kControl), kTestPayload)));
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Downstream.PayloadDropped",
+      "Browser.Actuator.Transport.Downstream.PayloadDropped",
       DownstreamPayloadDropReason::kDispatchFailed, 1);
 }
 

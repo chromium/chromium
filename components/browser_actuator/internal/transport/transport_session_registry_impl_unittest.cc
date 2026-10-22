@@ -140,9 +140,10 @@ TEST(TransportSessionRegistryImplTest, EnforcesMaxConcurrentSessions) {
   EXPECT_EQ(session3_retry->GetSessionId(), "session_3");
 }
 
-// Verifies that `Browser.Actuator.SessionRegistry.ExistingSessionsCount`
-// records the number of currently active transport sessions immediately prior
-// to attempting to create a new session.
+// Verifies that
+// `Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount` records
+// the number of currently active transport sessions immediately prior to
+// attempting to create a new session.
 TEST(TransportSessionRegistryImplTest,
      ExistingSessionsCountHistogram_RecordedOnSessionCreation) {
   base::HistogramTester histogram_tester;
@@ -151,21 +152,23 @@ TEST(TransportSessionRegistryImplTest,
                                         /*max_concurrent_sessions=*/2);
 
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount", 0);
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 0);
 
   // 1st session creation: registry has 0 existing sessions.
   registry.GetOrCreateSession("session_1");
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount", /*sample=*/0,
-      /*expected_bucket_count=*/1);
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      /*sample=*/0,
+      /*expected_count=*/1);
 
   // 2nd session creation: registry has 1 existing session.
   registry.GetOrCreateSession("session_2");
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount", /*sample=*/1,
-      /*expected_bucket_count=*/1);
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      /*sample=*/1,
+      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount", 2);
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 2);
 }
 
 // Verifies that attempting to create a new session when the registry has
@@ -186,13 +189,15 @@ TEST(TransportSessionRegistryImplTest,
   // The histogram should still record that 2 sessions currently exist.
   EXPECT_EQ(registry.GetOrCreateSession("session_3"), nullptr);
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount", /*sample=*/2,
-      /*expected_bucket_count=*/1);
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      /*sample=*/2,
+      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount", 3);
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 3);
 }
 
-// Verifies that `Browser.Actuator.SessionRegistry.SessionLimitReached` records
+// Verifies that
+// `Browser.Actuator.Transport.SessionRegistry.SessionLimitReached` records
 // `false` when a new session is created within the allowed limit, and `true`
 // when the session request is rejected because the maximum limit is reached.
 TEST(TransportSessionRegistryImplTest,
@@ -203,26 +208,29 @@ TEST(TransportSessionRegistryImplTest,
                                         /*max_concurrent_sessions=*/2);
 
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.SessionRegistry.SessionLimitReached", 0);
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 0);
 
   // 1st and 2nd session creations succeed (limit not reached -> false).
   registry.GetOrCreateSession("session_1");
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.SessionRegistry.SessionLimitReached", /*sample=*/false,
-      /*expected_bucket_count=*/1);
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      /*sample=*/false,
+      /*expected_count=*/1);
 
   registry.GetOrCreateSession("session_2");
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.SessionRegistry.SessionLimitReached", /*sample=*/false,
-      /*expected_bucket_count=*/2);
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      /*sample=*/false,
+      /*expected_count=*/2);
 
   // 3rd session creation is rejected (limit reached -> true).
   EXPECT_EQ(registry.GetOrCreateSession("session_3"), nullptr);
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.SessionRegistry.SessionLimitReached", /*sample=*/true,
-      /*expected_bucket_count=*/1);
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      /*sample=*/true,
+      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.SessionRegistry.SessionLimitReached", 3);
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 3);
 }
 
 // Verifies that looking up or retrieving an existing session from the registry
@@ -238,9 +246,9 @@ TEST(TransportSessionRegistryImplTest,
   // Create initial session.
   registry.GetOrCreateSession("session_1");
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount", 1);
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.SessionRegistry.SessionLimitReached", 1);
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 1);
 
   // Requesting the existing session again should retrieve it without recording
   // new histogram samples.
@@ -249,9 +257,9 @@ TEST(TransportSessionRegistryImplTest,
   EXPECT_EQ(session1->GetSessionId(), "session_1");
 
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount", 1);
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.SessionRegistry.SessionLimitReached", 1);
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 1);
 }
 
 // Verifies that after an active session is destroyed to free capacity, creating
@@ -279,11 +287,13 @@ TEST(TransportSessionRegistryImplTest,
   EXPECT_EQ(session3->GetSessionId(), "session_3");
 
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount", /*sample=*/1,
-      /*expected_bucket_count=*/2);
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      /*sample=*/1,
+      /*expected_count=*/2);
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.SessionRegistry.SessionLimitReached", /*sample=*/false,
-      /*expected_bucket_count=*/3);
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      /*sample=*/false,
+      /*expected_count=*/3);
 }
 
 namespace {

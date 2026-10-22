@@ -864,12 +864,12 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
 
   EXPECT_TRUE(sessions[0].events[0].is_downstream);
   EXPECT_THAT(sessions[0].events[0].payload_types,
-              ::testing::ElementsAre("Control", "GlicExperimentalTriggering",
+              ::testing::ElementsAre("Control", "ExperimentalTriggering",
                                      "Actuation", "Unspecified"));
 
   EXPECT_FALSE(sessions[0].events[1].is_downstream);
   EXPECT_THAT(sessions[0].events[1].payload_types,
-              ::testing::ElementsAre("Control", "GlicExperimentalTriggering",
+              ::testing::ElementsAre("Control", "ExperimentalTriggering",
                                      "Actuation", "Unspecified"));
 }
 

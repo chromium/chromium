@@ -101,12 +101,13 @@ TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramExactLinear(
-      "Browser.Actuator.SessionRegistry.ExistingSessionsCount",
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
       static_cast<int>(sessions_.size()),
       /*exclusive_max=*/20);
   const bool limit_reached = sessions_.size() >= max_concurrent_sessions_;
   base::UmaHistogramBoolean(
-      "Browser.Actuator.SessionRegistry.SessionLimitReached", limit_reached);
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      limit_reached);
   if (limit_reached) {
     DLOG(WARNING) << "Max concurrent sessions limit ("
                   << max_concurrent_sessions_
