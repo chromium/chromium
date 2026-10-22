@@ -72,6 +72,14 @@ class CONTENT_EXPORT ManifestIconDownloader final {
   // Centers |icon| in a transparent square, scaling it down if necessary.
   static SkBitmap PadIconToSquare(const SkBitmap& icon, int square_size);
 
+  // Whether an icon of |size| is usable as an icon of at least
+  // |minimum_icon_size_in_px|. With |pad_to_square|, the longest side is
+  // compared against the minimum, since the icon is padded to a square at its
+  // longest side.
+  static bool IsUsableIconSize(const gfx::Size& size,
+                               int minimum_icon_size_in_px,
+                               bool pad_to_square);
+
   // This threshold has been chosen arbitrarily and is open to any necessary
   // changes in the future.
   static const int kMaxWidthToHeightRatio = 5;

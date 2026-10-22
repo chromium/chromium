@@ -4,8 +4,10 @@
 
 #include "components/favicon/core/large_icon_worker.h"
 
+#include <algorithm>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -29,17 +31,25 @@ BASE_FEATURE(kLargeIconWorkerTaskPriorityKillSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 using NoBigEnoughIconBehavior = LargeIconService::NoBigEnoughIconBehavior;
+using NonSquareIconBehavior = LargeIconService::NonSquareIconBehavior;
 
 namespace {
 
 bool ShouldReturnBitmap(const favicon_base::FaviconRawBitmapResult& db_result,
                         int min_source_size,
-                        NoBigEnoughIconBehavior no_big_enough_icon_behavior) {
-  return db_result.is_valid() &&
-         db_result.pixel_size.width() == db_result.pixel_size.height() &&
-         (db_result.pixel_size.width() >= min_source_size ||
-          no_big_enough_icon_behavior ==
-              NoBigEnoughIconBehavior::kReturnBitmap);
+                        NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+                        NonSquareIconBehavior non_square_icon_behavior) {
+  if (!db_result.is_valid()) {
+    return false;
+  }
+  if (non_square_icon_behavior == NonSquareIconBehavior::kSkip &&
+      db_result.pixel_size.width() != db_result.pixel_size.height()) {
+    return false;
+  }
+  const int shortest_side =
+      std::min(db_result.pixel_size.width(), db_result.pixel_size.height());
+  return shortest_side >= min_source_size ||
+         no_big_enough_icon_behavior == NoBigEnoughIconBehavior::kReturnBitmap;
 }
 
 // Wraps the PNG data in `db_result` in a gfx::Image. If `desired_size` is not
@@ -50,7 +60,14 @@ gfx::Image ResizeLargeIconOnBackgroundThread(
     int desired_size) {
   gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(db_result.bitmap_data);
 
-  if (desired_size == 0 || db_result.pixel_size.width() == desired_size) {
+  if (desired_size == 0) {
+    return image;
+  }
+
+  // Callers requesting a resize cannot accept non-square icons, see
+  // `LargeIconService::NonSquareIconBehavior`.
+  CHECK_EQ(db_result.pixel_size.width(), db_result.pixel_size.height());
+  if (db_result.pixel_size.width() == desired_size) {
     return image;
   }
 
@@ -98,12 +115,14 @@ LargeIconWorker::LargeIconWorker(
     int min_source_size_in_pixel,
     int size_in_pixel_to_resize_to,
     NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+    NonSquareIconBehavior non_square_icon_behavior,
     favicon_base::LargeIconCallback raw_bitmap_callback,
     favicon_base::LargeIconImageCallback image_callback,
     base::CancelableTaskTracker* tracker)
     : min_source_size_in_pixel_(min_source_size_in_pixel),
       size_in_pixel_to_resize_to_(size_in_pixel_to_resize_to),
       no_big_enough_icon_behavior_(no_big_enough_icon_behavior),
+      non_square_icon_behavior_(non_square_icon_behavior),
       raw_bitmap_callback_(std::move(raw_bitmap_callback)),
       image_callback_(std::move(image_callback)),
       background_task_runner_(base::ThreadPool::CreateTaskRunner(
@@ -124,7 +143,8 @@ void LargeIconWorker::OnIconLookupComplete(
   fallback_icon_style_ = std::make_unique<favicon_base::FallbackIconStyle>();
 
   if (ShouldReturnBitmap(db_result, min_source_size_in_pixel_,
-                         no_big_enough_icon_behavior_)) {
+                         no_big_enough_icon_behavior_,
+                         non_square_icon_behavior_)) {
     tracker_->PostTaskAndReply(
         background_task_runner_.get(), FROM_HERE,
         base::BindOnce(&LargeIconWorker::ResizeAndEncodeOnBackgroundThread,
@@ -153,6 +173,7 @@ base::CancelableTaskTracker::TaskId LargeIconWorker::GetLargeIconRawBitmap(
     int min_source_size_in_pixel,
     int size_in_pixel_to_resize_to,
     NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+    NonSquareIconBehavior non_square_icon_behavior,
     favicon_base::LargeIconCallback raw_bitmap_callback,
     favicon_base::LargeIconImageCallback image_callback,
     base::CancelableTaskTracker* tracker) {
@@ -161,8 +182,8 @@ base::CancelableTaskTracker::TaskId LargeIconWorker::GetLargeIconRawBitmap(
 
   auto worker = base::MakeRefCounted<LargeIconWorker>(
       min_source_size_in_pixel, size_in_pixel_to_resize_to,
-      no_big_enough_icon_behavior, std::move(raw_bitmap_callback),
-      std::move(image_callback), tracker);
+      no_big_enough_icon_behavior, non_square_icon_behavior,
+      std::move(raw_bitmap_callback), std::move(image_callback), tracker);
 
   int max_size_in_pixel =
       std::max(size_in_pixel_to_resize_to, min_source_size_in_pixel);

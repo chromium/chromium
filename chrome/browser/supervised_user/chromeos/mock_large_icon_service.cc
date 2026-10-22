@@ -40,8 +40,8 @@ MockLargeIconService::MockLargeIconService() {
         return kTaskId;
       });
 
-  ON_CALL(*this, GetLargeIconRawBitmapForPageUrl(_, _, _, _, _, _))
-      .WillByDefault([this](auto, auto, auto, auto,
+  ON_CALL(*this, GetLargeIconRawBitmapForPageUrl(_, _, _, _, _, _, _))
+      .WillByDefault([this](auto, auto, auto, auto, auto,
                             favicon_base::LargeIconCallback callback, auto) {
         favicon_base::FaviconRawBitmapResult result;
         result.icon_url = kIconUrl;

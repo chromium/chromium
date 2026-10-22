@@ -97,6 +97,7 @@ class TestLargeIconService : public favicon::LargeIconService {
       int min_source_size_in_pixel,
       std::optional<int> size_in_pixel_to_resize_to,
       NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+      NonSquareIconBehavior non_square_icon_behavior,
       favicon_base::LargeIconCallback callback,
       base::CancelableTaskTracker* tracker) override {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -789,6 +790,144 @@ TEST_F(InstallableIconFetcherTest, FaviconFallbackCandidateSizesAny) {
   EXPECT_FALSE(page_data.primary_icon()->drawsNothing());
   EXPECT_GT(page_data.primary_icon()->width(), 0);
   EXPECT_GT(page_data.primary_icon()->height(), 0);
+}
+
+TEST_F(InstallableIconFetcherTest, CachedNonSquareFaviconIsPaddedToSquare) {
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  EnableLargeIconService();
+  // The shortest side is below the minimum size, so this bitmap is only
+  // accepted when the longest side is used.
+  const GURL kDbIconUrl("https://www.example.com/favicon-64x36.png");
+  large_icon_service()->SetRawBitmapResult(
+      CreateFaviconRawBitmapResult(CreateTestBitmap(64, 36), kDbIconUrl));
+
+  const GURL kCandidateUrl("https://www.example.com/touch-icon.png");
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kCandidateUrl, blink::mojom::FaviconIconType::kTouchIcon,
+      std::vector<gfx::Size>(), /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kCandidateUrl));
+  EXPECT_EQ(page_data.primary_icon_url(), kDbIconUrl);
+  ASSERT_TRUE(page_data.primary_icon());
+  EXPECT_EQ(page_data.primary_icon()->width(), 64);
+  EXPECT_EQ(page_data.primary_icon()->height(), 64);
+  EXPECT_EQ(page_data.primary_icon()->getColor(32, 32), SK_ColorRED);
+  EXPECT_EQ(page_data.primary_icon()->getColor(32, 0), SK_ColorTRANSPARENT);
+}
+
+TEST_F(InstallableIconFetcherTest, CachedElongatedFaviconIsRejected) {
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  EnableLargeIconService();
+  const GURL kDbIconUrl("https://www.example.com/favicon-192x16.png");
+  large_icon_service()->SetRawBitmapResult(
+      CreateFaviconRawBitmapResult(CreateTestBitmap(192, 16), kDbIconUrl));
+
+  const GURL kCandidateUrl("https://www.example.com/touch-icon.png");
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kCandidateUrl, blink::mojom::FaviconIconType::kTouchIcon,
+      std::vector<gfx::Size>(), /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  // The cached bitmap is too elongated to pad, so candidates are fetched.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return web_contents_tester()->HasPendingDownloadImage(kCandidateUrl);
+  }));
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kCandidateUrl, 200, {CreateTestBitmap(192, 192)}, {gfx::Size(192, 192)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_EQ(page_data.primary_icon_url(), kCandidateUrl);
+}
+
+TEST_F(InstallableIconFetcherTest, FaviconFallbackCandidateNonSquareSizes) {
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  // Both sides of the banner reach the minimum size, so only the aspect ratio
+  // rejects it, while the portrait icon is only accepted by its longest side.
+  const GURL kElongatedIconUrl("https://www.example.com/banner.png");
+  const GURL kNonSquareIconUrl("https://www.example.com/icon.png");
+
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kElongatedIconUrl, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>{gfx::Size(300, 48)},
+      /*is_default_icon=*/false));
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kNonSquareIconUrl, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>{gfx::Size(36, 64)},
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_FALSE(
+      web_contents_tester()->HasPendingDownloadImage(kElongatedIconUrl));
+  ASSERT_TRUE(
+      web_contents_tester()->HasPendingDownloadImage(kNonSquareIconUrl));
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kNonSquareIconUrl, 200, {CreateTestBitmap(36, 64)}, {gfx::Size(36, 64)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_EQ(page_data.primary_icon_url(), kNonSquareIconUrl);
+  ASSERT_TRUE(page_data.primary_icon());
+  EXPECT_EQ(page_data.primary_icon()->width(), 64);
+  EXPECT_EQ(page_data.primary_icon()->height(), 64);
+}
+
+// Declared sizes come from the page, so the ratio check must not overflow.
+TEST_F(InstallableIconFetcherTest, FaviconFallbackCandidateHugeSize) {
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kHugeIconUrl("https://www.example.com/huge.png");
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kHugeIconUrl, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>{gfx::Size(500000000, 500000000)},
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  ASSERT_TRUE(web_contents_tester()->HasPendingDownloadImage(kHugeIconUrl));
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kHugeIconUrl, 200, {CreateTestBitmap(192, 192)}, {gfx::Size(192, 192)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_EQ(page_data.primary_icon_url(), kHugeIconUrl);
 }
 
 TEST_F(InstallableIconFetcherTest,

@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -821,12 +822,89 @@ TEST_P(LargeIconServiceGetterTest, IconTooSmallStillWantBitmap) {
   large_icon_service_.GetLargeIconRawBitmapForPageUrl(
       GURL(kDummyPageUrl), 24, std::nullopt,
       LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
+      LargeIconService::NonSquareIconBehavior::kReturnBitmap,
       base::BindRepeating(&LargeIconServiceGetterTest::RawBitmapResultCallback,
                           base::Unretained(this)),
       &cancelable_task_tracker_);
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(gfx::Size(16, 16), returned_bitmap_size_);
+  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+}
+
+TEST_P(LargeIconServiceGetterTest,
+       ReturnBitmap_AllowNonSquare_ExpectReturnNonSquareBitmap) {
+  // TODO(crbug.com/337714411): Remove
+  // LargeIconService::GetLargeIconImageOrFallbackStyleForPageUrl().
+  if (GetParam()) {
+    return;
+  }
+
+  InjectMockDatabaseResult(GURL(kDummyPageUrl),
+                           CreateTestBitmapResult(24, 32, kTestColor));
+  base::RunLoop run_loop;
+  large_icon_service_.GetLargeIconRawBitmapForPageUrl(
+      GURL(kDummyPageUrl), 24, std::nullopt,
+      LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
+      LargeIconService::NonSquareIconBehavior::kReturnBitmap,
+      base::BindOnce(&LargeIconServiceGetterTest::RawBitmapResultCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()),
+      &cancelable_task_tracker_);
+  run_loop.Run();
+
+  EXPECT_EQ(gfx::Size(24, 32), returned_bitmap_size_);
+  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+}
+
+TEST_P(LargeIconServiceGetterTest,
+       ReturnBitmap_SquareOnly_ExpectReturnEmptyBitmap) {
+  // TODO(crbug.com/337714411): Remove
+  // LargeIconService::GetLargeIconImageOrFallbackStyleForPageUrl().
+  if (GetParam()) {
+    return;
+  }
+
+  InjectMockDatabaseResult(GURL(kDummyPageUrl),
+                           CreateTestBitmapResult(24, 32, kTestColor));
+  base::RunLoop run_loop;
+  large_icon_service_.GetLargeIconRawBitmapForPageUrl(
+      GURL(kDummyPageUrl), 24, std::nullopt,
+      LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
+      LargeIconService::NonSquareIconBehavior::kSkip,
+      base::BindOnce(&LargeIconServiceGetterTest::RawBitmapResultCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()),
+      &cancelable_task_tracker_);
+  run_loop.Run();
+
+  EXPECT_EQ(std::nullopt, returned_bitmap_size_);
+  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+}
+
+TEST_P(LargeIconServiceGetterTest,
+       ReturnEmpty_AllowNonSquare_OneDimensionTooSmall) {
+  // TODO(crbug.com/337714411): Remove
+  // LargeIconService::GetLargeIconImageOrFallbackStyleForPageUrl().
+  if (GetParam()) {
+    return;
+  }
+
+  // The height is less than the minimum size, even though the width is not.
+  InjectMockDatabaseResult(GURL(kDummyPageUrl),
+                           CreateTestBitmapResult(32, 16, kTestColor));
+  base::RunLoop run_loop;
+  large_icon_service_.GetLargeIconRawBitmapForPageUrl(
+      GURL(kDummyPageUrl), 24, std::nullopt,
+      LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
+      LargeIconService::NonSquareIconBehavior::kReturnBitmap,
+      base::BindOnce(&LargeIconServiceGetterTest::RawBitmapResultCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()),
+      &cancelable_task_tracker_);
+  run_loop.Run();
+
+  EXPECT_EQ(std::nullopt, returned_bitmap_size_);
   EXPECT_EQ(std::nullopt, returned_fallback_style_);
 }
 
@@ -842,6 +920,7 @@ TEST_P(LargeIconServiceGetterTest, IconTooSmallDontWantAnything) {
   large_icon_service_.GetLargeIconRawBitmapForPageUrl(
       GURL(kDummyPageUrl), 24, std::nullopt,
       LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
+      LargeIconService::NonSquareIconBehavior::kSkip,
       base::BindRepeating(&LargeIconServiceGetterTest::RawBitmapResultCallback,
                           base::Unretained(this)),
       &cancelable_task_tracker_);

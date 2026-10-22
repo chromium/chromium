@@ -46,7 +46,7 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetUncachedFavicon) {
   // the cache. One before the network request where the icon is not yet in the
   // cache and one afterwards, when the icon should be present in the cache.
   EXPECT_CALL(large_icon_service,
-              GetLargeIconRawBitmapForPageUrl(page_url, _, _, _, _, _))
+              GetLargeIconRawBitmapForPageUrl(page_url, _, _, _, _, _, _))
       .Times(2);
   EXPECT_CALL(large_icon_service,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
@@ -79,7 +79,7 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetCachedFavicon) {
   // Confirm that the icon was retrieved from the cache on the first attempt
   // and no network request was made.
   EXPECT_CALL(large_icon_service,
-              GetLargeIconRawBitmapForPageUrl(page_url, _, _, _, _, _))
+              GetLargeIconRawBitmapForPageUrl(page_url, _, _, _, _, _, _))
       .Times(1);
   EXPECT_CALL(large_icon_service,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(

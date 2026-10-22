@@ -42,6 +42,14 @@ class LargeIconService : public KeyedService {
     // Empty return.
     kReturnEmpty = 2,
   };
+  // Controls the behavior for a stored icon that is not square.
+  enum class NonSquareIconBehavior {
+    // Treat the icon as if no icon was found.
+    kSkip = 0,
+    // Return the icon as it is stored. Resizing a non-square icon is
+    // unsupported, so this requires no resizing to be requested.
+    kReturnBitmap = 1,
+  };
 
   LargeIconService(const LargeIconService&) = delete;
   LargeIconService& operator=(const LargeIconService&) = delete;
@@ -86,11 +94,15 @@ class LargeIconService : public KeyedService {
   // NoBigEnoughIconBehavior::kReturnBitmap. `no_big_enough_icon_behavior`
   // controls the returned value if there is no icon larger than
   // `min_source_size_in_pixel` in the database.
+  // `non_square_icon_behavior` controls whether a non-square stored icon can
+  // be returned. NonSquareIconBehavior::kReturnBitmap is valid only when
+  // `size_in_pixel_to_resize_to` == std::nullopt.
   virtual base::CancelableTaskTracker::TaskId GetLargeIconRawBitmapForPageUrl(
       const GURL& page_url,
       int min_source_size_in_pixel,
       std::optional<int> size_in_pixel_to_resize_to,
       NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+      NonSquareIconBehavior non_square_icon_behavior,
       favicon_base::LargeIconCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 

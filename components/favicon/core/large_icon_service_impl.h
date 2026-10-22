@@ -61,6 +61,7 @@ class LargeIconServiceImpl : public LargeIconService {
       int min_source_size_in_pixel,
       std::optional<int> size_in_pixel_to_resize_to,
       NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+      NonSquareIconBehavior non_square_icon_behavior,
       favicon_base::LargeIconCallback callback,
       base::CancelableTaskTracker* tracker) override;
   base::CancelableTaskTracker::TaskId
@@ -101,6 +102,7 @@ class LargeIconServiceImpl : public LargeIconService {
       int min_source_size_in_pixel,
       std::optional<int> size_in_pixel_to_resize_to,
       NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+      NonSquareIconBehavior non_square_icon_behavior,
       favicon_base::LargeIconCallback raw_bitmap_callback,
       favicon_base::LargeIconImageCallback image_callback,
       base::CancelableTaskTracker* tracker);

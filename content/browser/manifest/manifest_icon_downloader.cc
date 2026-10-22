@@ -23,6 +23,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace content {
 
@@ -74,6 +75,23 @@ bool ManifestIconDownloader::Download(
           minimum_icon_size_in_px, square_only, web_contents->GetWeakPtr(),
           std::move(final_callback_with_metrics), suppress_warnings));
   return true;
+}
+
+bool ManifestIconDownloader::IsUsableIconSize(const gfx::Size& size,
+                                              int minimum_icon_size_in_px,
+                                              bool pad_to_square) {
+  const int longest_side = std::max(size.width(), size.height());
+  const int shortest_side = std::min(size.width(), size.height());
+  if (shortest_side <= 0) {
+    return false;
+  }
+  // A padded icon ends up as `longest_side` x `longest_side`.
+  if ((pad_to_square ? longest_side : shortest_side) <
+      minimum_icon_size_in_px) {
+    return false;
+  }
+  return static_cast<float>(longest_side) / shortest_side <=
+         kMaxWidthToHeightRatio;
 }
 
 SkBitmap ManifestIconDownloader::PadIconToSquare(const SkBitmap& icon,
@@ -260,21 +278,16 @@ int ManifestIconDownloader::FindClosestBitmapIndex(
     if (bitmaps[i].drawsNothing()) {
       continue;
     }
-    // Non-square fallback frames are padded to their longest side.
-    const int bitmap_size =
-        square_only ? std::max(bitmaps[i].height(), bitmaps[i].width())
-                    : std::min(bitmaps[i].height(), bitmaps[i].width());
-    if (bitmap_size < minimum_icon_size_in_px) {
+    const gfx::Size size(bitmaps[i].width(), bitmaps[i].height());
+    if (!IsUsableIconSize(size, minimum_icon_size_in_px,
+                          /*pad_to_square=*/square_only)) {
       continue;
     }
 
-    const float ratio =
-        static_cast<float>(std::max(bitmaps[i].width(), bitmaps[i].height())) /
-        std::min(bitmaps[i].width(), bitmaps[i].height());
-    if (ratio > kMaxWidthToHeightRatio) {
-      continue;
-    }
-    const float ratio_difference = ratio - 1.0f;
+    const float ratio_difference =
+        static_cast<float>(std::max(size.width(), size.height())) /
+            std::min(size.width(), size.height()) -
+        1.0f;
     if (ratio_difference < best_ratio_difference) {
       best_index = i;
       best_ratio_difference = ratio_difference;

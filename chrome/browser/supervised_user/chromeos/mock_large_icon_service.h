@@ -53,6 +53,7 @@ class MockLargeIconService : public favicon::LargeIconService {
                int min_source_size_in_pixel,
                std::optional<int> size_in_pixel_to_resize_to,
                NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+               NonSquareIconBehavior non_square_icon_behavior,
                favicon_base::LargeIconCallback callback,
                base::CancelableTaskTracker* tracker),
               (override));

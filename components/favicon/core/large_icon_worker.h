@@ -28,6 +28,7 @@ class LargeIconWorker : public base::RefCountedThreadSafe<LargeIconWorker> {
       int min_source_size_in_pixel,
       int size_in_pixel_to_resize_to,
       LargeIconService::NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+      LargeIconService::NonSquareIconBehavior non_square_icon_behavior,
       favicon_base::LargeIconCallback raw_bitmap_callback,
       favicon_base::LargeIconImageCallback image_callback,
       base::CancelableTaskTracker* tracker);
@@ -47,6 +48,7 @@ class LargeIconWorker : public base::RefCountedThreadSafe<LargeIconWorker> {
       int min_source_size_in_pixel,
       int size_in_pixel_to_resize_to,
       LargeIconService::NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+      LargeIconService::NonSquareIconBehavior non_square_icon_behavior,
       favicon_base::LargeIconCallback raw_bitmap_callback,
       favicon_base::LargeIconImageCallback image_callback,
       base::CancelableTaskTracker* tracker);
@@ -73,6 +75,7 @@ class LargeIconWorker : public base::RefCountedThreadSafe<LargeIconWorker> {
   int min_source_size_in_pixel_;
   int size_in_pixel_to_resize_to_;
   LargeIconService::NoBigEnoughIconBehavior no_big_enough_icon_behavior_;
+  LargeIconService::NonSquareIconBehavior non_square_icon_behavior_;
   favicon_base::LargeIconCallback raw_bitmap_callback_;
   favicon_base::LargeIconImageCallback image_callback_;
   scoped_refptr<base::TaskRunner> background_task_runner_;

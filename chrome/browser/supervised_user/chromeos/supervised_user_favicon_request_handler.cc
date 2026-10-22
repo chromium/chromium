@@ -49,6 +49,7 @@ void SupervisedUserFaviconRequestHandler::FetchFaviconFromCache() {
   large_icon_service_->GetLargeIconRawBitmapForPageUrl(
       page_url_, kMinIconSize, kDesiredIconSize,
       favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
+      favicon::LargeIconService::NonSquareIconBehavior::kSkip,
       base::BindOnce(
           &SupervisedUserFaviconRequestHandler::OnGetFaviconFromCacheFinished,
           weak_ptr_factory_.GetWeakPtr()),

@@ -30,6 +30,7 @@
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -121,8 +122,10 @@ void ProcessFaviconInBackground(
   }
 
   int min_size = GetMinimumFaviconForPrimaryIconSizeInPx();
-  if (decoded.isNull() || decoded.width() < min_size ||
-      decoded.height() < min_size) {
+  if (decoded.isNull() ||
+      !content::ManifestIconDownloader::IsUsableIconSize(
+          gfx::Size(decoded.width(), decoded.height()), min_size,
+          /*pad_to_square=*/true)) {
     ui_thread_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(failed_callback),
                                   InstallableStatusCode::NO_ACCEPTABLE_ICON));
@@ -184,8 +187,8 @@ bool IsCandidateBigEnough(const blink::mojom::FaviconURL& favicon_url,
     if (size.IsEmpty()) {
       return true;
     }
-    if (size.width() >= min_required_size &&
-        size.height() >= min_required_size) {
+    if (content::ManifestIconDownloader::IsUsableIconSize(
+            size, min_required_size, /*pad_to_square=*/true)) {
       return true;
     }
   }
@@ -297,6 +300,7 @@ void InstallableIconFetcher::FetchFavicon() {
       GetIdealPrimaryIconSizeInPx(IconPurpose::ANY),
       /*size_in_pixel_to_resize_to=*/std::nullopt,
       favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
+      favicon::LargeIconService::NonSquareIconBehavior::kReturnBitmap,
       base::BindOnce(&InstallableIconFetcher::OnFaviconFetched,
                      weak_ptr_factory_.GetWeakPtr()),
       &favicon_task_tracker_);
