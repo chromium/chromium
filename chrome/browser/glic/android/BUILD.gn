@@ -266,6 +266,7 @@ source_set("android") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicContextMenuUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelperUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImplUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicTabPickerBridgeUnitTest.java",

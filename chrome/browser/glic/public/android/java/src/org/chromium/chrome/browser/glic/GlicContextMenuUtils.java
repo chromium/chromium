@@ -61,15 +61,20 @@ public final class GlicContextMenuUtils {
 
     private GlicContextMenuUtils() {}
 
-    private static boolean isContextMenuEligible(
-            @Nullable Profile profile, String paramName, boolean defaultValue) {
+    /** Returns true if the profile is eligible for any Glic context menu entry point. */
+    public static boolean isGlicContextMenuEligible(@Nullable Profile profile) {
         if (profile == null || profile.isOffTheRecord() || DeviceInfo.isAutomotive()) {
             return false;
         }
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
+                && GlicEnabling.isReadyForProfile(profile);
+    }
+
+    private static boolean isContextMenuEligible(
+            @Nullable Profile profile, String paramName, boolean defaultValue) {
+        return isGlicContextMenuEligible(profile)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU, paramName, defaultValue)
-                && GlicEnabling.isEnabledForProfile(profile);
+                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU, paramName, defaultValue);
     }
 
     private static boolean isContainerAvailable(Context context) {
