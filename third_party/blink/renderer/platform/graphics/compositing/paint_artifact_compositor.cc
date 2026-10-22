@@ -621,8 +621,8 @@ bool NeedsFullUpdateAfterPaintingChunk(
 }
 
 // When a drawable element of <canvas> is rendered via drawElementImage, its
-// paint must be recorded using the canvas element's content clip and effect
-// state.
+// paint must be recorded using the drawable element's clip, effect, and
+// transform state.
 PropertyTreeState GetPropertyTreeStateForPaint(
     const PropertyTreeState& layer_state) {
   PropertyTreeState result = layer_state;
