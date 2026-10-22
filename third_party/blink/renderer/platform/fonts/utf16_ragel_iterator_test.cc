@@ -14,7 +14,7 @@
 
 namespace blink {
 
-TEST(UTF16RagelIteratorTest, CharacterClasses) {
+TEST(Utf16RagelIteratorTest, CharacterClasses) {
   UChar32 class_examples_codepoints[] = {
       uchar::kCombiningEnclosingKeycap,
       uchar::kCombiningEnclosingCircleBackslash,
@@ -49,14 +49,14 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
       EmojiSegmentationCategory::EMOJI_EMOJI_PRESENTATION,
       EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION,
   });
-  UTF16RagelIterator ragel_iterator(
+  Utf16RagelIterator ragel_iterator(
       unicode::ToSpan(class_examples_unicode_string));
   for (const EmojiSegmentationCategory& category : categories) {
     CHECK_EQ(category, *ragel_iterator);
     ragel_iterator++;
   }
 
-  UTF16RagelIterator reverse_ragel_iterator(
+  Utf16RagelIterator reverse_ragel_iterator(
       unicode::ToSpan(class_examples_unicode_string),
       class_examples_unicode_string.length() - 1);
   size_t i = std::size(categories) - 1;
@@ -67,7 +67,7 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
   };
 }
 
-TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
+TEST(Utf16RagelIteratorTest, ArithmeticOperators) {
   UChar32 class_examples_codepoints[] = {
       uchar::kVariationSelector15, uchar::kVariationSelector15,
       uchar::kVariationSelector15, uchar::kVariationSelector16,
@@ -77,7 +77,7 @@ TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
       icu::UnicodeString::fromUTF32(class_examples_codepoints,
                                     std::size(class_examples_codepoints));
 
-  UTF16RagelIterator ragel_iterator(
+  Utf16RagelIterator ragel_iterator(
       unicode::ToSpan(class_examples_unicode_string));
 
   CHECK_EQ(*ragel_iterator, EmojiSegmentationCategory::VS15);
@@ -92,7 +92,7 @@ TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
 
   ragel_iterator += 3;
 
-  UTF16RagelIterator ragel_iterator_begin = ragel_iterator - 5;
+  Utf16RagelIterator ragel_iterator_begin = ragel_iterator - 5;
   CHECK(ragel_iterator != ragel_iterator_begin);
   CHECK(ragel_iterator == ragel_iterator.end() - 1);
 
@@ -102,21 +102,21 @@ TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
   CHECK_EQ(*(ragel_iterator - 5), EmojiSegmentationCategory::VS15);
 }
 
-TEST(UTF16RagelIteratorTest, InvalidOperationOnEmpty) {
-  UTF16RagelIterator ragel_iterator;
+TEST(Utf16RagelIteratorTest, InvalidOperationOnEmpty) {
+  Utf16RagelIterator ragel_iterator;
   CHECK_EQ(ragel_iterator.Cursor(), 0u);
   EXPECT_DCHECK_DEATH(ragel_iterator++);
   EXPECT_DCHECK_DEATH(ragel_iterator--);
   EXPECT_DCHECK_DEATH(*ragel_iterator);
 }
 
-TEST(UTF16RagelIteratorTest, CursorPositioning) {
+TEST(Utf16RagelIteratorTest, CursorPositioning) {
   UChar32 flags_codepoints[] = {0x1F99E, 0x1F99E, 0x1F99E,
                                 uchar::kLeftSpeechBubble};
 
   icu::UnicodeString flags_unicode_string = icu::UnicodeString::fromUTF32(
       flags_codepoints, std::size(flags_codepoints));
-  UTF16RagelIterator ragel_iterator(unicode::ToSpan(flags_unicode_string));
+  Utf16RagelIterator ragel_iterator(unicode::ToSpan(flags_unicode_string));
 
   CHECK_EQ(ragel_iterator.end().Cursor(), 8u);
 

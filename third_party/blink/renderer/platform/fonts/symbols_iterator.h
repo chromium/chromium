@@ -48,7 +48,7 @@ class PLATFORM_EXPORT SymbolsIterator {
   bool Consume(wtf_size_t* symbols_limit, FontFallbackPriority*);
 
  private:
-  UTF16RagelIterator buffer_iterator_;
+  Utf16RagelIterator buffer_iterator_;
   wtf_size_t cursor_ = 0;
 
   wtf_size_t next_token_end_ = 0;
