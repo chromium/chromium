@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 #include "components/services/storage/dom_storage/session_storage_impl.h"
+#include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -267,6 +268,10 @@ void DOMStorageContextWrapper::BindNamespace(
     const std::string& namespace_id,
     mojo::ReportBadMessageCallback bad_message_callback,
     mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver) {
+  if (!storage::IsNamespaceIdValid(namespace_id)) {
+    std::move(bad_message_callback).Run(storage::kInvalidNamespaceIdError);
+    return;
+  }
   CHECK(session_storage_control_, base::NotFatalUntil::M158);
   session_storage_control_->BindNamespace(namespace_id, std::move(receiver));
 }
@@ -278,6 +283,10 @@ void DOMStorageContextWrapper::BindStorageArea(
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
+  if (!storage::IsNamespaceIdValid(namespace_id)) {
+    std::move(bad_message_callback).Run(storage::kInvalidNamespaceIdError);
+    return;
+  }
   if (!IsRequestValid(StorageType::kSessionStorage, storage_key,
                       local_frame_token, std::move(security_policy_handle),
                       std::move(bad_message_callback))) {

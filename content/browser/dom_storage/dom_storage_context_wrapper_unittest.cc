@@ -9,7 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/uuid.h"
+#include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -17,6 +17,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
@@ -83,7 +84,7 @@ class DOMStorageContextWrapperTest : public testing::Test {
   }
 
   const std::string test_namespace_id_{
-      base::Uuid::GenerateRandomV4().AsLowercaseString()};
+      blink::AllocateSessionStorageNamespaceId()};
   const blink::StorageKey test_storage_key1_{
       blink::StorageKey::CreateFromStringForTesting("https://host1.com/")};
   const blink::StorageKey test_storage_key2_{
@@ -151,5 +152,45 @@ TEST_F(DOMStorageContextWrapperTest,
                             MakeBadMessageCallback());
   EXPECT_FALSE(bad_message_called_);
 }
+
+class DOMStorageContextWrapperInvalidNamespaceIdTest
+    : public DOMStorageContextWrapperTest,
+      public testing::WithParamInterface<std::string> {};
+
+TEST_P(DOMStorageContextWrapperInvalidNamespaceIdTest, BindNamespace) {
+  mojo::Remote<blink::mojom::SessionStorageNamespace> session_namespace;
+  context_->BindNamespace(GetParam(), MakeBadMessageCallback(),
+                          session_namespace.BindNewPipeAndPassReceiver());
+
+  EXPECT_TRUE(bad_message_called_);
+  EXPECT_EQ(bad_message_, storage::kInvalidNamespaceIdError);
+  session_namespace.FlushForTesting();
+  EXPECT_FALSE(session_namespace.is_connected());
+}
+
+TEST_P(DOMStorageContextWrapperInvalidNamespaceIdTest, BindStorageArea) {
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context_->BindStorageArea(test_storage_key1_, std::nullopt, GetParam(),
+                            area.BindNewPipeAndPassReceiver(),
+                            CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
+                            MakeBadMessageCallback());
+
+  EXPECT_TRUE(bad_message_called_);
+  EXPECT_EQ(bad_message_, storage::kInvalidNamespaceIdError);
+  area.FlushForTesting();
+  EXPECT_FALSE(area.is_connected());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DOMStorageContextWrapperInvalidNamespaceIdTest,
+    testing::Values("",
+                    "invalid",
+                    "36356e0b_1627_4492_a474_db76a8996be",
+                    "36356e0b_1627_4492_a474_db76a8996bed0",
+                    "36356e0b-1627-4492-a474-db76a8996bed",
+                    "36356E0B_1627_4492_A474_DB76A8996BED",
+                    "g6356e0b_1627_4492_a474_db76a8996bed",
+                    "36356e0_b1627_4492_a474_db76a8996bed"));
 
 }  // namespace content
