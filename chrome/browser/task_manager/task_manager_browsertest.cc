@@ -28,6 +28,7 @@
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -2115,4 +2116,67 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest,
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
+}
+
+// Regression test for crbug.com/396002122: clearing a WebContentsTag (which
+// invokes WebContentsTaskProvider::WebContentsEntry::ClearAllTasks) on a tab
+// with cross-process subframes must remove all subframe tasks from the table
+// model even when the primary main frame task is removed before its child
+// subframe tasks.
+IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
+                       ClearTagWithSubframesRemovesAllTasks) {
+  if (!ShouldExpectSubframes()) {
+    return;
+  }
+
+  ShowTaskManager();
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
+
+  const GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,c,d,e)");
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchTab("Cross-site iframe factory")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(4, MatchAnySubframe()));
+
+  task_manager::WebContentsTags::ClearTag(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+
+  // Immediately query all remaining rows in the model to verify that no stale
+  // TaskIds were left behind in TaskManagerTableModel::tasks_.
+  for (size_t i = 0; i < model()->GetRowCount(); ++i) {
+    EXPECT_FALSE(model()->GetRowTitle(i).empty());
+  }
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnySubframe()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
+}
+
+// Regression test for crbug.com/396002122: removing a task while a search
+// filter is active must remove the task from TaskManagerTableModel::tasks_ even
+// after its process is erased from matched_process_set_.
+IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest,
+                       RemoveTaskWhileFilteredBySearchTerm) {
+  ShowTaskManager();
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
+
+  ASSERT_TRUE(AddTabAtIndex(0, GetTestURL(), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
+
+  model()->UpdateModel(DisplayCategory::kAll, u"title1");
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
+
+  // Change the document title so that HasMatchInTasksSharingSameProcess()
+  // returns false when the tab is closed, causing matched_process_set_ to
+  // erase the process during OnTaskToBeRemoved().
+  ASSERT_TRUE(content::ExecJs(browser()->tab_strip_model()->GetWebContentsAt(0),
+                              "document.title = 'updated_title';"));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("updated_title")));
+
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
+
+  for (size_t i = 0; i < model()->GetRowCount(); ++i) {
+    EXPECT_FALSE(model()->GetRowTitle(i).empty());
+  }
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
 }

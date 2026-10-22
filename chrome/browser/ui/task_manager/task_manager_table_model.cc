@@ -909,21 +909,23 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
 
 void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
   themed_icons_.erase(id);
-  if (!search_terms_.empty() && !HasMatchInTasksSharingSameProcess(id)) {
-    // Update matched process set if task manager is in search mode.
-    matched_process_set_.erase(observed_task_manager()->GetProcessId(id));
-  }
 
-  if (!ShouldKeepTask(id)) {
-    return;
-  }
-
+  // Do not check ShouldKeepTask(id) here: it can return false for a task that
+  // is currently in `tasks_` (e.g. if its parent task was removed first), which
+  // would leave a destroyed TaskId in `tasks_`.
   auto index = std::ranges::find(tasks_, id);
   if (index == tasks_.end()) {
     return;
   }
   auto removed_index = static_cast<size_t>(index - tasks_.begin());
   tasks_.erase(index);
+
+  // Update `matched_process_set_` after erasing `id` from `tasks_` so
+  // HasMatchInTasksSharingSameProcess() only checks remaining tasks.
+  if (!search_terms_.empty() && !HasMatchInTasksSharingSameProcess(id)) {
+    matched_process_set_.erase(observed_task_manager()->GetProcessId(id));
+  }
+
   if (table_model_observer_) {
     table_model_observer_->OnItemsRemoved(removed_index, 1);
   }
