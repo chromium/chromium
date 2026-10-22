@@ -343,10 +343,7 @@ export class AppElement extends AppElementBase {
         type: Boolean,
         reflect: true,
       },
-      composeboxOutsideClickEnabled_: {
-        type: Boolean,
-        reflect: true,
-      },
+      composeboxOutsideClickEnabled_: {type: Boolean},
 
       /**
        * Whether the scrim is shown in Realbox Next.
@@ -791,10 +788,12 @@ export class AppElement extends AppElementBase {
       this.composeboxFocused_ = false;
     }
 
-    if (this.composeboxOutsideClickEnabled_ &&
-        changedPrivateProperties.has('composeboxFocused_')) {
-      this.pageContentHidden_ =
-          !this.ntpRealboxNextEnabled_ && this.composeboxFocused_;
+    if (changedPrivateProperties.has(
+            this.composeboxOutsideClickEnabled_ ? 'composeboxFocused_' :
+                                                  'showComposebox_')) {
+      this.pageContentHidden_ = !this.ntpRealboxNextEnabled_ &&
+          (this.composeboxOutsideClickEnabled_ ? this.composeboxFocused_ :
+                                                 this.showComposebox_);
     }
 
     if (this.ntpRealboxNextEnabled_ && [

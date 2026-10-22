@@ -2373,22 +2373,24 @@ suite('NewTabPageAppTest', () => {
         blockedElements.forEach(el => assertTrue(el.hasAttribute('inert')));
       });
 
-      test('page hiding keeps the original CSS with the flag off', async () => {
+      test('page hiding uses showComposebox_ with the flag off', async () => {
         loadTimeData.overrideValues({composeboxRealboxOutsideClick: false});
         try {
           await recreateApp();
           const mostVisited = $$<HTMLElement>(app, '#mostVisited')!;
+          assertFalse(app.hasAttribute('page-content-hidden_'));
           assertNotEquals('none', window.getComputedStyle(mostVisited).display);
           $$(app, '#searchbox')!.dispatchEvent(new CustomEvent(
               'open-composebox', {detail: {text: 'draft', files: []}}));
           await microtasksFinished();
-          assertFalse(app.hasAttribute('page-content-hidden_'));
+          assertTrue(app.hasAttribute('page-content-hidden_'));
           assertEquals('none', window.getComputedStyle(mostVisited).display);
 
           const composebox = app.shadowRoot.querySelector<NtpComposeboxElement>(
               '#composebox')!;
           composebox.fire('close-composebox', {composeboxText: ''});
           await microtasksFinished();
+          assertFalse(app.hasAttribute('page-content-hidden_'));
           assertNotEquals('none', window.getComputedStyle(mostVisited).display);
         } finally {
           loadTimeData.overrideValues({composeboxRealboxOutsideClick: true});
