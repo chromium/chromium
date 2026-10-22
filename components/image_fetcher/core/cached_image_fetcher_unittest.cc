@@ -121,6 +121,7 @@ class CachedImageFetcherTest : public testing::Test {
   CachedImageFetcher* cached_image_fetcher() {
     return cached_image_fetcher_.get();
   }
+  void DestroyCachedImageFetcher() { cached_image_fetcher_.reset(); }
   scoped_refptr<ImageCache> image_cache() { return image_cache_; }
   FakeImageDecoder* image_decoder() { return fake_image_decoder_; }
   network::TestURLLoaderFactory* test_url_loader_factory() {
@@ -161,8 +162,6 @@ MATCHER(NonEmptyString, "") {
   return !arg.empty();
 }
 
-// TODO(wylieb): Write a test that creates two CachedImageFetcher and tests
-// that they both can use what's inside.
 TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
   // Save the image in the database.
   const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
@@ -188,6 +187,69 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
   histogram_tester().ExpectBucketCount(kImageFetcherEventHistogramName,
                                        ImageFetcherEvent::kCacheHit, 1);
 }
+
+// The parameter controls whether the writer is destroyed before the other
+// fetcher reads from their shared cache.
+class CachedImageFetcherSharingTest : public CachedImageFetcherTest,
+                                      public testing::WithParamInterface<bool> {
+ protected:
+  bool ShouldDestroyWriter() const { return GetParam(); }
+};
+
+TEST_P(CachedImageFetcherSharingTest, ReusesImageCachedByAnotherFetcher) {
+  const GURL image_url("http://gstatic.img.com/shared.jpg");
+  auto shared_factory =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          test_url_loader_factory());
+  ImageFetcherImpl second_network_fetcher(std::make_unique<FakeImageDecoder>(),
+                                          shared_factory);
+  CachedImageFetcher second_fetcher(&second_network_fetcher, image_cache(),
+                                    /*read_only=*/false);
+
+  test_url_loader_factory()->AddResponse(image_url.spec(), kImageData);
+  ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName);
+  params.set_skip_transcoding_for_testing(true);
+  {
+    base::MockCallback<ImageDataFetcherCallback> callback;
+    EXPECT_CALL(callback, Run(kImageData, _));
+    cached_image_fetcher()->FetchImageAndData(image_url, callback.Get(),
+                                              ImageFetcherCallback(), params);
+    db()->LoadCallback(true);
+    RunUntilIdle();
+  }
+  ASSERT_EQ(1u, test_url_loader_factory()->total_requests());
+  histogram_tester().ExpectBucketCount(kImageFetcherEventHistogramName,
+                                       ImageFetcherEvent::kCacheMiss, 1);
+
+  if (ShouldDestroyWriter()) {
+    DestroyCachedImageFetcher();
+    RunUntilIdle();
+  }
+  test_url_loader_factory()->ClearResponses();
+  {
+    base::MockCallback<ImageDataFetcherCallback> callback;
+    base::MockCallback<ImageFetcherCallback> image_callback;
+    EXPECT_CALL(callback, Run(kImageData, _));
+    EXPECT_CALL(image_callback, Run(NonEmptyImage(), _));
+    second_fetcher.FetchImageAndData(
+        image_url, callback.Get(), image_callback.Get(),
+        ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
+    db()->LoadCallback(true);
+    RunUntilIdle();
+  }
+  EXPECT_EQ(1u, test_url_loader_factory()->total_requests());
+  EXPECT_EQ(0, test_url_loader_factory()->NumPending());
+  histogram_tester().ExpectBucketCount(kImageFetcherEventHistogramName,
+                                       ImageFetcherEvent::kCacheHit, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CachedImageFetcherSharingTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WriterDestroyed"
+                                             : "WriterAlive";
+                         });
 
 TEST_F(CachedImageFetcherTest, FetchImageFromCacheNeedsTranscoding) {
   // Save the image in the database.
