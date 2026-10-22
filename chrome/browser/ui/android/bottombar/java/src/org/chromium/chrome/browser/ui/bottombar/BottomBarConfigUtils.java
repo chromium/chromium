@@ -47,9 +47,9 @@ public class BottomBarConfigUtils {
     }
 
     /**
-     * Returns whether the "Show bottom toolbar" switch should be offered in Settings: the bottom
-     * bar must be eligible on this device and the show_settings_toggle param must be on. Never true
-     * when the AndroidBottomBar flag is off.
+     * Returns whether the "Toolbar" (bottom toolbar) switch should be offered in Settings: the
+     * bottom bar must be eligible on this device and the show_settings_toggle param must be on.
+     * Never true when the AndroidBottomBar flag is off.
      */
     public static boolean shouldShowSettingsToggle(Context context) {
         return isBottomBarEligible(context)
