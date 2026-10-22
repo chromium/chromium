@@ -43,6 +43,7 @@
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/prefs.h"
+#include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -93,14 +94,13 @@
 #include "extensions/common/permissions/permissions_data.h"
 #endif
 
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 
 enum class ReportingType {
   kDevice,
@@ -201,7 +201,11 @@ void AddThreatProtectionPermission(const char* title,
 }
 
 bool IsSaasReportingEnabled(content::WebUI* web_ui) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (!base::FeatureList::IsEnabled(
+          enterprise_reporting::kSaasUsageReporting)) {
+    return false;
+  }
   return !Profile::FromWebUI(web_ui)
               ->GetPrefs()
               ->GetList(enterprise_reporting::kSaasUsageDomainUrlsForProfile)
@@ -211,7 +215,7 @@ bool IsSaasReportingEnabled(content::WebUI* web_ui) {
               .empty();
 #else
   return false;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -427,13 +431,13 @@ void ManagementUIHandler::AddProfileReportingInfo(
     return;
   }
 
-  const std::string messages[] = {
-      kProfileReportingOverview, kProfileReportingUsername,
-      kProfileReportingBrowser,
+  const std::string messages[] = {kProfileReportingOverview,
+                                  kProfileReportingUsername,
+                                  kProfileReportingBrowser,
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-      kProfileReportingExtension,
+                                  kProfileReportingExtension,
 #endif
-      kProfileReportingPolicy};
+                                  kProfileReportingPolicy};
   for (const auto& message : messages) {
     base::DictValue data;
     data.Set("messageId", message);
