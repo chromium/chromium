@@ -241,3 +241,6 @@ crbug.com/575489890 AutofillProfileSettingsTestCase/testCountrySelection [ Pass 
 crbug.com/575489325 [ Device ] NewTabPageTestCase/testPremiumAvatarRingWithDynamicTierChange [ Pass Failure ]
 crbug.com/575489612 [ iPhone Simulator ] AutofillAIEGTest/testSavePassportForm [ Pass Failure ]
 crbug.com/575489509 [ Simulator ] SharedTabGroupsSigninTestCase/testJoinGroupNotSynced [ Pass Failure ]
+
+# Gardening suppression 2026-10-22
+crbug.com/575489890 AutofillProfileSettingsTestCase/testDoneButtonByRequirementsOfCountries [ Pass Failure ]
