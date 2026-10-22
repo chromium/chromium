@@ -12,7 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -55,9 +55,9 @@ RecordingTypeMenuView::RecordingTypeMenuView(
     base::RepeatingClosure on_option_selected_callback)
     : CaptureModeMenuGroup(this, kMenuPadding),
       on_option_selected_callback_(std::move(on_option_selected_callback)),
-      shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+      shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
           this,
-          SystemShadow::Type::kElevation12)) {
+          SystemDecoration::ShadowType::kElevation12)) {
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(kRoundedCorners);
   SetBackground(views::CreateSolidBackground(

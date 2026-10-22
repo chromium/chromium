@@ -23,7 +23,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -120,9 +120,9 @@ CaptureModeSettingsView::CaptureModeSettingsView(
     : ScrollView(views::ScrollView::ScrollWithLayers::kEnabled),
       capture_mode_session_(session),
       active_behavior_(active_behavior),
-      shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+      shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
           this,
-          SystemShadow::Type::kElevation12)) {
+          SystemDecoration::ShadowType::kElevation12)) {
   auto* controller = CaptureModeController::Get();
 
   SetContents(std::make_unique<views::View>());

@@ -151,9 +151,9 @@ CaptureLabelView::CaptureLabelView(
     views::Button::PressedCallback on_capture_button_pressed,
     views::Button::PressedCallback on_drop_down_button_pressed)
     : capture_mode_session_(capture_mode_session),
-      shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+      shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
           this,
-          SystemShadow::Type::kElevation12)) {
+          SystemDecoration::ShadowType::kElevation12)) {
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
   SetBackground(views::CreateSolidBackground(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 
 #include "ash/root_window_controller.h"
 #include "ash/style/style_util.h"
@@ -49,23 +49,24 @@ const ui::decoration::Shadow* GetShadow(const ui::Decoration* decoration) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// SystemShadowImpl:
+// SystemDecorationImpl:
 
-// An implementation of `SystemShadow`. It directly owns a shadow Decoration.
-class SystemShadowImpl : public SystemShadow {
+// An implementation of `SystemDecoration`. It directly owns a shadow
+// Decoration.
+class SystemDecorationImpl : public SystemDecoration {
  public:
-  explicit SystemShadowImpl(SystemShadow::Type type)
+  explicit SystemDecorationImpl(SystemDecoration::ShadowType type)
       : decoration_(ui::Decoration::CreateShadow(
-            SystemShadow::GetElevationFromType(type),
+            SystemDecoration::GetElevationFromType(type),
             ui::decoration::Shadow::Style::kChromeOSSystemUI)) {}
 
-  SystemShadowImpl(const SystemShadowImpl&) = delete;
-  SystemShadowImpl& operator=(const SystemShadowImpl&) = delete;
+  SystemDecorationImpl(const SystemDecorationImpl&) = delete;
+  SystemDecorationImpl& operator=(const SystemDecorationImpl&) = delete;
 
-  ~SystemShadowImpl() override = default;
+  ~SystemDecorationImpl() override = default;
 
  private:
-  // SystemShadow:
+  // SystemDecoration:
   ui::Decoration* decoration() override { return decoration_.get(); }
   const ui::Decoration* decoration() const override {
     return decoration_.get();
@@ -75,18 +76,19 @@ class SystemShadowImpl : public SystemShadow {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// SystemViewShadow:
+// SystemViewDecoration:
 
-// An implementation of `SystemShadow`. It is based on ViewDecoration. The
+// An implementation of `SystemDecoration`. It is based on ViewDecoration. The
 // ViewDecoration is added in the layers beneath the view and adjusts its
 // content bounds with the view's bounds. Do not manually set the content
 // bounds.
-class SystemViewShadow : public SystemShadow, public views::ViewObserver {
+class SystemViewDecoration : public SystemDecoration,
+                             public views::ViewObserver {
  public:
-  SystemViewShadow(views::View* view, SystemShadow::Type type)
+  SystemViewDecoration(views::View* view, SystemDecoration::ShadowType type)
       : view_decoration_(view) {
     view_decoration_.SetShadow(
-        SystemShadow::GetElevationFromType(type),
+        SystemDecoration::GetElevationFromType(type),
         ui::decoration::Shadow::Style::kChromeOSSystemUI);
     view_observation_.Observe(view);
     if (auto* widget = view->GetWidget()) {
@@ -94,10 +96,10 @@ class SystemViewShadow : public SystemShadow, public views::ViewObserver {
     }
   }
 
-  SystemViewShadow(const SystemViewShadow&) = delete;
-  SystemViewShadow& operator=(const SystemViewShadow&) = delete;
+  SystemViewDecoration(const SystemViewDecoration&) = delete;
+  SystemViewDecoration& operator=(const SystemViewDecoration&) = delete;
 
-  ~SystemViewShadow() override = default;
+  ~SystemViewDecoration() override = default;
 
   // views::ViewObserver:
   void OnViewAddedToWidget(views::View* observed_view) override {
@@ -108,7 +110,7 @@ class SystemViewShadow : public SystemShadow, public views::ViewObserver {
   }
 
  private:
-  // SystemShadow:
+  // SystemDecoration:
   ui::Decoration* decoration() override {
     return view_decoration_.decoration();
   }
@@ -122,16 +124,17 @@ class SystemViewShadow : public SystemShadow, public views::ViewObserver {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// SystemWindowShadow:
+// SystemWindowDecoration:
 
-// An extension of SystemShadowImpl. The shadow is added at the bottom of a
+// An extension of SystemDecorationImpl. The shadow is added at the bottom of a
 // window's layer and adjusts its content bounds with the window's bounds. Do
 // not manually set the content bounds.
-class SystemWindowShadow : public SystemShadowImpl,
-                           public aura::WindowObserver {
+class SystemWindowDecoration : public SystemDecorationImpl,
+                               public aura::WindowObserver {
  public:
-  SystemWindowShadow(aura::Window* window, SystemShadow::Type type)
-      : SystemShadowImpl(type) {
+  SystemWindowDecoration(aura::Window* window,
+                         SystemDecoration::ShadowType type)
+      : SystemDecorationImpl(type) {
     auto* window_layer = window->layer();
     auto* shadow_layer = GetLayer();
     window_layer->Add(shadow_layer);
@@ -146,10 +149,10 @@ class SystemWindowShadow : public SystemShadowImpl,
     }
   }
 
-  SystemWindowShadow(const SystemWindowShadow&) = delete;
-  SystemWindowShadow& operator=(const SystemWindowShadow&) = delete;
+  SystemWindowDecoration(const SystemWindowDecoration&) = delete;
+  SystemWindowDecoration& operator=(const SystemWindowDecoration&) = delete;
 
-  ~SystemWindowShadow() override = default;
+  ~SystemWindowDecoration() override = default;
 
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
@@ -173,82 +176,84 @@ class SystemWindowShadow : public SystemShadowImpl,
 
 }  // namespace
 
-SystemShadow::~SystemShadow() = default;
+SystemDecoration::~SystemDecoration() = default;
 
 // static
-std::unique_ptr<SystemShadow> SystemShadow::CreateShadowOnNinePatchLayer(
-    Type shadow_type) {
-  return std::make_unique<SystemShadowImpl>(shadow_type);
+std::unique_ptr<SystemDecoration>
+SystemDecoration::CreateShadowOnNinePatchLayer(ShadowType shadow_type) {
+  return std::make_unique<SystemDecorationImpl>(shadow_type);
 }
 
 // static
-std::unique_ptr<SystemShadow> SystemShadow::CreateShadowOnNinePatchLayerForView(
-    views::View* view,
-    Type shadow_type) {
+std::unique_ptr<SystemDecoration>
+SystemDecoration::CreateShadowOnNinePatchLayerForView(views::View* view,
+                                                      ShadowType shadow_type) {
   DCHECK(view);
-  return std::make_unique<SystemViewShadow>(view, shadow_type);
+  return std::make_unique<SystemViewDecoration>(view, shadow_type);
 }
 
 // static
-std::unique_ptr<SystemShadow>
-SystemShadow::CreateShadowOnNinePatchLayerForWindow(aura::Window* window,
-                                                    Type shadow_type) {
+std::unique_ptr<SystemDecoration>
+SystemDecoration::CreateShadowOnNinePatchLayerForWindow(
+    aura::Window* window,
+    ShadowType shadow_type) {
   DCHECK(window);
-  return std::make_unique<SystemWindowShadow>(window, shadow_type);
+  return std::make_unique<SystemWindowDecoration>(window, shadow_type);
 }
 
 // static
-int SystemShadow::GetElevationFromType(Type type) {
+int SystemDecoration::GetElevationFromType(ShadowType type) {
   switch (type) {
-    case Type::kElevation4:
+    case ShadowType::kElevation4:
       return 4;
-    case Type::kElevation12:
+    case ShadowType::kElevation12:
       return 12;
-    case Type::kElevation24:
+    case ShadowType::kElevation24:
       return 24;
   }
 }
 
-void SystemShadow::SetType(SystemShadow::Type type) {
+void SystemDecoration::SetType(SystemDecoration::ShadowType type) {
   GetShadow(decoration())
-      ->SetElevation(SystemShadow::GetElevationFromType(type));
+      ->SetElevation(SystemDecoration::GetElevationFromType(type));
 }
 
-void SystemShadow::SetContentBounds(const gfx::Rect& bounds) {
+void SystemDecoration::SetContentBounds(const gfx::Rect& bounds) {
   decoration()->SetContentBounds(bounds);
 }
 
-void SystemShadow::SetRoundedCorners(
+void SystemDecoration::SetRoundedCorners(
     const gfx::RoundedCornersF& rounded_corners) {
   decoration()->SetRoundedCorners(rounded_corners);
 }
 
-const gfx::Rect& SystemShadow::GetContentBounds() {
+const gfx::Rect& SystemDecoration::GetContentBounds() {
   return decoration()->content_bounds();
 }
 
-ui::Layer* SystemShadow::GetLayer() {
+ui::Layer* SystemDecoration::GetLayer() {
   return decoration()->layer();
 }
 
-void SystemShadow::ObserveColorProviderSource(
+void SystemDecoration::ObserveColorProviderSource(
     ui::ColorProviderSource* color_provider_source) {
   Observe(color_provider_source);
 }
 
-void SystemShadow::OnColorProviderChanged() {
+void SystemDecoration::OnColorProviderChanged() {
   if (auto* color_provider_source = GetColorProviderSource()) {
     UpdateShadowColors(color_provider_source->GetColorProvider());
   }
 }
 
-const gfx::ShadowValues SystemShadow::GetShadowValuesForTesting() const {
+const gfx::ShadowValues SystemDecoration::GetShadowValuesForTesting() const {
   return GetShadow(decoration())
       ->GetSpec(decoration()->content_bounds(), decoration()->rounded_corners())
       .value_or(gfx::ShadowValues());
 }
 
-void SystemShadow::UpdateShadowColors(const ui::ColorProvider* color_provider) {
+void SystemDecoration::UpdateShadowColors(
+    const ui::ColorProvider* color_provider) {
   GetShadow(decoration())
       ->SetColorMap(
           StyleUtil::CreateShadowElevationToColorsMap(color_provider));

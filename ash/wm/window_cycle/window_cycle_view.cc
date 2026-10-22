@@ -14,7 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
@@ -262,8 +262,8 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   mirror_container_->SetBetweenChildSpacing(kBetweenChildPaddingDp -
                                             cycle_item_insets.width());
 
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-      this, SystemShadow::Type::kElevation4);
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      this, SystemDecoration::ShadowType::kElevation4);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kBackgroundCornerRadius));
 }
 

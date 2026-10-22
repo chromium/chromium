@@ -26,7 +26,7 @@ class RoundedCornersF;
 namespace ash {
 
 struct AnchoredNudgeData;
-class SystemShadow;
+class SystemDecoration;
 
 // The System Nudge view. (go/cros-educationalnudge-spec)
 // This view supports different configurations depending on the provided
@@ -79,7 +79,7 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
 
   std::unique_ptr<views::ViewTracker> anchor_view_tracker_;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   // Used to determine if the nudge will draw a pointy corner.
   const bool is_corner_anchored_;

@@ -9,7 +9,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,8 +67,8 @@ GameDashboardWelcomeDialog::GameDashboardWelcomeDialog() {
   SetBorder(views::CreateRoundedRectBorder(
       game_dashboard::kWelcomeDialogBorderThickness, kDialogCornerRadius,
       ui::kColorCrosSystemHighlight));
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-      this, SystemShadow::Type::kElevation12);
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      this, SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kDialogCornerRadius));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);

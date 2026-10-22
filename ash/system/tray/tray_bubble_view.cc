@@ -18,7 +18,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_constants.h"
@@ -376,7 +376,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   }
 
   if (params_.has_shadow) {
-    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+    shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
         this, params_.shadow_type);
     shadow_->SetRoundedCorners(gfx::RoundedCornersF(params_.corner_radius));
   }

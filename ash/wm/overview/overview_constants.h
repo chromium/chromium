@@ -5,7 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_
 
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/time/time.h"
 
@@ -30,10 +30,10 @@ inline constexpr int kDraggingEnlargeDp = 10;
 inline constexpr float kExtremeWindowRatioThreshold = 2.f;
 
 // The shadow types corresponding to the default and dragged states.
-inline constexpr SystemShadow::Type kDefaultShadowType =
-    SystemShadow::Type::kElevation12;
-inline constexpr SystemShadow::Type kDraggedShadowType =
-    SystemShadow::Type::kElevation24;
+inline constexpr SystemDecoration::ShadowType kDefaultShadowType =
+    SystemDecoration::ShadowType::kElevation12;
+inline constexpr SystemDecoration::ShadowType kDraggedShadowType =
+    SystemDecoration::ShadowType::kElevation24;
 
 // Threshold for clamping overview grid bounds.
 inline constexpr float kOverviewGridClampThresholdRatio = 1.0 / 3.0;

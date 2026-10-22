@@ -10,7 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/public_account_menu_view.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
@@ -115,7 +115,7 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   OnPublicSessionViewDismissed on_dismissed_;
   raw_ptr<PublicAccountMonitoringInfoDialog> learn_more_dialog_ = nullptr;
   std::unique_ptr<ui::EventHandler> event_handler_;
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   base::WeakPtrFactory<LoginExpandedPublicAccountView> weak_factory_{this};
 };

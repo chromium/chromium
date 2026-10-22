@@ -20,7 +20,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -801,8 +801,8 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   SetBorder(std::make_unique<views::HighlightBorder>(
       kJellyRoundRectCornerRadiusDp,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-      this, SystemShadow::Type::kElevation12);
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      this, SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(
       gfx::RoundedCornersF(kJellyRoundRectCornerRadiusDp));
 

@@ -5,7 +5,7 @@
 #ifndef ASH_BUBBLE_BUBBLE_CONSTANTS_H_
 #define ASH_BUBBLE_BUBBLE_CONSTANTS_H_
 
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 
 namespace ash {
 
@@ -18,8 +18,8 @@ inline constexpr int kBubbleCornerRadius = 16;
 inline constexpr int kBubbleMenuPadding = 8;
 
 // The elevation used for system tray bubble.
-inline constexpr SystemShadow::Type kBubbleShadowType =
-    SystemShadow::Type::kElevation12;
+inline constexpr SystemDecoration::ShadowType kBubbleShadowType =
+    SystemDecoration::ShadowType::kElevation12;
 
 }  // namespace ash
 

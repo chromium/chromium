@@ -234,8 +234,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   layer()->SetFillsBoundsOpaquely(false);
 
   // Create a shadow for the view.
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-      this, SystemShadow::Type::kElevation12);
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      this, SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kSaveDeskCornerRadius));
 
   if (chromeos::features::IsSystemBlurEnabled()) {

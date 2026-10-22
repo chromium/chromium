@@ -18,7 +18,7 @@
 #include "ash/style/keyboard_shortcut_view.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/nudge_constants.h"
 #include "base/memory/raw_ptr.h"
@@ -182,9 +182,9 @@ SystemNudgeView::SystemNudgeView(
     const AnchoredNudgeData& nudge_data,
     base::RepeatingCallback<void(/*is_hovered_or_has_focus=*/bool)>
         hover_or_focus_changed_callback)
-    : shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+    : shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
           this,
-          SystemShadow::Type::kElevation4)),
+          SystemDecoration::ShadowType::kElevation4)),
       is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)),
       hover_changed_callback_(std::move(nudge_data.hover_changed_callback)),
       hover_or_focus_changed_callback_(

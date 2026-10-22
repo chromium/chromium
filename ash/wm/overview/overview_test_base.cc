@@ -13,7 +13,7 @@
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
 #include "ash/style/rounded_label_widget.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -153,7 +153,7 @@ WindowPreviewView* OverviewTestBase::GetPreviewView(OverviewItemBase* item) {
 
 gfx::Rect OverviewTestBase::GetShadowBounds(
     const OverviewItemBase* item) const {
-  SystemShadow* shadow = item->shadow_.get();
+  SystemDecoration* shadow = item->shadow_.get();
   if (!shadow || !shadow->GetLayer()->visible()) {
     return gfx::Rect();
   }

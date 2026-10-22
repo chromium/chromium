@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "ash/ash_export.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/desks/desks_window_occlusion_calculator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -74,16 +74,16 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
 
   ~DeskPreviewView() override;
 
-  static constexpr SystemShadow::Type kDefaultShadowType =
-      SystemShadow::Type::kElevation4;
-  static constexpr SystemShadow::Type kDraggedShadowType =
-      SystemShadow::Type::kElevation12;
+  static constexpr SystemDecoration::ShadowType kDefaultShadowType =
+      SystemDecoration::ShadowType::kElevation4;
+  static constexpr SystemDecoration::ShadowType kDraggedShadowType =
+      SystemDecoration::ShadowType::kElevation12;
 
   // Returns the height of the DeskPreviewView, which is a function of the
   // |root| window's height.
   static int GetHeight(aura::Window* root);
 
-  SystemShadow* shadow() const { return shadow_.get(); }
+  SystemDecoration* shadow() const { return shadow_.get(); }
 
   std::optional<ui::ColorId> focus_color_id() { return focus_color_id_; }
   void set_focus_color_id(std::optional<ui::ColorId> focus_color_id) {
@@ -164,7 +164,7 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
   std::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_float_occlusion_tracker_visible_;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   std::optional<ui::ColorId> focus_color_id_;
 };

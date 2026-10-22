@@ -22,7 +22,7 @@ class Label;
 
 namespace ash {
 
-class SystemShadow;
+class SystemDecoration;
 
 // The System Toast view. (go/toast-style-spec)
 // This view supports different configurations depending on the provided
@@ -65,7 +65,7 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   // `ButtonType`.
   raw_ptr<views::Button> button_ = nullptr;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 };
 
 }  // namespace ash

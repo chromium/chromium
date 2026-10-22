@@ -5,7 +5,7 @@
 #ifndef ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_STYLE_H_
 #define ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_STYLE_H_
 
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 
@@ -17,7 +17,7 @@ inline constexpr int kQuickInsertContainerBorderRadius = 12;
 inline constexpr ui::ColorId kQuickInsertContainerBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 inline constexpr auto kQuickInsertContainerShadowType =
-    SystemShadow::Type::kElevation12;
+    SystemDecoration::ShadowType::kElevation12;
 
 enum class QuickInsertLayoutType {
   kMainResultsBelowSearchField,

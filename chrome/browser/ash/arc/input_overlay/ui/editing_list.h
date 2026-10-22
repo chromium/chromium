@@ -17,7 +17,7 @@
 namespace ash {
 class AnchoredNudge;
 class PillButton;
-class SystemShadow;
+class SystemDecoration;
 }  // namespace ash
 
 namespace ui {
@@ -146,7 +146,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   raw_ptr<ash::PillButton> done_button_;
 
   // Owned by this view.
-  std::unique_ptr<ash::SystemShadow> shadow_;
+  std::unique_ptr<ash::SystemDecoration> shadow_;
 
   // Used to tell if the zero state view shows up.
   bool is_zero_state_ = false;

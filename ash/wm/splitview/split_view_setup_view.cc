@@ -9,7 +9,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/system/toast/system_toast_view.h"
 #include "ash/wm/wm_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,9 +42,9 @@ class SplitViewSetupViewSettingsButton : public IconButton {
                    IconButton::Type::kLarge,
                    &kOverviewSettingsIcon,
                    IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL),
-        shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+        shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
             this,
-            SystemShadow::Type::kElevation4)) {
+            SystemDecoration::ShadowType::kElevation4)) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetBackgroundColor(kColorAshShieldAndBase80);
@@ -66,7 +66,7 @@ class SplitViewSetupViewSettingsButton : public IconButton {
   ~SplitViewSetupViewSettingsButton() override = default;
 
  private:
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 };
 
 BEGIN_METADATA(SplitViewSetupViewSettingsButton)

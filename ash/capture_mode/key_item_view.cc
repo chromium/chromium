@@ -41,9 +41,9 @@ constexpr int kKeyItemViewLineHeight = 24;
 
 KeyItemView::KeyItemView(ui::KeyboardCode key_code)
     : key_code_(key_code),
-      shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+      shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
           this,
-          SystemShadow::Type::kElevation4)) {
+          SystemDecoration::ShadowType::kElevation4)) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetBackground(views::CreateRoundedRectBackground(

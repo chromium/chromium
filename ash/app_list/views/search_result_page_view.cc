@@ -15,7 +15,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -44,8 +44,8 @@ constexpr int kActiveSearchBoxHeight = 56;
 constexpr int kSearchResultPageMinimumBottomMargin = 24;
 
 // The shadow type for the shadow of the expanded search box.
-constexpr SystemShadow::Type kSearchBoxSearchResultShadowType =
-    SystemShadow::Type::kElevation12;
+constexpr SystemDecoration::ShadowType kSearchBoxSearchResultShadowType =
+    SystemDecoration::ShadowType::kElevation12;
 
 // The duration of the search result page view expanding animation.
 constexpr base::TimeDelta kExpandingSearchResultDuration =
@@ -88,7 +88,7 @@ SearchResultPageView::SearchResultPageView() {
   SetPaintToLayer();
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kActiveSearchBoxHeight, 0, 0, 0)));
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
       this, kSearchBoxSearchResultShadowType);
   shadow_->SetRoundedCorners(
       gfx::RoundedCornersF(kSearchBoxBorderCornerRadiusSearchResult));
@@ -300,7 +300,7 @@ void SearchResultPageView::AnimateBetweenBounds(const gfx::Rect& from_rect,
 }
 
 void SearchResultPageView::OnAnimationBetweenBoundsEnded() {
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
       this, kSearchBoxSearchResultShadowType);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(
       GetCornerRadiusForSearchResultsState(current_search_results_state_)));

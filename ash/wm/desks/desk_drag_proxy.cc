@@ -5,7 +5,7 @@
 #include "ash/wm/desks/desk_drag_proxy.h"
 
 #include "ash/drag_drop/drag_image_view.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"

@@ -16,7 +16,7 @@
 namespace ash {
 enum class PowerButtonMenuActionType;
 class PowerButtonMenuItemView;
-class SystemShadow;
+class SystemDecoration;
 
 // PowerButtonMenuView displays the menu items of the power button menu. It
 // includes power off and sign out items currently.
@@ -94,7 +94,7 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   // The physical display side of power button in landscape primary.
   PowerButtonController::PowerButtonPosition power_button_position_;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 };
 
 }  // namespace ash

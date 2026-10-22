@@ -17,7 +17,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,9 +71,9 @@ bool CaptureModeBarView::IsEventOnSettingsButton(
 // TODO(hewer): Add a check and/or test so that the behavior sets
 // `ShouldShowUserNudge()` to false if the `settings_button_` doesn't exist.
 CaptureModeBarView::CaptureModeBarView()
-    : shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+    : shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
           this,
-          SystemShadow::Type::kElevation12)) {
+          SystemDecoration::ShadowType::kElevation12)) {
   SetPaintToLayer();
   SetBackground(views::CreateSolidBackground(
       chromeos::features::IsSystemBlurEnabled()

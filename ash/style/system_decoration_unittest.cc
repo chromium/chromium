@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/style/system_decoration.h"
+
 #include <memory>
 
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
-#include "ash/style/system_shadow.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/aura/window.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -19,22 +20,22 @@ namespace ash {
 
 namespace {
 
-// Different types of SystemShadow implementations.
-enum class SystemShadowType {
-  kShadowOnNinePatchLayer,        // Instance of standard `SystemShadowImpl`.
-  kViewShadowOnNinePatchLayer,    // Instance of `SystemViewShadow`.
-  kWindowShadowOnNinePatchLayer,  // Instance of `SystemWindowShadow`.
+// Different types of SystemDecoration implementations.
+enum class SystemDecorationType {
+  kShadowOnNinePatchLayer,      // Instance of standard `SystemDecorationImpl`.
+  kViewShadowOnNinePatchLayer,  // Instance of `SystemViewDecoration`.
+  kWindowShadowOnNinePatchLayer,  // Instance of `SystemWindowDecoration`.
 };
 
 // Gets the key and ambient shadow colors from a shadow.
-std::pair<SkColor, SkColor> GetShadowColors(SystemShadow* shadow) {
+std::pair<SkColor, SkColor> GetShadowColors(SystemDecoration* shadow) {
   gfx::ShadowValues values = shadow->GetShadowValuesForTesting();
   return std::make_pair(values[0].color(), values[1].color());
 }
 
 // Add a shadow to the bottom of the native window of a widget and make the
 // shadow observe the theme change of the widget.
-void AddShadowToWidget(SystemShadow* shadow, views::Widget* widget) {
+void AddShadowToWidget(SystemDecoration* shadow, views::Widget* widget) {
   auto* window_layer = widget->GetNativeWindow()->layer();
   auto* shadow_layer = shadow->GetLayer();
   window_layer->Add(shadow_layer);
@@ -46,14 +47,15 @@ void AddShadowToWidget(SystemShadow* shadow, views::Widget* widget) {
 }  // namespace
 
 // The parameterized test class for dynamic system shadow colors.
-class SystemShadowColorTest
+class SystemDecorationColorTest
     : public AshTestBase,
-      public testing::WithParamInterface<SystemShadowType> {
+      public testing::WithParamInterface<SystemDecorationType> {
  public:
-  SystemShadowColorTest() = default;
-  SystemShadowColorTest(const SystemShadowColorTest&) = delete;
-  SystemShadowColorTest& operator=(const SystemShadowColorTest&) = delete;
-  ~SystemShadowColorTest() override = default;
+  SystemDecorationColorTest() = default;
+  SystemDecorationColorTest(const SystemDecorationColorTest&) = delete;
+  SystemDecorationColorTest& operator=(const SystemDecorationColorTest&) =
+      delete;
+  ~SystemDecorationColorTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -73,41 +75,41 @@ class SystemShadowColorTest
     return widget_->GetColorProvider()->GetColor(color_id);
   }
 
-  // Creates a certain type of SystemShadow instance according to the test
+  // Creates a certain type of SystemDecoration instance according to the test
   // parameter.
-  std::unique_ptr<SystemShadow> MakeShadowAccordingToParam(
-      SystemShadow::Type type) {
+  std::unique_ptr<SystemDecoration> MakeShadowAccordingToParam(
+      SystemDecoration::ShadowType type) {
     switch (GetParam()) {
-      case SystemShadowType::kShadowOnNinePatchLayer:
+      case SystemDecorationType::kShadowOnNinePatchLayer:
         return MakeShadowOnNinePatchLayer(type);
-      case SystemShadowType::kViewShadowOnNinePatchLayer:
+      case SystemDecorationType::kViewShadowOnNinePatchLayer:
         return MakeViewShadowOnNinePatchLayer(type);
-      case SystemShadowType::kWindowShadowOnNinePatchLayer:
+      case SystemDecorationType::kWindowShadowOnNinePatchLayer:
         return MakeWindowShadowOnNinePatchLayer(type);
     }
   }
 
  private:
-  // Creates an instance of `SystemShadowImpl`.
-  std::unique_ptr<SystemShadow> MakeShadowOnNinePatchLayer(
-      SystemShadow::Type type) {
-    auto shadow = SystemShadow::CreateShadowOnNinePatchLayer(type);
+  // Creates an instance of `SystemDecorationImpl`.
+  std::unique_ptr<SystemDecoration> MakeShadowOnNinePatchLayer(
+      SystemDecoration::ShadowType type) {
+    auto shadow = SystemDecoration::CreateShadowOnNinePatchLayer(type);
     AddShadowToWidget(shadow.get(), widget_.get());
     return shadow;
   }
 
-  // Creates an instance of `SystemViewShadow`.
-  std::unique_ptr<SystemShadow> MakeViewShadowOnNinePatchLayer(
-      SystemShadow::Type type) {
-    auto shadow = SystemShadow::CreateShadowOnNinePatchLayerForView(
+  // Creates an instance of `SystemViewDecoration`.
+  std::unique_ptr<SystemDecoration> MakeViewShadowOnNinePatchLayer(
+      SystemDecoration::ShadowType type) {
+    auto shadow = SystemDecoration::CreateShadowOnNinePatchLayerForView(
         widget_->GetContentsView(), type);
     return shadow;
   }
 
-  // Creates an instance of `SystemWindowShadow`.
-  std::unique_ptr<SystemShadow> MakeWindowShadowOnNinePatchLayer(
-      SystemShadow::Type type) {
-    auto shadow = SystemShadow::CreateShadowOnNinePatchLayerForWindow(
+  // Creates an instance of `SystemWindowDecoration`.
+  std::unique_ptr<SystemDecoration> MakeWindowShadowOnNinePatchLayer(
+      SystemDecoration::ShadowType type) {
+    auto shadow = SystemDecoration::CreateShadowOnNinePatchLayerForWindow(
         widget_->GetNativeWindow(), type);
     return shadow;
   }
@@ -118,38 +120,40 @@ class SystemShadowColorTest
 
 INSTANTIATE_TEST_SUITE_P(
     MaterialNext,
-    SystemShadowColorTest,
-    testing::Values(SystemShadowType::kShadowOnNinePatchLayer,
-                    SystemShadowType::kViewShadowOnNinePatchLayer,
-                    SystemShadowType::kWindowShadowOnNinePatchLayer),
-    [](const testing::TestParamInfo<SystemShadowColorTest::ParamType>& info) {
+    SystemDecorationColorTest,
+    testing::Values(SystemDecorationType::kShadowOnNinePatchLayer,
+                    SystemDecorationType::kViewShadowOnNinePatchLayer,
+                    SystemDecorationType::kWindowShadowOnNinePatchLayer),
+    [](const testing::TestParamInfo<SystemDecorationColorTest::ParamType>&
+           info) {
       switch (info.param) {
-        case SystemShadowType::kShadowOnNinePatchLayer:
+        case SystemDecorationType::kShadowOnNinePatchLayer:
           return "ShadowOnNinePatchLayer";
-        case SystemShadowType::kViewShadowOnNinePatchLayer:
+        case SystemDecorationType::kViewShadowOnNinePatchLayer:
           return "ViewShadowOnNinePatchLayer";
-        case SystemShadowType::kWindowShadowOnNinePatchLayer:
+        case SystemDecorationType::kWindowShadowOnNinePatchLayer:
           return "WindowShadowOnNinePatcherLayer";
       }
     });
 
 // Tests if the colors of system shadow change with shadow types.
-TEST_P(SystemShadowColorTest, UpdateShadowColorsWithType) {
-  auto shadow = MakeShadowAccordingToParam(SystemShadow::Type::kElevation4);
+TEST_P(SystemDecorationColorTest, UpdateShadowColorsWithType) {
+  auto shadow =
+      MakeShadowAccordingToParam(SystemDecoration::ShadowType::kElevation4);
   EXPECT_EQ(GetShadowColors(shadow.get()),
             std::make_pair(
                 GetColor(ui::kColorShadowValueKeyShadowElevationFour),
                 GetColor(ui::kColorShadowValueAmbientShadowElevationFour)));
 
   // Change type to kElevation12.
-  shadow->SetType(SystemShadow::Type::kElevation12);
+  shadow->SetType(SystemDecoration::ShadowType::kElevation12);
   EXPECT_EQ(GetShadowColors(shadow.get()),
             std::make_pair(
                 GetColor(ui::kColorShadowValueKeyShadowElevationTwelve),
                 GetColor(ui::kColorShadowValueAmbientShadowElevationTwelve)));
 
   // Change type to kElevation24;
-  shadow->SetType(SystemShadow::Type::kElevation24);
+  shadow->SetType(SystemDecoration::ShadowType::kElevation24);
   EXPECT_EQ(
       GetShadowColors(shadow.get()),
       std::make_pair(
@@ -158,8 +162,9 @@ TEST_P(SystemShadowColorTest, UpdateShadowColorsWithType) {
 }
 
 // Tests if the colors of system shadow change with the themes.
-TEST_P(SystemShadowColorTest, UpdateShadowColorsWithTheme) {
-  auto shadow = MakeShadowAccordingToParam(SystemShadow::Type::kElevation4);
+TEST_P(SystemDecorationColorTest, UpdateShadowColorsWithTheme) {
+  auto shadow =
+      MakeShadowAccordingToParam(SystemDecoration::ShadowType::kElevation4);
 
   // Set light mode.
   DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_STYLE_SYSTEM_SHADOW_H_
-#define ASH_STYLE_SYSTEM_SHADOW_H_
+#ifndef ASH_STYLE_SYSTEM_DECORATION_H_
+#define ASH_STYLE_SYSTEM_DECORATION_H_
 
 #include <memory>
 
@@ -32,20 +32,20 @@ class View;
 
 namespace ash {
 
-// SystemShadow generates a shadow with system shadow style for different types
-// of UI surfaces. It is based on `ui::decoration::Shadow` which paints the
-// shadow on a nine patch layer.
-class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
+// SystemDecoration generates a shadow with system shadow style for different
+// types of UI surfaces. It is based on `ui::decoration::Shadow` which paints
+// the shadow on a nine patch layer.
+class ASH_EXPORT SystemDecoration : public ui::ColorProviderSourceObserver {
  public:
   // Shadow types of system UI components. The shadows with different elevations
   // have different appearance.
-  enum class Type {
+  enum class ShadowType {
     kElevation4,   // corresponds to cros.sys.system-elevation1.
     kElevation12,  // corresponds to cros.sys.system-elevation3.
     kElevation24,  // corresponds to cros.sys.system-elevation5.
   };
 
-  ~SystemShadow() override;
+  ~SystemDecoration() override;
 
   // Create a system shadow based on `ui::decoration::Shadow` which paints
   // shadow on a nine patch layer. This shadow can be used for any UI surfaces.
@@ -53,8 +53,8 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   // at the bottom of the window's layer; when creating the shadow for a view,
   // attach the shadow's layer at the bottom of the view's parent layer. The
   // layer's content bounds should be manually updated.
-  static std::unique_ptr<SystemShadow> CreateShadowOnNinePatchLayer(
-      Type shadow_type);
+  static std::unique_ptr<SystemDecoration> CreateShadowOnNinePatchLayer(
+      ShadowType shadow_type);
 
   // Create a system shadow based on `views::ViewDecoration`. This shadow is
   // used for views. The shadow's layer is added to the `layers_beneath_` of the
@@ -64,9 +64,9 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   // For example, `AppListFolderView` has a clip rect whose bounds should be the
   // content bounds of the shadow. In this case, please use
   // `CreateShadowOnNinePatchLayer` instead.
-  static std::unique_ptr<SystemShadow> CreateShadowOnNinePatchLayerForView(
+  static std::unique_ptr<SystemDecoration> CreateShadowOnNinePatchLayerForView(
       views::View* view,
-      Type shadow_type);
+      ShadowType shadow_type);
 
   // Create a system shadow based on `ui::decoration::Shadow`. The shadow's
   // layer is added to the bottom of the window's layer and its contents bounds
@@ -75,17 +75,17 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   // bounds do not equal to the window bounds. For example, the content bounds
   // of `OverviewItem` for wide and tall windows do not equal to the item
   // bounds. In this case, please use `CreateShadowOnNinePatchLayer` instead.
-  static std::unique_ptr<SystemShadow> CreateShadowOnNinePatchLayerForWindow(
-      aura::Window* window,
-      Type shadow_type);
+  static std::unique_ptr<SystemDecoration>
+  CreateShadowOnNinePatchLayerForWindow(aura::Window* window,
+                                        ShadowType shadow_type);
 
   // Get shadow elevation according to the given type.
-  static int GetElevationFromType(Type type);
+  static int GetElevationFromType(ShadowType type);
 
   // Change shadow type and update shadow elevation and appearance. Note that to
   // avoid inconsistency of shadow type and elevation. Always change system
   // shadow elevation with `SetType`.
-  void SetType(Type type);
+  void SetType(ShadowType type);
 
   void SetContentBounds(const gfx::Rect& bounds);
 
@@ -119,4 +119,4 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
 
 }  // namespace ash
 
-#endif  // ASH_STYLE_SYSTEM_SHADOW_H_
+#endif  // ASH_STYLE_SYSTEM_DECORATION_H_

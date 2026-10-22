@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -146,8 +146,8 @@ SkPath BackgroundPath(SkScalar height,
 
 gfx::ShadowValues GetShadowValues() {
   return gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
-      ash::SystemShadow::GetElevationFromType(
-          ash::SystemShadow::Type::kElevation12));
+      ash::SystemDecoration::GetElevationFromType(
+          ash::SystemDecoration::ShadowType::kElevation12));
 }
 
 // Returns negative insets to expand the shadow layer bigger than the container.

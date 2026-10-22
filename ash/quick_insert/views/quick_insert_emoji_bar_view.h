@@ -22,7 +22,7 @@ namespace ash {
 
 class IconButton;
 class QuickInsertEmojiBarViewDelegate;
-class SystemShadow;
+class SystemDecoration;
 
 // View for the Quick Insert emoji bar, which is a small bar above the main
 // Quick Insert container that shows expression search results (i.e. emojis,
@@ -82,7 +82,7 @@ class ASH_EXPORT QuickInsertEmojiBarView
   // such view.
   views::View* GetLeftmostItem();
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   // `delegate_` outlives `this`.
   raw_ptr<QuickInsertEmojiBarViewDelegate> delegate_;

@@ -14,7 +14,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -168,8 +168,8 @@ SystemToastView::SystemToastView(const std::u16string& text,
       rounded_corner_radius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-      this, SystemShadow::Type::kElevation4);
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      this, SystemDecoration::ShadowType::kElevation4);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(rounded_corner_radius));
 
   SetProperty(views::kElementIdentifierKey, kSystemToastViewElementId);

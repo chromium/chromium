@@ -20,7 +20,7 @@ namespace ash {
 enum class QuickInsertLayoutType;
 class QuickInsertSearchFieldView;
 class QuickInsertPageView;
-class SystemShadow;
+class SystemDecoration;
 
 // View for the main Quick Insert container, which consists of the search field
 // and the main contents (e.g. search results page).
@@ -65,7 +65,7 @@ class ASH_EXPORT QuickInsertMainContainerView
   void SetActivePage(QuickInsertPageView* page_view);
 
  private:
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   raw_ptr<QuickInsertSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<QuickInsertContentsView> contents_view_ = nullptr;

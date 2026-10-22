@@ -6,7 +6,8 @@
 #define ASH_APP_LIST_VIEWS_APP_DRAG_ICON_PROXY_H_
 
 #include <memory>
-#include "ash/style/system_shadow.h"
+
+#include "ash/style/system_decoration.h"
 #include "base/functional/callback.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -97,7 +98,7 @@ class AppDragIconProxy {
   // progress.
   bool closing_widget_ = false;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   // A layer that is used to blur the background of the dragged icon. Only used
   // for refreshed folder icons.

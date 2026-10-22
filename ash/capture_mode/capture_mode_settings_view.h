@@ -25,7 +25,7 @@ class CaptureModeBehavior;
 class CaptureModeMenuGroup;
 class CaptureModeSession;
 class CaptureModeMenuToggleButton;
-class SystemShadow;
+class SystemDecoration;
 
 // All the options in the CaptureMode settings view.
 enum CaptureSettingsOption {
@@ -178,7 +178,7 @@ class ASH_EXPORT CaptureModeSettingsView
   // If set, it will be called when the settings menu is refreshed.
   base::OnceClosure on_settings_menu_refreshed_callback_for_test_;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   base::WeakPtrFactory<CaptureModeSettingsView> weak_ptr_factory_{this};
 };

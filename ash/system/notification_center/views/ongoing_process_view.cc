@@ -12,7 +12,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/metrics_utils.h"

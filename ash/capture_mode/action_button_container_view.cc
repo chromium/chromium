@@ -18,7 +18,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -93,9 +93,9 @@ constexpr base::TimeDelta kSmartActionsButtonTransitionSlideInDuration =
 }  // namespace
 
 ActionButtonContainerView::ErrorView::ErrorView()
-    : shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+    : shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
           this,
-          SystemShadow::Type::kElevation12)) {
+          SystemDecoration::ShadowType::kElevation12)) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetInsideBorderInsets(kErrorViewBorderInsets);
 

@@ -14,7 +14,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check_op.h"
@@ -292,8 +292,8 @@ void EditingList::Init() {
 
   SizeToPreferredSize();
 
-  shadow_ = ash::SystemShadow::CreateShadowOnNinePatchLayerForView(
-      this, ash::SystemShadow::Type::kElevation12);
+  shadow_ = ash::SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      this, ash::SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kMainContainerCornerRadius));
 }
 

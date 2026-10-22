@@ -21,7 +21,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -266,7 +266,7 @@ QuickInsertEmojiBarView::QuickInsertEmojiBarView(
   SetBorder(std::make_unique<views::HighlightBorder>(
       kQuickInsertContainerBorderRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
       this, kQuickInsertContainerShadowType);
   shadow_->SetRoundedCorners(
       gfx::RoundedCornersF(kQuickInsertContainerBorderRadius));

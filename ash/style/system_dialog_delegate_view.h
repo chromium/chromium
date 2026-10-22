@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/pill_button.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -198,7 +198,7 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   base::flat_map<ContentType, raw_ptr<views::View>> contents_;
 
   // The dialog shadow.
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   // Indicates if the dialog is being closed.
   bool closing_dialog_ = false;

@@ -35,7 +35,7 @@ class Widget;
 
 namespace ash {
 
-class SystemShadow;
+class SystemDecoration;
 
 // Specialized bubble view for bubbles associated with a tray icon (e.g. the
 // Ash status area). Mostly this handles custom anchor location and arrow and
@@ -146,7 +146,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     std::optional<gfx::Insets> insets;
     std::optional<gfx::Insets> margin;
     bool has_shadow = false;
-    SystemShadow::Type shadow_type = kBubbleShadowType;
+    SystemDecoration::ShadowType shadow_type = kBubbleShadowType;
     // Use half opaque widget instead of fully opaque.
     bool translucent = false;
     // Whether the view is fully transparent (only serves as a container).
@@ -332,7 +332,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // keyboard.
   std::unique_ptr<EventHandler> reroute_event_handler_;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   base::CallbackListSubscription name_changed_subscription_;
 };

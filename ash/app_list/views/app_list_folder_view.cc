@@ -32,7 +32,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -210,7 +210,7 @@ class BackgroundAnimation : public AppListFolderView::Animation,
 
   const raw_ptr<AppListFolderView> folder_view_;
   const raw_ptr<views::View> animating_view_;
-  const raw_ptr<SystemShadow> shadow_;
+  const raw_ptr<SystemDecoration> shadow_;
 
   // Observes the rect clip change of background view.
   base::ScopedObservation<views::View, views::ViewObserver>
@@ -707,8 +707,8 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   CreateScrollableAppsGrid(tablet_mode);
 
   // Create a shadow under `background_view_`.
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
-      SystemShadow::Type::kElevation12);
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayer(
+      SystemDecoration::ShadowType::kElevation12);
   background_view_->AddLayerToRegion(shadow_->GetLayer(),
                                      views::LayerRegion::kBelow);
 

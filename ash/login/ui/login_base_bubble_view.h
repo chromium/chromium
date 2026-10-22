@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_button.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -103,7 +103,7 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   std::unique_ptr<LoginBubbleHandler> bubble_handler_;
 
   // The dialog shadow.
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   bool is_persistent_ = false;
 

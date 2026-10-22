@@ -12,7 +12,7 @@
 #include "ash/login/ui/access_code_input.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -219,7 +219,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   raw_ptr<FocusableLabelButton> help_button_ = nullptr;
   raw_ptr<views::Button> submit_button_ = nullptr;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

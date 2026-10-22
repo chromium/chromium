@@ -13,7 +13,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -93,8 +93,8 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   // The container should adjust its bounds if we collapse to an icon button.
   ink_drop_container_->SetAutoMatchParentBounds(true);
 
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
-      SystemShadow::Type::kElevation12);
+  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayer(
+      SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kActionButtonRadius));
 
   if (icon) {

@@ -33,7 +33,7 @@ class Link;
 namespace ash {
 
 class ActionButtonView;
-class SystemShadow;
+class SystemDecoration;
 
 // A view that displays a row of action buttons near the capture region. It may
 // display an error message if actions are not available.
@@ -64,7 +64,7 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
     std::u16string_view GetErrorMessageForTesting() const;
 
    private:
-    std::unique_ptr<SystemShadow> shadow_;
+    std::unique_ptr<SystemDecoration> shadow_;
 
     raw_ptr<views::Label> error_label_ = nullptr;
 

@@ -17,7 +17,7 @@
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -146,7 +146,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
   raw_ptr<views::Label> description_label_ = nullptr;
   raw_ptr<LoginButton> close_button_ = nullptr;
   raw_ptr<LoginPasswordView> login_password_view_ = nullptr;
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   // Current local authentication state.
   LocalAuthenticationRequestViewState state_ =

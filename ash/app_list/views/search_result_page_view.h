@@ -19,7 +19,7 @@ class AppListViewDelegate;
 class AppListSearchView;
 class SearchBoxView;
 class SearchResultPageAnchoredDialog;
-class SystemShadow;
+class SystemDecoration;
 
 // The search results page for the app list.
 class ASH_EXPORT SearchResultPageView : public AppListPage {
@@ -105,7 +105,7 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
   SearchResultsState current_search_results_state_ =
       SearchResultsState::kClosed;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   // The controller that manages dialogs modal to the search results page.
   std::unique_ptr<SearchResultPageDialogController> dialog_controller_;

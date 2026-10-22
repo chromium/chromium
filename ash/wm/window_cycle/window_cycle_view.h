@@ -33,7 +33,7 @@ class View;
 namespace ash {
 class WindowMiniViewBase;
 class LabelSliderButton;
-class SystemShadow;
+class SystemDecoration;
 class TabSlider;
 class WindowCycleItemView;
 
@@ -211,7 +211,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // active.
   std::unique_ptr<WmFlingHandler> fling_handler_;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 
   // Indicates whether the selector view on `tab_slider_` is focused or not. We
   // need to manually schedule paint for the focus ring since the tab slider

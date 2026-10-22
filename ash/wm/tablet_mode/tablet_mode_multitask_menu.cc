@@ -12,7 +12,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/system_shadow.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
@@ -124,8 +124,8 @@ class TabletModeMultitaskMenuView : public views::View {
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
-    shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
-        SystemShadow::Type::kElevation12);
+    shadow_ = SystemDecoration::CreateShadowOnNinePatchLayer(
+        SystemDecoration::ShadowType::kElevation12);
     shadow_->SetRoundedCorners(gfx::RoundedCornersF(kCornerRadius));
     layer()->Add(shadow_->GetLayer());
   }
@@ -137,12 +137,12 @@ class TabletModeMultitaskMenuView : public views::View {
 
   chromeos::MultitaskMenuView* menu_view_base() { return menu_view_base_; }
 
-  SystemShadow* shadow() { return shadow_.get(); }
+  SystemDecoration* shadow() { return shadow_.get(); }
 
  private:
   raw_ptr<chromeos::MultitaskMenuView> menu_view_base_ = nullptr;
 
-  std::unique_ptr<SystemShadow> shadow_;
+  std::unique_ptr<SystemDecoration> shadow_;
 };
 
 BEGIN_METADATA(TabletModeMultitaskMenuView)
