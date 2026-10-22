@@ -276,8 +276,13 @@ Notes:
   generate Rust bindings for it, and both languages will share one
   implementation.
 * Injecting Rust sources into a _nested module_ of the generated bindings is
-  supported via `extra_rust_sources_mod` attribute.  Reaching for this attribute
-  should be needed quite rarely - usually only for `cc_std` or `base` bindings.
+  supported via the `extra_rust_source_groups` attribute.  Each group lists
+  `sources` and a Rust module path in `mod` (e.g. `"foo::bar"`) - the sources
+  are placed into that module.  Reaching for this attribute should be
+  needed quite rarely - usually only for `cc_std` or `base` bindings.  See
+  `test_extra_rust_source_groups_rs_api` in
+  [`build/rust/tests/test_rust_api_from_cpp/BUILD.gn`](../../../build/rust/tests/test_rust_api_from_cpp/BUILD.gn)
+  for an example.
 
 ## Troubleshooting
 

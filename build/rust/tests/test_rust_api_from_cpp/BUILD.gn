@@ -17,7 +17,7 @@ rust_static_library("test_rust_api_from_cpp") {
     ":self_contained_target_rs_api",
     ":target_depending_on_another_rs_api",
     ":test_browsing_instance_id_rs_api",
-    ":test_extra_rust_sources_mod_rs_api",
+    ":test_extra_rust_source_groups_rs_api",
     ":test_std_types_rs_api",
     ":test_time_delta_rs_api",
     "//build/rust/crubit:cc_std",
@@ -109,18 +109,29 @@ source_set("test_time_delta") {
   sources = [ "test_time_delta.h" ]
 }
 
-rust_api_from_cpp("test_extra_rust_sources_mod_rs_api") {
-  bindings_target = ":test_extra_rust_sources_mod"
-  public_headers = [ "test_extra_rust_sources_mod.h" ]
-  extra_rust_sources = [ "test_extra_rust_sources_mod.rs" ]
+rust_api_from_cpp("test_extra_rust_source_groups_rs_api") {
+  bindings_target = ":test_extra_rust_source_groups"
+  public_headers = [ "test_extra_rust_source_groups.h" ]
 
-  # Puts `extra_rust_sources` into the module that corresponds to the
-  # `test_outer::test_inner` C++ namespace.
-  extra_rust_sources_mod = "test_outer::test_inner"
+  # Placed at the root of the crate.
+  extra_rust_sources = [ "test_extra_rust_source_groups_root.rs" ]
+
+  # Placed into the `test_outer::test_inner` and `test_outer` modules (which
+  # correspond to the C++ namespaces with the same names).
+  extra_rust_source_groups = [
+    {
+      sources = [ "test_extra_rust_source_groups_nested.rs" ]
+      mod = "test_outer::test_inner"
+    },
+    {
+      sources = [ "test_extra_rust_source_groups_outer.rs" ]
+      mod = "test_outer"
+    },
+  ]
 }
 
-source_set("test_extra_rust_sources_mod") {
-  sources = [ "test_extra_rust_sources_mod.h" ]
+source_set("test_extra_rust_source_groups") {
+  sources = [ "test_extra_rust_source_groups.h" ]
 }
 
 rust_api_from_cpp("test_std_types_rs_api") {

@@ -15,8 +15,8 @@ chromium::import! {
         as target_depending_on_another;
     "//build/rust/tests/test_rust_api_from_cpp:test_browsing_instance_id_rs_api"
         as test_browsing_instance_id;
-    "//build/rust/tests/test_rust_api_from_cpp:test_extra_rust_sources_mod_rs_api"
-        as test_extra_rust_sources_mod;
+    "//build/rust/tests/test_rust_api_from_cpp:test_extra_rust_source_groups_rs_api"
+        as test_extra_rust_source_groups;
     "//build/rust/tests/test_rust_api_from_cpp:test_std_types_rs_api"
         as test_std_types;
     "//build/rust/tests/test_rust_api_from_cpp:test_time_delta_rs_api"
@@ -88,13 +88,21 @@ fn test_extra_rust_sources() {
     assert!(Duration::try_from(negative_delta).is_err());
 }
 
-#[gtest(TestRustApiFromCpp, ExtraRustSourcesMod)]
-fn test_extra_rust_sources_mod() {
-    use ::test_extra_rust_sources_mod::test_outer::test_inner;
+#[gtest(TestRustApiFromCpp, ExtraRustSourceGroups)]
+fn test_extra_rust_source_groups() {
+    use ::test_extra_rust_source_groups::test_outer;
+    use ::test_extra_rust_source_groups::test_outer::test_inner;
 
-    // `double_meters` comes from `extra_rust_sources` placed (via
-    // `extra_rust_sources_mod`) into the `test_outer::test_inner` module.
+    // `double_meters` comes from an `extra_rust_source_groups` entry placed
+    // into the `test_outer::test_inner` module.  It calls `scale_factor`,
+    // which comes from `extra_rust_sources` (placed at the root of the crate).
     let m = test_inner::double_meters(test_inner::TestMeters { value: 21 });
+    assert_eq!(m.value, 42);
+    assert_eq!(::test_extra_rust_source_groups::scale_factor(), 2);
+
+    // `triple_meters` comes from another `extra_rust_source_groups` entry
+    // (placed into the `test_outer` module).
+    let m = test_outer::triple_meters(test_inner::TestMeters { value: 14 });
     assert_eq!(m.value, 42);
 }
 

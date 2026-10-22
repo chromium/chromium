@@ -136,15 +136,19 @@ if (enable_rust_api_from_cpp) {
 
     # Hand-written Rust types (e.g. `cc_std::std::optional<T>`) that
     # Crubit-generated code expects in the `std` module.
-    extra_rust_sources = [
-      "${crubit_src_dir}/support/cc_std_impl/allocator.rs",
-      "${crubit_src_dir}/support/cc_std_impl/non_null.rs",
-      "${crubit_src_dir}/support/cc_std_impl/optional.rs",
-      "${crubit_src_dir}/support/cc_std_impl/unique_ptr.rs",
-      "${crubit_src_dir}/support/cc_std_impl/vector.rs",
-      "${crubit_src_dir}/support/cc_std_impl/vector_partial_eq.rs",
+    extra_rust_source_groups = [
+      {
+        sources = [
+          "${crubit_src_dir}/support/cc_std_impl/allocator.rs",
+          "${crubit_src_dir}/support/cc_std_impl/non_null.rs",
+          "${crubit_src_dir}/support/cc_std_impl/optional.rs",
+          "${crubit_src_dir}/support/cc_std_impl/unique_ptr.rs",
+          "${crubit_src_dir}/support/cc_std_impl/vector.rs",
+          "${crubit_src_dir}/support/cc_std_impl/vector_partial_eq.rs",
+        ]
+        mod = "std"
+      },
     ]
-    extra_rust_sources_mod = "std"
 
     # Chromium's libc++ uses the size-based `std::vector` layout (see
     # `_LIBCPP_ABI_VECTOR_LAYOUT_SIZE_BASED` in libc++'s

@@ -89,19 +89,25 @@ _globally_enabled_crubit_features = [
 #     orphan rule (see
 #     https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.orphan-rule).
 #
-#     Each file becomes a private module of the crate, and all its items are
-#     re-exported (via `pub use`) into the parent module.
+#     Each file becomes a private module at the root of the crate, and all its
+#     items are re-exported (via `pub use`) into the root of the crate.
 #
 #     See `//docs/rust/crubit/rust_api_from_cpp.md` for more info and examples.
 #
-#   extra_rust_sources_mod: (optional)
-#     The Rust module path (e.g. `"foo::bar"` for the C++ namespace `foo::bar`)
-#     where `extra_rust_sources` should be placed.  The module has to exist in
-#     the generated bindings.  By default, `extra_rust_sources` are placed at
-#     the root of the crate.
+#   extra_rust_source_groups: (optional)
+#     Like `extra_rust_sources`, but places the files into nested modules of
+#     the generated bindings crate (both attributes can be used together).
+#     A list of scopes (i.e. "GN dictionaries"), where each scope has the
+#     following attributes:
+#       * `sources`: a list of `.rs` files (same semantics as
+#         `extra_rust_sources`, except that the files are placed into `mod`).
+#       * `mod`: a Rust module path (e.g. `"foo::bar"` for the C++ namespace
+#         `foo::bar`).  The files are placed into this module of the generated
+#         bindings (the module has to exist there).  Use `extra_rust_sources`
+#         to place files at the root of the crate.
 #
-#     This should be needed only rarely (e.g. when `extra_rust_sources` need to
-#     provide items that Crubit-generated code expects at a specific module
+#     This should be needed only rarely (e.g. when hand-written sources need
+#     to provide items that Crubit-generated code expects at a specific module
 #     path).
 #
 #   override_target_label, override_crate_name: (optional)
@@ -121,7 +127,7 @@ _globally_enabled_crubit_features = [
 #     Internal parameter, used only by `//build/rust/crubit:cc_std`.  A list of
 #     Cargo-style features (i.e. `--cfg feature="..."`) for compiling the
 #     generated bindings crate.  Crubit-generated code doesn't check any
-#     features, so this is only useful for `extra_rust_sources` (e.g.
+#     features, so this is only useful for hand-written Rust sources (e.g.
 #     `len_capacity_encoding` for `vector.rs`).
 template("rust_api_from_cpp") {
   assert(enable_rust_api_from_cpp)
@@ -191,7 +197,7 @@ template("rust_api_from_cpp") {
     _bindings_deps += [ _cc_std_target ]
   }
 
-  # Optional parameters: extra_rust_sources and extra_rust_sources_mod.
+  # Optional parameters: extra_rust_sources and extra_rust_source_groups.
   #
   # Crubit emits each `--extra_rs_srcs` path into a `#[path = ...]` attribute
   # in the generated `.rs` file.  Such paths are resolved [1] by `rustc`
@@ -199,45 +205,72 @@ template("rust_api_from_cpp") {
   # subdirectories that correspond to the nested module (e.g. `foo/bar/` for
   # `--extra_rs_srcs=path=foo::bar`).
   #
-  # By default, `extra_rust_sources` are placed at the root of the crate, and
-  # therefore their paths are rebased onto `target_gen_dir`.  When placing
-  # `extra_rust_sources` into a nested module, rebasing onto a `foo/bar/`
-  # subdirectory wouldn't work (because the subdirectory doesn't exist), and
-  # therefore the `copy` action below puts the extra sources into such a
-  # subdirectory.
+  # Sources placed at the root of the crate are used in place (their paths are
+  # rebased onto `target_gen_dir`).  When placing sources into a nested module,
+  # rebasing onto a `foo/bar/` subdirectory wouldn't work (because the
+  # subdirectory doesn't exist), and therefore a `copy` action puts such
+  # sources into the subdirectory.
   #
   # [1] https://doc.rust-lang.org/reference/items/modules.html#the-path-attribute:~:text=the%20file%20path%20is%20relative%20to%20the%20directory%20the%20source%20file%20is%20located
-  _extra_rust_sources = []
-  _extra_rs_srcs_flag_values = []
+  _extra_rust_sources = []  # Files (or their copies) to compile.
+  _extra_rs_srcs_flag_values = []  # Entries of `--extra_rs_srcs`.
   if (defined(invoker.extra_rust_sources)) {
-    if (defined(invoker.extra_rust_sources_mod)) {
-      _mod = invoker.extra_rust_sources_mod
-      _mod_dir = "${target_gen_dir}/" + string_replace(_mod, "::", "/")
-      _extra_rs_srcs_copy_dir = "${_mod_dir}/${_lib_target_name}"
-      _extra_rs_srcs_copy_target_name = "${_lib_target_name}_extra_rust_sources"
+    _extra_rust_sources += invoker.extra_rust_sources
+    _extra_rs_srcs_flag_values +=
+        rebase_path(invoker.extra_rust_sources, target_gen_dir)
+  }
 
-      copy(_extra_rs_srcs_copy_target_name) {
-        testonly = _testonly
-        visibility = [ ":${_lib_target_name}" ]
-        sources = invoker.extra_rust_sources
-        outputs = [ "${_extra_rs_srcs_copy_dir}/" +
-                    "{{source_root_relative_dir}}/{{source_file_part}}" ]
-      }
-
-      _extra_rust_sources =
-          get_target_outputs(":${_extra_rs_srcs_copy_target_name}")
-      foreach(_src, _extra_rust_sources) {
-        _extra_rs_srcs_flag_values +=
-            [ rebase_path(_src, _mod_dir) + "=${_mod}" ]
-      }
-    } else {
-      _extra_rust_sources = invoker.extra_rust_sources
-      _extra_rs_srcs_flag_values =
-          rebase_path(_extra_rust_sources, target_gen_dir)
+  _extra_rust_source_groups = []
+  if (defined(invoker.extra_rust_source_groups)) {
+    _extra_rust_source_groups = invoker.extra_rust_source_groups
+  }
+  _extra_rs_srcs_copy_targets = []
+  _extra_rs_srcs_remap_flags = []
+  foreach(_group, _extra_rust_source_groups) {
+    # Catch typos (e.g. `mods = ...`) that would otherwise be silently ignored.
+    _unexpected = {
+      forward_variables_from(_group,
+                             "*",
+                             [
+                               "mod",
+                               "sources",
+                             ])
     }
-  } else {
-    assert(!defined(invoker.extra_rust_sources_mod),
-           "`extra_rust_sources_mod` requires `extra_rust_sources`")
+    assert(_unexpected == {
+               },
+           "Unexpected `extra_rust_source_groups` attributes: ${_unexpected}")
+    assert(defined(_group.sources) && defined(_group.mod),
+           "Each `extra_rust_source_groups` entry needs `sources` and `mod`")
+    _mod = _group.mod
+    assert(_mod != "",
+           "Use `extra_rust_sources` to place sources at the crate root")
+    _mod_dir = "${target_gen_dir}/" + string_replace(_mod, "::", "/")
+    _copy_dir = "${_mod_dir}/${_lib_target_name}"
+
+    # Note that this requires at most one group per `mod` (otherwise GN
+    # reports a duplicate target).
+    _copy_target_name = "${_lib_target_name}_extra_rust_sources_" +
+                        string_replace(_mod, "::", "_")
+
+    copy(_copy_target_name) {
+      testonly = _testonly
+      visibility = [ ":${_lib_target_name}" ]
+      sources = _group.sources
+      outputs = [ "${_copy_dir}/" +
+                  "{{source_root_relative_dir}}/{{source_file_part}}" ]
+    }
+
+    foreach(_src, get_target_outputs(":${_copy_target_name}")) {
+      _extra_rust_sources += [ _src ]
+      _extra_rs_srcs_flag_values += [ rebase_path(_src, _mod_dir) + "=${_mod}" ]
+    }
+    _extra_rs_srcs_copy_targets += [ ":${_copy_target_name}" ]
+
+    # Make compiler diagnostics point at the original sources (rather than at
+    # their copies).
+    _extra_rs_srcs_remap_flags +=
+        [ "--remap-path-prefix=" + rebase_path(_copy_dir, root_build_dir) +
+          "=" + rebase_path("//", root_build_dir) ]
   }
 
   # Various names and paths that are shared across multiple targets defined
@@ -355,19 +388,11 @@ template("rust_api_from_cpp") {
     crate_name = _lib_target_crate_name
     crate_root = _rs_out_path
     sources = [ crate_root ] + _extra_rust_sources
+    deps += _extra_rs_srcs_copy_targets
+    rustflags = _extra_rs_srcs_remap_flags
 
     if (defined(invoker.crate_features)) {
       features = invoker.crate_features
-    }
-
-    if (defined(_extra_rs_srcs_copy_target_name)) {
-      deps += [ ":${_extra_rs_srcs_copy_target_name}" ]
-
-      # Make compiler diagnostics point at the original `extra_rust_sources`
-      # (rather than at their copies).
-      rustflags = [ "--remap-path-prefix=" +
-                    rebase_path(_extra_rs_srcs_copy_dir, root_build_dir) + "=" +
-                    rebase_path("//", root_build_dir) ]
     }
 
     # Crubit-generated crates are Chromium-agnostic, so they shouldn't use
