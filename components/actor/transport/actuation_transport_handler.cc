@@ -17,8 +17,8 @@
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
-#include "components/browser_actuator/public/common.h"
-#include "components/browser_actuator/public/transport_session.h"
+#include "components/browser_actuator/public/transport/common.h"
+#include "components/browser_actuator/public/transport/transport_session.h"
 
 namespace actor {
 namespace {
@@ -34,9 +34,9 @@ std::optional<TaskId> ParseTaskId(std::string_view task_id_str) {
 }  // namespace
 
 ActuationTransportHandler::ActuationTransportHandler(
-    browser_actuator::TransportSession* session,
+    browser_actuator::transport::TransportSession* session,
     std::unique_ptr<ActuationDelegate> delegate)
-    : browser_actuator::TransportHandler(session),
+    : browser_actuator::transport::TransportHandler(session),
       delegate_(std::move(delegate)) {
   CHECK(session);
   CHECK(delegate_);
@@ -51,9 +51,9 @@ ActuationTransportHandler::~ActuationTransportHandler() {
 }
 
 void ActuationTransportHandler::OnMessage(
-    browser_actuator::PayloadType payload_type,
+    browser_actuator::transport::PayloadType payload_type,
     std::string_view serialized_payload) {
-  if (payload_type != browser_actuator::PayloadType::kActuation) {
+  if (payload_type != browser_actuator::transport::PayloadType::kActuation) {
     return;
   }
 
@@ -103,8 +103,8 @@ void ActuationTransportHandler::OnStartTaskComplete(
     upstream.set_task_id(base::NumberToString(task_id.value()));
   }
   *upstream.mutable_start_task() = std::move(response);
-  std::ignore =
-      SendUpstreamMessage(browser_actuator::PayloadType::kActuation, upstream);
+  std::ignore = SendUpstreamMessage(
+      browser_actuator::transport::PayloadType::kActuation, upstream);
 }
 
 void ActuationTransportHandler::HandleStopTask(
@@ -133,8 +133,8 @@ void ActuationTransportHandler::OnStopTaskComplete(
   upstream.mutable_stop_task()->set_status(
       success ? proto::StopTaskResponse::STATUS_OK
               : proto::StopTaskResponse::STATUS_FAILED);
-  std::ignore =
-      SendUpstreamMessage(browser_actuator::PayloadType::kActuation, upstream);
+  std::ignore = SendUpstreamMessage(
+      browser_actuator::transport::PayloadType::kActuation, upstream);
 }
 
 void ActuationTransportHandler::HandlePerformActions(
@@ -164,8 +164,8 @@ void ActuationTransportHandler::OnActComplete(
   upstream.set_task_id(task_id_str);
   upstream.set_request_id(request_id);
   *upstream.mutable_perform_actions() = std::move(response);
-  std::ignore =
-      SendUpstreamMessage(browser_actuator::PayloadType::kActuation, upstream);
+  std::ignore = SendUpstreamMessage(
+      browser_actuator::transport::PayloadType::kActuation, upstream);
 }
 
 }  // namespace actor

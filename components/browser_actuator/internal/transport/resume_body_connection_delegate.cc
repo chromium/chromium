@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "services/network/public/cpp/resource_request.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 namespace {
 // OnePlatform reads the binary WatchSessionsRequest from the request body.
@@ -47,4 +47,4 @@ bool ResumeBodyConnectionDelegate::ShouldRetryOnHttpFailure(int response_code) {
   return inner_->ShouldRetryOnHttpFailure(response_code);
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

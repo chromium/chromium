@@ -8,7 +8,7 @@
 
 #include "services/network/public/cpp/resource_request.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 bool StreamConnectionDelegate::ShouldRetryOnHttpFailure(int response_code) {
   return false;
@@ -25,4 +25,4 @@ void DefaultStreamConnectionDelegate::PrepareRequest(
   std::move(callback).Run(std::move(request));
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

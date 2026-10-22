@@ -33,7 +33,7 @@
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "components/sharing_message/proto/actuator_downstream_message.to_value.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 SessionEventSnapshot::SessionEventSnapshot() = default;
 SessionEventSnapshot::SessionEventSnapshot(const SessionEventSnapshot&) =
@@ -449,4 +449,4 @@ std::string SessionStreamRecorderFactory::ExportSessionsAsJson(
       .value_or("");
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

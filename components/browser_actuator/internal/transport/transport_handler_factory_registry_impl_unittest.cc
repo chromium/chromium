@@ -15,7 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 TEST(TransportHandlerFactoryRegistryImplTest, IsEmpty) {
   TransportHandlerFactoryRegistryImpl registry;
@@ -190,4 +190,4 @@ TEST(TransportHandlerFactoryRegistryImplTest,
   EXPECT_FALSE(observation.IsObserving());
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

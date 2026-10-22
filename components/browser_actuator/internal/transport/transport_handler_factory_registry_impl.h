@@ -15,7 +15,7 @@
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class TransportHandlerFactory;
 
@@ -51,6 +51,6 @@ class TransportHandlerFactoryRegistryImpl
       factories_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_TRANSPORT_HANDLER_FACTORY_REGISTRY_IMPL_H_

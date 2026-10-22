@@ -12,7 +12,7 @@
 #include "components/browser_actuator/public/transport/transport_handler_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class TransportSession;
 
@@ -36,6 +36,6 @@ class MockTransportHandlerFactory : public TransportHandlerFactory {
   const FactoryId factory_id_;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_TEST_SUPPORT_TRANSPORT_MOCK_TRANSPORT_HANDLER_FACTORY_H_

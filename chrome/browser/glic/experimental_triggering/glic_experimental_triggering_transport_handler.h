@@ -12,15 +12,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
-#include "components/browser_actuator/public/common.h"
-#include "components/browser_actuator/public/transport_handler.h"
-#include "components/browser_actuator/public/transport_handler_factory.h"
+#include "components/browser_actuator/public/transport/common.h"
+#include "components/browser_actuator/public/transport/transport_handler.h"
+#include "components/browser_actuator/public/transport/transport_handler_factory.h"
 
 class Profile;
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 class TransportSession;
-}
+}  // namespace browser_actuator::transport
 
 namespace glic {
 
@@ -29,11 +29,11 @@ class GlicExperimentalTriggeringCoordinator;
 // TransportHandler for handling GlicExperimentalTriggering messages and
 // coordinating requests over a BrowserActuator TransportSession.
 class GlicExperimentalTriggeringTransportHandler
-    : public browser_actuator::TransportHandler {
+    : public browser_actuator::transport::TransportHandler {
  public:
   GlicExperimentalTriggeringTransportHandler(
       Profile* profile,
-      browser_actuator::TransportSession* session,
+      browser_actuator::transport::TransportSession* session,
       base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator);
   ~GlicExperimentalTriggeringTransportHandler() override;
 
@@ -42,8 +42,8 @@ class GlicExperimentalTriggeringTransportHandler
   GlicExperimentalTriggeringTransportHandler& operator=(
       const GlicExperimentalTriggeringTransportHandler&) = delete;
 
-  // browser_actuator::TransportHandler implementation:
-  void OnMessage(browser_actuator::PayloadType payload_type,
+  // browser_actuator::transport::TransportHandler implementation:
+  void OnMessage(browser_actuator::transport::PayloadType payload_type,
                  std::string_view serialized_payload) override;
 
  private:
@@ -56,7 +56,7 @@ class GlicExperimentalTriggeringTransportHandler
 };
 
 class GlicExperimentalTriggeringTransportHandlerFactory
-    : public browser_actuator::TransportHandlerFactory {
+    : public browser_actuator::transport::TransportHandlerFactory {
  public:
   explicit GlicExperimentalTriggeringTransportHandlerFactory(Profile* profile);
   GlicExperimentalTriggeringTransportHandlerFactory(
@@ -69,12 +69,12 @@ class GlicExperimentalTriggeringTransportHandlerFactory
   GlicExperimentalTriggeringTransportHandlerFactory& operator=(
       const GlicExperimentalTriggeringTransportHandlerFactory&) = delete;
 
-  // browser_actuator::TransportHandlerFactory implementation:
-  browser_actuator::FactoryId GetFactoryId() const override;
-  std::vector<browser_actuator::PayloadType> GetSupportedPayloadTypes()
-      const override;
-  std::unique_ptr<browser_actuator::TransportHandler> OnNewSession(
-      browser_actuator::TransportSession* session) override;
+  // browser_actuator::transport::TransportHandlerFactory implementation:
+  browser_actuator::transport::FactoryId GetFactoryId() const override;
+  std::vector<browser_actuator::transport::PayloadType>
+  GetSupportedPayloadTypes() const override;
+  std::unique_ptr<browser_actuator::transport::TransportHandler> OnNewSession(
+      browser_actuator::transport::TransportSession* session) override;
 
  private:
   const raw_ptr<Profile> profile_;

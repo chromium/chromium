@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/browser_actuator/public/common.h"
-#include "components/browser_actuator/public/transport_handler.h"
-#include "components/browser_actuator/public/transport_handler_factory.h"
+#include "components/browser_actuator/public/transport/common.h"
+#include "components/browser_actuator/public/transport/transport_handler.h"
+#include "components/browser_actuator/public/transport/transport_handler_factory.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 class TransportSession;
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 namespace actor {
 
@@ -25,7 +25,7 @@ class ActorKeyedService;
 // Creates ActuationTransportHandler instances for remote actuation transport
 // sessions.
 class ChromeActuationTransportHandlerFactory
-    : public browser_actuator::TransportHandlerFactory {
+    : public browser_actuator::transport::TransportHandlerFactory {
  public:
   explicit ChromeActuationTransportHandlerFactory(
       ActorKeyedService* actor_keyed_service);
@@ -35,12 +35,12 @@ class ChromeActuationTransportHandlerFactory
       const ChromeActuationTransportHandlerFactory&) = delete;
   ~ChromeActuationTransportHandlerFactory() override;
 
-  // browser_actuator::TransportHandlerFactory:
-  browser_actuator::FactoryId GetFactoryId() const override;
-  std::vector<browser_actuator::PayloadType> GetSupportedPayloadTypes()
-      const override;
-  std::unique_ptr<browser_actuator::TransportHandler> OnNewSession(
-      browser_actuator::TransportSession* session) override;
+  // browser_actuator::transport::TransportHandlerFactory:
+  browser_actuator::transport::FactoryId GetFactoryId() const override;
+  std::vector<browser_actuator::transport::PayloadType>
+  GetSupportedPayloadTypes() const override;
+  std::unique_ptr<browser_actuator::transport::TransportHandler> OnNewSession(
+      browser_actuator::transport::TransportSession* session) override;
 
  private:
   // Owns `this`.

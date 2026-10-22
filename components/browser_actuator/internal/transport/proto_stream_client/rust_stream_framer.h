@@ -10,7 +10,7 @@
 
 #include "components/browser_actuator/internal/transport/stream_framer.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // StreamFramer for OnePlatform `alt=proto` StreamBody framing, backed by
 // the pure-Rust `stream_body_parser` crate: each complete top-level
@@ -43,6 +43,6 @@ class RustStreamFramer : public StreamFramer {
   std::unique_ptr<Impl> impl_;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_PROTO_STREAM_CLIENT_RUST_STREAM_FRAMER_H_

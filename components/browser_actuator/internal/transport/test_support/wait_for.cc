@@ -12,7 +12,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/task_observer.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 namespace {
 
@@ -62,4 +62,4 @@ bool WaitFor(base::FunctionRef<bool()> condition) {
   return waiter.satisfied();
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

@@ -15,7 +15,7 @@ source_set("transport") {
     "//components/actor/core:task_id",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/actor/transport/proto:actuation_transport_proto",
-    "//components/browser_actuator/public",
+    "//components/browser_actuator/public/transport",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }
@@ -29,8 +29,8 @@ source_set("unit_tests") {
     "//components/actor/core:task_id",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/actor/transport/proto:actuation_transport_proto",
-    "//components/browser_actuator/public",
-    "//components/browser_actuator/public:payload_type_mapping",
+    "//components/browser_actuator/public/transport",
+    "//components/browser_actuator/public/transport:payload_type_mapping",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gtest",
   ]

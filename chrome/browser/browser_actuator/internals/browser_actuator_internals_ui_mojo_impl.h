@@ -17,9 +17,11 @@
 
 class Profile;
 
-namespace browser_actuator {
-
+namespace browser_actuator::transport {
 class SessionStreamRecorderFactory;
+}  // namespace browser_actuator::transport
+
+namespace browser_actuator {
 
 // Mojo implementation of
 // browser_actuator_internals::mojom::BrowserActuatorInternalsUI.
@@ -45,7 +47,7 @@ class BrowserActuatorInternalsUIMojoImpl
                             ExportSessionHistoryCallback callback) override;
 
  private:
-  const SessionStreamRecorderFactory* GetRecorderFactory() const;
+  const transport::SessionStreamRecorderFactory* GetRecorderFactory() const;
 
   // Outlives this object; the WebContents is destroyed before the Profile.
   raw_ptr<Profile> profile_;

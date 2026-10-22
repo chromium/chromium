@@ -12,7 +12,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class MockStreamConnectionDelegate : public StreamConnectionDelegate {
  public:
@@ -29,6 +29,6 @@ class MockStreamConnectionDelegate : public StreamConnectionDelegate {
   MOCK_METHOD(bool, ShouldRetryOnHttpFailure, (int), (override));
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_TEST_SUPPORT_MOCK_STREAM_CONNECTION_DELEGATE_H_

@@ -12,7 +12,7 @@
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 ControlTransportHandler::ControlTransportHandler(
     TransportSession* session,
@@ -95,4 +95,4 @@ std::unique_ptr<TransportHandler> ControlTransportHandlerFactory::OnNewSession(
                                                    close_session_cb_);
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

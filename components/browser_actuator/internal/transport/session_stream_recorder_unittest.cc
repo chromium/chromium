@@ -25,7 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 class FakeTransportSession : public TransportSession {
@@ -892,4 +892,4 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {
 }
 
 }  // namespace
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

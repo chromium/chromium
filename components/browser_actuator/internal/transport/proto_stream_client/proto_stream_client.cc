@@ -21,7 +21,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 ProtoStreamClient::ProtoStreamClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -372,4 +372,4 @@ void ProtoStreamClient::SetConnected(bool connected) {
   }
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

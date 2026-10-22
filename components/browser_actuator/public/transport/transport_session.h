@@ -14,7 +14,7 @@ namespace google::protobuf {
 class MessageLite;
 }  // namespace google::protobuf
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Represents an active session for a task shared between the browser and
 // server.
@@ -34,6 +34,6 @@ class TransportSession {
                          const google::protobuf::MessageLite& message) = 0;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_TRANSPORT_SESSION_H_

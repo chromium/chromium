@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_COMMON_H_
 #define COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_COMMON_H_
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Identifies feature payload targets, matching the server
 // DownstreamMessage.PayloadType.
@@ -37,6 +37,6 @@ enum class SendUpstreamMessageError {
   kChannelDisconnected,
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_COMMON_H_

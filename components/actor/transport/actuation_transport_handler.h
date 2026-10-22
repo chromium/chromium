@@ -13,27 +13,29 @@
 #include "base/memory/weak_ptr.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/transport/actuation_delegate.h"
-#include "components/browser_actuator/public/transport_handler.h"
+#include "components/browser_actuator/public/transport/transport_handler.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 class TransportSession;
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 namespace actor {
 
 // Routes actuation commands from a transport session to an ActuationDelegate
 // and sends the results upstream.
-class ActuationTransportHandler : public browser_actuator::TransportHandler {
+class ActuationTransportHandler
+    : public browser_actuator::transport::TransportHandler {
  public:
-  ActuationTransportHandler(browser_actuator::TransportSession* session,
-                            std::unique_ptr<ActuationDelegate> delegate);
+  ActuationTransportHandler(
+      browser_actuator::transport::TransportSession* session,
+      std::unique_ptr<ActuationDelegate> delegate);
   ActuationTransportHandler(const ActuationTransportHandler&) = delete;
   ActuationTransportHandler& operator=(const ActuationTransportHandler&) =
       delete;
   ~ActuationTransportHandler() override;
 
-  // browser_actuator::TransportHandler:
-  void OnMessage(browser_actuator::PayloadType payload_type,
+  // browser_actuator::transport::TransportHandler:
+  void OnMessage(browser_actuator::transport::PayloadType payload_type,
                  std::string_view serialized_payload) override;
 
  private:

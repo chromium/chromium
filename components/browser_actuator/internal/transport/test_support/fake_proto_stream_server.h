@@ -18,7 +18,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Simulates a server-streaming protobuf endpoint (`StreamBody` framing) backed
 // by a `network::TestURLLoaderFactory`.
@@ -89,6 +89,6 @@ class FakeProtoStreamServer {
   mojo::ScopedDataPipeProducerHandle producer_handle_;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_TEST_SUPPORT_FAKE_PROTO_STREAM_SERVER_H_

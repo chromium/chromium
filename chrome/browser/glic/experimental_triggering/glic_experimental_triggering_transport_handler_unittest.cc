@@ -30,9 +30,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/browser_actuator/public/common.h"
-#include "components/browser_actuator/public/payload_type_mapping.h"
-#include "components/browser_actuator/public/transport_session.h"
+#include "components/browser_actuator/public/transport/common.h"
+#include "components/browser_actuator/public/transport/payload_type_mapping.h"
+#include "components/browser_actuator/public/transport/transport_session.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
@@ -43,10 +43,10 @@
 namespace glic {
 namespace {
 
-using browser_actuator::FactoryId;
-using browser_actuator::PayloadType;
-using browser_actuator::SendUpstreamMessageError;
-using browser_actuator::TransportSession;
+using browser_actuator::transport::FactoryId;
+using browser_actuator::transport::PayloadType;
+using browser_actuator::transport::SendUpstreamMessageError;
+using browser_actuator::transport::TransportSession;
 
 class MockTransportSession : public TransportSession {
  public:
@@ -412,8 +412,9 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
 // Pins `ExpectedTypeUrl` to the generated proto; this layer may include it.
 TEST(GlicExperimentalTriggeringTypeUrlTest, MatchesProtoTypeName) {
   EXPECT_EQ(
-      browser_actuator::ExpectedTypeUrl(PayloadType::kExperimentalTriggering),
-      base::StrCat({browser_actuator::kTypeUrlPrefix,
+      browser_actuator::transport::ExpectedTypeUrl(
+          PayloadType::kExperimentalTriggering),
+      base::StrCat({browser_actuator::transport::kTypeUrlPrefix,
                     components_sharing_message::GlicExperimentalTriggering()
                         .GetTypeName()}));
 }

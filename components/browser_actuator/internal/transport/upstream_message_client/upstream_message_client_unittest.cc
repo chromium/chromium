@@ -25,7 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 constexpr char kEndpoint[] = "https://example.com/v1/send";
@@ -247,4 +247,4 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
 }
 
 }  // namespace
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

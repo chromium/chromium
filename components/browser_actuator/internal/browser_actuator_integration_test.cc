@@ -51,8 +51,8 @@ ActuatorDownstreamMessage BuildDownstreamControlMessage(
   msg.set_sequence_number(sequence_number);
   auto* typed = msg.add_typed_payloads();
   typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
-  typed->mutable_proto_payload()->set_type_url(
-      std::string(ExpectedTypeUrl(PayloadType::kControl)));
+  typed->mutable_proto_payload()->set_type_url(std::string(
+      transport::ExpectedTypeUrl(transport::PayloadType::kControl)));
   typed->mutable_proto_payload()->set_value(command.SerializeAsString());
   return msg;
 }
@@ -68,17 +68,18 @@ ActuatorDownstreamMessage BuildDownstreamExperimentalTriggeringMessage(
   typed->set_payload_type(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   typed->mutable_proto_payload()->set_type_url(
-      std::string(ExpectedTypeUrl(PayloadType::kExperimentalTriggering)));
+      std::string(transport::ExpectedTypeUrl(
+          transport::PayloadType::kExperimentalTriggering)));
   typed->mutable_proto_payload()->set_value(payload.SerializeAsString());
   return msg;
 }
 
 // A real feature handler that records incoming `kExperimentalTriggering`
 // payloads and optionally sends an upstream reply on `session_`.
-class EchoExperimentalTriggeringHandler : public TransportHandler {
+class EchoExperimentalTriggeringHandler : public transport::TransportHandler {
  public:
   EchoExperimentalTriggeringHandler(
-      TransportSession* session,
+      transport::TransportSession* session,
       std::vector<components_sharing_message::GlicExperimentalTriggering>*
           received_messages,
       bool send_upstream_reply)
@@ -86,9 +87,9 @@ class EchoExperimentalTriggeringHandler : public TransportHandler {
         received_messages_(received_messages),
         send_upstream_reply_(send_upstream_reply) {}
 
-  void OnMessage(PayloadType payload_type,
+  void OnMessage(transport::PayloadType payload_type,
                  std::string_view serialized_payload) override {
-    EXPECT_EQ(payload_type, PayloadType::kExperimentalTriggering);
+    EXPECT_EQ(payload_type, transport::PayloadType::kExperimentalTriggering);
     components_sharing_message::GlicExperimentalTriggering parsed;
     ASSERT_TRUE(parsed.ParseFromArray(serialized_payload.data(),
                                       serialized_payload.size()));
@@ -99,13 +100,14 @@ class EchoExperimentalTriggeringHandler : public TransportHandler {
       reply.set_context_id("ack:" + parsed.context_id());
       EXPECT_TRUE(
           session_
-              ->SendUpstreamMessage(PayloadType::kExperimentalTriggering, reply)
+              ->SendUpstreamMessage(
+                  transport::PayloadType::kExperimentalTriggering, reply)
               .has_value());
     }
   }
 
  private:
-  const raw_ptr<TransportSession> session_;
+  const raw_ptr<transport::TransportSession> session_;
   const raw_ptr<
       std::vector<components_sharing_message::GlicExperimentalTriggering>>
       received_messages_;
@@ -115,7 +117,8 @@ class EchoExperimentalTriggeringHandler : public TransportHandler {
 // TODO(crbug.com/566363773): Add an integration test for the concrete
 // BrowserActuator action payload handler once the wire payload type is
 // defined in ActuatorDownstreamPayloadType.
-class EchoExperimentalTriggeringFactory : public TransportHandlerFactory {
+class EchoExperimentalTriggeringFactory
+    : public transport::TransportHandlerFactory {
  public:
   explicit EchoExperimentalTriggeringFactory(
       std::vector<components_sharing_message::GlicExperimentalTriggering>*
@@ -124,16 +127,17 @@ class EchoExperimentalTriggeringFactory : public TransportHandlerFactory {
       : received_messages_(received_messages),
         send_upstream_reply_(send_upstream_reply) {}
 
-  FactoryId GetFactoryId() const override {
-    return FactoryId::kExperimentalTriggering;
+  transport::FactoryId GetFactoryId() const override {
+    return transport::FactoryId::kExperimentalTriggering;
   }
 
-  std::vector<PayloadType> GetSupportedPayloadTypes() const override {
-    return {PayloadType::kExperimentalTriggering};
+  std::vector<transport::PayloadType> GetSupportedPayloadTypes()
+      const override {
+    return {transport::PayloadType::kExperimentalTriggering};
   }
 
-  std::unique_ptr<TransportHandler> OnNewSession(
-      TransportSession* session) override {
+  std::unique_ptr<transport::TransportHandler> OnNewSession(
+      transport::TransportSession* session) override {
     return std::make_unique<EchoExperimentalTriggeringHandler>(
         session, received_messages_, send_upstream_reply_);
   }
@@ -155,7 +159,8 @@ class BrowserActuatorIntegrationTest : public testing::Test {
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kBrowserActuator, kBrowserActuatorChannelEnabled,
+        /*enabled_features=*/{kBrowserActuator,
+                              transport::kBrowserActuatorChannelEnabled,
                               kBrowserActuatorInternals},
         /*disabled_features=*/{});
 
@@ -172,9 +177,9 @@ class BrowserActuatorIntegrationTest : public testing::Test {
   // Waits for an upstream HTTP POST request, parses its protobuf body into
   // `SendSessionMessageRequest`, and completes the request with HTTP 200 OK.
   SendSessionMessageRequest WaitForUpstreamRequest() {
-    const GURL upstream_url = GetSendSessionMessageEndpoint();
+    const GURL upstream_url = transport::GetSendSessionMessageEndpoint();
     SendSessionMessageRequest parsed;
-    bool received = WaitFor([&]() {
+    bool received = transport::WaitFor([&]() {
       auto* pending_requests = test_url_loader_factory_.pending_requests();
       for (auto it = pending_requests->begin(); it != pending_requests->end();
            ++it) {
@@ -201,8 +206,9 @@ class BrowserActuatorIntegrationTest : public testing::Test {
     received_messages_.clear();
   }
 
-  TransportChannelImpl* channel_impl() {
-    return static_cast<TransportChannelImpl*>(service_->GetChannel());
+  transport::TransportChannelImpl* channel_impl() {
+    return static_cast<transport::TransportChannelImpl*>(
+        service_->GetChannel());
   }
 
   std::vector<components_sharing_message::GlicExperimentalTriggering>
@@ -217,10 +223,10 @@ class BrowserActuatorIntegrationTest : public testing::Test {
 
 TEST_F(BrowserActuatorIntegrationTest,
        DownstreamStartSessionTriggersUpstreamStartSessionAck) {
-  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
-                                      GetWatchSessionsEndPoint());
+  transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
 
-  TransportSession* session =
+  transport::TransportSession* session =
       service_->GetOrCreateSession("session-handshake-1");
   ASSERT_NE(session, nullptr);
 
@@ -251,7 +257,7 @@ TEST_F(BrowserActuatorIntegrationTest,
   EXPECT_EQ(upstream_msg.typed_payloads(0).payload_type(),
             ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   EXPECT_EQ(upstream_msg.typed_payloads(0).proto_payload().type_url(),
-            ExpectedTypeUrl(PayloadType::kControl));
+            transport::ExpectedTypeUrl(transport::PayloadType::kControl));
 
   ControlCommand ack_cmd;
   ASSERT_TRUE(ack_cmd.ParseFromString(
@@ -261,7 +267,7 @@ TEST_F(BrowserActuatorIntegrationTest,
   // Verify chrome://browser-actuator-internals SessionStreamRecorderFactory
   // records both the downstream StartSession message (via TransportHandler)
   // and the upstream StartSessionAck message (via TransportMessageObserver).
-  SessionStreamRecorderFactory* recorder_factory =
+  transport::SessionStreamRecorderFactory* recorder_factory =
       service_->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
   base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
@@ -285,14 +291,15 @@ TEST_F(
   service_->GetChannel()->GetHandlerFactoryRegistry()->RegisterFactory(
       &feature_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
-      &TransportHandlerFactoryRegistry::UnregisterFactory,
+      &transport::TransportHandlerFactoryRegistry::UnregisterFactory,
       base::Unretained(service_->GetChannel()->GetHandlerFactoryRegistry()),
       &feature_factory));
 
-  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
-                                      GetWatchSessionsEndPoint());
+  transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
 
-  TransportSession* session = service_->GetOrCreateSession("session-feature-1");
+  transport::TransportSession* session =
+      service_->GetOrCreateSession("session-feature-1");
   ASSERT_NE(session, nullptr);
   stream_server.WaitForConnection();
 
@@ -314,7 +321,8 @@ TEST_F(
   EXPECT_EQ(upstream_msg.typed_payloads(0).payload_type(),
             ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   EXPECT_EQ(upstream_msg.typed_payloads(0).proto_payload().type_url(),
-            ExpectedTypeUrl(PayloadType::kExperimentalTriggering));
+            transport::ExpectedTypeUrl(
+                transport::PayloadType::kExperimentalTriggering));
 
   components_sharing_message::GlicExperimentalTriggering upstream_reply;
   ASSERT_TRUE(upstream_reply.ParseFromString(
@@ -323,8 +331,8 @@ TEST_F(
 }
 
 TEST_F(BrowserActuatorIntegrationTest, DownstreamCloseSessionDestroysSession) {
-  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
-                                      GetWatchSessionsEndPoint());
+  transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
 
   ASSERT_NE(service_->GetOrCreateSession("session-to-close"), nullptr);
   stream_server.WaitForConnection();
@@ -334,10 +342,10 @@ TEST_F(BrowserActuatorIntegrationTest, DownstreamCloseSessionDestroysSession) {
   stream_server.PushMessage(BuildDownstreamControlMessage(
       "session-to-close", /*sequence_number=*/2, close_cmd));
 
-  ASSERT_TRUE(WaitFor(
+  ASSERT_TRUE(transport::WaitFor(
       [&]() { return service_->GetSession("session-to-close") == nullptr; }));
 
-  SessionStreamRecorderFactory* recorder_factory =
+  transport::SessionStreamRecorderFactory* recorder_factory =
       service_->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
   base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
@@ -352,14 +360,14 @@ TEST_F(BrowserActuatorIntegrationTest, DownstreamCloseSessionDestroysSession) {
 
 TEST_F(BrowserActuatorIntegrationTest,
        DownstreamCloseChannelDisconnectsStream) {
-  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
-                                      GetWatchSessionsEndPoint());
+  transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
 
   ASSERT_NE(service_->GetOrCreateSession("session-channel-close"), nullptr);
   stream_server.WaitForConnection();
-  ASSERT_TRUE(WaitFor([&]() {
+  ASSERT_TRUE(transport::WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
-           DownstreamConnectionState::kConnected;
+           transport::DownstreamConnectionState::kConnected;
   }));
 
   ControlCommand close_channel_cmd;
@@ -367,9 +375,9 @@ TEST_F(BrowserActuatorIntegrationTest,
   stream_server.PushMessage(BuildDownstreamControlMessage(
       "session-channel-close", /*sequence_number=*/3, close_channel_cmd));
 
-  ASSERT_TRUE(WaitFor([&]() {
+  ASSERT_TRUE(transport::WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
-           DownstreamConnectionState::kDisconnected;
+           transport::DownstreamConnectionState::kDisconnected;
   }));
 }
 
@@ -380,12 +388,12 @@ TEST_F(BrowserActuatorIntegrationTest,
   service_->GetChannel()->GetHandlerFactoryRegistry()->RegisterFactory(
       &feature_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
-      &TransportHandlerFactoryRegistry::UnregisterFactory,
+      &transport::TransportHandlerFactoryRegistry::UnregisterFactory,
       base::Unretained(service_->GetChannel()->GetHandlerFactoryRegistry()),
       &feature_factory));
 
-  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
-                                      GetWatchSessionsEndPoint());
+  transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
 
   ASSERT_NE(service_->GetOrCreateSession("session-resume"), nullptr);
   stream_server.WaitForConnection();
@@ -401,7 +409,8 @@ TEST_F(BrowserActuatorIntegrationTest,
   payload_1.set_context_id("step-1");
   stream_server.PushMessage(BuildDownstreamExperimentalTriggeringMessage(
       "session-resume", /*sequence_number=*/1, payload_1));
-  ASSERT_TRUE(WaitFor([&]() { return received_messages_.size() == 1u; }));
+  ASSERT_TRUE(
+      transport::WaitFor([&]() { return received_messages_.size() == 1u; }));
   EXPECT_EQ(received_messages_[0].context_id(), "step-1");
 
   // 2. Abort the stream with a network reset and advance mock time by the 3s
@@ -423,25 +432,25 @@ TEST_F(BrowserActuatorIntegrationTest,
 
 TEST_F(BrowserActuatorIntegrationTest,
        StreamStatusTrailersCleanlyFinishWithoutReconnecting) {
-  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
-                                      GetWatchSessionsEndPoint());
+  transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
 
   ASSERT_NE(service_->GetOrCreateSession("session-status-finish"), nullptr);
   stream_server.WaitForConnection();
-  ASSERT_TRUE(WaitFor([&]() {
+  ASSERT_TRUE(transport::WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
-           DownstreamConnectionState::kConnected;
+           transport::DownstreamConnectionState::kConnected;
   }));
 
   stream_server.PushTrailersAndFinish(/*rpc_status_code=*/0, "OK");
-  ASSERT_TRUE(WaitFor([&]() {
+  ASSERT_TRUE(transport::WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
-           DownstreamConnectionState::kDisconnected;
+           transport::DownstreamConnectionState::kDisconnected;
   }));
   task_environment_.FastForwardBy(base::Seconds(10));
 
   EXPECT_EQ(channel_impl()->downstream_connection_state(),
-            DownstreamConnectionState::kDisconnected);
+            transport::DownstreamConnectionState::kDisconnected);
   EXPECT_EQ(stream_server.connection_count(), 1);
 }
 
@@ -453,12 +462,12 @@ TEST_F(
   service_->GetChannel()->GetHandlerFactoryRegistry()->RegisterFactory(
       &feature_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
-      &TransportHandlerFactoryRegistry::UnregisterFactory,
+      &transport::TransportHandlerFactoryRegistry::UnregisterFactory,
       base::Unretained(service_->GetChannel()->GetHandlerFactoryRegistry()),
       &feature_factory));
 
-  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
-                                      GetWatchSessionsEndPoint());
+  transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
 
   ASSERT_NE(service_->GetOrCreateSession("session-unknown-type"), nullptr);
   stream_server.WaitForConnection();
@@ -482,7 +491,8 @@ TEST_F(
   stream_server.PushMessage(BuildDownstreamExperimentalTriggeringMessage(
       "session-unknown-type", /*sequence_number=*/2, downstream_payload));
 
-  ASSERT_TRUE(WaitFor([&]() { return received_messages_.size() == 1u; }));
+  ASSERT_TRUE(
+      transport::WaitFor([&]() { return received_messages_.size() == 1u; }));
   EXPECT_EQ(received_messages_[0].context_id(), "step-after-unknown");
   EXPECT_NE(service_->GetSession("session-unknown-type"), nullptr);
 }
@@ -494,12 +504,12 @@ TEST_F(BrowserActuatorIntegrationTest,
   service_->GetChannel()->GetHandlerFactoryRegistry()->RegisterFactory(
       &feature_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
-      &TransportHandlerFactoryRegistry::UnregisterFactory,
+      &transport::TransportHandlerFactoryRegistry::UnregisterFactory,
       base::Unretained(service_->GetChannel()->GetHandlerFactoryRegistry()),
       &feature_factory));
 
-  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
-                                      GetWatchSessionsEndPoint());
+  transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
 
   ASSERT_NE(service_->GetOrCreateSession("session-reordered"), nullptr);
   stream_server.WaitForConnection();

@@ -15,7 +15,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 std::unique_ptr<ResumeBodyConnectionDelegate> MakeDelegate(std::string body) {
@@ -45,4 +45,4 @@ TEST(ResumeBodyConnectionDelegateTest, PrepareRequestForwardsThroughInner) {
 }
 
 }  // namespace
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

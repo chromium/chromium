@@ -10,8 +10,10 @@
 #include "base/observer_list_types.h"
 
 namespace browser_actuator {
-
 class ActuatorUpstreamMessage;
+}  // namespace browser_actuator
+
+namespace browser_actuator::transport {
 
 // Watches whole transport envelopes. Diagnostic consumers implement
 // this; it is not part of message delivery.
@@ -26,6 +28,6 @@ class TransportMessageObserver : public base::CheckedObserver {
                                  const ActuatorUpstreamMessage& message) = 0;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_TRANSPORT_MESSAGE_OBSERVER_H_

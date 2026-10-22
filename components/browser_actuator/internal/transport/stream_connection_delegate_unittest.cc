@@ -11,7 +11,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 TEST(StreamConnectionDelegateTest, DefaultDelegatePassesRequestThrough) {
@@ -36,4 +36,4 @@ TEST(StreamConnectionDelegateTest, NoRetryOnHttpFailureByDefault) {
 }
 
 }  // namespace
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

@@ -15,7 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 using Error = DownstreamMessageSequencer::Error;
@@ -312,4 +312,4 @@ TEST(DownstreamMessageSequencerTest, FlushSkipsGapsAndAdvancesCursor) {
 }
 
 }  // namespace
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

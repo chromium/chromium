@@ -9,8 +9,8 @@
 
 namespace mojo {
 
-using browser_actuator::SessionEventSnapshot;
-using browser_actuator::SessionSnapshot;
+using browser_actuator::transport::SessionEventSnapshot;
+using browser_actuator::transport::SessionSnapshot;
 using browser_actuator_internals::mojom::MessageDirection;
 
 // static

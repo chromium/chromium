@@ -202,7 +202,6 @@ group("isolation_check") {
     "//components/browser_actuator:*",
     "//components/browser_actuator/internal:*",
     "//components/browser_actuator/public",
-    "//components/browser_actuator/public:payload_type_mapping",
     "//components/browser_actuator/test_support:*",
   ]
 }

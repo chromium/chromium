@@ -34,7 +34,7 @@ namespace base {
 class DictValue;
 }  // namespace base
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class TransportSession;
 
@@ -252,6 +252,6 @@ class SessionStreamRecorderFactory : public TransportHandlerFactory,
   base::WeakPtrFactory<SessionStreamRecorderFactory> weak_ptr_factory_{this};
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_SESSION_STREAM_RECORDER_H_

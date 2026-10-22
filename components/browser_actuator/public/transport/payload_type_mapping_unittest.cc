@@ -9,7 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 TEST(PayloadTypeMappingTest, MapsPayloadTypeToWireEnum) {
@@ -73,4 +73,4 @@ TEST(PayloadTypeMappingTest, ExpectedTypeUrlIsUniquePerPayloadType) {
 }
 
 }  // namespace
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

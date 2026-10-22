@@ -6,7 +6,7 @@
 
 #include "components/browser_actuator/public/transport/transport_session.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 TransportHandler::TransportHandler(TransportSession* session)
     : session_(session) {}
@@ -23,4 +23,4 @@ TransportHandler::SendUpstreamMessage(
   return session_->SendUpstreamMessage(payload_type, message);
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

@@ -13,7 +13,7 @@
 
 #include "base/functional/callback.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Splits an untrusted byte stream into the complete messages it frames.
 // This is the seam between a MessageStreamClient implementation, which
@@ -61,6 +61,6 @@ class StreamFramer {
 using StreamFramerFactory =
     base::RepeatingCallback<std::unique_ptr<StreamFramer>()>;
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_STREAM_FRAMER_H_

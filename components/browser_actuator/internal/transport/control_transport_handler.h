@@ -17,7 +17,7 @@
 #include "components/browser_actuator/public/transport/transport_handler.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Implementation of TransportHandler specifically for processing channel and
 // session control commands (PayloadType::kControl).
@@ -73,6 +73,6 @@ class ControlTransportHandlerFactory : public TransportHandlerFactory {
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_CONTROL_TRANSPORT_HANDLER_H_

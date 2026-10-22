@@ -15,7 +15,7 @@ namespace google::protobuf {
 class MessageLite;
 }  // namespace google::protobuf
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class TransportHandlerFactoryRegistry;
 class TransportSessionRegistry;
@@ -39,6 +39,6 @@ class TransportChannel {
       std::optional<int64_t> responding_to_sequence_number) = 0;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_TRANSPORT_CHANNEL_H_

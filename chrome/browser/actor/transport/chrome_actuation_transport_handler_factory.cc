@@ -23,19 +23,19 @@ ChromeActuationTransportHandlerFactory::ChromeActuationTransportHandlerFactory(
 ChromeActuationTransportHandlerFactory::
     ~ChromeActuationTransportHandlerFactory() = default;
 
-browser_actuator::FactoryId
+browser_actuator::transport::FactoryId
 ChromeActuationTransportHandlerFactory::GetFactoryId() const {
-  return browser_actuator::FactoryId::kActuation;
+  return browser_actuator::transport::FactoryId::kActuation;
 }
 
-std::vector<browser_actuator::PayloadType>
+std::vector<browser_actuator::transport::PayloadType>
 ChromeActuationTransportHandlerFactory::GetSupportedPayloadTypes() const {
-  return {browser_actuator::PayloadType::kActuation};
+  return {browser_actuator::transport::PayloadType::kActuation};
 }
 
-std::unique_ptr<browser_actuator::TransportHandler>
+std::unique_ptr<browser_actuator::transport::TransportHandler>
 ChromeActuationTransportHandlerFactory::OnNewSession(
-    browser_actuator::TransportSession* session) {
+    browser_actuator::transport::TransportSession* session) {
   return std::make_unique<ActuationTransportHandler>(
       session, std::make_unique<ActorKeyedServiceAdapter>(
                    actor_keyed_service_, enterprise_policy_checker_.get()));

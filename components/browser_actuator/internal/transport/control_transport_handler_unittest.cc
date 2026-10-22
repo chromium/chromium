@@ -17,7 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 class TestTransportSession : public TransportSession {
@@ -231,4 +231,4 @@ TEST(ControlTransportHandlerTest, ExpectedTypeUrlMatchesControlCommand) {
 }
 
 }  // namespace
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

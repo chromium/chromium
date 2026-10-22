@@ -29,7 +29,7 @@ class URLResponseHead;
 }  // namespace mojom
 }  // namespace network
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class StreamConnectionDelegate;
 
@@ -190,6 +190,6 @@ class ProtoStreamClient : public MessageStreamClient,
   base::WeakPtrFactory<ProtoStreamClient> weak_ptr_factory_{this};
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_PROTO_STREAM_CLIENT_PROTO_STREAM_CLIENT_H_

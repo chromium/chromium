@@ -11,7 +11,7 @@
 #include "components/browser_actuator/public/transport/transport_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class MockTransportHandler : public TransportHandler {
  public:
@@ -38,6 +38,6 @@ class CallbackTransportHandler : public TransportHandler {
   base::OnceClosure on_message_cb_;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_TEST_SUPPORT_TRANSPORT_MOCK_TRANSPORT_HANDLER_H_

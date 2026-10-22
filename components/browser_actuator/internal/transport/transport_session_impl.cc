@@ -26,7 +26,7 @@
 #include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 // `Any::Is<T>()` is unavailable for LITE_RUNTIME protos, so `type_url` is
@@ -333,4 +333,4 @@ void TransportSessionImpl::ProcessTypedPayload(
   }
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

@@ -84,17 +84,17 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
     })");
 }
 
-std::unique_ptr<MessageStreamClient> CreateStreamClient(
+std::unique_ptr<transport::MessageStreamClient> CreateStreamClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<StreamConnectionDelegate> resume_delegate) {
-  GURL endpoint = GetWatchSessionsEndPoint();
-  return std::make_unique<ProtoStreamClient>(
+    std::unique_ptr<transport::StreamConnectionDelegate> resume_delegate) {
+  GURL endpoint = transport::GetWatchSessionsEndPoint();
+  return std::make_unique<transport::ProtoStreamClient>(
       std::move(url_loader_factory), std::move(endpoint),
-      std::make_unique<OAuthStreamConnectionDelegate>(
+      std::make_unique<transport::OAuthStreamConnectionDelegate>(
           std::move(resume_delegate), identity_manager,
           signin::OAuthConsumerId::kBrowserActuator),
-      RustStreamFramer::MakeFactory(), GetTrafficAnnotation());
+      transport::RustStreamFramer::MakeFactory(), GetTrafficAnnotation());
 }
 
 }  // namespace
@@ -102,11 +102,11 @@ std::unique_ptr<MessageStreamClient> CreateStreamClient(
 BrowserActuatorServiceImpl::BrowserActuatorServiceImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager) {
-  if (base::FeatureList::IsEnabled(kBrowserActuatorChannelEnabled)) {
-    channel_ = std::make_unique<TransportChannelImpl>(
-        std::make_unique<UpstreamMessageClient>(
+  if (base::FeatureList::IsEnabled(transport::kBrowserActuatorChannelEnabled)) {
+    channel_ = std::make_unique<transport::TransportChannelImpl>(
+        std::make_unique<transport::UpstreamMessageClient>(
             url_loader_factory, identity_manager,
-            GetSendSessionMessageEndpoint(), GetTrafficAnnotation()),
+            transport::GetSendSessionMessageEndpoint(), GetTrafficAnnotation()),
         // Safe because BrowserActuatorServiceFactory depends on
         // IdentityManagerFactory, so `identity_manager` outlives `channel_`.
         base::BindOnce(&CreateStreamClient, url_loader_factory,
@@ -118,14 +118,14 @@ BrowserActuatorServiceImpl::BrowserActuatorServiceImpl(
   // memory cost at zero for regular users.
   if (base::FeatureList::IsEnabled(kBrowserActuatorInternals)) {
     session_stream_recorder_factory_ =
-        std::make_unique<SessionStreamRecorderFactory>();
+        std::make_unique<transport::SessionStreamRecorderFactory>();
   }
 
   // The channel is only created when the channel feature is on. When it is off
   // the recorder factory is still owned here, but there is nothing to register
   // with.
   if (session_stream_recorder_factory_ && channel_) {
-    if (TransportHandlerFactoryRegistry* registry =
+    if (transport::TransportHandlerFactoryRegistry* registry =
             channel_->GetHandlerFactoryRegistry()) {
       registry->RegisterFactory(session_stream_recorder_factory_.get());
     }
@@ -141,7 +141,7 @@ BrowserActuatorServiceImpl::~BrowserActuatorServiceImpl() {
   // Unregister before anything is destroyed. The registry and channel store
   // raw pointers and do not own the factory.
   if (session_stream_recorder_factory_) {
-    if (TransportHandlerFactoryRegistry* registry =
+    if (transport::TransportHandlerFactoryRegistry* registry =
             channel_->GetHandlerFactoryRegistry()) {
       registry->UnregisterFactory(session_stream_recorder_factory_.get());
     }
@@ -154,31 +154,31 @@ bool BrowserActuatorServiceImpl::IsInitialized() const {
   return true;
 }
 
-TransportChannel* BrowserActuatorServiceImpl::GetChannel() {
+transport::TransportChannel* BrowserActuatorServiceImpl::GetChannel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return channel_.get();
 }
 
-SessionStreamRecorderFactory*
+transport::SessionStreamRecorderFactory*
 BrowserActuatorServiceImpl::GetStreamRecorderFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return session_stream_recorder_factory_.get();
 }
 
-TransportSession* BrowserActuatorServiceImpl::GetOrCreateSession(
+transport::TransportSession* BrowserActuatorServiceImpl::GetOrCreateSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TransportChannel* channel = GetChannel();
+  transport::TransportChannel* channel = GetChannel();
   if (channel && channel->GetSessionRegistry()) {
     return channel->GetSessionRegistry()->GetOrCreateSession(session_id);
   }
   return nullptr;
 }
 
-TransportSession* BrowserActuatorServiceImpl::GetSession(
+transport::TransportSession* BrowserActuatorServiceImpl::GetSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TransportChannel* channel = GetChannel();
+  transport::TransportChannel* channel = GetChannel();
   if (channel && channel->GetSessionRegistry()) {
     return channel->GetSessionRegistry()->GetSession(session_id);
   }

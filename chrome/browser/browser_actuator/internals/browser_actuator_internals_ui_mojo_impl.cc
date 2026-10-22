@@ -40,7 +40,8 @@ BrowserActuatorInternalsUIMojoImpl::~BrowserActuatorInternalsUIMojoImpl() =
 
 void BrowserActuatorInternalsUIMojoImpl::GetSessionHistory(
     GetSessionHistoryCallback callback) {
-  const SessionStreamRecorderFactory* recorder_factory = GetRecorderFactory();
+  const transport::SessionStreamRecorderFactory* recorder_factory =
+      GetRecorderFactory();
   if (!recorder_factory) {
     // No service (feature off, or a non-regular profile), or the internals
     // feature did not install the recorder.
@@ -57,7 +58,8 @@ void BrowserActuatorInternalsUIMojoImpl::GetSessionHistory(
 void BrowserActuatorInternalsUIMojoImpl::ExportSessionHistory(
     const std::vector<std::string>& session_ids,
     ExportSessionHistoryCallback callback) {
-  const SessionStreamRecorderFactory* recorder_factory = GetRecorderFactory();
+  const transport::SessionStreamRecorderFactory* recorder_factory =
+      GetRecorderFactory();
   if (!recorder_factory) {
     std::move(callback).Run("");
     return;
@@ -66,7 +68,7 @@ void BrowserActuatorInternalsUIMojoImpl::ExportSessionHistory(
   std::move(callback).Run(recorder_factory->ExportSessionsAsJson(session_ids));
 }
 
-const SessionStreamRecorderFactory*
+const transport::SessionStreamRecorderFactory*
 BrowserActuatorInternalsUIMojoImpl::GetRecorderFactory() const {
   BrowserActuatorService* service =
       profile_ ? BrowserActuatorServiceFactory::GetForProfile(profile_)

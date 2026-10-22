@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "components/browser_actuator/public/transport/common.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Maps a PayloadType to its corresponding histogram variant name suffix.
 // LINT.IfChange(PayloadTypeToMetricSuffix)
@@ -98,6 +98,6 @@ class UpstreamRequestLog {
   base::TimeTicks start_time_;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_METRICS_UTILS_H_

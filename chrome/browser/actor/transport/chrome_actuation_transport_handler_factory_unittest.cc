@@ -24,12 +24,12 @@
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
-#include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/features.h"
-#include "components/browser_actuator/public/transport_channel.h"
-#include "components/browser_actuator/public/transport_handler.h"
-#include "components/browser_actuator/public/transport_handler_factory_registry.h"
-#include "components/browser_actuator/public/transport_session.h"
+#include "components/browser_actuator/public/transport/common.h"
+#include "components/browser_actuator/public/transport/transport_channel.h"
+#include "components/browser_actuator/public/transport/transport_handler.h"
+#include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
+#include "components/browser_actuator/public/transport/transport_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +38,8 @@ namespace {
 
 namespace proto = ::chrome::aix::autobrowse::proto;
 
-class FakeTransportSession : public browser_actuator::TransportSession {
+class FakeTransportSession
+    : public browser_actuator::transport::TransportSession {
  public:
   explicit FakeTransportSession(std::string_view session_id)
       : session_id_(session_id) {}
@@ -46,8 +47,8 @@ class FakeTransportSession : public browser_actuator::TransportSession {
 
   std::string_view GetSessionId() const override { return session_id_; }
 
-  base::expected<void, browser_actuator::SendUpstreamMessageError>
-  SendUpstreamMessage(browser_actuator::PayloadType payload_type,
+  base::expected<void, browser_actuator::transport::SendUpstreamMessageError>
+  SendUpstreamMessage(browser_actuator::transport::PayloadType payload_type,
                       const google::protobuf::MessageLite& message) override {
     sent_payload_types_.push_back(payload_type);
     proto::BrowserToServerPayload upstream;
@@ -56,10 +57,11 @@ class FakeTransportSession : public browser_actuator::TransportSession {
     return {};
   }
 
-  void OnMessage(browser_actuator::PayloadType payload_type,
+  void OnMessage(browser_actuator::transport::PayloadType payload_type,
                  const google::protobuf::MessageLite& message) override {}
 
-  const std::vector<browser_actuator::PayloadType>& sent_payload_types() const {
+  const std::vector<browser_actuator::transport::PayloadType>&
+  sent_payload_types() const {
     return sent_payload_types_;
   }
 
@@ -69,7 +71,7 @@ class FakeTransportSession : public browser_actuator::TransportSession {
 
  private:
   std::string session_id_;
-  std::vector<browser_actuator::PayloadType> sent_payload_types_;
+  std::vector<browser_actuator::transport::PayloadType> sent_payload_types_;
   std::vector<proto::BrowserToServerPayload> sent_messages_;
 };
 
@@ -107,16 +109,17 @@ class ChromeActuationTransportHandlerFactoryTest : public testing::Test {
 
 TEST_F(ChromeActuationTransportHandlerFactoryTest,
        ReportsActuationFactoryIdAndSupportedPayloadTypes) {
-  EXPECT_EQ(factory_->GetFactoryId(), browser_actuator::FactoryId::kActuation);
-  std::vector<browser_actuator::PayloadType> expected_types = {
-      browser_actuator::PayloadType::kActuation};
+  EXPECT_EQ(factory_->GetFactoryId(),
+            browser_actuator::transport::FactoryId::kActuation);
+  std::vector<browser_actuator::transport::PayloadType> expected_types = {
+      browser_actuator::transport::PayloadType::kActuation};
   EXPECT_EQ(factory_->GetSupportedPayloadTypes(), expected_types);
 }
 
 TEST_F(ChromeActuationTransportHandlerFactoryTest,
        OnNewSessionCreatesHandlerThatRoutesStartTaskAndStopsOnDestruction) {
   FakeTransportSession session("session_factory_1");
-  std::unique_ptr<browser_actuator::TransportHandler> handler =
+  std::unique_ptr<browser_actuator::transport::TransportHandler> handler =
       factory_->OnNewSession(&session);
   ASSERT_TRUE(handler);
 
@@ -124,12 +127,12 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
   downstream.set_request_id("req_factory_start");
   downstream.mutable_start_task()->add_target_surfaces()->set_tab_id(15);
 
-  handler->OnMessage(browser_actuator::PayloadType::kActuation,
+  handler->OnMessage(browser_actuator::transport::PayloadType::kActuation,
                      downstream.SerializeAsString());
 
   ASSERT_EQ(session.sent_messages().size(), 1u);
   EXPECT_EQ(session.sent_payload_types()[0],
-            browser_actuator::PayloadType::kActuation);
+            browser_actuator::transport::PayloadType::kActuation);
   const auto& upstream = session.sent_messages()[0];
   EXPECT_EQ(upstream.request_id(), "req_factory_start");
   ASSERT_TRUE(upstream.has_start_task());
@@ -155,29 +158,33 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
       browser_actuator::BrowserActuatorServiceFactory::GetForProfile(profile_);
   ASSERT_TRUE(actuator_service);
   ASSERT_TRUE(actuator_service->GetChannel());
-  browser_actuator::TransportHandlerFactoryRegistry* registry =
+  browser_actuator::transport::TransportHandlerFactoryRegistry* registry =
       actuator_service->GetChannel()->GetHandlerFactoryRegistry();
   ASSERT_TRUE(registry);
 
-  std::vector<browser_actuator::TransportHandlerFactory*> factories =
-      registry->GetFactories(browser_actuator::PayloadType::kActuation);
+  std::vector<browser_actuator::transport::TransportHandlerFactory*> factories =
+      registry->GetFactories(
+          browser_actuator::transport::PayloadType::kActuation);
   ASSERT_EQ(factories.size(), 1u);
   EXPECT_EQ(factories[0]->GetFactoryId(),
-            browser_actuator::FactoryId::kActuation);
+            browser_actuator::transport::FactoryId::kActuation);
 
-  browser_actuator::TransportSession* session =
+  browser_actuator::transport::TransportSession* session =
       actuator_service->GetOrCreateSession("enabled_session_1");
   ASSERT_TRUE(session);
   proto::ServerToBrowserPayload downstream;
   downstream.set_request_id("req_enabled_start");
   downstream.mutable_start_task()->add_target_surfaces()->set_tab_id(15);
-  session->OnMessage(browser_actuator::PayloadType::kActuation, downstream);
+  session->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+                     downstream);
   EXPECT_EQ(actor_keyed_service_->GetActiveTasks().size(), 1u);
 
   actor_keyed_service_->Shutdown();
   EXPECT_TRUE(actor_keyed_service_->GetActiveTasks().empty());
-  EXPECT_TRUE(registry->GetFactories(browser_actuator::PayloadType::kActuation)
-                  .empty());
+  EXPECT_TRUE(
+      registry
+          ->GetFactories(browser_actuator::transport::PayloadType::kActuation)
+          .empty());
 }
 
 }  // namespace

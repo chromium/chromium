@@ -21,7 +21,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 namespace {
 
@@ -136,4 +136,4 @@ void UpstreamMessageClient::OnMessageSent(
   std::move(callback).Run(success, response_code);
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

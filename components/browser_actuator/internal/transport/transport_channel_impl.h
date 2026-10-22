@@ -22,7 +22,7 @@
 #include "components/browser_actuator/public/transport/transport_channel.h"
 #include "components/browser_actuator/public/transport/transport_session_registry.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class ControlTransportHandlerFactory;
 class StreamConnectionDelegate;
@@ -150,6 +150,6 @@ class TransportChannelImpl : public TransportChannel,
   base::WeakPtrFactory<TransportChannelImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_TRANSPORT_CHANNEL_IMPL_H_

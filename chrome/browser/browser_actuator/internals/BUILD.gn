@@ -14,11 +14,11 @@ mojom("mojo_bindings") {
       types = [
         {
           mojom = "browser_actuator_internals.mojom.RecordedEvent"
-          cpp = "::browser_actuator::SessionEventSnapshot"
+          cpp = "::browser_actuator::transport::SessionEventSnapshot"
         },
         {
           mojom = "browser_actuator_internals.mojom.SessionSummary"
-          cpp = "::browser_actuator::SessionSnapshot"
+          cpp = "::browser_actuator::transport::SessionSnapshot"
         },
       ]
       traits_headers = [ "browser_actuator_internals_mojom_traits.h" ]

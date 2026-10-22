@@ -19,8 +19,8 @@ namespace {
 
 namespace mojom = browser_actuator_internals::mojom;
 
-SessionEventSnapshot MakeEvent(bool is_downstream) {
-  SessionEventSnapshot event;
+transport::SessionEventSnapshot MakeEvent(bool is_downstream) {
+  transport::SessionEventSnapshot event;
   event.timestamp = base::Time::FromMillisecondsSinceUnixEpoch(1'000'000);
   event.is_downstream = is_downstream;
   event.payload_types = {"Control", "Unspecified"};
@@ -31,8 +31,8 @@ SessionEventSnapshot MakeEvent(bool is_downstream) {
 
 TEST(BrowserActuatorInternalsMojomTraitsTest, RecordedEventRoundTrip) {
   for (bool is_downstream : {true, false}) {
-    SessionEventSnapshot input = MakeEvent(is_downstream);
-    SessionEventSnapshot output;
+    transport::SessionEventSnapshot input = MakeEvent(is_downstream);
+    transport::SessionEventSnapshot output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::RecordedEvent>(
         input, output));
     EXPECT_EQ(output.timestamp, input.timestamp);
@@ -45,7 +45,7 @@ TEST(BrowserActuatorInternalsMojomTraitsTest, RecordedEventRoundTrip) {
 }
 
 TEST(BrowserActuatorInternalsMojomTraitsTest, SessionSummaryRoundTrip) {
-  SessionSnapshot input;
+  transport::SessionSnapshot input;
   input.session_id = "session_1";
   input.start_wall_time = base::Time::FromMillisecondsSinceUnixEpoch(500'000);
   input.end_wall_time = input.start_wall_time + base::Seconds(10);
@@ -55,7 +55,7 @@ TEST(BrowserActuatorInternalsMojomTraitsTest, SessionSummaryRoundTrip) {
   input.events.push_back(MakeEvent(/*is_downstream=*/true));
   input.events.push_back(MakeEvent(/*is_downstream=*/false));
 
-  SessionSnapshot output;
+  transport::SessionSnapshot output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionSummary>(
       input, output));
   EXPECT_EQ(output.session_id, "session_1");
@@ -70,11 +70,11 @@ TEST(BrowserActuatorInternalsMojomTraitsTest, SessionSummaryRoundTrip) {
 }
 
 TEST(BrowserActuatorInternalsMojomTraitsTest, ActiveSessionHasNoEndTime) {
-  SessionSnapshot input;
+  transport::SessionSnapshot input;
   input.session_id = "active";
   input.start_wall_time = base::Time::FromMillisecondsSinceUnixEpoch(500'000);
 
-  SessionSnapshot output;
+  transport::SessionSnapshot output;
   output.end_wall_time = base::Time::Now();
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionSummary>(
       input, output));
@@ -88,12 +88,12 @@ TEST(BrowserActuatorInternalsMojomTraitsTest, CountsSaturateAtUint32Max) {
   if constexpr (sizeof(size_t) <= sizeof(uint32_t)) {
     GTEST_SKIP() << "size_t cannot exceed uint32_t on this platform.";
   }
-  SessionSnapshot input;
+  transport::SessionSnapshot input;
   input.total_downstream_messages = kHuge;
   input.total_upstream_messages = kHuge;
   input.total_events = kHuge;
 
-  SessionSnapshot output;
+  transport::SessionSnapshot output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionSummary>(
       input, output));
   EXPECT_EQ(output.total_downstream_messages,

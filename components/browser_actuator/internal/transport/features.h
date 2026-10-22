@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "url/gurl.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Features and params internal to the browser_actuator implementation:
 // kill switches and tuning knobs that are not part of the embedder
@@ -44,6 +44,6 @@ GURL GetSendSessionMessageEndpoint();
 // Returns the full endpoint URL for watchSessions.
 GURL GetWatchSessionsEndPoint();
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_FEATURES_H_

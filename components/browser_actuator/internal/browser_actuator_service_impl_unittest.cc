@@ -49,7 +49,7 @@ TEST_F(BrowserActuatorServiceImplTest, IsInitialized) {
 
 TEST_F(BrowserActuatorServiceImplTest, GetChannelReturnsValidChannel) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+  feature_list.InitAndEnableFeature(transport::kBrowserActuatorChannelEnabled);
   BrowserActuatorServiceImpl service(test_shared_url_loader_factory_,
                                      identity_test_env_.identity_manager());
   EXPECT_NE(service.GetChannel(), nullptr);
@@ -57,7 +57,7 @@ TEST_F(BrowserActuatorServiceImplTest, GetChannelReturnsValidChannel) {
 
 TEST_F(BrowserActuatorServiceImplTest, GetChannelReturnsNullIfChannelDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kBrowserActuatorChannelEnabled);
+  feature_list.InitAndDisableFeature(transport::kBrowserActuatorChannelEnabled);
   BrowserActuatorServiceImpl disabled_service(
       test_shared_url_loader_factory_, identity_test_env_.identity_manager());
   EXPECT_EQ(disabled_service.GetChannel(), nullptr);
@@ -67,21 +67,21 @@ TEST_F(BrowserActuatorServiceImplTest,
        RecorderFactoryIsRegisteredWithChannelWhenInternalsEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{kBrowserActuatorChannelEnabled,
+      /*enabled_features=*/{transport::kBrowserActuatorChannelEnabled,
                             kBrowserActuatorInternals},
       /*disabled_features=*/{});
 
   BrowserActuatorServiceImpl service(test_shared_url_loader_factory_,
                                      identity_test_env_.identity_manager());
 
-  SessionStreamRecorderFactory* recorder_factory =
+  transport::SessionStreamRecorderFactory* recorder_factory =
       service.GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
   ASSERT_NE(service.GetChannel(), nullptr);
   ASSERT_NE(service.GetChannel()->GetHandlerFactoryRegistry(), nullptr);
   const auto& factories =
       service.GetChannel()->GetHandlerFactoryRegistry()->GetFactories(
-          PayloadType::kControl);
+          transport::PayloadType::kControl);
   EXPECT_THAT(factories, testing::Contains(recorder_factory));
 }
 
@@ -101,7 +101,7 @@ TEST_F(BrowserActuatorServiceImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kBrowserActuatorInternals},
-      /*disabled_features=*/{kBrowserActuatorChannelEnabled});
+      /*disabled_features=*/{transport::kBrowserActuatorChannelEnabled});
 
   BrowserActuatorServiceImpl service(test_shared_url_loader_factory_,
                                      identity_test_env_.identity_manager());
@@ -115,7 +115,7 @@ TEST_F(
     SessionStreamRecorderFactoryObservesUpstreamMessagesWhenInternalsEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{kBrowserActuatorChannelEnabled,
+      /*enabled_features=*/{transport::kBrowserActuatorChannelEnabled,
                             kBrowserActuatorInternals},
       /*disabled_features=*/{});
 
@@ -123,21 +123,21 @@ TEST_F(
                                      identity_test_env_.identity_manager());
 
   ASSERT_NE(service.GetChannel(), nullptr);
-  SessionStreamRecorderFactory* recorder_factory =
+  transport::SessionStreamRecorderFactory* recorder_factory =
       service.GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
 
-  TransportSession* session = service.GetOrCreateSession("s1");
+  transport::TransportSession* session = service.GetOrCreateSession("s1");
   ASSERT_NE(session, nullptr);
-  std::unique_ptr<TransportHandler> handler =
+  std::unique_ptr<transport::TransportHandler> handler =
       recorder_factory->OnNewSession(session);
   ASSERT_NE(handler, nullptr);
   EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
 
   ControlCommand command;
   command.mutable_close_channel();
-  service.GetChannel()->SendUpstreamMessage("s1", PayloadType::kControl,
-                                            command, 1);
+  service.GetChannel()->SendUpstreamMessage(
+      "s1", transport::PayloadType::kControl, command, 1);
 
   base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
   const base::ListValue* sessions = dump.FindList("sessions");

@@ -10,11 +10,13 @@
 #include "components/browser_actuator/public/browser_actuator_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace browser_actuator {
-
+namespace browser_actuator::transport {
 class SessionStreamRecorderFactory;
 class TransportChannel;
 class TransportSession;
+}  // namespace browser_actuator::transport
+
+namespace browser_actuator {
 
 class MockBrowserActuatorService : public BrowserActuatorService {
  public:
@@ -22,13 +24,16 @@ class MockBrowserActuatorService : public BrowserActuatorService {
   ~MockBrowserActuatorService() override;
 
   MOCK_METHOD(bool, IsInitialized, (), (const, override));
-  MOCK_METHOD(TransportChannel*, GetChannel, (), (override));
-  MOCK_METHOD(TransportSession*,
+  MOCK_METHOD(transport::TransportChannel*, GetChannel, (), (override));
+  MOCK_METHOD(transport::TransportSession*,
               GetOrCreateSession,
               (std::string_view),
               (override));
-  MOCK_METHOD(TransportSession*, GetSession, (std::string_view), (override));
-  MOCK_METHOD(SessionStreamRecorderFactory*,
+  MOCK_METHOD(transport::TransportSession*,
+              GetSession,
+              (std::string_view),
+              (override));
+  MOCK_METHOD(transport::SessionStreamRecorderFactory*,
               GetStreamRecorderFactory,
               (),
               (override));

@@ -15,7 +15,7 @@
 #include "base/types/expected.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Orders the downstream messages of a single session by `sequence_number`.
 // In-band stream messages start at 1; `sequence_number == 0` is reserved for
@@ -93,6 +93,6 @@ class DownstreamMessageSequencer {
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_DOWNSTREAM_MESSAGE_SEQUENCER_H_

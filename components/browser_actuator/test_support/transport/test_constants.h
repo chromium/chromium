@@ -7,7 +7,7 @@
 
 #include "components/browser_actuator/public/transport/common.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Standard test-only constants for PayloadType.
 inline constexpr PayloadType kTestPayloadTypeA = static_cast<PayloadType>(1);
@@ -19,6 +19,6 @@ inline constexpr FactoryId kTestFactoryId1 = static_cast<FactoryId>(1);
 inline constexpr FactoryId kTestFactoryId2 = static_cast<FactoryId>(2);
 inline constexpr FactoryId kTestFactoryId3 = static_cast<FactoryId>(3);
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_TEST_SUPPORT_TRANSPORT_TEST_CONSTANTS_H_

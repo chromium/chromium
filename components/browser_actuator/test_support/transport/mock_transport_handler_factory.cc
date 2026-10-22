@@ -4,7 +4,7 @@
 
 #include "components/browser_actuator/test_support/transport/mock_transport_handler_factory.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 MockTransportHandlerFactory::MockTransportHandlerFactory(
     const std::vector<PayloadType>& supported_types,
@@ -22,4 +22,4 @@ std::vector<PayloadType> MockTransportHandlerFactory::GetSupportedPayloadTypes()
   return supported_types_;
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

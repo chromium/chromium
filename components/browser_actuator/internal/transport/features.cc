@@ -11,7 +11,7 @@
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 namespace {
 
@@ -66,4 +66,4 @@ GURL GetWatchSessionsEndPoint() {
   return net::AppendQueryParameter(base_url, "alt", "proto");
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

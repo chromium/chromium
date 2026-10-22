@@ -9,7 +9,7 @@
 
 #include "base/observer_list_types.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class TransportSession;
 
@@ -38,6 +38,6 @@ class TransportSessionRegistry {
   virtual TransportSession* GetOrCreateSession(std::string_view session_id) = 0;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_TRANSPORT_SESSION_REGISTRY_H_

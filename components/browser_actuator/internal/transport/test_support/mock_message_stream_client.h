@@ -10,7 +10,7 @@
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class MockMessageStreamClient : public MessageStreamClient {
  public:
@@ -34,6 +34,6 @@ class MockMessageStreamObserver : public MessageStreamClient::Observer {
   MOCK_METHOD(void, OnStreamConnectionStateChange, (bool), (override));
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_TEST_SUPPORT_MOCK_MESSAGE_STREAM_CLIENT_H_

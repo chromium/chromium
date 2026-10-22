@@ -17,7 +17,7 @@
 #include "base/types/expected.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 DownstreamMessageSequencer::DownstreamMessageSequencer(
     size_t max_buffered_messages)
@@ -109,4 +109,4 @@ std::vector<ActuatorDownstreamMessage> DownstreamMessageSequencer::Flush() {
   return flushed;
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

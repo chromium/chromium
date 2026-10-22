@@ -23,15 +23,15 @@
 #include "components/browser_actuator/internal/transport/test_support/fake_proto_stream_server.h"
 #include "components/browser_actuator/internal/transport/test_support/wait_for.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
-#include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/features.h"
-#include "components/browser_actuator/public/payload_type_mapping.h"
-#include "components/browser_actuator/public/transport_channel.h"
-#include "components/browser_actuator/public/transport_handler.h"
-#include "components/browser_actuator/public/transport_handler_factory.h"
-#include "components/browser_actuator/public/transport_handler_factory_registry.h"
-#include "components/browser_actuator/public/transport_session.h"
-#include "components/browser_actuator/public/transport_session_registry.h"
+#include "components/browser_actuator/public/transport/common.h"
+#include "components/browser_actuator/public/transport/payload_type_mapping.h"
+#include "components/browser_actuator/public/transport/transport_channel.h"
+#include "components/browser_actuator/public/transport/transport_handler.h"
+#include "components/browser_actuator/public/transport/transport_handler_factory.h"
+#include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
+#include "components/browser_actuator/public/transport/transport_session.h"
+#include "components/browser_actuator/public/transport/transport_session_registry.h"
 #include "components/browser_actuator/test_support/mock_browser_actuator_service.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/sharing_message/fake_sharing_handler_registry.h"
@@ -87,18 +87,20 @@ class BrowserActuatorMessageHandlerTest : public testing::Test {
   std::unique_ptr<BrowserActuatorMessageHandler> handler_;
 };
 
-class MockTransportSession : public browser_actuator::TransportSession {
+class MockTransportSession
+    : public browser_actuator::transport::TransportSession {
  public:
   MOCK_METHOD(std::string_view, GetSessionId, (), (const, override));
   MOCK_METHOD(
-      (base::expected<void, browser_actuator::SendUpstreamMessageError>),
+      (base::expected<void,
+                      browser_actuator::transport::SendUpstreamMessageError>),
       SendUpstreamMessage,
-      (browser_actuator::PayloadType payload_type,
+      (browser_actuator::transport::PayloadType payload_type,
        const google::protobuf::MessageLite& message),
       (override));
   MOCK_METHOD(void,
               OnMessage,
-              (browser_actuator::PayloadType payload_type,
+              (browser_actuator::transport::PayloadType payload_type,
                const google::protobuf::MessageLite& message),
               (override));
 };
@@ -138,12 +140,15 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   MockTransportSession mock_session;
   EXPECT_CALL(*mock_service_, GetOrCreateSession("bundled_session_123"))
       .WillOnce(testing::Return(
-          static_cast<browser_actuator::TransportSession*>(&mock_session)));
+          static_cast<browser_actuator::transport::TransportSession*>(
+              &mock_session)));
   EXPECT_CALL(*mock_service_, GetSession("bundled_session_123"))
       .WillRepeatedly(testing::Return(
-          static_cast<browser_actuator::TransportSession*>(&mock_session)));
+          static_cast<browser_actuator::transport::TransportSession*>(
+              &mock_session)));
   EXPECT_CALL(mock_session,
-              OnMessage(browser_actuator::PayloadType::kControl, testing::_));
+              OnMessage(browser_actuator::transport::PayloadType::kControl,
+                        testing::_));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -175,13 +180,17 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   MockTransportSession mock_session;
   EXPECT_CALL(*mock_service_, GetOrCreateSession("bundled_session_123"))
       .WillOnce(testing::Return(
-          static_cast<browser_actuator::TransportSession*>(&mock_session)));
+          static_cast<browser_actuator::transport::TransportSession*>(
+              &mock_session)));
   EXPECT_CALL(*mock_service_, GetSession("bundled_session_123"))
       .WillRepeatedly(testing::Return(
-          static_cast<browser_actuator::TransportSession*>(&mock_session)));
-  EXPECT_CALL(mock_session,
-              OnMessage(browser_actuator::PayloadType::kExperimentalTriggering,
-                        testing::_));
+          static_cast<browser_actuator::transport::TransportSession*>(
+              &mock_session)));
+  EXPECT_CALL(
+      mock_session,
+      OnMessage(
+          browser_actuator::transport::PayloadType::kExperimentalTriggering,
+          testing::_));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -223,10 +232,12 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   MockTransportSession* session_ptr = owned_session.get();
   EXPECT_CALL(*mock_service_, GetOrCreateSession("bundled_session_123"))
       .WillOnce(testing::Return(
-          static_cast<browser_actuator::TransportSession*>(session_ptr)));
-  EXPECT_CALL(*session_ptr,
-              OnMessage(browser_actuator::PayloadType::kControl, testing::_))
-      .WillOnce([&owned_session](browser_actuator::PayloadType,
+          static_cast<browser_actuator::transport::TransportSession*>(
+              session_ptr)));
+  EXPECT_CALL(
+      *session_ptr,
+      OnMessage(browser_actuator::transport::PayloadType::kControl, testing::_))
+      .WillOnce([&owned_session](browser_actuator::transport::PayloadType,
                                  const google::protobuf::MessageLite&) {
         // Simulate TransportSessionRegistryImpl::DestroySession().
         owned_session.reset();
@@ -236,7 +247,8 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   // StartSession payload is never dispatched.
   EXPECT_CALL(*mock_service_, GetSession("bundled_session_123"))
       .WillOnce(testing::Return(
-          static_cast<browser_actuator::TransportSession*>(session_ptr)))
+          static_cast<browser_actuator::transport::TransportSession*>(
+              session_ptr)))
       .WillOnce(testing::Return(nullptr));
 
   base::test::TestFuture<
@@ -261,16 +273,17 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   AddControlPayload(bundled, start_command);
 
   MockTransportSession mock_session;
-  auto* session =
-      static_cast<browser_actuator::TransportSession*>(&mock_session);
+  auto* session = static_cast<browser_actuator::transport::TransportSession*>(
+      &mock_session);
   EXPECT_CALL(*mock_service_, GetOrCreateSession("bundled_session_123"))
       .WillOnce(testing::Return(session));
   // One lookup per payload.
   EXPECT_CALL(*mock_service_, GetSession("bundled_session_123"))
       .Times(2)
       .WillRepeatedly(testing::Return(session));
-  EXPECT_CALL(mock_session,
-              OnMessage(browser_actuator::PayloadType::kControl, testing::_))
+  EXPECT_CALL(
+      mock_session,
+      OnMessage(browser_actuator::transport::PayloadType::kControl, testing::_))
       .Times(2);
 
   base::test::TestFuture<
@@ -291,7 +304,7 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
   BrowserActuatorFcmIntegrationTest() {
     feature_list_.InitWithFeatures(
         {browser_actuator::kBrowserActuator,
-         browser_actuator::kBrowserActuatorChannelEnabled,
+         browser_actuator::transport::kBrowserActuatorChannelEnabled,
          browser_actuator::kBrowserActuatorInternals,
          browser_actuator::kEnableBrowserActuatorForGlicExperimentalTriggering},
         {});
@@ -327,9 +340,10 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
   }
 
   browser_actuator::SendSessionMessageRequest WaitForUpstreamRequest() {
-    const GURL upstream_url = browser_actuator::GetSendSessionMessageEndpoint();
+    const GURL upstream_url =
+        browser_actuator::transport::GetSendSessionMessageEndpoint();
     browser_actuator::SendSessionMessageRequest parsed;
-    bool received = browser_actuator::WaitFor([&]() {
+    bool received = browser_actuator::transport::WaitFor([&]() {
       auto* pending = test_url_loader_factory_.pending_requests();
       for (const auto& req : *pending) {
         if (req.request.url == upstream_url) {
@@ -361,8 +375,9 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
 
 TEST_F(BrowserActuatorFcmIntegrationTest,
        FcmStartSessionStartsChannelAndSendsStartSessionAck) {
-  browser_actuator::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, browser_actuator::GetWatchSessionsEndPoint());
+  browser_actuator::transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_,
+      browser_actuator::transport::GetWatchSessionsEndPoint());
 
   components_sharing_message::SharingMessage sharing_msg;
   auto* bundled = sharing_msg.mutable_actuator_downstream_message();
@@ -374,8 +389,8 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
   typed->set_payload_type(
       browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   typed->mutable_proto_payload()->set_type_url(
-      std::string(browser_actuator::ExpectedTypeUrl(
-          browser_actuator::PayloadType::kControl)));
+      std::string(browser_actuator::transport::ExpectedTypeUrl(
+          browser_actuator::transport::PayloadType::kControl)));
   typed->mutable_proto_payload()->set_value(start_cmd.SerializeAsString());
 
   gcm::IncomingMessage fcm_msg;
@@ -420,23 +435,25 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
   close_typed->set_payload_type(
       browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   close_typed->mutable_proto_payload()->set_type_url(
-      std::string(browser_actuator::ExpectedTypeUrl(
-          browser_actuator::PayloadType::kControl)));
+      std::string(browser_actuator::transport::ExpectedTypeUrl(
+          browser_actuator::transport::PayloadType::kControl)));
   close_typed->mutable_proto_payload()->set_value(
       close_cmd.SerializeAsString());
   stream_server.PushMessage(close_msg);
 
-  EXPECT_TRUE(browser_actuator::WaitFor([&]() {
+  EXPECT_TRUE(browser_actuator::transport::WaitFor([&]() {
     return service->GetChannel()->GetSessionRegistry()->GetSession(
                "fcm-session-1") == nullptr;
   }));
 }
 
-class EchoTriggeringHandler : public browser_actuator::TransportHandler {
+class EchoTriggeringHandler
+    : public browser_actuator::transport::TransportHandler {
  public:
-  explicit EchoTriggeringHandler(browser_actuator::TransportSession* session)
+  explicit EchoTriggeringHandler(
+      browser_actuator::transport::TransportSession* session)
       : session_(session) {}
-  void OnMessage(browser_actuator::PayloadType payload_type,
+  void OnMessage(browser_actuator::transport::PayloadType payload_type,
                  std::string_view serialized_payload) override {
     components_sharing_message::GlicExperimentalTriggering parsed;
     ASSERT_TRUE(parsed.ParseFromString(std::string(serialized_payload)));
@@ -446,28 +463,30 @@ class EchoTriggeringHandler : public browser_actuator::TransportHandler {
   }
 
  private:
-  raw_ptr<browser_actuator::TransportSession> session_;
+  raw_ptr<browser_actuator::transport::TransportSession> session_;
 };
 
-class EchoTriggeringFactory : public browser_actuator::TransportHandlerFactory {
+class EchoTriggeringFactory
+    : public browser_actuator::transport::TransportHandlerFactory {
  public:
-  browser_actuator::FactoryId GetFactoryId() const override {
-    return browser_actuator::FactoryId::kExperimentalTriggering;
+  browser_actuator::transport::FactoryId GetFactoryId() const override {
+    return browser_actuator::transport::FactoryId::kExperimentalTriggering;
   }
-  std::vector<browser_actuator::PayloadType> GetSupportedPayloadTypes()
-      const override {
-    return {browser_actuator::PayloadType::kExperimentalTriggering};
+  std::vector<browser_actuator::transport::PayloadType>
+  GetSupportedPayloadTypes() const override {
+    return {browser_actuator::transport::PayloadType::kExperimentalTriggering};
   }
-  std::unique_ptr<browser_actuator::TransportHandler> OnNewSession(
-      browser_actuator::TransportSession* session) override {
+  std::unique_ptr<browser_actuator::transport::TransportHandler> OnNewSession(
+      browser_actuator::transport::TransportSession* session) override {
     return std::make_unique<EchoTriggeringHandler>(session);
   }
 };
 
 TEST_F(BrowserActuatorFcmIntegrationTest,
        FcmGlicExperimentalTriggeringStartsChannelAndSendsUpstreamReply) {
-  browser_actuator::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, browser_actuator::GetWatchSessionsEndPoint());
+  browser_actuator::transport::FakeProtoStreamServer stream_server(
+      &test_url_loader_factory_,
+      browser_actuator::transport::GetWatchSessionsEndPoint());
   auto* service =
       browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
           profile_.get());
@@ -477,7 +496,7 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
       &triggering_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
       [](browser_actuator::BrowserActuatorService* s,
-         browser_actuator::TransportHandlerFactory* f) {
+         browser_actuator::transport::TransportHandlerFactory* f) {
         s->GetChannel()->GetHandlerFactoryRegistry()->UnregisterFactory(f);
       },
       service, &triggering_factory));
@@ -497,8 +516,8 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
       browser_actuator::
           ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   typed->mutable_proto_payload()->set_type_url(
-      std::string(browser_actuator::ExpectedTypeUrl(
-          browser_actuator::PayloadType::kExperimentalTriggering)));
+      std::string(browser_actuator::transport::ExpectedTypeUrl(
+          browser_actuator::transport::PayloadType::kExperimentalTriggering)));
   typed->mutable_proto_payload()->set_value(triggering.SerializeAsString());
 
   gcm::IncomingMessage fcm_msg;

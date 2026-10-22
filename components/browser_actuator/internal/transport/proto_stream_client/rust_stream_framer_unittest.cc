@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 using testing::ElementsAre;
@@ -182,4 +182,4 @@ FUZZ_TEST(RustStreamFramerFuzzTest, FeedDoesNotCrashOnArbitraryChunks)
     .WithSeeds(StreamSeeds);
 
 }  // namespace
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

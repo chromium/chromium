@@ -22,7 +22,7 @@
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 // Protobuf length-delimited field helper: writes `tag` followed by the varint
@@ -157,4 +157,4 @@ void FakeProtoStreamServer::WriteRawBytes(std::string_view bytes) {
            MOJO_RESULT_OK);
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

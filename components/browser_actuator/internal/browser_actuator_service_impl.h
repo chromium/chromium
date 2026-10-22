@@ -20,10 +20,12 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace browser_actuator {
-
+namespace browser_actuator::transport {
 class SessionStreamRecorderFactory;
 class TransportChannelImpl;
+}  // namespace browser_actuator::transport
+
+namespace browser_actuator {
 
 class BrowserActuatorServiceImpl : public BrowserActuatorService {
  public:
@@ -38,10 +40,11 @@ class BrowserActuatorServiceImpl : public BrowserActuatorService {
 
   // BrowserActuatorService implementation.
   bool IsInitialized() const override;
-  TransportChannel* GetChannel() override;
-  TransportSession* GetOrCreateSession(std::string_view session_id) override;
-  TransportSession* GetSession(std::string_view session_id) override;
-  SessionStreamRecorderFactory* GetStreamRecorderFactory() override;
+  transport::TransportChannel* GetChannel() override;
+  transport::TransportSession* GetOrCreateSession(
+      std::string_view session_id) override;
+  transport::TransportSession* GetSession(std::string_view session_id) override;
+  transport::SessionStreamRecorderFactory* GetStreamRecorderFactory() override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -50,10 +53,10 @@ class BrowserActuatorServiceImpl : public BrowserActuatorService {
   // declaration order, so `channel_` -- and the factory registry it owns, which
   // holds a raw pointer to `session_stream_recorder_factory_` -- is torn down
   // first.
-  std::unique_ptr<SessionStreamRecorderFactory>
+  std::unique_ptr<transport::SessionStreamRecorderFactory>
       session_stream_recorder_factory_;
 
-  std::unique_ptr<TransportChannelImpl> channel_;
+  std::unique_ptr<transport::TransportChannelImpl> channel_;
 };
 
 }  // namespace browser_actuator

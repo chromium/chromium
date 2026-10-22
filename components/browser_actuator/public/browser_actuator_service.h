@@ -9,11 +9,13 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace browser_actuator {
-
+namespace browser_actuator::transport {
 class SessionStreamRecorderFactory;
 class TransportChannel;
 class TransportSession;
+}  // namespace browser_actuator::transport
+
+namespace browser_actuator {
 
 // Service that provides browser actuation capabilities.
 class BrowserActuatorService : public KeyedService {
@@ -27,19 +29,22 @@ class BrowserActuatorService : public KeyedService {
   virtual bool IsInitialized() const = 0;
 
   // Exposes the transport channel.
-  virtual TransportChannel* GetChannel() = 0;
+  virtual transport::TransportChannel* GetChannel() = 0;
 
   // Retrieves an existing session by ID or creates a new one if it does not
   // exist.
-  virtual TransportSession* GetOrCreateSession(std::string_view session_id) = 0;
+  virtual transport::TransportSession* GetOrCreateSession(
+      std::string_view session_id) = 0;
 
   // Gets an existing transport session for session_id, or nullptr if none
   // exists.
-  virtual TransportSession* GetSession(std::string_view session_id) = 0;
+  virtual transport::TransportSession* GetSession(
+      std::string_view session_id) = 0;
 
   // Returns the session stream recorder factory owned by this service, or
   // nullptr if session recording is not enabled.
-  virtual SessionStreamRecorderFactory* GetStreamRecorderFactory() = 0;
+  virtual transport::SessionStreamRecorderFactory*
+  GetStreamRecorderFactory() = 0;
 
  protected:
   BrowserActuatorService();

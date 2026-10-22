@@ -13,7 +13,7 @@
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // Translation between the `ActuatorDownstreamPayloadType` wire enum and the
 // public `PayloadType` enum. This lives in public/ because chrome/browser
@@ -84,6 +84,6 @@ inline std::optional<PayloadType> FromDownstreamProtoPayloadType(
   return std::nullopt;
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_PAYLOAD_TYPE_MAPPING_H_

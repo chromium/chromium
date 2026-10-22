@@ -12,7 +12,7 @@
 #include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/transport_session_impl.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
 
 size_t GetMaxConcurrentSessionsLimit() {
@@ -133,4 +133,4 @@ TransportSessionRegistryImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

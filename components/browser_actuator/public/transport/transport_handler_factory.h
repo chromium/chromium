@@ -11,7 +11,7 @@
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/transport_handler.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 class TransportSession;
 
@@ -34,6 +34,6 @@ class TransportHandlerFactory {
       TransportSession* session) = 0;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_TRANSPORT_HANDLER_FACTORY_H_

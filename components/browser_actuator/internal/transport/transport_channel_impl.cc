@@ -25,7 +25,7 @@
 #include "components/browser_actuator/internal/transport/upstream_message_client/upstream_message_client.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 TransportChannelImpl::TransportChannelImpl(
     std::unique_ptr<UpstreamMessageClient> upstream_message_client,
@@ -256,4 +256,4 @@ std::string TransportChannelImpl::BuildWatchSessionsRequestBodyForTesting() {
   return BuildWatchSessionsRequestBody();
 }
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

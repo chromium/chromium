@@ -20,7 +20,7 @@ class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 
 // StreamConnectionDelegate decorator that authenticates the stream
 // connection as the profile's primary GAIA account
@@ -89,6 +89,6 @@ class OAuthStreamConnectionDelegate : public StreamConnectionDelegate {
   int consecutive_auth_failures_ = 0;
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_OAUTH_OAUTH_STREAM_CONNECTION_DELEGATE_H_

@@ -28,8 +28,11 @@
 #include "components/browser_actuator/public/transport/transport_session.h"
 
 namespace browser_actuator {
-
 class ActuatorDownstreamTypedPayload;
+}  // namespace browser_actuator
+
+namespace browser_actuator::transport {
+
 class TransportChannel;
 class TransportHandler;
 
@@ -178,6 +181,6 @@ class TransportSessionImpl : public TransportSession,
   base::WeakPtrFactory<TransportSessionImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_TRANSPORT_SESSION_IMPL_H_
