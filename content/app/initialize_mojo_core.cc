@@ -28,7 +28,6 @@ void InitializeMojoCore() {
   }
 
   mojo::core::Configuration config;
-  config.max_message_num_bytes = 128 * 1024 * 1024;
 
   // If this is the browser process and there's no Mojo invitation pipe on the
   // command line, we will serve as the global Mojo broker.

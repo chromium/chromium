@@ -101,7 +101,7 @@ source_set("app") {
   ]
 
   configs += extra_configs
-  deps = content_app_deps + [ "//ipc" ]
+  deps = content_app_deps
 
   public_deps = [ ":content_main_runner_app" ]
 

@@ -5,9 +5,6 @@
 #ifndef MOJO_CORE_EMBEDDER_CONFIGURATION_H_
 #define MOJO_CORE_EMBEDDER_CONFIGURATION_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "build/build_config.h"
 
 namespace mojo {
@@ -41,15 +38,6 @@ struct Configuration {
   // policy; only set this for process types where that is known to hold.
   bool direct_unsafe_shared_memory_allocation = false;
 #endif
-
-  // Maximum number of active memory mappings.
-  size_t max_mapping_table_size = 1000000;
-
-  // Maximum data size of messages sent over message pipes, in bytes.
-  size_t max_message_num_bytes = 256 * 1024 * 1024;
-
-  // Maximum size of a single shared memory segment, in bytes.
-  size_t max_shared_memory_num_bytes = 1024 * 1024 * 1024;
 
   // If true we will not advertise our capabilities to our peer.
   bool dont_advertise_capabilities = false;

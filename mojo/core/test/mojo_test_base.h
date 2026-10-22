@@ -26,8 +26,9 @@ namespace test {
 
 class MojoTestBase : public testing::Test {
  public:
-  // Mojo Core is configured with this message size limit in tests so that we
-  // can reliably exercise code paths for oversized messages.
+  // Legacy message size threshold. Neither Mojo Core nor the bindings enforce
+  // a message size limit any more; the only remaining user of this constant is
+  // the disabled RemoteTest.SendVeryLargeMessages test.
   static constexpr size_t kMaxMessageSizeInTests = 32 * 1024 * 1024;
 
   MojoTestBase();
