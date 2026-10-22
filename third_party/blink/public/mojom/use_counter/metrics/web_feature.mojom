@@ -5359,6 +5359,7 @@ enum WebFeature {
   kOfflineAudioContextClose = 6042,
   kViewTransitionPreventSvgFilterPaint = 6043,
   kMulticastControllerJoinGroupWithSourceAddress = 6044,
+  kCSSGridLanesLayout = 6045,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

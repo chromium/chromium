@@ -306,6 +306,32 @@ TEST_F(LayoutObjectTest, MaskAsGroupingProperty) {
   EXPECT_TRUE(GetLayoutObjectByElementId("target2")->Style().Preserves3D());
 }
 
+TEST_F(LayoutObjectTest, UseCountGridLanesLayout) {
+  ScopedCSSGridLanesLayoutForTest grid_lanes_enabled(true);
+  for (const char* style :
+       {"display: grid-lanes", "display: inline-grid-lanes"}) {
+    SCOPED_TRACE(style);
+    GetDocument().ClearUseCounterForTesting(WebFeature::kCSSGridLanesLayout);
+    SetBodyInnerHTML(R"HTML(
+      <div style="display: grid"></div>
+      <div id="container" style="display: none">
+        <div id="target"></div>
+      </div>
+    )HTML");
+    GetElementById("target")->setAttribute(html_names::kStyleAttr,
+                                           AtomicString(style));
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(GetLayoutObjectByElementId("target"));
+    EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSGridLanesLayout));
+
+    GetElementById("container")->removeAttribute(html_names::kStyleAttr);
+    UpdateAllLifecyclePhasesForTest();
+    ASSERT_TRUE(GetLayoutObjectByElementId("target"));
+    EXPECT_TRUE(GetLayoutObjectByElementId("target")->IsLayoutGridLanes());
+    EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSGridLanesLayout));
+  }
+}
+
 TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
   SetBodyInnerHTML(R"HTML(
     <style>

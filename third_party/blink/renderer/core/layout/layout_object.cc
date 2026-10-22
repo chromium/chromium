@@ -473,7 +473,8 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutGrid>(element);
     case EDisplay::kGridLanes:
     case EDisplay::kInlineGridLanes:
-      // TODO(almaher): Add use counter for CSS Grid Lanes.
+      UseCounter::Count(element->GetDocument(),
+                        WebFeature::kCSSGridLanesLayout);
       return MakeGarbageCollected<LayoutGridLanes>(element);
     case EDisplay::kMath:
     case EDisplay::kBlockMath:
