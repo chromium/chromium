@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Syed AbuTalib <lowkey@google.com>
+Date: Mon, 19 Oct 2026 18:06:00 +0000
+Subject: [PATCH] vorbis: Map greater than 8 channels to discrete layout
+
+Per Section 4.3.9 of the Vorbis I specification, channel counts greater
+than 8 have application-defined (discrete) channel order rather than
+predefined speaker positions. Return `Channels::Discrete` from
+`vorbis_channels_to_channels` for non-zero channel counts above 8 so
+that multi-channel Vorbis streams (> 8 channels) can be demuxed and
+decoded instead of failing with an unsupported channel map error.
+
+Upstream issue: https://github.com/pdeljanov/Symphonia/issues/591
+Upstream PR: https://github.com/pdeljanov/Symphonia/pull/592
+Chromium bug: https://issues.chromium.org/issues/574545168
+---
+ .../src/xiph/audio/vorbis/mod.rs                              | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/xiph/audio/vorbis/mod.rs b/third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/xiph/audio/vorbis/mod.rs
+index 4b914004a3288..baa2153a75b38 100644
+--- a/third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/xiph/audio/vorbis/mod.rs
++++ b/third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/xiph/audio/vorbis/mod.rs
+@@ -11,6 +11,7 @@ use symphonia_core::errors::{Result, decode_error};
+ /// Get the mapping 0 channel listing for the given number of channels.
+ pub fn vorbis_channels_to_channels(num_channels: u8) -> Option<Channels> {
+     let positions = match num_channels {
++        0 => return None,
+         1 => Position::FRONT_LEFT,
+         2 => Position::FRONT_LEFT | Position::FRONT_RIGHT,
+         3 => Position::FRONT_LEFT | Position::FRONT_CENTER | Position::FRONT_RIGHT,
+@@ -54,7 +55,7 @@ pub fn vorbis_channels_to_channels(num_channels: u8) -> Option<Channels> {
+                 | Position::REAR_RIGHT
+                 | Position::LFE1
+         }
+-        _ => return None,
++        _ => return Some(Channels::Discrete(u16::from(num_channels))),
+     };
+ 
+     Some(Channels::Positioned(positions))
+-- 
+2.51.0

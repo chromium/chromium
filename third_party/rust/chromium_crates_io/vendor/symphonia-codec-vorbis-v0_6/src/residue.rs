@@ -274,7 +274,7 @@ impl Residue {
                         code,
                         parts_per_classword,
                         self.setup.residue_classifications as u32,
-                        &mut self.part_classes[part_first..],
+                        &mut self.part_classes[part_first..parts_to_read],
                     );
                 }
 
@@ -377,7 +377,8 @@ impl Residue {
                             code,
                             parts_per_classword,
                             self.setup.residue_classifications as u32,
-                            &mut self.part_classes[part_first + i * parts_to_read..],
+                            &mut self.part_classes
+                                [part_first + i * parts_to_read..(i + 1) * parts_to_read],
                         );
                     }
                 }

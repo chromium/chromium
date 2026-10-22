@@ -315,13 +315,6 @@ TEST_P(AudioFileReaderTest, MidStreamConfigChangesFail) {
 #endif
 
 TEST_P(AudioFileReaderTest, VorbisValidChannelLayout) {
-  if (GetParam()) {
-    // TODO(crbug.com/495575937): Remove this check once Symphonia supports 9
-    // channels.
-    Initialize("9ch.ogg");
-    EXPECT_FALSE(reader_->Open());
-    return;
-  }
   // The total samples should be 4800 after applying discard padding.
   RunTest("9ch.ogg", "102.08,12.51,57.91,56.94,63.05,17.30,", 9, 48000,
           base::Microseconds(102668), 4929, 4800);

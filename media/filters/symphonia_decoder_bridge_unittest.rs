@@ -270,6 +270,64 @@ fn test_pcm_init_with_discrete_channel_layout() {
     }
 }
 
+// Verify that Vorbis decoder initialization and decoding succeed for channel
+// counts greater than 8, which use a discrete (unpositioned) channel layout per
+// the Vorbis I specification.
+// Regression test for https://crbug.com/574545168.
+#[gtest(SymphoniaDecoderBridgeTest, VorbisInitWithDiscreteChannelLayout)]
+fn test_vorbis_init_with_discrete_channel_layout() {
+    for channel_count in [9u16, 21, 32] {
+        let extra_data = [
+            &[2u8, 30, 16] as &[u8],
+            b"\x01vorbis",
+            &[0, 0, 0, 0, channel_count as u8, 0x80, 0xBB, 0, 0],
+            &[0; 12],
+            &[0x66, 1],
+            b"\x03vorbis",
+            &[0, 0, 0, 0, 0, 0, 0, 0, 1],
+            b"\x05vorbis",
+            &[0, 0x42, 0x43, 0x56, 1, 0, 1, 0, 0],
+            &[0; 41],
+            &[0x04],
+        ]
+        .concat();
+
+        let config = ffi::SymphoniaDecoderConfig {
+            codec: ffi::SymphoniaAudioCodec::Vorbis,
+            extra_data: &extra_data,
+            bytes_per_sample: 4,
+            channel_mask: 0,
+            channel_count,
+            sample_rate: 48000,
+        };
+
+        let mut result = init_symphonia_decoder(&config);
+        expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok, "channels: {}", channel_count);
+        expect_true!(result.error_str.is_empty(), "channels: {}", channel_count);
+
+        let packet = ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 1000, data: &[0u8] };
+        let first_decode = result.decoder.decode(&packet);
+        expect_eq!(
+            first_decode.status,
+            ffi::SymphoniaDecodeStatus::Ok,
+            "channels: {}",
+            channel_count
+        );
+        expect_eq!(first_decode.buffer.num_frames, 0);
+
+        let second_decode = result.decoder.decode(&packet);
+        expect_eq!(
+            second_decode.status,
+            ffi::SymphoniaDecodeStatus::Ok,
+            "channels: {}",
+            channel_count
+        );
+        expect_eq!(second_decode.buffer.channel_count, usize::from(channel_count));
+        expect_eq!(second_decode.buffer.channel_mask, 0);
+        expect_eq!(second_decode.buffer.num_frames, 32);
+    }
+}
+
 // Verify that FLAC decoder initialization succeeds even if the "fLaC" marker
 // is present in the extra data.
 #[gtest(SymphoniaDecoderBridgeTest, FlacInitWithMarker)]

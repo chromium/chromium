@@ -1,0 +1,60 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Syed AbuTalib <lowkey@google.com>
+Date: Mon, 19 Oct 2026 20:10:00 +0000
+Subject: [PATCH] vorbis: Bound part_classes slice in residue decoding
+
+`decode_classes` relies on `out.len()` (`num_parts`) to determine how
+many trailing class assignments in the final classword exceed the
+remaining partitions for the current channel (`parts_per_classword >
+num_parts`).
+
+In `read_residue_inner_type_0_1`, `self.part_classes` holds
+`parts_to_read * residue_channels.count()` elements, and passing an
+unbounded upper slice `&mut self.part_classes[part_first + i *
+parts_to_read..]` caused `out.len()` for channel `i` to include all
+subsequent channels' partition classes. On the final `part_first` batch
+of pass 0, when `parts_to_read` was not a multiple of
+`parts_per_classword`, `decode_classes` failed to skip the excess
+classes and overwrote the first partition classes of channel `i + 1`,
+corrupting codebook lookups and bitstream synchronization in subsequent
+passes (`pass >= 1`).
+
+Similarly, in `read_residue_inner_type_2`, `prepare_partition_classes`
+only grows `self.part_classes`, so passing `&mut
+self.part_classes[part_first..]` after a long block caused `out.len()`
+on subsequent short blocks to include the old long-block tail.
+
+Bound the slices to `..parts_to_read` and `..(i + 1) * parts_to_read`.
+
+Upstream issue: https://github.com/pdeljanov/Symphonia/issues/591
+Upstream PR: https://github.com/pdeljanov/Symphonia/pull/592
+Chromium bug: https://issues.chromium.org/issues/574545168
+---
+ .../vendor/symphonia-codec-vorbis-v0_6/src/residue.rs        | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_6/src/residue.rs b/third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_6/src/residue.rs
+index e3bc9f3c1cd85..8168ab838ec53 100644
+--- a/third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_6/src/residue.rs
++++ b/third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_6/src/residue.rs
+@@ -274,7 +274,7 @@ impl Residue {
+                         code,
+                         parts_per_classword,
+                         self.setup.residue_classifications as u32,
+-                        &mut self.part_classes[part_first..],
++                        &mut self.part_classes[part_first..parts_to_read],
+                     );
+                 }
+ 
+@@ -377,7 +377,8 @@ impl Residue {
+                             code,
+                             parts_per_classword,
+                             self.setup.residue_classifications as u32,
+-                            &mut self.part_classes[part_first + i * parts_to_read..],
++                            &mut self.part_classes
++                                [part_first + i * parts_to_read..(i + 1) * parts_to_read],
+                         );
+                     }
+                 }
+-- 
+2.51.0
