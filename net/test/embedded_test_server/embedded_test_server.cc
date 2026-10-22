@@ -32,6 +32,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "net/base/hex_utils.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -483,8 +484,17 @@ std::vector<SSLServerCredential> EmbeddedTestServer::GenerateCertAndKeys() {
     // Create AIA server and start listening. Need to have the socket
     // initialized so the URL can be put in the AIA records of the generated
     // certs.
+#if BUILDFLAG(IS_IOS)
+    // Starting in iOS 27.2 Beta 3, trustd enforces SSRF protections
+    // (UseSSRFLiteralEnforcement and UseSSRFPortEnforcement) that block AIA
+    // and OCSP fetches to numeric loopback/private IP literals (such as
+    // 127.0.0.1) and to TCP ports other than 80 or 8080.
+    constexpr int kAiaServerPort = 8080;
+#else
+    constexpr int kAiaServerPort = 0;
+#endif
     aia_http_server_ = std::make_unique<EmbeddedTestServer>(TYPE_HTTP);
-    if (!aia_http_server_->InitializeAndListen()) {
+    if (!aia_http_server_->InitializeAndListen(kAiaServerPort)) {
       return {};
     }
   }
@@ -638,9 +648,15 @@ EmbeddedTestServer::GenerateCertAndKey(
                                &ocsp_response)) {
     return std::nullopt;
   }
+#if BUILDFLAG(IS_IOS)
+  constexpr std::string_view kAiaServerHostname = "localhost";
+#else
+  constexpr std::string_view kAiaServerHostname = "127.0.0.1";
+#endif
   if (!ocsp_response.empty()) {
     std::string ocsp_path = "/ocsp/" + leaf_serial_text;
-    leaf_ocsp_urls.push_back(aia_http_server_->GetURL(ocsp_path));
+    leaf_ocsp_urls.push_back(
+        aia_http_server_->GetURL(kAiaServerHostname, ocsp_path));
     aia_http_server_->RegisterRequestHandler(
         base::BindRepeating(ServeResponseForSubPaths, ocsp_path, HTTP_OK,
                             "application/ocsp-response", ocsp_response));
@@ -661,7 +677,8 @@ EmbeddedTestServer::GenerateCertAndKey(
   if (!intermediate_ocsp_response.empty()) {
     std::string intermediate_ocsp_path = "/ocsp/" + intermediate_serial_text;
     intermediate->SetCaIssuersAndOCSPUrls(
-        {}, {aia_http_server_->GetURL(intermediate_ocsp_path)});
+        {},
+        {aia_http_server_->GetURL(kAiaServerHostname, intermediate_ocsp_path)});
     aia_http_server_->RegisterRequestHandler(base::BindRepeating(
         ServeResponseForSubPaths, intermediate_ocsp_path, HTTP_OK,
         "application/ocsp-response", intermediate_ocsp_response));
@@ -669,7 +686,8 @@ EmbeddedTestServer::GenerateCertAndKey(
 
   if (cert_config.intermediate == IntermediateType::kByAIA) {
     std::string ca_issuers_path = "/ca_issuers/" + intermediate_serial_text;
-    leaf_ca_issuers_urls.push_back(aia_http_server_->GetURL(ca_issuers_path));
+    leaf_ca_issuers_urls.push_back(
+        aia_http_server_->GetURL(kAiaServerHostname, ca_issuers_path));
 
     // Setup AIA server to serve the intermediate referred to by the leaf.
     aia_http_server_->RegisterRequestHandler(
