@@ -4,8 +4,11 @@
 
 #include "components/services/unzip/public/cpp/unzip.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/files/file.h"
@@ -20,15 +23,20 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
+#include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace unzip {
 
@@ -48,6 +56,214 @@ bool CheckZipFileValid(const base::FilePath& zip_path,
   }
   return true;
 }
+
+// Normalizes and validates a relative path supplied by the unzipper utility
+// process before passing it to `filter_callback_` or the underlying filesystem:
+// - rejects empty, absolute, parent-referencing (`..`), and current-directory
+//   (`.`) paths;
+// - rejects paths with a trailing separator unless `allow_trailing_separator`
+//   is set, and otherwise strips the trailing separator;
+// - on Windows, trims trailing dots and spaces from each component and rejects
+//   any component containing `:` (e.g. drive-relative paths or NTFS alternate
+//   data streams) or path separators.
+std::optional<base::FilePath> NormalizeUnzipRelativePath(
+    const base::FilePath& path,
+    bool allow_trailing_separator = false) {
+  if (path.empty() || path.IsAbsolute() || path.ReferencesParent()) {
+    return std::nullopt;
+  }
+  if (!allow_trailing_separator && path.EndsWithSeparator()) {
+    return std::nullopt;
+  }
+  std::vector<base::FilePath::StringType> components = path.GetComponents();
+  if (components.empty()) {
+    return std::nullopt;
+  }
+  base::FilePath normalized;
+  for (const auto& comp : components) {
+#if BUILDFLAG(IS_WIN)
+    // On Windows, Win32 path normalization strips trailing dots and spaces from
+    // the final path component when creating, opening, or deleting files and
+    // directories (so "foo.", "foo ", and "foo" all refer to "foo" on disk).
+    // Canonicalize each component on Windows so `filter_callback_` and
+    // `created_files_` see the exact path that the OS will access, and so
+    // intermediate directory components match the directories created by
+    // `CreateDirectory`. Also reject components containing `:` (such as
+    // drive-relative paths or NTFS alternate data streams like `::$DATA`) or
+    // path separators (such as root-relative `\foo`).
+    base::FilePath::StringViewType canonical =
+        base::TrimString(comp, FILE_PATH_LITERAL(". "), base::TRIM_TRAILING);
+    if (canonical.find_first_of(FILE_PATH_LITERAL(":\\/")) !=
+        base::FilePath::StringViewType::npos) {
+      return std::nullopt;
+    }
+#else
+    base::FilePath::StringViewType canonical = comp;
+#endif
+    if (canonical.empty() || canonical == base::FilePath::kCurrentDirectory ||
+        canonical == base::FilePath::kParentDirectory) {
+      return std::nullopt;
+    }
+    normalized = normalized.empty() ? base::FilePath(canonical)
+                                    : normalized.Append(canonical);
+  }
+  return normalized;
+}
+
+// A `storage::mojom::Directory` implementation that restricts file operations
+// to those required for unzipping (`OpenFile`, `CreateDirectory`, and
+// `DeleteFile`) by delegating only those operations to a private
+// `storage::FilesystemImpl`, and binds a single Directory receiver owned by
+// `UnzipOperation` so that directory access is revoked as soon as the unzip
+// operation finishes.
+class UnzipFilesystemImpl : public storage::mojom::Directory {
+ public:
+  // `ClientType::kTrusted` is set to allow the unzipping process to handle all
+  // types of files.
+  UnzipFilesystemImpl(const base::FilePath& root,
+                      mojo::PendingReceiver<storage::mojom::Directory> receiver,
+                      UnzipFilterCallback filter_callback)
+      : filesystem_(root, storage::FilesystemImpl::ClientType::kTrusted),
+        filter_callback_(std::move(filter_callback)),
+        receiver_(this, std::move(receiver)) {}
+
+  UnzipFilesystemImpl(const UnzipFilesystemImpl&) = delete;
+  UnzipFilesystemImpl& operator=(const UnzipFilesystemImpl&) = delete;
+  ~UnzipFilesystemImpl() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  // storage::mojom::Directory:
+  void Clone(
+      mojo::PendingReceiver<storage::mojom::Directory> receiver) override {
+    receiver_.ReportBadMessage("Unexpected Directory::Clone from unzipper");
+  }
+
+  void PathExists(const base::FilePath& path,
+                  PathExistsCallback callback) override {
+    receiver_.ReportBadMessage(
+        "Unexpected Directory::PathExists from unzipper");
+  }
+
+  void GetEntries(const base::FilePath& path,
+                  storage::mojom::GetEntriesMode mode,
+                  GetEntriesCallback callback) override {
+    receiver_.ReportBadMessage(
+        "Unexpected Directory::GetEntries from unzipper");
+  }
+
+  void OpenFile(const base::FilePath& path,
+                storage::mojom::FileOpenMode mode,
+                storage::mojom::FileReadAccess read_access,
+                storage::mojom::FileWriteAccess write_access,
+                OpenFileCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    std::optional<base::FilePath> normalized = NormalizeUnzipRelativePath(path);
+    if (!normalized ||
+        mode != storage::mojom::FileOpenMode::kCreateAndOpenOnlyIfNotExists ||
+        read_access != storage::mojom::FileReadAccess::kReadAllowed ||
+        write_access != storage::mojom::FileWriteAccess::kWriteAllowed ||
+        created_files_.contains(*normalized) ||
+        !filter_callback_.Run(*normalized)) {
+      std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED,
+                              base::File());
+      return;
+    }
+    filesystem_.OpenFile(
+        *normalized, mode, read_access, write_access,
+        base::BindOnce(
+            [](UnzipFilesystemImpl* self, base::FilePath created_path,
+               OpenFileCallback cb, base::File::Error error, base::File file) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+              if (error == base::File::FILE_OK) {
+                self->created_files_.insert(std::move(created_path));
+              }
+              std::move(cb).Run(error, std::move(file));
+            },
+            base::Unretained(this), *normalized, std::move(callback)));
+  }
+
+  void CreateDirectory(const base::FilePath& path,
+                       CreateDirectoryCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // `CreateDirectory` is intentionally not passed through `filter_callback_`
+    // because a filter may reject directory entries (e.g. theme filters that
+    // only match file extensions) while still allowing nested files inside
+    // them.
+    std::optional<base::FilePath> normalized =
+        NormalizeUnzipRelativePath(path, /*allow_trailing_separator=*/true);
+    if (!normalized) {
+      std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
+      return;
+    }
+    filesystem_.CreateDirectory(*normalized, std::move(callback));
+  }
+
+  void DeleteFile(const base::FilePath& path,
+                  DeleteFileCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    std::optional<base::FilePath> normalized = NormalizeUnzipRelativePath(path);
+    if (!normalized || !created_files_.contains(*normalized)) {
+      std::move(callback).Run(false);
+      return;
+    }
+    filesystem_.DeleteFile(
+        *normalized,
+        base::BindOnce(
+            [](UnzipFilesystemImpl* self, base::FilePath deleted_path,
+               DeleteFileCallback cb, bool success) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+              if (success) {
+                self->created_files_.erase(deleted_path);
+              }
+              std::move(cb).Run(success);
+            },
+            base::Unretained(this), *normalized, std::move(callback)));
+  }
+
+  void GetFileInfo(const base::FilePath& path,
+                   GetFileInfoCallback callback) override {
+    receiver_.ReportBadMessage(
+        "Unexpected Directory::GetFileInfo from unzipper");
+  }
+
+  void GetDiskSpaceInfo(const base::FilePath& path,
+                        GetDiskSpaceInfoCallback callback) override {
+    receiver_.ReportBadMessage(
+        "Unexpected Directory::GetDiskSpaceInfo from unzipper");
+  }
+
+  void ComputeDirectorySize(const base::FilePath& path,
+                            ComputeDirectorySizeCallback callback) override {
+    receiver_.ReportBadMessage(
+        "Unexpected Directory::ComputeDirectorySize from unzipper");
+  }
+
+  void GetPathAccess(const base::FilePath& path,
+                     GetPathAccessCallback callback) override {
+    receiver_.ReportBadMessage(
+        "Unexpected Directory::GetPathAccess from unzipper");
+  }
+
+  void RenameFile(const base::FilePath& old_path,
+                  const base::FilePath& new_path,
+                  RenameFileCallback callback) override {
+    receiver_.ReportBadMessage(
+        "Unexpected Directory::RenameFile from unzipper");
+  }
+
+  void LockFile(const base::FilePath& path,
+                LockFileCallback callback) override {
+    receiver_.ReportBadMessage("Unexpected Directory::LockFile from unzipper");
+  }
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+  storage::FilesystemImpl filesystem_;
+  UnzipFilterCallback filter_callback_;
+  absl::flat_hash_set<base::FilePath> created_files_;
+  mojo::Receiver<storage::mojom::Directory> receiver_;
+};
 
 // An UnzipOperation is a cancellable invocation of Unzip. To support
 // cancellation, it maintains the completion callback as a class member.
@@ -87,12 +303,9 @@ class UnzipOperation : public base::RefCountedThreadSafe<UnzipOperation>,
     unzipper_.set_disconnect_handler(
         base::BindOnce(&UnzipOperation::Done, this, false));
     mojo::PendingRemote<storage::mojom::Directory> directory_remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<storage::FilesystemImpl>(
-            // kTrusted is set to allow the unzipping process to handle all
-            // types of files.
-            output_dir, storage::FilesystemImpl::ClientType::kTrusted),
-        directory_remote.InitWithNewPipeAndPassReceiver());
+    directory_ = std::make_unique<UnzipFilesystemImpl>(
+        output_dir, directory_remote.InitWithNewPipeAndPassReceiver(),
+        filter_callback_);
     mojo::PendingRemote<unzip::mojom::UnzipFilter> filter_remote;
     filter_receiver_.Bind(filter_remote.InitWithNewPipeAndPassReceiver());
 
@@ -110,18 +323,22 @@ class UnzipOperation : public base::RefCountedThreadSafe<UnzipOperation>,
   }
 
  private:
+  friend class base::RefCountedThreadSafe<UnzipOperation>;
+
   // Done may be called multiple times, for example if cancellation is posted
   // to a task runner, but concurrently, the job completes or the remote
   // disconnects.
   void Done(bool result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    std::move(callback_).Run(result);
-    callback_ = base::DoNothing();
+    // Revoke all capabilities granted to the utility process before signalling
+    // completion so no file operation can occur after the caller observes
+    // completion.
+    directory_.reset();
+    filter_receiver_.reset();
+    listener_receiver_.reset();
     unzipper_.reset();
+    std::exchange(callback_, base::DoNothing()).Run(result);
   }
-
- private:
-  friend class base::RefCountedThreadSafe<UnzipOperation>;
 
   ~UnzipOperation() override = default;
 
@@ -129,7 +346,13 @@ class UnzipOperation : public base::RefCountedThreadSafe<UnzipOperation>,
   void ShouldUnzipFile(const base::FilePath& path,
                        ShouldUnzipFileCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    std::move(callback).Run(filter_callback_.Run(path));
+    std::optional<base::FilePath> normalized =
+        NormalizeUnzipRelativePath(path, /*allow_trailing_separator=*/true);
+    if (!normalized) {
+      std::move(callback).Run(false);
+      return;
+    }
+    std::move(callback).Run(filter_callback_.Run(*normalized));
   }
 
   // unzip::mojom::UnzipListener implementation:
@@ -140,6 +363,7 @@ class UnzipOperation : public base::RefCountedThreadSafe<UnzipOperation>,
 
   SEQUENCE_CHECKER(sequence_checker_);
   mojo::Remote<mojom::Unzipper> unzipper_;
+  std::unique_ptr<UnzipFilesystemImpl> directory_;
   mojo::Receiver<unzip::mojom::UnzipFilter> filter_receiver_{this};
   UnzipFilterCallback filter_callback_;
   mojo::Receiver<unzip::mojom::UnzipListener> listener_receiver_{this};
@@ -337,6 +561,7 @@ base::OnceClosure Unzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
                         UnzipListenerCallback listener_callback,
                         UnzipCallback result_callback) {
   CHECK(result_callback);
+  CHECK(filter_callback);
 
   auto unzip_operation = base::MakeRefCounted<UnzipOperation>(
       filter_callback,

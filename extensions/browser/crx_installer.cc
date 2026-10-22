@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -997,21 +998,84 @@ void CrxInstaller::ReloadExtensionAfterInstall(
   // just moved the extension.
   // TODO(aa): All paths to resources inside extensions should be created
   // lazily and based on the Extension's root path at that moment.
-  ExtensionId extension_id = extension()->id();
+  scoped_refptr<const Extension> unpacked_extension = std::move(extension_);
   std::u16string error;
   extension_ = file_util::LoadExtension(
       version_dir, install_source_,
       // Note: modified by UpdateCreationFlagsAndCompleteInstall.
       creation_flags_, &error);
 
-  if (extension()) {
-    ReportSuccessFromSharedFileThread();
-  } else {
-    LOG(ERROR) << error << " " << extension_id << " " << download_url_;
+  if (!extension()) {
+    LOG(ERROR) << error << " " << unpacked_extension->id() << " "
+               << download_url_;
+    if (install_directory_.IsParent(version_dir) &&
+        base::FeatureList::IsEnabled(
+            extensions_features::kCrxInstallerVerifyReloadedManifest)) {
+      base::DeletePathRecursively(version_dir);
+    }
     ReportFailureFromSharedFileThread(
         CrxInstallError(CrxInstallErrorType::OTHER,
                         CrxInstallErrorDetail::CANT_LOAD_EXTENSION, error));
+    return;
   }
+
+  // `SandboxedUnpacker` writes the parsed manifest to disk and
+  // `file_util::LoadExtension` re-localizes it, so the reloaded manifest must
+  // equal the one validated in `OnUnpackSuccess`. The `id()` and `version()`
+  // checks are implied by manifest equality and kept as belt-and-braces.
+  const bool manifest_mismatch =
+      extension()->id() != unpacked_extension->id() ||
+      extension()->version() != unpacked_extension->version() ||
+      *extension()->manifest()->value() !=
+          *unpacked_extension->manifest()->value();
+  if (manifest_mismatch &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kCrxInstallerVerifyReloadedManifest)) {
+    if (!install_directory_.IsParent(version_dir) &&
+        base::PathExists(unpacked_extension_root_)) {
+      // On ChromeOS with shared extension assets enabled, `version_dir` may
+      // resolve to a pre-existing shared copy written by an earlier install
+      // (e.g. with a different `differential_fingerprint` or Chrome version)
+      // while this install's `unpacked_extension_root_` is still on disk. Fall
+      // back to installing `unpacked_extension_root_` into this profile's
+      // `install_directory_`.
+      // TODO(crbug.com/574299586): Unregister this user from
+      // `ExtensionAssetsManagerChromeOS` (`MarkSharedExtensionUnused`) so
+      // unused or mismatched shared copies can be garbage-collected.
+      base::UmaHistogramEnumeration(
+          "Extensions.CrxInstaller.ReloadManifestMismatch",
+          ReloadManifestVerificationResult::kSharedCopyMismatchFallback);
+      extension_ = std::move(unpacked_extension);
+      ReloadExtensionAfterInstall(file_util::InstallExtension(
+          unpacked_extension_root_, extension_->id(),
+          extension_->VersionString(), install_directory_));
+      return;
+    }
+    base::UmaHistogramEnumeration(
+        "Extensions.CrxInstaller.ReloadManifestMismatch",
+        ReloadManifestVerificationResult::kMismatch);
+    LOG(ERROR) << "Manifest mismatch after install " << unpacked_extension->id()
+               << " " << download_url_;
+    extension_.reset();
+    // Only delete `version_dir` if it was installed under this profile's
+    // `install_directory_`. On ChromeOS with shared extension assets enabled,
+    // `version_dir` may refer to an existing shared cache directory used by
+    // other users.
+    if (install_directory_.IsParent(version_dir)) {
+      base::DeletePathRecursively(version_dir);
+    }
+    ReportFailureFromSharedFileThread(CrxInstallError(
+        CrxInstallErrorType::OTHER,
+        CrxInstallErrorDetail::MANIFEST_MISMATCH_AFTER_INSTALL,
+        l10n_util::GetStringUTF16(IDS_EXTENSION_MANIFEST_INVALID)));
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      "Extensions.CrxInstaller.ReloadManifestMismatch",
+      manifest_mismatch ? ReloadManifestVerificationResult::kMismatch
+                        : ReloadManifestVerificationResult::kMatch);
+
+  ReportSuccessFromSharedFileThread();
 }
 
 void CrxInstaller::ReportFailureFromSharedFileThread(

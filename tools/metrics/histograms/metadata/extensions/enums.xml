@@ -151,6 +151,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/extensions/extension_context_menu_model.h:ExtensionContextMenuRateExtensionOutcome) -->
 
+<!-- LINT.IfChange(ExtensionCrxInstallerReloadManifestVerificationResult) -->
+
+<enum name="ExtensionCrxInstallerReloadManifestVerificationResult">
+  <int value="0" label="kMatch"/>
+  <int value="1" label="kMismatch"/>
+  <int value="2" label="kSharedCopyMismatchFallback"/>
+</enum>
+
+<!-- LINT.ThenChange(//extensions/browser/crx_installer.h:CrxInstallerReloadManifestVerificationResult) -->
+
 <enum name="ExtensionDisableReason">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="USER_ACTION"/>
@@ -2946,6 +2956,8 @@ Called by update_extension_histograms.py.-->
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
 
+<!-- LINT.IfChange(ExtensionInstallationCrxInstallError) -->
+
 <enum name="ExtensionInstallationCrxInstallError">
   <int value="0" label="NONE"/>
   <int value="1" label="CONVERT_USER_SCRIPT_TO_EXTENSION_FAILED"/>
@@ -2973,7 +2985,10 @@ Called by update_extension_histograms.py.-->
   <int value="23" label="USER_ABORTED"/>
   <int value="24" label="UPDATE_NON_EXISTING_EXTENSION"/>
   <int value="25" label="PROFILE_SHUTTING_DOWN"/>
+  <int value="26" label="MANIFEST_MISMATCH_AFTER_INSTALL"/>
 </enum>
+
+<!-- LINT.ThenChange(//extensions/browser/install/crx_install_error.h:CrxInstallErrorDetail,//components/policy/proto/device_management_backend.proto:CrxInstallErrorDetail) -->
 
 <enum name="ExtensionInstallationDownloadingCacheStatus">
   <int value="0" label="UNKNOWN"/>

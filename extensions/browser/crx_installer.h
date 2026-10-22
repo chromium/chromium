@@ -101,6 +101,20 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // installation.
   enum WithholdingBehavior { kWithholdPermissions, kDontWithholdPermissions };
 
+  // LINT.IfChange(CrxInstallerReloadManifestVerificationResult)
+  // Recorded in `CrxInstaller::ReloadExtensionAfterInstall` to track whether
+  // the manifest reloaded from the final install directory matched the
+  // unpacked manifest validated in `OnUnpackSuccess`.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ReloadManifestVerificationResult {
+    kMatch = 0,
+    kMismatch = 1,
+    kSharedCopyMismatchFallback = 2,
+    kMaxValue = kSharedCopyMismatchFallback,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionCrxInstallerReloadManifestVerificationResult)
+
   static void EnsureShutdownNotifierFactoryBuilt();
 
   // Extensions will be installed into the default install directory, then

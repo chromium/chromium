@@ -5,22 +5,30 @@
 #include "components/services/unzip/public/cpp/unzip.h"
 
 #include <cstdint>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/services/unzip/unzipper_impl.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/zip.h"
 
 namespace unzip {
 namespace {
@@ -518,6 +526,404 @@ TEST_F(UnzipTest, UnzipZipWithInterestingZip64s) {
   // Two inner ZIPs. If there's only one, it's probably the contents of the
   // inner ZIP.
   EXPECT_EQ(2, CountFiles(unzip_dir_));
+}
+
+class FakeUnzipper : public mojom::Unzipper {
+ public:
+  using UnzipHandler = base::RepeatingCallback<void(
+      mojo::PendingRemote<storage::mojom::Directory>,
+      mojo::PendingRemote<mojom::UnzipFilter>,
+      UnzipCallback)>;
+
+  explicit FakeUnzipper(UnzipHandler handler) : handler_(std::move(handler)) {}
+  ~FakeUnzipper() override = default;
+
+  void Bind(mojo::PendingReceiver<mojom::Unzipper> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  // mojom::Unzipper:
+  void Unzip(base::File zip_file,
+             mojo::PendingRemote<storage::mojom::Directory> output_dir,
+             mojom::UnzipOptionsPtr options,
+             mojo::PendingRemote<mojom::UnzipFilter> filter,
+             mojo::PendingRemote<mojom::UnzipListener> listener,
+             UnzipCallback callback) override {
+    handler_.Run(std::move(output_dir), std::move(filter), std::move(callback));
+  }
+
+  void DetectEncoding(base::File zip_file,
+                      DetectEncodingCallback callback) override {
+    std::move(callback).Run(UNKNOWN_ENCODING);
+  }
+
+  void GetExtractedInfo(base::File zip_file,
+                        GetExtractedInfoCallback callback) override {
+    std::move(callback).Run(mojom::Info::New());
+  }
+
+  void DecodeXz(base::File in_file,
+                base::File out_file,
+                DecodeXzCallback callback) override {
+    std::move(callback).Run(false);
+  }
+
+ private:
+  UnzipHandler handler_;
+  mojo::ReceiverSet<mojom::Unzipper> receivers_;
+};
+
+bool DoFakeUnzip(const base::FilePath& output_dir,
+                 FakeUnzipper::UnzipHandler handler,
+                 UnzipFilterCallback filter_callback = AllContents()) {
+  FakeUnzipper fake_unzipper(std::move(handler));
+  mojo::PendingRemote<mojom::Unzipper> unzipper_remote;
+  fake_unzipper.Bind(unzipper_remote.InitWithNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  bool result = false;
+  Unzip(std::move(unzipper_remote), GetArchivePath("good_archive.zip"),
+        output_dir, mojom::UnzipOptions::New(), std::move(filter_callback),
+        base::DoNothing(), base::BindLambdaForTesting([&](bool success) {
+          result = success;
+          run_loop.Quit();
+        }));
+  run_loop.Run();
+  return result;
+}
+
+// Verifies that the Directory capability is revoked before the Unzip
+// completion callback runs (both on normal completion and on cancellation),
+// preventing a compromised utility process from modifying the output directory
+// after Unzip completes.
+TEST_F(UnzipTest, DirectoryRevokedBeforeCompletionCallback) {
+  for (bool cancel : {false, true}) {
+    SCOPED_TRACE(cancel);
+    mojo::Remote<storage::mojom::Directory> retained_dir;
+    mojom::Unzipper::UnzipCallback held_callback;
+    base::RunLoop unzip_started_loop;
+
+    FakeUnzipper fake_unzipper(base::BindLambdaForTesting(
+        [&](mojo::PendingRemote<storage::mojom::Directory> output_dir,
+            mojo::PendingRemote<mojom::UnzipFilter> filter,
+            mojom::Unzipper::UnzipCallback callback) {
+          retained_dir.Bind(std::move(output_dir));
+          retained_dir.FlushForTesting();
+          if (cancel) {
+            held_callback = std::move(callback);
+            unzip_started_loop.Quit();
+          } else {
+            std::move(callback).Run(true);
+          }
+        }));
+
+    mojo::PendingRemote<mojom::Unzipper> unzipper_remote;
+    fake_unzipper.Bind(unzipper_remote.InitWithNewPipeAndPassReceiver());
+
+    base::RunLoop completion_loop;
+    base::OnceClosure cancel_closure =
+        Unzip(std::move(unzipper_remote), GetArchivePath("good_archive.zip"),
+              unzip_dir_, mojom::UnzipOptions::New(), AllContents(),
+              base::DoNothing(), base::BindLambdaForTesting([&](bool success) {
+                EXPECT_EQ(!cancel, success);
+                retained_dir.FlushForTesting();
+                EXPECT_FALSE(retained_dir.is_connected());
+                completion_loop.Quit();
+              }));
+
+    if (cancel) {
+      unzip_started_loop.Run();
+      EXPECT_TRUE(retained_dir.is_connected());
+      std::move(cancel_closure).Run();
+    }
+    completion_loop.Run();
+
+    base::File::Error error = base::File::FILE_ERROR_FAILED;
+    base::File created_file;
+    EXPECT_FALSE(retained_dir->OpenFile(
+        base::FilePath(FILE_PATH_LITERAL("post_unzip.txt")),
+        storage::mojom::FileOpenMode::kCreateAndOpenOnlyIfNotExists,
+        storage::mojom::FileReadAccess::kReadAllowed,
+        storage::mojom::FileWriteAccess::kWriteAllowed, &error, &created_file));
+    EXPECT_EQ(0, CountFiles(unzip_dir_));
+  }
+}
+
+// Verifies that `UnzipFilter::ShouldUnzipFile` rejects unsafe or non-normalized
+// paths without passing them to `filter_callback`.
+TEST_F(UnzipTest, FilterNormalizesPaths) {
+  EXPECT_TRUE(DoFakeUnzip(
+      unzip_dir_,
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<storage::mojom::Directory> output_dir_pending,
+              mojo::PendingRemote<mojom::UnzipFilter> filter_pending,
+              mojom::Unzipper::UnzipCallback callback) {
+            mojo::Remote<mojom::UnzipFilter> filter(std::move(filter_pending));
+
+            bool should_unzip = true;
+            filter->ShouldUnzipFile(
+                base::FilePath(FILE_PATH_LITERAL("../evil.txt")),
+                &should_unzip);
+            EXPECT_FALSE(should_unzip);
+
+            should_unzip = true;
+            filter->ShouldUnzipFile(unzip_dir_.AppendASCII("absolute.txt"),
+                                    &should_unzip);
+            EXPECT_FALSE(should_unzip);
+
+            should_unzip = true;
+            filter->ShouldUnzipFile(
+                base::FilePath(FILE_PATH_LITERAL("./manifest.json")),
+                &should_unzip);
+            EXPECT_FALSE(should_unzip);
+
+            should_unzip = false;
+            filter->ShouldUnzipFile(
+                base::FilePath(FILE_PATH_LITERAL("allowed.txt")),
+                &should_unzip);
+            EXPECT_TRUE(should_unzip);
+
+            std::move(callback).Run(true);
+          }),
+      base::BindRepeating([](const base::FilePath& path) {
+        EXPECT_FALSE(path.IsAbsolute());
+        EXPECT_FALSE(path.ReferencesParent());
+        return path != base::FilePath(FILE_PATH_LITERAL("manifest.json"));
+      })));
+}
+
+// Verifies that the Directory capability enforces the filter callback and
+// create-only open mode, and denies renaming or locking files.
+TEST_F(UnzipTest, DirectoryEnforcesFilterAndOpenMode) {
+  const base::FilePath existing_file = unzip_dir_.AppendASCII("manifest.json");
+  ASSERT_TRUE(base::WriteFile(existing_file, "original"));
+
+  EXPECT_TRUE(DoFakeUnzip(
+      unzip_dir_,
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<storage::mojom::Directory> output_dir_pending,
+              mojo::PendingRemote<mojom::UnzipFilter> filter_pending,
+              mojom::Unzipper::UnzipCallback callback) {
+            mojo::Remote<storage::mojom::Directory> output_dir(
+                std::move(output_dir_pending));
+            auto open_file = [&](const base::FilePath::CharType* name,
+                                 storage::mojom::FileOpenMode mode =
+                                     storage::mojom::FileOpenMode::
+                                         kCreateAndOpenOnlyIfNotExists) {
+              base::File::Error error = base::File::FILE_ERROR_FAILED;
+              base::File file;
+              output_dir->OpenFile(
+                  base::FilePath(name), mode,
+                  storage::mojom::FileReadAccess::kReadAllowed,
+                  storage::mojom::FileWriteAccess::kWriteAllowed, &error,
+                  &file);
+              return error;
+            };
+
+            // Attempting to open a file excluded by the filter (directly or via
+            // a "." path component) must be denied even if ShouldUnzipFile() is
+            // never called.
+            EXPECT_EQ(base::File::FILE_ERROR_ACCESS_DENIED,
+                      open_file(FILE_PATH_LITERAL("manifest.json")));
+            EXPECT_EQ(base::File::FILE_ERROR_ACCESS_DENIED,
+                      open_file(FILE_PATH_LITERAL("./manifest.json")));
+
+#if BUILDFLAG(IS_WIN)
+            // On Windows, trailing dots/spaces, NTFS alternate data streams,
+            // root-relative paths, and drive-relative paths must not bypass the
+            // filter.
+            for (const auto* candidate : {
+                     FILE_PATH_LITERAL("manifest.json."),
+                     FILE_PATH_LITERAL("manifest.json "),
+                     FILE_PATH_LITERAL("x.exe::$DATA"),
+                     FILE_PATH_LITERAL("\\manifest.json"),
+                     FILE_PATH_LITERAL("C:manifest.json"),
+                 }) {
+              EXPECT_EQ(base::File::FILE_ERROR_ACCESS_DENIED,
+                        open_file(candidate))
+                  << candidate;
+            }
+#endif
+
+            // Creating an allowed file with kCreateAndOpenOnlyIfNotExists
+            // succeeds, but overwriting it with kAlwaysCreate is denied.
+            EXPECT_EQ(base::File::FILE_OK,
+                      open_file(FILE_PATH_LITERAL("allowed.txt")));
+            EXPECT_EQ(base::File::FILE_ERROR_ACCESS_DENIED,
+                      open_file(FILE_PATH_LITERAL("allowed.txt"),
+                                storage::mojom::FileOpenMode::kAlwaysCreate));
+
+            // Attempting to call an unsupported Directory method (such as
+            // RenameFile) must report a bad Mojo message and disconnect the
+            // Directory pipe.
+            mojo::test::BadMessageObserver bad_message_observer;
+            base::File::Error error = base::File::FILE_OK;
+            EXPECT_FALSE(output_dir->RenameFile(
+                base::FilePath(FILE_PATH_LITERAL("allowed.txt")),
+                base::FilePath(FILE_PATH_LITERAL("manifest.json")), &error));
+            EXPECT_EQ("Unexpected Directory::RenameFile from unzipper",
+                      bad_message_observer.WaitForBadMessage());
+            output_dir.FlushForTesting();
+            EXPECT_FALSE(output_dir.is_connected());
+
+            std::move(callback).Run(true);
+          }),
+      base::BindRepeating([](const base::FilePath& path) {
+        return path != base::FilePath(FILE_PATH_LITERAL("manifest.json")) &&
+               !path.MatchesExtension(FILE_PATH_LITERAL(".exe"));
+      })));
+
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(existing_file, &content));
+  EXPECT_EQ("original", content);
+}
+
+// Verifies that `DeleteFile` is restricted to files created during the current
+// operation, erases the path from `created_files_` on deletion, and allows
+// re-creating and deleting a previously deleted path.
+TEST_F(UnzipTest, DirectoryAllowsSingleDeleteOfCreatedFilesOnly) {
+  const base::FilePath existing_file = unzip_dir_.AppendASCII("manifest.json");
+  ASSERT_TRUE(base::WriteFile(existing_file, "original"));
+  const base::FilePath existing_allowed =
+      unzip_dir_.AppendASCII("preexisting.txt");
+  ASSERT_TRUE(base::WriteFile(existing_allowed, "keep"));
+
+  EXPECT_TRUE(DoFakeUnzip(
+      unzip_dir_,
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<storage::mojom::Directory> output_dir_pending,
+              mojo::PendingRemote<mojom::UnzipFilter> filter_pending,
+              mojom::Unzipper::UnzipCallback callback) {
+            mojo::Remote<storage::mojom::Directory> output_dir(
+                std::move(output_dir_pending));
+            auto create_allowed = [&]() {
+              base::File::Error error = base::File::FILE_ERROR_FAILED;
+              base::File file;
+              output_dir->OpenFile(
+                  base::FilePath(FILE_PATH_LITERAL("allowed.txt")),
+                  storage::mojom::FileOpenMode::kCreateAndOpenOnlyIfNotExists,
+                  storage::mojom::FileReadAccess::kReadAllowed,
+                  storage::mojom::FileWriteAccess::kWriteAllowed, &error,
+                  &file);
+              EXPECT_EQ(base::File::FILE_OK, error);
+              EXPECT_TRUE(file.IsValid());
+            };
+            auto delete_file = [&](const base::FilePath::CharType* name) {
+              bool deleted = false;
+              output_dir->DeleteFile(base::FilePath(name), &deleted);
+              return deleted;
+            };
+
+            // Attempting to delete a file excluded by the filter (directly or
+            // via "./") or a pre-existing file that was not created by this
+            // Unzip operation must fail.
+            EXPECT_FALSE(delete_file(FILE_PATH_LITERAL("manifest.json")));
+            EXPECT_FALSE(delete_file(FILE_PATH_LITERAL("./manifest.json")));
+            EXPECT_FALSE(delete_file(FILE_PATH_LITERAL("preexisting.txt")));
+
+            // Create an allowed file, delete it once, and verify a second
+            // delete without re-creating it fails.
+            create_allowed();
+            EXPECT_TRUE(delete_file(FILE_PATH_LITERAL("allowed.txt")));
+            EXPECT_FALSE(delete_file(FILE_PATH_LITERAL("allowed.txt")));
+
+            // Re-creating a deleted file via OpenFile and deleting it again
+            // (e.g. if a duplicate zip entry also fails) is allowed.
+            create_allowed();
+            EXPECT_TRUE(delete_file(FILE_PATH_LITERAL("allowed.txt")));
+
+            std::move(callback).Run(true);
+          }),
+      base::BindRepeating([](const base::FilePath& path) {
+        return path != base::FilePath(FILE_PATH_LITERAL("manifest.json"));
+      })));
+
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(existing_file, &content));
+  EXPECT_EQ("original", content);
+  ASSERT_TRUE(base::ReadFileToString(existing_allowed, &content));
+  EXPECT_EQ("keep", content);
+  EXPECT_FALSE(base::PathExists(unzip_dir_.AppendASCII("allowed.txt")));
+}
+
+// Verifies that archive entries whose names end in a dot or a space are
+// extracted rather than silently skipped by path normalization.
+TEST_F(UnzipTest, UnzipArchiveWithTrailingDotsAndSpaces) {
+  base::ScopedTempDir archive_dir;
+  ASSERT_TRUE(archive_dir.CreateUniqueTempDir());
+  const base::FilePath backing_file = archive_dir.GetPath().AppendASCII("src");
+  ASSERT_TRUE(base::WriteFile(backing_file, "payload"));
+
+  class TestFileAccessor : public zip::FileAccessor {
+   public:
+    explicit TestFileAccessor(const base::FilePath& backing_file)
+        : backing_file_(backing_file) {}
+
+    bool Open(zip::Paths paths, std::vector<base::File>* files) override {
+      for (const auto& path : paths) {
+        if (path == base::FilePath(FILE_PATH_LITERAL("dir.")) ||
+            path == base::FilePath(FILE_PATH_LITERAL("dir "))) {
+          files->emplace_back();
+        } else {
+          files->emplace_back(backing_file_,
+                              base::File::FLAG_OPEN | base::File::FLAG_READ);
+        }
+      }
+      return true;
+    }
+
+    bool List(const base::FilePath& path,
+              std::vector<base::FilePath>* files,
+              std::vector<base::FilePath>* subdirs) override {
+      return true;
+    }
+
+    bool GetInfo(const base::FilePath& path, Info* info) override {
+      info->is_directory = (path == base::FilePath(FILE_PATH_LITERAL("dir.")) ||
+                            path == base::FilePath(FILE_PATH_LITERAL("dir ")));
+      return true;
+    }
+
+   private:
+    const base::FilePath backing_file_;
+  };
+
+  TestFileAccessor file_accessor(backing_file);
+  const base::FilePath zip_path = archive_dir.GetPath().AppendASCII("test.zip");
+  const base::FilePath src_files[] = {
+      base::FilePath(FILE_PATH_LITERAL("trailing_dot.")),
+      base::FilePath(FILE_PATH_LITERAL("trailing_space ")),
+      base::FilePath(FILE_PATH_LITERAL("dir.")),
+      base::FilePath(FILE_PATH_LITERAL("dir ")),
+      base::FilePath(FILE_PATH_LITERAL("dir./nested_dot.")),
+      base::FilePath(FILE_PATH_LITERAL("dir /nested_space ")),
+  };
+  zip::ZipParams params{
+      .file_accessor = &file_accessor,
+      .dest_file = zip_path,
+      .src_files = src_files,
+  };
+  ASSERT_TRUE(zip::Zip(params));
+
+  EXPECT_TRUE(DoUnzip(zip_path, unzip_dir_));
+  bool some_files_empty = false;
+  EXPECT_EQ(4, CountFiles(unzip_dir_, &some_files_empty));
+  EXPECT_FALSE(some_files_empty);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(base::PathExists(unzip_dir_.AppendASCII("trailing_dot")));
+  EXPECT_TRUE(base::PathExists(unzip_dir_.AppendASCII("trailing_space")));
+  EXPECT_TRUE(base::PathExists(
+      unzip_dir_.AppendASCII("dir").AppendASCII("nested_dot")));
+  EXPECT_TRUE(base::PathExists(
+      unzip_dir_.AppendASCII("dir").AppendASCII("nested_space")));
+#else
+  EXPECT_TRUE(base::PathExists(unzip_dir_.AppendASCII("trailing_dot.")));
+  EXPECT_TRUE(base::PathExists(unzip_dir_.AppendASCII("trailing_space ")));
+  EXPECT_TRUE(base::PathExists(
+      unzip_dir_.AppendASCII("dir.").AppendASCII("nested_dot.")));
+  EXPECT_TRUE(base::PathExists(
+      unzip_dir_.AppendASCII("dir ").AppendASCII("nested_space ")));
+#endif
 }
 
 }  // namespace

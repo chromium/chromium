@@ -820,6 +820,24 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.CrxInstaller.ReloadManifestMismatch"
+    enum="ExtensionCrxInstallerReloadManifestVerificationResult"
+    expires_after="2027-04-30">
+  <owner>ganesh@chromium.org</owner>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the result of verifying the extension manifest reloaded from the
+    final installation directory in CrxInstaller::ReloadExtensionAfterInstall
+    against the in-memory manifest validated during
+    SandboxedUnpacker::OnUnpackSuccess: whether the manifest matched (kMatch),
+    mismatched (kMismatch), or mismatched against a pre-existing ChromeOS shared
+    extension copy and triggered a fallback install into the profile's local
+    install directory (kSharedCopyMismatchFallback). Recorded on each reload
+    attempt in CrxInstaller::ReloadExtensionAfterInstall.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.CWSInfoService.FetchSuccess" enum="BooleanSuccess"
     expires_after="never">
 <!-- expires-never: used to monitor the health of CWS metadata fetch service -->

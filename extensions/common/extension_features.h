@@ -154,6 +154,15 @@ BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
 // URLs in worker scripts and subresources.
 BASE_DECLARE_FEATURE(kComponentExtensionAllowWorkerChromeResources);
 
+// When enabled (the default), `CrxInstaller::ReloadExtensionAfterInstall`
+// verifies that the manifest reloaded from the final install directory matches
+// the unpacked manifest validated in `OnUnpackSuccess`, failing the install
+// on mismatch (or falling back to a local install on ChromeOS if a shared copy
+// mismatched), and cleans up `version_dir` under `install_directory_` on
+// post-install reload failures (`CANT_LOAD_EXTENSION` and
+// `MANIFEST_MISMATCH_AFTER_INSTALL`).
+BASE_DECLARE_FEATURE(kCrxInstallerVerifyReloadedManifest);
+
 // Gates native UI affordances for leaving reviews on installed Chrome Web Store
 // extensions.
 BASE_DECLARE_FEATURE(kCWSReviewPromptingNativeUI);

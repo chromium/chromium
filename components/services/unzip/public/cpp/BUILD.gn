@@ -14,4 +14,6 @@ source_set("cpp") {
     "//components/services/storage/public/cpp/filesystem",
     "//components/services/unzip/public/mojom",
   ]
+
+  deps = [ "//third_party/abseil-cpp:absl" ]
 }

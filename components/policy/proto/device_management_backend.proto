@@ -4062,6 +4062,7 @@ message ExtensionInstallReportLogEvent {
   // error. See extensions::CrxInstallErrorDetail for more details.
   // extensions::CrxInstallErrorDetail is the main enum and this is a
   // copy used for reporting purposes.
+  // LINT.IfChange(CrxInstallErrorDetail)
   enum CrxInstallErrorDetail {
     CRX_INSTALL_ERROR_DETAIL_UNKNOWN = 0;
     CONVERT_USER_SCRIPT_TO_EXTENSION_FAILED = 1;
@@ -4089,7 +4090,9 @@ message ExtensionInstallReportLogEvent {
     USER_ABORTED = 23;
     UPDATE_NON_EXISTING_EXTENSION = 24;
     PROFILE_SHUTTING_DOWN = 25;
+    MANIFEST_MISMATCH_AFTER_INSTALL = 26;
   }
+  // LINT.ThenChange(//extensions/browser/install/crx_install_error.h:CrxInstallErrorDetail,//tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionInstallationCrxInstallError)
 
   // Timestamp, in microseconds since epoch. Set for all log
   // events.

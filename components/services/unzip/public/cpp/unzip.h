@@ -28,9 +28,15 @@ using UnzipperFactory =
 // Unzip must be called on a sequenced task runner. The cancellation closure may
 // be called on any sequence (or none at all). Unzip does not block.
 // `result_callback` and `listener_callback` will run on the same sequence Unzip
-// is called on. `filter_callback` may run on any sequence. If no filtration is
-// needed, pass `unzip::AllContents` as `filter_callback`. If no progress
-// tracking is needed, pass `base::DoNothing()` as `listener_callback`.
+// is called on.
+// `filter_callback` is required and may run on any sequence. It is enforced
+// both when filtering archive entries and when the utility process creates or
+// deletes files in `output_dir`, so it may run more than once per entry. It
+// receives normalized relative paths (directory entries do not have a trailing
+// separator, and on Windows trailing dots and spaces are trimmed from each path
+// component). If no filtration is needed, pass `unzip::AllContents` as
+// `filter_callback`. If no progress tracking is needed, pass
+// `base::DoNothing()` as `listener_callback`.
 using UnzipCallback = base::OnceCallback<void(bool result)>;
 using UnzipFilterCallback =
     base::RepeatingCallback<bool(const base::FilePath& path)>;

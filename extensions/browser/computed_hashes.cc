@@ -282,7 +282,11 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
   if (!base::JSONWriter::Write(top_dictionary, &json)) {
     return false;
   }
-  if (!base::WriteFile(path, json)) {
+  // Unlink any existing file (e.g. if the archive already contained
+  // `_metadata/computed_hashes.json`) before writing so that a new inode is
+  // created and any process still holding an open file descriptor to the
+  // original file cannot modify the newly written hashes in place.
+  if (!base::DeleteFile(path) || !base::WriteFile(path, json)) {
     LOG(ERROR) << "Error writing " << path.AsUTF8Unsafe();
     return false;
   }

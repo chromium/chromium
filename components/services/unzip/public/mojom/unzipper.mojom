@@ -48,6 +48,10 @@ interface UnzipListener {
 interface Unzipper {
   // Unzips |zip_file| into |output_dir|.
   // Returns true on success, false otherwise.
+  // |output_dir| is a restricted directory capability scoped to this operation
+  // that permits only create-only read+write |OpenFile| (for paths allowed by
+  // |filter|), |CreateDirectory|, and single |DeleteFile| of files created
+  // during this operation.
   // |options| contains unpacking information such as filename encoding.
   // If provided, |filter| is called for each entry of the archive (which incurs
   // one IPC for each entry) and only the entries for which it returns true are

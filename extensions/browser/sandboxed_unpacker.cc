@@ -1030,7 +1030,12 @@ std::optional<base::DictValue> SandboxedUnpacker::RewriteManifestFile(
   }
 
   base::FilePath manifest_path = extension_root_.Append(kManifestFilename);
-  if (!base::WriteFile(manifest_path, *manifest_json)) {
+  // Unlink the existing manifest before writing the sanitized version so that a
+  // new inode is created, preventing any process that still holds an open file
+  // descriptor to the original unpacked file from modifying the rewritten
+  // manifest in place.
+  if (!base::DeleteFile(manifest_path) ||
+      !base::WriteFile(manifest_path, *manifest_json)) {
     // Error saving manifest.json.
     ReportFailure(
         SandboxedUnpackerFailureReason::ERROR_SAVING_MANIFEST_JSON,
