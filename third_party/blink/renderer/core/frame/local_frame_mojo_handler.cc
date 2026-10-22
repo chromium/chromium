@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
+#include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -59,6 +60,7 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
@@ -626,7 +628,13 @@ void LocalFrameMojoHandler::AddMessageToConsole(
 }
 
 void LocalFrameMojoHandler::SwapInImmediately() {
-  frame_->SwapIn();
+  {
+    FrameSwapScope frame_swap_scope(frame_->Owner());
+    if (!frame_->SwapIn()) {
+      return;
+    }
+    frame_->AttachViewToOwner();
+  }
   // Normally, this happens as part of committing a cross-Document navigation.
   // However, there is no navigation being committed here. Instead, the browser
   // navigation code is optimistically early-swapping in this frame to replace a

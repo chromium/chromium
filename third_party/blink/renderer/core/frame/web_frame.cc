@@ -14,6 +14,7 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
+#include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/opened_frame_tracker.h"
@@ -42,9 +43,11 @@ bool WebFrame::Swap(
         remote_frame_receiver,
     blink::mojom::FrameReplicationStatePtr replicated_state,
     const std::optional<base::UnguessableToken>& devtools_frame_token) {
-  bool res = ToCoreFrame(*this)->Swap(frame, std::move(remote_frame_host),
-                                      std::move(remote_frame_receiver),
-                                      devtools_frame_token);
+  Frame* old_frame = ToCoreFrame(*this);
+  FrameSwapScope frame_swap_scope(old_frame->Owner());
+  bool res =
+      old_frame->Swap(frame, std::move(remote_frame_host),
+                      std::move(remote_frame_receiver), devtools_frame_token);
   if (!res)
     return false;
 

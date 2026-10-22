@@ -150,6 +150,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // a load was initiated.
   bool LoadImmediatelyIfLazy();
 
+  bool IsSwappingFrames() const final { return is_swapping_frames_; }
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -209,8 +211,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   virtual void CheckPotentialPermissionsPolicyViolation() {}
 
  protected:
-  bool IsSwappingFrames() const final { return is_swapping_frames_; }
-
   // Checks that the number of frames on the page are within the current limit.
   bool IsCurrentlyWithinFrameLimit() const;
 

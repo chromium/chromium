@@ -158,6 +158,11 @@ WebRemoteFrameImpl* CreateRemoteChild(WebRemoteFrame& parent,
                                       const WebString& name = WebString(),
                                       scoped_refptr<SecurityOrigin> = nullptr);
 
+// Helper that wraps WebFrame::Swap(WebLocalFrame*) in a FrameSwapScope with
+// LocalFrame::AttachViewToOwner, as would normally occur in the course of
+// FrameLoader::CommitNavigation.
+bool SwapLocalFrame(WebFrame* old_frame, WebLocalFrame* new_local_frame);
+
 // Call Swap with a `new_remote_frame` stubbing out the mojo channels if
 // necessary.
 void SwapRemoteFrame(

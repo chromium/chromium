@@ -251,6 +251,10 @@ class CORE_EXPORT LocalFrame final
   void SetView(LocalFrameView*);
   void CreateView(const gfx::Size&, const Color&);
 
+  // Registers the LocalFrameView as the EmbeddedContentView of this frame's
+  // HTMLFrameOwnerElement, if the owner has a layout object.
+  void AttachViewToOwner();
+
   // Frame overrides:
   ~LocalFrame() override;
   void Trace(Visitor*) const override;

@@ -177,6 +177,7 @@
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
@@ -495,22 +496,33 @@ void LocalFrame::CreateView(const gfx::Size& viewport_size,
     frame_view->SetParentVisible(true);
   }
 
-  // FIXME: Not clear what the right thing for OOPI is here.
-  if (OwnerLayoutObject()) {
-    HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
-    DCHECK(owner);
-    // FIXME: OOPI might lead to us temporarily lying to a frame and telling it
-    // that it's owned by a FrameOwner that knows nothing about it. If we're
-    // lying to this frame, don't let it clobber the existing
-    // EmbeddedContentView.
-    if (owner->ContentFrame() == this) {
-      owner->SetEmbeddedContentView(frame_view);
-    }
-  }
+  AttachViewToOwner();
 
   if (Owner()) {
     View()->SetCanHaveScrollbars(Owner()->ScrollbarMode() !=
                                  mojom::blink::ScrollbarMode::kAlwaysOff);
+  }
+}
+
+void LocalFrame::AttachViewToOwner() {
+  DCHECK(View());
+
+  // Attach our LocalFrameView to the frame owner element only if the owner
+  // itself is attached to layout. For example, a display:none <iframe> expects
+  // a null embedded_content_view_ (see HTMLFrameOwnerElement::IsDisplayNone())
+  // even though the LocalFrameView exists and is held by its LocalFrame.
+  if (!OwnerLayoutObject()) {
+    return;
+  }
+  // Since the frame has an owner layout object, this cast is guaranteed to
+  // succeed.
+  auto* owner = To<HTMLFrameOwnerElement>(Owner());
+  // FIXME: OOPI might lead to us temporarily lying to a frame and telling it
+  // that it's owned by a FrameOwner that knows nothing about it. If we're
+  // lying to this frame, don't let it clobber the existing
+  // EmbeddedContentView.
+  if (owner->ContentFrame() == this) {
+    owner->SetEmbeddedContentView(View());
   }
 }
 

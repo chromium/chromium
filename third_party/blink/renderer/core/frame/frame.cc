@@ -837,7 +837,12 @@ bool Frame::SwapImpl(
   // `Detach()` to mutate the frame tree and cause cached values to become
   // invalid.
   FrameOwner* owner = owner_;
-  FrameSwapScope frame_swap_scope(owner);
+  if (auto* owner_element = DynamicTo<HTMLFrameOwnerElement>(owner)) {
+    // The caller is responsible for opening a FrameSwapScope that covers the
+    // whole swap, including SetEmbeddedContentView attachment, so that we don't
+    // broadcast changes to FrameOwnerProperties::is_display_none too eagerly.
+    DCHECK(owner_element->IsSwappingFrames());
+  }
   Page* page = page_;
   AtomicString name = Tree().GetName();
 
@@ -952,10 +957,9 @@ bool Frame::SwapImpl(
     DCHECK_EQ(owner, new_local_frame->Owner());
     if (owner) {
       owner->SetContentFrame(*new_local_frame);
-
-      if (auto* frame_owner_element = DynamicTo<HTMLFrameOwnerElement>(owner)) {
-        frame_owner_element->SetEmbeddedContentView(new_local_frame->View());
-      }
+      // Note: we do not call SetEmbeddedContentView on the owner here, because
+      // the new view is normally not ready yet. Once the document commits,
+      // LocalFrame::CreateView() -> AttachViewToOwner() will do that.
     } else {
       Page* new_page = new_local_frame->GetPage();
       if (page != new_page) {

@@ -9693,6 +9693,11 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
     return did_propagate_display_none_;
   }
 
+  void ResetDidPropagateDisplayNoneProperty() {
+    Frame()->GetFrame()->FlushLocalFrameHostForTesting();
+    did_propagate_display_none_ = false;
+  }
+
  private:
   class TestLocalFrameHostForFrameOwnerPropertiesChanges
       : public FakeLocalFrameHost {
@@ -9994,7 +9999,8 @@ TEST_F(WebFrameTest, SwapChildAddFrameInUnload) {
 
   // This triggers the unload handler in the child frame's Document, mutating
   // the frame tree during the `Frame::Swap()` call.
-  web_view_helper.LocalMainFrame()->FirstChild()->Swap(new_frame);
+  frame_test_helpers::SwapLocalFrame(
+      web_view_helper.LocalMainFrame()->FirstChild(), new_frame);
 
   // TODO(dcheng): This is currently required to trigger a crash when the bug is
   // not fixed. Removing a frame from the frame tree will fail one of the
@@ -10011,7 +10017,8 @@ void WebFrameTest::SwapAndVerifyFirstChildConsistency(const char* const message,
                                                       WebFrame* new_child) {
   SCOPED_TRACE(message);
   if (new_child->IsWebLocalFrame()) {
-    parent->FirstChild()->Swap(new_child->ToWebLocalFrame());
+    frame_test_helpers::SwapLocalFrame(parent->FirstChild(),
+                                       new_child->ToWebLocalFrame());
   } else {
     frame_test_helpers::SwapRemoteFrame(parent->FirstChild(),
                                         new_child->ToWebRemoteFrame());
@@ -10059,7 +10066,38 @@ TEST_F(WebFrameSwapTest, DISABLED_DoNotPropagateDisplayNonePropertyOnSwap) {
 
   WebLocalFrame* local_frame =
       web_view_helper_.CreateProvisional(*remote_frame);
-  remote_frame->Swap(local_frame);
+  frame_test_helpers::SwapLocalFrame(remote_frame, local_frame);
+  EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
+  Reset();
+}
+
+// FrameLoader::CommitNavigation() (1) detaches a provisional LocalFrame's
+// initial empty document, (2) swaps the new frame in, and (3) creates the new
+// LocalFrameView and attaches it to the owner. The frame owner element has no
+// embedded_content_view_ until step 3, so we rely on the FrameSwapScope in
+// CommitNavigation() to defer FrameOwnerPropertiesChanged() until the view
+// is attached. Otherwise the browser would be incorrectly told that the frame
+// is display:none.
+TEST_F(WebFrameSwapTest, DoNotPropagateDisplayNoneOnProvisionalFrameCommit) {
+  WebFrameSwapTestClient* main_frame_client =
+      static_cast<WebFrameSwapTestClient*>(MainFrame()->Client());
+
+  UpdateAllLifecyclePhases(WebView());
+  RunPendingTasks();
+  main_frame_client->ResetDidPropagateDisplayNoneProperty();
+
+  WebLocalFrame* child_frame = MainFrame()->FirstChild()->ToWebLocalFrame();
+  WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
+  frame_test_helpers::SwapRemoteFrame(child_frame, remote_frame);
+  EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
+
+  WebLocalFrame* local_frame =
+      web_view_helper_.CreateProvisional(*remote_frame);
+  EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
+
+  // Committing a navigation in the provisional frame swaps it in.
+  frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
+  EXPECT_EQ(local_frame, MainFrame()->FirstChild());
   EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
   Reset();
 }
@@ -10071,7 +10109,8 @@ void WebFrameTest::SwapAndVerifyMiddleChildConsistency(
   SCOPED_TRACE(message);
 
   if (new_child->IsWebLocalFrame()) {
-    parent->FirstChild()->NextSibling()->Swap(new_child->ToWebLocalFrame());
+    frame_test_helpers::SwapLocalFrame(parent->FirstChild()->NextSibling(),
+                                       new_child->ToWebLocalFrame());
   } else {
     frame_test_helpers::SwapRemoteFrame(parent->FirstChild()->NextSibling(),
                                         new_child->ToWebRemoteFrame());
@@ -10114,7 +10153,8 @@ void WebFrameTest::SwapAndVerifyLastChildConsistency(const char* const message,
                                                      WebFrame* new_child) {
   SCOPED_TRACE(message);
   if (new_child->IsWebLocalFrame()) {
-    parent->LastChild()->Swap(new_child->ToWebLocalFrame());
+    frame_test_helpers::SwapLocalFrame(parent->LastChild(),
+                                       new_child->ToWebLocalFrame());
   } else {
     frame_test_helpers::SwapRemoteFrame(parent->LastChild(),
                                         new_child->ToWebRemoteFrame());
@@ -10178,7 +10218,7 @@ void WebFrameTest::SwapAndVerifySubframeConsistency(const char* const message,
   EXPECT_TRUE(old_frame->FirstChild());
 
   if (new_frame->IsWebLocalFrame()) {
-    old_frame->Swap(new_frame->ToWebLocalFrame());
+    frame_test_helpers::SwapLocalFrame(old_frame, new_frame->ToWebLocalFrame());
   } else {
     frame_test_helpers::SwapRemoteFrame(old_frame,
                                         new_frame->ToWebRemoteFrame());
@@ -10293,7 +10333,7 @@ TEST_F(WebFrameSwapTest, SwapPreservesGlobalContext) {
   // code path.
   WebLocalFrame* local_frame =
       web_view_helper_.CreateProvisional(*remote_frame);
-  remote_frame->Swap(local_frame);
+  frame_test_helpers::SwapLocalFrame(remote_frame, local_frame);
   v8::Local<v8::Value> local_window = MainFrame()->ExecuteScriptAndReturnValue(
       WebScriptSource("document.querySelector('#frame2').contentWindow;"));
   EXPECT_TRUE(original_window->StrictEquals(local_window));
