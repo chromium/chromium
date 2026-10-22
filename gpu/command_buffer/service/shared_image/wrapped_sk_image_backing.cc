@@ -105,8 +105,15 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
+    if (!wrapped_sk_image()->BeginAccess(/*readonly=*/false)) {
+      return {};
+    }
     write_surfaces_ = wrapped_sk_image()->GetSkSurfaces(
         final_msaa_count, surface_props, context_state_);
+    if (write_surfaces_.empty()) {
+      wrapped_sk_image()->EndAccess(/*readonly=*/false);
+      return {};
+    }
     for (auto& surface : write_surfaces_) {
       [[maybe_unused]] int save_count = surface->getCanvas()->save();
       DCHECK_EQ(1, save_count);
@@ -118,6 +125,9 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
+    if (!wrapped_sk_image()->BeginAccess(/*readonly=*/false)) {
+      return {};
+    }
     return wrapped_sk_image()->GetPromiseTextures();
   }
 
@@ -132,17 +142,22 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
       DCHECK(context_state_->CachedSkSurfaceIsUnique(promise_texture.get()));
     }
 #endif
+    wrapped_sk_image()->EndAccess(/*readonly=*/false);
   }
 
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
-    DCHECK(write_surfaces_.empty());
+    if (!wrapped_sk_image()->BeginAccess(/*readonly=*/true)) {
+      return {};
+    }
     return wrapped_sk_image()->GetPromiseTextures();
   }
 
-  void EndReadAccess() override { DCHECK(write_surfaces_.empty()); }
+  void EndReadAccess() override {
+    wrapped_sk_image()->EndAccess(/*readonly=*/true);
+  }
 
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 
@@ -186,6 +201,9 @@ WrappedSkImageBacking::WrappedSkImageBacking(
 }
 
 WrappedSkImageBacking::~WrappedSkImageBacking() {
+  DCHECK(!is_write_in_progress_);
+  DCHECK_EQ(reads_in_progress_, 0u);
+
   auto destroy_resources = [](scoped_refptr<SharedContextState> context_state,
                               std::vector<TextureHolder> textures) {
     ScopedRestoreCurrentGLContext restore_context;
@@ -463,6 +481,37 @@ WrappedSkImageBacking::GetPromiseTextures() {
     promise_textures.push_back(texture.promise_texture);
   }
   return promise_textures;
+}
+
+bool WrappedSkImageBacking::BeginAccess(bool readonly) {
+  AutoLock auto_lock(this);
+  if (is_write_in_progress_) {
+    LOG(ERROR) << "Unable to begin " << (readonly ? "read" : "write")
+               << " access because another write access is in progress";
+    return false;
+  }
+  if (reads_in_progress_ && !readonly) {
+    LOG(ERROR) << "Unable to begin write access because a read access is in "
+                  "progress";
+    return false;
+  }
+  if (readonly) {
+    ++reads_in_progress_;
+  } else {
+    is_write_in_progress_ = true;
+  }
+  return true;
+}
+
+void WrappedSkImageBacking::EndAccess(bool readonly) {
+  AutoLock auto_lock(this);
+  if (readonly) {
+    CHECK_GT(reads_in_progress_, 0u);
+    --reads_in_progress_;
+  } else {
+    CHECK(is_write_in_progress_);
+    is_write_in_progress_ = false;
+  }
 }
 
 SkColorType WrappedSkImageBacking::GetSkColorType(int plane_index) {

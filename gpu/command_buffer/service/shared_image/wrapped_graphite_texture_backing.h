@@ -104,6 +104,12 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
   GetWrappedGraphiteTextureHolders();
   bool InsertRecordingAndSubmit(SharedContextState* context_state);
 
+  // Called by representations from begin access functions. Returns true if
+  // access is allowed or false if access must fail. A corresponding EndAccess()
+  // call must be made if BeginAccess() returns true.
+  bool BeginAccess(bool readonly);
+  void EndAccess(bool readonly);
+
   // Returns the SharedContextState to use for accessing the backing on the
   // current thread, or nullptr if there is none.
   SharedContextState* GetContextStateForCurrentThread() const;
@@ -115,6 +121,8 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
   scoped_refptr<SharedContextState> context_state_;
   std::vector<scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>
       texture_holders_;
+  bool is_write_in_progress_ GUARDED_BY(lock_) = false;
+  uint32_t reads_in_progress_ GUARDED_BY(lock_) = 0;
 
   // Only stored for thread safe backings.
   scoped_refptr<base::SingleThreadTaskRunner> created_task_runner_;

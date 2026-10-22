@@ -287,6 +287,81 @@ TEST_P(WrappedSkImageBackingFactoryTest, RestoresPreviouslyCurrentGLContext) {
   ASSERT_TRUE(gl_context_->MakeCurrent(gl_surface_.get()));
 }
 
+// Verify that WrappedSkImageBacking and WrappedGraphiteTextureBacking enforce
+// exclusive write access and prevent concurrent read/write access across
+// multiple representations, while allowing concurrent read access.
+TEST_P(WrappedSkImageBackingFactoryTest, AccessExclusivity) {
+  auto format = GetFormat();
+  auto mailbox = Mailbox::Generate();
+  gfx::Size size(100, 100);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, kColorSpace, kSurfaceOrigin, GetAlphaType(format), kUsage,
+       "TestLabel"},
+      gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  auto rep1 = shared_image_representation_factory_.ProduceSkia(
+      mailbox, context_state_.get());
+  auto rep2 = shared_image_representation_factory_.ProduceSkia(
+      mailbox, context_state_.get());
+  ASSERT_TRUE(rep1);
+  ASSERT_TRUE(rep2);
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  // 1. Concurrent write access while write access is active must fail.
+  auto write1 = rep1->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  ASSERT_TRUE(write1);
+  EXPECT_FALSE(rep2->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes));
+  EXPECT_FALSE(rep2->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes,
+      /*use_sk_surface=*/false));
+
+  // 2. Read access while write access is active must fail.
+  rep1->SetCleared();
+  EXPECT_FALSE(rep2->BeginScopedReadAccess(&begin_semaphores, &end_semaphores));
+
+  write1.reset();
+
+  // 3. Concurrent read access must succeed, and write access while read access
+  // is active must fail.
+  auto read1 = rep1->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
+  ASSERT_TRUE(read1);
+  auto read2 = rep2->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
+  ASSERT_TRUE(read2);
+
+  auto rep3 = shared_image_representation_factory_.ProduceSkia(
+      mailbox, context_state_.get());
+  ASSERT_TRUE(rep3);
+  EXPECT_FALSE(rep3->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes));
+
+  read1.reset();
+  // Still one active reader (`read2`), so write access must still fail.
+  EXPECT_FALSE(rep3->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes));
+
+  read2.reset();
+  // All readers finished; write access must now succeed.
+  auto write3 = rep3->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  EXPECT_TRUE(write3);
+}
+
 std::string TestParamToString(
     const testing::TestParamInfo<
         std::tuple<viz::SharedImageFormat, GrContextType>>& param_info) {

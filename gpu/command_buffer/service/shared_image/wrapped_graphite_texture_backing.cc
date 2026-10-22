@@ -73,6 +73,9 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
       const SkSurfaceProps& surface_props,
       const gfx::Rect& update_rect,
       EndAccessState& end_access_state) override {
+    if (!backing_impl()->BeginAccess(/*readonly=*/false)) {
+      return {};
+    }
     const auto& texture_holders =
         backing_impl()->GetWrappedGraphiteTextureHolders();
     CHECK(write_surfaces_.empty());
@@ -93,6 +96,7 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
       if (!surface) {
         LOG(ERROR) << "BeginWriteAccess() failed.";
         write_surfaces_.clear();
+        backing_impl()->EndAccess(/*readonly=*/false);
         return {};
       }
       write_surfaces_.push_back(std::move(surface));
@@ -102,6 +106,9 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
 
   std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess(
       EndAccessState& end_access_state) override {
+    if (!backing_impl()->BeginAccess(/*readonly=*/false)) {
+      return {};
+    }
     return backing_impl()->GetWrappedGraphiteTextureHolders();
   }
 
@@ -110,15 +117,20 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
       CHECK(write_surface->unique());
     }
     write_surfaces_.clear();
+    backing_impl()->EndAccess(/*readonly=*/false);
   }
 
   std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess(
       EndAccessState& end_access_state) override {
-    CHECK(write_surfaces_.empty());
+    if (!backing_impl()->BeginAccess(/*readonly=*/true)) {
+      return {};
+    }
     return backing_impl()->GetWrappedGraphiteTextureHolders();
   }
 
-  void EndReadAccess() override { CHECK(write_surfaces_.empty()); }
+  void EndReadAccess() override {
+    backing_impl()->EndAccess(/*readonly=*/true);
+  }
 
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 
@@ -164,6 +176,9 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
 }
 
 WrappedGraphiteTextureBacking::~WrappedGraphiteTextureBacking() {
+  DCHECK(!is_write_in_progress_);
+  DCHECK_EQ(reads_in_progress_, 0u);
+
   if (created_task_runner_ && !created_task_runner_->BelongsToCurrentThread()) {
     // The `context_state_` ref needs to be dropped on original thread for cases
     // like DrDC with Android.
@@ -431,6 +446,37 @@ WrappedGraphiteTextureBacking::GetContextStateForCurrentThread() const {
 const std::vector<scoped_refptr<GraphiteTextureHolder>>&
 WrappedGraphiteTextureBacking::GetWrappedGraphiteTextureHolders() {
   return texture_holders_;
+}
+
+bool WrappedGraphiteTextureBacking::BeginAccess(bool readonly) {
+  AutoLock auto_lock(this);
+  if (is_write_in_progress_) {
+    LOG(ERROR) << "Unable to begin " << (readonly ? "read" : "write")
+               << " access because another write access is in progress";
+    return false;
+  }
+  if (reads_in_progress_ && !readonly) {
+    LOG(ERROR) << "Unable to begin write access because a read access is in "
+                  "progress";
+    return false;
+  }
+  if (readonly) {
+    ++reads_in_progress_;
+  } else {
+    is_write_in_progress_ = true;
+  }
+  return true;
+}
+
+void WrappedGraphiteTextureBacking::EndAccess(bool readonly) {
+  AutoLock auto_lock(this);
+  if (readonly) {
+    CHECK_GT(reads_in_progress_, 0u);
+    --reads_in_progress_;
+  } else {
+    CHECK(is_write_in_progress_);
+    is_write_in_progress_ = false;
+  }
 }
 
 std::unique_ptr<SkiaGraphiteImageRepresentation>
