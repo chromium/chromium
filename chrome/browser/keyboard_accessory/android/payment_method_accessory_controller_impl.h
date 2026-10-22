@@ -19,8 +19,6 @@
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-class ManualFillingController;
-
 namespace autofill {
 
 class AutofillManager;
@@ -56,7 +54,6 @@ class PaymentMethodAccessoryControllerImpl
 
   static void CreateForWebContentsForTesting(
       content::WebContents* web_contents,
-      base::WeakPtr<ManualFillingController> mf_controller,
       PaymentsDataManager* payments_data_manager,
       ValuablesDataManager* valuables_data_manager,
       BrowserAutofillManager* af_manager,
@@ -74,7 +71,6 @@ class PaymentMethodAccessoryControllerImpl
   // Used by CreateForWebContentsForTesting:
   PaymentMethodAccessoryControllerImpl(
       content::WebContents* web_contents,
-      base::WeakPtr<ManualFillingController> mf_controller,
       PaymentsDataManager* payments_data_manager,
       ValuablesDataManager* valuables_data_manager,
       BrowserAutofillManager* af_manager,
@@ -108,7 +104,6 @@ class PaymentMethodAccessoryControllerImpl
   // Gets Google Wallet loyalty cards from the valuables data manager.
   std::vector<LoyaltyCard> GetLoyaltyCards() const;
 
-  base::WeakPtr<ManualFillingController> GetManualFillingController();
   AutofillDriver* GetDriver();
   const BrowserAutofillManager* GetAutofillManager() const;
   BrowserAutofillManager* GetAutofillManager();
@@ -144,7 +139,6 @@ class PaymentMethodAccessoryControllerImpl
     return valuables_data_manager_observation_.GetSource();
   }
 
-  base::WeakPtr<ManualFillingController> mf_controller_;
   raw_ptr<BrowserAutofillManager> af_manager_for_testing_ = nullptr;
   raw_ptr<AutofillDriver> af_driver_for_testing_ = nullptr;
 

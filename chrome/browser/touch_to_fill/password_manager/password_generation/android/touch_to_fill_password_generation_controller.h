@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/android/password_generation_element_data.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_delegate.h"
@@ -40,8 +40,7 @@ class TouchToFillPasswordGenerationController
       content::WebContents* web_contents,
       PasswordGenerationElementData generation_element_data,
       std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
-      OnDismissedCallback on_dismissed_callback,
-      base::WeakPtr<ManualFillingController> manual_filling_controller);
+      OnDismissedCallback on_dismissed_callback);
   TouchToFillPasswordGenerationController(
       const TouchToFillPasswordGenerationController&) = delete;
   TouchToFillPasswordGenerationController& operator=(
@@ -75,8 +74,6 @@ class TouchToFillPasswordGenerationController
   PasswordGenerationElementData generation_element_data_;
   std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge_;
   OnDismissedCallback on_dismissed_callback_;
-  // The manual filling controller object to forward client requests to.
-  base::WeakPtr<ManualFillingController> manual_filling_controller_;
 
   content::RenderWidgetHost::SuppressShowingImeCallback
       suppress_showing_ime_callback_;

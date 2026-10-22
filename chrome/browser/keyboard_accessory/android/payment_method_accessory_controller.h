@@ -26,14 +26,9 @@ class PaymentMethodAccessoryController : public AccessoryController {
   PaymentMethodAccessoryController& operator=(
       const PaymentMethodAccessoryController&) = delete;
 
-  // Returns true if the accessory controller may exist for |web_contents|.
-  // Otherwise it returns false.
-  static bool AllowedForWebContents(content::WebContents* web_contents);
-
   // Returns a reference to the unique controller associated with
   // |web_contents|. A new instance is created if the first time this function
-  // is called. Should only be called if AllowedForWebContents returns true for
-  // |web_contents|.
+  // is called.
   static PaymentMethodAccessoryController* GetOrCreate(
       content::WebContents* web_contents);
 

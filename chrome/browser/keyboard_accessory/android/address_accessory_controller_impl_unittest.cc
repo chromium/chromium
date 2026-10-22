@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -47,7 +46,6 @@ using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
-using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
 constexpr char kExampleSite[] = "https://example.com";
@@ -112,8 +110,7 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         GetBrowserContext(),
         base::BindRepeating(&BuildTestPersonalDataManager));
 
-    AddressAccessoryControllerImpl::CreateForWebContentsForTesting(
-        web_contents(), mock_manual_filling_controller_.AsWeakPtr());
+    AddressAccessoryControllerImpl::CreateForWebContents(web_contents());
     controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
 
     ON_CALL(autofill_client(), GetLastCommittedPrimaryMainFrameOrigin)
@@ -145,7 +142,6 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
 
   test::AutofillUnitTestEnvironment test_environment_;
-  StrictMock<MockManualFillingController> mock_manual_filling_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
   TestAutofillClientInjector<NiceMock<MockAutofillClient>>

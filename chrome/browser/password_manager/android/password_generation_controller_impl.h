@@ -76,9 +76,7 @@ class PasswordGenerationControllerImpl
   // for testing.
   std::unique_ptr<TouchToFillPasswordGenerationController>
   CreateTouchToFillGenerationControllerForTesting(
-      std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
-      base::WeakPtr<ManualFillingController> manual_filling_controller)
-      override;
+      std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge) override;
   TouchToFillPasswordGenerationController*
   GetTouchToFillGenerationControllerForTesting() override;
 

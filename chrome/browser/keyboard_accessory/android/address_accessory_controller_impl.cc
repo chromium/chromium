@@ -17,7 +17,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -169,31 +168,10 @@ void AddressAccessoryControllerImpl::OnAddressDataChanged() {
   RefreshSuggestions();
 }
 
-
-// static
-void AddressAccessoryControllerImpl::CreateForWebContentsForTesting(
-    content::WebContents* web_contents,
-    base::WeakPtr<ManualFillingController> mf_controller) {
-  DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
-  DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
-  CHECK(mf_controller, base::NotFatalUntil::M161);
-
-  web_contents->SetUserData(UserDataKey(),
-                            base::WrapUnique(new AddressAccessoryControllerImpl(
-                                web_contents, std::move(mf_controller))));
-}
-
 AddressAccessoryControllerImpl::AddressAccessoryControllerImpl(
     content::WebContents* web_contents)
-    : AddressAccessoryControllerImpl(web_contents, nullptr) {}
-
-// Additional creation functions in unit tests only:
-AddressAccessoryControllerImpl::AddressAccessoryControllerImpl(
-    content::WebContents* web_contents,
-    base::WeakPtr<ManualFillingController> mf_controller)
     : content::WebContentsUserData<AddressAccessoryControllerImpl>(
-          *web_contents),
-      mf_controller_(std::move(mf_controller)) {}
+          *web_contents) {}
 
 std::vector<FooterCommand>
 AddressAccessoryControllerImpl::CreateManageAddressesFooter() const {
@@ -221,14 +199,6 @@ void AddressAccessoryControllerImpl::FillValueIntoField(
   driver->browser_events().ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
                                             mojom::ActionPersistence::kFill,
                                             focused_field_id, value);
-}
-
-base::WeakPtr<ManualFillingController>
-AddressAccessoryControllerImpl::GetManualFillingController() {
-  if (!mf_controller_)
-    mf_controller_ = ManualFillingController::GetOrCreate(&GetWebContents());
-  CHECK(mf_controller_, base::NotFatalUntil::M161);
-  return mf_controller_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AddressAccessoryControllerImpl);

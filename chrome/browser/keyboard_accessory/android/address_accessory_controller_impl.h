@@ -17,8 +17,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-class ManualFillingController;
-
 namespace autofill {
 
 // Use either AddressAccessoryController::GetOrCreate or
@@ -54,23 +52,11 @@ class AddressAccessoryControllerImpl
   // AddressDataManagerObserver:
   void OnAddressDataChanged() override;
 
-  // Like |CreateForWebContents|, it creates the controller and attaches it to
-  // the given |web_contents|. Additionally, it allows inject a manual filling
-  // controller.
-  static void CreateForWebContentsForTesting(
-      content::WebContents* web_contents,
-      base::WeakPtr<ManualFillingController> mf_controller);
-
  private:
   friend class content::WebContentsUserData<AddressAccessoryControllerImpl>;
 
   // Required for construction via |CreateForWebContents|:
   explicit AddressAccessoryControllerImpl(content::WebContents* contents);
-
-  // Constructor that allows to inject a mock filling controller.
-  AddressAccessoryControllerImpl(
-      content::WebContents* web_contents,
-      base::WeakPtr<ManualFillingController> mf_controller);
 
   // Constructs a vector of available manual fallback actions subject to
   // enabled features and available user data.
@@ -83,15 +69,8 @@ class AddressAccessoryControllerImpl
   void FillValueIntoField(FieldGlobalId focused_field_id,
                           const std::u16string& value);
 
-  // Lazy-initializes and returns the ManualFillingController for the current
-  // |web_contents_|. The lazy initialization allows injecting mocks for tests.
-  base::WeakPtr<ManualFillingController> GetManualFillingController();
-
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
-
-  // The password accessory controller object to forward client requests to.
-  base::WeakPtr<ManualFillingController> mf_controller_;
 
   // Responsible for observing the `AddressDataManager` of the current profile.
   base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>

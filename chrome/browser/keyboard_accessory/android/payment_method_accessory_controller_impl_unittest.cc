@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -110,8 +109,8 @@ class PaymentMethodAccessoryControllerTestBase
         .set_credit_card_access_manager(
             std::make_unique<TestAccessManager>(&autofill_manager()));
     PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
-        web_contents(), mock_mf_controller_.AsWeakPtr(), &paydm(),
-        &valuables_data_manager(), &autofill_manager(), &autofill_driver());
+        web_contents(), &paydm(), &valuables_data_manager(),
+        &autofill_manager(), &autofill_driver());
     controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
     paydm().SetPrefService(profile()->GetPrefs());
     paydm().SetSyncServiceForTest(&sync_service_);
@@ -163,7 +162,6 @@ class PaymentMethodAccessoryControllerTestBase
   syncer::TestSyncService sync_service_;
   TestPaymentsDataManager paydm_;
   TestValuablesDataManager valuables_data_manager_;
-  testing::NiceMock<MockManualFillingController> mock_mf_controller_;
   GURL url_;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;

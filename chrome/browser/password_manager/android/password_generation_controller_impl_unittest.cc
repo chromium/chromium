@@ -161,8 +161,7 @@ class PasswordGenerationControllerTest
 
     ON_CALL(create_ttf_generation_controller_, Run).WillByDefault([this]() {
       return controller()->CreateTouchToFillGenerationControllerForTesting(
-          std::make_unique<MockTouchToFillPasswordGenerationBridge>(),
-          mock_manual_filling_controller_.AsWeakPtr());
+          std::make_unique<MockTouchToFillPasswordGenerationBridge>());
     });
 
     PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
@@ -415,8 +414,7 @@ TEST_F(PasswordGenerationControllerTest,
   EXPECT_CALL(create_ttf_generation_controller_, Run)
       .WillOnce([this, &ttf_password_generation_bridge]() {
         return controller()->CreateTouchToFillGenerationControllerForTesting(
-            std::move(ttf_password_generation_bridge),
-            mock_manual_filling_controller_.AsWeakPtr());
+            std::move(ttf_password_generation_bridge));
       });
 
   // Keyboard accessory shouldn't show up.
@@ -468,8 +466,7 @@ TEST_F(PasswordGenerationControllerTest,
   EXPECT_CALL(create_ttf_generation_controller_, Run)
       .WillOnce([this, &ttf_password_generation_bridge]() {
         return controller()->CreateTouchToFillGenerationControllerForTesting(
-            std::move(ttf_password_generation_bridge),
-            mock_manual_filling_controller_.AsWeakPtr());
+            std::move(ttf_password_generation_bridge));
       });
 
   // Keyboard accessory should show up.
@@ -535,8 +532,7 @@ TEST_F(PasswordGenerationControllerTest,
   EXPECT_CALL(create_ttf_generation_controller_, Run)
       .WillOnce([this, &ttf_password_generation_bridge]() {
         return controller()->CreateTouchToFillGenerationControllerForTesting(
-            std::move(ttf_password_generation_bridge),
-            mock_manual_filling_controller_.AsWeakPtr());
+            std::move(ttf_password_generation_bridge));
       });
 
   // Keyboard accessory shouldn't be called.

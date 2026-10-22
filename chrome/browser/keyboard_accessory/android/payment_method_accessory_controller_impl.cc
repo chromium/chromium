@@ -20,7 +20,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/autofill/android/autofill_fallback_surface_launcher.h"
-#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -387,20 +386,17 @@ void PaymentMethodAccessoryControllerImpl::ApplyToField(
 // static
 void PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
     content::WebContents* web_contents,
-    base::WeakPtr<ManualFillingController> mf_controller,
     PaymentsDataManager* payments_data_manager,
     ValuablesDataManager* valuables_data_manager,
     BrowserAutofillManager* af_manager,
     AutofillDriver* af_driver) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
-  CHECK(mf_controller, base::NotFatalUntil::M161);
 
   web_contents->SetUserData(
-      UserDataKey(),
-      base::WrapUnique(new PaymentMethodAccessoryControllerImpl(
-          web_contents, std::move(mf_controller), payments_data_manager,
-          valuables_data_manager, af_manager, af_driver)));
+      UserDataKey(), base::WrapUnique(new PaymentMethodAccessoryControllerImpl(
+                         web_contents, payments_data_manager,
+                         valuables_data_manager, af_manager, af_driver)));
 }
 
 PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
@@ -427,14 +423,12 @@ PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
 // and initialize testing members via test api.
 PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
     content::WebContents* web_contents,
-    base::WeakPtr<ManualFillingController> mf_controller,
     PaymentsDataManager* payments_data_manager,
     ValuablesDataManager* valuables_data_manager,
     BrowserAutofillManager* af_manager,
     AutofillDriver* af_driver)
     : content::WebContentsUserData<PaymentMethodAccessoryControllerImpl>(
           *web_contents),
-      mf_controller_(mf_controller),
       af_manager_for_testing_(af_manager),
       af_driver_for_testing_(af_driver) {
   if (payments_data_manager) {
@@ -522,14 +516,6 @@ std::vector<LoyaltyCard> PaymentMethodAccessoryControllerImpl::GetLoyaltyCards()
   }
 
   return valuables_data_manager()->GetLoyaltyCards();
-}
-
-base::WeakPtr<ManualFillingController>
-PaymentMethodAccessoryControllerImpl::GetManualFillingController() {
-  if (!mf_controller_)
-    mf_controller_ = ManualFillingController::GetOrCreate(&GetWebContents());
-  CHECK(mf_controller_, base::NotFatalUntil::M161);
-  return mf_controller_;
 }
 
 AutofillDriver* PaymentMethodAccessoryControllerImpl::GetDriver() {
