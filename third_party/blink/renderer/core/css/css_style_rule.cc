@@ -48,6 +48,7 @@ static SelectorTextCache& GetSelectorTextCache() {
   using SelectorTextCacheHolder = DisallowNewWrapper<SelectorTextCache>;
   DEFINE_STATIC_LOCAL(Persistent<SelectorTextCacheHolder>, cache,
                       (MakeGarbageCollected<SelectorTextCacheHolder>()));
+  CHECK(IsMainThread());
   return cache->Value();
 }
 

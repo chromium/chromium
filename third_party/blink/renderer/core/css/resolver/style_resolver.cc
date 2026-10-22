@@ -617,6 +617,7 @@ static CSSPropertyValueSet* LeftToRightDeclaration() {
   DEFINE_STATIC_LOCAL(
       Persistent<MutableCSSPropertyValueSet>, left_to_right_decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode)));
+  CHECK(IsMainThread());
   if (left_to_right_decl->IsEmpty()) {
     left_to_right_decl->SetLonghandProperty(CSSPropertyID::kDirection,
                                             CSSValueID::kLtr);
@@ -628,6 +629,7 @@ static CSSPropertyValueSet* RightToLeftDeclaration() {
   DEFINE_STATIC_LOCAL(
       Persistent<MutableCSSPropertyValueSet>, right_to_left_decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode)));
+  CHECK(IsMainThread());
   if (right_to_left_decl->IsEmpty()) {
     right_to_left_decl->SetLonghandProperty(CSSPropertyID::kDirection,
                                             CSSValueID::kRtl);
@@ -639,6 +641,7 @@ static CSSPropertyValueSet* DocumentElementUserAgentDeclarations() {
   DEFINE_STATIC_LOCAL(
       Persistent<MutableCSSPropertyValueSet>, document_element_ua_decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+  CHECK(IsMainThread());
   if (document_element_ua_decl->IsEmpty()) {
     document_element_ua_decl->SetProperty(CSSPropertyID::kColor,
                                           *CSSInitialColorValue::Create());
@@ -653,6 +656,7 @@ static CSSPropertyValueSet* ForcedColorsUserAgentDeclarations() {
   DEFINE_STATIC_LOCAL(
       Persistent<MutableCSSPropertyValueSet>, decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+  CHECK(IsMainThread());
   if (decl->IsEmpty()) {
     decl->SetProperty(CSSPropertyID::kColor, *CSSInheritedValue::Create());
   }
@@ -664,6 +668,7 @@ static CSSPropertyValueSet* UniversalOverlayUserAgentDeclaration() {
   DEFINE_STATIC_LOCAL(
       Persistent<MutableCSSPropertyValueSet>, decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+  CHECK(IsMainThread());
 
   if (decl->IsEmpty()) {
     decl->SetProperty(CSSPropertyID::kOverlay,

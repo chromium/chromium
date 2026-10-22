@@ -77,6 +77,7 @@ CSSDefaultStyleSheets& CSSDefaultStyleSheets::Instance() {
   DEFINE_STATIC_LOCAL(Persistent<CSSDefaultStyleSheets>,
                       css_default_style_sheets,
                       (MakeGarbageCollected<CSSDefaultStyleSheets>()));
+  CHECK(IsMainThread());
   return *css_default_style_sheets;
 }
 
@@ -86,6 +87,7 @@ static const MediaQueryEvaluator& ForcedColorsEval() {
   DEFINE_STATIC_LOCAL(
       Persistent<MediaQueryEvaluator>, forced_colors_eval,
       (MakeGarbageCollected<MediaQueryEvaluator>("ua-forced-colors")));
+  CHECK(IsMainThread());
   return *forced_colors_eval;
 }
 
@@ -111,6 +113,7 @@ StyleSheetContents* CSSDefaultStyleSheets::ParseUASheet(const String& str) {
 const MediaQueryEvaluator& CSSDefaultStyleSheets::ScreenEval() {
   DEFINE_STATIC_LOCAL(const Persistent<MediaQueryEvaluator>, static_screen_eval,
                       (MakeGarbageCollected<MediaQueryEvaluator>("screen")));
+  CHECK(IsMainThread());
   return *static_screen_eval;
 }
 

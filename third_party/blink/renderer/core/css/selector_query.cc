@@ -57,6 +57,7 @@ namespace blink {
 #if DCHECK_IS_ON() || defined(RELEASE_QUERY_STATS)
 static SelectorQuery::QueryStats& CurrentQueryStats() {
   DEFINE_STATIC_LOCAL(SelectorQuery::QueryStats, stats, ());
+  CHECK(IsMainThread());
   return stats;
 }
 

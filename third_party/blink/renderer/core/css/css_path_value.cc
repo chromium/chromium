@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 namespace cssvalue {
@@ -40,6 +41,7 @@ CSSPathValue* CreatePathValue() {
 
 const CSSPathValue& CSSPathValue::EmptyPathValue() {
   DEFINE_STATIC_LOCAL(Persistent<CSSPathValue>, empty, (CreatePathValue()));
+  CHECK(IsMainThread());
   return *empty;
 }
 

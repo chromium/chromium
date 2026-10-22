@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -63,6 +64,7 @@ StyleEnvironmentVariables::StyleEnvironmentVariables() : parent_(nullptr) {
 StyleEnvironmentVariables& StyleEnvironmentVariables::GetRootInstance() {
   DEFINE_STATIC_LOCAL(Persistent<StyleEnvironmentVariables>, instance,
                       (MakeGarbageCollected<StyleEnvironmentVariables>()));
+  CHECK(IsMainThread());
   return *instance;
 }
 

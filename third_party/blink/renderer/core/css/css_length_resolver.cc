@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -147,6 +148,7 @@ DefaultAnchorData CSSLengthResolver::GetDefaultAnchorData() const {
   DEFINE_STATIC_LOCAL(Persistent<Holder>, empty,
                       (MakeGarbageCollected<Holder>(StylePositionAnchor(
                           StylePositionAnchor::Initial()))));
+  CHECK(IsMainThread());
   return DefaultAnchorData(empty->Value(), PositionArea());
 }
 
