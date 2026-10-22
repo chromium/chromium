@@ -460,14 +460,14 @@ public class ChromeContextMenuPopulatorTest {
                 /* additionalNavigationParams= */ null);
     }
 
-    private ContextMenuParams getHttpLinkParams() {
+    private ContextMenuParams getLinkParamsWithUrl(String linkUrl) {
         return new ContextMenuParams(
                 0,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.NONE,
                 ContextMenuDataMediaFlags.MEDIA_NONE,
                 new GURL(PAGE_URL),
-                new GURL(LINK_URL),
+                new GURL(linkUrl),
                 LINK_TEXT,
                 GURL.emptyGURL(),
                 GURL.emptyGURL(),
@@ -504,6 +504,10 @@ public class ChromeContextMenuPopulatorTest {
                 /* openedFromInterestFor= */ false,
                 /* interestForNodeID= */ 0,
                 /* additionalNavigationParams= */ null);
+    }
+
+    private ContextMenuParams getHttpLinkParams() {
+        return getLinkParamsWithUrl(LINK_URL);
     }
 
     private ContextMenuParams getInterestForLinkParams() {
@@ -4340,6 +4344,29 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         if (!DeviceInfo.isAutomotive()) {
             assertTrue(mPopulator.shouldShowAskGeminiForLink());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testAskGeminiForLinkIneligibleForNonHttpOrHttpsSchemes() {
+        GlicEnabling.setEnabledForTesting(true);
+        String[] nonHttpUrls = {
+            "chrome://settings",
+            "file:///sdcard/Download",
+            "mailto:test@example.com",
+            "tel:1234567890",
+            "javascript:alert(1)"
+        };
+        for (String url : nonHttpUrls) {
+            initializePopulator(
+                    ChromeContextMenuPopulator.ContextMenuMode.NORMAL, getLinkParamsWithUrl(url));
+            assertFalse(
+                    "Should not show Ask Gemini for non-HTTP/HTTPS scheme: " + url,
+                    mPopulator.shouldShowAskGeminiForLink());
         }
     }
 
