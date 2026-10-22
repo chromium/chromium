@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -201,12 +202,9 @@ std::optional<UserSelectableType> GetUserSelectableTypeFromString(
 }
 
 std::string UserSelectableTypeSetToString(UserSelectableTypeSet types) {
-  std::vector<std::string> type_names;
-  type_names.reserve(types.size());
-  for (UserSelectableType type : types) {
-    type_names.push_back(GetUserSelectableTypeName(type));
-  }
-  return base::JoinString(type_names, ", ");
+  return base::JoinString(
+      base::ToVector<std::string_view>(types, &GetUserSelectableTypeName),
+      ", ");
 }
 
 DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type) {
@@ -265,12 +263,9 @@ const char* GetUserSelectableOsTypeName(UserSelectableOsType type) {
 }
 
 std::string UserSelectableOsTypeSetToString(UserSelectableOsTypeSet types) {
-  std::vector<std::string> type_names;
-  type_names.reserve(types.size());
-  for (UserSelectableOsType type : types) {
-    type_names.push_back(GetUserSelectableOsTypeName(type));
-  }
-  return base::JoinString(type_names, ", ");
+  return base::JoinString(
+      base::ToVector<std::string_view>(types, &GetUserSelectableOsTypeName),
+      ", ");
 }
 
 std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(

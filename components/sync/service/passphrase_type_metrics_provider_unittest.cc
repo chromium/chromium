@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -54,11 +55,10 @@ class PassphraseTypeMetricsProviderTest : public testing::Test {
 
  private:
   std::vector<const SyncService*> GetSyncServices() const {
-    std::vector<const SyncService*> result;
-    for (const auto& sync_service : sync_services_) {
-      result.push_back(sync_service.get());
-    }
-    return result;
+    return base::ToVector(
+        sync_services_,
+        [](const std::unique_ptr<MockSyncService>& sync_service)
+            -> const SyncService* { return sync_service.get(); });
   }
 
   std::vector<std::unique_ptr<MockSyncService>> sync_services_;

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
@@ -45,14 +46,10 @@ bool ShouldRequestEncryptionKey(SyncCycleContext* context) {
 
 std::vector<std::vector<uint8_t>> ExtractKeystoreKeys(
     const sync_pb::ClientToServerResponse& update_response) {
-  const google::protobuf::RepeatedPtrField<std::string>& encryption_keys =
-      update_response.get_updates().encryption_keys();
-  std::vector<std::vector<uint8_t>> keystore_keys;
-  keystore_keys.reserve(encryption_keys.size());
-  for (const std::string& key : encryption_keys) {
-    keystore_keys.emplace_back(key.begin(), key.end());
-  }
-  return keystore_keys;
+  return base::ToVector(update_response.get_updates().encryption_keys(),
+                        [](const std::string& key) {
+                          return std::vector<uint8_t>(key.begin(), key.end());
+                        });
 }
 
 // Populates keystore encryption keys to KeystoreKeysHandler, returns true on

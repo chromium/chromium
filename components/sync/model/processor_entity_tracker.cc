@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -214,21 +215,15 @@ const ProcessorEntity* ProcessorEntityTracker::GetEntityForStorageKey(
 
 std::vector<const ProcessorEntity*>
 ProcessorEntityTracker::GetAllEntitiesIncludingTombstones() const {
-  std::vector<const ProcessorEntity*> entities;
-  entities.reserve(entities_.size());
-  for (const auto& [client_tag_hash, entity] : entities_) {
-    entities.push_back(entity.get());
-  }
-  return entities;
+  return base::ToVector(entities_,
+                        [](const auto& pair) -> const ProcessorEntity* {
+                          return pair.second.get();
+                        });
 }
 
 std::vector<std::string> ProcessorEntityTracker::GetAllStorageKeys() const {
-  std::vector<std::string> storage_keys;
-  storage_keys.reserve(storage_key_to_tag_hash_.size());
-  for (const auto& [storage_key, client_tag_hash] : storage_key_to_tag_hash_) {
-    storage_keys.push_back(storage_key);
-  }
-  return storage_keys;
+  return base::ToVector(storage_key_to_tag_hash_,
+                        &std::pair<const std::string, ClientTagHash>::first);
 }
 
 std::vector<ProcessorEntity*>

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "components/sync/test/fake_server.h"
@@ -179,18 +180,12 @@ AssertionResult FakeServerVerifier::VerifyHistory(
     return AssertionSuccess();
   }
 
-  std::vector<std::string> actual;
-  for (const GURL& url : actual_urls) {
-    actual.push_back(url.spec());
-  }
-  std::vector<std::string> expected;
-  for (const GURL& url : expected_urls) {
-    expected.push_back(url.spec());
-  }
   return AssertionFailure()
          << "Server history does not match! "
-         << "FakeServer contents: " << base::JoinString(actual, ", ")
-         << "; Expected contents: " << base::JoinString(expected, ", ");
+         << "FakeServer contents: "
+         << base::JoinString(base::ToVector(actual_urls, &GURL::spec), ", ")
+         << "; Expected contents: "
+         << base::JoinString(base::ToVector(expected_urls, &GURL::spec), ", ");
 }
 
 }  // namespace fake_server

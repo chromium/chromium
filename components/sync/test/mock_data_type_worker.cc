@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -101,12 +102,10 @@ std::vector<const CommitRequestData*> MockDataTypeWorker::GetNthPendingCommit(
   if (n >= GetNumPendingCommits()) {
     return {};
   }
-  std::vector<const CommitRequestData*> nth_pending_commits;
-  for (const std::unique_ptr<CommitRequestData>& request_data :
-       pending_commits_[n]) {
-    nth_pending_commits.push_back(request_data.get());
-  }
-  return nth_pending_commits;
+  return base::ToVector(
+      pending_commits_[n],
+      [](const std::unique_ptr<CommitRequestData>& request_data)
+          -> const CommitRequestData* { return request_data.get(); });
 }
 
 std::vector<const CommitRequestData*>

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -102,11 +103,9 @@ KeyDerivationParams GetKeyDerivationParamsFromSpecifics(
 // implementation for PBKDF2) assume the keys are utf8.
 std::vector<std::string> Base64EncodeKeys(
     const std::vector<std::vector<uint8_t>>& keys) {
-  std::vector<std::string> encoded_keystore_keys;
-  for (const std::vector<uint8_t>& key : keys) {
-    encoded_keystore_keys.push_back(base::Base64Encode(key));
-  }
-  return encoded_keystore_keys;
+  return base::ToVector(keys, [](base::span<const uint8_t> key) {
+    return base::Base64Encode(key);
+  });
 }
 
 bool SpecificsHasValidKeyDerivationParams(const NigoriSpecifics& specifics) {

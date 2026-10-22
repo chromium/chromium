@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -66,12 +67,9 @@ void RecordIncomingInvalidationStatus(
 
 DataTypeSet ExtractInvalidatedDataTypes(
     const sync_pb::SyncInvalidationsPayload& payload) {
-  std::vector<int> field_numbers;
-  field_numbers.reserve(payload.data_type_invalidations_size());
-  for (const auto& invalidation : payload.data_type_invalidations()) {
-    field_numbers.push_back(invalidation.data_type_id());
-  }
-  return GetDataTypeSetFromSpecificsFieldNumberList(field_numbers);
+  return GetDataTypeSetFromSpecificsFieldNumberList(base::ToVector(
+      payload.data_type_invalidations(),
+      &sync_pb::SyncInvalidationsPayload::DataTypeInvalidation::data_type_id));
 }
 
 void RecordLatencyMetric(std::string_view histogram_prefix,

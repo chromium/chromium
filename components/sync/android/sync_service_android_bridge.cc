@@ -12,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
@@ -54,11 +55,8 @@ DataType IntToDataTypeChecked(int type) {
 }
 
 std::vector<int32_t> DataTypeSetToVector(DataTypeSet types) {
-  std::vector<int32_t> type_vector;
-  for (DataType type : types) {
-    type_vector.push_back(static_cast<int32_t>(type));
-  }
-  return type_vector;
+  return base::ToVector(
+      types, [](DataType type) { return static_cast<int32_t>(type); });
 }
 
 DataTypeSet VectorToDataTypeSet(const std::vector<int32_t>& types_vector) {
@@ -71,12 +69,9 @@ DataTypeSet VectorToDataTypeSet(const std::vector<int32_t>& types_vector) {
 
 std::vector<int32_t> UserSelectableTypeSetToVector(
     UserSelectableTypeSet types) {
-  std::vector<int32_t> type_vector;
-  type_vector.reserve(types.size());
-  for (UserSelectableType type : types) {
-    type_vector.push_back(static_cast<int32_t>(type));
-  }
-  return type_vector;
+  return base::ToVector(types, [](UserSelectableType type) {
+    return static_cast<int32_t>(type);
+  });
 }
 
 // Native callback for the JNI GetTypesWithUnsyncedData method. When
@@ -375,12 +370,10 @@ int64_t SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging() {
 
 void SyncServiceAndroidBridge::KeepAccountSettingsPrefsOnlyForUsers(
     const std::vector<std::string>& gaia_id_strings) {
-  std::vector<GaiaId> gaia_ids;
-  for (const std::string& gaia_id_string : gaia_id_strings) {
-    gaia_ids.emplace_back(gaia_id_string);
-  }
   native_sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
-      gaia_ids);
+      base::ToVector(gaia_id_strings, [](const std::string& gaia_id_string) {
+        return GaiaId(gaia_id_string);
+      }));
 }
 
 }  // namespace syncer

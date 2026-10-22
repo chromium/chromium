@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/uuid.h"
@@ -174,11 +175,9 @@ size_t MockDataTypeProcessor::GetNumUpdateResponses() const {
 std::vector<const UpdateResponseData*>
 MockDataTypeProcessor::GetNthUpdateResponse(size_t n) const {
   DCHECK_LT(n, GetNumUpdateResponses());
-  std::vector<const UpdateResponseData*> nth_update_responses;
-  for (const UpdateResponseData& response : received_update_responses_[n]) {
-    nth_update_responses.push_back(&response);
-  }
-  return nth_update_responses;
+  return base::ToVector(
+      received_update_responses_[n],
+      [](const UpdateResponseData& response) { return &response; });
 }
 
 sync_pb::DataTypeState MockDataTypeProcessor::GetNthUpdateState(
