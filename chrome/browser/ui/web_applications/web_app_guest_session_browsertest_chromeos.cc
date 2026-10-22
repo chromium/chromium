@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
   Profile* profile = browser()->GetProfile();
   apps::AppLaunchParams params(
       ash::kOsSettingsAppId, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, apps::LaunchSource::kFromTest);
+      WindowOpenDisposition::kNewForegroundTab, apps::LaunchSource::kFromTest);
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);

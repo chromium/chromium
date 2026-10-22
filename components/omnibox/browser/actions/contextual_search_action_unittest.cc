@@ -59,7 +59,7 @@ TEST_F(ContextualSearchActionTest, Execute_RoutesToCoBrowse) {
   MockAutocompleteProviderClient client;
   OmniboxAction::ExecutionContext context(
       client, OmniboxAction::ExecutionContext::OpenUrlCallback(),
-      base::TimeTicks(), WindowOpenDisposition::IGNORE_ACTION);
+      base::TimeTicks(), WindowOpenDisposition::kIgnoreAction);
 
   auto action = base::MakeRefCounted<ContextualSearchOpenLensAction>();
 
@@ -90,7 +90,7 @@ TEST_F(ContextualSearchActionTest, Execute_RoutesToComposeBoxForAskG) {
   MockAutocompleteProviderClient client;
   OmniboxAction::ExecutionContext context(
       client, OmniboxAction::ExecutionContext::OpenUrlCallback(),
-      base::TimeTicks(), WindowOpenDisposition::IGNORE_ACTION);
+      base::TimeTicks(), WindowOpenDisposition::kIgnoreAction);
 
   auto action = base::MakeRefCounted<ContextualSearchOpenLensAction>();
 

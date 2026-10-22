@@ -146,7 +146,7 @@ void ComposeboxEverywhereHandler::ProcessContextAndOpenUrl(
     GURL url,
     const WindowOpenDisposition disposition) {
   const WindowOpenDisposition effective_disposition =
-      ShouldOpenWithInPlaceWindow() ? WindowOpenDisposition::NEW_WINDOW
+      ShouldOpenWithInPlaceWindow() ? WindowOpenDisposition::kNewWindow
                                     : disposition;
   ComposeboxHandler::ProcessContextAndOpenUrl(std::move(url),
                                               effective_disposition);

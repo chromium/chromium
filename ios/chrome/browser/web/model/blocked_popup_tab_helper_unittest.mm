@@ -119,7 +119,7 @@ TEST_F(BlockedPopupTabHelperTest, AllowBlockedPopup) {
   EXPECT_EQ(target_url, params.url);
   EXPECT_EQ(source_url, params.referrer.url);
   EXPECT_EQ(web::ReferrerPolicyDefault, params.referrer.policy);
-  EXPECT_EQ(WindowOpenDisposition::NEW_POPUP, params.disposition);
+  EXPECT_EQ(WindowOpenDisposition::kNewPopup, params.disposition);
   EXPECT_TRUE(
       PageTransitionCoreTypeIs(params.transition, ui::PAGE_TRANSITION_LINK));
   EXPECT_TRUE(params.is_renderer_initiated);

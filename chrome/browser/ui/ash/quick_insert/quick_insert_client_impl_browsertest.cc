@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertClientImplBrowserTest, StartCrosSearch) {
   AddBookmarks(GetProfile(), u"Foobaz", GURL("https://foo.com/bookmarks"));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://foo.com/tab"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   browser()
       ->GetTabStripModel()

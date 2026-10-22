@@ -128,7 +128,7 @@ void FramebustBlockedMessageDelegate::HandleClick() {
 void FramebustBlockedMessageDelegate::HandleOpenLink() {
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          blocked_url_, WindowOpenDisposition::CURRENT_TAB,
+          blocked_url_, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           initiator_navigation_state_);
   params.initiator_origin = initiator_origin_;

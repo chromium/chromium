@@ -46,7 +46,7 @@ class GlicPromotionSourceNavigationObserverBrowserTest
 
   bool OpenTabWithLink(const GURL& url) {
     NavigateParams params(GetBrowser(), url, ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     ui_test_utils::NavigateToURL(&params);
     return params.navigated_or_inserted_contents != nullptr;
   }

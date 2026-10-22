@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, ShowChooserInBackgroundTab) {
   GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
   NavigateParams params(GetBrowserWindowInterface(), url,
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   content::WaitForLoadStop(params.navigated_or_inserted_contents);
 

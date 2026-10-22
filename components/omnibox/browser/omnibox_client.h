@@ -391,7 +391,7 @@ class OmniboxClient {
   // activations of the AI Mode page action icon.
   virtual void OpenUrl(
       GURL gurl,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB) {}
+      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab) {}
 
   // Even though IPH suggestions aren't selectable like normal matches, they can
   // have a 'learn more' or next-steps link. `OpenIphLink()` allows opening

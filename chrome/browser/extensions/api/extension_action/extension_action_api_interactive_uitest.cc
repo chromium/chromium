@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest,
   // Open a new web popup window (which has no toolbar).
   NavigateParams params(browser(), GURL("about:blank"),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.disposition = WindowOpenDisposition::kNewPopup;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   ui_test_utils::NavigateToURL(&params);
   ASSERT_TRUE(params.browser);

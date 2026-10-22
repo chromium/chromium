@@ -42,10 +42,10 @@ void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
                                    const content::OpenURLParams& params,
                                    TabLaunchedCallback callback) {
   WindowOpenDisposition disposition = params.disposition;
-  if (disposition != WindowOpenDisposition::NEW_WINDOW &&
-      disposition != WindowOpenDisposition::NEW_POPUP &&
-      disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
-      disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (disposition != WindowOpenDisposition::kNewWindow &&
+      disposition != WindowOpenDisposition::kNewPopup &&
+      disposition != WindowOpenDisposition::kNewForegroundTab &&
+      disposition != WindowOpenDisposition::kNewBackgroundTab) {
     // ServiceTabLauncher can currently only launch new tabs.
     NOTIMPLEMENTED();
     return;

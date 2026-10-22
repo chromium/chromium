@@ -175,7 +175,7 @@ class VideoConferenceIntegrationTest
       // This creates a blank page which is more consistent with normal mode.
       ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
           browser_, GURL("chrome://blank"), 1,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     } else {
@@ -204,7 +204,7 @@ class VideoConferenceIntegrationTest
     const GURL url(embedded_test_server()->GetURL(url_str));
     content::RenderFrameHost* main_rfh = ui_test_utils::
         NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-            browser_, url, 1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            browser_, url, 1, WindowOpenDisposition::kNewForegroundTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                 ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     content::WebContents* web_contents =

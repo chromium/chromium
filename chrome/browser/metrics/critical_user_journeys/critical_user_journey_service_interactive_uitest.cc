@@ -387,7 +387,7 @@ class RealCriticalUserJourneyServiceInteractiveTest
               manager, 1,
               content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
       ui_test_utils::NavigateToURLWithDisposition(
-          browser(), url, WindowOpenDisposition::CURRENT_TAB,
+          browser(), url, WindowOpenDisposition::kCurrentTab,
           ui_test_utils::BROWSER_TEST_NO_WAIT);
       observer->WaitForFinished();
     }));

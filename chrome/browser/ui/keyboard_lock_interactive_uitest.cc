@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURLWithDisposition(
       GetActiveBrowser(),
       GetEmbeddedTestServer()->GetURL(GetFullscreenFramePath()),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_FALSE(IsKeyboardLockActive());
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURLWithDisposition(
       GetActiveBrowser(), GetEmbeddedTestServer()->GetURL(kSimplePageHTML),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_FALSE(IsKeyboardLockActive());

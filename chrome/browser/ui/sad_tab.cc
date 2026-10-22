@@ -227,7 +227,7 @@ void SadTab::PerformAction(SadTab::Action action) {
                   ui_metrics::SadTabEvent::HELP_LINK_CLICKED);
       content::OpenURLParams params =
           content::OpenURLParams::CreateBrowserInitiated(
-              GURL(GetHelpLinkURL()), WindowOpenDisposition::CURRENT_TAB,
+              GURL(GetHelpLinkURL()), WindowOpenDisposition::kCurrentTab,
               ui::PAGE_TRANSITION_LINK);
       web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
       break;

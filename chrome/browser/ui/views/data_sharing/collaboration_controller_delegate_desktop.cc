@@ -652,7 +652,7 @@ void CollaborationControllerDelegateDesktop::OnErrorDialogOkForUpdate() {
     NavigateParams params(browser_,
                           chrome::GetSettingsUrl(chrome::kHelpSubPage),
                           ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
   }
 

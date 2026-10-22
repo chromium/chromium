@@ -192,7 +192,7 @@ class TabDesktopMediaListTest : public InProcessBrowserTest,
   void AddWebcontents(int favicon_greyscale) {
     GURL url = embedded_test_server()->GetURL("/title1.html");
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     content::WebContents* contents =

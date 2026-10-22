@@ -45,7 +45,7 @@ AutofillSaveCardInfoBarDelegateMobile::FromInfobarDelegate(
 
 void AutofillSaveCardInfoBarDelegateMobile::OnLegalMessageLinkClicked(
     GURL url) {
-  infobar()->owner()->OpenURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  infobar()->owner()->OpenURL(url, WindowOpenDisposition::kNewForegroundTab);
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::IsChromeBrandingEnabled() const {

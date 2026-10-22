@@ -469,7 +469,7 @@ class TestGlicViewForWindowCreation : public GlicView {
 
   raw_ptr<content::RenderFrameHost> last_opener_ = nullptr;
   GURL last_url_;
-  WindowOpenDisposition last_disposition_ = WindowOpenDisposition::UNKNOWN;
+  WindowOpenDisposition last_disposition_ = WindowOpenDisposition::kUnknown;
   bool window_creation_called_ = false;
 };
 
@@ -485,12 +485,12 @@ TEST_F(GlicViewNoWebviewTest, HandleWindowCreation_ForwardsFromPwc) {
   blink::mojom::WindowFeatures features;
 
   EXPECT_TRUE(pwc()->HandleWindowCreation(
-      rfh, target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB, features));
+      rfh, target_url, WindowOpenDisposition::kNewForegroundTab, features));
   EXPECT_TRUE(test_view->window_creation_called_);
   EXPECT_EQ(test_view->last_opener_, rfh);
   EXPECT_EQ(test_view->last_url_, target_url);
   EXPECT_EQ(test_view->last_disposition_,
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+            WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(GlicViewNoWebviewTest, SetWebContents_InformsSize) {

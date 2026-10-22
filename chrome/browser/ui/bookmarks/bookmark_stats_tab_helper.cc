@@ -45,7 +45,7 @@ void BookmarkStatsTabHelper::DidFinishNavigation(
 
 void BookmarkStatsTabHelper::DidFirstVisuallyNonEmptyPaint() {
   if (launch_action_ &&
-      tab_disposition_ == WindowOpenDisposition::CURRENT_TAB &&
+      tab_disposition_ == WindowOpenDisposition::kCurrentTab &&
       launch_action_->location == BookmarkLaunchLocation::kAttachedBar) {
     base::UmaHistogramTimes(
         "Bookmarks.AttachedBar.CurrentTab.TimeToFirstVisuallyNonEmptyPaint",

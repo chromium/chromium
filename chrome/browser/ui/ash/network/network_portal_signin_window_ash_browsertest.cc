@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   EXPECT_EQ(params.tabstrip_index, -1);
 
   // Navigate to a new tab. The contents should be opened in the same tab.
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   EXPECT_EQ(params.browser, browser);
   EXPECT_EQ(params.tabstrip_index, -1);
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshGuestBrowserTest,
   // profile with the Guest browsing session.
   NavigateParams params(browser, GURL("http://www.google.com"),
                         ui::PageTransition::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   EXPECT_EQ(params.browser, browser);
   EXPECT_EQ(params.tabstrip_index, -1);
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshGuestBrowserTest,
   NavigateParams source_params(browser, GURL("http://www.google.com"),
                                ui::PageTransition::PAGE_TRANSITION_LINK);
   source_params.source_contents = web_contents;
-  source_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  source_params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&source_params);
   EXPECT_EQ(source_params.browser, browser);
   EXPECT_EQ(source_params.tabstrip_index, -1);

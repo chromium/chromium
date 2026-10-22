@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest, ToggleDefaultZoomLevel) {
 
   GURL test_url2 = SubstituteTestServerPort(GURL("http://host2/"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), test_url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(
       blink::ZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url2)));

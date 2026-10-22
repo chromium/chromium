@@ -579,8 +579,8 @@ void OpenWindow(
       Referrer::SanitizeForRequest(
           url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
       type == WindowType::PAYMENT_HANDLER_WINDOW
-          ? WindowOpenDisposition::NEW_POPUP
-          : WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ? WindowOpenDisposition::kNewPopup
+          : WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true /* is_renderer_initiated */);
 
   // Technically this field is equivalent to (disposition == NEW_FOREGROUND_TAB)
@@ -690,7 +690,7 @@ void NavigateClient(
       std::string() /* extra_headers */,
       Referrer::SanitizeForRequest(
           url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       false /* should_replace_current_entry */, false /* user_gesture */,
       blink::mojom::TriggeringEventInfo::kUnknown,
       std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,

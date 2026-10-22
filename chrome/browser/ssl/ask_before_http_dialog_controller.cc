@@ -499,7 +499,7 @@ void AskBeforeHttpDialogController::OnHelpCenterLinkClicked(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(kLearnMoreLink),
           ui::DispositionFromEventFlags(
-              event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+              event.flags(), WindowOpenDisposition::kNewForegroundTab),
           ui::PAGE_TRANSITION_LINK);
   contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }

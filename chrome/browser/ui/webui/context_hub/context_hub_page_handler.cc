@@ -1417,7 +1417,7 @@ void ContextHubPageHandler::OpenTopic(
 
   if (web_contents_) {
     content::OpenURLParams params(url, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  WindowOpenDisposition::kNewForegroundTab,
                                   ui::PAGE_TRANSITION_LINK,
                                   /*is_renderer_initiated=*/false);
     web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});

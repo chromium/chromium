@@ -48,7 +48,7 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     const apps::AppLaunchParams& params) const {
   // Always reuse an existing browser for popups. Otherwise let the app decide.
   // TODO(crbug.com/40679012): Allow apps to control whether popups are single.
-  const bool popup = params.disposition == WindowOpenDisposition::NEW_POPUP;
+  const bool popup = params.disposition == WindowOpenDisposition::kNewPopup;
   BrowserDelegate* browser =
       popup
           ? FindSystemWebAppBrowser(profile, GetType(), BrowserType::kAppPopup)

@@ -663,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerConservativeBrowserTest,
   // 2. Setup Tab 2: PDF Mime Type.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("data:application/pdf,test"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   fake_upgrade_detector_.SetUpgradeAvailable();

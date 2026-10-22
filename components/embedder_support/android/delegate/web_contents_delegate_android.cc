@@ -141,10 +141,10 @@ WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
   const GURL& url = params.url;
   WindowOpenDisposition disposition = params.disposition;
 
-  if (!source || (disposition != WindowOpenDisposition::CURRENT_TAB &&
-                  disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
-                  disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-                  disposition != WindowOpenDisposition::OFF_THE_RECORD)) {
+  if (!source || (disposition != WindowOpenDisposition::kCurrentTab &&
+                  disposition != WindowOpenDisposition::kNewForegroundTab &&
+                  disposition != WindowOpenDisposition::kNewBackgroundTab &&
+                  disposition != WindowOpenDisposition::kOffTheRecord)) {
     NOTIMPLEMENTED();
     return NULL;
   }
@@ -156,9 +156,9 @@ WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
         source, params, std::move(navigation_handle_callback));
   }
 
-  if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-      disposition == WindowOpenDisposition::OFF_THE_RECORD) {
+  if (disposition == WindowOpenDisposition::kNewForegroundTab ||
+      disposition == WindowOpenDisposition::kNewBackgroundTab ||
+      disposition == WindowOpenDisposition::kOffTheRecord) {
     ScopedJavaLocalRef<jobject> java_gurl =
         url::GURLAndroid::FromNativeGURL(env, url);
     ScopedJavaLocalRef<jstring> extra_headers =

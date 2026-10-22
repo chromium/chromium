@@ -157,13 +157,13 @@ content::WebContents* LensOverlaySidePanelWebView::OpenURLFromTab(
     // `default` is used deliberately so that any disposition added in the
     // future is demoted rather than silently forwarded.
     switch (modified_params.disposition) {
-      case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      case WindowOpenDisposition::NEW_POPUP:
-      case WindowOpenDisposition::NEW_WINDOW:
+      case WindowOpenDisposition::kNewForegroundTab:
+      case WindowOpenDisposition::kNewBackgroundTab:
+      case WindowOpenDisposition::kNewPopup:
+      case WindowOpenDisposition::kNewWindow:
         break;
       default:
-        modified_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        modified_params.disposition = WindowOpenDisposition::kNewForegroundTab;
         break;
     }
   }

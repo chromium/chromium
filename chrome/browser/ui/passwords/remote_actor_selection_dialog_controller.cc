@@ -97,7 +97,7 @@ void RemoteActorSelectionDialogController::OnSubtitleLinkClicked() {
   }
   content::OpenURLParams params(
       GURL(kRemoteActorDataHandlingHelpUrl), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK,
       /*is_renderer_initiated=*/false);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }

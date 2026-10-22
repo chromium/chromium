@@ -1388,7 +1388,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   AutocompleteMatch match;
   handler_->GetOmniboxClientForTesting()->OnAutocompleteAccept(
       GURL("https://www.google.com/search?q=test query"), nullptr,
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
+      WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchSuggest, base::TimeTicks::Now(),
       false, false, u"test query", match, match);
 
@@ -1427,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   AutocompleteMatch match;
   handler_->GetOmniboxClientForTesting()->OnAutocompleteAccept(
       GURL("https://www.google.com/search?q=extracted%20query"), nullptr,
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
+      WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchSuggest, base::TimeTicks::Now(),
       false, false, u"extracted query", match, match);
 }
@@ -1446,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   AutocompleteMatch match;
   handler_->GetOmniboxClientForTesting()->OnAutocompleteAccept(
       GURL("https://www.google.com/search?other=param"), nullptr,
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
+      WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchSuggest, base::TimeTicks::Now(),
       false, false, u"other param", match, match);
 }

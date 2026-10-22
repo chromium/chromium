@@ -775,15 +775,15 @@ content::WebContents* ReadAnythingController::OpenURLFromTab(
     // strictly allow-list dispositions that open new windows/tabs, and demote
     // all others.
     switch (modified_params.disposition) {
-      case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      case WindowOpenDisposition::NEW_POPUP:
-      case WindowOpenDisposition::NEW_WINDOW:
-      case WindowOpenDisposition::SAVE_TO_DISK:
-      case WindowOpenDisposition::OFF_THE_RECORD:
+      case WindowOpenDisposition::kNewForegroundTab:
+      case WindowOpenDisposition::kNewBackgroundTab:
+      case WindowOpenDisposition::kNewPopup:
+      case WindowOpenDisposition::kNewWindow:
+      case WindowOpenDisposition::kSaveToDisk:
+      case WindowOpenDisposition::kOffTheRecord:
         break;
       default:
-        modified_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        modified_params.disposition = WindowOpenDisposition::kNewForegroundTab;
         break;
     }
 

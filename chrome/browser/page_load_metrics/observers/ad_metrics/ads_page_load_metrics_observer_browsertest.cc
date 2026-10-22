@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(
   // Open a new tab, which backgrounds the original web_contents.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Verify the original tab is hidden.
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(
   // Open a new tab, which backgrounds the original web_contents.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Verify the original tab is hidden.
@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   // Open a new tab, which backgrounds the original web_contents.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Verify the original tab is hidden.
@@ -1984,7 +1984,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   browser()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/mock_page.html"),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   waiter->AddMinimumNetworkBytesExpectation(base::ByteSize(5000));
@@ -2050,7 +2050,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   browser()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/mock_page.html"),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   main_html_response->WaitForRequest();
@@ -2118,7 +2118,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL(
               "/ads_observer/ad_with_incomplete_resource.html"),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   waiter->AddMinimumCompleteResourcesExpectation(3);
@@ -3120,7 +3120,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverSurfaceBrowserTest,
   browser()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/mock_page.html"),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   main_html_response->WaitForRequest();

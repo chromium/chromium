@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   // No crash should occur due to this.
   NavigateToURLWithDisposition(
       GetBrowserFromFrame(iwa_frame), url_info.origin().GetURL(),
-      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+      WindowOpenDisposition::kCurrentTab, ui_test_utils::BROWSER_TEST_NO_WAIT);
   ASSERT_NO_FATAL_FAILURE(chrome::CloseAllBrowsers());
 }
 

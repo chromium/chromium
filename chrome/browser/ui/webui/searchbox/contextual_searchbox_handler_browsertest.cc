@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   GURL url = embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(
   // Omnibox popup WebContents when triggered from a webpage).
   const GURL webpage_url = embedded_test_server()->GetURL("/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), webpage_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), webpage_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const GURL webpage_url = embedded_test_server()->GetURL("/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), webpage_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), webpage_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 

@@ -1076,7 +1076,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
   NavigateParams param(app_browser, GURL("http://www.google.com/"),
                        ui::PAGE_TRANSITION_LINK);
   param.window_action = NavigateParams::WindowAction::kShowWindow;
-  param.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  param.disposition = WindowOpenDisposition::kNewForegroundTab;
 
   ui_test_utils::NavigateToURL(&param);
 
@@ -1109,7 +1109,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, DownloadInNewWindowAutoCloses) {
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   NavigateParams params(app_browser, download_url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.disposition = WindowOpenDisposition::kNewPopup;
   ui_test_utils::NavigateToURL(&params);
 
   BrowserWindowInterface* download_browser = browser_created_observer.Wait();
@@ -1358,7 +1358,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest,
                                                       offscope_url);
     // Browser-initiated navigations expose the pending destination as visible.
     ui_test_utils::NavigateToURLWithDisposition(
-        popup_browser, offscope_url, WindowOpenDisposition::CURRENT_TAB,
+        popup_browser, offscope_url, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     ASSERT_TRUE(navigation_manager.WaitForRequestStart());
     ASSERT_EQ(about_blank_url, popup_contents->GetLastCommittedURL());
@@ -3056,7 +3056,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
   const webapps::AppId app_id = InstallPWA(app_url);
   apps::AppLaunchParams params(
       app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
 
   BrowserHandler handler(nullptr, std::string());
   ui_test_utils::BrowserDestroyedObserver observer(browser());

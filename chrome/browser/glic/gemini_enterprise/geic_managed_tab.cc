@@ -144,7 +144,7 @@ bool GeicManagedTab::Open(const GURL& url, ReuseMode reuse_mode) {
   auto params = std::make_unique<NavigateParams>(
       profile_, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params->browser = browser_window;
-  params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params->disposition = WindowOpenDisposition::kNewForegroundTab;
   params->user_gesture = false;
 
   base::WeakPtr<content::NavigationHandle> handle =

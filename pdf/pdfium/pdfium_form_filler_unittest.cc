@@ -96,17 +96,17 @@ TEST_P(FormFillerTest, DoURIActionWithKeyboardModifier) {
   const char kUri[] = "https://www.google.com/";
   {
     InSequence sequence;
-    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::CURRENT_TAB));
-    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::SAVE_TO_DISK));
+    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::kCurrentTab));
+    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::kSaveToDisk));
     EXPECT_CALL(client,
-                NavigateTo(kUri, WindowOpenDisposition::NEW_BACKGROUND_TAB));
-    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::NEW_WINDOW));
+                NavigateTo(kUri, WindowOpenDisposition::kNewBackgroundTab));
+    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::kNewWindow));
     EXPECT_CALL(client,
-                NavigateTo(kUri, WindowOpenDisposition::NEW_FOREGROUND_TAB));
+                NavigateTo(kUri, WindowOpenDisposition::kNewForegroundTab));
     EXPECT_CALL(client,
-                NavigateTo(kUri, WindowOpenDisposition::NEW_BACKGROUND_TAB));
+                NavigateTo(kUri, WindowOpenDisposition::kNewBackgroundTab));
     EXPECT_CALL(client,
-                NavigateTo(kUri, WindowOpenDisposition::NEW_FOREGROUND_TAB));
+                NavigateTo(kUri, WindowOpenDisposition::kNewForegroundTab));
   }
 
   constexpr blink::WebInputEvent::Modifiers kModifierKey =

@@ -275,7 +275,7 @@ void SkillsPageHandlerV2::CloseDialog(
         ->StoreData(std::move(data));
     if (BrowserWindowInterface* browser = GetBrowserWindow()) {
       browser->OpenGURL(GURL("chrome://skills/editor"),
-                        WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                        WindowOpenDisposition::kNewForegroundTab);
     }
   }
   if (delegate_) {

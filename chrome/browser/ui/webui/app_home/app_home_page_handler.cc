@@ -210,19 +210,19 @@ void AppHomePageHandler::LaunchAppInternal(
                         click_event->button == 1.0, click_event->alt_key,
                         click_event->ctrl_key, click_event->meta_key,
                         click_event->shift_key)
-                  : WindowOpenDisposition::CURRENT_TAB;
+                  : WindowOpenDisposition::kCurrentTab;
   GURL override_url;
 
   CHECK_NE(launch_bucket, extension_misc::APP_LAUNCH_BUCKET_INVALID);
   extensions::RecordAppLaunchType(launch_bucket, type);
 
-  if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-      disposition == WindowOpenDisposition::NEW_WINDOW) {
+  if (disposition == WindowOpenDisposition::kNewForegroundTab ||
+      disposition == WindowOpenDisposition::kNewBackgroundTab ||
+      disposition == WindowOpenDisposition::kNewWindow) {
     // TODO(jamescook): Proper support for background tabs.
     apps::AppLaunchParams params(
         app_id,
-        disposition == WindowOpenDisposition::NEW_WINDOW
+        disposition == WindowOpenDisposition::kNewWindow
             ? apps::LaunchContainer::kLaunchContainerWindow
             : apps::LaunchContainer::kLaunchContainerTab,
         disposition, apps::LaunchSource::kFromAppHomePage);
@@ -243,11 +243,11 @@ void AppHomePageHandler::LaunchAppInternal(
       old_contents_ptr = old_contents->GetWeakPtr();
     }
 
-    apps::AppLaunchParams params(
-        app_id, launch_container,
-        old_contents ? WindowOpenDisposition::CURRENT_TAB
-                     : WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromAppHomePage);
+    apps::AppLaunchParams params(app_id, launch_container,
+                                 old_contents
+                                     ? WindowOpenDisposition::kCurrentTab
+                                     : WindowOpenDisposition::kNewForegroundTab,
+                                 apps::LaunchSource::kFromAppHomePage);
     params.override_url = override_url;
     web_app::LaunchExtensionOrWebApp(
         profile_, std::move(params),

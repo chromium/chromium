@@ -27,7 +27,7 @@ TabSwitchAction::TabSwitchAction(GURL url)
 TabSwitchAction::~TabSwitchAction() = default;
 
 void TabSwitchAction::Execute(ExecutionContext& context) const {
-  context.disposition_ = WindowOpenDisposition::SWITCH_TO_TAB;
+  context.disposition_ = WindowOpenDisposition::kSwitchToTab;
   OpenURL(context, url_);
 }
 

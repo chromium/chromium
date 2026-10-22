@@ -248,7 +248,7 @@ TEST_F(TabWebContentsDestroyerTest, NavigationSuppressionAndInterception) {
   // OpenURLFromTab should be suppressed (return nullptr).
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          GURL("https://example.com"), WindowOpenDisposition::CURRENT_TAB,
+          GURL("https://example.com"), WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           raw_web_contents->GetPrimaryMainFrame()
               ->GetCurrentInitiatorNavigationState());
@@ -296,7 +296,7 @@ TEST_F(TabWebContentsDestroyerTest, WindowCreationSuppression) {
                 raw_web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
                 /*is_new_browsing_instance=*/true, GURL("https://example.com"),
                 "test_frame", GURL("https://target.example.com"),
-                WindowOpenDisposition::NEW_POPUP, window_features,
+                WindowOpenDisposition::kNewPopup, window_features,
                 partition_config, /*session_storage_namespace=*/nullptr));
 
   task_environment()->FastForwardBy(base::Seconds(2));

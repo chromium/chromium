@@ -679,7 +679,7 @@ void ContentAnalysisDialogDelegate::AddLinksToDialogMessage() {
               }
               web_contents->OpenURL(
                   content::OpenURLParams::CreateBrowserInitiated(
-                      url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                      url, WindowOpenDisposition::kNewForegroundTab,
                       ui::PAGE_TRANSITION_LINK),
                   /*navigation_handle_callback=*/{});
             },
@@ -839,7 +839,7 @@ void ContentAnalysisDialogDelegate::LearnMoreLinkClickedCallback(
   web_contents_getter_.Run()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           (*delegate_base_->GetCustomLearnMoreUrl()),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

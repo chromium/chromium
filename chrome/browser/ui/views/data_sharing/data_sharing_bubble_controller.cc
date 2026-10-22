@@ -44,7 +44,7 @@ content::WebContents* OpenLinkInNewWindow(
   NavigateParams params(/*a_browser=*/nullptr, std::move(new_contents));
   params.initiating_profile =
       Profile::FromBrowserContext(source->GetBrowserContext());
-  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  params.disposition = WindowOpenDisposition::kNewWindow;
   Navigate(&params);
   return params.navigated_or_inserted_contents;
 }

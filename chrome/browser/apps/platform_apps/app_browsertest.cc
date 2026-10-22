@@ -219,7 +219,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithFiles(
             extension->id(),
-            apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
                                 true /* preferred_container */),
             apps::LaunchSource::kFromTest, std::move(launch_files));
     ASSERT_TRUE(catcher.GetNextResult());
@@ -240,7 +240,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
 
     apps::AppLaunchParams params(
         extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
     params.command_line = command_line;
     params.current_directory = test_data_dir_;
     apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
@@ -941,7 +941,7 @@ void MAYBE_PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
     apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+            WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
     app_loaded_observer.Wait();
     window = GetFirstAppWindow();
     ASSERT_TRUE(window);
@@ -1129,7 +1129,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
 }
@@ -1152,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
   apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
   ASSERT_FALSE(should_not_install.seen());
@@ -1189,7 +1189,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
   apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
 }
@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
     apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+            WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
   }
 
@@ -1327,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
   registry->AddObserver(this);
   apps::AppServiceProxyFactory::GetForProfile(incognito_profile)
       ->Launch(file_manager->id(),
-               apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
                                    true /* prefer_container */),
                apps::LaunchSource::kFromTest);
 

@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   // Reload the initiator. Make sure reloading destroys the print preview
   // dialog.
   content::WebContentsDestroyedWatcher watcher(preview_dialog);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
   // When Widget::Close is called, a task is posted that will destroy the

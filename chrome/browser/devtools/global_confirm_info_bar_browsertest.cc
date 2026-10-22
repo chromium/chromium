@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, ClickLink) {
   infobars::InfoBar* first_tab_infobar =
       GetInfoBarManagerFromTabIndex(0)->infobars()[0];
   EXPECT_FALSE(first_tab_infobar->delegate()->LinkClicked(
-      WindowOpenDisposition::NEW_BACKGROUND_TAB));
+      WindowOpenDisposition::kNewBackgroundTab));
 
   // This should have opened a new tab.
   ASSERT_EQ(2, GetTabCount());

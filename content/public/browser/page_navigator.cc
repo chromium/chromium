@@ -60,7 +60,7 @@ OpenURLParams::~OpenURLParams() = default;
 OpenURLParams OpenURLParams::FromNavigationHandle(NavigationHandle* handle) {
   OpenURLParams params(
       handle->GetURL(), Referrer(handle->GetReferrer()),
-      handle->GetFrameTreeNodeId(), WindowOpenDisposition::CURRENT_TAB,
+      handle->GetFrameTreeNodeId(), WindowOpenDisposition::kCurrentTab,
       handle->GetPageTransition(), handle->IsRendererInitiated());
 
   params.initiator_origin = handle->GetInitiatorOrigin();

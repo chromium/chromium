@@ -277,7 +277,7 @@ void SendTabToSelfBubbleController::OnManageDevicesClicked(
   OpenManageDevicesPage(
       GetProfile(),
       ui::DispositionFromEventFlags(event.flags(),
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
+                                    WindowOpenDisposition::kNewForegroundTab));
 }
 
 void SendTabToSelfBubbleController::PrimaryPageChanged(content::Page& page) {

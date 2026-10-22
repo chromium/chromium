@@ -185,7 +185,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
                                  : window_features.bounds;
     raw_child_contents->SetBounds(bounds);
 
-    if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    if (disposition == WindowOpenDisposition::kNewPictureInPicture) {
       // Register the document Picture-in-Picture child contents so the
       // controller can manage the PiP window's lifetime.
       content::DocumentPictureInPictureWindowController* controller =
@@ -209,14 +209,14 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     DCHECK_EQ(source, headless_web_contents_->web_contents());
     content::WebContents* target = nullptr;
     switch (params.disposition) {
-      case WindowOpenDisposition::CURRENT_TAB:
+      case WindowOpenDisposition::kCurrentTab:
         target = source;
         break;
 
-      case WindowOpenDisposition::NEW_POPUP:
-      case WindowOpenDisposition::NEW_WINDOW:
-      case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      case WindowOpenDisposition::NEW_FOREGROUND_TAB: {
+      case WindowOpenDisposition::kNewPopup:
+      case WindowOpenDisposition::kNewWindow:
+      case WindowOpenDisposition::kNewBackgroundTab:
+      case WindowOpenDisposition::kNewForegroundTab: {
         if (headless_web_contents_->browser_context()
                 ->options()
                 ->block_new_web_contents()) {
@@ -234,10 +234,10 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
       }
 
       // TODO(veluca): add support for other disposition types.
-      case WindowOpenDisposition::SINGLETON_TAB:
-      case WindowOpenDisposition::OFF_THE_RECORD:
-      case WindowOpenDisposition::SAVE_TO_DISK:
-      case WindowOpenDisposition::IGNORE_ACTION:
+      case WindowOpenDisposition::kSingletonTab:
+      case WindowOpenDisposition::kOffTheRecord:
+      case WindowOpenDisposition::kSaveToDisk:
+      case WindowOpenDisposition::kIgnoreAction:
       default:
         return nullptr;
     }

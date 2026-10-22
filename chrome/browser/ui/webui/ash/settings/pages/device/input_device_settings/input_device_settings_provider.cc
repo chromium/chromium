@@ -784,7 +784,7 @@ void InputDeviceSettingsProvider::LaunchCompanionApp(
       ProfileManager::GetActiveUserProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           app_id.value(), apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW,
+          WindowOpenDisposition::kNewWindow,
           apps::LaunchSource::kFromManagementApi));
 }
 

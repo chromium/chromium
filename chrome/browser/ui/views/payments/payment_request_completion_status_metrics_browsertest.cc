@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 
   // Reload the page containing the Payment Request.
   ResetEventWaiterForSequence({DialogEvent::DIALOG_CLOSED});
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Make sure the correct events were logged.

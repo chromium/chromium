@@ -267,7 +267,7 @@ TEST_F(WebUIContentsWrapperTest, HostNotifiedOnAddNewContents) {
       nullptr /* source */,
       std::unique_ptr<content::WebContents>() /* new_contents */,
       GURL() /* target_url */,
-      WindowOpenDisposition::CURRENT_TAB /* disposition */,
+      WindowOpenDisposition::kCurrentTab /* disposition */,
       blink::mojom::WindowFeatures() /* window_features */,
       false /* user_gesture */, &blocked /* was_blocked */);
   EXPECT_EQ(1, host.add_new_contents_called());
@@ -277,7 +277,7 @@ TEST_F(WebUIContentsWrapperTest, HostNotifiedOnAddNewContents) {
       nullptr /* source */,
       std::unique_ptr<content::WebContents>() /* new_contents */,
       GURL() /* target_url */,
-      WindowOpenDisposition::CURRENT_TAB /* disposition */,
+      WindowOpenDisposition::kCurrentTab /* disposition */,
       blink::mojom::WindowFeatures() /* window_features */,
       false /* user_gesture */, &blocked /* was_blocked */);
   EXPECT_EQ(1, host.add_new_contents_called());

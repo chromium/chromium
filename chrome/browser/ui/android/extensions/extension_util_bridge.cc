@@ -100,11 +100,11 @@ void JNI_ExtensionUtilBridge_OnOmniboxExtensionInputEntered(
     input_text.clear();
   }
 
-  WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
   if (open_in_new_window) {
-    disposition = WindowOpenDisposition::NEW_WINDOW;
+    disposition = WindowOpenDisposition::kNewWindow;
   } else if (open_in_new_tab) {
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    disposition = WindowOpenDisposition::kNewForegroundTab;
   }
 
   extensions::ExtensionOmniboxEventRouter::OnInputEntered(

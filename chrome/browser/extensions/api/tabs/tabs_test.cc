@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabsIwaDuplicateTest,
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTab) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   content::WebContents* web_contents =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -1105,7 +1105,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTab) {
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   content::WebContents* web_contents =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -1327,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
   // Create two additional tabs and wait for them to finish loading.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewBackgroundTab,
           ui::PAGE_TRANSITION_LINK);
   content::WebContents* web_contents_a =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -1911,7 +1911,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, Freezing) {
   // Create a background tab.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* web_contents =
       GetTabListInterface()->GetTab(1)->GetContents();
@@ -2006,7 +2006,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
   // Create two additional tabs.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewBackgroundTab,
           ui::PAGE_TRANSITION_LINK);
   content::WebContents* web_contents_a =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -2304,7 +2304,7 @@ double GetZoomFactor(const content::WebContents* web_contents) {
 
 content::OpenURLParams GetOpenParams(const char* url) {
   return content::OpenURLParams::CreateBrowserInitiated(
-      GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      GURL(url), WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK);
 }
 
@@ -2593,7 +2593,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
   content::TestNavigationManager navigation_manager(
       second_web_contents, GURL("http://www.facebook.com:83"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Ensure the PDF has loaded, and get the WebContents to click.

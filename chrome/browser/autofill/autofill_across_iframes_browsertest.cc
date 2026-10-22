@@ -298,7 +298,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
         browser(),
         embedded_https_test_server().GetURL(kMainHostname, relative_url),
         ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     ui_test_utils::NavigateToURL(&params);
     return GetOrWaitForFormWithFocusableFields(
         /*num_fields=*/num_fields);

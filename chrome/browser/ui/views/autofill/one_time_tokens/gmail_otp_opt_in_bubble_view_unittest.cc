@@ -175,7 +175,7 @@ TEST_F(GmailOtpOptInBubbleViewTest, FormatsDescriptionAndOpensSettingsLink) {
                      AllOf(Field(&content::OpenURLParams::url,
                                  GURL("chrome://settings/contactInfo")),
                            Field(&content::OpenURLParams::disposition,
-                                 WindowOpenDisposition::NEW_FOREGROUND_TAB)),
+                                 WindowOpenDisposition::kNewForegroundTab)),
                      _));
   link_view->OnKeyPressed(
       ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE));

@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   {
     content::TestFrameNavigationObserver nav_observer(
         web_contents->GetPrimaryMainFrame());
-    chrome::Home(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Home(browser(), WindowOpenDisposition::kCurrentTab);
     nav_observer.Wait();
   }
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   {
     content::TestFrameNavigationObserver nav_observer(
         web_contents->GetPrimaryMainFrame());
-    chrome::Home(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Home(browser(), WindowOpenDisposition::kCurrentTab);
     nav_observer.Wait();
   }
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));

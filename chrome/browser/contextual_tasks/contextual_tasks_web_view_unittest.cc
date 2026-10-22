@@ -579,7 +579,7 @@ TEST_F(ContextualTasksWebViewTest, OpenURLFromTab_RejectsNonWebSchemes) {
   };
   for (const GURL& url : kNonWebUrls) {
     content::OpenURLParams params(url, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  WindowOpenDisposition::kNewForegroundTab,
                                   ui::PAGE_TRANSITION_LINK,
                                   /*is_renderer_initiated=*/true);
     params.user_gesture = true;
@@ -612,7 +612,7 @@ TEST_F(
 
   const GURL kTargetUrl("https://example.com/target");
   content::OpenURLParams params(kTargetUrl, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
+                                WindowOpenDisposition::kCurrentTab,
                                 ui::PAGE_TRANSITION_LINK,
                                 /*is_renderer_initiated=*/true);
   params.user_gesture = true;
@@ -627,7 +627,7 @@ TEST_F(
                     base::OnceCallback<void(content::NavigationHandle&)>) {
         EXPECT_EQ(kTargetUrl, forwarded_params.url);
         EXPECT_FALSE(forwarded_params.user_gesture);
-        EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
                   forwarded_params.disposition);
         EXPECT_TRUE(forwarded_params.frame_tree_node_id.is_null());
         return tab_contents.get();
@@ -662,7 +662,7 @@ TEST_F(ContextualTasksWebViewTest,
 
   content::OpenURLParams params(
       GURL("https://example.com/target"), content::Referrer(),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      WindowOpenDisposition::kNewBackgroundTab, ui::PAGE_TRANSITION_LINK,
       /*is_renderer_initiated=*/true);
   params.user_gesture = true;
   params.source_render_process_id = panel_rfh->GetProcess()->GetDeprecatedID();
@@ -673,7 +673,7 @@ TEST_F(ContextualTasksWebViewTest,
                     const content::OpenURLParams& forwarded_params,
                     base::OnceCallback<void(content::NavigationHandle&)>) {
         EXPECT_TRUE(forwarded_params.user_gesture);
-        EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        EXPECT_EQ(WindowOpenDisposition::kNewBackgroundTab,
                   forwarded_params.disposition);
         return tab_contents.get();
       });
@@ -710,7 +710,7 @@ TEST_F(ContextualTasksWebViewTest,
 
   content::OpenURLParams params(
       GURL("https://example.com/target"), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK,
       /*is_renderer_initiated=*/true);
   params.user_gesture = true;
   params.source_render_process_id =
@@ -749,7 +749,7 @@ TEST_F(ContextualTasksWebViewTest,
 
   content::OpenURLParams params(
       GURL("https://example.com/incognito"), content::Referrer(),
-      WindowOpenDisposition::OFF_THE_RECORD, ui::PAGE_TRANSITION_LINK,
+      WindowOpenDisposition::kOffTheRecord, ui::PAGE_TRANSITION_LINK,
       /*is_renderer_initiated=*/false);
   params.user_gesture = true;
   params.started_from_context_menu = true;
@@ -759,7 +759,7 @@ TEST_F(ContextualTasksWebViewTest,
                     const content::OpenURLParams& forwarded_params,
                     base::OnceCallback<void(content::NavigationHandle&)>) {
         EXPECT_TRUE(forwarded_params.user_gesture);
-        EXPECT_EQ(WindowOpenDisposition::OFF_THE_RECORD,
+        EXPECT_EQ(WindowOpenDisposition::kOffTheRecord,
                   forwarded_params.disposition);
         return tab_contents.get();
       });

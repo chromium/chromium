@@ -475,7 +475,7 @@ class ActorUiTabControllerNavigationConfirmTest
     // SetUserText() clears the paste state, so mark the paste afterwards.
     model->OnPaste();
     model->OpenSelection(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
-                         base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB,
+                         base::TimeTicks(), WindowOpenDisposition::kCurrentTab,
                          /*via_keyboard=*/true);
   }
 

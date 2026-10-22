@@ -118,7 +118,7 @@ void LaunchTerminalImpl(Profile* profile,
   // LaunchSystemWebAppAsync.
 
   // Launch without a pinned home tab (settings page).
-  if (params.disposition == WindowOpenDisposition::NEW_POPUP) {
+  if (params.disposition == WindowOpenDisposition::kNewPopup) {
     ash::LaunchSystemWebAppImpl(profile, ash::SystemWebAppType::TERMINAL, url,
                                 params);
     return;
@@ -316,7 +316,7 @@ void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
   }
   std::string path = "html/terminal_settings.html";
   // Use an app pop window to host the settings page.
-  params->disposition = WindowOpenDisposition::NEW_POPUP;
+  params->disposition = WindowOpenDisposition::kNewPopup;
 
   // Always launch asynchronously to avoid disturbing the caller. See
   // https://crbug.com/1262890#c12 for more details.

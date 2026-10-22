@@ -255,7 +255,7 @@ void ProfileManagementNavigationThrottle::NavigateTo(const GURL& url) {
       base::BindOnce(&ProfileManagementWebContentsLifetimeHelper::OpenURL,
                      helper->GetWeakPtr(),
                      content::OpenURLParams::CreateBrowserInitiated(
-                         url, WindowOpenDisposition::CURRENT_TAB,
+                         url, WindowOpenDisposition::kCurrentTab,
                          ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT)));
 
   // Only call `CancelDeferredNavigation()` outside of testing since it crashes

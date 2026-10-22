@@ -183,7 +183,7 @@ void ToastService::RegisterToasts() {
                   window->OpenGURL(
                       chrome::GetSettingsUrl(
                           chrome::kSafeBrowsingEnhancedProtectionSubPage),
-                      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                      WindowOpenDisposition::kNewForegroundTab);
                 }))
             .AddCloseButton()
             .Build());
@@ -374,7 +374,7 @@ void ToastService::RegisterToasts() {
               base::BindRepeating([](BrowserWindowInterface* window) {
                 window->OpenGURL(
                     chrome::GetSettingsUrl(chrome::kSecuritySubPage),
-                    WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                    WindowOpenDisposition::kNewForegroundTab);
               }))
           .AddCloseButton()
           .AddGlobalScoped()

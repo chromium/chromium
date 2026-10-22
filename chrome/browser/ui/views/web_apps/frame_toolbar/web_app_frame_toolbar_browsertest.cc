@@ -4334,7 +4334,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
       out_of_extended_scope_host_, "/ssl/blank_page.html");
   content::TestNavigationManager navigation_manager(contents, out_of_scope_url);
   ui_test_utils::NavigateToURLWithDisposition(
-      popup_browser, out_of_scope_url, WindowOpenDisposition::CURRENT_TAB,
+      popup_browser, out_of_scope_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   ASSERT_TRUE(navigation_manager.WaitForRequestStart());
   ASSERT_EQ(about_blank_url, contents->GetLastCommittedURL());

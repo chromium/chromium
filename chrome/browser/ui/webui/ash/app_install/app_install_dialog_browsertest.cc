@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
   const GURL app_url(app_install_server()->GetUrl("/web_apps/basic.html"));
 
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser(), app_url, 1, WindowOpenDisposition::CURRENT_TAB,
+      browser(), app_url, 1, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::TestNavigationObserver navigation_observer_dialog(

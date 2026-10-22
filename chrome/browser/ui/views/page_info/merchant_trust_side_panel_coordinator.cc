@@ -40,7 +40,7 @@ content::OpenURLParams CreateOpenUrlParams(const GURL& url) {
       net::AppendOrReplaceQueryParameter(url,
                                          kMerchantTrustContextParameterName,
                                          kMerchantTrustContextParameterValue),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
+      WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK);
 }
 }  // namespace
 

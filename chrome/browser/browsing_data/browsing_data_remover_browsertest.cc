@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, HistoryDeletion) {
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
   // Create a new tab to avoid confusion from having a NTP navigation entry.
   ui_test_utils::NavigateToURLWithDisposition(
-      GetBrowser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      GetBrowser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(HasDataForType(kType));
   SetDataForType(kType);

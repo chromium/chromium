@@ -93,7 +93,7 @@ void OpenUmaLink(BrowserWindowInterface* browser, const ui::Event& event) {
   browser->OpenGURL(
       GURL("https://support.google.com/chrome/answer/96817"),
       ui::DispositionFromEventFlags(event.flags(),
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
+                                    WindowOpenDisposition::kNewForegroundTab));
   RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_HELP);
 }
 

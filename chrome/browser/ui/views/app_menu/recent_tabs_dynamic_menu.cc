@@ -82,9 +82,9 @@ void RecentTabsDynamicMenu::ExecuteRecentTab(
     actions::ActionInvocationContext context) {
   WindowOpenDisposition disposition =
       context.GetProperty(chrome::kDispositionKey);
-  if (disposition == WindowOpenDisposition::CURRENT_TAB ||
-      disposition == WindowOpenDisposition::UNKNOWN) {
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  if (disposition == WindowOpenDisposition::kCurrentTab ||
+      disposition == WindowOpenDisposition::kUnknown) {
+    disposition = WindowOpenDisposition::kNewForegroundTab;
   }
   if (recent_item.is_local()) {
     base::RecordAction(
@@ -141,9 +141,9 @@ void RecentTabsDynamicMenu::ExecuteRecentSplit(
   }
   WindowOpenDisposition disposition =
       context.GetProperty(chrome::kDispositionKey);
-  if (disposition == WindowOpenDisposition::CURRENT_TAB ||
-      disposition == WindowOpenDisposition::UNKNOWN) {
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  if (disposition == WindowOpenDisposition::kCurrentTab ||
+      disposition == WindowOpenDisposition::kUnknown) {
+    disposition = WindowOpenDisposition::kNewForegroundTab;
   }
   ExecuteRestoreEntry(recent_item.session_id(), disposition);
 }

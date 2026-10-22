@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
       browser()->GetProfile(),
       apps::AppLaunchParams(extension->id(),
                             apps::LaunchContainer::kLaunchContainerWindow,
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            WindowOpenDisposition::kNewForegroundTab,
                             apps::LaunchSource::kFromTest),
       base::IgnoreArgs<content::WebContents*>(done.QuitClosure()));
   done.Run();

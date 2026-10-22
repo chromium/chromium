@@ -50,7 +50,7 @@ void RestoreTab(const SessionID session_id,
                 Browser* browser) {
   // iOS Chrome doesn't yet support restoring tabs to new windows.
   // TODO(crbug.com/40676931) : Support WINDOW restoration under multi-window.
-  DCHECK(disposition != WindowOpenDisposition::NEW_WINDOW);
+  DCHECK(disposition != WindowOpenDisposition::kNewWindow);
   LiveTabContextBrowserAgent* context =
       LiveTabContextBrowserAgent::FromBrowser(browser);
   // Passing a nil context into RestoreEntryById can result in the restore

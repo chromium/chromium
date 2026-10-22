@@ -4634,7 +4634,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   // For Automatic Document Picture-in-Picture, the window creation is
   // authorized by the browser rather than a user gesture. If AutoPip
   // preconditions are met, permit the window creation.
-  if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+  if (disposition == WindowOpenDisposition::kNewPictureInPicture) {
     auto* auto_pip_tab_helper =
         AutoPictureInPictureTabHelper::FromWebContents(web_contents);
     if (auto_pip_tab_helper &&
@@ -7585,7 +7585,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
             *new_url,
             content::Referrer(web_contents->GetLastCommittedURL(),
                               network::mojom::ReferrerPolicy::kDefault),
-            WindowOpenDisposition::NEW_FOREGROUND_TAB, page_transition,
+            WindowOpenDisposition::kNewForegroundTab, page_transition,
             /*is_renderer_initiated=*/true);
         // Fallback to an opaque origin if the initiating origin is not
         // provided (e.g., for external OS-initiated or browser-initiated
@@ -9609,7 +9609,7 @@ void ChromeContentBrowserClient::ShowCaptionSettings(
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(captions::GetCaptionSettingsUrl()),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 #endif
 }

@@ -281,7 +281,7 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
 
   content::WebContents* AddTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
@@ -3222,7 +3222,7 @@ class DiceWebSigninInterceptorLatePolicyCallbackUAFTest
 
   content::WebContents* AddTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }

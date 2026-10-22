@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               settings_app_id, apps::LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::NEW_WINDOW,
+              WindowOpenDisposition::kNewWindow,
               apps::LaunchSource::kFromCommandLine));
   EXPECT_EQ(contents,
             settings_browser->GetTabStripModel()->GetActiveWebContents());

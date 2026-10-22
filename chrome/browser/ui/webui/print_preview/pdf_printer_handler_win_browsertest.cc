@@ -109,7 +109,7 @@ class PdfPrinterHandlerWinTest : public InProcessBrowserTest {
     // Create a new tab and navigate to chrome://print.
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("chrome://print"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     // Create the PDF printer.
     pdf_printer_ = std::make_unique<FakePdfPrinterHandler>(

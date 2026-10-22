@@ -491,7 +491,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     web::Referrer referrer(_webState->GetLastCommittedURL(),
                            web::ReferrerPolicyDefault);
     _webState->OpenURL(web::WebState::OpenURLParams(
-        URLToLoad, referrer, WindowOpenDisposition::CURRENT_TAB,
+        URLToLoad, referrer, WindowOpenDisposition::kCurrentTab,
         ui::PAGE_TRANSITION_LINK, false));
   }
 }

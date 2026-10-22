@@ -2469,7 +2469,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // this case.
   content::WebContents* new_prefetch_tab = GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          expected_prerender_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          expected_prerender_url, WindowOpenDisposition::kNewBackgroundTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       /*navigation_handle_callback=*/{});
@@ -2783,7 +2783,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          expected_real_url, WindowOpenDisposition::CURRENT_TAB,
+          expected_real_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       std::move(navigation_handle_callback));
@@ -2905,7 +2905,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          expected_real_url, WindowOpenDisposition::CURRENT_TAB,
+          expected_real_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       std::move(navigation_handle_callback));
@@ -3025,7 +3025,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          expected_prerender_url, WindowOpenDisposition::CURRENT_TAB,
+          expected_prerender_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       std::move(navigation_handle_callback));

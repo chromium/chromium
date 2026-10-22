@@ -733,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(
   SetPagePassages({"Sample initial page content"});
   GURL first_url = embedded_test_server()->GetURL("/page_with_slow_image");
   browser()->OpenURL(content::OpenURLParams(first_url, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
+                                            WindowOpenDisposition::kCurrentTab,
                                             ui::PAGE_TRANSITION_TYPED, false),
                      /*navigation_handle_callback=*/{});
 

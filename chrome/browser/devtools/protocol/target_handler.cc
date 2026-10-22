@@ -41,11 +41,11 @@ NavigateParams CreateNavigateParams(Profile* profile,
   CHECK(new_window || browser, base::NotFatalUntil::M161);
   NavigateParams params(profile, url, transition);
   if (new_window) {
-    params.disposition = WindowOpenDisposition::NEW_WINDOW;
+    params.disposition = WindowOpenDisposition::kNewWindow;
   } else {
     params.disposition = (background)
-                             ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-                             : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                             ? WindowOpenDisposition::kNewBackgroundTab
+                             : WindowOpenDisposition::kNewForegroundTab;
     params.browser = browser;
   }
   if (background) {

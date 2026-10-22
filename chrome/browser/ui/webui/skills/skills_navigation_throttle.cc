@@ -101,8 +101,8 @@ SkillsNavigationThrottle::WillStartRequest() {
 
               const WindowOpenDisposition disposition =
                   is_initial_navigation
-                      ? WindowOpenDisposition::CURRENT_TAB
-                      : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                      ? WindowOpenDisposition::kCurrentTab
+                      : WindowOpenDisposition::kNewForegroundTab;
 
               content::OpenURLParams params =
                   content::OpenURLParams::CreateBrowserInitiated(

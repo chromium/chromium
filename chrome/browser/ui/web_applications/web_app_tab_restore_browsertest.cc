@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppPopupWindow) {
   InstallTestWebApp();
   BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowserAndWait(profile(), test_web_app_id(),
-                                          WindowOpenDisposition::NEW_POPUP);
+                                          WindowOpenDisposition::kNewPopup);
 
   ASSERT_EQ(app_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_APP_POPUP);

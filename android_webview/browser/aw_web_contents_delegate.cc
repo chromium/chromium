@@ -148,7 +148,7 @@ WebContents* AwWebContentsDelegate::AddNewContents(
     bool* was_blocked) {
   JNIEnv* env = AttachCurrentThread();
 
-  bool is_dialog = disposition == WindowOpenDisposition::NEW_POPUP;
+  bool is_dialog = disposition == WindowOpenDisposition::kNewPopup;
   ScopedJavaLocalRef<jobject> java_delegate = GetJavaDelegate(env);
   bool create_popup = false;
 

@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperMigrationTest, MigrationCalls) {
   views::NamedWidgetShownWaiter update_dialog_waiter(
       views::test::AnyWidgetTestPasskey{}, "WebAppUpdateReviewDialog");
   {
-    chrome::Reload(app_browser, WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(app_browser, WindowOpenDisposition::kCurrentTab);
     WebAppMenuModel model(/*provider=*/nullptr, app_browser);
     model.Init();
     model.ExecuteCommand(IDC_WEB_APP_UPGRADE_DIALOG, /*event_flags=*/0);

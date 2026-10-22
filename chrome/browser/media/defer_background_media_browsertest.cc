@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(DeferredMediaBrowserTest, BackgroundMediaIsDeferred) {
       browser(),
       content::GetFileUrlWithQuery(
           media::GetTestDataFilePath("bear-640x360.webm"), ""),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(
       browser(),
       content::GetFileUrlWithQuery(
           media::GetTestDataFilePath("bear-640x360.webm"), ""),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to a new blank tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 

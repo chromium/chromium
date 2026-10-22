@@ -2142,7 +2142,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     NavigateParams nav_params(
         browser(), web_ui_url,
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED));
-    nav_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
     content::WebContentsAddedObserver new_web_contents_observer;
     Navigate(&nav_params);
 
@@ -3071,7 +3071,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     NavigateParams nav_params(
         browser(), extension_resource,
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED));
-    nav_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
     content::WebContentsAddedObserver new_web_contents_observer;
     Navigate(&nav_params);
     extension_web_contents = new_web_contents_observer.GetWebContents();

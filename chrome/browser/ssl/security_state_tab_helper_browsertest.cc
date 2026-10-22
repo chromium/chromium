@@ -1086,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateLoadingTest, NavigationStateChanges) {
   browser()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/title1.html"),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   CheckSecurityInfoForNonCommitted(
       browser()->GetTabStripModel()->GetActiveWebContents());
@@ -1284,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(DidChangeVisibleSecurityStateTest,
             observer.latest_security_level());
 
   content::LoadStopObserver back_nav_load_observer(web_contents);
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
   back_nav_load_observer.Wait();
 
   EXPECT_EQ(security_state::SecurityLevel::SECURE,

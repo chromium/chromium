@@ -28,14 +28,14 @@ class AutoPictureInPictureTabStripObserverHelperBrowserTest
   void OpenNewForegroundTab(BrowserWindowInterface* browser) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser, GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 
   void OpenNewBackgroundTab(BrowserWindowInterface* browser) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser, GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 };

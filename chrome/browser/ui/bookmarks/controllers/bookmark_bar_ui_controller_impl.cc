@@ -124,7 +124,7 @@ void BookmarkBarUIControllerImpl::OpenFolder(
     WindowOpenDisposition disposition) {
   // Clicking the middle mouse button or clicking with Control/Command key down
   // opens all bookmarks in the folder in new tabs.
-  if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (disposition == WindowOpenDisposition::kCurrentTab) {
     injector_->GetActionAdapter()->NotifyFolderOpened();
     if (client_) {
       client_->ShowFolderMenu(folder);

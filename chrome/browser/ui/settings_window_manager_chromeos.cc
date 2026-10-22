@@ -189,7 +189,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
 
   // No existing browser window, create one.
   NavigateParams params(profile, gurl, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.disposition = WindowOpenDisposition::kNewPopup;
   params.trusted_source = true;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = true;

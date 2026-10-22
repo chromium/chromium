@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
   {
     content::LoadStopObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     observer.Wait();
   }
   // Focus should stay on the location bar.
@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
   {
     content::LoadStopObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     observer.Wait();
   }
 
@@ -863,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FocusOnReloadCrashedTab) {
   {
     content::LoadStopObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     observer.Wait();
   }
 
@@ -953,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NavigateFromOmniboxIntoNewTab) {
 
   // Simulate an alt-enter.
   omnibox_client->OnAutocompleteAccept(
-      url2, nullptr, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      url2, nullptr, WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(),
       false, false, std::u16string(), AutocompleteMatch(), AutocompleteMatch());

@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
   ASSERT_TRUE(search_url.is_valid());
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), search_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), search_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   tabs::TabInterface* search_tab = tab_list()->GetActiveTab();
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(),
       GURL("https://example.com/search?q=quantum+entanglement+physics"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
       template_url_service()->GenerateSearchURLForDefaultSearchProvider(
           u"quantum entanglement physics");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), search_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), search_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(tracker()->GetActiveJourneysForTesting().size(), 1u);

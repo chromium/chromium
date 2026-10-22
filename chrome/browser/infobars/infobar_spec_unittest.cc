@@ -171,7 +171,7 @@ TEST_F(InfoBarSpecTest, BuildSpecWithTemplateAndSubstitutions) {
 
   ASSERT_FALSE(spec.inline_link_callback().is_null());
   EXPECT_TRUE(spec.inline_link_callback().Run(
-      nullptr, 0, WindowOpenDisposition::CURRENT_TAB));
+      nullptr, 0, WindowOpenDisposition::kCurrentTab));
   EXPECT_TRUE(link_clicked);
 }
 

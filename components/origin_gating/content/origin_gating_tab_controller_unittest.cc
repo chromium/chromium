@@ -75,7 +75,7 @@ class OriginGatingTabControllerTest
                                 content::WebContents* new_contents) {
     observer->DidOpenRequestedURL(
         new_contents, main_rfh(), GURL("https://example.com/"),
-        content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        content::Referrer(), WindowOpenDisposition::kNewForegroundTab,
         ui::PAGE_TRANSITION_LINK, /*started_from_context_menu=*/false,
         /*renderer_initiated=*/true);
   }

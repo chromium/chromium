@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebContentsBrowserTest,
   NavigateParams params(GetBrowserWindowInterface(),
                         embedded_test_server()->GetURL("/iframe.html"),
                         ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.disposition = WindowOpenDisposition::kCurrentTab;
   Navigate(&params);
 
   // Ensure the load is complete so DidFinishNavigation will fire.

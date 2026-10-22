@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(ProcessPriorityBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.test", "/title1.html"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, tab_strip_model()->count());
   content::WebContents* contents = tab_strip_model()->GetWebContentsAt(1);
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(ProcessPriorityNotAppliedBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.test", "/title1.html"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, tab_strip_model()->count());
   content::WebContents* contents = tab_strip_model()->GetWebContentsAt(1);

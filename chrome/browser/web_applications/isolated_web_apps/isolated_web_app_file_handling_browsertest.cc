@@ -67,7 +67,7 @@ class IsolatedWebAppFileHandlingBrowserTest
       const std::vector<base::FilePath>& files) {
     apps::AppLaunchParams params(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
 
     auto launch_infos =
         file_handler_manager().GetMatchingFileHandlerUrls(app_id, files);

@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
 
   // Add a second tab so we have two tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
 
   // Add a second tab so we have two tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -626,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
 
   // Add a second tab so closing the group does not close the browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(browser2);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser2, GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser2, GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, browser2->GetTabStripModel()->count());
 

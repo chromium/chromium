@@ -1598,7 +1598,7 @@ TEST_F(RenderFrameHostImplTest, CapturedMediaStreamAddedRemoved) {
 // message.
 TEST_F(RenderFrameHostImplTest, CreateNewWindowInvalidDisposition) {
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
-  params->disposition = WindowOpenDisposition::UNKNOWN;
+  params->disposition = WindowOpenDisposition::kUnknown;
   params->features = blink::mojom::WindowFeatures::New();
 
   // The bad message is reported to the process.
@@ -1626,7 +1626,7 @@ class RenderFrameHostImplWindowOpenSplitTabTest
   bool VerifyFeatures(blink::mojom::WindowFeaturesPtr features) {
     mojom::CreateNewWindowParamsPtr params =
         mojom::CreateNewWindowParams::New();
-    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params->disposition = WindowOpenDisposition::kNewForegroundTab;
     params->features = std::move(features);
 
     base::HistogramTester histograms;

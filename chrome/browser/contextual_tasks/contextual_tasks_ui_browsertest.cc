@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   GURL url("https://www.google.com/search?q=test");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK);
+          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
   controller_->TransferNavigationToEmbeddedPage(params);
   run_loop.Run();
 }

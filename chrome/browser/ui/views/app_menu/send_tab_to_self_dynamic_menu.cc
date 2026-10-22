@@ -263,9 +263,9 @@ void SendTabToSelfDynamicMenu::ExecuteManageDevices(
     actions::ActionInvocationContext context) {
   WindowOpenDisposition disposition =
       context.GetProperty(chrome::kDispositionKey);
-  if (disposition == WindowOpenDisposition::CURRENT_TAB ||
-      disposition == WindowOpenDisposition::UNKNOWN) {
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  if (disposition == WindowOpenDisposition::kCurrentTab ||
+      disposition == WindowOpenDisposition::kUnknown) {
+    disposition = WindowOpenDisposition::kNewForegroundTab;
   }
   send_tab_to_self::OpenManageDevicesPage(
       browser_window_interface_->GetProfile(), disposition);

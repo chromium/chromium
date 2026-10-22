@@ -706,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL aim_url("https://www.google.com/search?q=aim_test");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          aim_url, WindowOpenDisposition::CURRENT_TAB,
+          aim_url, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL lens_url("https://www.google.com/search?q=lens_test&lns_mode=un");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          lens_url, WindowOpenDisposition::CURRENT_TAB,
+          lens_url, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url("https://www.google.com/search?q=tab_test");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK);
+          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
       params, tab_contents, /*is_from_embedded_page=*/false,
@@ -816,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url("https://www.google.com/search?q=aim_test&gsc=2&hl=en&cs=0");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK);
+          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
       params, panel_contents, /*is_from_embedded_page=*/true,
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceRearchitectureEnabledTest,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          third_party_url, WindowOpenDisposition::CURRENT_TAB,
+          third_party_url, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
@@ -900,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url("https://www.google.com/search?q=host_test&gsc=2&hl=en&cs=0");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK);
+          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
       params, panel_contents, /*is_from_embedded_page=*/true,

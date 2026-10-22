@@ -117,7 +117,7 @@ class PrintManagementInteractiveUiTest : public InteractiveAshTest {
       // will always be the first browser.
       ASSERT_FALSE(GlobalBrowserCollection::GetInstance()->IsEmpty());
       chrome::Reload(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
-                     WindowOpenDisposition::CURRENT_TAB);
+                     WindowOpenDisposition::kCurrentTab);
     });
   }
 };

@@ -191,8 +191,8 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   NavigateParams navigate_params(&browser, validated_url,
                                  ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = active
-                                    ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                    : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+                                    ? WindowOpenDisposition::kNewForegroundTab
+                                    : WindowOpenDisposition::kNewBackgroundTab;
 
   // If splitWithTabId is specified, determine the relative positioning of the
   // new tab. Defaults to the right of the target tab if index is not specified.

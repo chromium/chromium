@@ -55,8 +55,8 @@ struct UrlLoadParams {
       web::NavigationManager::WebLoadParams(GURL());
 
   // The disposition of the URL being opened. Defaults to
-  // `WindowOpenDisposition::NEW_FOREGROUND_TAB`.
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  // `WindowOpenDisposition::kNewForegroundTab`.
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewForegroundTab;
 
   // Whether this requests opening in incognito or not. Defaults to `false`.
   bool in_incognito = false;
@@ -132,7 +132,7 @@ struct UrlLoadParams {
   }
 
   bool in_background() const {
-    return disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    return disposition == WindowOpenDisposition::kNewBackgroundTab;
   }
 
   // Public for testing only.

@@ -61,7 +61,7 @@ class WebAppUiManagerTest : public testing::Test {
       const std::optional<GURL>& protocol_handler_launch_url) {
     apps::AppLaunchParams params(
         kTestAppId, apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::UNKNOWN, apps::LaunchSource::kFromCommandLine);
+        WindowOpenDisposition::kUnknown, apps::LaunchSource::kFromCommandLine);
 
     params.current_directory = base::FilePath(kCurrentDirectory);
     params.command_line = command_line;

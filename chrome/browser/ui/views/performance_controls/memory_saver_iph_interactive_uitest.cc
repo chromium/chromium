@@ -44,7 +44,7 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
           for (int i = 0; i < kTabCountThreshold; i++) {
             NavigateParams params(browser(), GURL("about:blank"),
                                   ui::PAGE_TRANSITION_LINK);
-            params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+            params.disposition = WindowOpenDisposition::kNewBackgroundTab;
             Navigate(&params);
           }
         }),

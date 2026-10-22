@@ -134,12 +134,12 @@ INSTANTIATE_TEST_SUITE_P(
         RedirectionTestCase{
             .test_name = "NewTabWhenPageCommitted",
             .is_initial_navigation = false,
-            .expected_disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            .expected_disposition = WindowOpenDisposition::kNewForegroundTab,
         },
         RedirectionTestCase{
             .test_name = "CurrentTabOnInitialNavigation",
             .is_initial_navigation = true,
-            .expected_disposition = WindowOpenDisposition::CURRENT_TAB,
+            .expected_disposition = WindowOpenDisposition::kCurrentTab,
         }),
     [](const ::testing::TestParamInfo<RedirectionTestCase>& info) {
       return info.param.test_name;

@@ -90,7 +90,7 @@ void OpenLoginPage(content::WebContents* web_contents) {
       base::android::AttachCurrentThread());
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GURL(url), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 #else
@@ -367,10 +367,10 @@ void OpenLoginTab(BrowserWindowInterface* browser,
   WindowOpenDisposition disposition;
   switch (portal_type) {
     case captive_portal::CaptivePortalWindowType::kPopup:
-      disposition = WindowOpenDisposition::NEW_POPUP;
+      disposition = WindowOpenDisposition::kNewPopup;
       break;
     case captive_portal::CaptivePortalWindowType::kTab:
-      disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      disposition = WindowOpenDisposition::kNewForegroundTab;
       break;
     default:
       NOTREACHED() << "Invalid captive portal window type";

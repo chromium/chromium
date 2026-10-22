@@ -1591,7 +1591,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   run_loop_ = std::make_unique<base::RunLoop>();
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->Launch(app->id(),
-                apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
                                     false /* preferred_containner */),
                 apps::LaunchSource::kFromChromeInternal,
                 std::make_unique<apps::WindowInfo>(

@@ -136,7 +136,7 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
         profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
-    params->disposition = WindowOpenDisposition::NEW_POPUP;
+    params->disposition = WindowOpenDisposition::kNewPopup;
 
     ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
@@ -149,7 +149,7 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
         profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
-    params->disposition = WindowOpenDisposition::NEW_WINDOW;
+    params->disposition = WindowOpenDisposition::kNewWindow;
 
     ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),

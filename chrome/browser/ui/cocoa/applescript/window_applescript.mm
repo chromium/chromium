@@ -269,7 +269,7 @@
 
   NavigateParams params(_browser.get(), GURL(chrome::kChromeUINewTabURL),
                         ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.tabstrip_index = index;
   Navigate(&params);
 

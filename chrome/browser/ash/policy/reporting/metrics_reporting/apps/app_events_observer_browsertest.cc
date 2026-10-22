@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportLaunchedApp) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
       apps::AppLaunchParams(
           app_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromTest),
+          WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromTest),
       base::IgnoreArgs<apps::LaunchResult>(run_loop.QuitClosure()));
   run_loop.Run();
 

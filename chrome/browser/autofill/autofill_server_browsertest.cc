@@ -161,7 +161,7 @@ class AutofillServerTest : public InProcessBrowserTest {
     NavigateParams params(
         browser(), embedded_https_test_server().GetURL("a.com", relative_url),
         ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     ui_test_utils::NavigateToURL(&params);
   }
 

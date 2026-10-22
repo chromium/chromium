@@ -417,7 +417,7 @@ void SharesheetService::LaunchApp(const std::u16string& target_name,
                                   apps::IntentPtr intent) {
   app_service_proxy_->LaunchAppWithIntent(
       base::UTF16ToUTF8(target_name),
-      apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+      apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
                           /*prefer_container=*/true),
       std::move(intent), apps::LaunchSource::kFromSharesheet,
       std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),

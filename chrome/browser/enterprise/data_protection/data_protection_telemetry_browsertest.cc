@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest, StandardNavigation) {
       CreateExpectedUrlFilteringEvent(target_url, /*tab_title=*/"title1.html"));
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), target_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), target_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   run_loop.Run();
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest, FallbackFlushNavigation) {
   browser()->GetTabStripModel()->ActivateTabAt(0);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), target_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), target_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // Wait for the lookup response to arrive and be stored in rt_lookup_response_
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest, NoContentNavigation) {
       CreateExpectedUrlFilteringEvent(target_url, /*tab_title=*/""));
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), target_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), target_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   run_loop.Run();

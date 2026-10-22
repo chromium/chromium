@@ -111,7 +111,7 @@ TEST_F(InstallerDownloaderInfoBarDelegateTest, LinkClicked) {
   ASSERT_TRUE(added_infobar_ptr);
 
   EXPECT_FALSE(added_infobar_ptr->delegate()->LinkClicked(
-      WindowOpenDisposition::CURRENT_TAB));
+      WindowOpenDisposition::kCurrentTab));
 }
 
 TEST_F(InstallerDownloaderInfoBarDelegateTest, AddInfoBarToManager) {

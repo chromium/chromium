@@ -282,10 +282,10 @@ void ForeignSessionHandler::OpenForeignSessionTab(
       modifiers->meta_key, modifiers->shift_key);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (side_panel_ui_ && disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (side_panel_ui_ && disposition == WindowOpenDisposition::kCurrentTab) {
     // In the side panel, never replace the current tab but open a new tab
     // instead.
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    disposition = WindowOpenDisposition::kNewForegroundTab;
   }
 
   if (side_panel_ui_ && side_panel_ui_->metrics_recorder()) {

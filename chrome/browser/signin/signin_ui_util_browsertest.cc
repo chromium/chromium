@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncWithAccountThatNeedsReauth) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -452,8 +452,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://foo/1"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("http://foo/1"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ExpectNoSigninStartedHistograms(histogram_tester);
@@ -480,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://example.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -511,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -561,8 +560,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInForNewAccountWithNoTab) {
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://foo/1"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("http://foo/1"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   SignIn(CoreAccountInfo());
@@ -692,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   GURL other_url = GURL("https://example.com");
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), other_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), other_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tab_strip->ActivateTabAt(
       1, TabStripUserGestureDetails(
@@ -718,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowReauthTab) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       GetIdentityManager(), "foo@example.com", signin::ConsentLevel::kSync);

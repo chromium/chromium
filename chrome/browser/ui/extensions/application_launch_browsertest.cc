@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
   // Create browser2 on display 2.
   apps::AppLaunchParams params("app_id",
                                apps::LaunchContainer::kLaunchContainerWindow,
-                               WindowOpenDisposition::NEW_WINDOW,
+                               WindowOpenDisposition::kNewWindow,
                                apps::LaunchSource::kFromAppListGrid, display2);
   BrowserWindowInterface* browser2 =
       CreateApplicationWindow(browser()->GetProfile(), params, GURL());

@@ -2903,10 +2903,10 @@ TEST_F(ContextualTasksUiTest,
   embedded_web_contents_->SetDelegate(&delegate);
 
   GURL exact_matches_url("https://www.google.com/search?q=test&udm=48");
-  content::OpenURLParams renderer_params(
-      exact_matches_url, content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/true);
+  content::OpenURLParams renderer_params(exact_matches_url, content::Referrer(),
+                                         WindowOpenDisposition::kCurrentTab,
+                                         ui::PAGE_TRANSITION_LINK,
+                                         /*is_renderer_initiated=*/true);
   renderer_params.initiator_origin =
       url::Origin::Create(GURL("https://www.google.com"));
 

@@ -51,21 +51,21 @@ content::WebContents* SearchResultsView::OpenURLFromTab(
   // Open the URL specified by `params` in a new tab.
   WindowOpenDisposition disposition;
   switch (params.disposition) {
-    case WindowOpenDisposition::UNKNOWN:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::CURRENT_TAB:
-    case WindowOpenDisposition::SINGLETON_TAB:
-      disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    case WindowOpenDisposition::kUnknown:
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kCurrentTab:
+    case WindowOpenDisposition::kSingletonTab:
+      disposition = WindowOpenDisposition::kNewForegroundTab;
       break;
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_POPUP:
-    case WindowOpenDisposition::NEW_WINDOW:
-    case WindowOpenDisposition::SAVE_TO_DISK:
-    case WindowOpenDisposition::OFF_THE_RECORD:
-    case WindowOpenDisposition::IGNORE_ACTION:
-    case WindowOpenDisposition::SWITCH_TO_TAB:
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-    case WindowOpenDisposition::NEW_SPLIT_VIEW:
+    case WindowOpenDisposition::kNewForegroundTab:
+    case WindowOpenDisposition::kNewPopup:
+    case WindowOpenDisposition::kNewWindow:
+    case WindowOpenDisposition::kSaveToDisk:
+    case WindowOpenDisposition::kOffTheRecord:
+    case WindowOpenDisposition::kIgnoreAction:
+    case WindowOpenDisposition::kSwitchToTab:
+    case WindowOpenDisposition::kNewPictureInPicture:
+    case WindowOpenDisposition::kNewSplitView:
       // These other dispositions will open new windows / tabs, so use these
       // dispositions as-is.
       disposition = params.disposition;
@@ -106,7 +106,7 @@ bool SearchResultsView::IsWebContentsCreationOverridden(
               self->OpenURLFromTab(
                   self->web_contents(),
                   content::OpenURLParams::CreateBrowserInitiated(
-                      url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                      url, WindowOpenDisposition::kNewForegroundTab,
                       ui::PAGE_TRANSITION_LINK),
                   /*navigation_handle_callback=*/{});
             }

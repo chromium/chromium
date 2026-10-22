@@ -77,7 +77,7 @@ void InvokeExtensionsPromo(ContextPtr context) {
   NavigateParams params(
       context->AsA<BrowserUserEducationContext>()->GetBrowserView().browser(),
       url_with_utm, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.disposition = WindowOpenDisposition::kCurrentTab;
   Navigate(&params);
 }
 

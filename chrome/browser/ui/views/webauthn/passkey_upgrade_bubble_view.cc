@@ -99,7 +99,7 @@ class PasskeyUpgradeBubbleController : public PasswordBubbleControllerBase {
         std::string(base::i18n::GetDefaultIcuLocale().tag_string()));
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            learn_more_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            learn_more_url, WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_LINK);
     web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
   }

@@ -315,7 +315,7 @@ Example: Advanced setup required in C++
 IN_PROC_BROWSER_TEST_F(FooDialogBrowserTest, MyTest) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kSomeOtherBaseUrl),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   FooDialog* my_dialog = FooDialog::ShowConstrained(
       kDummyParam,

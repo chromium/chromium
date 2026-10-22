@@ -90,7 +90,7 @@ class RecordingOpenURLDelegate : public content::WebContentsDelegate {
  private:
   int call_count_ = 0;
   raw_ptr<content::WebContents> source_ = nullptr;
-  WindowOpenDisposition disposition_ = WindowOpenDisposition::UNKNOWN;
+  WindowOpenDisposition disposition_ = WindowOpenDisposition::kUnknown;
   GURL url_;
 };
 
@@ -120,7 +120,7 @@ class RecordingAddNewContentsDelegate : public content::WebContentsDelegate {
  private:
   int call_count_ = 0;
   raw_ptr<content::WebContents> source_ = nullptr;
-  WindowOpenDisposition disposition_ = WindowOpenDisposition::UNKNOWN;
+  WindowOpenDisposition disposition_ = WindowOpenDisposition::kUnknown;
   std::unique_ptr<content::WebContents> new_contents_;
 };
 
@@ -892,7 +892,7 @@ TEST_F(DocumentPipHostTest, AddNewContents_BlocksWhenOpenerHasNoDelegate) {
   auto popup =
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
   host->AddNewContents(host->GetChildWebContents(), std::move(popup), GURL(),
-                       WindowOpenDisposition::NEW_POPUP,
+                       WindowOpenDisposition::kNewPopup,
                        blink::mojom::WindowFeatures(), /*user_gesture=*/false,
                        &was_blocked);
   EXPECT_TRUE(was_blocked);
@@ -910,7 +910,7 @@ TEST_F(DocumentPipHostTest, OpenURLFromTab_CurrentTabClosesPipWindow) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          GURL("https://example.test/"), WindowOpenDisposition::CURRENT_TAB,
+          GURL("https://example.test/"), WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           child->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState());
   EXPECT_EQ(nullptr, host->OpenURLFromTab(child, params, base::NullCallback()));
@@ -939,7 +939,7 @@ TEST_F(DocumentPipHostTest, OpenURLFromTab_NewForegroundTabRoutesToOpener) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           child->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState());
   EXPECT_EQ(opener(),
@@ -947,7 +947,7 @@ TEST_F(DocumentPipHostTest, OpenURLFromTab_NewForegroundTabRoutesToOpener) {
 
   EXPECT_EQ(1, opener_delegate.call_count());
   EXPECT_EQ(opener(), opener_delegate.source());
-  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
             opener_delegate.disposition());
   EXPECT_EQ(url, opener_delegate.url());
   EXPECT_TRUE(host->GetWidget());
@@ -1186,12 +1186,12 @@ TEST_F(DocumentPipHostTest, AddNewContents_ForwardsToOpenerDelegate) {
   content::WebContents* popup_ptr = popup.get();
   content::WebContents* result = host->AddNewContents(
       host->GetChildWebContents(), std::move(popup), GURL(),
-      WindowOpenDisposition::NEW_POPUP, blink::mojom::WindowFeatures(),
+      WindowOpenDisposition::kNewPopup, blink::mojom::WindowFeatures(),
       /*user_gesture=*/true, &was_blocked);
 
   EXPECT_EQ(1, opener_delegate.call_count());
   EXPECT_EQ(opener(), opener_delegate.source());
-  EXPECT_EQ(WindowOpenDisposition::NEW_POPUP, opener_delegate.disposition());
+  EXPECT_EQ(WindowOpenDisposition::kNewPopup, opener_delegate.disposition());
   EXPECT_EQ(popup_ptr, result);
   EXPECT_FALSE(was_blocked);
   opener()->SetDelegate(nullptr);

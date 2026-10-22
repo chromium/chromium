@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_P(ViewTransitionBrowserTestTraverse,
   std::unique_ptr<WebContents> new_tab = shell()->web_contents()->Clone();
   WebContentsImpl* new_tab_impl = static_cast<WebContentsImpl*>(new_tab.get());
   shell()->AddNewContents(nullptr, std::move(new_tab), url_b,
-                          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                          WindowOpenDisposition::kNewForegroundTab,
                           blink::mojom::WindowFeatures(), false, nullptr);
   NavigationController& new_controller = new_tab_impl->GetController();
 

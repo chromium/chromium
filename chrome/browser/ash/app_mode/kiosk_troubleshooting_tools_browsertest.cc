@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, NewWindowAddTab) {
 
   ui_test_utils::NavigateToURLWithDisposition(
       newly_opened_browser, GURL("https://www.google.com/"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(tab_strip_model->count(), initial_number_of_tabs + 1);
 }

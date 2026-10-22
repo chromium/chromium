@@ -2125,7 +2125,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   content::OpenURLParams chrome_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("chrome://settings/"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GURL("chrome://settings/"), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
                          immersive_contents, chrome_params, base::DoNothing()));
@@ -2133,7 +2133,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   content::OpenURLParams file_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("file:///etc/passwd"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GURL("file:///etc/passwd"), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
                          immersive_contents, file_params, base::DoNothing()));
@@ -2141,8 +2141,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   content::OpenURLParams js_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("javascript:alert(1)"),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
+          GURL("javascript:alert(1)"), WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
                          immersive_contents, js_params, base::DoNothing()));
   EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->count());
@@ -2216,7 +2216,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   for (const GURL& target : non_web_urls) {
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            target, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            target, WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_LINK);
     EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
                            immersive_contents, params, base::DoNothing()))
@@ -2248,7 +2248,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   for (const GURL& target : non_web_urls) {
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            target, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            target, WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_LINK);
     EXPECT_EQ(nullptr, side_panel_delegate->OpenURLFromTab(
                            side_panel_contents, params, base::DoNothing()))
@@ -3017,8 +3017,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   constexpr int kSpam = 3;
   for (int i = 0; i < kSpam; ++i) {
     WindowOpenDisposition d = (i < kSpam - 1)
-                                  ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-                                  : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                                  ? WindowOpenDisposition::kNewBackgroundTab
+                                  : WindowOpenDisposition::kNewForegroundTab;
     content::PwnOpenURLWithDisposition(irm_rfh, popup_target, d,
                                        /*user_gesture=*/true);
   }
@@ -3057,7 +3057,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Simulate a compromised renderer sending an OpenURL IPC with a spoofed user
   // gesture and a CURRENT_TAB disposition to hijack the active tab.
   content::PwnOpenURLWithDisposition(irm_rfh, evil_target,
-                                     WindowOpenDisposition::CURRENT_TAB,
+                                     WindowOpenDisposition::kCurrentTab,
                                      /*user_gesture=*/true);
 
   // The active tab was not hijacked. The navigation was converted to a
@@ -3113,8 +3113,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   constexpr int kSpam = 3;
   for (int i = 0; i < kSpam; ++i) {
     WindowOpenDisposition d = (i < kSpam - 1)
-                                  ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-                                  : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                                  ? WindowOpenDisposition::kNewBackgroundTab
+                                  : WindowOpenDisposition::kNewForegroundTab;
     content::PwnOpenURLWithDisposition(side_panel_rfh, popup_target, d,
                                        /*user_gesture=*/true);
   }
@@ -3160,7 +3160,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Simulate a compromised renderer sending an OpenURL IPC with a spoofed user
   // gesture and a CURRENT_TAB disposition to hijack the active tab.
   content::PwnOpenURLWithDisposition(side_panel_rfh, evil_target,
-                                     WindowOpenDisposition::CURRENT_TAB,
+                                     WindowOpenDisposition::kCurrentTab,
                                      /*user_gesture=*/true);
 
   // The active tab was not hijacked. The navigation was converted to a

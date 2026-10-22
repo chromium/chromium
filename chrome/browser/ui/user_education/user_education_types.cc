@@ -11,11 +11,11 @@ WindowOpenDisposition GetWindowOpenDisposition(
     PageOpenMode page_open_mode) {
   switch (page_open_mode) {
     case PageOpenMode::kOverwriteActiveTab:
-      return WindowOpenDisposition::CURRENT_TAB;
+      return WindowOpenDisposition::kCurrentTab;
     case PageOpenMode::kNewForegroundTab:
-      return WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      return WindowOpenDisposition::kNewForegroundTab;
     case PageOpenMode::kSingletonTab:
-      return WindowOpenDisposition::SINGLETON_TAB;
+      return WindowOpenDisposition::kSingletonTab;
   }
 }
 }  // namespace user_education

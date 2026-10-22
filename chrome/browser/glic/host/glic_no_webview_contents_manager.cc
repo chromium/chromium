@@ -581,7 +581,7 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::OpenUrlAndClosePanel(
     const GURL& url) {
   auto params = std::make_unique<NavigateParams>(
       profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params->disposition = WindowOpenDisposition::kNewForegroundTab;
   glic::NavigateAsync(std::move(params), base::DoNothing());
   OnClosePanelClicked();
 }

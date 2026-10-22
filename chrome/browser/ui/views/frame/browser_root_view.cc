@@ -635,7 +635,7 @@ void BrowserRootView::NavigateToDroppedUrls(
                           ui::PAGE_TRANSITION_LINK);
     params.tabstrip_index = insertion_index;
     base::RecordAction(base::UserMetricsAction("Tab_DropURLOnTab"));
-    params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    params.disposition = WindowOpenDisposition::kCurrentTab;
     params.initiator_origin = event.data().GetRendererTaintedOrigin();
     params.source_contents = model->GetWebContentsAt(insertion_index);
     params.window_action = NavigateParams::WindowAction::kShowWindow;
@@ -650,7 +650,7 @@ void BrowserRootView::NavigateToDroppedUrls(
                           ui::PAGE_TRANSITION_LINK);
     params.tabstrip_index = insertion_index;
     base::RecordAction(base::UserMetricsAction("Tab_DropURLBetweenTabs"));
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     if (drop_info->index->group_inclusion ==
             DropIndex::GroupInclusion::kIncludeInGroup &&
         insertion_index < model->count()) {

@@ -65,7 +65,7 @@ class ChromeTabStripDelegateBrowserTest
     for (const auto& url : urls) {
       // content::TestNavigationObserver navigation_observer(urls[i]);
       ui_test_utils::NavigateToURLWithDisposition(
-          browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          browser, url, WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
     return browser;

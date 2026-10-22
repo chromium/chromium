@@ -41,7 +41,7 @@ void InfoRequestedByEvent(tabs::TabInterface* tab, int event_flags) {
   tab->GetBrowserWindowInterface()->OpenGURL(
       GURL(lens::features::GetLensOverlayHelpCenterURL()),
       ui::DispositionFromEventFlags(event_flags,
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
+                                    WindowOpenDisposition::kNewForegroundTab));
 }
 
 void ActivityRequestedByEvent(tabs::TabInterface* tab, int event_flags) {
@@ -52,6 +52,6 @@ void ActivityRequestedByEvent(tabs::TabInterface* tab, int event_flags) {
   tab->GetBrowserWindowInterface()->OpenGURL(
       GURL(lens::features::GetLensOverlayActivityURL()),
       ui::DispositionFromEventFlags(event_flags,
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
+                                    WindowOpenDisposition::kNewForegroundTab));
 }
 }  // namespace lens

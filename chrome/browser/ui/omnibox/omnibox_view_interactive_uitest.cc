@@ -834,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, ClearUserTextAfterBackgroundCommit) {
   GURL url2("data:text/html,page2");
   NavigateParams params(browser(), url2, ui::PAGE_TRANSITION_LINK);
   params.source_contents = contents;
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.disposition = WindowOpenDisposition::kCurrentTab;
   ui_test_utils::NavigateToURL(&params);
 
   // Switch back to the first tab.  The user text should be cleared, and the

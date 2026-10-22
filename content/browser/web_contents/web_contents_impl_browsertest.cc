@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLSubframe) {
   // Navigate with the subframe's FrameTreeNode ID.
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
   OpenURLParams params = OpenURLParams::CreateRendererInitiated(
-      url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+      url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
       Referrer(),
       wc->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState(),
       /*started_from_context_menu=*/false, frame_tree_node_id);
@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLNonExistentSubframe) {
   // Navigate with the invalid FrameTreeNode ID.
   const GURL url(embedded_test_server()->GetURL("/title2.html"));
   OpenURLParams params = OpenURLParams::CreateRendererInitiated(
-      url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+      url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
       Referrer(),
       wc->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState(),
       /*started_from_context_menu=*/false, frame_tree_node_id);
@@ -5092,7 +5092,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, CtrlClickSubframeLink) {
                   subframe,      // source_render_frame_host
                   embedded_test_server()->GetURL("/title1.html"),
                   ::testing::Field(&Referrer::url, main_url),
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  WindowOpenDisposition::kNewForegroundTab,
                   ::testing::Truly([](ui::PageTransition arg) {
                     return ui::PageTransitionCoreTypeIs(
                         arg, ui::PAGE_TRANSITION_LINK);

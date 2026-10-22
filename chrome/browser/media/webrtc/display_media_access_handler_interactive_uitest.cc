@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerInteractiveUITest,
   // Open a new tab in the original window. This will put the opener into the
   // background.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Re-focus the pip window.

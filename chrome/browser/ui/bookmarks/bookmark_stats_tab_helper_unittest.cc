@@ -75,7 +75,7 @@ TEST_F(BookmarkStatsTabHelperTest, LaunchActionAddedWithPendingEntry) {
   // been set should result in a no-op.
   helper->SetLaunchAction(
       {BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()},
-      WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition::kCurrentTab);
   EXPECT_FALSE(helper->launch_action_for_testing().has_value());
   EXPECT_FALSE(helper->tab_disposition_for_testing().has_value());
 
@@ -84,7 +84,7 @@ TEST_F(BookmarkStatsTabHelperTest, LaunchActionAddedWithPendingEntry) {
   LoadUrl(kTestUrl1);
   helper->SetLaunchAction(
       {BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()},
-      WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(helper->launch_action_for_testing().has_value());
   EXPECT_TRUE(helper->tab_disposition_for_testing().has_value());
 
@@ -113,7 +113,7 @@ TEST_F(BookmarkStatsTabHelperTest, EmitsNonEmptyPaintMetrics) {
   LoadUrl(kTestUrl1);
   helper->SetLaunchAction(
       {BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()},
-      WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(helper->launch_action_for_testing().has_value());
   EXPECT_TRUE(helper->tab_disposition_for_testing().has_value());
 

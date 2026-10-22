@@ -141,7 +141,7 @@ ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
 
 void ShoppingUiHandlerDelegate::NavigateToUrl(BrowserWindowInterface* browser,
                                               const GURL& url) {
-  browser->OpenGURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  browser->OpenGURL(url, WindowOpenDisposition::kNewForegroundTab);
 }
 
 }  // namespace commerce

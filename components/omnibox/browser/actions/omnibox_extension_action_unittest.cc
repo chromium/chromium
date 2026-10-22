@@ -72,7 +72,7 @@ TEST(OmniboxExtensionActionTest, ActionRunnerIsInvoked) {
   OmniboxAction::ExecutionContext context(
       autocomplete_provider_client,
       OmniboxAction::ExecutionContext::OpenUrlCallback(), {},
-      WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition::kCurrentTab);
   action->Execute(context);
 }
 

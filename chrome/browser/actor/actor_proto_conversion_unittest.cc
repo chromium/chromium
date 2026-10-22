@@ -745,7 +745,7 @@ TEST_F(ActorProtoConversionTest, GetClientToolForRequest) {
             ClientTool(RuleMetadata::CAPABILITY_FORWARD));
 
   CreateTabToolRequest create_tab_req(
-      /*window_id=*/1, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      /*window_id=*/1, WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(GetClientToolForRequest(create_tab_req),
             ClientTool(RuleMetadata::CAPABILITY_CREATE_TAB));
 

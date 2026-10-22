@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServicePreviousTabSignalTest,
   // Open invalid tab.
   GURL ntp_url("chrome://new-tab-page/");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), ntp_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), ntp_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   tabs::TabInterface* tab_b = TabListInterface::From(browser())->GetActiveTab();
@@ -669,13 +669,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   GURL search_url =
       embedded_test_server()->GetURL("www.google.com", "/search?q=test");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), search_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), search_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // 3. Open another new tab and navigate to Google Home Page.
   GURL home_url = embedded_test_server()->GetURL("www.google.com", "/");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), home_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), home_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   NotifyEmbedderMetadata();
@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   GURL url_b = embedded_test_server()->GetURL(
       kValidUrlDomain, "/optimization_guide/hello.html?b");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url_b, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url_b, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   browser()->tab_strip_model()->ActivateTabAt(0);
@@ -1828,7 +1828,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   // Set up an NTP as the active foreground tab.
   GURL ntp_url("chrome://newtab/");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), ntp_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), ntp_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   NotifyEmbedderMetadata();
@@ -1939,7 +1939,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   GURL url2 = embedded_test_server()->GetURL("b.test",
                                              "/optimization_guide/hello.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   NotifyEmbedderMetadata();
@@ -2057,19 +2057,19 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   GURL url2 = embedded_test_server()->GetURL("B.test",
                                              "/optimization_guide/hello.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   GURL url3 = embedded_test_server()->GetURL("c.test",
                                              "/optimization_guide/hello.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url3, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   GURL url4 = embedded_test_server()->GetURL("en.c.test",
                                              "/optimization_guide/hello.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url4, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url4, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   NotifyEmbedderMetadata();
@@ -2172,7 +2172,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SuccessWithMlModel) {
 
   // Open a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), valid_url(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), valid_url(), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   NotifyEmbedderMetadata();
@@ -2228,14 +2228,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceDeduplicateTest,
 
   // Open a second tab with the same URL.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), valid_url(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), valid_url(), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Open a third tab with a different URL.
   GURL url2 = embedded_test_server()->GetURL("b.test",
                                              "/optimization_guide/hello.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   NotifyEmbedderMetadata();

@@ -183,7 +183,7 @@ void NewTabFooterHandler::OpenUrlInCurrentTabInternal(const GURL& url) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK);
+          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 

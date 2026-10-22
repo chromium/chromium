@@ -180,7 +180,7 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
     apps::AppLaunchParams params(
         extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
     apps::AppServiceProxyFactory::GetForProfile(
         run_options.profile ? run_options.profile.get() : profile())

@@ -1893,7 +1893,7 @@ void DevToolsWindow::OpenInNewTab(const GURL& url) {
   }
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          fixed_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          fixed_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   // The URL typically originates from content that is controlled by the
   // inspected target (e.g. a linkified URL in the Console, or a request in the

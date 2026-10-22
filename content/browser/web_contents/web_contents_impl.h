@@ -2930,7 +2930,7 @@ class CONTENT_EXPORT WebContentsImpl
   // The window open disposition that was originally requested
   // when this WebContents was created.
   WindowOpenDisposition original_window_open_disposition_ =
-      WindowOpenDisposition::UNKNOWN;
+      WindowOpenDisposition::kUnknown;
 
 #if BUILDFLAG(IS_ANDROID)
   bool supports_forward_transition_animation_ = true;

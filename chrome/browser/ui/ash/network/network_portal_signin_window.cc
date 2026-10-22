@@ -101,7 +101,7 @@ void NetworkPortalSigninWindow::Show(const GURL& url) {
 
   NET_LOG(EVENT) << "Show new portal signin window";
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.disposition = WindowOpenDisposition::kNewPopup;
   params.user_gesture = true;
   params.trusted_source = false;
   // `captive_portal_window_type = kPopup` is used on desktop Chrome to identify

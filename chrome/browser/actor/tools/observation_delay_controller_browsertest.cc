@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   // Now open a new tab, putting the tab waiting on page stability in the
   // background.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_FALSE(observed_tab->IsActivated());
   ASSERT_NE(active_tab(), observed_tab);

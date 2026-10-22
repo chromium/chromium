@@ -1058,7 +1058,7 @@ void ChromeOmniboxClient::OpenIphLink(GURL gurl) {
   ui::PageTransition transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
   NavigateParams params(profile_, gurl, transition);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

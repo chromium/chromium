@@ -1041,7 +1041,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
   // Since this navigation targeted a specific RenderFrameProxy, it should stay
   // in the current tab.
-  CHECK_EQ(WindowOpenDisposition::CURRENT_TAB, params->disposition,
+  CHECK_EQ(WindowOpenDisposition::kCurrentTab, params->disposition,
            base::NotFatalUntil::M152);
 
   // Augment |download_policy| for situations that were not covered on the

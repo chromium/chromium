@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
                        MAYBE_DoShowIconAndBubbleOnChromePasswordManagerPage) {
   GURL password_manager_url("chrome://password-manager");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), password_manager_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), password_manager_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   webapps::AppId pwd_manager_app_id =

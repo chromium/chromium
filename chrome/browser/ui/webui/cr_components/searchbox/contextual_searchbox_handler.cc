@@ -2448,7 +2448,7 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get()) &&
-      disposition == WindowOpenDisposition::CURRENT_TAB) {
+      disposition == WindowOpenDisposition::kCurrentTab) {
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_);
     auto* tab_list = TabListInterface::From(browser_window_interface);
@@ -2503,7 +2503,7 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (disposition == WindowOpenDisposition::kCurrentTab) {
     content::WebContents* target_web_contents = web_contents_.get();
     if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {
       if (auto* browser_window_interface =
@@ -2601,7 +2601,7 @@ void ContextualSearchboxHandler::OpenUrl(
     // the focus is re-captured by the Omnibox after query submission (see:
     // http://crbug.com/469458346).
     if (target_web_contents &&
-        disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+        disposition != WindowOpenDisposition::kNewBackgroundTab) {
       target_web_contents->Focus();
     }
   }

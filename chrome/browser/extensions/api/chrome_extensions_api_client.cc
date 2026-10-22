@@ -344,7 +344,7 @@ void ChromeExtensionsAPIClient::OpenFileUrlForTesting(
   // Open the file URL in the current tab.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          file_url, WindowOpenDisposition::CURRENT_TAB,
+          file_url, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_FROM_API);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }

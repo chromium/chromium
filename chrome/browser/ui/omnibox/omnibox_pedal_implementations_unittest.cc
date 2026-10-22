@@ -79,7 +79,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
         autocomplete_provider_client_,
         base::BindOnce(&OmniboxPedalImplementationsTest::OnAutocompleteAccept,
                        base::Unretained(this)),
-        {}, WindowOpenDisposition::CURRENT_TAB);
+        {}, WindowOpenDisposition::kCurrentTab);
     pedal->Execute(context);
     return last_destination_url_;
   }

@@ -403,7 +403,7 @@ void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
       BrowserLiveTabContext::FindContextForWebContents(
           browser_->GetActiveTabInterface()->GetContents()),
       SessionID::FromSerializedValue(session_id),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      WindowOpenDisposition::kNewForegroundTab);
 }
 
 void TabSearchPageHandler::ReplaceActiveSplitTab(int32_t replacement_tab_id) {

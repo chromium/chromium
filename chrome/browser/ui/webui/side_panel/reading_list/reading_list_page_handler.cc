@@ -98,7 +98,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
       case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                url_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                url_, WindowOpenDisposition::kNewBackgroundTab,
                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
@@ -107,7 +107,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
       case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW: {
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                url_, WindowOpenDisposition::NEW_WINDOW,
+                url_, WindowOpenDisposition::kNewWindow,
                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
@@ -116,7 +116,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
       case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD: {
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                url_, WindowOpenDisposition::OFF_THE_RECORD,
+                url_, WindowOpenDisposition::kOffTheRecord,
                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;

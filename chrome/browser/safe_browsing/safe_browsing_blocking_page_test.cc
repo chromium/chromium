@@ -790,7 +790,7 @@ class SafeBrowsingBlockingPageBrowserTest
                                             BrowserWindowInterface* browser) {
     SetURLThreatType(url, GetThreatType());
     ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser, url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
     content::TestNavigationObserver observer(
         browser->GetTabStripModel()->GetActiveWebContents());
@@ -3136,7 +3136,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
     content::TestNavigationManager navigation_manager(
         browser()->tab_strip_model()->GetActiveWebContents(), original_url);
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), original_url, WindowOpenDisposition::CURRENT_TAB,
+        browser(), original_url, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     EXPECT_TRUE(navigation_manager.WaitForResponse());
 
@@ -3191,7 +3191,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
     content::TestNavigationManager navigation_manager(
         browser()->tab_strip_model()->GetActiveWebContents(), original_url);
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), original_url, WindowOpenDisposition::CURRENT_TAB,
+        browser(), original_url, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
   }

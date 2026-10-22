@@ -2275,7 +2275,7 @@ bool PDFiumEngine::NavigateToLinkDestination(
       return true;
     }
 
-    if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+    if (disposition == WindowOpenDisposition::kCurrentTab) {
       client_->NavigateToDestination(target.page,
                                      base::OptionalToPtr(target.x_in_pixels),
                                      base::OptionalToPtr(target.y_in_pixels),
@@ -3111,7 +3111,7 @@ void PDFiumEngine::HandleAccessibilityAction(
               pages_[action_data.page_index]->GetLinkTargetAtIndex(
                   action_data.annotation_index, &target);
           NavigateToLinkDestination(area, target,
-                                    WindowOpenDisposition::CURRENT_TAB);
+                                    WindowOpenDisposition::kCurrentTab);
         }
       }
       return;

@@ -264,7 +264,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
         ->GetOmniboxController()
         ->edit_model()
         ->OpenCurrentSelection(base::TimeTicks::Now(),
-                               WindowOpenDisposition::CURRENT_TAB,
+                               WindowOpenDisposition::kCurrentTab,
                                /*via_keyboard=*/true);
   }
 

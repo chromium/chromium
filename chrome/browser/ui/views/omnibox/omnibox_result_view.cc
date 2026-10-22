@@ -592,7 +592,7 @@ void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
                                       const ui::Event& event) {
   popup_view_->controller()->edit_model()->OpenSelection(
       OmniboxPopupSelection(model_index_, state), event.time_stamp(),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       /*via_keyboard=*/event.IsKeyEvent());
   if (state ==
       OmniboxPopupSelection::LineState::kFocusedButtonRemoveSuggestion) {
@@ -641,8 +641,8 @@ bool OmniboxResultView::OnMouseDragged(const ui::MouseEvent& event) {
 void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
   if (event.IsOnlyMiddleMouseButton() || event.IsOnlyLeftMouseButton()) {
     const auto disposition = event.IsOnlyLeftMouseButton()
-                                 ? WindowOpenDisposition::CURRENT_TAB
-                                 : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+                                 ? WindowOpenDisposition::kCurrentTab
+                                 : WindowOpenDisposition::kNewBackgroundTab;
     popup_view_->controller()->edit_model()->OpenSelection(
         OmniboxPopupSelection(model_index_), event.time_stamp(), disposition);
   }

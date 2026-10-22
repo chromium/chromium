@@ -104,7 +104,7 @@ void WalletReminderNoticeBubbleController::OnLinkClicked(const GURL& url) {
   logged_link_clicked_ = true;
 
   web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                              url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              url, WindowOpenDisposition::kNewForegroundTab,
                               ui::PAGE_TRANSITION_LINK),
                           /*navigation_handle_callback=*/{});
 }

@@ -328,7 +328,7 @@ void AndroidNotificationHandler::OpenEntryInBackground(
       Profile::FromBrowserContext(target_web_contents.GetBrowserContext()),
       entry.GetURL(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   nav_params->source_contents = &target_web_contents;
-  nav_params->disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  nav_params->disposition = WindowOpenDisposition::kNewBackgroundTab;
   nav_params->window_action = NavigateParams::WindowAction::kNoAction;
   nav_params->tabstrip_index = tabstrip_index;
   nav_params->internal_scroll_to_text_fragment =

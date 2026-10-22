@@ -560,7 +560,7 @@ void InspectMessageHandler::CreateNativeUIInspectionSession(
   content::WebContents* front_end = inspect_ui->GetDelegate()->OpenURLFromTab(
       inspect_ui,
       content::OpenURLParams::CreateBrowserInitiated(
-          gurl, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          gurl, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
   // When the front-end is started, disable the launch button.
@@ -744,7 +744,7 @@ void InspectUI::InspectBrowserWithCustomFrontend(const std::string& source_id,
   WebContents* front_end = inspect_ui->GetDelegate()->OpenURLFromTab(
       inspect_ui,
       content::OpenURLParams::CreateBrowserInitiated(
-          frontend_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          frontend_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 

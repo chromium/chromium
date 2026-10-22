@@ -118,7 +118,7 @@ void ExplainSuggestion::OpenTabForSearch(const std::string& query) {
     return;
   }
   content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                WindowOpenDisposition::kNewForegroundTab,
                                 ui::PAGE_TRANSITION_LINK,
                                 /*is_renderer_initiated=*/true);
   params.user_gesture = true;

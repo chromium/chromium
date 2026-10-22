@@ -87,7 +87,7 @@ content::WebContents* OpenUrlInBrowser(GURL page_url) {
       CHECK_DEREF(CreateBrowserWindow(std::move(params)));
   new_browser.GetWindow()->Show();
   ui_test_utils::NavigateToURLWithDisposition(
-      &new_browser, page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      &new_browser, page_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   return new_browser.GetTabStripModel()->GetActiveWebContents();
 }

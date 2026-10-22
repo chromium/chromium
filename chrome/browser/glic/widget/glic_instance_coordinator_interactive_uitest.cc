@@ -670,14 +670,14 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
   ASSERT_TRUE(tab_1);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tabs::TabInterface* tab_2 = tab_list_a->GetActiveTab();
   ASSERT_TRUE(tab_2);
   ASSERT_NE(tab_1, tab_2);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tabs::TabInterface* tab_3 = tab_list_a->GetActiveTab();
   ASSERT_TRUE(tab_3);

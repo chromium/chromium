@@ -135,7 +135,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
   auto NewTab(BrowserWindowInterface* browser, GURL url) {
     return Steps(Do([browser, url = std::move(url)]() {
       ui_test_utils::NavigateToURLWithDisposition(
-          browser, url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          browser, url, WindowOpenDisposition::kNewBackgroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }));

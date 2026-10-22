@@ -360,7 +360,7 @@ void InSessionAuthDialogClient::OpenInSessionAuthHelpPage() const {
   // existing one.
   ash::BrowserController::GetInstance()->OpenUrl(
       session.account_id(), GURL(kInSessionAuthHelpPageUrl),
-      {.disposition = WindowOpenDisposition::NEW_POPUP,
+      {.disposition = WindowOpenDisposition::kNewPopup,
        .transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK,
        .popup_has_trusted_source = true});
 }

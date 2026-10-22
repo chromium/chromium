@@ -135,8 +135,9 @@ void PopupBlockerTabHelper::ShowBlockedPopup(
   BlockedRequest* popup = it->second.get();
 
   std::optional<WindowOpenDisposition> updated_disposition;
-  if (disposition != WindowOpenDisposition::CURRENT_TAB)
+  if (disposition != WindowOpenDisposition::kCurrentTab) {
     updated_disposition = disposition;
+  }
 
   PopupNavigationDelegate::NavigateResult result =
       popup->delegate->NavigateWithGesture(popup->window_features,
@@ -167,7 +168,7 @@ void PopupBlockerTabHelper::ShowBlockedPopup(
 void PopupBlockerTabHelper::ShowAllBlockedPopups() {
   PopupIdMap blocked_popups = GetBlockedPopupRequests();
   for (const auto& elem : blocked_popups) {
-    ShowBlockedPopup(elem.first, WindowOpenDisposition::CURRENT_TAB);
+    ShowBlockedPopup(elem.first, WindowOpenDisposition::kCurrentTab);
   }
 }
 

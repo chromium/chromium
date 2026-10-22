@@ -42,7 +42,7 @@ base::expected<WebContents*, std::string> OpenInNewTab(
     WebContents* original_tab,
     const GURL& url) {
   OpenedWindowObserver tab_observer(original_tab,
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                                    WindowOpenDisposition::kNewForegroundTab);
   if (!ExecJs(original_tab, JsReplace("window.open($1, '_blank');", url))) {
     return base::unexpected("window.open failed");
   }

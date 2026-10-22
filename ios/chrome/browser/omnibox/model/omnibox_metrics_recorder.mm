@@ -174,7 +174,7 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
   log.ukm_source_id = _omniboxClient->GetUKMSourceId();
   log.input_state = _omniboxTextModel->input.input_state();
 
-  if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
+  if ((disposition == WindowOpenDisposition::kCurrentTab) &&
       _omniboxClient->CurrentPageExists()) {
     // If we know the destination is being opened in the current tab,
     // we can easily get the tab ID.  (If it's being opened in a new

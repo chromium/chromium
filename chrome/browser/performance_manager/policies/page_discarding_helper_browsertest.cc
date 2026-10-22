@@ -148,8 +148,8 @@ void EnsureTabsInBrowser(BrowserWindowInterface* browser, int num_tabs) {
   for (int i = 0; i < num_tabs; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, GURL("data:text/html;charset=utf-8,hello"),
-        i == 0 ? WindowOpenDisposition::CURRENT_TAB
-               : WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        i == 0 ? WindowOpenDisposition::kCurrentTab
+               : WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -213,7 +213,7 @@ class PageDiscardingHelperBrowserTest
     content::OpenURLParams page =
         content::OpenURLParams::CreateBrowserInitiated(
             embedded_test_server()->GetURL("/favicon/title2_with_favicon.html"),
-            WindowOpenDisposition::NEW_BACKGROUND_TAB,
+            WindowOpenDisposition::kNewBackgroundTab,
             ui::PAGE_TRANSITION_TYPED);
     content::WebContents* contents =
         browser()->OpenURL(page, /*navigation_handle_callback=*/{});

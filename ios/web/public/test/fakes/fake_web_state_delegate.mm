@@ -10,7 +10,7 @@ namespace web {
 FakeOpenURLRequest::FakeOpenURLRequest()
     : params(GURL(),
              Referrer(),
-             WindowOpenDisposition::UNKNOWN,
+             WindowOpenDisposition::kUnknown,
              ui::PAGE_TRANSITION_LINK,
              false) {}
 

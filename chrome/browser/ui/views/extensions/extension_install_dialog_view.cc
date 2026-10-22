@@ -482,7 +482,7 @@ void ExtensionInstallDialogView::LinkClicked() {
   GURL store_url(extension_urls::GetWebstoreItemDetailURLPrefix() +
                  prompt_->extension()->id());
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      store_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      store_url, WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK);
 
   CHECK(show_params_, base::NotFatalUntil::M162);

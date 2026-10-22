@@ -41,8 +41,8 @@ void NavigationHandler::HandleNavigateToUrl(const base::ListValue& list) {
 
   WindowOpenDisposition disposition = ui::DispositionFromClick(
       middle_button, alt_key, ctrl_key, meta_key, shift_key,
-      (target_string == "_blank") ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                  : WindowOpenDisposition::CURRENT_TAB);
+      (target_string == "_blank") ? WindowOpenDisposition::kNewForegroundTab
+                                  : WindowOpenDisposition::kCurrentTab);
   web_ui()->GetWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(url_string), disposition, ui::PAGE_TRANSITION_LINK),

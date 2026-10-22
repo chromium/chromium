@@ -60,7 +60,7 @@ WindowOpenDisposition GetLinkCapturingSourceDisposition(
     content::WebContents* contents) {
   auto* helper = LinkCapturingUserData::FromWebContents(contents);
   if (!helper) {
-    return WindowOpenDisposition::UNKNOWN;
+    return WindowOpenDisposition::kUnknown;
   }
   return helper->source_disposition();
 }

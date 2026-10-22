@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
   // Navigate, unblocking with new tab.
   GURL url = embedded_test_server()->GetURL("/save_page/b.htm");
   NavigateToURLWithDisposition(incognito, url,
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               WindowOpenDisposition::kNewForegroundTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // Save the page before completion.
@@ -1337,7 +1337,7 @@ class SavePageOriginalVsSavedComparisonTest
     // See https://crbug.com/41450468.
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,foo")));
-    chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
     EXPECT_TRUE(content::WaitForLoadStop(GetCurrentTab(browser())));
     DLOG(INFO) << "Verifying test expectations after history navigation...";
     AssertExpectationsAboutCurrentTab(expected_number_of_frames_in_saved_page,

@@ -527,7 +527,7 @@ TEST_F(ActionAppMenuTest, PassesClickDisposition) {
       .WillOnce([](actions::ActionId, actions::ActionItem*,
                    actions::ActionInvocationContext context) {
         EXPECT_EQ(context.GetProperty(chrome::kDispositionKey),
-                  WindowOpenDisposition::CURRENT_TAB);
+                  WindowOpenDisposition::kCurrentTab);
       });
   menu.ExecuteCommand(print_item->GetCommand(), ui::EF_NONE);
 
@@ -535,7 +535,7 @@ TEST_F(ActionAppMenuTest, PassesClickDisposition) {
       .WillOnce([](actions::ActionId, actions::ActionItem*,
                    actions::ActionInvocationContext context) {
         EXPECT_EQ(context.GetProperty(chrome::kDispositionKey),
-                  WindowOpenDisposition::NEW_BACKGROUND_TAB);
+                  WindowOpenDisposition::kNewBackgroundTab);
       });
   menu.ExecuteCommand(print_item->GetCommand(), ui::EF_MIDDLE_MOUSE_BUTTON);
 
@@ -543,7 +543,7 @@ TEST_F(ActionAppMenuTest, PassesClickDisposition) {
       .WillOnce([](actions::ActionId, actions::ActionItem*,
                    actions::ActionInvocationContext context) {
         EXPECT_EQ(context.GetProperty(chrome::kDispositionKey),
-                  WindowOpenDisposition::NEW_WINDOW);
+                  WindowOpenDisposition::kNewWindow);
       });
   menu.ExecuteCommand(print_item->GetCommand(), ui::EF_SHIFT_DOWN);
 
@@ -677,14 +677,14 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
       return nullptr;
     }
     GURL last_url;
-    WindowOpenDisposition last_disposition = WindowOpenDisposition::UNKNOWN;
+    WindowOpenDisposition last_disposition = WindowOpenDisposition::kUnknown;
   } nav_wrapper;
   bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&nav_wrapper);
 
   base::HistogramTester histogram_tester;
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_NONE);
   EXPECT_EQ(nav_wrapper.last_url, GURL("https://www.google.com"));
-  EXPECT_EQ(nav_wrapper.last_disposition, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_EQ(nav_wrapper.last_disposition, WindowOpenDisposition::kCurrentTab);
   histogram_tester.ExpectUniqueSample("Bookmarks.LaunchLocation",
                                       BookmarkLaunchLocation::kAppMenu, 1);
   histogram_tester.ExpectTotalCount("Bookmarks.UsageCountPerProfileType", 1);
@@ -692,11 +692,11 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_MIDDLE_MOUSE_BUTTON);
   EXPECT_EQ(nav_wrapper.last_url, GURL("https://www.google.com"));
   EXPECT_EQ(nav_wrapper.last_disposition,
-            WindowOpenDisposition::NEW_BACKGROUND_TAB);
+            WindowOpenDisposition::kNewBackgroundTab);
 
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_SHIFT_DOWN);
   EXPECT_EQ(nav_wrapper.last_url, GURL("https://www.google.com"));
-  EXPECT_EQ(nav_wrapper.last_disposition, WindowOpenDisposition::NEW_WINDOW);
+  EXPECT_EQ(nav_wrapper.last_disposition, WindowOpenDisposition::kNewWindow);
 
   bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(nullptr);
 

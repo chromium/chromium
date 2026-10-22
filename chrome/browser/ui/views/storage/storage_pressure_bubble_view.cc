@@ -76,7 +76,7 @@ void StoragePressureBubbleView::OnDialogAccepted() {
   const GURL all_sites_gurl(kAllSitesContentSettingsUrl);
   NavigateParams params(bwi_, all_sites_gurl,
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

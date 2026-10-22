@@ -134,7 +134,7 @@ void ExtensionInstallDialogViewAndroid::OnStoreLinkClicked(
   GURL gurl(url);
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          gurl, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          gurl, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }

@@ -487,7 +487,7 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
 
   // Allow the side panel's own WebUI (`chrome://contextual-tasks`) to reload or
   // navigate itself in-place without forwarding to the active browser tab.
-  if (params.disposition == WindowOpenDisposition::CURRENT_TAB &&
+  if (params.disposition == WindowOpenDisposition::kCurrentTab &&
       ContextualTasksUiService::IsContextualTasksUrl(params.url)) {
     content::NavigationController::LoadURLParams load_url_params(params);
     base::WeakPtr<content::NavigationHandle> navigation_handle =
@@ -546,13 +546,13 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
     }
 
     switch (modified_params.disposition) {
-      case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      case WindowOpenDisposition::NEW_POPUP:
-      case WindowOpenDisposition::NEW_WINDOW:
+      case WindowOpenDisposition::kNewForegroundTab:
+      case WindowOpenDisposition::kNewBackgroundTab:
+      case WindowOpenDisposition::kNewPopup:
+      case WindowOpenDisposition::kNewWindow:
         break;
       default:
-        modified_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        modified_params.disposition = WindowOpenDisposition::kNewForegroundTab;
         break;
     }
   }

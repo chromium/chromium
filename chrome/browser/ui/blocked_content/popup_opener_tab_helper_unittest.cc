@@ -129,7 +129,7 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
 
     blocked_content::PopupTracker::CreateForWebContents(
         raw_popup, web_contents() /* opener */,
-        WindowOpenDisposition::NEW_POPUP);
+        WindowOpenDisposition::kNewPopup);
     web_contents()->WasHidden();
     raw_popup->WasShown();
     return raw_popup;

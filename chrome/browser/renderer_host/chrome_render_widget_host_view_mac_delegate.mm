@@ -205,7 +205,7 @@
 
   webContents->BackNavigationLikely(
       content::preloading_predictor::kBackGestureNavigation,
-      WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition::kCurrentTab);
 }
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item

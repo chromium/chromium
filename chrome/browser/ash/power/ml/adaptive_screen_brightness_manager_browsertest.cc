@@ -112,13 +112,13 @@ class AdaptiveScreenBrightnessManagerBrowserTest : public InProcessBrowserTest {
   ukm::SourceId NavigateInBrowser(
       BrowserWindowInterface* target_browser,
       const GURL& url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB) {
+      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab) {
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         target_browser, url, disposition,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     TabStripModel* const tab_strip_model = target_browser->GetTabStripModel();
     content::WebContents* const contents =
-        disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB
+        disposition == WindowOpenDisposition::kNewBackgroundTab
             ? tab_strip_model->GetWebContentsAt(tab_strip_model->count() - 1)
             : tab_strip_model->GetActiveWebContents();
     return contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -132,10 +132,10 @@ class AdaptiveScreenBrightnessManagerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AdaptiveScreenBrightnessManagerBrowserTest,
                        SingleBrowser) {
   NavigateInBrowser(browser(), embedded_test_server()->GetURL("/title1.html"),
-                    WindowOpenDisposition::CURRENT_TAB);
+                    WindowOpenDisposition::kCurrentTab);
   const ukm::SourceId source_id2 = NavigateInBrowser(
       browser(), embedded_test_server()->GetURL("/title2.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      WindowOpenDisposition::kNewForegroundTab);
 
   InitializeBrightness(75.0f);
   FireTimer();

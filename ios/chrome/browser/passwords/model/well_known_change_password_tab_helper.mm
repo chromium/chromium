@@ -144,7 +144,7 @@ void WellKnownChangePasswordTabHelper::Redirect(const GURL& url) {
   // Making sure there was no other navigation started we could override.
   if (processing_state_ == kResponesReceived) {
     web::WebState::OpenURLParams params(url, web::Referrer(),
-                                        WindowOpenDisposition::CURRENT_TAB,
+                                        WindowOpenDisposition::kCurrentTab,
                                         ui::PAGE_TRANSITION_LINK, false);
     web_state_->OpenURL(params);
   }

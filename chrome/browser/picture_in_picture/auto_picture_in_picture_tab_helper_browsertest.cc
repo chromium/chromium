@@ -587,7 +587,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kBlankPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser, test_page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser, test_page_url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 
@@ -596,7 +596,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kBlankPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser, test_page_url, WindowOpenDisposition::NEW_POPUP,
+        browser, test_page_url, WindowOpenDisposition::kNewPopup,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 

@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(AudioDuckerBrowserTest,
 
   // Open a second test page and also play a video.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), test_page_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   content::WebContents* web_contents2 =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(AudioDuckerBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), test_page_no_player_url,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   content::WebContents* web_contents2 =
       browser()->tab_strip_model()->GetActiveWebContents();

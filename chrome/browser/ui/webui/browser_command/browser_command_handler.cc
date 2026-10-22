@@ -392,7 +392,7 @@ void BrowserCommandHandler::OpenGlicSettings() {
     }
 
     NavigateToURL(glic::GetHelpCenterUrl(url),
-                  WindowOpenDisposition::SINGLETON_TAB);
+                  WindowOpenDisposition::kSingletonTab);
   }
 }
 

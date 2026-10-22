@@ -51,7 +51,7 @@ void BrowserControlsAdapterImpl::Reload(bool bypass_cache,
 
 void BrowserControlsAdapterImpl::Stop() {
   command_updater_->ExecuteCommandWithDisposition(
-      IDC_STOP, WindowOpenDisposition::CURRENT_TAB);
+      IDC_STOP, WindowOpenDisposition::kCurrentTab);
 }
 
 void BrowserControlsAdapterImpl::Back(WindowOpenDisposition disposition) {
@@ -72,7 +72,7 @@ void BrowserControlsAdapterImpl::BackButtonHovered() {
     return;
   }
   contents->BackNavigationLikely(chrome_preloading_predictor::kBackButtonHover,
-                                 WindowOpenDisposition::CURRENT_TAB);
+                                 WindowOpenDisposition::kCurrentTab);
 }
 
 void BrowserControlsAdapterImpl::CreateNewSplitTab() {
@@ -162,7 +162,7 @@ void BrowserControlsAdapterImpl::OpenDroppedUrl(
     const GURL& url,
     bool drag_originated_from_renderer) {
   content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
+                                WindowOpenDisposition::kCurrentTab,
                                 ui::PAGE_TRANSITION_LINK,
                                 /*is_renderer_initiated=*/false);
   // A drag that started in a web page carries data controlled by that page, so

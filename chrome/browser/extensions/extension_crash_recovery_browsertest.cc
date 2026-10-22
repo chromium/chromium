@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   extensions::TestExtensionRegistryObserver observer(GetExtensionRegistry());
   {
     content::LoadStopObserver notification_observer(GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     notification_observer.Wait();
   }
   scoped_refptr<const Extension> extension = observer.WaitForExtensionLoaded();

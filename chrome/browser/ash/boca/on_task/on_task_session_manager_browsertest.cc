@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_P(OnTaskSessionManagerBrowserTest,
   content::RunAllTasksUntilIdle();
   const GURL new_url(embedded_test_server()->GetURL("/test/new_page.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      boca_app_browser, new_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      boca_app_browser, new_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             new_url);

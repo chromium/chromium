@@ -59,7 +59,7 @@ class OmniboxMetricsProviderTest : public testing::Test {
         metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID,
         /*is_popup_open=*/false,
         /*selection=*/OmniboxPopupSelection(selected_index),
-        /*disposition=*/WindowOpenDisposition::CURRENT_TAB,
+        /*disposition=*/WindowOpenDisposition::kCurrentTab,
         /*is_paste_and_go=*/false,
         /*tab_id=*/SessionID::FromSerializedValue(1),
         /*current_page_classification=*/

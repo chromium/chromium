@@ -409,7 +409,7 @@ content::WebContents* MimeHandlerViewGuest::CreateCustomWebContents(
 
   content::OpenURLParams open_params =
       content::OpenURLParams::CreateRendererInitiated(
-          target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          target_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           opener->GetCurrentInitiatorNavigationState());
   open_params.initiator_origin = opener->GetLastCommittedOrigin();

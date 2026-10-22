@@ -1313,7 +1313,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Setup Tab 2 with an image replacement.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), test_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* web_contents2 =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -2013,7 +2013,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Open a second tab in the same profile.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), test_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* web_contents2 =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -2061,7 +2061,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   // Open a second tab in the same profile and trigger photo deletion while Tab
   // 1's Generate request is in flight.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), test_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* web_contents2 =
       browser()->GetTabStripModel()->GetActiveWebContents();

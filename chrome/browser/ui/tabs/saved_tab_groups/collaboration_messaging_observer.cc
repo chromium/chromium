@@ -235,7 +235,7 @@ void CollaborationMessagingObserver::ReopenTabForCurrentInstantMessage() {
               group_id.value())) {
     SavedTabGroupUtils::OpenTabInBrowser(
         GURL(tab_url.value()), browser, profile_,
-        WindowOpenDisposition::NEW_BACKGROUND_TAB, std::nullopt,
+        WindowOpenDisposition::kNewBackgroundTab, std::nullopt,
         group_id.value());
   }
 }

@@ -1283,7 +1283,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(ExecJs(active_web_contents, "exitPictureInPicture();"));
 
   content::TestNavigationObserver observer(active_web_contents, 1);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   observer.Wait();
 
   active_web_contents = browser()->GetTabStripModel()->GetActiveWebContents();

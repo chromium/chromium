@@ -228,7 +228,7 @@ void HidChooserController::OpenHelpCenterUrl() const {
 
   web_contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                             GURL(chrome::kChooserHidOverviewUrl),
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            WindowOpenDisposition::kNewForegroundTab,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
                         /*navigation_handle_callback=*/{});
 }

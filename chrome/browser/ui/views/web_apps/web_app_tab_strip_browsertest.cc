@@ -240,7 +240,7 @@ class WebAppTabStripBrowserTestBase : public WebAppBrowserTestBase {
 
     NavigateParams params(app_browser, url,
                           ui::PageTransition::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    params.disposition = WindowOpenDisposition::kCurrentTab;
     ui_test_utils::NavigateToURL(&params);
   }
 
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   provider->scheduler().LaunchAppWithCustomParams(
       apps::AppLaunchParams(
           app_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromTest),
+          WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromTest),
       future.GetCallback());
   content::WebContents* web_contents = future.template Get<1>().get();
   ASSERT_TRUE(web_contents);
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip->active_index(), 1);
 
   // Navigate to home tab using the same URL.
-  app_browser->OpenGURL(start_url, WindowOpenDisposition::CURRENT_TAB);
+  app_browser->OpenGURL(start_url, WindowOpenDisposition::kCurrentTab);
 
   // Expect the JS variable to still be set, meaning the page was not navigated.
   EXPECT_EQ(true, EvalJs(tab_strip->GetWebContentsAt(0), "test == 5"));
@@ -1057,7 +1057,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, DontCreateThrottleForReload) {
   // Reload.
   content::TestNavigationObserver reload_nav_observer(
       tab_strip->GetActiveWebContents(), 1);
-  chrome::Reload(app_browser, WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(app_browser, WindowOpenDisposition::kCurrentTab);
   reload_nav_observer.Wait();
 
   // Expect the reload did not cause a new tab to open.
@@ -1484,7 +1484,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
   EXPECT_EQ(tab_strip->active_index(), 0);
 
   // Middle click home tab link from the home tab.
-  app_browser->OpenGURL(start_url, WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  app_browser->OpenGURL(start_url, WindowOpenDisposition::kNewBackgroundTab);
 
   // Check we stayed in the home tab.
   EXPECT_EQ(tab_strip->count(), 1);
@@ -1495,7 +1495,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
   chrome::NewTab(app_browser, NewTabTypes::kNoUserAction);
 
   // Middle click home tab link from a different tab.
-  app_browser->OpenGURL(start_url, WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  app_browser->OpenGURL(start_url, WindowOpenDisposition::kNewBackgroundTab);
 
   // Check it was opened in the home tab.
   EXPECT_EQ(tab_strip->count(), 2);

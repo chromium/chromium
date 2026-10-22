@@ -261,7 +261,7 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlockWebContentsCreation) {
   RunCheckTest(browser(), "/popup_blocker/popup-blocked-to-post-blank.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kCurrentTab, kExpectForegroundTab,
                kDontCheckTitle);
 }
 
@@ -277,20 +277,20 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
                        MAYBE_BlockWebContentsCreationIncognito) {
   RunCheckTest(CreateIncognitoBrowser(),
                "/popup_blocker/popup-blocked-to-post-blank.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kCurrentTab, kExpectForegroundTab,
                kDontCheckTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupBlockedFakeClickOnAnchor) {
   RunCheckTest(browser(), "/popup_blocker/popup-fake-click-on-anchor.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kCurrentTab, kExpectForegroundTab,
                kDontCheckTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
                        PopupBlockedFakeClickOnAnchorNoTarget) {
   RunCheckTest(browser(), "/popup_blocker/popup-fake-click-on-anchor2.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kCurrentTab, kExpectForegroundTab,
                kDontCheckTitle);
 }
 
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupMetrics) {
       browser()->GetTabStripModel()->GetActiveWebContents());
   popup_blocker->ShowBlockedPopup(
       popup_blocker->GetBlockedPopupRequests().begin()->first,
-      WindowOpenDisposition::NEW_BACKGROUND_TAB);
+      WindowOpenDisposition::kNewBackgroundTab);
 
   tester.ExpectBucketCount(
       kPopupActions,
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_WindowFeatures) {
   WebContents* popup = RunCheckTest(
       browser(), "/popup_blocker/popup-window-open.html",
-      WindowOpenDisposition::CURRENT_TAB, kExpectPopup, kDontCheckTitle);
+      WindowOpenDisposition::kCurrentTab, kExpectPopup, kDontCheckTitle);
 
   // Check that the new popup has (roughly) the requested size.
   auto* const popup_widget =
@@ -505,30 +505,30 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_WindowFeatures) {
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CorrectReferrer) {
   RunCheckTest(browser(), "/popup_blocker/popup-referrer.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kCurrentTab, kExpectForegroundTab,
                kCheckTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CorrectFrameName) {
   RunCheckTest(browser(), "/popup_blocker/popup-framename.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kCurrentTab, kExpectForegroundTab,
                kCheckTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, WindowFeaturesBarProps) {
   RunCheckTest(browser(), "/popup_blocker/popup-windowfeatures.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectPopup, kCheckTitle);
+               WindowOpenDisposition::kCurrentTab, kExpectPopup, kCheckTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, SessionStorage) {
   RunCheckTest(browser(), "/popup_blocker/popup-sessionstorage.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kCurrentTab, kExpectForegroundTab,
                kCheckTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, Opener) {
   RunCheckTest(browser(), "/popup_blocker/popup-opener.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kCurrentTab, kExpectForegroundTab,
                kCheckTitle);
 }
 
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ClosableAfterNavigation) {
   // Open a popup.
   WebContents* popup = RunCheckTest(
       browser(), "/popup_blocker/popup-opener.html",
-      WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab, kCheckTitle);
+      WindowOpenDisposition::kCurrentTab, kExpectForegroundTab, kCheckTitle);
 
   // Navigate it elsewhere.
   content::TestNavigationObserver nav_observer(popup);
@@ -557,13 +557,13 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ClosableAfterNavigation) {
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpenerSuppressed) {
   RunCheckTest(browser(), "/popup_blocker/popup-openersuppressed.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kCurrentTab, kExpectForegroundTab,
                kCheckTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ShiftClick) {
   RunCheckTest(browser(), "/popup_blocker/popup-fake-click-on-anchor3.html",
-               WindowOpenDisposition::CURRENT_TAB, kExpectPopup, kCheckTitle,
+               WindowOpenDisposition::kCurrentTab, kExpectPopup, kCheckTitle,
                u"Popup Success!");
 }
 
@@ -820,21 +820,21 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MultiplePopupsViaPostMessage) {
 // Test that popup blocker can show blocked contents in new foreground tab.
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpenInNewForegroundTab) {
   RunCheckTest(browser(), "/popup_blocker/popup-window-open.html",
-               WindowOpenDisposition::NEW_FOREGROUND_TAB, kExpectForegroundTab,
+               WindowOpenDisposition::kNewForegroundTab, kExpectForegroundTab,
                kDontCheckTitle);
 }
 
 // Test that popup blocker can show blocked contents in new background tab.
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpenInNewBackgroundTab) {
   RunCheckTest(browser(), "/popup_blocker/popup-window-open.html",
-               WindowOpenDisposition::NEW_BACKGROUND_TAB, kExpectBackgroundTab,
+               WindowOpenDisposition::kNewBackgroundTab, kExpectBackgroundTab,
                kDontCheckTitle);
 }
 
 // Test that popup blocker can show blocked contents in new window.
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpenInNewWindow) {
   RunCheckTest(browser(), "/popup_blocker/popup-window-open.html",
-               WindowOpenDisposition::NEW_WINDOW, kExpectNewWindow,
+               WindowOpenDisposition::kNewWindow, kExpectNewWindow,
                kDontCheckTitle);
 }
 

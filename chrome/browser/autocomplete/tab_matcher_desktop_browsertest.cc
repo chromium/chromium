@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(TabMatcherDesktopTest,
 
   for (auto url : {foo, bar, baz}) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(TabMatcherDesktopTest, GetOpenTabsOnlyWithinProfile) {
                                            GURL("https://bar.chromium.org")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://foo.chromium.org"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -117,12 +117,12 @@ IN_PROC_BROWSER_TEST_F(TabMatcherDesktopTest, IsTabOpenUsesCanonicalSearchURL) {
         search_terms_args, turl_service->search_terms_data());
     EXPECT_EQ("https://example.com/search?wiz=baz&q=foo", foo_url);
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(foo_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), GURL(foo_url), WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     // The last tab is active. IsTabOpenWithURL() does not match the active tab.
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("https://active.chromium.org"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     EXPECT_TRUE(matcher.IsTabOpenWithURL(
@@ -140,12 +140,12 @@ IN_PROC_BROWSER_TEST_F(TabMatcherDesktopTest, IsTabOpenUsesCanonicalSearchURL) {
         search_terms_args, turl_service->search_terms_data());
     EXPECT_EQ("https://example.com/search?intent=INTENT&q=bar", bar_url);
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(bar_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), GURL(bar_url), WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     // The last tab is active. IsTabOpenWithURL() does not match the active tab.
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("https://active.chromium.org"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     EXPECT_FALSE(matcher.IsTabOpenWithURL(

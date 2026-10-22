@@ -101,7 +101,7 @@ bool OpenExtensionApplicationWindow(Profile* profile,
   RecordCmdLineAppHistogram(app->GetType());
 
   apps::AppLaunchParams params(app_id, launch_container,
-                               WindowOpenDisposition::NEW_WINDOW,
+                               WindowOpenDisposition::kNewWindow,
                                apps::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
@@ -135,7 +135,7 @@ content::WebContents* OpenExtensionApplicationTab(Profile* profile,
   content::WebContents* app_tab = ::OpenApplication(
       profile,
       apps::AppLaunchParams(app_id, apps::LaunchContainer::kLaunchContainerTab,
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            WindowOpenDisposition::kNewForegroundTab,
                             apps::LaunchSource::kFromCommandLine));
   return app_tab;
 }
@@ -159,7 +159,7 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
   }
 
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
   Navigate(&params);
 
@@ -186,7 +186,7 @@ bool OpenExtensionApplicationWithReenablePrompt(
   RecordCmdLineAppHistogram(extensions::Manifest::Type::kPlatformApp);
   apps::AppLaunchParams params(
       app_id, apps::LaunchContainer::kLaunchContainerNone,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromCommandLine);
+      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
   ::OpenApplicationWithReenablePrompt(profile, std::move(params));

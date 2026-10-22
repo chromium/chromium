@@ -267,7 +267,7 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
     auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile);
     ASSERT_TRUE(service);
     service->OpenUrl(GURL("chrome://version/"),
-                     WindowOpenDisposition::CURRENT_TAB,
+                     WindowOpenDisposition::kCurrentTab,
                      ui::PAGE_TRANSITION_TYPED);
 
     // Verify that a new browser window was created.
@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
             browser()->GetProfile());
         ASSERT_TRUE(service);
         service->OpenUrl(GURL("https://www.google.com/search?q=test"),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_GENERATED);
       }),
       // In persistent mode, submitting a query should demote the widget
@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
             browser()->GetProfile());
         ASSERT_TRUE(service);
         service->OpenUrl(GURL("https://www.google.com/search?q=test"),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_GENERATED);
       }),
       // In ephemeral mode, submitting a query should close the widget.
@@ -1155,7 +1155,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
   auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(service);
   service->OpenUrl(GURL("chrome://version/"),
-                   WindowOpenDisposition::CURRENT_TAB,
+                   WindowOpenDisposition::kCurrentTab,
                    ui::PAGE_TRANSITION_TYPED);
 
   // Verify that only one browser window was created and session restore was

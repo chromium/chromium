@@ -150,7 +150,7 @@ void KioskAppServiceLauncher::LaunchAppInternal() {
 
   auto params = apps::AppLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_POPUP, apps::LaunchSource::kFromKiosk);
+      WindowOpenDisposition::kNewPopup, apps::LaunchSource::kFromKiosk);
   params.override_url = launch_url_.value_or(GURL());
 
   app_service_->LaunchAppWithParams(

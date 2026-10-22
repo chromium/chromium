@@ -159,7 +159,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
                 provider->scheduler().LaunchAppWithCustomParams(
                     apps::AppLaunchParams(
                         app_id, apps::LaunchContainer::kLaunchContainerWindow,
-                        WindowOpenDisposition::CURRENT_TAB,
+                        WindowOpenDisposition::kCurrentTab,
                         apps::LaunchSource::kFromTest),
                     base::DoNothing());
               }),

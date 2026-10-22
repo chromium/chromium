@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
       base::FilePath(kTitle2File));
   NavigateParams captive_portal_params(browser(), url,
                                        ui::PAGE_TRANSITION_TYPED);
-  captive_portal_params.disposition = WindowOpenDisposition::NEW_POPUP;
+  captive_portal_params.disposition = WindowOpenDisposition::kNewPopup;
   captive_portal_params.captive_portal_window_type =
       captive_portal::CaptivePortalWindowType::kPopup;
   ui_test_utils::NavigateToURL(&captive_portal_params);
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
           ->GetWindowTitleForCurrentTab(true /* include_app_name */);
 
   NavigateParams normal_params(browser(), url, ui::PAGE_TRANSITION_TYPED);
-  normal_params.disposition = WindowOpenDisposition::NEW_POPUP;
+  normal_params.disposition = WindowOpenDisposition::kNewPopup;
   ui_test_utils::NavigateToURL(&normal_params);
   std::u16string normal_window_title =
       WindowMetadataController::From(
@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ClearPendingOnFailUnlessNTP) {
   {
     content::LoadStopObserver stop_observer(web_contents);
     browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           abort_url, WindowOpenDisposition::CURRENT_TAB,
+                           abort_url, WindowOpenDisposition::kCurrentTab,
                            ui::PAGE_TRANSITION_TYPED),
                        /*navigation_handle_callback=*/{});
     stop_observer.Wait();
@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ClearPendingOnFailUnlessNTP) {
   {
     content::LoadStopObserver stop_observer(web_contents);
     browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           abort_url, WindowOpenDisposition::CURRENT_TAB,
+                           abort_url, WindowOpenDisposition::kCurrentTab,
                            ui::PAGE_TRANSITION_TYPED),
                        /*navigation_handle_callback=*/{});
     stop_observer.Wait();
@@ -1080,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ReloadThenCancelBeforeUnload) {
 
   // Navigate to another page, but click cancel in the dialog.  Make sure that
   // the throbber stops spinning.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   AppModalDialogController* alert = ui_test_utils::WaitForAppModalDialog();
 
   alert->CloseModalDialog();
@@ -1131,7 +1131,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BeforeUnloadVsBeforeReload) {
   content::PrepContentsForBeforeUnloadTest(contents);
 
   // Reload the page, and check that we get a "before reload" dialog.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   AppModalDialogController* alert = ui_test_utils::WaitForAppModalDialog();
   EXPECT_TRUE(alert->is_reload());
 
@@ -1145,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BeforeUnloadVsBeforeReload) {
   GURL url2(url::kAboutBlankURL);
   browser()->OpenURL(
       OpenURLParams::CreateBrowserInitiated(
-          url2, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+          url2, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   alert = ui_test_utils::WaitForAppModalDialog();
@@ -1218,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NewTabFromLinkInGroupedTabOpensInGroup) {
       browser()->tab_strip_model()->GetActiveWebContents();
   OpenURLFromTab(contents, OpenURLParams::CreateBrowserInitiated(
                                embedded_test_server()->GetURL("/empty.html"),
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               WindowOpenDisposition::kNewBackgroundTab,
                                ui::PAGE_TRANSITION_TYPED));
 
   // It should have inherited the tab group from the first tab.
@@ -1464,7 +1464,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               extension_app->id(),
               apps::LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::NEW_WINDOW,
+              WindowOpenDisposition::kNewWindow,
               apps::LaunchSource::kFromTest));
   ASSERT_TRUE(app_window);
   BrowserWindowInterface* const app_browser = browser_created_observer->Wait();
@@ -1649,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               extension_app->id(),
               apps::LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::NEW_WINDOW,
+              WindowOpenDisposition::kNewWindow,
               apps::LaunchSource::kFromTest));
   ASSERT_TRUE(app_window);
   BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
@@ -1746,7 +1746,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ForwardDisabledOnForward) {
 
   content::LoadStopObserver back_nav_load_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
   back_nav_load_observer.Wait();
   CommandUpdater* command_updater =
       chrome::BrowserCommandController::From(browser());
@@ -1754,7 +1754,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ForwardDisabledOnForward) {
 
   content::LoadStopObserver forward_nav_load_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  chrome::GoForward(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoForward(browser(), WindowOpenDisposition::kCurrentTab);
   // This check will happen before the navigation completes, since the browser
   // won't process the renderer's response until the Wait() call below.
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_FORWARD));
@@ -2552,7 +2552,7 @@ class ClickModifierTest : public InProcessBrowserTest {
         browser->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(url, web_contents->GetURL());
 
-    if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+    if (disposition == WindowOpenDisposition::kCurrentTab) {
       content::TestNavigationObserver same_tab_observer(web_contents);
       SimulateMouseClick(web_contents, modifiers, button);
       same_tab_observer.Wait();
@@ -2569,7 +2569,7 @@ class ClickModifierTest : public InProcessBrowserTest {
     SimulateMouseClick(web_contents, modifiers, button);
     new_tab_observer.Wait();
 
-    if (disposition == WindowOpenDisposition::NEW_WINDOW) {
+    if (disposition == WindowOpenDisposition::kNewWindow) {
       EXPECT_EQ(2u,
                 ProfileBrowserCollection::GetForProfile(browser->GetProfile())
                     ->GetSize());
@@ -2580,10 +2580,10 @@ class ClickModifierTest : public InProcessBrowserTest {
                       ->GetSize());
     EXPECT_EQ(2, browser->tab_strip_model()->count());
     web_contents = browser->tab_strip_model()->GetActiveWebContents();
-    if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+    if (disposition == WindowOpenDisposition::kNewForegroundTab) {
       EXPECT_EQ(GetSecondPageTitle(), web_contents->GetTitle());
     } else {
-      ASSERT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB, disposition);
+      ASSERT_EQ(WindowOpenDisposition::kNewBackgroundTab, disposition);
       EXPECT_EQ(GetFirstPageTitle(), web_contents->GetTitle());
     }
   }
@@ -2594,7 +2594,7 @@ class ClickModifierTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenBasicClickTest) {
   int modifiers = 0;
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewForegroundTab;
   RunTest(browser(), GetWindowOpenURL(), modifiers, button, disposition);
 }
 
@@ -2605,7 +2605,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenBasicClickTest) {
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenShiftClickTest) {
   int modifiers = blink::WebInputEvent::kShiftKey;
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_WINDOW;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewWindow;
   RunTest(browser(), GetWindowOpenURL(), modifiers, button, disposition);
 }
 
@@ -2618,7 +2618,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenControlClickTest) {
   int modifiers = blink::WebInputEvent::kControlKey;
 #endif
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewBackgroundTab;
   RunTest(browser(), GetWindowOpenURL(), modifiers, button, disposition);
 }
 
@@ -2632,7 +2632,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenControlShiftClickTest) {
 #endif
   modifiers |= blink::WebInputEvent::kShiftKey;
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewForegroundTab;
   RunTest(browser(), GetWindowOpenURL(), modifiers, button, disposition);
 }
 
@@ -2641,7 +2641,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenControlShiftClickTest) {
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefBasicClickTest) {
   int modifiers = 0;
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-  WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
   RunTest(browser(), GetHrefURL(), modifiers, button, disposition);
 }
 
@@ -2652,7 +2652,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefBasicClickTest) {
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefShiftClickTest) {
   int modifiers = blink::WebInputEvent::kShiftKey;
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_WINDOW;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewWindow;
   RunTest(browser(), GetHrefURL(), modifiers, button, disposition);
 }
 
@@ -2665,7 +2665,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefControlClickTest) {
   int modifiers = blink::WebInputEvent::kControlKey;
 #endif
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewBackgroundTab;
   RunTest(browser(), GetHrefURL(), modifiers, button, disposition);
 }
 
@@ -2679,7 +2679,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefControlShiftClickTest) {
 #endif
   modifiers |= blink::WebInputEvent::kShiftKey;
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewForegroundTab;
   RunTest(browser(), GetHrefURL(), modifiers, button, disposition);
 }
 
@@ -2687,7 +2687,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefControlShiftClickTest) {
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefMiddleClickTest) {
   int modifiers = 0;
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kMiddle;
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewBackgroundTab;
   RunTest(browser(), GetHrefURL(), modifiers, button, disposition);
 }
 
@@ -2695,7 +2695,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefMiddleClickTest) {
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefShiftMiddleClickTest) {
   int modifiers = blink::WebInputEvent::kShiftKey;
   blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kMiddle;
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kNewForegroundTab;
   RunTest(browser(), GetHrefURL(), modifiers, button, disposition);
 }
 
@@ -3192,7 +3192,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestTabCountMetricsRecordedOnReload) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(web_contents);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   nav_observer.Wait();
 
   histogram_tester.ExpectTotalCount("Tabs.TabCountPerLoad", 1);
@@ -3211,7 +3211,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(web_contents);
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
   nav_observer.Wait();
 
   histogram_tester.ExpectTotalCount("Tabs.TabCountPerLoad", 1);

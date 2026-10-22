@@ -66,7 +66,7 @@ class ChromeOmniboxNavigationObserverBase
       const std::u16string& text,
       const AutocompleteMatch& alternative_nav_match,
       const GURL& search_url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab);
 
  protected:
   ChromeOmniboxNavigationObserverBase(

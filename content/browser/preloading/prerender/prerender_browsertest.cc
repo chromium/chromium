@@ -5810,7 +5810,7 @@ IN_PROC_BROWSER_TEST_F(
           GetUrl("/empty.html?same_origin_iframe3");
       shell()->web_contents()->OpenURL(
           OpenURLParams::CreateBrowserInitiated(
-              same_origin_subframe_url3, WindowOpenDisposition::CURRENT_TAB,
+              same_origin_subframe_url3, WindowOpenDisposition::kCurrentTab,
               ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
               /*started_from_context_menu=*/false,
               child_frame->GetFrameTreeNodeId()),
@@ -7084,7 +7084,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, SuppressOpenURL) {
           *prerender_web_contents, host_id);
   EXPECT_EQ(GetRequestCount(prerendering_url), 1);
   OpenURLParams params = OpenURLParams::CreateRendererInitiated(
-      second_url, WindowOpenDisposition::NEW_WINDOW, ui::PAGE_TRANSITION_LINK,
+      second_url, WindowOpenDisposition::kNewWindow, ui::PAGE_TRANSITION_LINK,
       Referrer(),
       prerendered_render_frame_host->GetCurrentInitiatorNavigationState(),
       /*started_from_context_menu=*/false,
@@ -10681,7 +10681,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLFromPrerenderingMainFrame) {
         }));
     auto params = blink::mojom::OpenURLParams::New();
     params->url = GetUrl("/title3.html");
-    params->disposition = WindowOpenDisposition::CURRENT_TAB;
+    params->disposition = WindowOpenDisposition::kCurrentTab;
     params->should_replace_current_entry = false;
     params->user_gesture = true;
     params->initiator_state_token =
@@ -10727,7 +10727,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
                                         new_iframe_url);
   shell()->web_contents()->OpenURL(
       OpenURLParams::CreateBrowserInitiated(
-          new_iframe_url, WindowOpenDisposition::CURRENT_TAB,
+          new_iframe_url, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
           /*started_from_context_menu=*/false,
           child_frame->GetFrameTreeNodeId()),
@@ -10873,7 +10873,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   {
     shell()->web_contents()->OpenURL(
         OpenURLParams::CreateBrowserInitiated(
-            new_iframe_url, WindowOpenDisposition::CURRENT_TAB,
+            new_iframe_url, WindowOpenDisposition::kCurrentTab,
             ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
             /*started_from_context_menu=*/false,
             child_frame->GetFrameTreeNodeId()),
@@ -11747,7 +11747,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                                           new_iframe_url);
     shell()->web_contents()->OpenURL(
         OpenURLParams::CreateBrowserInitiated(
-            new_iframe_url, WindowOpenDisposition::CURRENT_TAB,
+            new_iframe_url, WindowOpenDisposition::kCurrentTab,
             ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
             /*started_from_context_menu=*/false,
             child_frame->GetFrameTreeNodeId()),
@@ -15842,7 +15842,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest,
   // Open a new tab, and the new page clears all settings.
   GURL new_tab_url = GetUrl("/image.html?acceptch-no-value");
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      new_tab_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      new_tab_url, WindowOpenDisposition::kNewBackgroundTab,
       ui::PAGE_TRANSITION_LINK);
   auto* new_web_contents =
       web_contents_impl()->OpenURL(params, /*navigation_handle_callback=*/{});

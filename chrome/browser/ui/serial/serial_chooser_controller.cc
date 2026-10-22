@@ -310,7 +310,7 @@ void SerialChooserController::OpenHelpCenterUrl() const {
 
   web_contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                             GURL(chrome::kChooserSerialOverviewUrl),
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            WindowOpenDisposition::kNewForegroundTab,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
                         /*navigation_handle_callback=*/{});
 }
@@ -533,7 +533,7 @@ void SerialChooserController::OpenBluetoothHelpUrl() const {
   content::OpenURLParams open_url_params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(chrome::kBluetoothAdapterOffHelpURL),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 #if BUILDFLAG(IS_ANDROID)
   auto* rfh = initiator_document_.AsRenderFrameHostIfValid();

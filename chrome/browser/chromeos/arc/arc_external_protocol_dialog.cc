@@ -129,7 +129,7 @@ void OpenUrlInChrome(base::WeakPtr<WebContents> web_contents, const GURL& url) {
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK);
   const content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::CURRENT_TAB, page_transition_type,
+          url, WindowOpenDisposition::kCurrentTab, page_transition_type,
           content::Referrer(web_contents->GetLastCommittedURL(),
                             network::mojom::ReferrerPolicy::kDefault));
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});

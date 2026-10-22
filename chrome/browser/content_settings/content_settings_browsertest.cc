@@ -1084,7 +1084,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, NonMainFrameRulesAreUpdated) {
       ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                  CONTENT_SETTING_DEFAULT);
   main_frame = ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_TRUE(main_frame);
   // Ensure 3 frames exist after the load (main frame, 'b.test' frame and
@@ -1129,7 +1129,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RendererUpdateWhilePendingCommit) {
             global_frame_token, ContentSettingsType::JAVASCRIPT);
       }));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), second_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), second_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   delayer.Wait();
 

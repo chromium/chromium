@@ -505,7 +505,7 @@ void GestureNavSimple::OnOverscrollModeChange(OverscrollMode old_mode,
   if (ShouldNavigateBack(&controller, mode_)) {
     web_contents_->BackNavigationLikely(
         preloading_predictor::kBackGestureNavigation,
-        WindowOpenDisposition::CURRENT_TAB);
+        WindowOpenDisposition::kCurrentTab);
   }
 
   const bool is_touchpad = source == OverscrollSource::TOUCHPAD;

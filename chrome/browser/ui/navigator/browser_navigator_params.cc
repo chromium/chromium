@@ -38,7 +38,7 @@ NavigateParams::NavigateParams(Profile* a_profile,
                                const GURL& a_url,
                                ui::PageTransition a_transition)
     : url(a_url),
-      disposition(WindowOpenDisposition::NEW_FOREGROUND_TAB),
+      disposition(WindowOpenDisposition::kNewForegroundTab),
       transition(a_transition),
       window_action(WindowAction::kShowWindow),
       initiating_profile(a_profile) {}

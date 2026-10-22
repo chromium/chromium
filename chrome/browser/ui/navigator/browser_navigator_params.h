@@ -205,7 +205,7 @@ struct NavigateParams {
   //                        & no matching tab
   // CURRENT_TAB          no params.browser                 DCHECK FAILURE
   //                        & no params.source_contents
-  WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
 
   // Allows setting the opener for the case when new WebContents are created
   // (i.e. when |disposition| asks for a new tab or window).

@@ -908,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, FocusAfterHideAndShow) {
   // is hidden or miniaturized. If there is no 2nd tab, there is no 2nd RWHV to
   // focus, hence the 1st RWHV won't lose focus.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 

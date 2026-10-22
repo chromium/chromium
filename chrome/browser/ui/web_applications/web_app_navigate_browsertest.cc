@@ -30,7 +30,7 @@ class WebAppServiceWorkerOpenWindowBrowserTest : public WebAppBrowserTestBase {
   NavigateParams MakeNavigateParamsForServiceWorker() const {
     NavigateParams params(browser()->GetProfile(), GetGoogleURL(),
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     params.is_renderer_initiated = true;
     params.user_gesture = false;
     params.initiator_origin = url::Origin::Create(GetGoogleURL());

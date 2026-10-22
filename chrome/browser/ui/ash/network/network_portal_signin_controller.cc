@@ -337,7 +337,7 @@ void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
   // portal navigation.
   params.captive_portal_window_type =
       captive_portal::CaptivePortalWindowType::kTab;
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   ::Navigate(&params);
 }
 

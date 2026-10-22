@@ -1612,7 +1612,7 @@ void LensOverlayController::ActivityRequestedByOverlay(
           click_modifiers->middle_button, click_modifiers->alt_key,
           click_modifiers->ctrl_key, click_modifiers->meta_key,
           click_modifiers->shift_key,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB));
+          WindowOpenDisposition::kNewForegroundTab));
 }
 
 void LensOverlayController::AddBackgroundBlur() {
@@ -1666,7 +1666,7 @@ void LensOverlayController::InfoRequestedByOverlay(
           click_modifiers->middle_button, click_modifiers->alt_key,
           click_modifiers->ctrl_key, click_modifiers->meta_key,
           click_modifiers->shift_key,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB));
+          WindowOpenDisposition::kNewForegroundTab));
 }
 
 void LensOverlayController::IssueLensRegionRequest(

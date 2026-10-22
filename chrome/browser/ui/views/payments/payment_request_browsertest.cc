@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, OpenAndNavigateToSame) {
 IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, OpenAndReload) {
   OpenPaymentRequestDialog();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   ASSERT_TRUE(WaitForObservedEvent());
 }
 

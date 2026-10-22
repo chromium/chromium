@@ -204,7 +204,7 @@ void ShowSigninErrorLearnMorePage(Profile* profile) {
       "https://support.google.com/chrome/answer/1181420?";
   NavigateParams params(profile, GURL(kSigninErrorLearnMoreUrl),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

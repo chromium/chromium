@@ -165,7 +165,7 @@ content::NavigationThrottle::ThrottleCheckResult
 TabbedWebAppNavigationThrottle::OpenInNewTab() {
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   // Clear the FrameTreeNode id, as the new navigation will be in a new tab
   // rather than the frame of the original navigation.
   params.frame_tree_node_id = content::FrameTreeNodeId();
@@ -180,7 +180,7 @@ TabbedWebAppNavigationThrottle::FocusHomeTab(
     TabStripModel& tab_strip) {
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.disposition = WindowOpenDisposition::kCurrentTab;
   params.frame_tree_node_id = content::FrameTreeNodeId();
 
   content::WebContents* pinned_home_tab = app_controller.GetPinnedHomeTab();

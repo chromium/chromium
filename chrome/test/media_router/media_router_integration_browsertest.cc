@@ -286,7 +286,7 @@ void MediaRouterIntegrationBrowserTest::OpenTestPageInNewTab(
   base::FilePath full_path = GetResourceFile(file_name);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestPageUrl(full_path),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // Opening a new tab creates new WebContents, so we must re-configure the
   // test UI for it.

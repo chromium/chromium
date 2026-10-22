@@ -41,14 +41,14 @@ namespace {
 // render_frame_impl.cc.
 bool IsValidRendererDisposition(WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::CURRENT_TAB:
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::NEW_POPUP:
-    case WindowOpenDisposition::NEW_WINDOW:
-    case WindowOpenDisposition::SAVE_TO_DISK:
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-    case WindowOpenDisposition::NEW_SPLIT_VIEW:
+    case WindowOpenDisposition::kCurrentTab:
+    case WindowOpenDisposition::kNewForegroundTab:
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kNewPopup:
+    case WindowOpenDisposition::kNewWindow:
+    case WindowOpenDisposition::kSaveToDisk:
+    case WindowOpenDisposition::kNewPictureInPicture:
+    case WindowOpenDisposition::kNewSplitView:
       return true;
     default:
       // Certain dispositions, such as SWITCH_TO_TAB, are only used internally
@@ -441,7 +441,7 @@ bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
   }
 
   if (params.pip_options &&
-      params.disposition != WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+      params.disposition != WindowOpenDisposition::kNewPictureInPicture) {
     bad_message::ReceivedBadMessage(
         process, bad_message::RFH_CREATE_NEW_WINDOW_INVALID_PIP_OPTIONS);
     return false;

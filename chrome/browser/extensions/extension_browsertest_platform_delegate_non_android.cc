@@ -57,7 +57,7 @@ const Extension* ExtensionBrowserTestPlatformDelegate::LoadAndLaunchApp(
       /*num_expected_contents=*/uses_guest_view ? 2 : 1);
   apps::AppLaunchParams params(
       app->id(), apps::LaunchContainer::kLaunchContainerNone,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
   params.command_line = *base::CommandLine::ForCurrentProcess();
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())
       ->BrowserAppLauncher()

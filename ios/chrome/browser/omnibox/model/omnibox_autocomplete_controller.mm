@@ -871,7 +871,7 @@ using base::UserMetricsAction;
   bool isTabSwitchAction =
       action && action->ActionId() == OmniboxActionId::TAB_SWITCH;
   if (isTabSwitchAction) {
-    disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+    disposition = WindowOpenDisposition::kSwitchToTab;
   }
 
   TRACE_EVENT("omnibox", "OmniboxAutocompleteController::OpenMatch", "match",
@@ -922,7 +922,7 @@ using base::UserMetricsAction;
     action->Execute(context);
   }
 
-  if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (disposition != WindowOpenDisposition::kNewBackgroundTab) {
     // Skip the revert here to avoid changing the size of the multiline omnibox
     // when accepting input, changes will be reverted at endEditing
     // (crbug.com/458055336).

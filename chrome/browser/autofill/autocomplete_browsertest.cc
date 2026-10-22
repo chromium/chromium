@@ -138,7 +138,7 @@ class AutocompleteTest : public InProcessBrowserTest {
   // `disposition`.
   void NavigateToFile(const char* filename,
                       const WindowOpenDisposition& disposition =
-                          WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+                          WindowOpenDisposition::kNewForegroundTab) {
     GURL url =
         embedded_test_server()->GetURL(base::StrCat({"/autofill/", filename}));
     NavigateParams params(active_browser_, url, ui::PAGE_TRANSITION_LINK);
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
-  NavigateToFile(kSimpleFormFileName, WindowOpenDisposition::OFF_THE_RECORD);
+  NavigateToFile(kSimpleFormFileName, WindowOpenDisposition::kOffTheRecord);
   ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));
   FillInputAndSubmit(test_value);
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),

@@ -415,7 +415,7 @@ void BackgroundModeManager::LaunchBackgroundApplication(
   web_app::LaunchExtensionOrWebApp(
       profile,
       CreateAppLaunchParamsUserContainer(
-          profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          profile, extension, WindowOpenDisposition::kNewForegroundTab,
           apps::LaunchSource::kFromBackgroundMode),
       base::DoNothing());
 #else

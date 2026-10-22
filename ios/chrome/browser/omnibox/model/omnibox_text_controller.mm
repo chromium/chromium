@@ -492,7 +492,7 @@ const char kOmniboxFocusResultedInNavigation[] =
     _omniboxClient->OnThumbnailOnlyAccept();
   } else {
     [self.omniboxAutocompleteController
-        openCurrentSelectionWithDisposition:WindowOpenDisposition::CURRENT_TAB
+        openCurrentSelectionWithDisposition:WindowOpenDisposition::kCurrentTab
                                   timestamp:base::TimeTicks()];
   }
 

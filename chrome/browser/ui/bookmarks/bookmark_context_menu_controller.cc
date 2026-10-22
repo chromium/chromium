@@ -390,11 +390,11 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       if (id == IDC_BOOKMARK_BAR_OPEN_ALL ||
           id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP ||
           id == IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW) {
-        initial_disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+        initial_disposition = WindowOpenDisposition::kNewBackgroundTab;
       } else if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW) {
-        initial_disposition = WindowOpenDisposition::NEW_WINDOW;
+        initial_disposition = WindowOpenDisposition::kNewWindow;
       } else {
-        initial_disposition = WindowOpenDisposition::OFF_THE_RECORD;
+        initial_disposition = WindowOpenDisposition::kOffTheRecord;
       }
       const UserMetricsAction* const action =
           GetActionForLocationAndDisposition(id, opened_from_);

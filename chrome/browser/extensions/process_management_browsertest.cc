@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
   GURL web_url2(embedded_test_server()->GetURL("foo.com", "/title2.html"));
   GURL web_url3(embedded_test_server()->GetURL("foo.com", "/title3.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), web_url1, WindowOpenDisposition::CURRENT_TAB,
+      browser(), web_url1, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   WebContents* web_contents1 =
       browser()->GetTabStripModel()->GetActiveWebContents();

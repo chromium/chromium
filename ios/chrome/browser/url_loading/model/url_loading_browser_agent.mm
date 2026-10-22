@@ -187,7 +187,7 @@ void UrlLoadingBrowserAgent::Load(const UrlLoadParams& params) {
   switch (params.load_strategy) {
     case UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB: {
       UrlLoadParams fixed_params = params;
-      fixed_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      fixed_params.disposition = WindowOpenDisposition::kNewForegroundTab;
       Dispatch(fixed_params);
       break;
     }
@@ -231,14 +231,14 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
 void UrlLoadingBrowserAgent::Dispatch(const UrlLoadParams& params) {
   // Then dispatch.
   switch (params.disposition) {
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kNewForegroundTab:
       LoadUrlInNewTab(params);
       break;
-    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::kCurrentTab:
       LoadUrlInCurrentTab(params);
       break;
-    case WindowOpenDisposition::SWITCH_TO_TAB:
+    case WindowOpenDisposition::kSwitchToTab:
       SwitchToTab(params);
       break;
     default:
@@ -296,7 +296,7 @@ void UrlLoadingBrowserAgent::LoadUrlInTab(const UrlLoadParams& params,
 
     if (!target_web_state) {
       UrlLoadParams fixed_params = params;
-      fixed_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      fixed_params.disposition = WindowOpenDisposition::kNewForegroundTab;
       fixed_params.in_incognito = profile->IsOffTheRecord();
       Load(fixed_params);
     } else {

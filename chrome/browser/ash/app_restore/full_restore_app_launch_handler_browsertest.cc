@@ -346,7 +346,7 @@ class FullRestoreAppLaunchHandlerTestBase
         profile()->GetPath(),
         std::make_unique<::app_restore::AppLaunchInfo>(
             kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
-            WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
+            WindowOpenDisposition::kNewWindow, display::kDefaultDisplayId,
             std::vector<base::FilePath>{}, nullptr));
   }
 
@@ -366,7 +366,7 @@ class FullRestoreAppLaunchHandlerTestBase
         profile()->GetPath(),
         std::make_unique<::app_restore::AppLaunchInfo>(
             app_id, apps::LaunchContainer::kLaunchContainerWindow,
-            WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
+            WindowOpenDisposition::kNewWindow, display::kDefaultDisplayId,
             std::vector<base::FilePath>{}, nullptr));
   }
 

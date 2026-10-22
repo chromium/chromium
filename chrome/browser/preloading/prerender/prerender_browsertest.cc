@@ -762,7 +762,7 @@ class PrerenderNewTabPageBrowserTest
   void SimulateNewTabNavigation(const GURL& url) {
     GetActiveWebContents()->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::CURRENT_TAB,
+            url, WindowOpenDisposition::kCurrentTab,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
         page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
             chrome_navigation_initiator::kNewTabPage));
@@ -1047,8 +1047,7 @@ class PrerenderPrewarmDefaultSearchEngineTest
     content::WebContents* original_web_contents = GetActiveWebContents();
     original_web_contents->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            GURL(url::kAboutBlankURL),
-            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewForegroundTab,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
         page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
             chrome_navigation_initiator::kNewTabPage));

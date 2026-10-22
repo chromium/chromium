@@ -44,7 +44,7 @@ class BlockingInfo : public base::SupportsUserData::Data {
       enterprise_action_web_contents_->OpenURL(
           content::OpenURLParams::CreateBrowserInitiated(
               enterprise_action_web_contents_->GetVisibleURL(),
-              WindowOpenDisposition::CURRENT_TAB,
+              WindowOpenDisposition::kCurrentTab,
               ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
           /*navigation_handle_callback=*/std::move(on_reload_triggered_));
     }

@@ -72,7 +72,7 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   content::RenderFrameHost* NavigateToURLInNewTab(
       BrowserWindowInterface* window,
       const GURL& url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab);
 
   BrowserWindowInterface* GetBrowserFromFrame(content::RenderFrameHost* frame);
 

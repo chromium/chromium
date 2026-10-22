@@ -286,7 +286,7 @@ bool IOSPromoBubbleView::Accept() {
       content::OpenURLParams params =
           content::OpenURLParams::CreateBrowserInitiated(
               GURL(config_.qr_code_url),
-              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              WindowOpenDisposition::kNewForegroundTab,
               ui::PAGE_TRANSITION_LINK);
 
       if (open_url_callback_) {

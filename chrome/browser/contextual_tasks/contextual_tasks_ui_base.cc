@@ -450,7 +450,7 @@ void ContextualTasksUIBase::OpenMyActivityUi() {
     return;
   }
   OpenUrlWithDisposition(GetProfile(), GURL(kMyActivityUrl),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
+                         WindowOpenDisposition::kNewForegroundTab, browser);
 }
 
 void ContextualTasksUIBase::OpenOverflowMenuHelpUi() {
@@ -461,7 +461,7 @@ void ContextualTasksUIBase::OpenOverflowMenuHelpUi() {
   OpenUrlWithDisposition(
       GetProfile(),
       GURL(contextual_tasks::GetContextualTasksOverflowMenuHelpUrl()),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
+      WindowOpenDisposition::kNewForegroundTab, browser);
 }
 
 void ContextualTasksUIBase::OpenFeedbackUi() {

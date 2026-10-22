@@ -207,11 +207,11 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
   // this guest view, change the disposition to NEW_FOREGROUND_TAB.
   if ((!params.url.SchemeIs(extensions::kExtensionScheme) ||
        params.url.GetHost() != options_page_.GetHost()) &&
-      params.disposition == WindowOpenDisposition::CURRENT_TAB) {
+      params.disposition == WindowOpenDisposition::kCurrentTab) {
     return extension_options_guest_delegate_->OpenURLInNewTab(
         content::OpenURLParams(params.url, params.referrer,
                                params.frame_tree_node_id,
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               WindowOpenDisposition::kNewForegroundTab,
                                params.transition, params.is_renderer_initiated),
         std::move(navigation_handle_callback));
   }
@@ -291,7 +291,7 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
   if (extension_options_guest_delegate_) {
     extension_options_guest_delegate_->OpenURLInNewTab(
         content::OpenURLParams::CreateBrowserInitiated(
-            target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            target_url, WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_LINK),
         /*navigation_handle_callback=*/{});
   }

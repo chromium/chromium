@@ -208,7 +208,7 @@ void AccountChooserController::ShowAddAccountDialog() {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           signin::GetAddAccountURLForDice("", GURL()),
-          WindowOpenDisposition::NEW_POPUP, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+          WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   add_account_popup_ = source_window->GetDelegate()->OpenURLFromTab(
       source_window, params, /*navigation_handle_callback=*/{});
   ResizeAndFocusAddAccountPopup();

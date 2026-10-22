@@ -415,7 +415,7 @@ class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
   bool LoadPdfAndWait(const GURL& url, bool new_tab) override {
     if (new_tab) {
       EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-          browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          browser(), url, WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     } else {
       EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

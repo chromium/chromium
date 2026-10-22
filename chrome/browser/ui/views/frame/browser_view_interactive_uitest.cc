@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowActivatedAccessibleEvent) {
 
   // Create a new browser window and wait for event again.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewWindow,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   if (ax_observer_.GetCount(ax::mojom::Event::kWindowActivated) == 1) {
     ax_observer_.WaitForEvent(ax::mojom::Event::kWindowActivated);

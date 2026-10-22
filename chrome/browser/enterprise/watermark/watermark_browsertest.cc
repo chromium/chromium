@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   NavigateParams params(browser(), GURL("chrome://version"),
                         ui::PAGE_TRANSITION_LINK);
   params.tabstrip_index = 1;
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   NavigateParams params(browser(), GURL("https://nowatermark.com"),
                         ui::PAGE_TRANSITION_LINK);
   params.tabstrip_index = 1;
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]

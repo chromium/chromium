@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_P(BrowserListRouterHelperBrowserTest, NotifyOnDiscardTab) {
   GURL gurl_2 = embedded_test_server()->GetURL("/title2.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl_1));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), gurl_2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), gurl_2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Find old_id of gurl_1.

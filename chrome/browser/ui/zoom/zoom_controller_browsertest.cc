@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   ASSERT_TRUE(tab_strip);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   {
     content::WebContents* web_contents = tab_strip->GetActiveWebContents();
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   // When we navigate away from the NTP, the HostZoomMap changes, and we need to
   // test that the ZoomController correctly detects this.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

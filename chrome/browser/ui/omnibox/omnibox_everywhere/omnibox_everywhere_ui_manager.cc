@@ -1820,7 +1820,7 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
                           OmniboxEverywhereServiceFactory::GetForProfile(
                               profile)) {
                     service->OpenUrl(match.destination_url,
-                                     WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                     WindowOpenDisposition::kNewForegroundTab,
                                      ui::PAGE_TRANSITION_GENERATED);
                   }
                 }
@@ -1838,7 +1838,7 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
       auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
       if (service) {
         service->OpenUrl(chrome::GetSettingsUrl(chrome::kSearchEnginesSubPage),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
       }
       break;
@@ -1870,7 +1870,7 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
       auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
       if (service) {
         service->OpenUrl(chrome::GetSettingsUrl(chrome::kSearchSubPage),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
       }
       break;
@@ -1879,7 +1879,7 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
       auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
       if (service) {
         service->OpenUrl(chrome::GetSettingsUrl(chrome::kSearchSubPage),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
       }
       break;

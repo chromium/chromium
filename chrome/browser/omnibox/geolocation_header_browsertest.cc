@@ -213,7 +213,7 @@ class GeolocationHeaderBrowserTest : public InProcessBrowserTest {
 
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            search_url, WindowOpenDisposition::CURRENT_TAB,
+            search_url, WindowOpenDisposition::kCurrentTab,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, AppendsXGeoHeader) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          search_url, WindowOpenDisposition::CURRENT_TAB,
+          search_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, NoHeaderInIncognito) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          search_url, WindowOpenDisposition::CURRENT_TAB,
+          search_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          search_url, WindowOpenDisposition::CURRENT_TAB,
+          search_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, NoHeaderForNonDse) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          search_url, WindowOpenDisposition::CURRENT_TAB,
+          search_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, RedirectToNonDse) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          redirect_url, WindowOpenDisposition::CURRENT_TAB,
+          redirect_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, RedirectToSameOrigin) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          redirect_url, WindowOpenDisposition::CURRENT_TAB,
+          redirect_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          redirect_url, WindowOpenDisposition::CURRENT_TAB,
+          redirect_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderDisabledBrowserTest,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          search_url, WindowOpenDisposition::CURRENT_TAB,
+          search_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 

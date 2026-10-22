@@ -177,7 +177,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
 
   void OpenTab(const GURL& url, ui::PageTransition transition) {
     NavigateParams params(browser(), url, transition);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     // params.opener does not need to be set in the context of this test because
     // it will use the current tab by default.
     Navigate(&params);
@@ -243,7 +243,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
   void OpenTabAsLink() {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("chrome://about"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

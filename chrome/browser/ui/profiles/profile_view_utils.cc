@@ -71,7 +71,7 @@ void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
   url = net::AppendQueryParameter(url, "continue", google_account.spec());
 
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

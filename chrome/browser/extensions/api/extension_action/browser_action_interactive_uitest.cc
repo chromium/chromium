@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_TestOpenPopup) {
         GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
             browser()->OpenURL(
                 content::OpenURLParams::CreateBrowserInitiated(
-                    GURL("about:blank"), WindowOpenDisposition::NEW_WINDOW,
+                    GURL("about:blank"), WindowOpenDisposition::kNewWindow,
                     ui::PAGE_TRANSITION_TYPED),
                 /*navigation_handle_callback=*/{}));
     ui_test_utils::BrowserActivationWaiter waiter(new_browser_interface);
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   // Create a new browser window to prevent the message loop from terminating.
   browser()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("chrome://version"), WindowOpenDisposition::NEW_WINDOW,
+          GURL("chrome://version"), WindowOpenDisposition::kNewWindow,
           ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 

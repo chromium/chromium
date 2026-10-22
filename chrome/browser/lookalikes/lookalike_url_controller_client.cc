@@ -51,7 +51,7 @@ void LookalikeUrlControllerClient::GoBack() {
   // We don't offer 'go back', but rather redirect to the legitimate site.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          safe_url_, WindowOpenDisposition::CURRENT_TAB,
+          safe_url_, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   // Prevent the back button from returning to the bad site.

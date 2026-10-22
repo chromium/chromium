@@ -68,7 +68,7 @@ void ZeroStatePromoPageHandler::LaunchWebStoreLink(
 
   NavigateParams params(profile_, url_with_utm,
                         ::ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   base::UmaHistogramEnumeration(
       "Extensions.ZeroStatePromo.IphActionChromeWebStoreLink", link);

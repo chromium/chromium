@@ -294,7 +294,7 @@ content::WebContents* WebAppBrowserTestBase::OpenApplication(
   provider->scheduler().LaunchAppWithCustomParams(
       apps::AppLaunchParams(
           app_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest),
+          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest),
       future.GetCallback());
   url_observer.Wait();
   return future.template Get<1>().get();

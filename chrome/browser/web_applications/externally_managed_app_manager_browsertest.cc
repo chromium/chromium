@@ -1159,7 +1159,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Launch the PWA so that the app relaunch is triggered on sync.
   ASSERT_TRUE(web_app::LaunchWebAppBrowser(profile(), placeholder_app_id,
-                                           WindowOpenDisposition::NEW_WINDOW));
+                                           WindowOpenDisposition::kNewWindow));
   WaitForNumberOfAppInstances(placeholder_app_id,
                               /*number_of_app_instances=*/1u);
 

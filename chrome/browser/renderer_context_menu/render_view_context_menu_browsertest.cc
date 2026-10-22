@@ -1348,17 +1348,17 @@ class ContextMenuForLockedFullscreenBrowserTest
 
     // Set up browser for testing / validating page navigation command states.
     OpenUrlWithDisposition(GURL("chrome://new-tab-page/"),
-                           WindowOpenDisposition::CURRENT_TAB);
+                           WindowOpenDisposition::kCurrentTab);
     OpenUrlWithDisposition(GURL("chrome://version/"),
-                           WindowOpenDisposition::CURRENT_TAB);
+                           WindowOpenDisposition::kCurrentTab);
     OpenUrlWithDisposition(GURL("about:blank"),
-                           WindowOpenDisposition::CURRENT_TAB);
+                           WindowOpenDisposition::kCurrentTab);
 
     // Go back by one page to ensure the forward command is also available for
     // testing purposes.
     content::TestNavigationObserver navigation_observer(
         browser()->GetTabStripModel()->GetActiveWebContents());
-    chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
     navigation_observer.Wait();
     ASSERT_TRUE(chrome::CanGoBack(browser()));
     ASSERT_TRUE(chrome::CanGoForward(browser()));

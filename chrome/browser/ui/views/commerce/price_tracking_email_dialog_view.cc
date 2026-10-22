@@ -137,7 +137,7 @@ void PriceTrackingEmailDialogView::OpenHelpArticle() {
   // Open web page with help article.
   web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                               GURL(kPriceTrackingHelpLink),
-                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              WindowOpenDisposition::kNewForegroundTab,
                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
                           /*navigation_handle_callback=*/{});
   base::RecordAction(base::UserMetricsAction(

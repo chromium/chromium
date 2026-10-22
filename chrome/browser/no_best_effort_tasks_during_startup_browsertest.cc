@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksDuringSessionRestoreStartupTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSlowURL()));
   chrome::AddTabAt(browser(), GetSlowURL(), -1, true);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetSlowURL(), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GetSlowURL(), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 

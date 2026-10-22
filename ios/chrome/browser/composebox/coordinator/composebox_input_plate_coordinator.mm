@@ -636,8 +636,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     UrlLoadParams params = UrlLoadParams::InNewTab(web_params);
     params.disposition = disposition;
     params.in_incognito = isIncognito;
-    if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    if (params.disposition == WindowOpenDisposition::kCurrentTab) {
+      params.disposition = WindowOpenDisposition::kNewForegroundTab;
     }
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   }

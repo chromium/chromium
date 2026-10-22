@@ -933,7 +933,7 @@ ExtensionFunction::ResponseAction SessionsRestoreFunction::RestoreLocalSession(
   std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
       tab_restore_service->RestoreEntryById(
           context, SessionID::FromSerializedValue(session_id.id()),
-          WindowOpenDisposition::UNKNOWN);
+          WindowOpenDisposition::kUnknown);
   if (!restored_tabs.has_value()) {
     return RespondNow(Error(kInvalidSessionIdError, session_id.ToString()));
   }
@@ -980,7 +980,7 @@ SessionsRestoreFunction::RestoreForeignSession(
 
     content::WebContents* tab_contents =
         SessionRestore::RestoreForeignSessionTab(
-            contents, *tab, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+            contents, *tab, WindowOpenDisposition::kNewForegroundTab);
     return RespondNow(GetRestoredTabResult(tab_contents));
   }
 

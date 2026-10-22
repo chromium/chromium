@@ -411,11 +411,11 @@ void WebAppInstallFlowDialogDelegate::OnLearnMoreButtonClicked() {
   CloseDialogAsIgnored();
 
   if (contents) {
-    contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                          GURL(chrome::kInstallDialogFlowLearnMoreURL),
-                          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                          ui::PAGE_TRANSITION_LINK),
-                      base::DoNothing());
+    contents->OpenURL(
+        content::OpenURLParams::CreateBrowserInitiated(
+            GURL(chrome::kInstallDialogFlowLearnMoreURL),
+            WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
+        base::DoNothing());
   }
 }
 

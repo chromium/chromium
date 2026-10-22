@@ -273,8 +273,8 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
       shift_key);
 
   if (tile->url.is_valid() &&
-      disposition != WindowOpenDisposition::SAVE_TO_DISK &&
-      disposition != WindowOpenDisposition::IGNORE_ACTION) {
+      disposition != WindowOpenDisposition::kSaveToDisk &&
+      disposition != WindowOpenDisposition::kIgnoreAction) {
     if (PrefService* prefs = profile_->GetPrefs()) {
       prefs->SetInt64(
           ntp_prefs::kNtpMostVisitedTileNavigationCount,

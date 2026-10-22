@@ -353,7 +353,7 @@ using base::UserMetricsAction;
   }
 
   [_sceneHandler openURLInNewTab:[OpenNewTabCommand command]];
-  RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, _browser.get());
+  RestoreTab(entry->id, WindowOpenDisposition::kCurrentTab, _browser.get());
 }
 
 - (void)keyCommand_find {

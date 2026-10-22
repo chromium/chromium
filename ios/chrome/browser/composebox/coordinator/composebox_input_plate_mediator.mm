@@ -1985,7 +1985,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 
   UrlLoadParams params = CreateOmniboxUrlLoadParams(
-      URL, /*post_content=*/nullptr, WindowOpenDisposition::CURRENT_TAB,
+      URL, /*post_content=*/nullptr, WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_GENERATED,
       /*destination_url_entered_without_scheme=*/false, _isIncognito);
 

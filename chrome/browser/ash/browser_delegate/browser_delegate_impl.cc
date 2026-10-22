@@ -248,8 +248,8 @@ content::WebContents* BrowserDelegateImpl::AddTab(
       url.is_empty() ? chrome::GetNewTabURL(&browser_.get()) : url;
   NavigateParams params(&browser_.get(), resolved_url, transition);
   params.disposition = disposition == TabDisposition::kForeground
-                           ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                           : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+                           ? WindowOpenDisposition::kNewForegroundTab
+                           : WindowOpenDisposition::kNewBackgroundTab;
   if (index.has_value()) {
     params.tabstrip_index = static_cast<int>(*index);
   }

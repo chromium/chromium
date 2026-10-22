@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, RunsExternalCommand) {
   // We open a new tab, because closing the last tab in the browser
   // causes the whole browser to close.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(kTestUrl), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL(kTestUrl), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   base::RunLoop run_loop;
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotKeepSpaces) {
   // causes the whole browser to close.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(kTestUrlWithSpaces),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   base::RunLoop run_loop;
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, UnencodesSingleQUotes) {
   // causes the whole browser to close.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(kTestUrlWithQuotes),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   base::RunLoop run_loop;
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotRunOnRandomUrls) {
   // We open a new tab, because closing the last tab in the browser
   // causes the whole browser to close.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(kOtherUrl), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL(kOtherUrl), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   base::RunLoop run_loop;

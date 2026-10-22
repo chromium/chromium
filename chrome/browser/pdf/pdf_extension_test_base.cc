@@ -116,7 +116,7 @@ testing::AssertionResult PDFExtensionTestBase::LoadPdf(const GURL& url) {
 testing::AssertionResult PDFExtensionTestBase::LoadPdfInNewTab(
     const GURL& url) {
   EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   return EnsureFullPagePDFHasLoadedWithValidFrameTree(
       GetActiveWebContents(), /*allow_multiple_frames=*/false);

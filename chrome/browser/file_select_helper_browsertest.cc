@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(FileSelectHelperBrowserTest, NoDialogForBackgroundTab) {
   // active tab.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title1.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_NE(background_contents,
             browser()->tab_strip_model()->GetActiveWebContents());

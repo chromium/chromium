@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadTrackerDecoratorTest, PageNodeLoadingState) {
   browser()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/empty.html"),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   // Wait until GetLoadingState() transitions to LoadingState::kLoadedIdle.

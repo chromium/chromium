@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest, IncognitoOpenUrl) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url::kAboutBlankURL), WindowOpenDisposition::OFF_THE_RECORD,
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::kOffTheRecord,
           ui::PAGE_TRANSITION_LINK);
   content::WebContents* new_contents =
       app_contents->OpenURL(params, /*navigation_handle_callback=*/{});

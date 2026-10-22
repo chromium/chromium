@@ -108,7 +108,7 @@ void BrowserSelectFileDialogController::FileSelected(
   if (!url.is_empty()) {
     page_navigator_->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+            url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
         /*navigation_handle_callback=*/{});
   }
 }

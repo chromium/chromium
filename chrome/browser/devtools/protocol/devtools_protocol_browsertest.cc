@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       chrome_test_utils::GetActiveWebContents(this);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* other_web_contents =
       chrome_test_utils::GetActiveWebContents(this);
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_AutoAttachToUnloadedTab) {
   // 1. Create two tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
@@ -1130,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::WebContents* web_contents =
       browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                             url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             url, WindowOpenDisposition::kNewForegroundTab,
                              ui::PAGE_TRANSITION_TYPED),
                          /*navigation_handle_callback=*/{});
   tab_added_waiter.Wait();
@@ -1282,7 +1282,7 @@ testing::AssertionResult SimulateBtmBounce(BrowserWindowInterface* browser,
                                            const GURL& bounce_url,
                                            const GURL& final_url) {
   if (!ui_test_utils::NavigateToURLWithDisposition(
-          browser, initial_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          browser, initial_url, WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)) {
     return testing::AssertionFailure()
@@ -1855,7 +1855,7 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
   void LaunchApp(const std::string& app_id) {
     apps::AppLaunchParams params(
         app_id, apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
     apps::AppServiceProxyFactory::GetForProfile(
         chrome_test_utils::GetProfile(this))
         ->BrowserAppLauncher()

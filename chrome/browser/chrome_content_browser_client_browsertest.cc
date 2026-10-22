@@ -2485,7 +2485,7 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest, OpenURL) {
   for (const GURL& url : urls) {
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            url, WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     // TODO(peter): We should have more in-depth browser tests for the window
     // opening functionality, which also covers Android. This test can currently

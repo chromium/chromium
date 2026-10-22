@@ -256,7 +256,7 @@ void AssistantBrowserDelegateImpl::OpenNewEntryPoint() {
   apps::AppServiceProxyFactory::GetForProfile(profile_for_new_entry_point_)
       ->LaunchAppWithParams(apps::AppLaunchParams(
           web_app->app_id(), apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW,
+          WindowOpenDisposition::kNewWindow,
           // TODO(xiaohuic): maybe add new source
           apps::LaunchSource::kUnknown));
 }

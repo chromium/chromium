@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest,
       browser()->GetProfile()));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), main_url(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), main_url(), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   EXPECT_FALSE(safe_browsing::SafeBrowsingNavigationObserver::FromWebContents(
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_P(DataProtectionNavigationControllerPolicyTest,
   // recorded by the observer.
   const GURL url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_TRUE(safe_browsing::SafeBrowsingNavigationObserver::FromWebContents(
       contents()));

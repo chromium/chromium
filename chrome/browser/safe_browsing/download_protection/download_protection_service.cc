@@ -405,7 +405,7 @@ void DownloadProtectionService::ShowDetailsForDownload(
 
   navigator->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          learn_more_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          learn_more_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }

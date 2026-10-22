@@ -72,12 +72,12 @@ class PopupBlockerTabHelper : public content::WebContentsObserver {
   PopupIdMap GetBlockedPopupRequests();
 
   // Creates the blocked popup with |popup_id| in given |dispostion|.
-  // Note that if |disposition| is WindowOpenDisposition::CURRENT_TAB,
+  // Note that if |disposition| is WindowOpenDisposition::kCurrentTab,
   // blocked popup will be opened as it was specified by renderer.
   void ShowBlockedPopup(int32_t popup_id, WindowOpenDisposition disposition);
 
   // All blocked popups will be opened with the disposition defaulted to
-  // WindowOpenDisposition::CURRENT_TAB. Used only on Android.
+  // WindowOpenDisposition::kCurrentTab. Used only on Android.
   void ShowAllBlockedPopups();
 
   // Adds a new blocked popup to the UI.

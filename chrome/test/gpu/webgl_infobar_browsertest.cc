@@ -43,7 +43,7 @@ void SimulateGPUCrash(BrowserWindowInterface* browser) {
       browser, GURL(blink::kChromeUIGpuCrashURL),
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
 }
 

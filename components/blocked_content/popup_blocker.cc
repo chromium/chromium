@@ -95,22 +95,22 @@ PopupBlockType ShouldBlockPopup(content::WebContents* web_contents,
 
 bool ConsiderForPopupBlocking(WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::UNKNOWN:
-    case WindowOpenDisposition::CURRENT_TAB:
-    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::kUnknown:
+    case WindowOpenDisposition::kCurrentTab:
+    case WindowOpenDisposition::kSingletonTab:
     // OTR popups would be considered, but they cannot be triggered by any
     // renderer message so we can ignore them.
-    case WindowOpenDisposition::OFF_THE_RECORD:
-    case WindowOpenDisposition::SAVE_TO_DISK:
-    case WindowOpenDisposition::IGNORE_ACTION:
-    case WindowOpenDisposition::SWITCH_TO_TAB:
+    case WindowOpenDisposition::kOffTheRecord:
+    case WindowOpenDisposition::kSaveToDisk:
+    case WindowOpenDisposition::kIgnoreAction:
+    case WindowOpenDisposition::kSwitchToTab:
       return false;
-    case WindowOpenDisposition::NEW_POPUP:
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::NEW_WINDOW:
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-    case WindowOpenDisposition::NEW_SPLIT_VIEW:
+    case WindowOpenDisposition::kNewPopup:
+    case WindowOpenDisposition::kNewForegroundTab:
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kNewWindow:
+    case WindowOpenDisposition::kNewPictureInPicture:
+    case WindowOpenDisposition::kNewSplitView:
       return true;
   }
 }

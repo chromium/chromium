@@ -83,7 +83,7 @@ class BrowserCommandsCoreTest : public InProcessBrowserTest {
 
   void AddTab(BrowserWindowInterface* browser, const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser, url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     if (!initial_tab_closed_) {
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BookmarkCurrentTab) {
   AddTab(browser(), url1);
   browser()->OpenURL(
       OpenURLParams::CreateBrowserInitiated(
-          url1, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+          url1, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   chrome::BookmarkCurrentTab(browser());
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTab) {
   NavigateAndCommitActiveTab(url2);
 
   // Go back in a new background tab.
-  chrome::GoBack(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kNewBackgroundTab);
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTab) {
   // removed (to test both codepaths).
   content::WaitForLoadStop(first);
   EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
-  chrome::GoForward(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  chrome::GoForward(browser(), WindowOpenDisposition::kNewBackgroundTab);
 
   // The previous tab should be unchanged and still in the foreground.
   EXPECT_EQ(url1, first->GetLastCommittedURL());
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTab) {
              TabStripUserGestureDetails::GestureType::kOther));
   // TODO(crbug.com/40705856): see the comment above about why we need this.
   content::WaitForLoadStop(second);
-  chrome::GoBack(browser(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kNewForegroundTab);
   ASSERT_EQ(3, browser()->GetTabStripModel()->active_index());
   ASSERT_EQ(
       url1,
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTab) {
   // TODO(crbug.com/40705856): see the comment above about why we need this.
   content::WaitForLoadStop(
       browser()->GetTabStripModel()->GetActiveWebContents());
-  chrome::GoForward(browser(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  chrome::GoForward(browser(), WindowOpenDisposition::kNewForegroundTab);
   ASSERT_EQ(4, browser()->GetTabStripModel()->active_index());
   ASSERT_EQ(
       url2,
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTabWithGroup) {
       browser()->GetTabStripModel()->AddToNewGroup({0});
 
   // Go back in a new background tab.
-  chrome::GoBack(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kNewBackgroundTab);
   ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTabWithGroup) {
   // TODO(crbug.com/40705856): see the comment above about why we need this.
   content::WaitForLoadStop(
       browser()->GetTabStripModel()->GetActiveWebContents());
-  chrome::GoForward(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  chrome::GoForward(browser(), WindowOpenDisposition::kNewBackgroundTab);
 
   // The new tab should have inherited the tab group from the old tab.
   EXPECT_EQ(group_id, browser()->GetTabStripModel()->GetTabGroupForTab(2));

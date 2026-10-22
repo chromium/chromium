@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
   {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), embedded_test_server()->GetURL("/simple.html"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     infobar_manager2 = infobars::ContentInfoBarManager::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());

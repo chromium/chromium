@@ -61,7 +61,7 @@ BrowserWindowInterface* LaunchAppBrowser(Profile* profile,
                   ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
                       extension_app->id(),
                       apps::LaunchContainer::kLaunchContainerWindow,
-                      WindowOpenDisposition::CURRENT_TAB,
+                      WindowOpenDisposition::kCurrentTab,
                       apps::LaunchSource::kFromTest)));
 
   BrowserWindowInterface* const browser = browser_created_observer.Wait();
@@ -75,7 +75,7 @@ BrowserWindowInterface* LaunchAppBrowser(Profile* profile,
 content::WebContents* AddTab(BrowserWindowInterface* browser, const GURL& url) {
   int starting_tab_count = browser->GetTabStripModel()->count();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser, url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   int tab_count = browser->GetTabStripModel()->count();
   EXPECT_EQ(starting_tab_count + 1, tab_count);

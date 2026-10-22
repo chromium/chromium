@@ -35,7 +35,7 @@ content::OpenURLParams CreateOpenUrlParams(const GURL& url) {
       net::AppendOrReplaceQueryParameter(
           url, page_info::AboutThisSiteRenderModeParameterName,
           page_info::AboutThisSiteRenderModeParameterValue),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
+      WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK);
 }
 }  // namespace
 

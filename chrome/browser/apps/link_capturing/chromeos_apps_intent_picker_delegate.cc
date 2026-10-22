@@ -217,7 +217,7 @@ void ChromeOsAppsIntentPickerDelegate::LaunchApp(
     CHECK(proxy_);
     proxy_->LaunchAppWithUrl(
         launch_name,
-        GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+        GetEventFlags(WindowOpenDisposition::kNewWindow,
                       /*prefer_container=*/true),
         url, LaunchSource::kFromLink,
         std::make_unique<WindowInfo>(display::kDefaultDisplayId),

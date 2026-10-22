@@ -358,7 +358,7 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
           // event_flags are ignored here because they control the disposition
           // which in this case has been overridden to always open a new window.
           proxy->LaunchAppWithParams(apps::AppLaunchParams(
-              app_id, container, WindowOpenDisposition::NEW_WINDOW,
+              app_id, container, WindowOpenDisposition::kNewWindow,
               ShelfLaunchSourceToAppsLaunchSource(source), display_id));
           return;
         case apps::LaunchContainer::kLaunchContainerPanelDeprecated:

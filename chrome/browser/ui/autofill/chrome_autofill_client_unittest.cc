@@ -1394,7 +1394,7 @@ TEST_F(ChromeAutofillClientTest, OpenGmailForOtps) {
   ASSERT_TRUE(delegate.last_params().has_value());
   EXPECT_EQ(delegate.last_params()->url, GURL("https://mail.google.com"));
   EXPECT_EQ(delegate.last_params()->disposition,
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+            WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(ChromeAutofillClientTest,

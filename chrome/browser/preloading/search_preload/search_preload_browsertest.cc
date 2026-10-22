@@ -465,7 +465,7 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
     observer.set_wait_event(wait_event);
     GetWebContents().OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::CURRENT_TAB,
+            url, WindowOpenDisposition::kCurrentTab,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
         /*navigation_handle_callback=*/{});

@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
     EXPECT_TRUE(action_runner->WantsToRun(extension.get()));
     // Manual reload should then allow for script inject and blocked actions to
     // run.
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     ASSERT_TRUE(content::WaitForLoadStop(web_contents));
     EXPECT_TRUE(DidInjectScript(web_contents));
     EXPECT_FALSE(action_runner->WantsToRun(extension.get()));

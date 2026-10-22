@@ -100,7 +100,7 @@ void SessionsSyncPerfTest::UpdateTabs(int profile) {
     url = NextURL();
     browser->OpenURL(
         OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+            url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
             content::Referrer(GURL("http://localhost"),
                               network::mojom::ReferrerPolicy::kDefault)),
         /*navigation_handle_callback=*/{});

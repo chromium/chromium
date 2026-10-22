@@ -768,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   GURL redirect_url(embedded_test_server()->GetURL(
       "c.com", "/server-redirect?" + dest_url.spec()));
   browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                         redirect_url, WindowOpenDisposition::CURRENT_TAB,
+                         redirect_url, WindowOpenDisposition::kCurrentTab,
                          ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
   javascript_dialogs::AppModalDialogController* alert =
@@ -1383,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   // Add a second tab and load a page with an iframe.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), main_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* second_web_contents =
       tab_strip_model->GetActiveWebContents();
@@ -1437,7 +1437,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   // Add a second tab and load a page with a same-site iframe.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), main_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* second_web_contents =
       tab_strip_model->GetActiveWebContents();

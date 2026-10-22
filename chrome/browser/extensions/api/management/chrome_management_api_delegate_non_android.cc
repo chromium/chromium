@@ -211,7 +211,7 @@ void LaunchWebApp(const webapps::AppId& app_id, Profile* profile) {
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
       apps::AppLaunchParams(app_id, launch_container,
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            WindowOpenDisposition::kNewForegroundTab,
                             apps::LaunchSource::kFromManagementApi));
 }
 
@@ -250,7 +250,7 @@ void OnWebAppInstallabilityChecked(
 
       chrome::AddWebContents(displayer.browser_window_interface(), nullptr,
                              std::move(web_contents), url,
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             WindowOpenDisposition::kNewForegroundTab,
                              blink::mojom::WindowFeatures());
       if (!weak_contents) {
         std::move(callback).Run(InstallOrLaunchWebAppResult::kUnknownError);
@@ -291,7 +291,7 @@ bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   }
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
       apps::AppLaunchParams(extension->id(), launch_container,
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            WindowOpenDisposition::kNewForegroundTab,
                             apps::LaunchSource::kFromManagementApi));
 
   RecordAppLaunchType(extension_misc::APP_LAUNCH_EXTENSION_API,

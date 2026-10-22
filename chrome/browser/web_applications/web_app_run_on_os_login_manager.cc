@@ -90,7 +90,7 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock,
     // as standalone windows, never as tabs
     apps::AppLaunchParams params(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOsLogin);
+        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromOsLogin);
 
     // Schedule launch here, show notification when the app window pops up.
     provider_->scheduler().LaunchAppWithCustomParams(std::move(params),

@@ -173,7 +173,7 @@ void GlicExperimentalOptInUIHostAndroid::OpenLinkInNewTab(const GURL& url) {
   }
   std::unique_ptr<NavigateParams> params =
       std::make_unique<NavigateParams>(profile_, url, ui::PAGE_TRANSITION_LINK);
-  params->disposition = WindowOpenDisposition::NEW_POPUP;
+  params->disposition = WindowOpenDisposition::kNewPopup;
   params->opened_by_another_window = true;
   glic::NavigateAsync(std::move(params), base::DoNothing());
 }

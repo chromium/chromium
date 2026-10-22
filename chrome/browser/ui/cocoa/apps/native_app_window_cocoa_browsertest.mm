@@ -71,7 +71,7 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
           profile(),
           apps::AppLaunchParams(
               app->id(), apps::LaunchContainer::kLaunchContainerNone,
-              WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest),
+              WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest),
           base::DoNothing());
       app_loaded_observer.Wait();
     }

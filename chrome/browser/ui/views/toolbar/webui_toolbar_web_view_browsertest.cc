@@ -924,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                                           "?.disabled ? 'true' : 'false'"})));
 
   // Go back to enable forward button.
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
 
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Forward");
@@ -1083,7 +1083,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   {
     content::TestNavigationObserver back_nav_observer(
         browser()->GetTabStripModel()->GetActiveWebContents());
-    chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
     back_nav_observer.Wait();
   }
 
@@ -3545,7 +3545,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
     // Ensure NOT in split view initially by opening a new tab.
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("chrome://version/"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     EXPECT_FALSE(tab_strip_model->GetActiveTab()->IsSplit());
 
@@ -5190,7 +5190,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarButtonPressAndDragTest, PressAndDragDown) {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
     if (std::string(param.test_name) == "Forward") {
-      chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+      chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
     }
   }
 
@@ -5337,7 +5337,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest,
   // new tab and navigating it to Tab Search.
   GURL tab_search_url("chrome://tab-search.top-chrome/");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), tab_search_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), tab_search_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Create a second browser window. This will trigger the creation of a new

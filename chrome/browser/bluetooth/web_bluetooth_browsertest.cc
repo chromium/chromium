@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, WebBluetoothAfterCrash) {
   crash_observer.Wait();
 
   // Reload tab.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, ShowChooserInBackgroundTab) {
 
   // Create a new foreground tab that covers |web_contents|.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(kExampleUrl), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL(kExampleUrl), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Try to show the chooser in the background tab.

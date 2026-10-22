@@ -79,20 +79,20 @@ webapps::AppId InstallWebAppFromManifest(BrowserWindowInterface* browser,
 BrowserWindowInterface* LaunchWebAppBrowser(
     Profile*,
     const webapps::AppId&,
-    WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+    WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab);
 
 // Launches the app, waits for the app url to load.
 BrowserWindowInterface* LaunchWebAppBrowserAndWait(
     Profile*,
     const webapps::AppId&,
-    WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+    WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab);
 
 // Launches a new tab for |app| in |profile|.
 BrowserWindowInterface* LaunchBrowserForWebAppInTab(
     Profile*,
     const webapps::AppId&,
     WindowOpenDisposition disposition =
-        WindowOpenDisposition::NEW_FOREGROUND_TAB);
+        WindowOpenDisposition::kNewForegroundTab);
 
 // Launches the web app to the given URL.
 BrowserWindowInterface* LaunchWebAppToURL(Profile* profile,

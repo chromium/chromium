@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_P(DocumentPipLifecycleBrowserTest,
   // Open a second tab so closing the first one doesn't close the browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title1.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   browser()->GetTabStripModel()->CloseWebContentsAt(

@@ -174,7 +174,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
     case Disposition::kNewTab:
       ExtensionTabUtil::NavigateToURL(
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          WindowOpenDisposition::kNewForegroundTab,
           /*source_contents=*/web_contents, url,
           // Binding `this` is safe because it is ref-counted.
           base::BindOnce(&SearchQueryFunction::OnNavigate, this));
@@ -182,7 +182,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
     case Disposition::kNewWindow:
       ExtensionTabUtil::NavigateToURL(
-          WindowOpenDisposition::NEW_WINDOW,
+          WindowOpenDisposition::kNewWindow,
           /*source_contents=*/web_contents, url,
           // Binding `this` is safe because it is ref-counted.
           base::BindOnce(&SearchQueryFunction::OnNavigate, this));

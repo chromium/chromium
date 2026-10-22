@@ -95,7 +95,7 @@ void PermissionBlockedMessageDelegate::OnLearnMoreClicked() {
   web_contents_->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GetNotificationBlockedLearnMoreUrl(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

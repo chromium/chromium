@@ -368,7 +368,7 @@ bool ChromeOsReimplNavigationCapturingThrottle::MaybeCreateAndAdd(
   // same (app/non-app) context as its opener.
   WindowOpenDisposition disposition =
       GetLinkCapturingSourceDisposition(contents);
-  if (disposition == WindowOpenDisposition::NEW_POPUP &&
+  if (disposition == WindowOpenDisposition::kNewPopup &&
       !contents->GetLastCommittedURL().is_valid()) {
     return false;
   }
@@ -567,7 +567,7 @@ ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
   // Do not use `this` or any fields in the code below.
   proxy->LaunchAppWithUrl(
       launch_app_id,
-      GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+      GetEventFlags(WindowOpenDisposition::kNewWindow,
                     /*prefer_container=*/true),
       redirected_url, launch_source,
       std::make_unique<WindowInfo>(display::kDefaultDisplayId),

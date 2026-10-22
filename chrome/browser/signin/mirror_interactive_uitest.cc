@@ -84,7 +84,7 @@ class MirrorResponseBrowserTest : public InProcessBrowserTest {
   void NavigateToURL(const GURL& url,
                      std::optional<url::Origin> initiator_origin) {
     NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
-    params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    params.disposition = WindowOpenDisposition::kCurrentTab;
     if (initiator_origin) {
       // `is_renderer_initiated` requires non-null `initiator_origin`.
       params.is_renderer_initiated = true;
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, BackgroundResponseIgnored) {
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_FROM_API);
   params.initiator_origin = url::Origin::Create(GURL("https://google.com"));
   // Use `NEW_BACKGROUND_TAB` to avoid activating `browser()`.
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   params.is_renderer_initiated = true;
   Navigate(&params);
   EXPECT_TRUE(content::WaitForLoadStop(params.navigated_or_inserted_contents));
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
   params.initiator_origin = url::Origin::Create(GURL("https://google.com"));
   // Use `NEW_BACKGROUND_TAB` to navigate in a background tab without activating
   // it.
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   params.is_renderer_initiated = true;
   Navigate(&params);
   EXPECT_TRUE(content::WaitForLoadStop(params.navigated_or_inserted_contents));
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
 
   GURL url = GetUrlWithManageAccountsHeader({{"action", "ADDSESSION"}});
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
   EXPECT_TRUE(content::WaitForLoadStop(params.navigated_or_inserted_contents));
 
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, BackgroundTabDefaultIgnored) {
 
   GURL url = GetUrlWithManageAccountsHeader({{"action", "DEFAULT"}});
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
   EXPECT_TRUE(content::WaitForLoadStop(params.navigated_or_inserted_contents));
 

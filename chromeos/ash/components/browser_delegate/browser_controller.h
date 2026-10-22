@@ -141,7 +141,7 @@ class BrowserController {
     // Where to open the URL, e.g. in a new foreground tab (default), in a new
     // window (`NEW_WINDOW`), or in an incognito window (`OFF_THE_RECORD`).
     WindowOpenDisposition disposition =
-        WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        WindowOpenDisposition::kNewForegroundTab;
     // The page transition type. Web apps can capture navigations whose
     // transition is `PAGE_TRANSITION_LINK` (the default) without qualifiers;
     // add a qualifier such as `PAGE_TRANSITION_FROM_API` to prevent that.
@@ -158,7 +158,7 @@ class BrowserController {
     // popup hides the location bar, title bar, and window icon, uses
     // app-style header rendering, and uses saved or default window bounds
     // instead of inheriting bounds from the last active browser.
-    // Only allowed when `disposition` is `WindowOpenDisposition::NEW_POPUP`.
+    // Only allowed when `disposition` is `WindowOpenDisposition::kNewPopup`.
     bool popup_has_trusted_source = false;
   };
 

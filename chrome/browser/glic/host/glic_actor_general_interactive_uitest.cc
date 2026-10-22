@@ -785,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabOnNewTabPage) {
         // Create another tab to ensure we're using the initiator tab.
         ui_test_utils::NavigateToURLWithDisposition(
             browser(), GURL(url::kAboutBlankURL),
-            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            WindowOpenDisposition::kNewForegroundTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
         // Sanity check - we'll ensure these won't change after binding to the
@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
         // Create another tab to ensure we're using the initiator tab.
         ui_test_utils::NavigateToURLWithDisposition(
             browser(), GURL(url::kAboutBlankURL),
-            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            WindowOpenDisposition::kNewForegroundTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
         // Sanity check - we'll ensure these won't change after binding to the

@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
   // Reload the page and the intent picker should show up.
   DoAndWaitForIntentPickerIconUpdate([this] {
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   });
 
   EXPECT_TRUE(GetIntentPickerIcon().GetVisible());

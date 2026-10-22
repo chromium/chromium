@@ -704,22 +704,22 @@ tabs::TabInterface* GetTabAndRevertIfNecessaryHelper(
   WebContents* current_contents = current_tab->GetContents();
 
   switch (disposition) {
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB: {
+    case WindowOpenDisposition::kNewForegroundTab:
+    case WindowOpenDisposition::kNewBackgroundTab: {
       std::unique_ptr<WebContents> new_tab = current_contents->Clone();
       WebContents* raw_new_tab = new_tab.get();
-      if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+      if (disposition == WindowOpenDisposition::kNewBackgroundTab) {
         new_tab->WasHidden();
       }
       browser->GetTabStripModel()->AddWebContents(
           std::move(new_tab), -1, ui::PAGE_TRANSITION_LINK,
-          (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB)
+          (disposition == WindowOpenDisposition::kNewForegroundTab)
               ? AddTabTypes::ADD_ACTIVE
               : AddTabTypes::ADD_NONE,
           current_tab->GetGroup());
       return browser->GetTabStripModel()->GetTabForWebContents(raw_new_tab);
     }
-    case WindowOpenDisposition::NEW_WINDOW: {
+    case WindowOpenDisposition::kNewWindow: {
       std::unique_ptr<WebContents> new_tab = current_contents->Clone();
       WebContents* raw_new_tab = new_tab.get();
       BrowserWindowInterface* new_browser = CreateNewBrowser(browser, true);
@@ -1233,8 +1233,8 @@ void Home(BrowserWindowInterface* browser, WindowOpenDisposition disposition) {
     url = extensions::AppLaunchInfo::GetLaunchWebURL(extension);
   }
 
-  if (disposition == WindowOpenDisposition::CURRENT_TAB ||
-      disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+  if (disposition == WindowOpenDisposition::kCurrentTab ||
+      disposition == WindowOpenDisposition::kNewForegroundTab) {
     extensions::MaybeShowExtensionControlledHomeNotification(
         browser, browser->GetTabStripModel()->GetActiveWebContents());
   }
@@ -1338,7 +1338,7 @@ void NewWindow(BrowserWindowInterface* browser) {
       launch_container = apps::LaunchContainer::kLaunchContainerTab;
     }
     apps::AppLaunchParams params = apps::AppLaunchParams(
-        app_id, launch_container, WindowOpenDisposition::NEW_WINDOW,
+        app_id, launch_container, WindowOpenDisposition::kNewWindow,
         apps::LaunchSource::kFromKeyboard);
     web_app::LaunchExtensionOrWebApp(profile, std::move(params),
                                      base::DoNothing());
@@ -1350,7 +1350,7 @@ void NewWindow(BrowserWindowInterface* browser) {
   const extensions::Extension* extension = GetExtensionForBrowser(browser);
   if (extension && extension->is_hosted_app()) {
     const auto app_launch_params = CreateAppLaunchParamsUserContainer(
-        profile, extension, WindowOpenDisposition::NEW_WINDOW,
+        profile, extension, WindowOpenDisposition::kNewWindow,
         apps::LaunchSource::kFromKeyboard);
     OpenApplicationWindow(
         profile, app_launch_params,

@@ -81,7 +81,7 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
   void AddTab(BrowserWindowInterface* target_browser, const GURL& url) {
     NavigateParams params(target_browser, url, ui::PAGE_TRANSITION_TYPED);
     params.tabstrip_index = 0;
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
     content::WaitForLoadStop(params.navigated_or_inserted_contents);
   }

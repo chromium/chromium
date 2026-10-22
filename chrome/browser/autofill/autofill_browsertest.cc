@@ -175,7 +175,7 @@ class AutofillTest : public InProcessBrowserTest {
       bool simulate_click = true) {
     GURL url = embedded_test_server()->GetURL("/autofill/" + filename);
     NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     ui_test_utils::NavigateToURL(&params);
     ASSERT_TRUE(
         autofill_manager_injector_[web_contents()]->WaitForFormsSeen(1));

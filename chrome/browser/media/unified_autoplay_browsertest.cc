@@ -88,19 +88,19 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
 
   content::WebContents* OpenNewTab(const GURL& url, bool from_context_menu) {
     return OpenInternal(
-        url, from_context_menu, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        url, from_context_menu, WindowOpenDisposition::kNewForegroundTab,
         false /* is_renderer_initiated */, true /* user_gesture */);
   }
 
   content::WebContents* OpenNewWindow(const GURL& url, bool from_context_menu) {
     return OpenInternal(
-        url, from_context_menu, WindowOpenDisposition::NEW_WINDOW,
+        url, from_context_menu, WindowOpenDisposition::kNewWindow,
         false /* is_renderer_initiated */, true /* user_gesture */);
   }
 
   content::WebContents* OpenFromRenderer(const GURL& url, bool user_gesture) {
     return OpenInternal(url, false /* from_context_menu */,
-                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                        WindowOpenDisposition::kNewForegroundTab,
                         true /* is_renderer_initiated */, user_gesture);
   }
 

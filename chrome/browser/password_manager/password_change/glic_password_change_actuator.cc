@@ -281,7 +281,7 @@ void GlicPasswordChangeActuator::StartActuation(const GURL& target_url) {
 
   content::OpenURLParams open_url_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          target_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          target_url, WindowOpenDisposition::kNewBackgroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   content::WebContents* new_contents =
@@ -387,7 +387,7 @@ void GlicPasswordChangeActuator::OpenPasswordChangeTab(
                                                       : change_password_url_;
     originator->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            target_url, WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_LINK),
         /*navigation_handle_callback=*/{});
   }

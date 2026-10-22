@@ -18,7 +18,7 @@ namespace lens {
 void WaitForPaint(
     BrowserWindowInterface* browser,
     const GURL& url,
-    WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
+    WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab,
     int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
 }  // namespace lens

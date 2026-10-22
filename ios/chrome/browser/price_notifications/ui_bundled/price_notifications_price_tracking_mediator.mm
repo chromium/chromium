@@ -174,7 +174,7 @@ using PriceNotificationItems =
 - (void)navigateToWebpageForItem:(PriceNotificationsTableViewItem*)item {
   DCHECK(item.tracking);
   [self navigateToWebpageForURL:item.entryURL
-                    disposition:WindowOpenDisposition::CURRENT_TAB];
+                    disposition:WindowOpenDisposition::kCurrentTab];
   [self.handler hidePriceTrackedItems];
 }
 
@@ -233,7 +233,7 @@ using PriceNotificationItems =
   [self.priceInsightsConsumer
       didStartNavigationToWebpageWithPriceBucket:item.priceBucket];
   [self navigateToWebpageForURL:item.buyingOptionsURL
-                    disposition:WindowOpenDisposition::NEW_FOREGROUND_TAB];
+                    disposition:WindowOpenDisposition::kNewForegroundTab];
 }
 
 #pragma mark - Private

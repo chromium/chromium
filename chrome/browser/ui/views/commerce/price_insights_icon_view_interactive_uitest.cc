@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       Do(base::BindLambdaForTesting([&]() {
         ui_test_utils::NavigateToURLWithDisposition(
             browser(), embedded_test_server()->GetURL(kEmptyDocumentURL),
-            WindowOpenDisposition::CURRENT_TAB,
+            WindowOpenDisposition::kCurrentTab,
             ui_test_utils::BROWSER_TEST_NO_WAIT);
       })),
 

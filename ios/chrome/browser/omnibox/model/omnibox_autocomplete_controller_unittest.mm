@@ -246,7 +246,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     omnibox_text_model_->OnSetFocus();
     [controller_ openMatch:match
                  popupSelection:OmniboxPopupSelection(0)
-          windowOpenDisposition:WindowOpenDisposition::CURRENT_TAB
+          windowOpenDisposition:WindowOpenDisposition::kCurrentTab
                 alternateNavURL:GURL()
                      pastedText:u""
         matchSelectionTimestamp:base::TimeTicks()];
@@ -387,7 +387,7 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenCreatedMatch) {
   // higher than autocomplete_controller_->result().size().
   [controller_ selectMatchForOpening:match
                                inRow:10
-                              openIn:WindowOpenDisposition::CURRENT_TAB];
+                              openIn:WindowOpenDisposition::kCurrentTab];
 
   // Expect the match to be opened without mutating autocomplete results.
   EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
@@ -400,7 +400,7 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenCreatedMatch) {
   // smaller than autocomplete_controller_->result().size().
   [controller_ selectMatchForOpening:match
                                inRow:1
-                              openIn:WindowOpenDisposition::CURRENT_TAB];
+                              openIn:WindowOpenDisposition::kCurrentTab];
   // Expect the match to be opened without mutating autocomplete results.
   EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
   EXPECT_EQ(autocomplete_controller_->result().size(), sample_matches.size());
@@ -422,7 +422,7 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardURLMatch) {
   // Open the clipboard match.
   [controller_ selectMatchForOpening:clipboard_match
                                inRow:0
-                              openIn:WindowOpenDisposition::CURRENT_TAB];
+                              openIn:WindowOpenDisposition::kCurrentTab];
 
   // Expect the clipboard content to be loaded.
   EXPECT_EQ(LastOpenedMatch().destination_url, pasteboard_url);
@@ -444,7 +444,7 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardTextMatch) {
   // Open the clipboard match.
   [controller_ selectMatchForOpening:clipboard_match
                                inRow:0
-                              openIn:WindowOpenDisposition::CURRENT_TAB];
+                              openIn:WindowOpenDisposition::kCurrentTab];
 
   // Expect the clipboard content to be loaded.
   EXPECT_EQ(LastOpenedMatch().fill_into_edit, pasteboard_text);
@@ -471,7 +471,7 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardImageMatch) {
   // Open the clipboard match.
   [controller_ selectMatchForOpening:clipboard_match
                                inRow:0
-                              openIn:WindowOpenDisposition::CURRENT_TAB];
+                              openIn:WindowOpenDisposition::kCurrentTab];
 
   // Wait for the image match.
   open_selection_waiter.Run();
@@ -506,7 +506,7 @@ TEST_F(OmniboxAutocompleteControllerTest, AlternateNavHasHTTP) {
   omnibox_text_model_->UpdateUserText(u"http://abcd");
   [controller_ openMatch:match
                popupSelection:OmniboxPopupSelection(0)
-        windowOpenDisposition:WindowOpenDisposition::CURRENT_TAB
+        windowOpenDisposition:WindowOpenDisposition::kCurrentTab
               alternateNavURL:alternate_nav_url
                    pastedText:u""
       matchSelectionTimestamp:base::TimeTicks()];
@@ -521,7 +521,7 @@ TEST_F(OmniboxAutocompleteControllerTest, AlternateNavHasHTTP) {
   omnibox_text_model_->UpdateUserText(u"abcd");
   [controller_ openMatch:match
                popupSelection:OmniboxPopupSelection(0)
-        windowOpenDisposition:WindowOpenDisposition::CURRENT_TAB
+        windowOpenDisposition:WindowOpenDisposition::kCurrentTab
               alternateNavURL:alternate_nav_url
                    pastedText:u""
       matchSelectionTimestamp:base::TimeTicks()];

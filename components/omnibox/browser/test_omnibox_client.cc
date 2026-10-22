@@ -32,7 +32,7 @@ TestOmniboxClient::TestOmniboxClient()
                   .provider_types =
                       AutocompleteClassifier::DefaultOmniboxProviders()}),
           std::make_unique<TestSchemeClassifier>()),
-      last_log_disposition_(WindowOpenDisposition::UNKNOWN) {}
+      last_log_disposition_(WindowOpenDisposition::kUnknown) {}
 
 TestOmniboxClient::~TestOmniboxClient() {
   autocomplete_classifier_.Shutdown();

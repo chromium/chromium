@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(TabClusterUIClientBrowserTest, PendingNavigation) {
   // and stall it before it commits.
   const GURL slow_url = embedded_test_server()->GetURL("/slow");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), slow_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), slow_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   response.WaitForRequest();
   ASSERT_EQ(web_contents->GetVisibleURL(), slow_url);

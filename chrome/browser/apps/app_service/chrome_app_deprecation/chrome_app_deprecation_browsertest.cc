@@ -34,7 +34,7 @@ class ChromeAppDeprecationUserInstalledAppsBrowserTest
   void RunPlatformApp(const Extension* extension) {
     AppLaunchParams params(
         extension->id(), LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::NEW_WINDOW, LaunchSource::kFromTest);
+        WindowOpenDisposition::kNewWindow, LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
 
     AppServiceProxyFactory::GetForProfile(browser()->GetProfile())

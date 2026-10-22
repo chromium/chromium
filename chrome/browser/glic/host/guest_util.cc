@@ -358,7 +358,7 @@ bool MaybeHandleGlicWindowCreation(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  bool is_popup = (disposition == WindowOpenDisposition::NEW_POPUP) ||
+  bool is_popup = (disposition == WindowOpenDisposition::kNewPopup) ||
                   window_features.is_popup;
   if (base::FeatureList::IsEnabled(features::kGlicPopupWindowsEnabled) &&
       (is_popup || window_features.has_x || window_features.has_y ||
@@ -385,7 +385,7 @@ bool MaybeHandleGlicWindowCreation(
 
     std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
         profile, target_url, ui::PAGE_TRANSITION_LINK);
-    params->disposition = WindowOpenDisposition::NEW_POPUP;
+    params->disposition = WindowOpenDisposition::kNewPopup;
     params->opened_by_another_window = true;
     params->window_features.bounds = gfx::Rect(x, y, popup_width, popup_height);
     glic::NavigateAsync(std::move(params), base::DoNothing());
@@ -396,9 +396,9 @@ bool MaybeHandleGlicWindowCreation(
   std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
       profile, target_url, ui::PAGE_TRANSITION_LINK);
   params->disposition =
-      (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB)
-          ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-          : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      (disposition == WindowOpenDisposition::kNewBackgroundTab)
+          ? WindowOpenDisposition::kNewBackgroundTab
+          : WindowOpenDisposition::kNewForegroundTab;
   glic::NavigateAsync(std::move(params), base::DoNothing());
   return true;
 }

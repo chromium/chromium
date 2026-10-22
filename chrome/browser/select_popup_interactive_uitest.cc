@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(SelectPopupBrowsertest, SelectPopupHiddenTab) {
   content::RenderFrameHost* second_rfh =
       ui_test_utils::NavigateToURLWithDisposition(
           browser(), GURL("data:text/html,<div>new tab</div>"),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_TRUE(second_rfh);
 

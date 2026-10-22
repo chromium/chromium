@@ -143,8 +143,9 @@ void LoginDetectionTabHelper::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  if (disposition != WindowOpenDisposition::NEW_POPUP)
+  if (disposition != WindowOpenDisposition::kNewPopup) {
     return;
+  }
   // DidOpenRequestedURL may be called before `new_contents` has been added to
   // the tab strip, and as such tab helpers may not yet have been initialized.
   // Explicitly instantiate the login detector for the `new_contents` here to

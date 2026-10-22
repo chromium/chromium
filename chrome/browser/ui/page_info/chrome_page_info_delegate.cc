@@ -412,7 +412,7 @@ void ChromePageInfoDelegate::OpenConnectionHelpCenterPage(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(chrome::kPageInfoHelpCenterURL),
           ui::DispositionFromEventFlags(
-              event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+              event.flags(), WindowOpenDisposition::kNewForegroundTab),
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
@@ -461,7 +461,7 @@ void ChromePageInfoDelegate::OpenSafeBrowsingHelpCenterPage(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(url),
           ui::DispositionFromEventFlags(
-              event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB),
+              event_flags, WindowOpenDisposition::kNewForegroundTab),
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }

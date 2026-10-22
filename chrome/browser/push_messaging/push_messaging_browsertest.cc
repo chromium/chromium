@@ -1440,7 +1440,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   // Open a blank foreground tab so site is no longer visible.
   ui_test_utils::NavigateToURLWithDisposition(
       GetBrowser(), GURL("about:blank"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // If the Service Worker push event handler shows a notification, we
@@ -1528,7 +1528,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 
   ui_test_utils::NavigateToURLWithDisposition(
       GetBrowser(), GURL("about:blank"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // Send a missed notification to use up the budget.
@@ -1729,7 +1729,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTestBase,
 
   ui_test_utils::NavigateToURLWithDisposition(
       GetBrowser(), GURL("about:blank"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   gcm::IncomingMessage message;

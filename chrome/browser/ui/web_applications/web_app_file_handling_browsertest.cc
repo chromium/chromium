@@ -252,7 +252,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
       const std::vector<base::FilePath>& files =
           std::vector<base::FilePath>()) {
     apps::AppLaunchParams params(app_id, launch_container,
-                                 WindowOpenDisposition::NEW_WINDOW,
+                                 WindowOpenDisposition::kNewWindow,
                                  launch_source);
 
     if (files.size()) {
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
     content::TestNavigationObserver navigation_observer(web_contents_);
     chrome::Reload(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
                        web_contents_),
-                   WindowOpenDisposition::CURRENT_TAB);
+                   WindowOpenDisposition::kCurrentTab);
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);
   }
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   // focus-existing entirely.
   apps::AppLaunchParams params(app_id,
                                apps::LaunchContainer::kLaunchContainerWindow,
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               WindowOpenDisposition::kNewForegroundTab,
                                apps::LaunchSource::kFromFileManager);
   params.launch_files = launch_files;
   params.override_url = url;
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
     content::TestNavigationObserver navigation_observer(web_contents_);
     chrome::Reload(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
                        web_contents_),
-                   WindowOpenDisposition::CURRENT_TAB);
+                   WindowOpenDisposition::kCurrentTab);
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);
   }

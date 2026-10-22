@@ -100,12 +100,12 @@ content::WebContents* TabThinWebViewHost::OpenURLFromTab(
     return nullptr;
   }
   content::OpenURLParams new_params = params;
-  if (new_params.disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (new_params.disposition == WindowOpenDisposition::kCurrentTab) {
     // `browser` would interpret CURRENT_TAB as "the window's active tab", but
     // the source here is the side panel, not that tab. Never replace the
     // current tab: open a new one instead, as the desktop Customize Chrome
     // side panel does in customize_chrome_page_handler.cc.
-    new_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    new_params.disposition = WindowOpenDisposition::kNewForegroundTab;
   }
   return browser->OpenURL(new_params, std::move(navigation_handle_callback));
 }

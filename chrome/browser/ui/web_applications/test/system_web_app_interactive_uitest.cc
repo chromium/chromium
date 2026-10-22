@@ -570,7 +570,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
 
     auto launch_params = apps::AppLaunchParams(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::CURRENT_TAB,
+        WindowOpenDisposition::kCurrentTab,
         apps::LaunchSource::kFromAppListGrid);
 
     content::TestNavigationObserver navigation_observer(
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
     provider->scheduler().LaunchAppWithCustomParams(
         apps::AppLaunchParams(app_id2,
                               apps::LaunchContainer::kLaunchContainerWindow,
-                              WindowOpenDisposition::CURRENT_TAB,
+                              WindowOpenDisposition::kCurrentTab,
                               apps::LaunchSource::kFromAppListGrid),
         future.GetCallback());
     EXPECT_FALSE(future.template Get<1>().get());
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
     provider->scheduler().LaunchAppWithCustomParams(
         apps::AppLaunchParams(app_id1,
                               apps::LaunchContainer::kLaunchContainerWindow,
-                              WindowOpenDisposition::CURRENT_TAB,
+                              WindowOpenDisposition::kCurrentTab,
                               apps::LaunchSource::kFromAppListGrid),
         future.GetCallback());
     EXPECT_TRUE(future.template Get<1>().get());

@@ -365,7 +365,7 @@ BrowserWindowInterface* LaunchWebAppToURL(Profile* profile,
                                           const GURL& url) {
   apps::AppLaunchParams params(app_id,
                                apps::LaunchContainer::kLaunchContainerWindow,
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               WindowOpenDisposition::kNewForegroundTab,
                                apps::LaunchSource::kFromCommandLine);
   params.override_url = url;
 

@@ -720,7 +720,7 @@ PrerenderTestHelper::NavigatePrimaryPageAsync(WebContents& web_contents,
   } else {
     web_contents.OpenURL(
         OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::CURRENT_TAB, transition),
+            url, WindowOpenDisposition::kCurrentTab, transition),
         /*navigation_handle_callback=*/{});
   }
   return observer;

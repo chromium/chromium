@@ -431,7 +431,7 @@ void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(
     BrowserWindowInterface* browser,
     const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.started_from_context_menu = true;
   Navigate(&params);
 }

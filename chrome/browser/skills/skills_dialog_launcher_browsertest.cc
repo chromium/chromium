@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(SkillsDialogLauncherBrowserTest,
                        LaunchWaitsForNavigation) {
   GURL url("chrome://newtab");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(SkillsDialogLauncherBrowserTest,
                        TabDestroyedDuringLoad) {
   GURL url("chrome://newtab");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();

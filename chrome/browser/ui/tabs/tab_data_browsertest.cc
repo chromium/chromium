@@ -79,7 +79,7 @@ class TabDataObserverBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, DefaultTabData) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   TabInterface* const tab_interface =
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, DefaultTabData) {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, PinnedStateChange) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, PinnedStateChange) {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, TitleChange) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContents* const web_contents =
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, TitleChange) {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, BlockedState) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   TabInterface* const tab_interface =
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, FaviconAndIconFlags) {
     TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(0);
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::CURRENT_TAB,
+        WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
     const TabData& data = tab_data_observer->tab_data();
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, FaviconAndIconFlags) {
   {  // Themeable by virtual URL only.
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(1);
     content::WebContents* const wc_virtual = tab_interface->GetContents();
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, FaviconAndIconFlags) {
   {  // Themeable by actual URL only.
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(2);
     content::WebContents* const wc_actual = tab_interface->GetContents();
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, FaviconAndIconFlags) {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, Urls) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
 
   for (const auto& test_case : test_cases) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), test_case.url, WindowOpenDisposition::CURRENT_TAB,
+        browser(), test_case.url, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     TabInterface* const tab_interface =
         browser()->GetTabStripModel()->GetTabAtIndex(0);
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, UncomittedNavigationUrl) {
   // navigation.
   GURL uncommitted_url = embedded_test_server()->GetURL("c.test", "/nocontent");
   ASSERT_FALSE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), uncommitted_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), uncommitted_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB));
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, UncomittedNavigationUrl) {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, ShouldRenderLoadingTitle) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, ShouldRenderLoadingTitle) {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, CrashedStatus) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, CrashedStatus) {
 
   // The tab should not be crashed after navigating to another site.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_FALSE(data.is_crashed);
 }
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, CrashedStatus) {
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, NetworkState) {
   const GURL kUrl("http://example.com/");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), kUrl, WindowOpenDisposition::CURRENT_TAB,
+      browser(), kUrl, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, NetworkState) {
   EXPECT_NE(data_loading.network_state, tabs::TabNetworkState::kNone);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   tabs::TabData data_committed = tabs::TabData::FromTabInterface(tab_interface);
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, NetworkState) {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, AlertStateAudioPlaying) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, AlertStateAudioPlaying) {
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, ShouldHideThrobber) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(1);
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, ShouldHideThrobber) {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, Thumbnail) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, Thumbnail) {
 
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, TabLifecycleManagement) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, TabLifecycleManagement) {
 IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
                        CollaborationMessagingTabDataInvalidatedOnTabClosure) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
 
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
   {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
     ASSERT_EQ(2, tab_strip_model->count());
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
                        AlertStateUpdatesAfterCancelledBeforeUnload) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title1.html"),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
   TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(0);
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(TabDataObserverDiscardBrowserTest,
                        ThumbnailRefreshesOnTabDiscard) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("example.com", "/title1.html"),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_P(TabDataObserverDiscardBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   auto* user_performance_tuning_manager = performance_manager::user_tuning::

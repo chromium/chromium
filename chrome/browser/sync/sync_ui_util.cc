@@ -408,7 +408,7 @@ void ShowBookmarksLimitExceededHelp(
   sync_service->AcknowledgeBookmarksLimitExceededError(source);
   NavigateParams params(browser, GURL(kBookmarksLimitExceededHelpCenter),
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

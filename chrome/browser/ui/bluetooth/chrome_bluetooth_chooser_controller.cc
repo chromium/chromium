@@ -66,7 +66,7 @@ void ChromeBluetoothChooserController::OpenAdapterOffHelpUrl() const {
   // For other operating systems, show a help center page in a tab.
   GetBrowser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                             GURL(chrome::kBluetoothAdapterOffHelpURL),
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            WindowOpenDisposition::kNewForegroundTab,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
                         /*navigation_handle_callback=*/{});
 #endif
@@ -84,7 +84,7 @@ void ChromeBluetoothChooserController::OpenPermissionPreferences() const {
 void ChromeBluetoothChooserController::OpenHelpCenterUrl() const {
   GetBrowser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                             GURL(permissions::kChooserBluetoothOverviewURL),
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            WindowOpenDisposition::kNewForegroundTab,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
                         /*navigation_handle_callback=*/{});
 }

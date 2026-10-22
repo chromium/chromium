@@ -679,7 +679,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreMostRecentEntry(
     return std::vector<LiveTab*>();
   }
   return RestoreEntryById(context, entries_.front()->id,
-                          WindowOpenDisposition::UNKNOWN)
+                          WindowOpenDisposition::kUnknown)
       .value();
 }
 
@@ -1088,7 +1088,7 @@ std::optional<std::vector<LiveTab*>> TabRestoreServiceHelper::RestoreEntryById(
 
       context->ShowBrowserWindow();
 
-      if (disposition == WindowOpenDisposition::CURRENT_TAB &&
+      if (disposition == WindowOpenDisposition::kCurrentTab &&
           current_context && current_context->GetActiveLiveTab()) {
         current_context->CloseTab();
       }
@@ -1553,11 +1553,11 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     LiveTab** live_tab,
     bool is_restoring_group_or_window) {
   LiveTab* restored_tab;
-  if (disposition == WindowOpenDisposition::CURRENT_TAB && context) {
+  if (disposition == WindowOpenDisposition::kCurrentTab && context) {
     restored_tab = context->ReplaceRestoredTab(tab);
   } else {
     // We only respect the tab's original browser if there's no disposition.
-    if (disposition == WindowOpenDisposition::UNKNOWN && tab.browser_id) {
+    if (disposition == WindowOpenDisposition::kUnknown && tab.browser_id) {
       context = client_->FindLiveTabContextWithID(
           SessionID::FromSerializedValue(tab.browser_id));
     }
@@ -1579,7 +1579,7 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     // |context| will be NULL in cases where one isn't already available (eg,
     // when invoked on Mac OS X with no windows open). In this case, create a
     // new browser into which we restore the tabs.
-    if (context && disposition != WindowOpenDisposition::NEW_WINDOW) {
+    if (context && disposition != WindowOpenDisposition::kNewWindow) {
       tab_index = tab.tabstrip_index;
     } else {
       context = client_->CreateLiveTabContext(
@@ -1594,13 +1594,13 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     // Place the tab at the end if the tab index is no longer valid or
     // we were passed a specific disposition.
     if (tab_index < 0 || tab_index > context->GetTabCount() ||
-        disposition != WindowOpenDisposition::UNKNOWN) {
+        disposition != WindowOpenDisposition::kUnknown) {
       tab_index = context->GetTabCount();
     }
 
     restored_tab = context->AddRestoredTab(
         tab, tab_index,
-        /*select=*/disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        /*select=*/disposition != WindowOpenDisposition::kNewBackgroundTab,
         is_restoring_group_or_window, session_restore_type);
   }
 

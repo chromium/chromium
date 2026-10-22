@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Now load an extension page and a non-extension page...
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), kExt1EmptyUrl, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), kExt1EmptyUrl, WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   NavigateToURL(embedded_test_server()->GetURL("/two_iframes.html"));
   EXPECT_EQ(1u, pm->GetAllFrames().size());
@@ -2139,7 +2139,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, SynchronousClosureUAF) {
   // Open a new tab to main.html.
   GURL main_url = extension->GetResourceURL("main.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), main_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* tab =

@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
 
   // Open a URL in Incognito window.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), simple, WindowOpenDisposition::OFF_THE_RECORD,
+      browser(), simple, WindowOpenDisposition::kOffTheRecord,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
 
   // Check that there are exactly 2 browsers (regular and incognito).

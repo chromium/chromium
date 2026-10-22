@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(NTPTilesTest, LoadURL) {
   const GURL page_url = embedded_test_server()->GetURL("/simple.html");
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), page_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), page_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   MostVisitedSitesWaiter waiter;
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(NTPTilesTest, ServerRedirect) {
       embedded_test_server()->GetURL("/server-redirect?" + final_url.spec());
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), first_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), first_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   MostVisitedSitesWaiter waiter;
   most_visited_sites_->AddMostVisitedURLsObserver(&waiter, /*max_num_sites=*/8);
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(NTPTilesTest, DISABLED_NavigateAfterSettingObserver) {
   most_visited_sites_->AddMostVisitedURLsObserver(&waiter, /*max_num_sites=*/8);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), page_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), page_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   most_visited_sites_->Refresh();

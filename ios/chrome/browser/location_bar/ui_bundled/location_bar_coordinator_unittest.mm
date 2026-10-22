@@ -284,7 +284,7 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
 
   GURL url("https://www.google.com/");
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
-  WindowOpenDisposition disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kSwitchToTab;
   [coordinator_ start];
   [coordinator_ loadGURLFromLocationBar:url
                                  postContent:nil
@@ -320,7 +320,7 @@ TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
 
   GURL url("https://www.nongoogle.com/");
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
-  WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
   [coordinator_ start];
   [coordinator_ loadGURLFromLocationBar:url
                                  postContent:nil

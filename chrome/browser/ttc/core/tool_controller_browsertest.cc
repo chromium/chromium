@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, CloseCurrentTab) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(),
       embedded_https_test_server().GetURL("example.com", "/title1.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(tab_strip->count(), 2);
   ASSERT_NE(tab_strip->GetActiveTab()->GetHandle(), first_tab);
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTab) {
   const GURL active_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), active_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
 
@@ -1744,7 +1744,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(),
       embedded_https_test_server().GetURL("example.com", "/title2.html"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(tab_strip->count(), 2);
 

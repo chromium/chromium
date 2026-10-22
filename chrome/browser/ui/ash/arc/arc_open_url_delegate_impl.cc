@@ -315,7 +315,7 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
     return;
   }
 
-  int event_flags = apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+  int event_flags = apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
                                         /*prefer_container=*/false);
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -324,7 +324,7 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
       *app_id, [&event_flags](const apps::AppUpdate& update) {
         if (update.WindowMode() == apps::WindowMode::kBrowser) {
           event_flags =
-              apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
                                   /*prefer_container=*/false);
         }
       });
@@ -441,11 +441,11 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
 
   apps::IntentPtr intent = ConvertLaunchIntent(profile, arc_intent);
 
-  auto disposition = WindowOpenDisposition::NEW_WINDOW;
+  auto disposition = WindowOpenDisposition::kNewWindow;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&disposition](const apps::AppUpdate& update) {
         if (update.WindowMode() == apps::WindowMode::kBrowser) {
-          disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+          disposition = WindowOpenDisposition::kNewForegroundTab;
         }
       });
 

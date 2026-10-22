@@ -4365,7 +4365,7 @@ bool PwnMessageHelper::OpenPopup(RenderFrameHost* render_frame_host,
   params->allow_popup =
       true;  // The compromised renderer lies and sets this to true
   params->window_container_type = mojom::WindowContainerType::NORMAL;
-  params->disposition = WindowOpenDisposition::NEW_POPUP;
+  params->disposition = WindowOpenDisposition::kNewPopup;
   params->features = blink::mojom::WindowFeatures::New();
   params->referrer = blink::mojom::Referrer::New();
 
@@ -4387,7 +4387,7 @@ void PwnMessageHelper::OpenURL(RenderFrameHost* render_frame_host,
                                const GURL& url) {
   auto params = blink::mojom::OpenURLParams::New();
   params->url = url;
-  params->disposition = WindowOpenDisposition::CURRENT_TAB;
+  params->disposition = WindowOpenDisposition::kCurrentTab;
   params->should_replace_current_entry = false;
   params->user_gesture = true;
   params->initiator_state_token =

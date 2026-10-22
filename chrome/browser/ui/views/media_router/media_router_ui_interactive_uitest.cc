@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,
     views::test::WidgetDestroyedWaiter waiter(GetDialogWidget());
     content::TestNavigationObserver reload_observer(
         browser()->GetTabStripModel()->GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     reload_observer.Wait();
 
     waiter.Wait();

@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(AdNavigationEntryBrowserTest,
   // starts at frame_factory.html.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetURL("frame_factory.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Quick sanity check to ensure our new active tab only has 1 history entry.
@@ -942,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(BackToAdInterventionDisabledBrowserTest,
   // starts at frame_factory.html.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetURL("frame_factory.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Quick sanity check to ensure our new active tab only has 1 history entry.

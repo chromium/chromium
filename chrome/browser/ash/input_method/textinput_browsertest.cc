@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_on_load.html")));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), new_url, WindowOpenDisposition::NEW_FOREGROUND_TAB, 0);
+      browser(), new_url, WindowOpenDisposition::kNewForegroundTab, 0);
   content::WebContents* new_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_NE(base_tab, new_tab);

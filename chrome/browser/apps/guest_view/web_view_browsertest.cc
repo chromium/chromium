@@ -3197,7 +3197,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, OpenURLFromTab_CurrentTab_Abort) {
   // Navigating to a file URL is forbidden inside a <webview>.
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          GURL("file://foo"), WindowOpenDisposition::CURRENT_TAB,
+          GURL("file://foo"), WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL, content::Referrer(),
           GetGuestRenderFrameHost()->GetCurrentInitiatorNavigationState());
   params.source_render_frame_id = GetGuestRenderFrameHost()->GetRoutingID();
@@ -3224,7 +3224,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, OpenURLFromTab_CurrentTab_Succeed) {
   GURL test_url("http://www.google.com");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          test_url, WindowOpenDisposition::CURRENT_TAB,
+          test_url, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.source_render_frame_id = GetGuestRenderFrameHost()->GetRoutingID();
   params.source_render_process_id =
@@ -3249,7 +3249,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
   scoped_refptr<content::SiteInstance> source_site_instance =
       guest_rfh->GetSiteInstance();
   content::OpenURLParams params(
-      test_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      test_url, content::Referrer(), WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */);
   params.initiator_origin = initiator_origin;
   params.source_render_frame_id = guest_rfh->GetRoutingID();
@@ -3288,7 +3288,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
   scoped_refptr<content::SiteInstance> source_site_instance =
       guest_rfh->GetSiteInstance();
   content::OpenURLParams params(
-      test_url, content::Referrer(), WindowOpenDisposition::NEW_WINDOW,
+      test_url, content::Referrer(), WindowOpenDisposition::kNewWindow,
       ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */);
   params.initiator_origin = initiator_origin;
   params.source_render_frame_id = guest_rfh->GetRoutingID();
@@ -3324,7 +3324,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
   // Navigating to a file URL is forbidden inside a <webview>.
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          GURL("file://foo"), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          GURL("file://foo"), WindowOpenDisposition::kNewBackgroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL, content::Referrer(),
           GetGuestRenderFrameHost()->GetCurrentInitiatorNavigationState());
   params.source_render_frame_id = GetGuestRenderFrameHost()->GetRoutingID();

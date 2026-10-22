@@ -304,7 +304,7 @@ content::WebContents* BrowserControllerImpl::OpenUrl(
     nav_params.initiator_origin = *params.initiating_origin;
   }
   if (params.popup_has_trusted_source) {
-    CHECK_EQ(params.disposition, WindowOpenDisposition::NEW_POPUP);
+    CHECK_EQ(params.disposition, WindowOpenDisposition::kNewPopup);
     nav_params.trusted_source = true;
   }
   Navigate(&nav_params);

@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(ChromeExtensionHostDelegateTest,
   // Create a new foreground tab.
   ChromeExtensionHostDelegate delegate;
   delegate.CreateTab(std::move(contents), GURL("chrome://version"),
-                     ExtensionId(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                     ExtensionId(), WindowOpenDisposition::kNewForegroundTab,
                      blink::mojom::WindowFeatures(), /*user_gesture=*/true);
 
   // Wait for the tab to be added.
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(ChromeExtensionHostDelegateTest,
   // Create a new background tab.
   ChromeExtensionHostDelegate delegate;
   delegate.CreateTab(std::move(contents), GURL("chrome://version"),
-                     ExtensionId(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                     ExtensionId(), WindowOpenDisposition::kNewBackgroundTab,
                      blink::mojom::WindowFeatures(), /*user_gesture=*/true);
 
   // Wait for the tab to be added.
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(ChromeExtensionHostDelegateTest,
   // Invoke CreateTab.
   ChromeExtensionHostDelegate delegate;
   delegate.CreateTab(std::move(contents), GURL("chrome://version"),
-                     ExtensionId(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                     ExtensionId(), WindowOpenDisposition::kNewForegroundTab,
                      blink::mojom::WindowFeatures(), /*user_gesture=*/true);
 
   // TabHelpers should be attached synchronously before CreateTab returns.

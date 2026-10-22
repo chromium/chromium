@@ -129,8 +129,8 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
   }
 
   WindowOpenDisposition disposition =
-      new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-              : WindowOpenDisposition::CURRENT_TAB;
+      new_tab ? WindowOpenDisposition::kNewForegroundTab
+              : WindowOpenDisposition::kCurrentTab;
   // TODO(crbug.com/534887116): Report the navigation outcome instead of
   // succeeding immediately. On Android, OpenURL() may start the navigation
   // asynchronously.

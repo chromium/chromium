@@ -947,7 +947,7 @@ void UserEducationInternalsPageHandlerImpl::LaunchWhatsNewStaging() {
   GURL url = net::AppendQueryParameter(GURL(chrome::kChromeUIWhatsNewURL),
                                        "staging", "true");
   NavigateParams params(profile_, url, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
       web_ui_->GetWebContents());
   Navigate(&params);

@@ -115,7 +115,7 @@ class NewTabPagePreloadBrowserTest : public PlatformBrowserTest {
   void SimulateNewTabNavigation(const GURL& url) {
     GetActiveWebContents()->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::CURRENT_TAB,
+            url, WindowOpenDisposition::kCurrentTab,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
         page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
             chrome_navigation_initiator::kNewTabPage));

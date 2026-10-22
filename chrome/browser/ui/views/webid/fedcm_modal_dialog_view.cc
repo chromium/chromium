@@ -73,8 +73,8 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
   bool is_fullscreen = delegate->GetDisplayMode(source_window_) ==
                        blink::mojom::DisplayMode::kFullscreen;
   WindowOpenDisposition disposition =
-      is_fullscreen ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                    : WindowOpenDisposition::NEW_POPUP;
+      is_fullscreen ? WindowOpenDisposition::kNewForegroundTab
+                    : WindowOpenDisposition::kNewPopup;
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(

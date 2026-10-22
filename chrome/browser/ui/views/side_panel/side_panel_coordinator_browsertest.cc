@@ -208,7 +208,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 
   void AddTabToBrowser(const GURL& tab_url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), tab_url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

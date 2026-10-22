@@ -130,7 +130,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
     // cannot open new browser windows, so they are instead opened in the
     // regular browser that initiated the HaTS survey.
     content::OpenURLParams params(target_url, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  WindowOpenDisposition::kNewForegroundTab,
                                   ui::PAGE_TRANSITION_LINK,
                                   /*is_renderer_initiated=*/true);
     params.initiator_origin = url::Origin();

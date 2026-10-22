@@ -973,7 +973,7 @@ WebUIReadOnlyOmnibox::OnKey(
               OmniboxPopupSelection(
                   OmniboxPopupSelection::kNoMatch,
                   OmniboxPopupSelection::LineState::kFocusedButtonAim),
-              base::TimeTicks::Now(), WindowOpenDisposition::CURRENT_TAB,
+              base::TimeTicks::Now(), WindowOpenDisposition::kCurrentTab,
               /*via_keyboard=*/true);
         }
         return base::ok(std::monostate());
@@ -992,7 +992,7 @@ WebUIReadOnlyOmnibox::OnKey(
         if (selection.IsButtonFocused()) {
           controller()->edit_model()->OpenSelection(
               selection, base::TimeTicks::Now(),
-              WindowOpenDisposition::CURRENT_TAB, /*via_keyboard=*/true);
+              WindowOpenDisposition::kCurrentTab, /*via_keyboard=*/true);
         }
       }
       break;

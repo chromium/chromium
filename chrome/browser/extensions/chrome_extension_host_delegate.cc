@@ -158,8 +158,8 @@ void ChromeExtensionHostDelegate::NavigateBrowser(
   // supported. See browser_navigator_android.cc or http://crbug.com/441594986.
   auto params =
       std::make_unique<NavigateParams>(browser, /*contents_to_insert=*/nullptr);
-  if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (disposition == WindowOpenDisposition::kNewForegroundTab ||
+      disposition == WindowOpenDisposition::kNewBackgroundTab) {
     params->contents_to_insert = std::move(web_contents);
   } else {
     params->url = std::move(target_url);
@@ -174,7 +174,7 @@ void ChromeExtensionHostDelegate::NavigateBrowser(
   // among other things, whether the location bar gets displayed.
   // TODO(mpcomplete): This seems wrong. What if the extension content is
   // hosted in a tab?
-  if (disposition == WindowOpenDisposition::NEW_POPUP) {
+  if (disposition == WindowOpenDisposition::kNewPopup) {
     params->app_id = extension_id;
   }
 

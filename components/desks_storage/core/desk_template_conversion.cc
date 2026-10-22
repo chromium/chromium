@@ -405,33 +405,33 @@ bool IsValidWindowOpenDisposition(const std::string& disposition) {
 // Returns a casted WindowOpenDisposition to be set in the app restore data.
 int32_t StringToWindowOpenDisposition(const std::string& disposition) {
   if (disposition == kWindowOpenDispositionUnknown) {
-    return static_cast<int32_t>(WindowOpenDisposition::UNKNOWN);
+    return static_cast<int32_t>(WindowOpenDisposition::kUnknown);
   } else if (disposition == kWindowOpenDispositionCurrentTab) {
-    return static_cast<int32_t>(WindowOpenDisposition::CURRENT_TAB);
+    return static_cast<int32_t>(WindowOpenDisposition::kCurrentTab);
   } else if (disposition == kWindowOpenDispositionSingletonTab) {
-    return static_cast<int32_t>(WindowOpenDisposition::SINGLETON_TAB);
+    return static_cast<int32_t>(WindowOpenDisposition::kSingletonTab);
   } else if (disposition == kWindowOpenDispositionNewForegroundTab) {
-    return static_cast<int32_t>(WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    return static_cast<int32_t>(WindowOpenDisposition::kNewForegroundTab);
   } else if (disposition == kWindowOpenDispositionNewBackgroundTab) {
-    return static_cast<int32_t>(WindowOpenDisposition::NEW_BACKGROUND_TAB);
+    return static_cast<int32_t>(WindowOpenDisposition::kNewBackgroundTab);
   } else if (disposition == kWindowOpenDispositionNewPopup) {
-    return static_cast<int32_t>(WindowOpenDisposition::NEW_POPUP);
+    return static_cast<int32_t>(WindowOpenDisposition::kNewPopup);
   } else if (disposition == kWindowOpenDispositionNewWindow) {
-    return static_cast<int32_t>(WindowOpenDisposition::NEW_WINDOW);
+    return static_cast<int32_t>(WindowOpenDisposition::kNewWindow);
   } else if (disposition == kWindowOpenDispositionSaveToDisk) {
-    return static_cast<int32_t>(WindowOpenDisposition::SAVE_TO_DISK);
+    return static_cast<int32_t>(WindowOpenDisposition::kSaveToDisk);
   } else if (disposition == kWindowOpenDispositionOffTheRecord) {
-    return static_cast<int32_t>(WindowOpenDisposition::OFF_THE_RECORD);
+    return static_cast<int32_t>(WindowOpenDisposition::kOffTheRecord);
   } else if (disposition == kWindowOpenDispositionIgnoreAction) {
-    return static_cast<int32_t>(WindowOpenDisposition::IGNORE_ACTION);
+    return static_cast<int32_t>(WindowOpenDisposition::kIgnoreAction);
   } else if (disposition == kWindowOpenDispositionNewPictureInPicture) {
-    return static_cast<int32_t>(WindowOpenDisposition::NEW_PICTURE_IN_PICTURE);
+    return static_cast<int32_t>(WindowOpenDisposition::kNewPictureInPicture);
 
     // Dcheck that the disposition is valid, we should never get here unless
     // the disposition is invalid.
   } else {
     DCHECK(IsValidWindowOpenDisposition(disposition));
-    return static_cast<int32_t>(WindowOpenDisposition::UNKNOWN);
+    return static_cast<int32_t>(WindowOpenDisposition::kUnknown);
   }
 }
 
@@ -802,31 +802,31 @@ std::string UiWindowStateToString(
 // casts the disposition from a int32_t.
 std::string WindowOpenDispositionToString(WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::UNKNOWN:
+    case WindowOpenDisposition::kUnknown:
       return kWindowOpenDispositionUnknown;
-    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::kCurrentTab:
       return kWindowOpenDispositionCurrentTab;
-    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::kSingletonTab:
       return kWindowOpenDispositionSingletonTab;
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::kNewForegroundTab:
       return kWindowOpenDispositionNewForegroundTab;
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::kNewBackgroundTab:
       return kWindowOpenDispositionNewBackgroundTab;
-    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::kNewPopup:
       return kWindowOpenDispositionNewPopup;
-    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::kNewWindow:
       return kWindowOpenDispositionNewWindow;
-    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::kSaveToDisk:
       return kWindowOpenDispositionSaveToDisk;
-    case WindowOpenDisposition::SWITCH_TO_TAB:
+    case WindowOpenDisposition::kSwitchToTab:
       return kWindowOpenDispositionSwitchToTab;
-    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::kOffTheRecord:
       return kWindowOpenDispositionOffTheRecord;
-    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::kIgnoreAction:
       return kWindowOpenDispositionIgnoreAction;
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+    case WindowOpenDisposition::kNewPictureInPicture:
       return kWindowOpenDispositionNewPictureInPicture;
-    case WindowOpenDisposition::NEW_SPLIT_VIEW:
+    case WindowOpenDisposition::kNewSplitView:
       return kWindowOpenDispositionUnknown;
   }
 }
@@ -1125,32 +1125,32 @@ WindowOpenDisposition ToBaseWindowOpenDisposition(
     SyncWindowOpenDisposition disposition) {
   switch (disposition) {
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN:
-      return WindowOpenDisposition::UNKNOWN;
+      return WindowOpenDisposition::kUnknown;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB:
-      return WindowOpenDisposition::CURRENT_TAB;
+      return WindowOpenDisposition::kCurrentTab;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB:
-      return WindowOpenDisposition::SINGLETON_TAB;
+      return WindowOpenDisposition::kSingletonTab;
     case sync_pb::
         WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB:
-      return WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      return WindowOpenDisposition::kNewForegroundTab;
     case sync_pb::
         WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB:
-      return WindowOpenDisposition::NEW_BACKGROUND_TAB;
+      return WindowOpenDisposition::kNewBackgroundTab;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP:
-      return WindowOpenDisposition::NEW_POPUP;
+      return WindowOpenDisposition::kNewPopup;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW:
-      return WindowOpenDisposition::NEW_WINDOW;
+      return WindowOpenDisposition::kNewWindow;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK:
-      return WindowOpenDisposition::SAVE_TO_DISK;
+      return WindowOpenDisposition::kSaveToDisk;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD:
-      return WindowOpenDisposition::OFF_THE_RECORD;
+      return WindowOpenDisposition::kOffTheRecord;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION:
-      return WindowOpenDisposition::IGNORE_ACTION;
+      return WindowOpenDisposition::kIgnoreAction;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB:
-      return WindowOpenDisposition::SWITCH_TO_TAB;
+      return WindowOpenDisposition::kSwitchToTab;
     case sync_pb::
         WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE:
-      return WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+      return WindowOpenDisposition::kNewPictureInPicture;
   }
 }
 
@@ -1350,38 +1350,38 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
 SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
     WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::UNKNOWN:
+    case WindowOpenDisposition::kUnknown:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN;
-    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::kCurrentTab:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB;
-    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::kSingletonTab:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB;
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::kNewForegroundTab:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB;
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::kNewBackgroundTab:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB;
-    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::kNewPopup:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP;
-    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::kNewWindow:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW;
-    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::kSaveToDisk:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK;
-    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::kOffTheRecord:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD;
-    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::kIgnoreAction:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION;
-    case WindowOpenDisposition::SWITCH_TO_TAB:
+    case WindowOpenDisposition::kSwitchToTab:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB;
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+    case WindowOpenDisposition::kNewPictureInPicture:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE;
-    case WindowOpenDisposition::NEW_SPLIT_VIEW:
+    case WindowOpenDisposition::kNewSplitView:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN;
   }
 }

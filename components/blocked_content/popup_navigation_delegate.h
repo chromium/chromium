@@ -40,7 +40,7 @@ class PopupNavigationDelegate {
   struct NavigateResult {
     raw_ptr<content::WebContents, DanglingUntriaged>
         navigated_or_inserted_contents = nullptr;
-    WindowOpenDisposition disposition = WindowOpenDisposition::UNKNOWN;
+    WindowOpenDisposition disposition = WindowOpenDisposition::kUnknown;
   };
   virtual NavigateResult NavigateWithGesture(
       const blink::mojom::WindowFeatures& window_features,

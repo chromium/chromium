@@ -37,7 +37,7 @@ apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
 
   apps::AppLaunchParams params(app_id,
                                apps::LaunchContainer::kLaunchContainerNone,
-                               WindowOpenDisposition::UNKNOWN, launch_source);
+                               WindowOpenDisposition::kUnknown, launch_source);
   params.command_line = command_line;
   params.current_directory = current_directory;
   params.launch_files = launch_files;

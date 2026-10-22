@@ -507,7 +507,7 @@ testing::AssertionResult SimulateBtmBounce(BrowserWindowInterface* browser,
                                            const GURL& bounce_url,
                                            const GURL& final_url) {
   if (!ui_test_utils::NavigateToURLWithDisposition(
-          browser, initial_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          browser, initial_url, WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)) {
     return testing::AssertionFailure()

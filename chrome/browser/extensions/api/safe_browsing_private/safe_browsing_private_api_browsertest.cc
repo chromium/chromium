@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPrivateApiBrowserTest, GetReferrerChain) {
       embedded_test_server()->GetURL("foo.test", "/title1.html"),
       embedded_test_server()->GetURL("bar.test", "/title2.html")};
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* web_contents =
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPrivateApiBrowserTest,
       embedded_test_server()->GetURL("foo.test", "/title1.html"),
       embedded_test_server()->GetURL("bar.test", "/title2.html")};
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* web_contents =

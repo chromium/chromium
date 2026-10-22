@@ -66,14 +66,14 @@ NavigateParams NavigateAndReturnParams(const GURL& url,
 
 // Opens a popup at `url` and returns true if the window wasn't force closed.
 bool OpenPopup(const GURL& url) {
-  NavigateAndReturnParams(url, WindowOpenDisposition::NEW_POPUP);
+  NavigateAndReturnParams(url, WindowOpenDisposition::kNewPopup);
   return !DidKioskCloseNewWindow();
 }
 
 // Navigates to `url` in the current tab, and returns the browser.
 BrowserWindowInterface& NavigateInCurrentTab(const GURL& url) {
   auto params =
-      NavigateAndReturnParams(url, WindowOpenDisposition::CURRENT_TAB);
+      NavigateAndReturnParams(url, WindowOpenDisposition::kCurrentTab);
   CHECK(params.browser);
   return *params.browser;
 }

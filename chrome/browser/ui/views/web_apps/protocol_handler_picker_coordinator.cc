@@ -137,7 +137,7 @@ void ProtocolHandlerPickerCoordinator::LaunchApp(
     std::optional<ConfirmationDialogAction> action) {
   apps::AppLaunchParams params(app_id,
                                apps::LaunchContainer::kLaunchContainerWindow,
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               WindowOpenDisposition::kNewForegroundTab,
                                apps::LaunchSource::kFromProtocolHandler);
   params.protocol_handler_launch_url = protocol_url;
   params.confirmation_dialog_action = action;

@@ -740,7 +740,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
       download_commands->GetBrowser()->OpenURL(
           content::OpenURLParams::CreateBrowserInitiated(
               download_commands->GetLearnMoreURLForInterruptedDownload(),
-              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              WindowOpenDisposition::kNewForegroundTab,
               ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});
       break;
@@ -748,7 +748,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
       download_commands->GetBrowser()->OpenURL(
           content::OpenURLParams::CreateBrowserInitiated(
               GURL(chrome::kInsecureDownloadBlockingLearnMoreUrl),
-              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              WindowOpenDisposition::kNewForegroundTab,
               ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});
       break;
@@ -758,7 +758,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
               google_util::AppendGoogleLocaleParam(
                   GURL(chrome::kDownloadBlockedLearnMoreURL),
                   g_browser_process->GetApplicationLocale()),
-              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              WindowOpenDisposition::kNewForegroundTab,
               ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});
       break;

@@ -2425,7 +2425,7 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
   // Create a new tab to avoid confusion from having a NTP navigation entry.
   GURL skippable_url(embedded_test_server()->GetURL("/title1.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), skippable_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), skippable_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::WebContents* main_contents =
@@ -2445,7 +2445,7 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
 
   // Attempting to go back should do nothing.
   ASSERT_FALSE(chrome::CanGoBack(browser()));
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
   ASSERT_EQ(redirected_url, main_contents->GetLastCommittedURL());
   EXPECT_EQ(main_contents->GetController().GetLastCommittedEntryIndex(), 1);
 
@@ -2482,7 +2482,7 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
   // Attempting to go back should skip |skippable_url| and go to about:blank.
   ASSERT_TRUE(chrome::CanGoBack(browser()));
   content::TestNavigationObserver observer(main_contents);
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
   observer.Wait();
   ASSERT_EQ(GURL("about:blank"), main_contents->GetLastCommittedURL());
 }
@@ -2514,7 +2514,7 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
   ASSERT_TRUE(chrome::CanGoBack(browser()));
 
   content::TestNavigationObserver go_back_observer(main_contents);
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
   go_back_observer.WaitForNavigationFinished();
   ASSERT_EQ(pdf_url, main_contents->GetLastCommittedURL());
 }
@@ -2545,7 +2545,7 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
 
   ASSERT_TRUE(chrome::CanGoBack(browser()));
   content::TestNavigationObserver go_back_observer(main_contents);
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
   go_back_observer.WaitForNavigationFinished();
   ASSERT_EQ(GURL("about:blank"), main_contents->GetLastCommittedURL());
 }

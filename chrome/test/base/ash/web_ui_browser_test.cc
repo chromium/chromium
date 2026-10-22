@@ -277,7 +277,7 @@ void BaseWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
   content::TestNavigationObserver navigation_observer(web_contents);
 
   NavigateParams params(browser(), browse_to, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.disposition = WindowOpenDisposition::kCurrentTab;
 
   Navigate(&params);
   navigation_observer.Wait();

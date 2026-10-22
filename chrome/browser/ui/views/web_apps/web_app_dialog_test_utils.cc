@@ -33,7 +33,7 @@ class PopupObserver : public content::WebContentsObserver {
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override {
-    if (!popup_ && disposition == WindowOpenDisposition::NEW_POPUP) {
+    if (!popup_ && disposition == WindowOpenDisposition::kNewPopup) {
       popup_ = new_contents;
       run_loop_.Quit();
     }

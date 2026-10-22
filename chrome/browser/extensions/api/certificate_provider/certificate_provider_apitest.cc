@@ -392,7 +392,7 @@ class CertificateProviderApiMockedExtensionTest
     // by completion of this request, so we don't wait for navigation to finish.
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GetHttpsClientCertUrl(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
 
     content::WebContents* const https_contents = GetActiveWebContents();
@@ -913,7 +913,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest,
   ASSERT_TRUE(incognito_browser);
   ui_test_utils::NavigateToURLWithDisposition(
       incognito_browser, GetHttpsClientCertUrl(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(test_certificate_provider_extension.certificate_request_count(), 1);
   EXPECT_EQ(GetPageTextContent(

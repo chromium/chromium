@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuSitePermissionsPageViewInteractiveUITest,
   // OnPageNavigation.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("chrome://newtab"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Verify that the site permissions page is no longer opened.

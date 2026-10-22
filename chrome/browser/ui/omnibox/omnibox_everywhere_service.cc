@@ -303,10 +303,10 @@ void OmniboxEverywhereService::NavigateInBrowserWindow(
   params.should_trigger_session_restore = false;
 
   if (!bwi) {
-    params.disposition = WindowOpenDisposition::NEW_WINDOW;
+    params.disposition = WindowOpenDisposition::kNewWindow;
   } else {
-    params.disposition = (disposition == WindowOpenDisposition::CURRENT_TAB)
-                             ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+    params.disposition = (disposition == WindowOpenDisposition::kCurrentTab)
+                             ? WindowOpenDisposition::kNewForegroundTab
                              : disposition;
   }
   params.window_action = NavigateParams::WindowAction::kShowWindow;
@@ -375,6 +375,6 @@ void OmniboxEverywhereService::OpenUrlWithInPlaceWindow(
     bwi = CreateBrowserWindow(std::move(browser_params));
   }
 
-  NavigateInBrowserWindow(bwi, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+  NavigateInBrowserWindow(bwi, url, WindowOpenDisposition::kNewForegroundTab,
                           transition, std::move(navigation_handle_callback));
 }

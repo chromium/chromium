@@ -817,7 +817,7 @@ bool InProcessBrowserTest::AddTabAtIndexToBrowser(
     ui::PageTransition transition) {
   NavigateParams params(browser, url, transition);
   params.tabstrip_index = index;
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.web_app_navigation_data.emplace();
   params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
   Navigate(&params);

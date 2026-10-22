@@ -178,7 +178,7 @@ void GmailOtpOptInBubbleView::OnLearnMoreLinkClicked() {
   web_contents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           chrome::GetSettingsUrl(chrome::kContactInfoSubPage),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

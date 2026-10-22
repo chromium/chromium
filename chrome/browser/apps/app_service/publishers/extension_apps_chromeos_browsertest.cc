@@ -70,7 +70,7 @@ class ExtensionAppsChromeOsBrowserTest
     // Launch app with intent.
     Profile* const profile = browser()->GetProfile();
     const int32_t event_flags =
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+        apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
                             /*prefer_container=*/true);
     apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
         extension.id(), event_flags, std::move(intent),

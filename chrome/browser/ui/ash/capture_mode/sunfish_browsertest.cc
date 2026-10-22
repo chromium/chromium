@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpensLinksOffTheRecord) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://assistant.google.com"),
-          WindowOpenDisposition::OFF_THE_RECORD, ui::PAGE_TRANSITION_LINK);
+          WindowOpenDisposition::kOffTheRecord, ui::PAGE_TRANSITION_LINK);
   content::WebContents* new_contents =
       web_contents->OpenURL(params,
                             /*navigation_handle_callback=*/base::DoNothing());

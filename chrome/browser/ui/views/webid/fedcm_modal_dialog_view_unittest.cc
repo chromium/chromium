@@ -108,7 +108,7 @@ class TestDelegate : public content::WebContentsDelegate {
   base::OnceClosure on_open_url_from_tab_;
   base::OnceClosure on_activate_contents_;
   gfx::Rect bounds_;
-  WindowOpenDisposition disposition_{WindowOpenDisposition::UNKNOWN};
+  WindowOpenDisposition disposition_{WindowOpenDisposition::kUnknown};
 };
 
 }  // namespace
@@ -170,7 +170,7 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowInFullscreen) {
 
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
-  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB, delegate.disposition());
+  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, delegate.disposition());
 }
 
 TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedByInvalidUrl) {

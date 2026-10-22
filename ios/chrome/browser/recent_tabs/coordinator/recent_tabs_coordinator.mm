@@ -307,8 +307,8 @@
 
   WindowOpenDisposition disposition =
       IsNTPWithoutHistory(activeWebState)
-          ? WindowOpenDisposition::CURRENT_TAB
-          : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+          ? WindowOpenDisposition::kCurrentTab
+          : WindowOpenDisposition::kNewForegroundTab;
   RestoreTab(sessionId, disposition, self.browser);
   [self showActiveRegularTabFromRecentTabs];
 }

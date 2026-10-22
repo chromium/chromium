@@ -192,7 +192,7 @@ void NtpMicrosoftAuthResponseCaptureNavigationThrottle::
       navigation_handle()->IsRendererInitiated()
           ? content::OpenURLParams::CreateRendererInitiated(
                 GURL("about:blank").ReplaceComponents(addRef),
-                WindowOpenDisposition::CURRENT_TAB,
+                WindowOpenDisposition::kCurrentTab,
                 navigation_handle()->GetPageTransition(),
                 content::Referrer(navigation_handle()->GetReferrer()),
                 navigation_handle()->GetInitiatorNavigationState(),
@@ -200,7 +200,7 @@ void NtpMicrosoftAuthResponseCaptureNavigationThrottle::
                 navigation_handle()->GetFrameTreeNodeId())
           : content::OpenURLParams::CreateBrowserInitiated(
                 GURL("about:blank").ReplaceComponents(addRef),
-                WindowOpenDisposition::CURRENT_TAB,
+                WindowOpenDisposition::kCurrentTab,
                 navigation_handle()->GetPageTransition(),
                 content::Referrer(navigation_handle()->GetReferrer()),
                 /*started_from_context_menu=*/false,

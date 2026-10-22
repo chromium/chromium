@@ -196,11 +196,11 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, PopupBlockingHostedApp) {
                         .ReplaceComponents(replace_host);
 
   browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                         open_tab, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         open_tab, WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
   browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                         open_popup, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         open_popup, WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
 

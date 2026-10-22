@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   NavigateParams p(browser_window_interface(), GURL("http://www.google.com"),
                    ui::PAGE_TRANSITION_LINK);
   p.window_action = NavigateParams::WindowAction::kShowWindow;
-  p.disposition = WindowOpenDisposition::SINGLETON_TAB;
+  p.disposition = WindowOpenDisposition::kSingletonTab;
   Navigate(&p);
 
   // Click the "Cancel" button.

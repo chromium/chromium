@@ -166,7 +166,7 @@ void ExtensionRequestNotification::Click(
   for (const std::string& extension_id : extension_ids_) {
     NavigateParams params(profile_, GURL(kChromeWebstoreUrl + extension_id),
                           ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&params);
   }

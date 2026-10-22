@@ -626,8 +626,8 @@ actions::ActionItem* BookmarksDynamicMenu::AddBookmarkNodeAction(
             profile_metrics::GetBrowserProfileType(browser->GetProfile()));
         WindowOpenDisposition disposition =
             context.GetProperty(chrome::kDispositionKey);
-        if (disposition == WindowOpenDisposition::UNKNOWN) {
-          disposition = WindowOpenDisposition::CURRENT_TAB;
+        if (disposition == WindowOpenDisposition::kUnknown) {
+          disposition = WindowOpenDisposition::kCurrentTab;
         }
         bookmarks::BookmarkModel* model =
             BookmarkModelFactory::GetForBrowserContext(browser->GetProfile());

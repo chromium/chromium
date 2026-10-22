@@ -303,7 +303,7 @@ void SendTabToSelfSubMenuModel::ExecuteCommand(int command_id,
     OpenManageDevicesPage(
         Profile::FromBrowserContext(primary_web_contents_->GetBrowserContext()),
         ui::DispositionFromEventFlags(
-            event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB));
+            event_flags, WindowOpenDisposition::kNewForegroundTab));
     return;
   }
 

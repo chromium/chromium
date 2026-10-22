@@ -262,13 +262,13 @@ IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest,
   // Expect suppression of the first click event.
   EXPECT_DID_SUPPRESS_NAVIGATION(
       web_view, /*url=*/GURL("https://google.com/"),
-      /*disposition=*/WindowOpenDisposition::CURRENT_TAB,
+      /*disposition=*/WindowOpenDisposition::kCurrentTab,
       /*from_user_gesture=*/false);
 
   // Expect suppression of the second click event.
   EXPECT_DID_SUPPRESS_NAVIGATION(
       web_view, /*url=*/GURL("https://assistant.google.com/"),
-      /*disposition=*/WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      /*disposition=*/WindowOpenDisposition::kNewForegroundTab,
       /*from_user_gesture=*/true);
 }
 

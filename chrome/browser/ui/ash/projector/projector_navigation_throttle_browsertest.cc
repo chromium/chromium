@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationCapturingParameterizedTest,
   } else {
     // Simulate the user typing the url into the omnibox.
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), gurl, WindowOpenDisposition::CURRENT_TAB,
+        browser(), gurl, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
     browser_destroyed_observer.Wait();
   }
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
   // servers to prevent flakiness.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(kChromeUIUntrustedProjectorPwaUrl),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
   browser_destroyed_observer.Wait();
   BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
   GURL untrusted_url(kChromeUIUntrustedProjectorUrl);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), untrusted_url, WindowOpenDisposition::NEW_WINDOW,
+      browser(), untrusted_url, WindowOpenDisposition::kNewWindow,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
 
   ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(

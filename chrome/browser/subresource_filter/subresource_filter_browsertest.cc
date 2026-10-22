@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   browser()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(blink::kChromeUICrashURL), WindowOpenDisposition::CURRENT_TAB,
+          GURL(blink::kChromeUICrashURL), WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   crash_observer.Wait();
@@ -1137,7 +1137,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterBrowserTestWithV4V5Param,
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(),
       content::MessageLoopRunner::QuitMode::DEFERRED);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   observer.Wait();
   EXPECT_FALSE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));

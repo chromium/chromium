@@ -266,7 +266,7 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
     // Create a new app browser.
     ash::BrowserController::GetInstance()->OpenUrl(
         account_id, GURL(url_string),
-        {.disposition = WindowOpenDisposition::NEW_POPUP,
+        {.disposition = WindowOpenDisposition::kNewPopup,
          .transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL});
 
     // We do not save the newly created browser to the `settings_browser_` here

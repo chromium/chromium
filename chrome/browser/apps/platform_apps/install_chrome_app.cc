@@ -87,7 +87,7 @@ void InstallChromeApp(const std::string& app_id,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GetAppInstallUrl(app_id), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GetAppInstallUrl(app_id), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
 

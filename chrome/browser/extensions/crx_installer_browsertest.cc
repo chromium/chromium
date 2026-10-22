@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 
   TestExtensionRegistryObserver registry_observer(extension_registry());
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   EXPECT_TRUE(registry_observer.WaitForExtensionInstalled());

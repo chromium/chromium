@@ -161,7 +161,7 @@ class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
       return;
     }
     if (auto* browser_window = tab_interface_->GetBrowserWindowInterface()) {
-      browser_window->OpenGURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      browser_window->OpenGURL(url, WindowOpenDisposition::kNewForegroundTab);
     }
   }
 

@@ -310,7 +310,7 @@ class UnloadControllerDownloadBrowserTest : public InProcessBrowserTest {
         browser(),
         embedded_test_server()->GetURL(
             content::SlowDownloadHttpResponse::kKnownSizeUrl),
-        WindowOpenDisposition::CURRENT_TAB,
+        WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     observer.WaitForFinished();
     ASSERT_EQ(1u, observer.NumDownloadsSeenInState(

@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerDialogViewTest,
   // tab.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com/"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   base::RunLoop run_loop;
   views::AnyWidgetObserver install_dialog_observer(

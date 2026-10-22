@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(WebuiLoadTimerTest, Timers) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestUrl)));
   WebuiLoadTimer timer(browser()->tab_strip_model()->GetActiveWebContents(),
                        kDocumentInitialLoadUmaId, kDocumentLoadCompletedUmaId);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
 

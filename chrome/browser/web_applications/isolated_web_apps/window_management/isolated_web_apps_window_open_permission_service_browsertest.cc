@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
           GURL("https://example.com/destination"),
-          WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+          WindowOpenDisposition::kNewBackgroundTab, ui::PAGE_TRANSITION_LINK,
           content::Referrer(),
           opener_contents->GetPrimaryMainFrame()
               ->GetCurrentInitiatorNavigationState());

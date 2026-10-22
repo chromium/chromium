@@ -58,14 +58,14 @@ class CustomCursorSuppressorBrowserTest : public InProcessBrowserTest {
 
   [[nodiscard]] bool AddTab(BrowserWindowInterface* browser, const GURL& url) {
     return ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser, url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
   [[nodiscard]] bool AddBackgroundTab(BrowserWindowInterface* browser,
                                       const GURL& url) {
     return ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        browser, url, WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

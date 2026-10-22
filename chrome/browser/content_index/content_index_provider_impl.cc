@@ -198,7 +198,7 @@ void ContentIndexProviderImpl::DidGetEntryToOpen(
 #if BUILDFLAG(IS_ANDROID)
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          entry->launch_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          entry->launch_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   ServiceTabLauncher::GetInstance()->LaunchTab(
       profile_, params,

@@ -130,11 +130,10 @@ void ForceInstalledPreinstalledDeprecatedAppDialogView::CreateAndShowDialog(
          Site site) {
         base::UmaHistogramEnumeration(
             "Extensions.ForceInstalledPreInstalledDeprecatedAppOpenUrl", site);
-        web_contents->OpenURL(
-            content::OpenURLParams::CreateBrowserInitiated(
-                url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                ui::PAGE_TRANSITION_LINK),
-            /*navigation_handle_callback=*/{});
+        web_contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                                  url, WindowOpenDisposition::kNewForegroundTab,
+                                  ui::PAGE_TRANSITION_LINK),
+                              /*navigation_handle_callback=*/{});
       },
       web_contents->GetWeakPtr(), link_config.link, link_config.site));
   delegate->SetContentsView(
@@ -193,7 +192,7 @@ ForceInstalledPreinstalledDeprecatedAppDialogView::
                     url,
                     ui::DispositionFromEventFlags(
                         event.flags(),
-                        WindowOpenDisposition::NEW_FOREGROUND_TAB),
+                        WindowOpenDisposition::kNewForegroundTab),
                     ui::PAGE_TRANSITION_LINK),
                 /*navigation_handle_callback=*/{});
           },
@@ -211,7 +210,7 @@ ForceInstalledPreinstalledDeprecatedAppDialogView::
             content::OpenURLParams::CreateBrowserInitiated(
                 GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
                 ui::DispositionFromEventFlags(
-                    event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+                    event.flags(), WindowOpenDisposition::kNewForegroundTab),
                 ui::PAGE_TRANSITION_LINK),
             /*navigation_handle_callback=*/{});
       },

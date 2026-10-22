@@ -35,12 +35,12 @@ TEST_F(CocoaBaseUtilsTest, WindowOpenDispositionFromNSEvent) {
   // Left Click = same tab.
   NSEvent* me =
       cocoa_test_event_utils::MouseEventWithType(NSEventTypeLeftMouseUp, 0);
-  EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB,
+  EXPECT_EQ(WindowOpenDisposition::kCurrentTab,
             WindowOpenDispositionFromNSEvent(me));
 
   // Middle Click = new background tab.
   me = cocoa_test_event_utils::MouseEventWithType(NSEventTypeOtherMouseUp, 0);
-  EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
+  EXPECT_EQ(WindowOpenDisposition::kNewBackgroundTab,
             WindowOpenDispositionFromNSEvent(me));
 
   // Shift+Middle Click = new foreground tab.
@@ -49,27 +49,27 @@ TEST_F(CocoaBaseUtilsTest, WindowOpenDispositionFromNSEvent) {
         [NSEvent class], [TestEvent class], @selector(modifierFlags));
     me = cocoa_test_event_utils::MouseEventWithType(NSEventTypeOtherMouseUp,
                                                     NSEventModifierFlagShift);
-    EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+    EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
               WindowOpenDispositionFromNSEvent(me));
   }
 
   // Cmd+Left Click = new background tab.
   me = cocoa_test_event_utils::MouseEventWithType(NSEventTypeLeftMouseUp,
                                                   NSEventModifierFlagCommand);
-  EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
+  EXPECT_EQ(WindowOpenDisposition::kNewBackgroundTab,
             WindowOpenDispositionFromNSEvent(me));
 
   // Cmd+Shift+Left Click = new foreground tab.
   me = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseUp,
       NSEventModifierFlagCommand | NSEventModifierFlagShift);
-  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
             WindowOpenDispositionFromNSEvent(me));
 
   // Shift+Left Click = new window
   me = cocoa_test_event_utils::MouseEventWithType(NSEventTypeLeftMouseUp,
                                                   NSEventModifierFlagShift);
-  EXPECT_EQ(WindowOpenDisposition::NEW_WINDOW,
+  EXPECT_EQ(WindowOpenDisposition::kNewWindow,
             WindowOpenDispositionFromNSEvent(me));
 }
 

@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionsTrackerHelperBrowserTest,
       // navigation to finish.
       Do(base::BindLambdaForTesting([&]() {
         ui_test_utils::NavigateToURLWithDisposition(
-            browser(), url_3, WindowOpenDisposition::CURRENT_TAB,
+            browser(), url_3, WindowOpenDisposition::kCurrentTab,
             ui_test_utils::BROWSER_TEST_NO_WAIT);
       })),
 

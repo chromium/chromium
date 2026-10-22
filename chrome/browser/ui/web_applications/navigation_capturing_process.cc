@@ -70,21 +70,21 @@ namespace {
 bool IsDispositionValidForNavigationCapturing(
     WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::kNewForegroundTab:
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kNewWindow:
       return true;
-    case WindowOpenDisposition::UNKNOWN:
+    case WindowOpenDisposition::kUnknown:
       // Note: App popups are handled in browser_navigator.cc
-    case WindowOpenDisposition::NEW_POPUP:
-    case WindowOpenDisposition::CURRENT_TAB:
-    case WindowOpenDisposition::SINGLETON_TAB:
-    case WindowOpenDisposition::SAVE_TO_DISK:
-    case WindowOpenDisposition::OFF_THE_RECORD:
-    case WindowOpenDisposition::IGNORE_ACTION:
-    case WindowOpenDisposition::SWITCH_TO_TAB:
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-    case WindowOpenDisposition::NEW_SPLIT_VIEW:
+    case WindowOpenDisposition::kNewPopup:
+    case WindowOpenDisposition::kCurrentTab:
+    case WindowOpenDisposition::kSingletonTab:
+    case WindowOpenDisposition::kSaveToDisk:
+    case WindowOpenDisposition::kOffTheRecord:
+    case WindowOpenDisposition::kIgnoreAction:
+    case WindowOpenDisposition::kSwitchToTab:
+    case WindowOpenDisposition::kNewPictureInPicture:
+    case WindowOpenDisposition::kNewSplitView:
       return false;
   }
 }
@@ -206,7 +206,7 @@ void ReparentWebContentsToTabbedBrowser(
   // Create a new browser window if the navigation was triggered via a
   // shift-click, or if there are no open tabbed browser windows at the moment.
   BrowserWindowInterface* target_browser_window =
-      (disposition == WindowOpenDisposition::NEW_WINDOW ||
+      (disposition == WindowOpenDisposition::kNewWindow ||
        !existing_browser_window)
           ? CreateBrowserWindow(BrowserWindowCreateParams(
                 source_browser->GetProfile(), /*from_user_gesture=*/true))
@@ -274,7 +274,7 @@ void LaunchIsolatedWebAppInNewWindow(web_app::WebAppProvider* provider,
           /*protocol_handler_launch_url=*/std::nullopt,
           /*file_launch_url=*/std::nullopt, /*launch_files=*/{});
   app_launch_params.override_url = target_url;
-  app_launch_params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  app_launch_params.disposition = WindowOpenDisposition::kNewWindow;
   app_launch_params.container = apps::LaunchContainer::kLaunchContainerWindow;
 
   provider->scheduler().LaunchAppWithCustomParams(std::move(app_launch_params),
@@ -603,7 +603,7 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
   if (params.is_service_worker_open_window && !navigation_capturing_enabled_) {
     // See service_worker_client_utils::OpenWindow() for more details.
     CHECK(!params.browser);
-    CHECK_EQ(disposition_, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    CHECK_EQ(disposition_, WindowOpenDisposition::kNewForegroundTab);
     CHECK(ui::PageTransitionCoreTypeIs(params.transition,
                                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
 
@@ -649,8 +649,8 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
   }
   bool is_for_new_browser =
       params.browser && params.browser->GetTabStripModel()->count() == 0 &&
-      (disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-       disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB);
+      (disposition_ == WindowOpenDisposition::kNewForegroundTab ||
+       disposition_ == WindowOpenDisposition::kNewBackgroundTab);
   if (is_for_new_browser) {
     // Some calls to `Navigate` populate a newly created browser in
     // `params.browser`, with no tabs. Callers can assume that browser is used,
@@ -755,7 +755,7 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
       return NoInitialActionRedirectionHandlingEligible();
     }
     // Case: Shift-clicks with a new top level browsing context.
-    if (disposition_ == WindowOpenDisposition::NEW_WINDOW) {
+    if (disposition_ == WindowOpenDisposition::kNewWindow) {
       BrowserWindowInterface* app_host_window;
       if (app_display_mode == DisplayMode::kBrowser) {
         app_host_window = CreateBrowserWindow(
@@ -777,7 +777,7 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
             : false;
 
     // Case: Middle clicks with a new top level browsing context.
-    if (disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
+    if (disposition_ == WindowOpenDisposition::kNewBackgroundTab &&
         (app_display_mode == DisplayMode::kBrowser ||
          (app_id == source_browser_app_id_ &&
           is_in_source_app_with_url_in_scope))) {
@@ -818,7 +818,7 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
     return NoInitialActionRedirectionHandlingEligible();
   }
 
-  if (disposition_ != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+  if (disposition_ != WindowOpenDisposition::kNewForegroundTab) {
     return CapturingDisabled();
   }
 
@@ -933,27 +933,27 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
 
   bool capturing_disabled = [&]() {
     switch (disposition_) {
-      case WindowOpenDisposition::NEW_POPUP:
-      case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+      case WindowOpenDisposition::kNewPopup:
+      case WindowOpenDisposition::kNewPictureInPicture:
         // App popups and picture-in-picture are handled in the switch statement
         // in `GetBrowserAndTabForDisposition()`.
         return true;
-      case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+      case WindowOpenDisposition::kNewForegroundTab:
+      case WindowOpenDisposition::kNewBackgroundTab:
         // If the browser window does not yet have any tabs, and we are
         // attempting to add the first tab to it, allow for it to be reused.
         return iwa_browser && params.browser->GetTabStripModel()->empty();
-      case WindowOpenDisposition::CURRENT_TAB:
+      case WindowOpenDisposition::kCurrentTab:
         return iwa_browser;
-      case WindowOpenDisposition::NEW_WINDOW:
+      case WindowOpenDisposition::kNewWindow:
         return false;
-      case WindowOpenDisposition::UNKNOWN:
-      case WindowOpenDisposition::SINGLETON_TAB:
-      case WindowOpenDisposition::SAVE_TO_DISK:
-      case WindowOpenDisposition::OFF_THE_RECORD:
-      case WindowOpenDisposition::IGNORE_ACTION:
-      case WindowOpenDisposition::SWITCH_TO_TAB:
-      case WindowOpenDisposition::NEW_SPLIT_VIEW:
+      case WindowOpenDisposition::kUnknown:
+      case WindowOpenDisposition::kSingletonTab:
+      case WindowOpenDisposition::kSaveToDisk:
+      case WindowOpenDisposition::kOffTheRecord:
+      case WindowOpenDisposition::kIgnoreAction:
+      case WindowOpenDisposition::kSwitchToTab:
+      case WindowOpenDisposition::kNewSplitView:
         // These are not supposed to be reachable with IWA URLs.
         return true;
     }
@@ -1308,9 +1308,9 @@ NavigationCapturingProcess::HandleRedirectImpl() {
     // new app window for an app when coming from the same app window.
     // Otherwise, only NEW_WINDOW can create a new app window when coming from
     // an app.
-    if ((disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
+    if ((disposition_ == WindowOpenDisposition::kNewBackgroundTab &&
          is_source_app_matching_final_target) ||
-        (disposition_ == WindowOpenDisposition::NEW_WINDOW)) {
+        (disposition_ == WindowOpenDisposition::kNewWindow)) {
       // browser-tab -> browser-tab-app.
       if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
         debug_data_.Set("!redirection_result", "N/A, btab");
@@ -1857,8 +1857,8 @@ NavigationCapturingProcess::ForcedNewAppContext(
       app_display_mode));
   CHECK((app_display_mode != blink::mojom::DisplayMode::kBrowser) ==
         (!!web_app::AppBrowserController::From(host_browser)));
-  CHECK(disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-        disposition_ == WindowOpenDisposition::NEW_WINDOW);
+  CHECK(disposition_ == WindowOpenDisposition::kNewBackgroundTab ||
+        disposition_ == WindowOpenDisposition::kNewWindow);
   CHECK(is_user_modified_click());
   initial_nav_handling_result_ =
       app_display_mode == DisplayMode::kBrowser
@@ -1884,8 +1884,8 @@ NavigationCapturingProcess::ForcedNewIwaAppContextWithScopeExtendedUrl(
   CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
       app_display_mode));
   CHECK(app_display_mode != blink::mojom::DisplayMode::kBrowser);
-  CHECK(disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-        disposition_ == WindowOpenDisposition::NEW_WINDOW);
+  CHECK(disposition_ == WindowOpenDisposition::kNewBackgroundTab ||
+        disposition_ == WindowOpenDisposition::kNewWindow);
   CHECK(is_user_modified_click());
   initial_nav_handling_result_ =
       NavigationCapturingInitialResult::kForcedContextAppWindow;
@@ -1923,12 +1923,12 @@ NavigationCapturingProcess::CapturedNewClient(
         (!!web_app::AppBrowserController::From(host_browser)));
 
   if (isolated_web_app_navigation_) {
-    CHECK(disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-          disposition_ == WindowOpenDisposition::CURRENT_TAB);
+    CHECK(disposition_ == WindowOpenDisposition::kNewForegroundTab ||
+          disposition_ == WindowOpenDisposition::kCurrentTab);
     initial_nav_handling_result_ =
         NavigationCapturingInitialResult::kNewAppWindow;
   } else {
-    CHECK_EQ(disposition_, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    CHECK_EQ(disposition_, WindowOpenDisposition::kNewForegroundTab);
     initial_nav_handling_result_ =
         app_display_mode == DisplayMode::kBrowser
             ? NavigationCapturingInitialResult::kNewAppBrowserTab
@@ -1955,7 +1955,7 @@ NavigationCapturingProcess::CapturedNewIwaClientWithScopeExtendedUrl(
 
   initial_nav_handling_result_ =
       NavigationCapturingInitialResult::kNewAppWindow;
-  CHECK_EQ(disposition_, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  CHECK_EQ(disposition_, WindowOpenDisposition::kNewForegroundTab);
   // Do not show iph when opening browser-tab-apps in a new browser tab, as
   // this matches what is 'normal' - clicking on a link opens a new browser
   // tab.
@@ -1977,14 +1977,14 @@ NavigationCapturingProcess::CapturedNavigateExisting(
 
   CHECK_NE(browser_tab, -1);
   if (isolated_web_app_navigation_) {
-    CHECK(disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-          disposition_ == WindowOpenDisposition::CURRENT_TAB);
+    CHECK(disposition_ == WindowOpenDisposition::kNewForegroundTab ||
+          disposition_ == WindowOpenDisposition::kCurrentTab);
 
     CHECK(WebAppBrowserController::IsWebApp(app_browser));
     initial_nav_handling_result_ =
         NavigationCapturingInitialResult::kNavigateExistingAppWindow;
   } else {
-    CHECK_EQ(disposition_, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    CHECK_EQ(disposition_, WindowOpenDisposition::kNewForegroundTab);
     initial_nav_handling_result_ =
         WebAppBrowserController::IsWebApp(app_browser)
             ? NavigationCapturingInitialResult::kNavigateExistingAppWindow

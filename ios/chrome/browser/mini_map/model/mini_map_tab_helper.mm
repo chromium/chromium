@@ -77,7 +77,7 @@ void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
     std::move(callback).Run(PolicyDecision::Cancel());
 
     web::WebState::OpenURLParams params(modified_url, web::Referrer(),
-                                        WindowOpenDisposition::CURRENT_TAB,
+                                        WindowOpenDisposition::kCurrentTab,
                                         request_info.transition_type,
                                         /*is_renderer_initiated=*/false);
     web_state()->OpenURL(params);
@@ -112,7 +112,7 @@ void MiniMapTabHelper::OnMiniMapFailure() {
   if (policy_callback_) {
     std::move(policy_callback_).Run(PolicyDecision::Cancel());
     web::WebState::OpenURLParams params(pending_treatment_url_, web::Referrer(),
-                                        WindowOpenDisposition::CURRENT_TAB,
+                                        WindowOpenDisposition::kCurrentTab,
                                         pending_transition_type_,
                                         /*is_renderer_initiated=*/false);
     web_state()->OpenURL(params);

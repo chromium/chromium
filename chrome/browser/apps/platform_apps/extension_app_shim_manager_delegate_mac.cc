@@ -201,7 +201,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
 
   if (extension->is_hosted_app()) {
     auto params = CreateAppLaunchParamsUserContainer(
-        profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        profile, extension, WindowOpenDisposition::kNewForegroundTab,
         apps::LaunchSource::kFromCommandLine);
     params.launch_files = files;
     web_app::LaunchExtensionOrWebApp(profile, std::move(params),

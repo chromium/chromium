@@ -201,8 +201,8 @@ bool CanOpenWindowOpenSplitTab(BrowserWindowInterface& browser,
   // "popup" was also specified, or NEW_FOREGROUND_TAB otherwise. The renderer
   // drops the request if the user's click modifiers chose the disposition, so
   // any other disposition is unexpected, and is left alone.
-  if (disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
-      disposition != WindowOpenDisposition::NEW_POPUP) {
+  if (disposition != WindowOpenDisposition::kNewForegroundTab &&
+      disposition != WindowOpenDisposition::kNewPopup) {
     return false;
   }
   if (!source || browser.GetType() != BrowserWindowInterface::TYPE_NORMAL) {
@@ -584,7 +584,7 @@ content::WebContents* BrowserWebContentsDelegate::OpenURLFromTab(
   // creating a new tab. Return |source| so that WebContentsImpl::OpenURL()
   // sees new_contents == this and skips the DidOpenRequestedURL notification,
   // which is only meant for newly created WebContents.
-  if (params.disposition == WindowOpenDisposition::NEW_SPLIT_VIEW && source) {
+  if (params.disposition == WindowOpenDisposition::kNewSplitView && source) {
     tabs::TabInterface* const source_tab =
         tabs::TabInterface::MaybeGetFromContents(source);
     if (source_tab && source_tab->IsSplit()) {
@@ -716,7 +716,7 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
     // default features.
     CHECK(base::FeatureList::IsEnabled(blink::features::kWindowOpenSplitTab));
     if (CanOpenWindowOpenSplitTab(*browser_, source, disposition)) {
-      disposition = WindowOpenDisposition::NEW_SPLIT_VIEW;
+      disposition = WindowOpenDisposition::kNewSplitView;
     }
   }
 
@@ -735,10 +735,10 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
       screen->GetDisplayNearestView(source->GetContentNativeView()) !=
           screen->GetDisplayMatching(window_features.bounds);
   if (!app_browser_controller_ &&
-      disposition == WindowOpenDisposition::NEW_POPUP &&
+      disposition == WindowOpenDisposition::kNewPopup &&
       fullscreen_controller->IsFullscreenForBrowser() &&
       !targeting_different_display) {
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    disposition = WindowOpenDisposition::kNewForegroundTab;
   }
 #endif
 
@@ -756,7 +756,7 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
   // Allow fullscreen-within-tab openers to open popups normally.
   NavigateParams::WindowAction window_action =
       NavigateParams::WindowAction::kShowWindow;
-  if (disposition == WindowOpenDisposition::NEW_POPUP &&
+  if (disposition == WindowOpenDisposition::kNewPopup &&
       fullscreen_controller->GetFullscreenState(source).target_mode ==
           content::FullscreenMode::kContent) {
     window_action = NavigateParams::WindowAction::kShowWindowInactive;
@@ -777,10 +777,10 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
   // If a backgrounded actor task triggered a new tab/popup, don't interrupt the
   // user.
   if (source && actor::IsRunningBackgroundActorTask(*source)) {
-    if (disposition == WindowOpenDisposition::NEW_POPUP) {
+    if (disposition == WindowOpenDisposition::kNewPopup) {
       window_action = NavigateParams::WindowAction::kShowWindowInactive;
-    } else if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
-      disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    } else if (disposition == WindowOpenDisposition::kNewForegroundTab) {
+      disposition = WindowOpenDisposition::kNewBackgroundTab;
     }
   }
 

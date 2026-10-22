@@ -278,7 +278,7 @@ void ShowSiteSettingsImpl(BrowserWindowInterface* browser,
         GetSettingsUrl(chrome::kSiteDetailsSubpage), kParamRequest, url_string);
   }
   NavigateParams params(profile, link_destination, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.browser = browser;
   Navigate(&params);
 }
@@ -304,7 +304,7 @@ void ShowSiteSettingsFileSystemImpl(BrowserWindowInterface* browser,
                                                  kParamRequest, origin_string);
   }
   NavigateParams params(profile, link_destination, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.browser = browser;
   Navigate(&params);
 }
@@ -713,7 +713,7 @@ void ShowWebAppSettingsImpl(BrowserWindowInterface* browser,
 #else
   const GURL link_destination(chrome::kChromeUIWebAppSettingsURL + app_id);
   NavigateParams params(profile, link_destination, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.browser = browser;
   Navigate(&params);
 #endif  // BUILDFLAG(IS_CHROMEOS)

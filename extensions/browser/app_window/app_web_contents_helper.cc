@@ -39,7 +39,7 @@ content::WebContents* AppWebContentsHelper::OpenURLFromTab(
   // navigations, which we don't want to allow.
   // TODO(mihaip): Can we check for user gestures instead?
   WindowOpenDisposition disposition = params.disposition;
-  if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (disposition == WindowOpenDisposition::kCurrentTab) {
     web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf(
@@ -49,9 +49,10 @@ content::WebContents* AppWebContentsHelper::OpenURLFromTab(
   }
 
   // These dispositions aren't really navigations.
-  if (disposition == WindowOpenDisposition::SAVE_TO_DISK ||
-      disposition == WindowOpenDisposition::IGNORE_ACTION)
+  if (disposition == WindowOpenDisposition::kSaveToDisk ||
+      disposition == WindowOpenDisposition::kIgnoreAction) {
     return nullptr;
+  }
 
   content::WebContents* contents =
       app_delegate_->OpenURLFromTab(browser_context_, web_contents_, params,

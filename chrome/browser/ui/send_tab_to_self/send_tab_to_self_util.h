@@ -64,7 +64,7 @@ void OnSendTabToDeviceComplete(
 // Opens the "Manage account devices" page for `profile` with `disposition`.
 void OpenManageDevicesPage(Profile* profile,
                            WindowOpenDisposition disposition =
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                               WindowOpenDisposition::kNewForegroundTab);
 
 }  // namespace send_tab_to_self
 

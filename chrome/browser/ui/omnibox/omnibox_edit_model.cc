@@ -902,7 +902,7 @@ void OmniboxEditModel::OpenLensSearch() {
     OpenMatch(
         OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
         provider->CreateLensEntrypointMatch(autocomplete_controller()->input()),
-        WindowOpenDisposition::CURRENT_TAB, GURL(), std::u16string(),
+        WindowOpenDisposition::kCurrentTab, GURL(), std::u16string(),
         base::TimeTicks::Now());
   }
 }
@@ -910,7 +910,7 @@ void OmniboxEditModel::OpenLensSearch() {
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                                      bool via_keyboard) {
   OpenSelection(selection, base::TimeTicks(),
-                WindowOpenDisposition::CURRENT_TAB, via_keyboard);
+                WindowOpenDisposition::kCurrentTab, via_keyboard);
 }
 
 void OmniboxEditModel::OpenSelection(
@@ -2631,7 +2631,7 @@ void OmniboxEditModel::OpenMatch(
   bool is_tab_switch_action =
       action && action->ActionId() == OmniboxActionId::TAB_SWITCH;
   if (is_open_tab_match || is_tab_switch_action) {
-    disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+    disposition = WindowOpenDisposition::kSwitchToTab;
   }
 
   TRACE_EVENT("omnibox", "OmniboxEditModel::OpenMatch", "match", match,
@@ -2750,7 +2750,7 @@ void OmniboxEditModel::OpenMatch(
   log.ukm_source_id = controller_->client()->GetUKMSourceId();
   log.input_state = input.input_state();
 
-  if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
+  if ((disposition == WindowOpenDisposition::kCurrentTab) &&
       controller_->client()->CurrentPageExists()) {
     // If we know the destination is being opened in the current tab,
     // we can easily get the tab ID.  (If it's being opened in a new
@@ -2772,7 +2772,7 @@ void OmniboxEditModel::OpenMatch(
   // the Full WebUI popup and reverts the box to its unedited state. Background
   // tab navigations leave the session intact, since the omnibox keeps focus.
   auto end_edit_session = [&] {
-    if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+    if (disposition == WindowOpenDisposition::kNewBackgroundTab) {
       return;
     }
     if (view_ && view_->IsFullWebUIOmnibox()) {
@@ -3288,7 +3288,7 @@ void OmniboxEditModel::NavigateToAiModeWithContextualizer(
       &OmniboxEditModel::
           NavigateToAiModeWithContextualizerOnContextualizationComplete,
       weak_factory_.GetWeakPtr(), query_text,
-      WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition::kCurrentTab);
   if (contextual_tasks::GetIsContextualTasksNonBlockingUrlNavigationEnabled()) {
     params.on_uploads_started_callback = std::move(on_contextualized_callback);
     params.complete_callback = base::DoNothing();

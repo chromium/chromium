@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
   WebContents* background_contents = web_contents();
 
   NavigateParams params(browser(), url_foreground, ::ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   ::ui_test_utils::NavigateToURL(&params);
 
   WebContents* foreground_contents = web_contents();

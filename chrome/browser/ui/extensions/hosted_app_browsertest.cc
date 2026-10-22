@@ -2219,7 +2219,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 
   GURL bar_app_url(embedded_test_server()->GetURL("bar.com", "/title2.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), bar_app_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), bar_app_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* bar_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -2228,7 +2228,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 
   GURL foo_app_url2(embedded_test_server()->GetURL("foo.com", "/title3.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), foo_app_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), foo_app_url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* foo_contents2 =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -2295,7 +2295,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
   // process-per-site.
   GURL bar_app_url2(embedded_test_server()->GetURL("bar.com", "/title3.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), bar_app_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), bar_app_url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* bar_contents2 =
       browser()->GetTabStripModel()->GetActiveWebContents();

@@ -184,7 +184,7 @@ class LaunchWebAppCommandTest : public WebAppBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerTab,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       apps::LaunchSource::kFromCommandLine, {}, std::nullopt);
 
   base::WeakPtr<BrowserWindowInterface> launch_browser;
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromCommandLine,
+      WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromCommandLine,
       {}, std::nullopt);
 
   base::WeakPtr<BrowserWindowInterface> launch_browser;
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
                        WebAppLaunchProcessStripsMaliciousShortcutUrl) {
   apps::AppLaunchParams launch_params =
       CreateLaunchParams(app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-                         WindowOpenDisposition::NEW_WINDOW,
+                         WindowOpenDisposition::kNewWindow,
                          apps::LaunchSource::kFromTest, {}, std::nullopt);
   launch_params.override_url = GURL("chrome://settings");
 

@@ -136,7 +136,7 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
       // Open in new tab
       content::OpenURLParams params =
           content::OpenURLParams::FromNavigationHandle(navigation_handle());
-      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      params.disposition = WindowOpenDisposition::kNewForegroundTab;
       navigation_handle()->GetWebContents()->OpenURL(
           params, /*navigation_handle_callback=*/{});
       // Cancel the navigation in the original frame so it doesn't show

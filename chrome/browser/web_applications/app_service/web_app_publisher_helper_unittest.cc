@@ -416,7 +416,7 @@ TEST_F(WebAppPublisherHelperTest, LaunchWithFiles_AllowWithNoPrompt) {
       base::FilePath::FromUTF8Unsafe("file.txt")};
   apps::AppLaunchParams params(
       app->app_id(), apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromFileManager);
+      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromFileManager);
   params.launch_files = test_files;
 
   base::test::TestFuture<std::vector<content::WebContents*>> launch_future;

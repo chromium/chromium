@@ -147,7 +147,7 @@ void NavigateToURLSync(BrowserWindowInterface* browser, const GURL& url) {
 
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
   params.initiator_origin = url::Origin::Create(GURL("about:blank"));
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.disposition = WindowOpenDisposition::kCurrentTab;
   params.is_renderer_initiated = true;
   ui_test_utils::NavigateToURL(&params);
 
@@ -1586,7 +1586,7 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
   // Reload the interstitial twice. Should still work.
   for (size_t i = 0; i < 2; i++) {
     content::TestNavigationObserver navigation_observer(web_contents);
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     navigation_observer.Wait();
 
     EXPECT_EQ(LookalikeUrlBlockingPage::kTypeForTesting,

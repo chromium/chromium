@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(TabModalConfirmDialogTest, CloseSelf) {
 IN_PROC_BROWSER_TEST_F(TabModalConfirmDialogTest, Navigate) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("about:blank"), WindowOpenDisposition::CURRENT_TAB,
+          GURL("about:blank"), WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
   browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
       params, /*navigation_handle_callback=*/{});

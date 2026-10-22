@@ -13,28 +13,28 @@ module ui.mojom;
 // These values are persisted (e.g. app restore data), logged to UKM and passed
 // to and from Java as integers. Entries must not be renumbered.
 enum WindowOpenDisposition {
-  UNKNOWN = 0,
-  CURRENT_TAB = 1,
+  kUnknown = 0,
+  kCurrentTab = 1,
   // Indicates that only one tab with the url should exist in the same window.
-  SINGLETON_TAB = 2,
-  NEW_FOREGROUND_TAB = 3,
-  NEW_BACKGROUND_TAB = 4,
-  NEW_POPUP = 5,
-  NEW_WINDOW = 6,
-  SAVE_TO_DISK = 7,
-  OFF_THE_RECORD = 8,
-  IGNORE_ACTION = 9,
+  kSingletonTab = 2,
+  kNewForegroundTab = 3,
+  kNewBackgroundTab = 4,
+  kNewPopup = 5,
+  kNewWindow = 6,
+  kSaveToDisk = 7,
+  kOffTheRecord = 8,
+  kIgnoreAction = 9,
   // Activates an existing tab containing the url, rather than navigating.
-  // This is similar to SINGLETON_TAB, but searches across all windows from
+  // This is similar to kSingletonTab, but searches across all windows from
   // the current profile and anonymity (instead of just the current one);
   // closes the current tab on switching if the current tab was the NTP with
-  // no session history; and behaves like CURRENT_TAB instead of
-  // NEW_FOREGROUND_TAB when no existing tab is found.
-  SWITCH_TO_TAB = 10,
+  // no session history; and behaves like kCurrentTab instead of
+  // kNewForegroundTab when no existing tab is found.
+  kSwitchToTab = 10,
   // Creates a new document picture-in-picture window showing a child WebView.
-  NEW_PICTURE_IN_PICTURE = 11,
+  kNewPictureInPicture = 11,
   // Opens a link in a split view alongside the current tab.
-  NEW_SPLIT_VIEW = 12,
+  kNewSplitView = 12,
 };
 
 // Click information needed to determine user's desired window disposition using

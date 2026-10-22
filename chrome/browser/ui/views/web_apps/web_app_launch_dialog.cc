@@ -66,7 +66,7 @@ class WebAppLaunchDialogDelegate : public WebAppModalDialogDelegate {
     if (provider) {
       apps::AppLaunchParams params(
           app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW,
+          WindowOpenDisposition::kNewWindow,
           apps::LaunchSource::kFromWebInstallApi);
 
       provider->command_manager().ScheduleCommand(

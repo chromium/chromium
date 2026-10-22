@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   browser()->GetTabStripModel()->ActivateTabAt(1);
   GURL url3(embedded_test_server()->GetURL("/title3.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url3, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), url3, WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),

@@ -814,9 +814,9 @@ TEST_F(BrowserInfoBarManagerUnitTest,
   EXPECT_FALSE(infobar3->delegate()
                    ->AsConfirmInfoBarDelegate()
                    ->InlineSubstitutionLinkClicked(
-                       0u, WindowOpenDisposition::CURRENT_TAB));
+                       0u, WindowOpenDisposition::kCurrentTab));
   EXPECT_FALSE(infobar3->delegate()->LinkClicked(
-      WindowOpenDisposition::NEW_BACKGROUND_TAB));
+      WindowOpenDisposition::kNewBackgroundTab));
   ContentInfoBarManager::FromWebContents(contents)->RemoveInfoBar(infobar3);
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(InfoBarResult::kLinkClicked, results[0]);
@@ -832,7 +832,7 @@ TEST_F(BrowserInfoBarManagerUnitTest,
   EXPECT_TRUE(infobar4->delegate()
                   ->AsConfirmInfoBarDelegate()
                   ->InlineSubstitutionLinkClicked(
-                      0u, WindowOpenDisposition::CURRENT_TAB));
+                      0u, WindowOpenDisposition::kCurrentTab));
   infobar4->RemoveSelf();
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(InfoBarResult::kLinkClicked, results[0]);
@@ -851,7 +851,7 @@ TEST_F(BrowserInfoBarManagerUnitTest,
   EXPECT_TRUE(infobar5->delegate()
                   ->AsConfirmInfoBarDelegate()
                   ->InlineSubstitutionLinkClicked(
-                      0u, WindowOpenDisposition::CURRENT_TAB));
+                      0u, WindowOpenDisposition::kCurrentTab));
   infobar5->RemoveSelf();
   EXPECT_TRUE(results.empty());
 }
@@ -977,7 +977,7 @@ TEST_F(BrowserInfoBarManagerUnitTest, GlobalCascadeCloseAndTeardown) {
   EXPECT_TRUE(b2_infobar->delegate()
                   ->AsConfirmInfoBarDelegate()
                   ->InlineSubstitutionLinkClicked(
-                      0u, WindowOpenDisposition::CURRENT_TAB));
+                      0u, WindowOpenDisposition::kCurrentTab));
   b2_infobar->RemoveSelf();
   EXPECT_EQ(0u,
             ContentInfoBarManager::FromWebContents(b1_tab0)->infobars().size());

@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
   // Open a browser window with some preloaded tabs.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://localhost"), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL("http://localhost"), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   TabStripModel* tab_strip = browser()->GetTabStripModel();
   EXPECT_EQ(1, tab_strip->count());  // Verify one tab is open.
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   DisableWhatsNewPage();
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://localhost"), WindowOpenDisposition::CURRENT_TAB,
+      browser(), GURL("http://localhost"), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_EQ(1, tab_strip->count());
@@ -1475,7 +1475,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
                                 /*from_user_gesture=*/true));
   TabStripModel* tab_strip_model = new_browser->GetTabStripModel();
   ui_test_utils::NavigateToURLWithDisposition(
-      new_browser, t3_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      new_browser, t3_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(t3_url,

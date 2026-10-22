@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
 
   content::TestNavigationObserver reload_observer(
       browser()->GetTabStripModel()->GetActiveWebContents());
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   reload_observer.Wait();
 
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_PRINT));
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest,
   Print();
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   browser()->GetTabStripModel()->ActivateTabAt(

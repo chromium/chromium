@@ -216,7 +216,7 @@ void ShowTabOverwritingNTP(BrowserWindowInterface* browser,
                            TabStripModel* tab_strip_model,
                            const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = false;
   params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;
@@ -226,7 +226,7 @@ void ShowTabOverwritingNTP(BrowserWindowInterface* browser,
     const GURL& contents_url = contents->GetVisibleURL();
     if (contents_url == chrome::ChromeUINewTabURLAsGURL() ||
         search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL) {
-      params.disposition = WindowOpenDisposition::CURRENT_TAB;
+      params.disposition = WindowOpenDisposition::kCurrentTab;
     }
   }
 
@@ -541,7 +541,7 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
   // Create a new tab page and wait for the navigation to complete.
   NavigateParams params(&browser_.get(), chrome::ChromeUINewTabURLAsGURL(),
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = false;
   params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;

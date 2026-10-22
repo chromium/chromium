@@ -1960,7 +1960,7 @@ IN_PROC_BROWSER_TEST_F(
   // close the last tab and shut down the browser.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Switch back to the first tab to run the test.

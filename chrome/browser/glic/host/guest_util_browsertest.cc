@@ -106,7 +106,7 @@ void OpenWebUiWithGuestView(const GURL& host_url) {
   new_browser.GetWindow()->Show();
 
   ui_test_utils::NavigateToURLWithDisposition(
-      &new_browser, host_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      &new_browser, host_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 

@@ -342,18 +342,18 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
   insertion_params.parent = source;
 
   switch (params.disposition) {
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB: {
+    case WindowOpenDisposition::kNewForegroundTab:
+    case WindowOpenDisposition::kNewBackgroundTab: {
       insertion_params.in_background =
-          params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+          params.disposition == WindowOpenDisposition::kNewBackgroundTab;
       return tab_insertion_agent()->InsertWebState(load_params,
                                                    insertion_params);
     }
-    case WindowOpenDisposition::CURRENT_TAB: {
+    case WindowOpenDisposition::kCurrentTab: {
       source->GetNavigationManager()->LoadURLWithParams(load_params);
       return source;
     }
-    case WindowOpenDisposition::NEW_POPUP: {
+    case WindowOpenDisposition::kNewPopup: {
       insertion_params.opened_by_dom = true;
       return tab_insertion_agent()->InsertWebState(load_params,
                                                    insertion_params);

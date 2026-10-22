@@ -227,7 +227,7 @@ class GlicTabObserverBrowserTest
     content::TestNavigationObserver navigation_observer(tab->GetContents());
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED);
+            url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
     tab->GetContents()->OpenURL(params, base::DoNothing());
     navigation_observer.Wait();
   }
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickTracking) {
   GURL target_url("about:blank");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          target_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   ASSERT_OK_AND_ASSIGN(auto creation, OpenURLAndWaitForTabCreation(
                                           first_tab, params, collector));
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickNewWindowTracking) {
   GURL target_url("about:blank");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          target_url, WindowOpenDisposition::NEW_WINDOW,
+          target_url, WindowOpenDisposition::kNewWindow,
           ui::PAGE_TRANSITION_LINK);
   params.source_render_process_id = first_tab->GetContents()
                                         ->GetPrimaryMainFrame()

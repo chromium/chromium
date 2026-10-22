@@ -104,21 +104,21 @@ BrowserWindowInterface* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
 void WebsiteMetricsBrowserTestMixin::NavigateActiveTab(
     BrowserWindowInterface* browser,
     const std::string& url) {
-  NavigateAndWait(browser, url, WindowOpenDisposition::CURRENT_TAB);
+  NavigateAndWait(browser, url, WindowOpenDisposition::kCurrentTab);
 }
 
 ::content::WebContents* WebsiteMetricsBrowserTestMixin::InsertForegroundTab(
     BrowserWindowInterface* browser,
     const std::string& url) {
   return NavigateAndWait(browser, url,
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                         WindowOpenDisposition::kNewForegroundTab);
 }
 
 ::content::WebContents* WebsiteMetricsBrowserTestMixin::InsertBackgroundTab(
     BrowserWindowInterface* browser,
     const std::string& url) {
   return NavigateAndWait(browser, url,
-                         WindowOpenDisposition::NEW_BACKGROUND_TAB);
+                         WindowOpenDisposition::kNewBackgroundTab);
 }
 
 AppPlatformMetricsService* WebsiteMetricsBrowserTestMixin::metrics_service() {

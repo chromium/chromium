@@ -619,7 +619,7 @@ void RecentActivityRowView::ReopenTab() {
           group_id.value())) {
     tab_groups::SavedTabGroupUtils::OpenTabInBrowser(
         GURL(tab_url.value()), browser, browser->GetProfile(),
-        WindowOpenDisposition::NEW_BACKGROUND_TAB, std::nullopt,
+        WindowOpenDisposition::kNewBackgroundTab, std::nullopt,
         group_id.value());
   }
 }

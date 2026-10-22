@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(ExperimentalAiDataPolicyBrowserTest,
 IN_PROC_BROWSER_TEST_P(ExperimentalAiDataPolicyBrowserTest, RejectsOtherTab) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("blocked.test", "/simple.html"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   BlockHost("*://blocked.test/*");
   auto result = Collect();

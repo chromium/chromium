@@ -1392,7 +1392,7 @@ void WebAppPublisherHelper::ExecuteContextMenuCommand(
 
   apps::AppLaunchParams params(
       app_id, ConvertDisplayModeToAppLaunchContainer(display_mode),
-      WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromMenu,
+      WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromMenu,
       display_id);
 
   auto menu_item = shortcut_id_map_.find(shortcut_id);

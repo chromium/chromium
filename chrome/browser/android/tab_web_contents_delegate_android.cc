@@ -601,12 +601,12 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
   }
 
   WindowOpenDisposition disposition = params.disposition;
-  if (!source || (disposition != WindowOpenDisposition::CURRENT_TAB &&
-                  disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
-                  disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-                  disposition != WindowOpenDisposition::OFF_THE_RECORD &&
-                  disposition != WindowOpenDisposition::NEW_POPUP &&
-                  disposition != WindowOpenDisposition::NEW_WINDOW)) {
+  if (!source || (disposition != WindowOpenDisposition::kCurrentTab &&
+                  disposition != WindowOpenDisposition::kNewForegroundTab &&
+                  disposition != WindowOpenDisposition::kNewBackgroundTab &&
+                  disposition != WindowOpenDisposition::kOffTheRecord &&
+                  disposition != WindowOpenDisposition::kNewPopup &&
+                  disposition != WindowOpenDisposition::kNewWindow)) {
     // We can't handle this here.  Give the parent a chance.
     return WebContentsDelegateAndroid::OpenURLFromTab(
         source, params, std::move(navigation_handle_callback));
@@ -632,7 +632,7 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
     }
   }
 
-  if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (disposition == WindowOpenDisposition::kCurrentTab) {
     // Ask the parent to handle in-place opening.
     return WebContentsDelegateAndroid::OpenURLFromTab(
         source, params, std::move(navigation_handle_callback));
@@ -663,13 +663,13 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
     bool user_gesture,
     bool* was_blocked) {
   // No code for this yet.
-  CHECK_NE(disposition, WindowOpenDisposition::SAVE_TO_DISK,
+  CHECK_NE(disposition, WindowOpenDisposition::kSaveToDisk,
            base::NotFatalUntil::M161);
   // Can't create a new contents for the current tab - invalid case.
-  CHECK_NE(disposition, WindowOpenDisposition::CURRENT_TAB,
+  CHECK_NE(disposition, WindowOpenDisposition::kCurrentTab,
            base::NotFatalUntil::M161);
 
-  if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+  if (disposition == WindowOpenDisposition::kNewPictureInPicture) {
     const GURL& opener_url = source ? source->GetLastCommittedURL() : GURL();
     if (!PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
             opener_url)) {
@@ -751,7 +751,7 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
   // When handled is |true|, ownership has been passed to java, which in turn
   // creates a new TabAndroid instance to own the WebContents.
   if (handled) {
-    if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    if (disposition == WindowOpenDisposition::kNewPictureInPicture) {
       // For Document PiP, immediately enter PiP mode on the native side so that
       // we start observing the opener for navigations immediately.
       PictureInPictureWindowManager::GetInstance()

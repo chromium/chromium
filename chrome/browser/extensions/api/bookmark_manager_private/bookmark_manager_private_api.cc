@@ -936,10 +936,10 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
                                    ui::PAGE_TRANSITION_LINK);
     navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
     navigate_params.disposition =
-        first_tab ? WindowOpenDisposition::NEW_WINDOW
-                  : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        first_tab ? WindowOpenDisposition::kNewWindow
+                  : WindowOpenDisposition::kNewForegroundTab;
     if (params->incognito) {
-      navigate_params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
+      navigate_params.disposition = WindowOpenDisposition::kOffTheRecord;
     }
     base::WeakPtr<content::NavigationHandle> handle =
         Navigate(&navigate_params);
@@ -1012,7 +1012,7 @@ BookmarkManagerPrivateOpenInNewTabGroupFunction::RunOnReady() {
   }
 
   bookmarks::OpenAllIfAllowed(browser, nodes,
-                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                              WindowOpenDisposition::kNewBackgroundTab,
                               bookmarks::OpenAllBookmarksContext::kInGroup);
 
   return RespondNow(NoArguments());

@@ -318,7 +318,7 @@ WebContents* Shell::AddNewContents(
 #if !BUILDFLAG(IS_ANDROID)
   // If the shell is opening a document picture-in-picture window, it needs to
   // inform the DocumentPictureInPictureWindowController.
-  if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+  if (disposition == WindowOpenDisposition::kNewPictureInPicture) {
     DocumentPictureInPictureWindowController* controller =
         PictureInPictureWindowController::
             GetOrCreateDocumentPictureInPictureController(source);
@@ -431,7 +431,7 @@ WebContents* Shell::OpenURLFromTab(
         navigation_handle_callback) {
   WebContents* target = nullptr;
   switch (params.disposition) {
-    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::kCurrentTab:
       target = source;
       break;
 
@@ -440,13 +440,13 @@ WebContents* Shell::OpenURLFromTab(
     // not resizable.  For simplicity and to enable new testing scenarios in
     // content shell and web tests, popups don't get special treatment below
     // (i.e. they will have a toolbar and other things described here).
-    case WindowOpenDisposition::NEW_POPUP:
-    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::kNewPopup:
+    case WindowOpenDisposition::kNewWindow:
     // content_shell doesn't really support tabs, but some web tests use
     // middle click (which translates into kNavigationPolicyNewBackgroundTab),
     // so we treat the cases below just like a NEW_WINDOW disposition.
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB: {
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kNewForegroundTab: {
       Shell* new_window =
           Shell::CreateNewWindow(source->GetBrowserContext(),
                                  GURL(),  // Don't load anything just yet.
@@ -457,16 +457,16 @@ WebContents* Shell::OpenURLFromTab(
     }
 
     // No tabs in content_shell:
-    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::kSingletonTab:
     // No incognito mode in content_shell:
-    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::kOffTheRecord:
     // TODO(lukasza): Investigate if some web tests might need support for
     // SAVE_TO_DISK disposition.  This would probably require that
     // WebTestControlHost always sets up and cleans up a temporary directory
     // as the default downloads destinations for the duration of a test.
-    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::kSaveToDisk:
     // Ignoring requests with disposition == IGNORE_ACTION...
-    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::kIgnoreAction:
     default:
       return nullptr;
   }

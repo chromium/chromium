@@ -116,7 +116,7 @@ void CaptionBubbleContextViews::OpenCaptionSettings() {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(GetCaptionSettingsUrl()),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 }  // namespace captions

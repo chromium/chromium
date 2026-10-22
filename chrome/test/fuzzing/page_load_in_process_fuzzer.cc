@@ -205,7 +205,7 @@ int PageLoadInProcessFuzzer::Fuzz(
         ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_NO_WAIT;
   }
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), test_url, WindowOpenDisposition::kCurrentTab,
       browser_test_flags);
   return 0;
 }

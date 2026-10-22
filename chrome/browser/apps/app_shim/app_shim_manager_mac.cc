@@ -1514,7 +1514,7 @@ void AppShimManager::OpenAppURLInBrowserWindow(
   browser->GetWindow()->Show();
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

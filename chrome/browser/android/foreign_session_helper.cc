@@ -450,7 +450,7 @@ content::WebContents* ForeignSessionHelper::RestoreTabWithRenderer(
 
   return SessionRestore::RestoreForeignSessionTab(
       web_contents, *foreground_session_tab,
-      WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition::kCurrentTab);
 }
 
 bool ForeignSessionHelper::RestoreTabNoRenderer(
@@ -466,7 +466,7 @@ bool ForeignSessionHelper::RestoreTabNoRenderer(
 
   SessionRestore::RestoreForeignSessionTab(
       web_contents, *background_session_tab,
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       /*skip_renderer_creation=*/true);
   return true;
 }

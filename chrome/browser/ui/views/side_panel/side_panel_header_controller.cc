@@ -348,7 +348,7 @@ void SidePanelHeaderController::OpenInNewTab() {
   SidePanelMetrics::RecordNewTabButtonClicked(side_panel_entry_->key().id());
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          new_tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          new_tab_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   browser_->OpenURL(params, /*navigation_handle_callback=*/{});
 

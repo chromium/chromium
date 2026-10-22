@@ -587,7 +587,7 @@ TEST_F(ComposeboxHandlerTest, ProcessContextAndOpenUrl_DestructionSafe) {
   // WebContentsDelegate::OpenURLFromTab, which synchronously destroys the
   // handler, and it should complete safely without any use-after-free crashes.
   test_handler->ProcessContextAndOpenUrl(GURL("https://google.com"),
-                                         WindowOpenDisposition::CURRENT_TAB);
+                                         WindowOpenDisposition::kCurrentTab);
 
   base::RunLoop().RunUntilIdle();
 

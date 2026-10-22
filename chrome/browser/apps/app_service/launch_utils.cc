@@ -101,7 +101,7 @@ BrowserWindowInterface* CreateBrowserWithNewTabPage(Profile* profile) {
 
   NavigateParams params(browser, chrome::ChromeUINewTabURLAsGURL(),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
   Navigate(&params);
 
@@ -120,18 +120,18 @@ AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
 
   LaunchContainer container;
   WindowOpenDisposition disposition;
-  if (raw_disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      raw_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (raw_disposition == WindowOpenDisposition::kNewForegroundTab ||
+      raw_disposition == WindowOpenDisposition::kNewBackgroundTab) {
     container = LaunchContainer::kLaunchContainerTab;
     disposition = raw_disposition;
-  } else if (raw_disposition == WindowOpenDisposition::NEW_WINDOW) {
+  } else if (raw_disposition == WindowOpenDisposition::kNewWindow) {
     container = LaunchContainer::kLaunchContainerWindow;
     disposition = raw_disposition;
   } else {
     // Look at preference to find the right launch container.  If no preference
     // is set, launch as a regular tab.
     container = fallback_container;
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    disposition = WindowOpenDisposition::kNewForegroundTab;
   }
   return AppLaunchParams(app_id, container, disposition, launch_source,
                          display_id);
@@ -256,11 +256,11 @@ int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container) {
   }
 
   switch (disposition) {
-    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::kNewWindow:
       return ui::EF_SHIFT_DOWN;
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::kNewBackgroundTab:
       return ui::EF_MIDDLE_MOUSE_BUTTON;
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::kNewForegroundTab:
       return ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_SHIFT_DOWN;
     default:
       NOTREACHED();

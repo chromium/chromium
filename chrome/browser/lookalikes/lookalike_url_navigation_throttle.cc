@@ -248,7 +248,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
     // initiated.
     handle->GetWebContents()->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            interstitial_params.url, WindowOpenDisposition::CURRENT_TAB,
+            interstitial_params.url, WindowOpenDisposition::kCurrentTab,
             ui::PageTransition::PAGE_TRANSITION_RELOAD,
             interstitial_params.referrer),
         /*navigation_handle_callback=*/{});

@@ -739,14 +739,14 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   auto create_nav_params = [&](const GURL& url, bool is_first_nav) {
     NavigateParams navigate_params(new_window, url, ui::PAGE_TRANSITION_LINK);
 
-    navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    navigate_params.disposition = WindowOpenDisposition::kNewForegroundTab;
 
 #if BUILDFLAG(IS_ANDROID)
     // On Android, new windows are created with a single empty tab. As such,
     // when navigating, we need to navigate that first tab, instead of adding
     // new ones. Otherwise, we'd end up with one extra tab in the new window.
     if (is_first_nav) {
-      navigate_params.disposition = WindowOpenDisposition::CURRENT_TAB;
+      navigate_params.disposition = WindowOpenDisposition::kCurrentTab;
     }
 #endif
     // Ensure that these navigations will not get 'captured' into PWA windows,

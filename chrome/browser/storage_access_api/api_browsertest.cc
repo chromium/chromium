@@ -450,7 +450,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   void NavigateToNewTabWithFrame(std::string_view host) {
     GURL main_url(https_server_.GetURL(host, "/iframe.html"));
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), main_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -2706,7 +2706,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   NavigateToURLWithDisposition(incognito_browser,
                                https_server().GetURL(kHostA, "/iframe.html"),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               WindowOpenDisposition::kNewForegroundTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   NavigateFrameTo(EchoCookiesURL(kHostB), incognito_browser);
 
@@ -2722,7 +2722,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, IncognitoCanUseAPI) {
 
   NavigateToURLWithDisposition(incognito_browser,
                                https_server().GetURL(kHostA, "/empty.html"),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               WindowOpenDisposition::kNewForegroundTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Even in an incognito profile, it's possible to use the Storage Access API

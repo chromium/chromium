@@ -97,7 +97,7 @@ void ForeignTabsPageHandler::OpenTab(const std::string& session_tag,
   }
   SessionRestore::RestoreForeignSessionTab(
       source_web_contents, *session_tab,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      WindowOpenDisposition::kNewForegroundTab);
 }
 
 void ForeignTabsPageHandler::GetForeignTabs(GetForeignTabsCallback callback) {

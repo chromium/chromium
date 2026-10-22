@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxMetricsTest, LogSearchEngineUsed) {
   base::HistogramTester histogram_tester;
   model()->SetPopupSelection(OmniboxPopupSelection(0));
   model()->OpenCurrentSelection(base::TimeTicks(),
-                                WindowOpenDisposition::CURRENT_TAB);
+                                WindowOpenDisposition::kCurrentTab);
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(controller()->done());
 
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxMetricsTest, LogSearchEngineUsed_PostNavigation) {
   base::HistogramTester histogram_tester;
   model()->SetPopupSelection(OmniboxPopupSelection(0));
   model()->OpenCurrentSelection(base::TimeTicks(),
-                                WindowOpenDisposition::CURRENT_TAB);
+                                WindowOpenDisposition::kCurrentTab);
 
   content::WaitForLoadStop(
       browser()->GetTabStripModel()->GetActiveWebContents());

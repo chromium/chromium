@@ -238,9 +238,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
 
   // Create tabs, and new window for testing.
   browser()->OpenGURL(GURL(kTestUrl1ForThisBrowser),
-                      WindowOpenDisposition::CURRENT_TAB);
+                      WindowOpenDisposition::kCurrentTab);
   browser()->OpenGURL(GURL(kTestUrl2ForThisBrowser),
-                      WindowOpenDisposition::NEW_BACKGROUND_TAB);
+                      WindowOpenDisposition::kNewBackgroundTab);
   EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
   EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
   content::WaitForLoadStop(
@@ -267,9 +267,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
   BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   EXPECT_TRUE(new_browser);
   new_browser->OpenGURL(GURL(kTestUrl1ForNewBrowser),
-                        WindowOpenDisposition::CURRENT_TAB);
+                        WindowOpenDisposition::kCurrentTab);
   new_browser->OpenGURL(GURL(kTestUrl2ForNewBrowser),
-                        WindowOpenDisposition::NEW_BACKGROUND_TAB);
+                        WindowOpenDisposition::kNewBackgroundTab);
   EXPECT_EQ(new_browser->GetTabStripModel()->count(), 2);
   EXPECT_EQ(new_browser->GetTabStripModel()->active_index(), 0);
   content::WaitForLoadStop(

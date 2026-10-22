@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?token=sometesttoken"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?token=sometesttoken"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?token=sometesttoken"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?failure=true"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?token=sometesttoken"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?token=sometesttoken"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?failure=true"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?failure=true"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?unrecognizedQueryParam=true"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?token=sometesttoken"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://site.example/?token=sometesttoken"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   // Navigate to the URL that denotes success inside of the BNPL pop-up.
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          success_url, WindowOpenDisposition::CURRENT_TAB,
+          success_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(std::string(kBnplSuccessUrlPrefix) +
                "testqueryparam?param1=true"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -895,7 +895,7 @@ IN_PROC_BROWSER_TEST_F(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(std::string(kBnplSuccessUrlPrefix) +
                "testqueryparam?param1=true"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -922,7 +922,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   // Navigate to the URL that denotes failure inside of the BNPL pop-up.
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          failure_url, WindowOpenDisposition::CURRENT_TAB,
+          failure_url, WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -943,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(std::string(kBnplFailureUrlPrefix) +
                "testqueryparam?param1=true"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -966,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(std::string(kBnplFailureUrlPrefix) +
                "testqueryparam?param1=true"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
@@ -1039,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   // Navigate to the URL that denotes the BNPL pop-up has not completed yet.
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          success_url_with_different_prefix, WindowOpenDisposition::CURRENT_TAB,
+          success_url_with_different_prefix, WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 

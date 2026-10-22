@@ -226,9 +226,9 @@ content::WebContents* DrivePickerHostView::OpenURLFromTab(
     return nullptr;
   }
   content::OpenURLParams new_params(params);
-  if (new_params.disposition == WindowOpenDisposition::CURRENT_TAB ||
-      new_params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
-    new_params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  if (new_params.disposition == WindowOpenDisposition::kCurrentTab ||
+      new_params.disposition == WindowOpenDisposition::kNewForegroundTab) {
+    new_params.disposition = WindowOpenDisposition::kNewWindow;
   }
   return browser_window_interface_->OpenURL(
       new_params, std::move(navigation_handle_callback));
@@ -255,9 +255,9 @@ content::WebContents* DrivePickerHostView::AddNewContents(
     return nullptr;
   }
   WindowOpenDisposition new_disposition = disposition;
-  if (new_disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      new_disposition == WindowOpenDisposition::CURRENT_TAB) {
-    new_disposition = WindowOpenDisposition::NEW_WINDOW;
+  if (new_disposition == WindowOpenDisposition::kNewForegroundTab ||
+      new_disposition == WindowOpenDisposition::kCurrentTab) {
+    new_disposition = WindowOpenDisposition::kNewWindow;
   }
   chrome::AddWebContents(browser_window_interface_, source,
                          std::move(new_contents), target_url, new_disposition,

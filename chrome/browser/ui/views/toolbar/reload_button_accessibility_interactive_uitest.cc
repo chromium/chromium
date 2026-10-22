@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest,
       InstrumentNextTab(kNewTabId), Do([&]() {
         browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                                embedded_test_server()->GetURL("/slow"),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               WindowOpenDisposition::kNewForegroundTab,
                                ui::PAGE_TRANSITION_TYPED),
                            /*navigation_handle_callback=*/{});
       }),

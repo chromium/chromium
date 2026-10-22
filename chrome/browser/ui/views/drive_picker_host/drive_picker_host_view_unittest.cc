@@ -190,12 +190,12 @@ TEST_F(DrivePickerHostViewTest, OpenURLFromTab_ForwardsToBrowserWindow) {
   const GURL test_url("https://policies.google.com/terms");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          test_url, WindowOpenDisposition::CURRENT_TAB,
+          test_url, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   EXPECT_CALL(*browser_window_interface(),
               OpenURL(testing::Field(&content::OpenURLParams::disposition,
-                                     WindowOpenDisposition::NEW_WINDOW),
+                                     WindowOpenDisposition::kNewWindow),
                       testing::_));
 
   view->OpenURLFromTab(view->GetWebContents(), params, base::NullCallback());
@@ -212,7 +212,7 @@ TEST_F(DrivePickerHostViewTest, OpenURLFromTab_RejectsPrivilegedSchemes) {
     const GURL privileged_url(url_str);
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            privileged_url, WindowOpenDisposition::CURRENT_TAB,
+            privileged_url, WindowOpenDisposition::kCurrentTab,
             ui::PAGE_TRANSITION_LINK);
 
     EXPECT_CALL(*browser_window_interface(), OpenURL(testing::_, testing::_))
@@ -239,7 +239,7 @@ TEST_F(DrivePickerHostViewTest, AddNewContents_RejectsPrivilegedSchemes) {
     bool was_blocked = false;
     content::WebContents* result = view->AddNewContents(
         view->GetWebContents(), nullptr, privileged_url,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         blink::mojom::WindowFeatures(), /*user_gesture=*/true, &was_blocked);
 
     EXPECT_EQ(result, nullptr);

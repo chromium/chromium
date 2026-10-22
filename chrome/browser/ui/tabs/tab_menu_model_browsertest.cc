@@ -428,7 +428,7 @@ class TabMenuModelMuteSitesBrowserTest : public TabMenuModelBrowserTest {
                                      const GURL& second_url) {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), second_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), second_url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
     TabStripModel* tab_strip_model = browser()->tab_strip_model();

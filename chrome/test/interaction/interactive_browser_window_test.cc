@@ -279,7 +279,7 @@ InteractiveBrowserWindowTestApi::AddInstrumentedTab(
                 browser, url, ui::PageTransition::PAGE_TRANSITION_TYPED);
             navigate_params.tabstrip_index = at_index.value_or(-1);
             navigate_params.disposition =
-                WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                WindowOpenDisposition::kNewForegroundTab;
             CHECK(Navigate(&navigate_params));
           })),
       WaitForWebContentsReady(id));

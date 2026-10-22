@@ -521,7 +521,7 @@ void RegisterInfoBars() {
                             browser, GURL("chrome://inspect#remote-debugging"),
                             ui::PAGE_TRANSITION_LINK);
                         params.disposition =
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                            WindowOpenDisposition::kNewForegroundTab;
                         Navigate(&params);
                       }));
                 }))

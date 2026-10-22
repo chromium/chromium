@@ -374,11 +374,11 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
   CHECK(!params->switch_to_singleton_tab, base::NotFatalUntil::M162);
 
   WindowOpenDisposition disposition = params->disposition;
-  bool supported = disposition == WindowOpenDisposition::NEW_POPUP ||
-                   disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-                   disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-                   disposition == WindowOpenDisposition::NEW_WINDOW ||
-                   disposition == WindowOpenDisposition::OFF_THE_RECORD;
+  bool supported = disposition == WindowOpenDisposition::kNewPopup ||
+                   disposition == WindowOpenDisposition::kNewForegroundTab ||
+                   disposition == WindowOpenDisposition::kNewBackgroundTab ||
+                   disposition == WindowOpenDisposition::kNewWindow ||
+                   disposition == WindowOpenDisposition::kOffTheRecord;
   if (!supported) {
     NOTIMPLEMENTED();
     return;

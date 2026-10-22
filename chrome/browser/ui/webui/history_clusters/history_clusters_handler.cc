@@ -134,7 +134,7 @@ class HistoryClustersSidePanelContextMenu
         }
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                url_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                url_, WindowOpenDisposition::kNewBackgroundTab,
                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         GetBrowserWindowInterface(interface_)
             ->OpenURL(params,
@@ -148,7 +148,7 @@ class HistoryClustersSidePanelContextMenu
         }
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                url_, WindowOpenDisposition::NEW_WINDOW,
+                url_, WindowOpenDisposition::kNewWindow,
                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         GetBrowserWindowInterface(interface_)
             ->OpenURL(params,
@@ -162,7 +162,7 @@ class HistoryClustersSidePanelContextMenu
         }
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                url_, WindowOpenDisposition::OFF_THE_RECORD,
+                url_, WindowOpenDisposition::kOffTheRecord,
                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         GetBrowserWindowInterface(interface_)
             ->OpenURL(params,
@@ -308,8 +308,8 @@ void HistoryClustersHandler::OpenHistoryUrl(
   // default is a new foreground tab.
   WindowOpenDisposition default_disposition =
       history_clusters_side_panel_embedder_
-          ? WindowOpenDisposition::CURRENT_TAB
-          : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+          ? WindowOpenDisposition::kCurrentTab
+          : WindowOpenDisposition::kNewForegroundTab;
 
   WindowOpenDisposition open_location = ui::DispositionFromClick(
       click_modifiers->middle_button, click_modifiers->alt_key,
@@ -488,7 +488,7 @@ void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
         GetBrowserWindowInterface(interface_)
             ->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                           visit_ptr->normalized_url,
-                          WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                          WindowOpenDisposition::kNewBackgroundTab,
                           ui::PAGE_TRANSITION_AUTO_BOOKMARK),
                       /*navigation_handle_callback=*/{});
 

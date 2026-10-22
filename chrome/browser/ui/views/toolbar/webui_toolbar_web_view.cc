@@ -1325,10 +1325,10 @@ void WebUIToolbarWebView::OverflowButtonClicked(
   // For better or for worse, ignoring modifiers and instead doing everything in
   // the current tab matches the Views overflow menu behavior.
   if (identifier == kToolbarForwardButtonElementId) {
-    browser_controls_adapter_->Forward(WindowOpenDisposition::CURRENT_TAB);
+    browser_controls_adapter_->Forward(WindowOpenDisposition::kCurrentTab);
     return;
   } else if (identifier == kToolbarHomeButtonElementId) {
-    browser_controls_adapter_->NavigateHome(WindowOpenDisposition::CURRENT_TAB);
+    browser_controls_adapter_->NavigateHome(WindowOpenDisposition::kCurrentTab);
     return;
   } else if (identifier == kToolbarSplitTabsToolbarButtonElementId) {
     split_tabs_control_.HandleContextMenuOverflowClick();
@@ -1550,7 +1550,7 @@ void WebUIToolbarWebView::OnHomeButtonDropText(const std::string& text) {
 
 void WebUIToolbarWebView::OnToolbarDropFile(const gfx::PointF& drop_position) {
   if (std::optional<GURL> url = web_view_->ConsumeDroppedUrl(drop_position)) {
-    browser_->OpenGURL(*url, WindowOpenDisposition::CURRENT_TAB);
+    browser_->OpenGURL(*url, WindowOpenDisposition::kCurrentTab);
   }
 }
 

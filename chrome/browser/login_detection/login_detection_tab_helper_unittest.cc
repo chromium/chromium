@@ -200,7 +200,7 @@ TEST_F(LoginDetectionTabHelperTest, PopUpOAuthLogin) {
   opener_tab_helper->DidOpenRequestedURL(
       popup_web_contents.get(), web_contents()->GetPrimaryMainFrame(),
       GURL("https://oauth.com/authenticate?client_id=123"), content::Referrer(),
-      WindowOpenDisposition::NEW_POPUP, ui::PAGE_TRANSITION_LINK, false, true);
+      WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK, false, true);
 
   // Navigate the popup.
   auto popup_simulator = content::NavigationSimulator::CreateBrowserInitiated(

@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, CannotLaunchAfterUninstall) {
 
   apps::AppLaunchParams params(
       app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
 
   UninstallWebApp(app_id);
 

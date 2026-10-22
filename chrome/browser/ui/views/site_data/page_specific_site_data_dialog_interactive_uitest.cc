@@ -419,7 +419,7 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
                           apps::AppLaunchParams(
                               app_id,
                               apps::LaunchContainer::kLaunchContainerTab,
-                              WindowOpenDisposition::CURRENT_TAB,
+                              WindowOpenDisposition::kCurrentTab,
                               apps::LaunchSource::kFromTest),
                           base::DoNothing());
                     },

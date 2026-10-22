@@ -349,7 +349,7 @@ void ApplyManifestMigrationCommand::AppUninstalledCompleteMigration(
                                apps::LaunchContainer::kLaunchContainerWindow,
                                // Note: This is overridden with the web app
                                // config, as per kOverrideWithWebAppConfig.
-                               WindowOpenDisposition::NEW_WINDOW,
+                               WindowOpenDisposition::kNewWindow,
                                apps::LaunchSource::kFromMigration);
   LaunchWebAppWindowSetting launch_setting =
       LaunchWebAppWindowSetting::kOverrideWithWebAppConfig;

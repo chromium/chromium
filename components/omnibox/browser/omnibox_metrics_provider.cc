@@ -282,7 +282,7 @@ void OmniboxMetricsProvider::RecordOmniboxEvent(const OmniboxLog& log) {
   omnibox_event->set_num_typed_terms(static_cast<int>(terms.size()));
   omnibox_event->set_selected_index(log.selection.line);
   omnibox_event->set_selected_tab_match(log.disposition ==
-                                        WindowOpenDisposition::SWITCH_TO_TAB);
+                                        WindowOpenDisposition::kSwitchToTab);
   if (log.completed_length != std::u16string::npos)
     omnibox_event->set_completed_length(log.completed_length);
   // Set the typing duration only if set/valid.

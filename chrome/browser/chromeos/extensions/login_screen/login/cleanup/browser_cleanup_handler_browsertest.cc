@@ -114,12 +114,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, Cleanup) {
   WaitForSessionStart();
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  OpenNewBrowserPage("/simple.html", WindowOpenDisposition::CURRENT_TAB);
-  OpenNewBrowserPage("/iframe.html", WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  OpenNewBrowserPage("/simple.html", WindowOpenDisposition::kCurrentTab);
+  OpenNewBrowserPage("/iframe.html", WindowOpenDisposition::kNewForegroundTab);
   OpenNewBrowserPage("/beforeunload.html",
-                     WindowOpenDisposition::NEW_BACKGROUND_TAB);
-  OpenNewBrowserPage("/unload.html", WindowOpenDisposition::NEW_WINDOW);
-  OpenNewBrowserPage("/title1.html", WindowOpenDisposition::NEW_WINDOW);
+                     WindowOpenDisposition::kNewBackgroundTab);
+  OpenNewBrowserPage("/unload.html", WindowOpenDisposition::kNewWindow);
+  OpenNewBrowserPage("/title1.html", WindowOpenDisposition::kNewWindow);
 
   ASSERT_EQ(3U, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(5, GetHistorySize());
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, CleanupWhenBrowsersClosed) {
   WaitForSessionStart();
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  OpenNewBrowserPage("/simple.html", WindowOpenDisposition::CURRENT_TAB);
+  OpenNewBrowserPage("/simple.html", WindowOpenDisposition::kCurrentTab);
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(GetActiveUserProfile(),
                                       /*skip_beforeunload=*/true);

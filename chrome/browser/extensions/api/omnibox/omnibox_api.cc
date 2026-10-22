@@ -165,9 +165,9 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
 
   auto args = base::MakeRefCounted<EventArgs>();
   args->data.Append(input);
-  if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+  if (disposition == WindowOpenDisposition::kNewForegroundTab) {
     args->data.Append(kForegroundTabDisposition);
-  } else if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  } else if (disposition == WindowOpenDisposition::kNewBackgroundTab) {
     args->data.Append(kBackgroundTabDisposition);
   } else {
     args->data.Append(kCurrentTabDisposition);

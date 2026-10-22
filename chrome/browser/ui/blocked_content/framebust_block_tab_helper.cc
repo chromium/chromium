@@ -46,7 +46,7 @@ void FramebustBlockTabHelper::OnBlockedUrlClicked(size_t index) {
   }
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
           content::Referrer(), initiator_navigation_states_[index]);
   params.initiator_origin = initiator_origins_[index];
   web_contents()->OpenURL(params, /*navigation_handle_callback=*/{});

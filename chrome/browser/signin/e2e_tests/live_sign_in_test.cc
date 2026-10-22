@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GaiaUrls::GetInstance()->add_account_url(),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED);
+          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
   content::WebContents* contents =
       signin_tab->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_EQ(current_tab_count, browser()->GetTabStripModel()->count());

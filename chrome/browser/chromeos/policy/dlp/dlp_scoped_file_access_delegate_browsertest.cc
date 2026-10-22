@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
 
   NavigateParams params(browser(), GURL("about:blank"),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
 
   TestJSAction("document.getElementById('idb_cached').click()",
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
 
   NavigateParams params(browser(), GURL("about:blank"),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
 
   TestJSAction("document.getElementById('idb_cached').click()",

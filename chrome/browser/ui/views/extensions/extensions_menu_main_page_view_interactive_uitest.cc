@@ -1307,7 +1307,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
       // Refresh the page manually.
       Do([&]() {
-        chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+        chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
       }),
       WaitForWebContentsNavigation(kTab),
 

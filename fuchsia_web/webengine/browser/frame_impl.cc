@@ -642,11 +642,11 @@ content::WebContents* FrameImpl::AddNewContents(
 
   // TODO(crbug.com/41476982): Add window disposition to the FIDL interface.
   switch (disposition) {
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-    case WindowOpenDisposition::NEW_POPUP:
-    case WindowOpenDisposition::NEW_WINDOW: {
+    case WindowOpenDisposition::kNewForegroundTab:
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kNewPictureInPicture:
+    case WindowOpenDisposition::kNewPopup:
+    case WindowOpenDisposition::kNewWindow: {
       if (url_request_rewrite_rules_manager_.GetCachedRules()) {
         // There is no support for URL request rules rewriting with popups.
         *was_blocked = true;
@@ -688,14 +688,14 @@ content::WebContents* FrameImpl::AddNewContents(
     }
 
     // These kinds of windows don't produce Frames.
-    case WindowOpenDisposition::CURRENT_TAB:
-    case WindowOpenDisposition::SINGLETON_TAB:
-    case WindowOpenDisposition::SAVE_TO_DISK:
-    case WindowOpenDisposition::OFF_THE_RECORD:
-    case WindowOpenDisposition::IGNORE_ACTION:
-    case WindowOpenDisposition::SWITCH_TO_TAB:
-    case WindowOpenDisposition::NEW_SPLIT_VIEW:
-    case WindowOpenDisposition::UNKNOWN:
+    case WindowOpenDisposition::kCurrentTab:
+    case WindowOpenDisposition::kSingletonTab:
+    case WindowOpenDisposition::kSaveToDisk:
+    case WindowOpenDisposition::kOffTheRecord:
+    case WindowOpenDisposition::kIgnoreAction:
+    case WindowOpenDisposition::kSwitchToTab:
+    case WindowOpenDisposition::kNewSplitView:
+    case WindowOpenDisposition::kUnknown:
       NOTIMPLEMENTED() << "Dropped new web contents (disposition: "
                        << static_cast<int>(disposition) << ")";
       return nullptr;

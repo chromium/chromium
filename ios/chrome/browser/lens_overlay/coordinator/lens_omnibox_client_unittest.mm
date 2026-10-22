@@ -59,7 +59,7 @@ class LensOmniboxClientTest : public PlatformTest {
                             const AutocompleteMatch& match) {
     lens_omnibox_client_->OnAutocompleteAccept(
         match.destination_url, match.post_content.get(),
-        WindowOpenDisposition::CURRENT_TAB, match.transition, match.type,
+        WindowOpenDisposition::kCurrentTab, match.transition, match.type,
         base::TimeTicks(), false, false, input_text, match, match);
   }
 

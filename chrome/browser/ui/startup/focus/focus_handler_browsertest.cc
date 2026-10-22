@@ -44,7 +44,7 @@ class FocusHandlerBrowserTest : public InProcessBrowserTest {
  protected:
   void NavigateToURLInNewTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest, IncognitoIsolation_NoMatch) {
   BrowserWindowInterface* incognito_browser =
       CreateIncognitoBrowser(browser()->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
-      incognito_browser, test_url, WindowOpenDisposition::CURRENT_TAB,
+      incognito_browser, test_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Verify the incognito tab exists
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
   BrowserWindowInterface* incognito_browser =
       CreateIncognitoBrowser(browser()->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
-      incognito_browser, test_url, WindowOpenDisposition::CURRENT_TAB,
+      incognito_browser, test_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Try to focus from incognito profile context
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
   BrowserWindowInterface* incognito_browser =
       CreateIncognitoBrowser(browser()->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
-      incognito_browser, test_url, WindowOpenDisposition::CURRENT_TAB,
+      incognito_browser, test_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Set up command line with focus and result file switches.

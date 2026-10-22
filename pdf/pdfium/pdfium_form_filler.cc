@@ -348,7 +348,7 @@ void PDFiumFormFiller::Form_DoURIAction(FPDF_FORMFILLINFO* param,
   }
 
   engine->client_->NavigateTo(std::string(uri),
-                              WindowOpenDisposition::CURRENT_TAB);
+                              WindowOpenDisposition::kCurrentTab);
 }
 
 // static

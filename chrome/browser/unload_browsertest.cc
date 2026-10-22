@@ -178,7 +178,7 @@ class UnloadTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL url(embedded_test_server()->GetURL("/title2.html"));
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::CURRENT_TAB, 0);
+        browser(), url, WindowOpenDisposition::kCurrentTab, 0);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     CheckTitle("Title Of Awesomeness");
   }

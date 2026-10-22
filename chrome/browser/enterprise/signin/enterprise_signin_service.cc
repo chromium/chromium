@@ -143,7 +143,7 @@ void EnterpriseSigninService::OpenOrActivateGaiaReauthTab() {
     chrome::BrowserCommandController::From(browser)
         ->ExecuteCommandWithDisposition(
             IDC_SHOW_SIGNIN_WHEN_PAUSED,
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+            WindowOpenDisposition::kNewForegroundTab);
   }
 }
 

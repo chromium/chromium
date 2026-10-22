@@ -730,7 +730,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestTabWillLoadUrlBackgroundOnly) {
   UrlLoadParams fg_params =
       UrlLoadParams::InCurrentTab(GURL("http://www.test.com"));
   fg_params.send_tab_to_self_entry_guid = guid;
-  fg_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  fg_params.disposition = WindowOpenDisposition::kNewForegroundTab;
   EXPECT_FALSE(fg_params.in_background());
 
   UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
@@ -743,7 +743,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestTabWillLoadUrlBackgroundOnly) {
   UrlLoadParams bg_params =
       UrlLoadParams::InCurrentTab(GURL("http://www.test.com"));
   bg_params.send_tab_to_self_entry_guid = guid;
-  bg_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  bg_params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   EXPECT_TRUE(bg_params.in_background());
 
   UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())

@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(InstallReplacementWebAppApiTest, CapturedNavigation) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
       apps::AppLaunchParams(
           appA_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
 
   url_observer.Wait();
 

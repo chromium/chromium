@@ -2031,7 +2031,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
   // Add a new tab navigated to the test page, and navigate the right subframe.
   GURL url = https_test_server()->GetURL("a.test", kTestPagePath);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
 

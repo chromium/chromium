@@ -1760,7 +1760,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserSigninInterceptionWithAccountPreviewTest,
   // ENABLE_SYNC header.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), https_server_.GetURL(kChromeSyncEndpointURL),
-      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+      WindowOpenDisposition::kCurrentTab, ui_test_utils::BROWSER_TEST_NO_WAIT);
   ASSERT_FALSE(DiceTabHelper::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents()));
 

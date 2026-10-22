@@ -57,7 +57,7 @@ void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          navigated_to, WindowOpenDisposition::CURRENT_TAB,
+          navigated_to, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.should_replace_current_entry = true;
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -67,7 +67,7 @@ void OpenHelpCenterFromSafetyTip(content::WebContents* web_contents) {
   web_contents->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(chrome::kSafetyTipHelpCenterURL),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

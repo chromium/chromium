@@ -455,7 +455,7 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
   NavigateParams params(
       profile(), extension_urls::GetWebstoreReportAbuseUrl(app_id, kReferrerId),
       ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

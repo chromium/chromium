@@ -281,8 +281,8 @@ content::WebContents* ContextualTasksPanelHostDesktopAndroid::OpenURLFromTab(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   if (browser_window_) {
-    if (params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-        params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+    if (params.disposition == WindowOpenDisposition::kNewForegroundTab ||
+        params.disposition == WindowOpenDisposition::kNewBackgroundTab) {
       TabListInterface* tab_list = TabListInterface::From(browser_window_);
       if (tab_list) {
         tabs::TabInterface* active_tab = tab_list->GetActiveTab();

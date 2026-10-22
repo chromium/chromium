@@ -1198,7 +1198,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
   // Open a second tab on the same origin in the background so that the origin
   // remains active after the first tab navigates away.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), test_url, WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
 
@@ -1220,7 +1220,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
   // Open a second tab on a different origin in the background.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("a.com", "/title1.html"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
@@ -1340,7 +1340,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFileSystemAccessBrowserTest,
   // Open a second tab with the same origin to ensure active grants are not
   // revoked by `MaybeCleanupPermissions()` when the primary tab navigates away.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), initial_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), initial_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   browser()->GetTabStripModel()->ActivateTabAt(0);
 
@@ -1474,7 +1474,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   // Create a second tab
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title2.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::WebContents* second_tab =
@@ -1517,7 +1517,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, ShowOpenFileThenHide) {
   // Create a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title2.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // The first tab should not be the active tab anymore.

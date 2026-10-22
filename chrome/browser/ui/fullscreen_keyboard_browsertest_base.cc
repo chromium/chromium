@@ -161,7 +161,7 @@ void FullscreenKeyboardBrowserTestBase::StartFullscreenLockPage() {
   ui_test_utils::NavigateToURLWithDisposition(
       GetActiveBrowser(),
       GetEmbeddedTestServer()->GetURL(kFullscreenKeyboardLockHTML),
-      WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_NO_FATAL_FAILURE(FocusOnLastActiveBrowser());
   GetActiveWebContents()->Focus();
@@ -316,7 +316,7 @@ void FullscreenKeyboardBrowserTestBase::SendShortcutsAndExpectNotPrevented(
             "</script></html>";
         ui_test_utils::NavigateToURLWithDisposition(
             this->GetActiveBrowser(), GURL("data:text/html," + page),
-            WindowOpenDisposition::CURRENT_TAB,
+            WindowOpenDisposition::kCurrentTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
         ASSERT_NO_FATAL_FAILURE(this->SendJsFullscreenShortcutAndWait());
       }

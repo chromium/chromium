@@ -513,7 +513,7 @@ void IOSTabGroupSyncDelegate::UpdateLocalWebState(
     local_update_observer_->IgnoreNavigationForWebState(web_state);
 
     web_state->OpenURL(web::WebState::OpenURLParams(
-        saved_tab.url(), web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+        saved_tab.url(), web::Referrer(), WindowOpenDisposition::kCurrentTab,
         ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
     return;
   }

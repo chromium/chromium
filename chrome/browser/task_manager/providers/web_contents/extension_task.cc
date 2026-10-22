@@ -90,7 +90,7 @@ void ExtensionTask::Activate() {
   // when it works on Android.
   GURL url = extensions::util::GetExtensionsPageUrl(extension->id());
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 #else
   chrome::ShowExtensions(browser, extension->id());

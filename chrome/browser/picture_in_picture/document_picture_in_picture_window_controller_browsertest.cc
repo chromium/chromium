@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerFrameViewTest,
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), test_page_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_NE(browser()->GetTabStripModel()->GetActiveWebContents(),
             opener_web_contents);
@@ -1144,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), test_page_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_NE(browser()->GetTabStripModel()->GetActiveWebContents(),
             opener_web_contents);

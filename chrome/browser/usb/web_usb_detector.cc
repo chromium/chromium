@@ -96,7 +96,7 @@ void OpenURL(const GURL& url) {
       ProfileManager::GetLastUsedProfileAllowedByPolicy());
   browser_displayer.browser_window_interface()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 }

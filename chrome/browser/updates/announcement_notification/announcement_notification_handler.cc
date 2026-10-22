@@ -69,7 +69,7 @@ void AnnouncementNotificationHandler::OpenAnnouncement(Profile* profile) {
   // Open the announcement URL in a new tab.
   GURL url = AnnouncementNotificationService::GetAnnouncementURL();
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&params);
 }

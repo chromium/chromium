@@ -149,7 +149,7 @@ TEST_F(BackgroundLoaderContentsTest, ShouldNotAddNewContents) {
       nullptr /* source */,
       std::unique_ptr<content::WebContents>() /* new_contents */,
       GURL() /* target_url */,
-      WindowOpenDisposition::CURRENT_TAB /* disposition */,
+      WindowOpenDisposition::kCurrentTab /* disposition */,
       blink::mojom::WindowFeatures() /* window_features */,
       false /* user_gesture */, &blocked /* was_blocked */);
   ASSERT_TRUE(blocked);

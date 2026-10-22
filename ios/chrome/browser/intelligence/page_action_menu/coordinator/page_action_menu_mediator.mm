@@ -540,7 +540,7 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
   // Open each blocked popup and allow future popups from this site.
   for (const auto& popup : popups) {
     web::WebState::OpenURLParams params(popup.popup_url, popup.referrer,
-                                        WindowOpenDisposition::NEW_POPUP,
+                                        WindowOpenDisposition::kNewPopup,
                                         ui::PAGE_TRANSITION_LINK, true);
     _webState->OpenURL(params);
 

@@ -111,7 +111,7 @@ class PriceTrackingHandlerBrowserTest : public InProcessBrowserTest {
 
   void NavigateToURL(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        browser(), url, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     base::PlatformThread::Sleep(base::Seconds(2));
     base::RunLoop().RunUntilIdle();

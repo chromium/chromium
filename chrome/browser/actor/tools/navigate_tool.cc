@@ -78,7 +78,7 @@ void NavigateTool::Invoke(ToolCallback callback) {
   // NavigateUsingLoadURL path lands safely.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url_, WindowOpenDisposition::CURRENT_TAB,
+          url_, WindowOpenDisposition::kCurrentTab,
           ::ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   // TODO(b/460113906): Alternate to the NavigateUsingLoadURL path to fix for

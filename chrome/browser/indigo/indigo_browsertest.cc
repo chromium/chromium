@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, HideToolbarOnReload) {
                   // conditions with ReloadButton's internal mode-switch timer.
                   Do(base::BindLambdaForTesting([&]() {
                     chrome::Reload(browser(),
-                                   WindowOpenDisposition::CURRENT_TAB);
+                                   WindowOpenDisposition::kCurrentTab);
                   })),
                   // Verify the toolbar is hidden.
                   WaitForHide(IndigoToolbar::kToolbarElementId));

@@ -309,7 +309,7 @@ std::unique_ptr<ui::DialogModel> OnboardingDialogController::CreateDialogModel(
 void OnboardingDialogController::OnLearnMoreLinkClicked() {
   tab_->GetBrowserWindowInterface()->OpenGURL(
       GURL("https://support.google.com/chrome?p=voice_typing"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      WindowOpenDisposition::kNewForegroundTab);
 }
 
 void OnboardingDialogController::OnDialogAccepted(

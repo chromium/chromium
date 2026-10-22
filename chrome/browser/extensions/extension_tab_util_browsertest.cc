@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
   content::TestNavigationObserver version_page_observer(
       GURL("chrome://version"));
   version_page_observer.WatchWebContents(web_contents);
-  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::CURRENT_TAB,
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::kCurrentTab,
                                   web_contents, GURL("chrome://version"),
                                   base::DoNothing());
   version_page_observer.Wait();
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
   content::TestNavigationObserver history_page_observer(
       GURL("chrome://history"));
   history_page_observer.StartWatchingNewWebContents();
-  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::kNewForegroundTab,
                                   web_contents, GURL("chrome://history"),
                                   base::DoNothing());
   history_page_observer.Wait();
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLWindow) {
   BrowserCreatedWaiter browser_created_waiter;
 
   base::RunLoop loop;
-  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::kNewWindow,
                                   web_contents, GURL("chrome://version"),
                                   loop.QuitClosure());
   loop.Run();
@@ -663,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   ASSERT_EQ(1, incognito_tab_strip->count());
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       incognito_browser, GURL("about:blank"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, incognito_tab_strip->count());
 

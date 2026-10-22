@@ -235,7 +235,7 @@ TEST_F(OmniboxEverywhereHandlerTest,
                         /*shift_key=*/false, /*is_voice_search=*/true);
 
   EXPECT_TRUE(captured_url.is_valid());
-  EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB, captured_disposition);
+  EXPECT_EQ(WindowOpenDisposition::kCurrentTab, captured_disposition);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(captured_transition,
                                            ui::PAGE_TRANSITION_GENERATED));
 
@@ -284,7 +284,7 @@ TEST_F(OmniboxEverywhereHandlerTest,
                         /*shift_key=*/false, /*is_voice_search=*/true);
 
   EXPECT_TRUE(captured_url.is_valid());
-  EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB, captured_disposition);
+  EXPECT_EQ(WindowOpenDisposition::kCurrentTab, captured_disposition);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(captured_transition,
                                            ui::PAGE_TRANSITION_GENERATED));
 
@@ -344,7 +344,7 @@ TEST_F(OmniboxEverywhereHandlerTest, ActivateKeywordDoesNotCrash) {
 TEST_F(OmniboxEverywhereHandlerTest, OpenUrlForwardsToService) {
   GURL test_url("https://www.google.com");
   EXPECT_CALL(*mock_service_,
-              OpenUrl(test_url, WindowOpenDisposition::CURRENT_TAB, testing::_,
+              OpenUrl(test_url, WindowOpenDisposition::kCurrentTab, testing::_,
                       testing::_))
       .WillOnce(
           [&](const GURL& url, WindowOpenDisposition disposition,
@@ -354,7 +354,7 @@ TEST_F(OmniboxEverywhereHandlerTest, OpenUrlForwardsToService) {
                 transition, ui::PAGE_TRANSITION_GENERATED));
           });
 
-  handler_->OpenUrl(test_url, WindowOpenDisposition::CURRENT_TAB,
+  handler_->OpenUrl(test_url, WindowOpenDisposition::kCurrentTab,
                     base::NullCallback());
 }
 
@@ -716,11 +716,11 @@ TEST_F(OmniboxEverywhereHandlerTest,
             captured_transition = transition;
           });
 
-  composebox_handler.OpenUrl(kTestUrl, WindowOpenDisposition::CURRENT_TAB,
+  composebox_handler.OpenUrl(kTestUrl, WindowOpenDisposition::kCurrentTab,
                              base::NullCallback());
 
   EXPECT_EQ(kTestUrl, captured_url);
-  EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB, captured_disposition);
+  EXPECT_EQ(WindowOpenDisposition::kCurrentTab, captured_disposition);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(captured_transition,
                                            ui::PAGE_TRANSITION_GENERATED));
 }
@@ -763,11 +763,11 @@ TEST_F(OmniboxEverywhereHandlerTest,
               OpenUrlWithInPlaceWindow(testing::_, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*factory_service,
-              OpenUrl(kUploadedImageUrl, WindowOpenDisposition::CURRENT_TAB,
+              OpenUrl(kUploadedImageUrl, WindowOpenDisposition::kCurrentTab,
                       testing::_, testing::_))
       .Times(1);
   composebox_handler.ProcessContextAndOpenUrl(
-      kUploadedImageUrl, WindowOpenDisposition::CURRENT_TAB);
+      kUploadedImageUrl, WindowOpenDisposition::kCurrentTab);
   testing::Mock::VerifyAndClearExpectations(factory_service);
 
   // Screenshots (added via AddFileContextToPage) should open with an in-place
@@ -796,7 +796,7 @@ TEST_F(OmniboxEverywhereHandlerTest,
           });
 
   composebox_handler.ProcessContextAndOpenUrl(
-      kScreenshotUrl, WindowOpenDisposition::CURRENT_TAB);
+      kScreenshotUrl, WindowOpenDisposition::kCurrentTab);
 
   EXPECT_EQ(kScreenshotUrl, captured_url);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(captured_transition,

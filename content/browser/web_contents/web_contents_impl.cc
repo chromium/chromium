@@ -5709,7 +5709,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   // that the OS currently prevents it (e.g., Android in app fullscreen).
   // `NEW_PICTURE_IN_PICTURE` is specific to Document PiP and does not affect
   // traditional video PiP or regular popups.
-  if (params.disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE &&
+  if (params.disposition == WindowOpenDisposition::kNewPictureInPicture &&
       delegate_ && delegate_->IsDocumentPictureInPictureBlockedBySystem()) {
     return nullptr;
   }
@@ -5757,12 +5757,12 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       return nullptr;
     }
     web_contents_impl->is_popup_ =
-        params.disposition == WindowOpenDisposition::NEW_POPUP;
+        params.disposition == WindowOpenDisposition::kNewPopup;
     return &web_contents_impl->GetPrimaryFrameTree();
   }
 
   bool renderer_started_hidden =
-      params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+      params.disposition == WindowOpenDisposition::kNewBackgroundTab;
 
   bool is_guest =
       base::FeatureList::IsEnabled(features::kGuestViewMPArch)
@@ -5859,7 +5859,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
 
   auto* new_contents_impl = new_contents.get();
   new_contents_impl->is_popup_ =
-      params.disposition == WindowOpenDisposition::NEW_POPUP;
+      params.disposition == WindowOpenDisposition::kNewPopup;
 
   // Sets the newly created WebContents WindowOpenDisposition.
   new_contents_impl->original_window_open_disposition_ = params.disposition;
@@ -6984,7 +6984,7 @@ WebContents* WebContentsImpl::OpenURL(
 
   // Prevent frames that are not active (e.g. a prerendering page) from opening
   // new windows, tabs, popups, etc.
-  if (params.disposition != WindowOpenDisposition::CURRENT_TAB &&
+  if (params.disposition != WindowOpenDisposition::kCurrentTab &&
       source_render_frame_host && !source_render_frame_host->IsActive()) {
     return nullptr;
   }
@@ -7011,7 +7011,7 @@ WebContents* WebContentsImpl::OpenURL(
       // tree.
       if (frame_tree.is_prerendering() ||
           frame_tree_node->IsInFencedFrameTree()) {
-        DCHECK_EQ(params.disposition, WindowOpenDisposition::CURRENT_TAB);
+        DCHECK_EQ(params.disposition, WindowOpenDisposition::kCurrentTab);
         frame_tree.controller().LoadURLWithParams(
             NavigationController::LoadURLParams(params));
         return this;
@@ -8896,7 +8896,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   constexpr bool kUserGesture = true;
   bool ignored_was_blocked;
   delegate_->AddNewContents(this, std::move(view_source_contents), url,
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            WindowOpenDisposition::kNewForegroundTab,
                             blink::mojom::WindowFeatures(), kUserGesture,
                             &ignored_was_blocked);
   // Note that the |delegate_| could have deleted |view_source_contents| during
@@ -11290,7 +11290,7 @@ void WebContentsImpl::DidReceiveInputEvent(
       static_cast<const blink::WebMouseEvent&>(event).button ==
           blink::WebPointerProperties::Button::kBack) {
     BackNavigationLikely(content_preloading_predictor::kMouseBackButton,
-                         WindowOpenDisposition::CURRENT_TAB);
+                         WindowOpenDisposition::kCurrentTab);
   }
 
   HandleUserInteractionForInputEvent(render_widget_host, event);
@@ -13305,7 +13305,7 @@ void WebContentsImpl::BackNavigationLikely(PreloadingPredictor predictor,
   }
   last_back_navigation_hint_time_ = now;
 
-  if (disposition != WindowOpenDisposition::CURRENT_TAB) {
+  if (disposition != WindowOpenDisposition::kCurrentTab) {
     RecordPrerenderBackNavigationEligibility(
         predictor, PrerenderBackNavigationEligibility::kTargetingOtherWindow,
         nullptr);

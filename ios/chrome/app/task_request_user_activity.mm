@@ -424,7 +424,7 @@ void OpenLatestTab(SceneState* sceneState,
 
   UrlLoadParams params;
   // Use SWITCH_TO_TAB as a signal to avoid opening a new NTP if tabs exist.
-  params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+  params.disposition = WindowOpenDisposition::kSwitchToTab;
 
   id<TabOpening> tabOpener = sceneState.controller;
   [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:targetMode

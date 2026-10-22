@@ -341,7 +341,7 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
       if (target_id.is_valid()) {
         service->RestoreEntryById(BrowserLiveTabContext::From(target_browser),
                                   target_id,
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                                  WindowOpenDisposition::kNewForegroundTab);
       } else {
         chrome::RestoreTab(target_browser);
       }
@@ -359,7 +359,7 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
     for (int i = 0; i < how_many; ++i) {
       ui_test_utils::NavigateToURLWithDisposition(
           browser, GetUrl(starting_url_index + i),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
     int tab_count = browser->GetTabStripModel()->count();
@@ -411,7 +411,7 @@ class SessionRestoreWithEncryptionTest
 IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest, BasicRestore) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(1)));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetUrl(2), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GetUrl(2), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   AssertCommandStorageBackendFilesExist(SessionType::kSessionRestore);
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest,
                        NavigationHistoryIsRestored) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(1)));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetUrl(2), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GetUrl(2), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
@@ -469,10 +469,10 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest,
 IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest, TabGroupsAreRestored) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(1)));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetUrl(2), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GetUrl(2), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetUrl(3), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GetUrl(3), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
 
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest,
                        PinnedTabsAreRestored) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(1)));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetUrl(2), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GetUrl(2), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest,
 IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest, ActiveTabIsRestored) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(1)));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetUrl(2), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GetUrl(2), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(TabRestoreWithEncryptionTest,
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
-      WindowOpenDisposition::NEW_WINDOW,
+      WindowOpenDisposition::kNewWindow,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -960,11 +960,11 @@ class TabRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
     CloseAboutBlankTabs(browser());
     GURL url1 = GetUrl(1);
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url1, WindowOpenDisposition::CURRENT_TAB,
+        browser(), url1, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     GURL url2 = GetUrl(2);
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url2, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     EXPECT_EQ(2, browser()->tab_strip_model()->count());

@@ -73,13 +73,13 @@ class FooterControllerExtensionTestBase
 
   void NavigateCurrentTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        browser(), url, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
   void OpenNewTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, OpenUrlFromTabInSplit) {
   const GURL kTargetUrl("https://www.google.com/");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          kTargetUrl, WindowOpenDisposition::CURRENT_TAB,
+          kTargetUrl, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
   content::TestNavigationObserver nav_observer(ntp_tab_contents);
   ntp_footer->OpenURLFromTab(ntp_footer->GetWebContents(), params, {});

@@ -40,8 +40,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebContentsMenuHelperBrowserTest,
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://foo/1"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("http://foo/1"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::ContextMenuParams enriched_params =
@@ -61,8 +60,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebContentsMenuHelperBrowserTest,
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://foo/1"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("http://foo/1"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::ContextMenuParams enriched_params =

@@ -207,7 +207,7 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
                          content::WebContents* popup_contents) {
     observer->DidOpenRequestedURL(
         popup_contents, /*source_render_frame_host=*/nullptr, GURL(),
-        content::Referrer(), WindowOpenDisposition::NEW_POPUP,
+        content::Referrer(), WindowOpenDisposition::kNewPopup,
         ui::PAGE_TRANSITION_LINK,
         /*started_from_context_menu=*/false, /*renderer_initiated=*/false);
   }

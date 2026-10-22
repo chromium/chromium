@@ -34,7 +34,7 @@ void NavigateShareTargetPost(
     content::WebContents* web_contents) {
   content::OpenURLParams open_url_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          share_target_gurl, WindowOpenDisposition::CURRENT_TAB,
+          share_target_gurl, WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
   // The share target action URL has already been verified to be within the web
   // app's scope, so the app itself is the initiator of this navigation.

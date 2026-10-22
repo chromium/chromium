@@ -150,7 +150,7 @@ void FakeIdentityRequestDialogController::ShowUrl(LinkType link_type,
   }
 
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      url, WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   web_contents_->GetDelegate()->OpenURLFromTab(
       web_contents_, params, /*navigation_handle_callback=*/{});
@@ -169,7 +169,7 @@ WebContents* FakeIdentityRequestDialogController::ShowModalDialog(
   popup_dismiss_callback_ = std::move(dismiss_callback);
   // This follows the code in FedCmModalDialogView::ShowPopupWindow.
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      url, WindowOpenDisposition::NEW_POPUP, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+      url, WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   popup_window_ = web_contents_->GetDelegate()->OpenURLFromTab(
       web_contents_, params, /*navigation_handle_callback=*/{});
   Observe(popup_window_);

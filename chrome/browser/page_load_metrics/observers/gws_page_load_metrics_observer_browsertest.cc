@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverBrowserTest,
 
   content::WebContents* new_tab = GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewForegroundTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       /*navigation_handle_callback=*/{});
@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_P(
   // process regardless of BackForwardCache.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   browser()->GetTabStripModel()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);

@@ -84,12 +84,12 @@ IN_PROC_BROWSER_TEST_F(NewTabUIProcessPerTabTest, NavBeforeNTPCommits) {
   // Navigate to chrome://hang/ to stall the process.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(blink::kChromeUIHangURL),
-      WindowOpenDisposition::CURRENT_TAB, 0);
+      WindowOpenDisposition::kCurrentTab, 0);
 
   // Visit a normal URL in another NTP that hasn't committed.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), chrome::ChromeUINewTabURLAsGURL(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, 0);
+      WindowOpenDisposition::kNewForegroundTab, 0);
 
   // We don't use ui_test_utils::NavigateToURLWithDisposition because that waits
   // for current loading to stop.
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(NewTabUIProcessPerTabTest, NavBeforeNTPCommits) {
       browser()->GetTabStripModel()->GetActiveWebContents());
   browser()->OpenURL(
       OpenURLParams::CreateBrowserInitiated(GURL("data:text/html,hello world"),
-                                            WindowOpenDisposition::CURRENT_TAB,
+                                            WindowOpenDisposition::kCurrentTab,
                                             ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   observer.Wait();

@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
 
   // Open a new unrelated tab in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), other_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), other_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::test::TestFuture<content::WebContents*> future_popup_contents =
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
 
   // Open a new unrelated tab in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), other_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), other_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Enter fullscreen mode.
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
 
   // Open a new unrelated tab in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), other_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), other_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::test::TestFuture<content::WebContents*> future_popup_contents =
@@ -625,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputDisabledForModalDialog) {
 
   // If we make a new tab input should be enabled.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(browser()
                    ->GetActiveTabInterface()

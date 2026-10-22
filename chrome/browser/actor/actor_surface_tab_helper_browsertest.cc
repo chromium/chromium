@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(ActorSurfaceTabHelperBrowserTest,
 
   // Opening a second tab eagerly creates its surface.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   tabs::TabInterface* second_tab =
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(ActorSurfaceTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorSurfaceTabHelperBrowserTest,
                        TabDiscardPreservesSurfaceAndUpdatesWebContents) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   TabStripModel* tab_strip = browser()->GetTabStripModel();
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(ActorSurfaceTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorSurfaceTabHelperBrowserTest,
                        TabMoveBetweenWindowsPreservesSurface) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetTabAtIndex(1);

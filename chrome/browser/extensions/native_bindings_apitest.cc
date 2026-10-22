@@ -1424,7 +1424,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest,
   // messaging via `ui_test_utils::NavigateToURLWithDisposition()`.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), extension->GetResourceURL("page.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Verify that the one-time message sender received the reply from

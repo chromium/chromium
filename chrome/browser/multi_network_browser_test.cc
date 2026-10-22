@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
 
   content::OpenURLParams open_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::NEW_POPUP, ui::PAGE_TRANSITION_LINK);
+          url, WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK);
   content::WebContents* popup_contents =
       web_contents->OpenURL(open_params, /*navigation_handle_callback=*/{});
   ASSERT_TRUE(popup_contents);
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
 
   content::OpenURLParams open_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::NEW_POPUP, ui::PAGE_TRANSITION_LINK);
+          url, WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK);
   open_params.has_rel_opener = false;
   content::WebContents* popup_contents =
       web_contents->OpenURL(open_params, /*navigation_handle_callback=*/{});

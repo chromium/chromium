@@ -1456,7 +1456,7 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           net::FilePathToFileURL(download->GetTargetFilePath()),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK);
 
   if (download->GetMimeType() == "application/x-x509-user-cert") {
     chrome::ShowSettingsSubPage(browser, "certificates");

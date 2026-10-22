@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, ReloadPage) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver navigation(web_contents);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   navigation.Wait();
 
   // The FedCM request should be dismissed on navigation/reload.

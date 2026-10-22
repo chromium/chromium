@@ -382,7 +382,7 @@ CreateNavigationAction(GURL target) {
          user_education::FeaturePromoHandle promo_handle) {
         auto* browser = GetBrowser(ctx);
         NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
-        params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        params.disposition = WindowOpenDisposition::kNewForegroundTab;
         Navigate(&params);
       },
       std::move(target));
@@ -767,7 +767,7 @@ void MaybeRegisterChromeFeaturePromos(
                                           chrome::ChromeUINewTabPageURLAsGURL(),
                                           ui::PAGE_TRANSITION_LINK);
                     params.disposition =
-                        WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                        WindowOpenDisposition::kNewForegroundTab;
                     Navigate(&params);
                   }
                 }

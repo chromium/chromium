@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialBackButton) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL("chrome://interstitials/ssl")));
   content::TestNavigationObserver navigation_observer(web_contents);
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
   navigation_observer.Wait();
   std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
@@ -347,5 +347,5 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, UseCorrectWebContents) {
   EXPECT_EQ(current_tab, browser()->GetTabStripModel()->active_index());
 
   // Reloading the page shouldn't cause a crash.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
 }

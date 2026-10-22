@@ -47,7 +47,7 @@ class CommandUpdater {
       std::optional<actions::ActionInvocationContext> context = std::nullopt,
       base::TimeTicks time_stamp = base::TimeTicks::Now()) {
     return ExecuteCommandWithDispositionAndContext(
-        id, WindowOpenDisposition::CURRENT_TAB, std::move(context), time_stamp);
+        id, WindowOpenDisposition::kCurrentTab, std::move(context), time_stamp);
   }
 
   // Performs the action associated with this command ID using the given

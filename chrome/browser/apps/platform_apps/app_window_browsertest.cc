@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
   apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
 
   ExtensionTestMessageListener geometry_listener("ListenGeometryChange",
                                                  ReplyBehavior::kWillReply);

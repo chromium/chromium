@@ -73,7 +73,7 @@ bool DevToolsRemoteServerInfobarDelegate::Accept() {
   }
   GURL internal_url("chrome://inspect#remote-debugging");
   NavigateParams params(browser, internal_url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   return ConfirmInfoBarDelegate::Accept();
 }

@@ -91,7 +91,7 @@ TEST_F(ComposeboxCobrowseOmniboxClientTest, OnAutocompleteAccept) {
   match.type = omnibox::AutocompleteMatchType::kSearchWhatYouTyped;
 
   client_->OnAutocompleteAccept(
-      GURL("http://example.com"), nullptr, WindowOpenDisposition::CURRENT_TAB,
+      GURL("http://example.com"), nullptr, WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
       base::TimeTicks::Now(), false, false, text, match, match);
@@ -111,7 +111,7 @@ TEST_F(ComposeboxCobrowseOmniboxClientTest,
   match.type = omnibox::AutocompleteMatchType::kSearchWhatYouTyped;
 
   client_->OnAutocompleteAccept(
-      GURL("http://example.com"), nullptr, WindowOpenDisposition::CURRENT_TAB,
+      GURL("http://example.com"), nullptr, WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
       base::TimeTicks::Now(), false, false, text, match, match);

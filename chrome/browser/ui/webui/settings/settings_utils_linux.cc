@@ -71,7 +71,7 @@ void ShowLinuxProxyConfigUrl(base::WeakPtr<content::WebContents> web_contents,
     LOG(ERROR) << "Could not find " << name << " network settings in $PATH";
   }
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      GURL(kLinuxProxyConfigUrl), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      GURL(kLinuxProxyConfigUrl), WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK);
 
   if (web_contents) {

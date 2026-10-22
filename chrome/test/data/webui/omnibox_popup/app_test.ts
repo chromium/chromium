@@ -463,10 +463,10 @@ suite('AppTestSelectionControl', () => {
         SelectionDirection.kForward, SelectionStep.kWholeLine);
     testProxy.page.stepSelection(
         SelectionDirection.kBackward, SelectionStep.kStateOrLine);
-    testProxy.page.openCurrentSelection(WindowOpenDisposition.CURRENT_TAB);
+    testProxy.page.openCurrentSelection(WindowOpenDisposition.kCurrentTab);
     const [_sequenceId, selection, disposition] =
         await testProxy.handler.whenCalled('openPopupSelection');
-    assertEquals(WindowOpenDisposition.CURRENT_TAB, disposition);
+    assertEquals(WindowOpenDisposition.kCurrentTab, disposition);
     assertDeepEquals(
         {
           line: 1,
@@ -483,10 +483,10 @@ suite('AppTestSelectionControl', () => {
         SelectionDirection.kBackward, SelectionStep.kWholeLine);
     testProxy.page.stepSelection(
         SelectionDirection.kBackward, SelectionStep.kWholeLine);
-    testProxy.page.openCurrentSelection(WindowOpenDisposition.CURRENT_TAB);
+    testProxy.page.openCurrentSelection(WindowOpenDisposition.kCurrentTab);
     const [_sequenceId, selection, disposition] =
         await testProxy.handler.whenCalled('openPopupSelection');
-    assertEquals(WindowOpenDisposition.CURRENT_TAB, disposition);
+    assertEquals(WindowOpenDisposition.kCurrentTab, disposition);
     assertDeepEquals(
         {
           line: 0,

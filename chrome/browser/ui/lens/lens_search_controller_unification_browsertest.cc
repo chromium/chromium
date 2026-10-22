@@ -466,8 +466,8 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationBrowserTest,
   constexpr int kSpam = 3;
   for (int i = 0; i < kSpam; ++i) {
     WindowOpenDisposition d = (i < kSpam - 1)
-                                  ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-                                  : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                                  ? WindowOpenDisposition::kNewBackgroundTab
+                                  : WindowOpenDisposition::kNewForegroundTab;
     content::PwnOpenURLWithDisposition(panel_rfh, popup_target, d,
                                        /*user_gesture=*/true);
   }
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationBrowserTest,
   const int tabs_before = browser()->GetTabStripModel()->count();
   GURL target_url = embedded_test_server()->GetURL("/title2.html");
   content::PwnOpenURLWithDisposition(panel_rfh, target_url,
-                                     WindowOpenDisposition::CURRENT_TAB,
+                                     WindowOpenDisposition::kCurrentTab,
                                      /*user_gesture=*/true);
 
   EXPECT_EQ(tabs_before, browser()->GetTabStripModel()->count());

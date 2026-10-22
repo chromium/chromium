@@ -132,7 +132,7 @@ void AdsBlockedMessageDelegate::HandleDialogLearnMoreClicked() {
   web_contents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(subresource_filter::kLearnMoreLink),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

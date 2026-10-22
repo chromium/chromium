@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
       0, 1, "Google", kProductName_1, "002", landing_page_1);
   Initialize();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), landing_page_1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), landing_page_1, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   AddDeviceWithNotificationExpectation(device_1, false);
 }
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
   Initialize();
   AddDeviceWithNotificationExpectation(device_1, true);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), landing_page_1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), landing_page_1, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   RemoveDeviceAndWaitNoNotification(device_1);
   histogram_tester.ExpectUniqueSample("WebUsb.NotificationClosed", 3, 1);
@@ -431,10 +431,10 @@ IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
   base::HistogramTester histogram_tester;
   Initialize();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), landing_page_1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), landing_page_1, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), landing_page_2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), landing_page_2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   AddDeviceWithNotificationExpectation(device_1, true);
   std::optional<message_center::Notification> notification_1 =
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
   AddDeviceWithNotificationExpectation(device_1, true);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), landing_page_1_fuzzed,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   RemoveDeviceAndWaitNoNotification(device_1);
   histogram_tester.ExpectUniqueSample("WebUsb.NotificationClosed", 3, 1);
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
   Initialize();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), landing_page_1_fuzzed,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   AddDeviceWithNotificationExpectation(device_1, false);
 }
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(
   RemoveDeviceAndWaitNoNotification(device_1);
   histogram_tester.ExpectUniqueSample("WebUsb.NotificationClosed", 2, 1);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), landing_page_2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), landing_page_2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   AddDeviceWithNotificationExpectation(device_2, true);
 }
@@ -578,10 +578,10 @@ IN_PROC_BROWSER_TEST_F(
   Initialize();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), landing_page_1_fuzzed,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), landing_page_2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), landing_page_2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   AddDeviceWithNotificationExpectation(device_1, true);
   std::optional<message_center::Notification> notification_1 =
@@ -610,12 +610,12 @@ IN_PROC_BROWSER_TEST_F(
   Initialize();
   AddDeviceWithNotificationExpectation(device_1, true);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), landing_page_1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), landing_page_1, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   RemoveDeviceAndWaitNoNotification(device_1);
   histogram_tester.ExpectUniqueSample("WebUsb.NotificationClosed", 3, 1);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), landing_page_2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), landing_page_2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   AddDeviceWithNotificationExpectation(device_2, true);
 }

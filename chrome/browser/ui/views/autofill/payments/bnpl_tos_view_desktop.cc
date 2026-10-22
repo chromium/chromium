@@ -49,7 +49,7 @@ BnplTosViewDesktop::~BnplTosViewDesktop() = default;
 
 void BnplTosViewDesktop::OpenLink(const GURL& url) {
   web_contents_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                             url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             url, WindowOpenDisposition::kNewForegroundTab,
                              ui::PAGE_TRANSITION_LINK),
                          /*navigation_handle_callback=*/{});
 }

@@ -258,7 +258,7 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
         content::OpenURLParams params =
             content::OpenURLParams::FromNavigationHandle(navigation_handle);
         params.frame_tree_node_id = content::FrameTreeNodeId();
-        params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        params.disposition = WindowOpenDisposition::kNewForegroundTab;
         lens_search_controller_->GetTabInterface()
             ->GetBrowserWindowInterface()
             ->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -281,7 +281,7 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
     content::OpenURLParams params =
         content::OpenURLParams::FromNavigationHandle(navigation_handle);
     params.frame_tree_node_id = content::FrameTreeNodeId();
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
 
     text_finder_manager->CreateTextFinders(
         text_fragments,
@@ -565,7 +565,7 @@ void LensOverlaySidePanelCoordinator::OnScrollToMessage(
   lens_search_controller_->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->OpenGURL(latest_page_url_with_viewport_params,
-                 WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                 WindowOpenDisposition::kNewForegroundTab);
 }
 
 void LensOverlaySidePanelCoordinator::ExecuteCommand(int command_id,
@@ -937,7 +937,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
     content::OpenURLParams params =
         content::OpenURLParams::FromNavigationHandle(navigation_handle);
     params.frame_tree_node_id = content::FrameTreeNodeId();
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     lens_search_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -955,7 +955,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
         content::OpenURLParams::FromNavigationHandle(navigation_handle);
     params.url = lens::MaybeStripParamsForShopping(params.url);
     params.frame_tree_node_id = content::FrameTreeNodeId();
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     lens_search_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->OpenURL(params, /*navigation_handle_callback=*/{});

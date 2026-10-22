@@ -76,12 +76,12 @@ TEST_F(ContentInfoBarManagerTest, OpenURLWithTextFragment) {
   std::string text_fragment = "text=hello";
 
   // Trigger OpenURL with a text fragment.
-  manager()->OpenURL(url, WindowOpenDisposition::CURRENT_TAB, text_fragment);
+  manager()->OpenURL(url, WindowOpenDisposition::kCurrentTab, text_fragment);
 
   ASSERT_TRUE(delegate().last_params().has_value());
   EXPECT_EQ(url, delegate().last_params()->url);
   // A CURRENT_TAB disposition gets converted to NEW_FOREGROUND_TAB in OpenURL.
-  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
             delegate().last_params()->disposition);
   EXPECT_TRUE(
       delegate().last_params()->internal_scroll_to_text_fragment.has_value());
@@ -91,11 +91,11 @@ TEST_F(ContentInfoBarManagerTest, OpenURLWithTextFragment) {
   delegate().reset();
 
   // Trigger OpenURL with an empty text fragment.
-  manager()->OpenURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB, "");
+  manager()->OpenURL(url, WindowOpenDisposition::kNewForegroundTab, "");
 
   ASSERT_TRUE(delegate().last_params().has_value());
   EXPECT_EQ(url, delegate().last_params()->url);
-  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
             delegate().last_params()->disposition);
   EXPECT_FALSE(
       delegate().last_params()->internal_scroll_to_text_fragment.has_value());

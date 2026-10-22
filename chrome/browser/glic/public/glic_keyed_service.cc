@@ -463,8 +463,8 @@ tabs::TabInterface* GlicKeyedService::CreateTab(
   }
 
   params->disposition = open_in_background
-                            ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                            ? WindowOpenDisposition::kNewBackgroundTab
+                            : WindowOpenDisposition::kNewForegroundTab;
   // Set navigation as renderer initiated to open links in their app/PWA (if
   // installed).
   params->is_renderer_initiated = true;

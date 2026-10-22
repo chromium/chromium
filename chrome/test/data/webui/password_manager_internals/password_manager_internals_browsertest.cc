@@ -17,7 +17,7 @@ class PasswordManagerInternalsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     WebUIMochaBrowserTest::SetUpOnMainThread();
-    OpenInternalsPage(WindowOpenDisposition::CURRENT_TAB);
+    OpenInternalsPage(WindowOpenDisposition::kCurrentTab);
   }
 
   // Navigates to the internals page in a tab specified by |disposition| (and
@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsBrowserTest,
           browser()->GetProfile());
   ASSERT_TRUE(log_router);
   log_router->ProcessLog("<script> text for testing");
-  OpenInternalsPage(WindowOpenDisposition::CURRENT_TAB);  // Reload.
+  OpenInternalsPage(WindowOpenDisposition::kCurrentTab);  // Reload.
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(RunTestOnWebContents(

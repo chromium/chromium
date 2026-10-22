@@ -75,7 +75,7 @@ void OpenGlicSettingsPage(Profile* profile) {
       profile,
       chrome::GetSettingsUrl(service->provider_spec().GetSettingsSubpage()),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::SINGLETON_TAB;
+  params->disposition = WindowOpenDisposition::kSingletonTab;
   glic::Navigate(std::move(params));
 }
 
@@ -111,7 +111,7 @@ void OpenPasswordManagerSettingsPage(Profile* profile) {
           : GURL(GetGooglePasswordManagerSubPageURLStr());
   auto params = std::make_unique<NavigateParams>(
       profile, settings_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::SINGLETON_TAB;
+  params->disposition = WindowOpenDisposition::kSingletonTab;
   glic::Navigate(std::move(params));
 }
 
@@ -119,7 +119,7 @@ void OpenContactInfoSettingsPage(Profile* profile) {
   auto params = std::make_unique<NavigateParams>(
       profile, chrome::GetSettingsUrl(chrome::kContactInfoSubPage),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::SINGLETON_TAB;
+  params->disposition = WindowOpenDisposition::kSingletonTab;
   glic::Navigate(std::move(params));
 }
 

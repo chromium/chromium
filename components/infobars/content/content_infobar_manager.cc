@@ -99,8 +99,8 @@ void ContentInfoBarManager::OpenURL(const GURL& url,
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           url,
-          (disposition == WindowOpenDisposition::CURRENT_TAB)
-              ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+          (disposition == WindowOpenDisposition::kCurrentTab)
+              ? WindowOpenDisposition::kNewForegroundTab
               : disposition,
           ui::PAGE_TRANSITION_LINK);
   if (!text_fragment.empty()) {

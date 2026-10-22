@@ -60,7 +60,7 @@ class LocationBar {
   // Holds the details necessary to open the omnibox match via browser commands.
   struct NavigationParams {
     GURL destination_url;
-    WindowOpenDisposition disposition{WindowOpenDisposition::CURRENT_TAB};
+    WindowOpenDisposition disposition{WindowOpenDisposition::kCurrentTab};
     ui::PageTransition transition{ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR};
     base::TimeTicks match_selection_timestamp;

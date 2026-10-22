@@ -61,7 +61,7 @@ class BrowserControlsAdapterImplTest : public ChromeRenderViewHostTestHarness {
 // how the adapter handles every drop on the toolbar.
 MATCHER_P(OpensInCurrentTab, url, "") {
   return arg.url == url &&
-         arg.disposition == WindowOpenDisposition::CURRENT_TAB;
+         arg.disposition == WindowOpenDisposition::kCurrentTab;
 }
 
 // Matches `content::OpenURLParams` whose initiator is an opaque origin, as set

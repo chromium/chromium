@@ -152,8 +152,7 @@ class SyncActiveWithoutPasswordsChecker
 #if !BUILDFLAG(IS_CHROMEOS)
 content::WebContents* GetNewTab(BrowserWindowInterface* browser) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, GURL("data:text/html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser, GURL("data:text/html"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   return browser->GetTabStripModel()->GetActiveWebContents();
 }

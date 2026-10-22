@@ -27,7 +27,7 @@ class MultiTabLoadingPageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   void NavigateToURLWithoutWaiting(GURL url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        browser(), url, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
   }
 
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest,
 
   // Open a new foreground tab.
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser(), GetTestURL(), 1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GetTestURL(), 1, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Navigate away to force the histogram recording.
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest,
 
   // Open a tab in the background.
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser(), GetTestURL(), 1, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), GetTestURL(), 1, WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Close the foreground tab.

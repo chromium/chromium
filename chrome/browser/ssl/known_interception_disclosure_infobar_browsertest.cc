@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_P(KnownInterceptionDisclosurePlatformBrowserTest,
   // Test that the infobar is shown on new tabs after it has been triggered
   // once.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* tab2 = tab_strip_model->GetActiveWebContents();
   EXPECT_EQ(1u, GetDisclosureCount(tab2));

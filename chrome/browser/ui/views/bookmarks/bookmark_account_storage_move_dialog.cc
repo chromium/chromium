@@ -213,7 +213,7 @@ void OpenDialogInOriginalProfileBookmarksManager(
   browser->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(chrome::kChromeUIBookmarksURL),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 
   ShowDialogOnRegularProfile(browser, node, target_folder, index, dialog_type,

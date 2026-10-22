@@ -345,7 +345,7 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   CHECK(context);
 
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
-      event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      event_flags, WindowOpenDisposition::kNewForegroundTab);
 
   if (IsCommandType(CommandType::Tab, command_id)) {
     const TabItems& tab_items = *GetTabVectorForCommandId(command_id);

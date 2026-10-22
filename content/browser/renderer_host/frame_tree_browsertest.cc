@@ -2180,7 +2180,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureFrameTreeBrowserTest,
 
   // Create invalid params: NEW_POPUP with pip_options.
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
-  params->disposition = WindowOpenDisposition::NEW_POPUP;
+  params->disposition = WindowOpenDisposition::kNewPopup;
   params->pip_options = blink::mojom::PictureInPictureWindowOptions::New();
 
   RenderProcessHostWatcher crash_observer(

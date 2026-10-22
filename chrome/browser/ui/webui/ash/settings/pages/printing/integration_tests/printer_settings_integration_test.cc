@@ -251,7 +251,7 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
         Do([]() {
           ASSERT_FALSE(GlobalBrowserCollection::GetInstance()->IsEmpty());
           chrome::Reload(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
-                         WindowOpenDisposition::CURRENT_TAB);
+                         WindowOpenDisposition::kCurrentTab);
         }),
         WaitForHide(kSettingsWebContentsId),
         WaitForShow(kSettingsWebContentsId),

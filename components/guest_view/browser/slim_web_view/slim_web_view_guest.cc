@@ -193,19 +193,19 @@ ParseOriginCheckParams(const base::DictValue& create_params) {
 std::string WindowOpenDispositionToString(
     WindowOpenDisposition window_open_disposition) {
   switch (window_open_disposition) {
-    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::kIgnoreAction:
       return "ignore";
-    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::kSaveToDisk:
       return "save_to_disk";
-    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::kCurrentTab:
       return "current_tab";
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::kNewBackgroundTab:
       return "new_background_tab";
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::kNewForegroundTab:
       return "new_foreground_tab";
-    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::kNewWindow:
       return "new_window";
-    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::kNewPopup:
       return "new_popup";
     default:
       NOTREACHED() << "Unknown Window Open Disposition";

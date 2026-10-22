@@ -119,7 +119,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
         NavigateParams params(
             profile.get(), GURL(chrome::kChromeUIManagementURL),
             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
-        params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        params.disposition = WindowOpenDisposition::kNewForegroundTab;
         params.window_action = NavigateParams::WindowAction::kShowWindow;
         Navigate(&params);
       },

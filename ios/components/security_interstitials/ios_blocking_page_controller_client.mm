@@ -84,14 +84,14 @@ void IOSBlockingPageControllerClient::Reload() {
 
 void IOSBlockingPageControllerClient::OpenUrlInCurrentTab(const GURL& url) {
   web_state_->OpenURL(web::WebState::OpenURLParams(
-      url, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      url, web::Referrer(), WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_LINK, false));
 }
 
 void IOSBlockingPageControllerClient::OpenUrlInNewForegroundTab(
     const GURL& url) {
   web_state_->OpenURL(web::WebState::OpenURLParams(
-      url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      url, web::Referrer(), WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK, false));
 }
 

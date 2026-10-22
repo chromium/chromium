@@ -199,7 +199,7 @@ TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTabLeftClick) {
 
   EXPECT_CALL(restore_tab_callback_,
               Run(web_contents(), TabHasUrl(GURL("https://www.google.com")),
-                  WindowOpenDisposition::CURRENT_TAB));
+                  WindowOpenDisposition::kCurrentTab));
 
   ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
   handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
@@ -213,7 +213,7 @@ TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTabMiddleClick) {
 
   EXPECT_CALL(restore_tab_callback_,
               Run(web_contents(), TabHasUrl(GURL("https://www.google.com")),
-                  WindowOpenDisposition::NEW_BACKGROUND_TAB));
+                  WindowOpenDisposition::kNewBackgroundTab));
 
   ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
   modifiers->middle_button = true;
@@ -364,7 +364,7 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
   EXPECT_CALL(restore_tab_callback_,
               Run(tab_strip_model_->GetActiveWebContents(),
                   TabHasUrl(GURL("https://www.google.com")),
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB));
+                  WindowOpenDisposition::kNewForegroundTab));
 
   handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
                                   std::move(modifiers));
@@ -388,7 +388,7 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
   EXPECT_CALL(restore_tab_callback_,
               Run(tab_strip_model_->GetActiveWebContents(),
                   TabHasUrl(GURL("https://www.google.com")),
-                  WindowOpenDisposition::NEW_BACKGROUND_TAB));
+                  WindowOpenDisposition::kNewBackgroundTab));
 
   handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
                                   std::move(modifiers));

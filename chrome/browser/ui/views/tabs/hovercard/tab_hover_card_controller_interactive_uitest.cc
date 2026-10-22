@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 
   // Open a second browser window.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewWindow,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 

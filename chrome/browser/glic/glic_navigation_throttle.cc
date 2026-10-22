@@ -268,7 +268,7 @@ GlicNavigationThrottle::WillStartRequest() {
                 Profile::FromBrowserContext(web_contents->GetBrowserContext());
             NavigateParams params(profile, target_url,
                                   ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-            params.disposition = WindowOpenDisposition::CURRENT_TAB;
+            params.disposition = WindowOpenDisposition::kCurrentTab;
             params.source_contents = web_contents.get();
             params.initiator_origin = initiator_origin;
             params.is_renderer_initiated = is_renderer_initiated;

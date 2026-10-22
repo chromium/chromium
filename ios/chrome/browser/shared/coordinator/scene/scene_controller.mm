@@ -768,7 +768,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     return;
   }
 
-  if (urlLoadParams.disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
+  if (urlLoadParams.disposition == WindowOpenDisposition::kSwitchToTab) {
     // Check if it's already the displayed tab and no switch is necessary
     if (currentWebState &&
         currentWebState->GetVisibleURL() == urlLoadParams.web_params.url) {
@@ -811,7 +811,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
   if (shouldOpenNewTab) {
     [targetBVC appendTabAddedCompletion:tabOpenedCompletion];
-    urlLoadParams.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    urlLoadParams.disposition = WindowOpenDisposition::kNewForegroundTab;
     urlLoadParams.in_incognito = targetMode == ApplicationMode::INCOGNITO;
     UrlLoadingBrowserAgent::FromBrowser(targetInterface.browser)
         ->Load(urlLoadParams);
@@ -819,7 +819,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 
   // Otherwise, load `urlLoadParams` in the current tab.
-  urlLoadParams.disposition = WindowOpenDisposition::CURRENT_TAB;
+  urlLoadParams.disposition = WindowOpenDisposition::kCurrentTab;
   UrlLoadingBrowserAgent::FromBrowser(targetInterface.browser)
       ->Load(urlLoadParams);
   if (tabOpenedCompletion) {
@@ -1007,7 +1007,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
       BOOL isURLEmpty = urlLoadParams.web_params.url.is_empty();
       BOOL isBrowserEmpty = targetInterface.browser->GetWebStateList()->empty();
       BOOL shouldAvoidNewTab =
-          (urlLoadParams.disposition == WindowOpenDisposition::SWITCH_TO_TAB) ||
+          (urlLoadParams.disposition == WindowOpenDisposition::kSwitchToTab) ||
           (self.NTPActionAfterTabSwitcherDismissal == OPEN_LATEST_TAB);
 
       if (isURLEmpty && shouldAvoidNewTab && !isBrowserEmpty) {

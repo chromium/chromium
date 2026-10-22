@@ -90,7 +90,7 @@ PolicyMap MakeDeveloperToolsAvailabilityMap(int value) {
 // events.
 void NavigateToURLNoWait(BrowserWindowInterface* browser, const GURL& url) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, url, WindowOpenDisposition::CURRENT_TAB,
+      browser, url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 }
 

@@ -119,7 +119,7 @@
 
   // See if this command will execute on the window bridge side.
   bridge->host()->WillExecuteCommand(result.chrome_command,
-                                     WindowOpenDisposition::CURRENT_TAB,
+                                     WindowOpenDisposition::kCurrentTab,
                                      kIsBeforeFirstResponder, &will_execute);
 
   // On macOS, command key shortcuts flash the title of their owning menu
@@ -134,7 +134,7 @@
 
   bool was_executed = false;
   bridge->host()->ExecuteCommand(result.chrome_command,
-                                 WindowOpenDisposition::CURRENT_TAB,
+                                 WindowOpenDisposition::kCurrentTab,
                                  kIsBeforeFirstResponder, &was_executed);
 
   return was_executed ? ui::PerformKeyEquivalentResult::kHandled
@@ -171,7 +171,7 @@
 
       bool was_executed = false;
       bridge->host()->ExecuteCommand(
-          result.chrome_command, WindowOpenDisposition::CURRENT_TAB,
+          result.chrome_command, WindowOpenDisposition::kCurrentTab,
           /*is_before_first_responder=*/false, &was_executed);
       CHECK(was_executed, base::NotFatalUntil::M162);
       return ui::PerformKeyEquivalentResult::kHandled;

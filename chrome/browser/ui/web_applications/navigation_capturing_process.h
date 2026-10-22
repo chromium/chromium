@@ -267,8 +267,8 @@ class NavigationCapturingProcess
   bool IsHandledByNavigationCapturing() const;
 
   bool is_user_modified_click() const {
-    return disposition_ == WindowOpenDisposition::NEW_WINDOW ||
-           disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    return disposition_ == WindowOpenDisposition::kNewWindow ||
+           disposition_ == WindowOpenDisposition::kNewBackgroundTab;
   }
 
   base::DictValue& PopulateAndGetDebugData();

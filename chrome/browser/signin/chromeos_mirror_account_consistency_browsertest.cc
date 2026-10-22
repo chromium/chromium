@@ -50,7 +50,7 @@ void TestMirrorRequestForProfile(net::EmbeddedTestServer* test_server,
   BrowserWindowInterface* browser = CreateBrowserWindow(
       BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, gaia_url, WindowOpenDisposition::SINGLETON_TAB,
+      browser, gaia_url, WindowOpenDisposition::kSingletonTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   std::string inner_text =

@@ -287,14 +287,14 @@ IN_PROC_BROWSER_TEST_F(RedirectTest,
   content::TestNavigationObserver observer(web_contents, 2);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), first_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), first_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   // We don't sleep here - the first navigation won't have been committed yet
   // because we told the server to wait a minute. This means the browser has
   // started it's provisional load for the client redirect destination page but
   // hasn't completed. Our time is now!
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), final_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), final_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   observer.Wait();
 

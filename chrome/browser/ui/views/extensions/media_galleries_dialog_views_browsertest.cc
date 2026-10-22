@@ -61,7 +61,7 @@ class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
     EXPECT_CALL(controller_, WebContents())
         .WillRepeatedly(testing::Return(content));
     ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-        browser(), about_blank, 1, WindowOpenDisposition::CURRENT_TAB,
+        browser(), about_blank, 1, WindowOpenDisposition::kCurrentTab,
         IsInteractiveUi() ? ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP : 0);
   }
 

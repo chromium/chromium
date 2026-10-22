@@ -213,7 +213,7 @@ void ComposeboxHandler::NavigateUrl(const GURL& url) {
   }
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   browser_window_interface->OpenURL(std::move(params),
                                     /*navigation_handle_callback=*/{});

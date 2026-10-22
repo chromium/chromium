@@ -185,7 +185,7 @@ class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
     NavigateParams params(browser(), url,
                           ui::PageTransition::PAGE_TRANSITION_LINK);
     params.tabstrip_index = index;
-    params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewBackgroundTab;
     Navigate(&params);
     content::WebContents* web_contents = params.navigated_or_inserted_contents;
     return content::WaitForLoadStop(web_contents) ? web_contents : nullptr;

@@ -225,7 +225,7 @@ void ControlledHomeDialogController::OnBubbleClosed(CloseAction action) {
         CHECK(learn_more_url.is_valid());
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                learn_more_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                learn_more_url, WindowOpenDisposition::kNewForegroundTab,
                 ui::PAGE_TRANSITION_LINK);
         web_contents_->OpenURL(params, {});
       }

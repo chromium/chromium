@@ -228,13 +228,13 @@ WindowOpenDisposition ToWindowOpenDisposition(
     ash::NewWindowDelegate::Disposition disposition) {
   switch (disposition) {
     case ash::NewWindowDelegate::Disposition::kNewForegroundTab:
-      return WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      return WindowOpenDisposition::kNewForegroundTab;
     case ash::NewWindowDelegate::Disposition::kNewWindow:
-      return WindowOpenDisposition::NEW_WINDOW;
+      return WindowOpenDisposition::kNewWindow;
     case ash::NewWindowDelegate::Disposition::kOffTheRecord:
-      return WindowOpenDisposition::OFF_THE_RECORD;
+      return WindowOpenDisposition::kOffTheRecord;
     case ash::NewWindowDelegate::Disposition::kSwitchToTab:
-      return WindowOpenDisposition::SWITCH_TO_TAB;
+      return WindowOpenDisposition::kSwitchToTab;
   }
 }
 }  // namespace
@@ -332,7 +332,7 @@ void ChromeNewWindowClient::OpenFileManager() {
     }
 
     proxy->Launch(update.AppId(),
-                  apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
                                       /*prefer_container=*/true),
                   apps::LaunchSource::kFromKeyboard);
   };
@@ -369,7 +369,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
     launch_files.push_back(downloads_path);
     proxy->LaunchAppWithFiles(
         update.AppId(),
-        apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
                             /*prefer_container=*/true),
         apps::LaunchSource::kFromKeyboard, std::move(launch_files));
   };

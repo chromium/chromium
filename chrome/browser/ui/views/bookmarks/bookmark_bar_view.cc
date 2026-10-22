@@ -1421,7 +1421,7 @@ bool BookmarkBarView::OnMenuButtonAccessibleAction(
   if (action_data.action == ax::mojom::Action::kExpand) {
     CHECK(controller_);
     controller_->OpenFolder(chrome::ToNodeId(folder),
-                            WindowOpenDisposition::CURRENT_TAB);
+                            WindowOpenDisposition::kCurrentTab);
     return true;
   }
   if (action_data.action == ax::mojom::Action::kCollapse) {

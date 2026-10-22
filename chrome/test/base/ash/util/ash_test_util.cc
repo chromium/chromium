@@ -65,7 +65,7 @@ apps::AppLaunchParams GetAppLaunchParams(Profile* profile,
   }
   return apps::AppLaunchParams(
       *app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
 }
 
 webapps::AppId CreateSystemWebAppImpl(Profile* profile,

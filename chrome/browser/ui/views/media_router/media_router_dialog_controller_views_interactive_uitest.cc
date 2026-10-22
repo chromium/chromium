@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
   // Create a new foreground tab that covers |web_contents|.
   GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_NE(initiator_, browser()->GetTabStripModel()->GetActiveWebContents());
 

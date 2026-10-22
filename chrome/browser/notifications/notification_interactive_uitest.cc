@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCrashRendererNotificationRemain) {
   // Test crashing renderer does not close or crash notification.
   AllowAllOrigins();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(

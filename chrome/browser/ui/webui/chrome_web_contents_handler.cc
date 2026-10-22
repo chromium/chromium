@@ -61,10 +61,10 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
   NavigateParams nav_params(browser, params.url, params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(params);
   if (source && source->IsCrashed() &&
-      params.disposition == WindowOpenDisposition::CURRENT_TAB &&
+      params.disposition == WindowOpenDisposition::kCurrentTab &&
       ui::PageTransitionCoreTypeIs(params.transition,
                                    ui::PAGE_TRANSITION_LINK)) {
-    nav_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
   } else {
     nav_params.disposition = params.disposition;
   }

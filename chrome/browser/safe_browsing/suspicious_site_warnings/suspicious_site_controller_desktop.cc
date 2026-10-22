@@ -283,11 +283,11 @@ void SuspiciousSiteControllerDesktop::OnLearnMoreClicked() {
   LogUserInteraction(UserInteraction::kLearnMore);
 
   if (web_contents()) {
-    web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                                GURL(chrome::kSafeBrowsingHelpCenterURL),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK),
-                            /*navigation_handle_callback=*/{});
+    web_contents()->OpenURL(
+        content::OpenURLParams::CreateBrowserInitiated(
+            GURL(chrome::kSafeBrowsingHelpCenterURL),
+            WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
+        /*navigation_handle_callback=*/{});
   }
 }
 

@@ -1867,7 +1867,7 @@ void ChromeAutofillClient::OpenGmailForOtps() {
   static constexpr std::string_view kGmailUrl = "https://mail.google.com";
   web_contents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(kGmailUrl), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GURL(kGmailUrl), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }

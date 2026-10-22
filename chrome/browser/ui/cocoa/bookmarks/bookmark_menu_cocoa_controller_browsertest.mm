@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
   [BookmarkMenuCocoaController
       openBookmarkByGUID:uuid1
                inProfile:test_profile
-         withDisposition:WindowOpenDisposition::CURRENT_TAB];
+         withDisposition:WindowOpenDisposition::kCurrentTab];
 
   // While the model is loading, no navigation could have happened.
   EXPECT_EQ(nullptr, contents->GetController().GetPendingEntry());

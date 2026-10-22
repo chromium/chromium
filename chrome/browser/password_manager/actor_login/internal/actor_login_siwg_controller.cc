@@ -293,7 +293,7 @@ void ActorLoginSiwgController::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  if (disposition == WindowOpenDisposition::NEW_POPUP) {
+  if (disposition == WindowOpenDisposition::kNewPopup) {
     popup_observer_ = std::make_unique<PopupObserver>(new_contents, this);
   }
 }

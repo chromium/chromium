@@ -59,7 +59,7 @@ class TabInfoCollectorTest : public InProcessBrowserTest {
     // Create a new tab and make sure the urls have loaded.
     for (const auto& url : urls) {
       ui_test_utils::NavigateToURLWithDisposition(
-          browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          browser, url, WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
     return browser;

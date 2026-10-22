@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("chrome-untrusted://crosh/"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   content::WebContents* tab2 =
       browser()->GetTabStripModel()->GetActiveWebContents();

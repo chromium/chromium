@@ -203,7 +203,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
       link_type, ui_model_->enrollment_fields().virtual_card_enrollment_source);
 
   web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                              url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              url, WindowOpenDisposition::kNewForegroundTab,
                               ui::PAGE_TRANSITION_LINK),
                           /*navigation_handle_callback=*/{});
 }

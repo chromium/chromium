@@ -432,8 +432,8 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
 
   if (window_for_new_tab) {
     params.disposition = open_in_background
-                             ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-                             : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                             ? WindowOpenDisposition::kNewBackgroundTab
+                             : WindowOpenDisposition::kNewForegroundTab;
     params.browser = window_for_new_tab;
     params.window_action = NavigateParams::WindowAction::kNoAction;
 
@@ -451,7 +451,7 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
 #if BUILDFLAG(IS_ANDROID)
     if (open_in_background) {
       // Workaround for b/489440503. On Android we ignore
-      // WindowOpenDisposition::NEW_BACKGROUND_TAB when a tabstrip_index is set,
+      // WindowOpenDisposition::kNewBackgroundTab when a tabstrip_index is set,
       // so revert the index to its default value.
       params.tabstrip_index = -1;
     }
@@ -463,7 +463,7 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
     // If window_for_new_tab is still null (e.g. the initiating window was
     // closed) the tab will be created in a new window.
     // TODO(b/454046200): Reconsider what should happen in this case.
-    params.disposition = WindowOpenDisposition::NEW_WINDOW;
+    params.disposition = WindowOpenDisposition::kNewWindow;
     params.window_action = NavigateParams::WindowAction::kShowWindow;
   }
 

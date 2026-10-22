@@ -1453,7 +1453,7 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItems) {
 
   const BlockedWindowParams params(
       GURL("about:blank"), std::nullopt, url::Origin(), nullptr,
-      content::Referrer(), std::string(), WindowOpenDisposition::NEW_POPUP,
+      content::Referrer(), std::string(), WindowOpenDisposition::kNewPopup,
       blink::mojom::WindowFeatures(), false, true);
   constexpr size_t kItemCount = 3;
   for (size_t i = 1; i <= kItemCount; i++) {
@@ -1485,7 +1485,7 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItemsSpoofing) {
 
   const BlockedWindowParams params(spoof_url, std::nullopt, url::Origin(),
                                    nullptr, content::Referrer(), std::string(),
-                                   WindowOpenDisposition::NEW_POPUP,
+                                   WindowOpenDisposition::kNewPopup,
                                    blink::mojom::WindowFeatures(), false, true);
 
   NavigateParams navigate_params =

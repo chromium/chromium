@@ -522,7 +522,7 @@ RenderViewContextMenuBase::GetOpenURLParamsWithExtraHeaders(
   // Do not send the referrer url to OTR windows. We still need the
   // |referring_url| to populate the |initiator_origin| below for browser UI.
   GURL referrer_url;
-  if (disposition != WindowOpenDisposition::OFF_THE_RECORD) {
+  if (disposition != WindowOpenDisposition::kOffTheRecord) {
     referrer_url = referring_url.GetAsReferrer();
   }
 
@@ -530,7 +530,7 @@ RenderViewContextMenuBase::GetOpenURLParamsWithExtraHeaders(
       url, content::Referrer(referrer_url, params_.referrer_policy));
 
   if (params_.link_url == url &&
-      disposition != WindowOpenDisposition::OFF_THE_RECORD) {
+      disposition != WindowOpenDisposition::kOffTheRecord) {
     params_.link_followed = url;
   }
 

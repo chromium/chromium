@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
 
   // Navigate to a new URL in a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   auto* web_contents2 = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
 
   // Navigate to a new URL in a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   auto* web_contents2 = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
 
   // Navigate to a new URL in a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   auto* web_contents2 = browser()->tab_strip_model()->GetActiveWebContents();
 

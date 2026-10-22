@@ -113,15 +113,15 @@ OpenedWebContentsSet OpenAllHelper(
   if (profile) {
     opening_urls_in_incognito =
         profile->IsPrimaryOTRProfileWithRegularParent() ||
-        initial_disposition == WindowOpenDisposition::OFF_THE_RECORD;
+        initial_disposition == WindowOpenDisposition::kOffTheRecord;
   } else {
     opening_urls_in_incognito =
-        initial_disposition == WindowOpenDisposition::OFF_THE_RECORD;
+        initial_disposition == WindowOpenDisposition::kOffTheRecord;
   }
 
   for (const auto& bookmark_url : bookmark_urls) {
     // Javascript URLs should not open in a new tab. See crbug.com/528757894.
-    if (disposition != WindowOpenDisposition::CURRENT_TAB &&
+    if (disposition != WindowOpenDisposition::kCurrentTab &&
         bookmark_url.url.SchemeIs(url::kJavaScriptScheme)) {
       continue;
     }
@@ -177,8 +177,8 @@ OpenedWebContentsSet OpenAllHelper(
     }
 
     bool opening_in_new_window =
-        disposition == WindowOpenDisposition::NEW_WINDOW ||
-        disposition == WindowOpenDisposition::OFF_THE_RECORD;
+        disposition == WindowOpenDisposition::kNewWindow ||
+        disposition == WindowOpenDisposition::kOffTheRecord;
     // If we are opening URLs in a new window we set the disposition to
     // `NEW_BACKGROUND_TAB` so that the rest of the URLs open in a new tab
     // instead of a new window.
@@ -189,7 +189,7 @@ OpenedWebContentsSet OpenAllHelper(
     // See crbug.com/40855833.
     if (opening_in_new_window) {
       if (!opening_urls_in_incognito || url_allowed_in_incognito) {
-        disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+        disposition = WindowOpenDisposition::kNewBackgroundTab;
       }
     }
 
@@ -381,7 +381,7 @@ void OpenAllIfAllowed(
     std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
     std::optional<BookmarkLaunchAction> launch_action) {
   std::vector<UrlAndId> url_and_ids = GetURLsToOpen(
-      nodes, initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
+      nodes, initial_disposition == WindowOpenDisposition::kOffTheRecord);
 
   std::optional<base::Uuid> bookmark_folder_node_id;
   if (nodes.size() == 1 && nodes[0]->is_folder()) {

@@ -978,7 +978,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
       ContentSettingsType::ANTI_ABUSE, CONTENT_SETTING_BLOCK);
   Flush();
 
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   EXPECT_EQ(false, EvalJs(GetActiveWebContents(), command));
 
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
       ContentSettingsType::ANTI_ABUSE, CONTENT_SETTING_ALLOW);
   Flush();
 
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   EXPECT_EQ(true, EvalJs(GetActiveWebContents(), command));
 
@@ -997,7 +997,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
       top_level_origin, top_level_origin, ContentSettingsType::COOKIES,
       CONTENT_SETTING_BLOCK);
 
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   EXPECT_EQ(false, EvalJs(GetActiveWebContents(), command));
 }

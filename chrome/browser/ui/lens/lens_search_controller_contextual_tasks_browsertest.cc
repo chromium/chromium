@@ -669,7 +669,7 @@ class ContextualTasksLensInteractionBrowserTestBase
   // the current tab.
   void WaitForPaint(
       std::string_view relative_url = kDocumentWithNamedElement,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab,
       int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
     const GURL url = embedded_test_server()->GetURL(relative_url);
     lens::WaitForPaint(browser(), url, disposition, browser_test_flags);

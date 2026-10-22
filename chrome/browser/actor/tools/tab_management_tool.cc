@@ -106,7 +106,7 @@ void TabManagementTool::CreateTab(TabListInterface* tab_list) {
   // Open a blank tab.
   tab_list->OpenTab(
       GURL(url::kAboutBlankURL), /*index=*/-1,
-      create_disposition_.value() == WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      create_disposition_.value() == WindowOpenDisposition::kNewForegroundTab);
 }
 
 void TabManagementTool::ActivateTab(TabListInterface* tab_list) {

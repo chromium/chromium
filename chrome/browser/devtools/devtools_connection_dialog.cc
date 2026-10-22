@@ -93,7 +93,7 @@ void DevToolsConnectionDialog::OnCancel() {
 void DevToolsConnectionDialog::OnDisable(const ui::Event& event) {
   GURL internal_url("chrome://inspect#remote-debugging");
   NavigateParams params(browser_, internal_url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   RunCallbackAndDie(
       content::DevToolsManagerDelegate::AcceptConnectionResult::kDeny);

@@ -51,7 +51,7 @@ class ProtocolHandlerPickerUITest
 
   void NavigateCurrentTabToAboutBlank() {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL("about:blank"), WindowOpenDisposition::CURRENT_TAB,
+        browser(), GURL("about:blank"), WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

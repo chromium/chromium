@@ -79,13 +79,13 @@ TEST_F(SearchboxUtilsTest, OpenMatchNormal) {
   metrics_tracker.set_match_selection_timestamp(now);
 
   EXPECT_CALL(client_, OnAutocompleteAccept(GURL("https://example.com"), _,
-                                            WindowOpenDisposition::CURRENT_TAB,
+                                            WindowOpenDisposition::kCurrentTab,
                                             _, _, _, _, _, _, _, _))
       .Times(1);
 
   OpenMatch(&autocomplete_controller_, &client_,
             MakeAutocompleteSnapshot(&autocomplete_controller_),
-            OmniboxPopupSelection(0), match, WindowOpenDisposition::CURRENT_TAB,
+            OmniboxPopupSelection(0), match, WindowOpenDisposition::kCurrentTab,
             metrics_tracker, metrics::OmniboxEventProto::INVALID, u"");
 }
 
@@ -118,7 +118,7 @@ TEST_F(SearchboxUtilsTest, OpenMatchWithAction) {
 
   OpenMatch(&autocomplete_controller_, &client_,
             MakeAutocompleteSnapshot(&autocomplete_controller_), selection,
-            match, WindowOpenDisposition::CURRENT_TAB, metrics_tracker,
+            match, WindowOpenDisposition::kCurrentTab, metrics_tracker,
             metrics::OmniboxEventProto::INVALID, u"");
 }
 
@@ -133,18 +133,18 @@ TEST_F(SearchboxUtilsTest, ComputeOpenDispositionFromModifiers) {
   } test_cases[] = {
       // {shift, control, alt, command, expected_disposition,
       // expected_metric_value}
-      {false, false, false, false, WindowOpenDisposition::CURRENT_TAB, 0},
-      {false, true, false, false, WindowOpenDisposition::CURRENT_TAB, 1},
-      {false, false, true, false, WindowOpenDisposition::NEW_FOREGROUND_TAB, 2},
-      {false, true, true, false, WindowOpenDisposition::NEW_FOREGROUND_TAB, 3},
-      {true, false, false, true, WindowOpenDisposition::NEW_FOREGROUND_TAB, 4},
-      {true, true, false, true, WindowOpenDisposition::NEW_FOREGROUND_TAB, 5},
-      {true, false, true, false, WindowOpenDisposition::NEW_BACKGROUND_TAB, 6},
-      {true, true, true, false, WindowOpenDisposition::NEW_BACKGROUND_TAB, 7},
-      {false, false, false, true, WindowOpenDisposition::NEW_BACKGROUND_TAB, 8},
-      {false, true, false, true, WindowOpenDisposition::NEW_BACKGROUND_TAB, 9},
-      {true, false, false, false, WindowOpenDisposition::NEW_WINDOW, 10},
-      {true, true, false, false, WindowOpenDisposition::NEW_WINDOW, 11},
+      {false, false, false, false, WindowOpenDisposition::kCurrentTab, 0},
+      {false, true, false, false, WindowOpenDisposition::kCurrentTab, 1},
+      {false, false, true, false, WindowOpenDisposition::kNewForegroundTab, 2},
+      {false, true, true, false, WindowOpenDisposition::kNewForegroundTab, 3},
+      {true, false, false, true, WindowOpenDisposition::kNewForegroundTab, 4},
+      {true, true, false, true, WindowOpenDisposition::kNewForegroundTab, 5},
+      {true, false, true, false, WindowOpenDisposition::kNewBackgroundTab, 6},
+      {true, true, true, false, WindowOpenDisposition::kNewBackgroundTab, 7},
+      {false, false, false, true, WindowOpenDisposition::kNewBackgroundTab, 8},
+      {false, true, false, true, WindowOpenDisposition::kNewBackgroundTab, 9},
+      {true, false, false, false, WindowOpenDisposition::kNewWindow, 10},
+      {true, true, false, false, WindowOpenDisposition::kNewWindow, 11},
   };
 
   for (const auto& test_case : test_cases) {

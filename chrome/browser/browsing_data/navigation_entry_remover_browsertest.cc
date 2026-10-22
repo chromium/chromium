@@ -54,14 +54,14 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
                       const std::vector<GURL>& urls) {
     for (const GURL& url : urls) {
       ui_test_utils::NavigateToURLWithDisposition(
-          browser, url, WindowOpenDisposition::CURRENT_TAB,
+          browser, url, WindowOpenDisposition::kCurrentTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
   }
 
   void AddTab(BrowserWindowInterface* browser, const std::vector<GURL>& urls) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser, urls[0], WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser, urls[0], WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
             ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     AddNavigations(browser, {urls.begin() + 1, urls.end()});
@@ -71,7 +71,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
                                      const std::vector<GURL>& urls) {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::NavigateToURLWithDisposition(
-        browser, urls[0], WindowOpenDisposition::NEW_WINDOW,
+        browser, urls[0], WindowOpenDisposition::kNewWindow,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
     BrowserWindowInterface* new_browser = browser_created_observer.Wait();
     ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);

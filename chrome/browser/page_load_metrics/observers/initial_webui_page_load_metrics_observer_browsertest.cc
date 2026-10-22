@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   content::WebContents* contents =
       NavigateAndWaitForMetrics(url, /*close_tab=*/false);
   content::TestNavigationObserver reload_observer(contents);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   reload_observer.Wait();
 
   browser()->GetTabStripModel()->CloseWebContents(contents, 0);

@@ -69,7 +69,7 @@ void KnownInterceptionDisclosureMessageDelegate::MaybeShow() {
         web_contents->OpenURL(
             content::OpenURLParams::CreateBrowserInitiated(
                 GURL("chrome://connection-monitoring-detected/"),
-                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                WindowOpenDisposition::kNewForegroundTab,
                 ui::PAGE_TRANSITION_LINK),
             /*navigation_handle_callback=*/{});
       },

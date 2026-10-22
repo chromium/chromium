@@ -33,7 +33,7 @@ class MockGlicExperimentalOptInUIHostDelegate
 
 // Returns the single popup-type browser window, or null if there isn't exactly
 // one. Links opened from the opt-in dialog use
-// WindowOpenDisposition::NEW_POPUP, which on Android materializes as a Custom
+// WindowOpenDisposition::kNewPopup, which on Android materializes as a Custom
 // Tab hosted in its own popup BrowserWindowInterface rather than as a tab in
 // the originating window.
 BrowserWindowInterface* FindSolePopupWindow() {

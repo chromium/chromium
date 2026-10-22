@@ -229,7 +229,7 @@ bool FilledCardInformationBubbleControllerImpl::ShouldIconBeVisible() const {
 void FilledCardInformationBubbleControllerImpl::OnLinkClicked() {
   web_contents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GetLearnMoreUrl(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GetLearnMoreUrl(), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }

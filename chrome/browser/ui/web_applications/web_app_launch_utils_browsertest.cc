@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_P(ReparentWebContentsTest, ReparentToAppAndBack) {
 
   if (GetReparentingUrlType() == ReparentingUrl::kAppUrlLoading) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GetReparentingUrl(), WindowOpenDisposition::CURRENT_TAB,
+        browser(), GetReparentingUrl(), WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
   } else {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetReparentingUrl()));

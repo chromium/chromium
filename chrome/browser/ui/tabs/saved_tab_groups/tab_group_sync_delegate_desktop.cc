@@ -125,7 +125,7 @@ tabs::TabInterface* MaybeOpenTabFromSavedTab(const SavedTabGroupTab& saved_tab,
   content::NavigationHandle* navigation_handle =
       SavedTabGroupUtils::OpenTabInBrowser(
           saved_tab.url(), browser, browser->GetProfile(),
-          WindowOpenDisposition::NEW_BACKGROUND_TAB);
+          WindowOpenDisposition::kNewBackgroundTab);
   if (!navigation_handle) {
     return nullptr;
   }

@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   // active.
   {
     ui_test_utils::UrlLoadObserver load_complete(url_viewsource);
-    chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
     load_complete.Wait();
   }
 
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheEnabledTest,
     content::WebContents* new_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver navigation_observer(new_contents);
-    chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
     navigation_observer.Wait();
   }
 

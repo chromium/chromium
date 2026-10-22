@@ -105,7 +105,7 @@ class IncognitoNavigationThrottleBrowserTest
   void NavigateToSimplePage(BrowserWindowInterface* browser) {
     GURL url(embedded_test_server()->GetURL("/simple_page.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser, url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoNavigationThrottleBrowserTest,
   // Navigate to a Top Chrome WebUI URL. Content is allowed.
   const GURL top_chrome_url(chrome::kChromeUITabSearchURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      incognito_browser(), top_chrome_url, WindowOpenDisposition::CURRENT_TAB,
+      incognito_browser(), top_chrome_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* web_contents =

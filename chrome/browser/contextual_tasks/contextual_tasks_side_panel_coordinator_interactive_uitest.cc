@@ -938,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
   NavigateParams params(browser(), GURL(chrome::kChromeUISettingsURL),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
   EXPECT_EQ(5, tab_list->GetTabCount());
 
@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(
 
   OmniboxEverywhereService omnibox_everywhere_service(browser()->GetProfile());
   omnibox_everywhere_service.OpenUrl(GURL(chrome::kChromeUISettingsURL),
-                                     WindowOpenDisposition::CURRENT_TAB,
+                                     WindowOpenDisposition::kCurrentTab,
                                      ui::PAGE_TRANSITION_GENERATED);
   EXPECT_EQ(5, tab_list->GetTabCount());
 
@@ -1116,7 +1116,7 @@ IN_PROC_BROWSER_TEST_F(
   tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
   NavigateParams params(browser(), GURL(chrome::kChromeUISettingsURL),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
   EXPECT_EQ(5, tab_list->GetTabCount());
 

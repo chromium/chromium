@@ -50,7 +50,7 @@ void OpenLearnMoreLink(BrowserWindowInterface* browser,
   const GURL kLearnMoreUrl(
       "https://support.google.com/chrome?p=chrome_reset_settings");
   browser->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                       kLearnMoreUrl, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                       kLearnMoreUrl, WindowOpenDisposition::kNewForegroundTab,
                        ui::PAGE_TRANSITION_LINK),
                    {});
 }

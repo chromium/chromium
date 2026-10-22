@@ -74,17 +74,17 @@ const char* WebNavigationPolicyToString(
 
 const char* WindowOpenDispositionToString(WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::kSaveToDisk:
       return kPolicyDownload;
-    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::kCurrentTab:
       return kPolicyCurrentTab;
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::kNewBackgroundTab:
       return kPolicyNewBackgroundTab;
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::kNewForegroundTab:
       return kPolicyNewForegroundTab;
-    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::kNewWindow:
       return kPolicyNewWindow;
-    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::kNewPopup:
       return kPolicyNewPopup;
     default:
       return kIllegalString;

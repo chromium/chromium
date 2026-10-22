@@ -73,16 +73,16 @@ content::WebContents* OpenURLFromTabInternal(
 
   // Force all links to open in a new tab, even if they were trying to open a
   // window.
-  if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    new_tab_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  } else if (params.disposition == WindowOpenDisposition::OFF_THE_RECORD) {
+  if (params.disposition == WindowOpenDisposition::kNewBackgroundTab) {
+    new_tab_params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  } else if (params.disposition == WindowOpenDisposition::kOffTheRecord) {
     // Don't force this behaviour for requests for an incognito window, where
     // it would not be acceptable to open in a new tab of a non-incognito
     // window.
-    new_tab_params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
+    new_tab_params.disposition = WindowOpenDisposition::kOffTheRecord;
     new_tab_params.window_action = NavigateParams::WindowAction::kShowWindow;
   } else {
-    new_tab_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    new_tab_params.disposition = WindowOpenDisposition::kNewForegroundTab;
     new_tab_params.window_action = NavigateParams::WindowAction::kShowWindow;
   }
 
@@ -308,9 +308,9 @@ void ChromeAppDelegate::AddNewContents(
       Profile::FromBrowserContext(context));
   // Force all links to open in a new tab, even if they were trying to open a
   // new window.
-  disposition = disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB
+  disposition = disposition == WindowOpenDisposition::kNewBackgroundTab
                     ? disposition
-                    : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                    : WindowOpenDisposition::kNewForegroundTab;
   chrome::AddWebContents(displayer.browser_window_interface(), nullptr,
                          std::move(new_contents), target_url, disposition,
                          window_features);

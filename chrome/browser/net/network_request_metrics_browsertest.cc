@@ -161,7 +161,7 @@ class NetworkRequestMetricsBrowserTest
     GURL interesting_url = embedded_test_server()->GetURL(kInterestingPath);
     if (GetParam() == RequestType::kMainFrame) {
       ui_test_utils::NavigateToURLWithDisposition(
-          browser(), interesting_url, WindowOpenDisposition::CURRENT_TAB,
+          browser(), interesting_url, WindowOpenDisposition::kCurrentTab,
           ui_test_utils::BROWSER_TEST_NO_WAIT);
     } else {
       WaitForMainFrameResourceObserver wait_for_main_frame_resource_observer(
@@ -169,7 +169,7 @@ class NetworkRequestMetricsBrowserTest
       ui_test_utils::NavigateToURLWithDisposition(
           browser(),
           embedded_test_server()->GetURL(kUninterestingMainFramePath),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui_test_utils::BROWSER_TEST_NO_WAIT);
       uninteresting_main_frame_response_->WaitForRequest();
       uninteresting_main_frame_response_->Send(

@@ -70,7 +70,7 @@ OmniboxActionInSuggestTest::OmniboxActionInSuggestTest()
     : context_(client_,
                OmniboxAction::ExecutionContext::OpenUrlCallback(),
                base::TimeTicks(),
-               WindowOpenDisposition::IGNORE_ACTION) {}
+               WindowOpenDisposition::kIgnoreAction) {}
 
 TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
   struct {

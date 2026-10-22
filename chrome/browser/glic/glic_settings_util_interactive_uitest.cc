@@ -103,7 +103,7 @@ class GlicSettingsUtilUiTest
   auto ReloadTab(ui::ElementIdentifier id) {
     return Steps(Do([this]() {
                    chrome::Reload(browser(),
-                                  WindowOpenDisposition::CURRENT_TAB);
+                                  WindowOpenDisposition::kCurrentTab);
                  }),
                  WaitForWebContentsNavigation(id));
   }

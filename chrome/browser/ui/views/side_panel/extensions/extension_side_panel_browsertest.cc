@@ -206,7 +206,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
     int tab_count = browser()->GetTabStripModel()->count();
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("http://example.com"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_EQ(tab_count + 1, browser()->GetTabStripModel()->count());
   }
@@ -2930,7 +2930,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
 
   // Open a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* second_tab_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -3081,7 +3081,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnOpenedEventSidePanelBrowserTest,
 
   // Open a new tab, which hides the panel.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(side_panel_ui->IsSidePanelEntryShowing(extension_key));
 
@@ -3226,7 +3226,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
                        OnClosedEvent_TabClosed) {
   // Open a new tab first to prevent the browser from shutting down.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 

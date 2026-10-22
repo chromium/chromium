@@ -562,7 +562,7 @@ class WebAppFrameViewChromeOSTest
   BrowserView* CreateWebAppPopup(BrowserWindowInterface* parent_browser) {
     NavigateParams navigate_params(parent_browser, GetAppURL(),
                                    ui::PAGE_TRANSITION_LINK);
-    navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
+    navigate_params.disposition = WindowOpenDisposition::kNewPopup;
 
     content::TestNavigationObserver navigation_observer(GetAppURL());
     navigation_observer.StartWatchingNewWebContents();
@@ -2245,7 +2245,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               app_id, apps::LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::CURRENT_TAB,
+              WindowOpenDisposition::kCurrentTab,
               apps::LaunchSource::kFromTest));
   ASSERT_TRUE(web_contents);
   BrowserWindowInterface* browser =

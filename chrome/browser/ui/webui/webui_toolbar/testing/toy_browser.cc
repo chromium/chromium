@@ -26,7 +26,7 @@ class ToyBrowserControlsAdapter : public BrowserControlsAdapter {
   void Stop() override {
     toy_browser_->received_commands_.push_back(
         {.command_id = IDC_STOP,
-         .disposition = WindowOpenDisposition::CURRENT_TAB});
+         .disposition = WindowOpenDisposition::kCurrentTab});
   }
 
   void Back(WindowOpenDisposition disposition) override {

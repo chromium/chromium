@@ -262,7 +262,7 @@ void DownloadTestBase::DownloadAndWait(BrowserWindowInterface* browser,
                                        const GURL& url,
                                        bool prompt_for_download) {
   DownloadAndWaitWithDisposition(
-      browser, url, WindowOpenDisposition::CURRENT_TAB,
+      browser, url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP, prompt_for_download);
 }
 
@@ -402,7 +402,7 @@ bool DownloadTestBase::RunSizeTest(BrowserWindowInterface* browser,
   // separate tab.
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, finish_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser, finish_url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   observer->WaitForFinished();
   EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));

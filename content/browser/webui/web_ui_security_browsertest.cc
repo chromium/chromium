@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(
 
   auto params = blink::mojom::OpenURLParams::New();
   params->url = dest_url;
-  params->disposition = WindowOpenDisposition::CURRENT_TAB;
+  params->disposition = WindowOpenDisposition::kCurrentTab;
   params->initiator_state_token =
       root->current_frame_host()->current_initiator_state_token();
   params->initiator_document_token =

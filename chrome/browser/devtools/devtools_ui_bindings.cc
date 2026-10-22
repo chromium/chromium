@@ -257,7 +257,7 @@ void DefaultBindingsDelegate::ActivateWindow() {
 void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GURL(url), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   // The URL typically originates from content that is controlled by the
   // inspected target, which is not a local WebContents here (e.g. a remote
@@ -293,7 +293,7 @@ void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
       GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(query));
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          GURL(url), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }

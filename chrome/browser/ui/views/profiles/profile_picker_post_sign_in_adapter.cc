@@ -54,7 +54,7 @@ bool ShouldOpenUrlAfterBrowserCreation(const GURL& url) {
 // not replace existing tabs.
 void OpenNewTabInBrowser(const GURL& url, BrowserWindowInterface* browser) {
   if (browser) {
-    browser->OpenGURL(url, WindowOpenDisposition::SINGLETON_TAB);
+    browser->OpenGURL(url, WindowOpenDisposition::kSingletonTab);
   }
 }
 

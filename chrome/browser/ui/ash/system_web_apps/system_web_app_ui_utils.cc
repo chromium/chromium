@@ -111,7 +111,7 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
       apps::AppServiceProxyFactory::GetForProfile(profile_for_launch);
   CHECK(app_service, base::NotFatalUntil::M162);
 
-  auto event_flags = apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+  auto event_flags = apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
                                          /* prefer_container */ false);
 
   if (!params.launch_paths.empty()) {

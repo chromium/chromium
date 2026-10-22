@@ -242,7 +242,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   GURL popup_url("https://example.popup/");
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          popup_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          popup_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           main_rfh()->GetCurrentInitiatorNavigationState());
   params.user_gesture = true;
@@ -272,7 +272,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   GURL popup_url("https://example.popup/");
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          popup_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          popup_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           main_rfh()->GetCurrentInitiatorNavigationState());
   params.user_gesture = true;

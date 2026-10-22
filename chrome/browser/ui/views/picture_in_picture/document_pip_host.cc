@@ -451,7 +451,7 @@ content::WebContents* DocumentPipHost::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (params.disposition == WindowOpenDisposition::kCurrentTab) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DocumentPipHost::ClosePipWindow,
                                   weak_factory_.GetWeakPtr()));

@@ -259,7 +259,7 @@ void OpenLearnMoreURL(bool is_profile_list_empty,
           GURL(is_profile_list_empty
                    ? chrome::kSigninOnDesktopLearnMoreURL
                    : chrome::kAddNewProfileOnDesktopLearnMoreURL),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

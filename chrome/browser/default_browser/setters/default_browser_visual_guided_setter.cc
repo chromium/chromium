@@ -54,7 +54,7 @@ class DefaultBrowserVisualGuidedSetter::ExecutionRunner
 
     NavigateParams navigation_params(base::to_address(profile_), url,
                                      ui::PAGE_TRANSITION_LINK);
-    navigation_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    navigation_params.disposition = WindowOpenDisposition::kNewForegroundTab;
     navigation_params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&navigation_params);
 
@@ -120,7 +120,7 @@ class DefaultBrowserVisualGuidedSetter::ExecutionRunner
                             GURL(chrome::kChromeUINewTabURL),
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
       params.source_contents = contents;
-      params.disposition = WindowOpenDisposition::CURRENT_TAB;
+      params.disposition = WindowOpenDisposition::kCurrentTab;
       Navigate(&params);
     }
     Finish(DefaultBrowserState::IS_DEFAULT);

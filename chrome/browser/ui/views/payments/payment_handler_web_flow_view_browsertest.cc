@@ -1366,7 +1366,7 @@ IN_PROC_BROWSER_TEST_F(
   // behavior and prevent accidental parent tab navigation.
   content::OpenURLParams current_tab_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("https://example.com"), WindowOpenDisposition::CURRENT_TAB,
+          GURL("https://example.com"), WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(nullptr, payment_handler_contents->GetDelegate()->OpenURLFromTab(
                          payment_handler_contents, current_tab_params,
@@ -1376,8 +1376,8 @@ IN_PROC_BROWSER_TEST_F(
   // parent tab's WebContents.
   content::OpenURLParams new_tab_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("https://example.com"),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
+          GURL("https://example.com"), WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK);
   content::WebContents* result =
       payment_handler_contents->GetDelegate()->OpenURLFromTab(
           payment_handler_contents, new_tab_params, base::NullCallback());

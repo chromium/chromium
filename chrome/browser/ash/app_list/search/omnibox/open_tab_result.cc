@@ -89,7 +89,7 @@ void OpenTabResult::Open(int event_flags) {
       profile_, search_result_->destination_url,
       search_result_->page_transition,
       ui::DispositionFromEventFlags(event_flags,
-                                    WindowOpenDisposition::SWITCH_TO_TAB));
+                                    WindowOpenDisposition::kSwitchToTab));
 }
 
 std::optional<GURL> OpenTabResult::url() const {

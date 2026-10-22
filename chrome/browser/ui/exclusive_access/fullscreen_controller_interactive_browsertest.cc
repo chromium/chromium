@@ -2346,7 +2346,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        ClosingTabExitsFullscreenSafely) {
   // Add a new tab so the browser doesn't close when we close the active tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   WebContents* active_tab =

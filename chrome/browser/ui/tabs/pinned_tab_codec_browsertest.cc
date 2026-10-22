@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(PinnedTabCodecBrowserTest, NoPinnedTabs) {
   GURL url1("https://www.google.com");
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url1, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   PinnedTabCodec::WritePinnedTabs(browser()->GetProfile());
@@ -43,10 +43,10 @@ IN_PROC_BROWSER_TEST_F(PinnedTabCodecBrowserTest, PinnedAndNonPinned) {
   GURL url1("https://www.google.com");
   GURL url2("https://www.google.com/2");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url1, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), url1, WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), url2, WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Close about:blank since we don't need it.

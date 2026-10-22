@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
       page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
           chrome_navigation_initiator::kNewTabPage));
 
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
   GURL url = embedded_test_server()->GetURL("www.example.com", "/empty.html");
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams(
-          url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          url, content::Referrer(), WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_API),
           /*is_renderer_initiated=*/false),
@@ -1285,7 +1285,7 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   {
     // Reload url_b.
     base::HistogramTester histogram_tester;
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
 
     histogram_tester.ExpectUniqueSample(
@@ -1418,7 +1418,7 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   {
     // Reload url_srp.
     base::HistogramTester histogram_tester;
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
 
     histogram_tester.ExpectUniqueSample(
@@ -1485,7 +1485,7 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   // 2. Reload url_a.
   {
     base::HistogramTester histogram_tester;
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
 
     histogram_tester.ExpectUniqueSample(
@@ -1595,7 +1595,7 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   // 3. Reload url_b.
   {
     base::HistogramTester histogram_tester;
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
 
     histogram_tester.ExpectUniqueSample(

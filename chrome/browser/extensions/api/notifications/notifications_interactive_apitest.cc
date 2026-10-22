@@ -187,7 +187,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
     apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
         apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+            WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 

@@ -175,14 +175,14 @@ void PlatformAppBrowserTest::LaunchPlatformApp(const Extension* extension) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
       apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
 }
 
 void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
       CreateAppLaunchParamsUserContainer(
           browser()->GetProfile(), extension,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          WindowOpenDisposition::kNewForegroundTab,
           apps::LaunchSource::kFromCommandLine));
 }
 

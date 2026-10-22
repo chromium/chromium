@@ -302,7 +302,7 @@ TEST_F(WebStateImplTest, DelegateTest) {
 
   // Test that OpenURLFromWebState() is called without a virtual URL.
   WebState::OpenURLParams params(GURL("https://chromium.test/"), Referrer(),
-                                 WindowOpenDisposition::CURRENT_TAB,
+                                 WindowOpenDisposition::kCurrentTab,
                                  ui::PAGE_TRANSITION_LINK, true);
   EXPECT_FALSE(delegate.last_open_url_request());
   web_state->OpenURL(params);
@@ -323,7 +323,7 @@ TEST_F(WebStateImplTest, DelegateTest) {
   // Test that OpenURLFromWebState() is called with a virtual URL.
   params = WebState::OpenURLParams(
       GURL("https://chromium.test/"), GURL("https://virtual.chromium.test/"),
-      Referrer(), WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+      Referrer(), WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
       true);
   web_state->OpenURL(params);
   open_url_request = delegate.last_open_url_request();

@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
   // Trigger reload which will cause page handler to be recreated.
   ui_test_utils::NavigateToURLWithDisposition(
       boca_app_browser, GURL(ash::boca::kChromeBocaAppUntrustedIndexURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // Callback never executed.

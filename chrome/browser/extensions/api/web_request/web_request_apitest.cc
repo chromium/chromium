@@ -1191,7 +1191,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   const GURL url(
       embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // Check that `Network.responseReceived` contains the response header added
@@ -1259,7 +1259,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   const GURL url(
       embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   base::DictValue request_paused_result =
       WaitForNotification("Fetch.requestPaused", true);
@@ -2351,7 +2351,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   const std::string kHost = "a.com";
   GURL url = embedded_test_server()->GetURL(kHost, "/iframe_cross_site.html");
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   ui_test_utils::NavigateToURL(&params);
 
   content::WebContents* web_contents = GetActiveWebContents();
@@ -7174,7 +7174,7 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
   ExtensionTestMessageListener listener("received event");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("test.example", "/simple.html"),
-      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+      WindowOpenDisposition::kCurrentTab, ui_test_utils::BROWSER_TEST_NO_WAIT);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
   EXPECT_TRUE(web_contents->IsLoading());
@@ -9333,7 +9333,7 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
   nav_observer.StartWatchingNewWebContents();
   ExtensionTestMessageListener test_listener("received");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_TRUE(test_listener.WaitUntilSatisfied());

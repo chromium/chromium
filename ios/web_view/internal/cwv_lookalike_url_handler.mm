@@ -64,7 +64,7 @@
       if ([self isSafeURLValid]) {
         _webState->OpenURL(web::WebState::OpenURLParams(
             _lookalikeURLInfo->safe_url, web::Referrer(),
-            WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
             /*is_renderer_initiated=*/false));
         return YES;
       } else {

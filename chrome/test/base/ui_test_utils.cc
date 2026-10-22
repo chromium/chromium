@@ -314,7 +314,7 @@ void NavigateToURLWithPost(BrowserWindowInterface* browser, const GURL& url) {
 content::RenderFrameHost* NavigateToURL(BrowserWindowInterface* browser,
                                         const GURL& url) {
   return NavigateToURLWithDisposition(browser, url,
-                                      WindowOpenDisposition::CURRENT_TAB,
+                                      WindowOpenDisposition::kCurrentTab,
                                       BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 
@@ -332,9 +332,10 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
               "disposition", disposition, "browser_test_flags",
               browser_test_flags);
   TabStripModel* tab_strip = browser->GetTabStripModel();
-  if (disposition == WindowOpenDisposition::CURRENT_TAB &&
-      tab_strip->GetActiveWebContents())
+  if (disposition == WindowOpenDisposition::kCurrentTab &&
+      tab_strip->GetActiveWebContents()) {
     content::WaitForLoadStop(tab_strip->GetActiveWebContents());
+  }
   content::TestNavigationObserver same_tab_observer(
       tab_strip->GetActiveWebContents(), number_of_navigations,
       content::MessageLoopRunner::QuitMode::DEFERRED,
@@ -377,20 +378,20 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     // Some other flag caused the wait prior to this.
     return nullptr;
   }
-  if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (disposition == WindowOpenDisposition::kNewBackgroundTab) {
     EXPECT_TRUE(web_contents)
         << " Unable to wait for navigation to \"" << url.spec()
         << "\" because the new tab is not available yet";
     if (!web_contents) {
       return nullptr;
     }
-  } else if ((disposition == WindowOpenDisposition::CURRENT_TAB) ||
-             (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) ||
-             (disposition == WindowOpenDisposition::SINGLETON_TAB)) {
+  } else if ((disposition == WindowOpenDisposition::kCurrentTab) ||
+             (disposition == WindowOpenDisposition::kNewForegroundTab) ||
+             (disposition == WindowOpenDisposition::kSingletonTab)) {
     // The tab we navigated should be the active one.
     EXPECT_EQ(web_contents, tab_strip->GetActiveWebContents());
   }
-  if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (disposition == WindowOpenDisposition::kCurrentTab) {
     // Waiting for the navigation may destroy `web_contents` (e.g. navigating
     // to a resource that closes its own tab, such as a corrupted extension
     // page that gets disabled mid-navigation under enforced content
@@ -440,7 +441,7 @@ content::RenderFrameHost* NavigateToURLBlockUntilNavigationsComplete(
     const GURL& url,
     int number_of_navigations) {
   return NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser, url, number_of_navigations, WindowOpenDisposition::CURRENT_TAB,
+      browser, url, number_of_navigations, WindowOpenDisposition::kCurrentTab,
       BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 

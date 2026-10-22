@@ -64,7 +64,7 @@ apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
   CHECK(app_id.has_value());
   return apps::AppLaunchParams(
       *app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromAppListGrid);
+      WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromAppListGrid);
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(

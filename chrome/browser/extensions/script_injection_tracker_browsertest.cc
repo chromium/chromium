@@ -171,7 +171,7 @@ class ScriptInjectionTrackerBrowserTest : public ExtensionBrowserTest {
     content::TestNavigationObserver nav_observer(parent_url);
     nav_observer.StartWatchingNewWebContents();
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), parent_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), parent_url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
     response.WaitForRequest();
 
@@ -2419,7 +2419,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
     content::TestNavigationObserver nav_observer(main_url);
     nav_observer.StartWatchingNewWebContents();
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), main_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
     navigation_response.WaitForRequest();
     navigation_response.Send(net::HTTP_OK, "text/html",
@@ -2628,7 +2628,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
     content::TestNavigationObserver nav_observer(main_url);
     nav_observer.StartWatchingNewWebContents();
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), main_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
     navigation_response.WaitForRequest();
     navigation_response.Send(net::HTTP_OK, "text/html",

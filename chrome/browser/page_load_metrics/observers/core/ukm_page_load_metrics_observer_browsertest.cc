@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("origin.com",
                                          "/subresource_loading/index.html"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       /*navigation_handle_callback=*/std::move(
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("origin.com",
                                          "/subresource_loading/index.html"),
-          WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       /*navigation_handle_callback=*/std::move(

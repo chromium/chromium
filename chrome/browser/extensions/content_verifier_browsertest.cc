@@ -1102,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   const char kLargeResource[] = "ten_meg_background.js";
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), extension->GetResourceURL(kLargeResource),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 }
 

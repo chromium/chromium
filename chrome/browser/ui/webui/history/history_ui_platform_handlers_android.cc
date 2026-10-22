@@ -165,7 +165,7 @@ CreateForeignSessionPageHandler(
               for (const auto& tab : window->tabs) {
                 SessionRestore::RestoreForeignSessionTab(
                     web_contents.get(), *tab,
-                    WindowOpenDisposition::NEW_BACKGROUND_TAB);
+                    WindowOpenDisposition::kNewBackgroundTab);
               }
             }
           },

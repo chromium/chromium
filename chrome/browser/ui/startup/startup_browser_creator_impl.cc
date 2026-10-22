@@ -423,7 +423,7 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
         (is_active_tab_overwrite == TabOverWrite::kYes)) {
       NavigateParams params(browser, tab.url,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-      params.disposition = WindowOpenDisposition::CURRENT_TAB;
+      params.disposition = WindowOpenDisposition::kCurrentTab;
       params.tabstrip_add_types = ADD_NONE;
       first_tab = false;
       Navigate(&params);
@@ -448,8 +448,8 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // when the tab strip is empty, so the first tab of a new window is still
     // activated under kOpenInBackground.
     params.disposition = (first_tab && !open_in_background)
-                             ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                             : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+                             ? WindowOpenDisposition::kNewForegroundTab
+                             : WindowOpenDisposition::kNewBackgroundTab;
     params.tabstrip_add_types = add_types;
 
 #if BUILDFLAG(ENABLE_RLZ)

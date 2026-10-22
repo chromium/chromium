@@ -77,7 +77,7 @@ ForceInstalledDeprecatedAppsDialogView::ForceInstalledDeprecatedAppsDialogView(
             content::OpenURLParams::CreateBrowserInitiated(
                 GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
                 ui::DispositionFromEventFlags(
-                    event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+                    event.flags(), WindowOpenDisposition::kNewForegroundTab),
                 ui::PAGE_TRANSITION_LINK),
             /*navigation_handle_callback=*/{});
       },

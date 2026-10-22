@@ -58,7 +58,7 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
 void AdjustBrowserInNavigateParams(NavigateParams* params) {
   bool browser_was_provided = params->browser != nullptr;
   bool navigating_current_tab =
-      params->disposition == WindowOpenDisposition::CURRENT_TAB;
+      params->disposition == WindowOpenDisposition::kCurrentTab;
 
   if (browser_was_provided &&
       (navigating_current_tab || WindowCanOpenTabs(*params))) {
@@ -67,8 +67,8 @@ void AdjustBrowserInNavigateParams(NavigateParams* params) {
 
   // Since the current browser is unsuitable, the new tab will be opened
   // in a different window in the foreground.
-  if (params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  if (params->disposition == WindowOpenDisposition::kNewBackgroundTab) {
+    params->disposition = WindowOpenDisposition::kNewForegroundTab;
   }
 
   // Try to find a suitable fallback browser. A Tabbed browser is always
@@ -81,7 +81,7 @@ void AdjustBrowserInNavigateParams(NavigateParams* params) {
   // This is designed to fail on the subsequent check in synchronous
   // Navigate().
   if (!params->browser) {
-    params->disposition = WindowOpenDisposition::NEW_WINDOW;
+    params->disposition = WindowOpenDisposition::kNewWindow;
   }
 }
 
@@ -114,7 +114,7 @@ content::WebContents* GetTargetWebContents(const NavigateParams& params) {
 // and the original NTP is closed if applicable.
 // If no tab exists, a fallback disposition is applied to params->disposition.
 void TrySwitchToMatchingTab(NavigateParams* params) {
-  CHECK(params->disposition == WindowOpenDisposition::SWITCH_TO_TAB);
+  CHECK(params->disposition == WindowOpenDisposition::kSwitchToTab);
 
   auto* target_contents = GetTargetWebContents(*params);
 
@@ -175,35 +175,35 @@ bool AdjustNavigateParams(NavigateParams* params) {
 
   // If OFF_THE_RECORD disposition does not require a new window,
   // convert it into NEW_FOREGROUND_TAB.
-  if (params->disposition == WindowOpenDisposition::OFF_THE_RECORD &&
+  if (params->disposition == WindowOpenDisposition::kOffTheRecord &&
       params->initiating_profile->IsOffTheRecord()) {
-    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params->disposition = WindowOpenDisposition::kNewForegroundTab;
   }
 
   TabListInterface* tab_list = TabListInterface::From(params->browser);
   bool empty_tab_list = tab_list && tab_list->GetTabCount() == 0;
 
   if (empty_tab_list &&
-      (params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-       params->disposition == WindowOpenDisposition::CURRENT_TAB)) {
-    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      (params->disposition == WindowOpenDisposition::kNewBackgroundTab ||
+       params->disposition == WindowOpenDisposition::kCurrentTab)) {
+    params->disposition = WindowOpenDisposition::kNewForegroundTab;
   }
 
   if (!params->source_contents && !params->browser &&
-      params->disposition == WindowOpenDisposition::CURRENT_TAB) {
+      params->disposition == WindowOpenDisposition::kCurrentTab) {
     DCHECK(false)
         << "Please provide either source_contents or browser for CURRENT_TAB "
            "disposition.";
   }
 
   // Adjust tabstrip_add_types based on the finalized disposition.
-  if (params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (params->disposition == WindowOpenDisposition::kNewBackgroundTab) {
     params->tabstrip_add_types &= ~AddTabTypes::ADD_ACTIVE;
   }
 
-  if (params->disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      params->disposition == WindowOpenDisposition::NEW_WINDOW ||
-      params->disposition == WindowOpenDisposition::NEW_POPUP) {
+  if (params->disposition == WindowOpenDisposition::kNewForegroundTab ||
+      params->disposition == WindowOpenDisposition::kNewWindow ||
+      params->disposition == WindowOpenDisposition::kNewPopup) {
     params->tabstrip_add_types |= AddTabTypes::ADD_ACTIVE;
   }
 
@@ -221,22 +221,22 @@ bool AdjustNavigateParams(NavigateParams* params) {
 
   // Confirm that there is a source or fallback browser for dispositions
   // that do not create a new window.
-  if (params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-      params->disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      params->disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (params->disposition == WindowOpenDisposition::kNewBackgroundTab ||
+      params->disposition == WindowOpenDisposition::kNewForegroundTab ||
+      params->disposition == WindowOpenDisposition::kCurrentTab) {
     AdjustBrowserInNavigateParams(params);
   }
 
   // Ensure that SWITCH_TO_TAB will succeed, coerce disposition otherwise.
-  if (params->disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
+  if (params->disposition == WindowOpenDisposition::kSwitchToTab) {
     auto [bwi, index] =
         GetIndexAndBrowserOfMatchingTab(params->initiating_profile, *params);
 
     auto* target_contents = GetTargetWebContents(*params);
     if (!bwi || index < 0) {
       params->disposition = IsNtpOrAboutBlank(target_contents)
-                                ? WindowOpenDisposition::CURRENT_TAB
-                                : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                                ? WindowOpenDisposition::kCurrentTab
+                                : WindowOpenDisposition::kNewForegroundTab;
       AdjustBrowserInNavigateParams(params);
     }
   }
@@ -251,18 +251,18 @@ void GetOrCreateBrowserWindowForDisposition(
     base::OnceCallback<void(BrowserWindowInterface*)> callback) {
   Profile* profile = params->initiating_profile;
   switch (params->disposition) {
-    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::kOffTheRecord:
       // The existing profile was already checked and is not OTR
       // so use an OTR profile and create a new window.
       profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
       [[fallthrough]];
-    case WindowOpenDisposition::NEW_WINDOW: {
+    case WindowOpenDisposition::kNewWindow: {
       BrowserWindowCreateParams create_params(*profile, params->user_gesture);
       create_params.web_contents = std::move(params->contents_to_insert);
       CreateBrowserWindow(std::move(create_params), std::move(callback));
       break;
     }
-    case WindowOpenDisposition::NEW_POPUP: {
+    case WindowOpenDisposition::kNewPopup: {
       BrowserWindowCreateParams create_params(
           BrowserWindowInterface::Type::TYPE_POPUP, *profile,
           params->user_gesture);
@@ -272,17 +272,17 @@ void GetOrCreateBrowserWindowForDisposition(
       CreateBrowserWindow(std::move(create_params), std::move(callback));
       break;
     }
-    case WindowOpenDisposition::SWITCH_TO_TAB: {
+    case WindowOpenDisposition::kSwitchToTab: {
       TrySwitchToMatchingTab(params);
       [[fallthrough]];
     }
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::kNewBackgroundTab:
       [[fallthrough]];
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::kNewForegroundTab:
       [[fallthrough]];
-    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::kIgnoreAction:
       [[fallthrough]];
-    case WindowOpenDisposition::CURRENT_TAB: {
+    case WindowOpenDisposition::kCurrentTab: {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), params->browser));
       break;
@@ -300,7 +300,7 @@ TabModel::TabLaunchType GetTabLaunchType(const NavigateParams* params) {
   using TabLaunchType = TabModel::TabLaunchType;
 
   bool is_background =
-      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+      params->disposition == WindowOpenDisposition::kNewBackgroundTab;
   bool is_link = ui::PageTransitionCoreTypeIs(params->transition,
                                               ui::PAGE_TRANSITION_LINK);
   // 1. Explicit Index:
@@ -414,11 +414,11 @@ tabs::TabInterface* GetOrCreateTabForDisposition(NavigateParams* params) {
   }
 
   switch (params->disposition) {
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::kNewBackgroundTab:
       [[fallthrough]];
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::kNewForegroundTab:
       return CreateNewTab(params);
-    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::kCurrentTab:
       // CURRENT_TAB with contents_to_insert is handled the same as
       // NEW_FOREGROUND_TAB.
       if (params->contents_to_insert) {
@@ -430,14 +430,14 @@ tabs::TabInterface* GetOrCreateTabForDisposition(NavigateParams* params) {
       }
       // Otherwise use the active tab.
       [[fallthrough]];
-    case WindowOpenDisposition::SWITCH_TO_TAB:
+    case WindowOpenDisposition::kSwitchToTab:
       [[fallthrough]];
-    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::kOffTheRecord:
       // A new incognito window has already been created with a new tab.
       [[fallthrough]];
-    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::kNewPopup:
       [[fallthrough]];
-    case WindowOpenDisposition::NEW_WINDOW: {
+    case WindowOpenDisposition::kNewWindow: {
       // A new tab is already created when the new window is created on Android.
       // Just get the active tab.
       tabs::TabInterface* active_tab = tab_model->GetActiveTab();
@@ -447,7 +447,7 @@ tabs::TabInterface* GetOrCreateTabForDisposition(NavigateParams* params) {
       params->source_contents = active_tab->GetContents();
       return active_tab;
     }
-    case WindowOpenDisposition::IGNORE_ACTION: {
+    case WindowOpenDisposition::kIgnoreAction: {
       if (!params->source_contents) {
         tabs::TabInterface* active_tab = tab_model->GetActiveTab();
         if (active_tab) {
@@ -468,7 +468,7 @@ base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
   bool is_contents_inserted = params->navigated_or_inserted_contents != nullptr;
   tabs::TabInterface* tab = GetOrCreateTabForDisposition(params);
   if (!tab || !tab->GetContents()) {
-    // WindowOpenDisposition::IGNORE_ACTION exits here.
+    // WindowOpenDisposition::kIgnoreAction exits here.
     return nullptr;
   }
 
@@ -486,7 +486,7 @@ base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
 
   // If SWITCH_TO_TAB found the tab, skip navigation unless crashed or
   // IGNORE_AND_NAVIGATE with different URL.
-  if (params->disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
+  if (params->disposition == WindowOpenDisposition::kSwitchToTab) {
     content::WebContents* contents = params->navigated_or_inserted_contents;
 
     if (contents->IsCrashed()) {
@@ -533,10 +533,10 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
 
   // Only handles dispositions that do not require window operations.
-  if (params->disposition != WindowOpenDisposition::CURRENT_TAB &&
-      params->disposition != WindowOpenDisposition::IGNORE_ACTION &&
-      params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-      params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+  if (params->disposition != WindowOpenDisposition::kCurrentTab &&
+      params->disposition != WindowOpenDisposition::kIgnoreAction &&
+      params->disposition != WindowOpenDisposition::kNewBackgroundTab &&
+      params->disposition != WindowOpenDisposition::kNewForegroundTab) {
     return nullptr;
   }
 

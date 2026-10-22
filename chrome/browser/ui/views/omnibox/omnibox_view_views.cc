@@ -2380,7 +2380,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
               OmniboxPopupSelection(
                   OmniboxPopupSelection::kNoMatch,
                   OmniboxPopupSelection::LineState::kFocusedButtonAim),
-              event.time_stamp(), WindowOpenDisposition::CURRENT_TAB,
+              event.time_stamp(), WindowOpenDisposition::kCurrentTab,
               /*via_keyboard=*/true);
           return true;
         }
@@ -2394,7 +2394,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
             controller()->edit_model()->GetPopupSelection();
         if (selection.IsButtonFocused()) {
           controller()->edit_model()->OpenSelection(
-              selection, event.time_stamp(), WindowOpenDisposition::CURRENT_TAB,
+              selection, event.time_stamp(), WindowOpenDisposition::kCurrentTab,
               /*via_keyboard=*/true);
           return true;
         }

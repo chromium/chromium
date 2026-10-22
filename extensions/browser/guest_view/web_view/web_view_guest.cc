@@ -162,19 +162,19 @@ uint32_t GetStoragePartitionRemovalMask(uint32_t web_view_removal_mask) {
 std::string WindowOpenDispositionToString(
     WindowOpenDisposition window_open_disposition) {
   switch (window_open_disposition) {
-    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::kIgnoreAction:
       return "ignore";
-    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::kSaveToDisk:
       return "save_to_disk";
-    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::kCurrentTab:
       return "current_tab";
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::kNewBackgroundTab:
       return "new_background_tab";
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::kNewForegroundTab:
       return "new_foreground_tab";
-    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::kNewWindow:
       return "new_window";
-    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::kNewPopup:
       return "new_popup";
     default:
       return "";
@@ -2114,7 +2114,7 @@ WebContents* WebViewGuest::OpenURLFromTab(
   // LoadURLWithParams such that if the guest attempts to navigate to a URL that
   // it is not allowed to navigate to, a 'loadabort' event will fire in the
   // embedder, and the guest will be navigated to about:blank.
-  if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (params.disposition == WindowOpenDisposition::kCurrentTab) {
     LoadURLWithParams(content::NavigationController::LoadURLParams(params),
                       std::move(navigation_handle_callback),
                       true /* force_navigation */);

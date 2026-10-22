@@ -177,7 +177,7 @@ void OpenMatch(
   const bool is_tab_switch_action =
       action && action->ActionId() == OmniboxActionId::TAB_SWITCH;
   if (is_open_tab_match || is_tab_switch_action) {
-    disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+    disposition = WindowOpenDisposition::kSwitchToTab;
   }
 
   base::TimeDelta elapsed_time_since_user_first_modified_omnibox =
@@ -266,7 +266,7 @@ void OpenMatch(
   log.input_state = input.input_state();
   log.ukm_source_id = client->GetUKMSourceId();
 
-  if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
+  if ((disposition == WindowOpenDisposition::kCurrentTab) &&
       client->CurrentPageExists()) {
     // If we know the destination is being opened in the current tab,
     // we can easily get the tab ID.  (If it's being opened in a new
@@ -449,7 +449,7 @@ void PasteAndGo(AutocompleteController* autocomplete_controller,
       input, autocomplete_controller->result().CopyForSnapshot());
   OpenMatch(autocomplete_controller, client, snapshot,
             OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
-            WindowOpenDisposition::CURRENT_TAB, metrics_tracker,
+            WindowOpenDisposition::kCurrentTab, metrics_tracker,
             keyword_mode_entry_method, text);
 }
 
@@ -523,28 +523,28 @@ WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OpenMatchWithKeyboardModifiers)
 
-  WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
+  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
   OpenMatchWithKeyboardModifiers metric_value;
   if (alt && !shift) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlAlt
                            : OpenMatchWithKeyboardModifiers::kAlt;
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    disposition = WindowOpenDisposition::kNewForegroundTab;
   } else if (shift && command) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlShiftCommand
                            : OpenMatchWithKeyboardModifiers::kShiftCommand;
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    disposition = WindowOpenDisposition::kNewForegroundTab;
   } else if (alt && shift) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlAltShift
                            : OpenMatchWithKeyboardModifiers::kAltShift;
-    disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    disposition = WindowOpenDisposition::kNewBackgroundTab;
   } else if (command && !shift) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlCommand
                            : OpenMatchWithKeyboardModifiers::kCommand;
-    disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    disposition = WindowOpenDisposition::kNewBackgroundTab;
   } else if (shift && !alt) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlShift
                            : OpenMatchWithKeyboardModifiers::kShift;
-    disposition = WindowOpenDisposition::NEW_WINDOW;
+    disposition = WindowOpenDisposition::kNewWindow;
   } else {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrl
                            : OpenMatchWithKeyboardModifiers::kNoModifier;

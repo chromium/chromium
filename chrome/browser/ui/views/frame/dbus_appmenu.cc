@@ -645,14 +645,13 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
     if (item->session_id.is_valid() && service) {
       service->RestoreEntryById(BrowserLiveTabContext::From(browser_),
                                 item->session_id,
-                                WindowOpenDisposition::UNKNOWN);
+                                WindowOpenDisposition::kUnknown);
     } else {
       CHECK(item->url.is_valid(), base::NotFatalUntil::M162);
-      browser_->OpenURL(
-          content::OpenURLParams::CreateBrowserInitiated(
-              item->url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-              ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-          /*navigation_handle_callback=*/{});
+      browser_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                            item->url, WindowOpenDisposition::kNewForegroundTab,
+                            ui::PAGE_TRANSITION_AUTO_BOOKMARK),
+                        /*navigation_handle_callback=*/{});
     }
   } else if (profile_commands_.contains(command_id)) {
     avatar_menu_->SwitchToProfile(profile_commands_[command_id], false);

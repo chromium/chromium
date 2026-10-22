@@ -199,8 +199,8 @@ TEST_F(BookmarkBarUIControllerImplTest, PrefChangesPropagate) {
 
 TEST_F(BookmarkBarUIControllerImplTest, OpenAppsPageDelegates) {
   EXPECT_CALL(mock_action_adapter_,
-              OpenAppsPage(WindowOpenDisposition::NEW_WINDOW));
-  controller_->OpenAppsPage(WindowOpenDisposition::NEW_WINDOW);
+              OpenAppsPage(WindowOpenDisposition::kNewWindow));
+  controller_->OpenAppsPage(WindowOpenDisposition::kNewWindow);
 }
 
 TEST_F(BookmarkBarUIControllerImplTest, OpenBookmarkDelegates) {
@@ -212,8 +212,8 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenBookmarkDelegates) {
   EXPECT_CALL(mock_model_adapter_, GetNodeById(42))
       .WillOnce(testing::Return(node));
   EXPECT_CALL(mock_action_adapter_,
-              OpenBookmark(node, WindowOpenDisposition::NEW_WINDOW));
-  controller_->OpenBookmark(42, WindowOpenDisposition::NEW_WINDOW);
+              OpenBookmark(node, WindowOpenDisposition::kNewWindow));
+  controller_->OpenBookmark(42, WindowOpenDisposition::kNewWindow);
 }
 
 TEST_F(BookmarkBarUIControllerImplTest, OpenBookmarkNodeNotFound) {
@@ -221,7 +221,7 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenBookmarkNodeNotFound) {
       .WillOnce(testing::Return(nullptr));
   EXPECT_CALL(mock_action_adapter_, OpenBookmark(testing::_, testing::_))
       .Times(0);
-  controller_->OpenBookmark(42, WindowOpenDisposition::NEW_WINDOW);
+  controller_->OpenBookmark(42, WindowOpenDisposition::kNewWindow);
 }
 
 TEST_F(BookmarkBarUIControllerImplTest, OpenFolderCurrentTabShowsMenu) {
@@ -229,7 +229,7 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenFolderCurrentTabShowsMenu) {
   bookmarks::BookmarkNodeId folder_id = int64_t{42};
   EXPECT_CALL(mock_action_adapter_, NotifyFolderOpened());
   EXPECT_CALL(mock_client_, ShowFolderMenu(folder_id));
-  controller_->OpenFolder(folder_id, WindowOpenDisposition::CURRENT_TAB);
+  controller_->OpenFolder(folder_id, WindowOpenDisposition::kCurrentTab);
 }
 
 TEST_F(BookmarkBarUIControllerImplTest, OpenFolderOtherDispositionOpensNodes) {
@@ -243,9 +243,9 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenFolderOtherDispositionOpensNodes) {
           std::vector<const bookmarks::BookmarkNode*>{bar_node}));
   EXPECT_CALL(mock_action_adapter_,
               OpenFolderNodes(testing::ElementsAre(bar_node),
-                              WindowOpenDisposition::NEW_WINDOW));
+                              WindowOpenDisposition::kNewWindow));
   EXPECT_CALL(mock_client_, ShowFolderMenu(testing::_)).Times(0);
-  controller_->OpenFolder(folder_id, WindowOpenDisposition::NEW_WINDOW);
+  controller_->OpenFolder(folder_id, WindowOpenDisposition::kNewWindow);
 }
 
 TEST_F(BookmarkBarUIControllerImplTest, OpenFolderOtherDispositionEmptyNodes) {
@@ -256,7 +256,7 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenFolderOtherDispositionEmptyNodes) {
   EXPECT_CALL(mock_action_adapter_, OpenFolderNodes(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(mock_client_, ShowFolderMenu(testing::_)).Times(0);
-  controller_->OpenFolder(folder_id, WindowOpenDisposition::NEW_WINDOW);
+  controller_->OpenFolder(folder_id, WindowOpenDisposition::kNewWindow);
 }
 
 TEST_F(BookmarkBarUIControllerImplTest, ShowContextMenuDelegates) {

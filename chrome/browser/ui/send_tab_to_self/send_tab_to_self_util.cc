@@ -154,7 +154,7 @@ base::WeakPtr<content::WebContents> OpenEntryInNewForegroundTab(
     ShareActivatedEntryPoint entry_point) {
   base::WeakPtr<content::WebContents> web_contents =
       OpenEntryInNewTabWithDisposition(
-          profile, entry, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+          profile, entry, WindowOpenDisposition::kNewForegroundTab);
   if (web_contents) {
     MarkEntryMatchingGuidActivated(profile, entry.GetGUID(), entry_point);
   }
@@ -166,7 +166,7 @@ base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
     const SendTabToSelfEntry& entry) {
   base::WeakPtr<content::WebContents> web_contents =
       OpenEntryInNewTabWithDisposition(
-          profile, entry, WindowOpenDisposition::NEW_BACKGROUND_TAB);
+          profile, entry, WindowOpenDisposition::kNewBackgroundTab);
   if (web_contents) {
     SendTabToSelfActivationTracker::CreateForWebContents(web_contents.get(),
                                                          entry.GetGUID());

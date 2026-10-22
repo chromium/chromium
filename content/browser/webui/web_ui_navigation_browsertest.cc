@@ -54,7 +54,7 @@ blink::mojom::OpenURLParamsPtr CreateOpenURLParams(
     const RenderFrameHostImpl* rfh) {
   auto params = blink::mojom::OpenURLParams::New();
   params->url = url;
-  params->disposition = WindowOpenDisposition::CURRENT_TAB;
+  params->disposition = WindowOpenDisposition::kCurrentTab;
   params->should_replace_current_entry = false;
   params->user_gesture = true;
   params->initiator_state_token = rfh->current_initiator_state_token();

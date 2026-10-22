@@ -259,7 +259,7 @@ void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
   // window is useless until the dialog is closed.
   ash::BrowserController::GetInstance()->OpenUrl(
       account_id, GURL(ash::kChromeUIEchoLearnMoreURL),
-      {.disposition = WindowOpenDisposition::NEW_WINDOW});
+      {.disposition = WindowOpenDisposition::kNewWindow});
 }
 
 void EchoPrivateGetUserConsentFunction::Finalize(bool consent) {

@@ -96,10 +96,10 @@ IN_PROC_BROWSER_TEST_F(MultiProfileSessionRestoreInteractiveUiTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_2, url1));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser_2, url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser_2, url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser_2, url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser_2, url3, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_EQ(3, browser_2->GetTabStripModel()->count());
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(MultiProfileSessionRestoreInteractiveUiTest,
   const GURL old_url2 = embedded_test_server()->GetURL("/title2.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_2, old_url1));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser_2, old_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser_2, old_url2, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_EQ(2, browser_2->GetTabStripModel()->count());

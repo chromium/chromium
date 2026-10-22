@@ -371,7 +371,7 @@ void LocalTabGroupListener::OpenWebContentsFromSync(
   content::NavigationHandle* navigation_handle =
       SavedTabGroupUtils::OpenTabInBrowser(
           url_to_open, browser, browser->GetProfile(),
-          WindowOpenDisposition::NEW_BACKGROUND_TAB, index_in_tabstrip,
+          WindowOpenDisposition::kNewBackgroundTab, index_in_tabstrip,
           local_id_);
   content::WebContents* opened_contents =
       navigation_handle ? navigation_handle->GetWebContents() : nullptr;

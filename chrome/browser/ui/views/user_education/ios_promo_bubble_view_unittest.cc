@@ -257,8 +257,7 @@ TEST_F(IOSPromoBubbleViewTest, AcceptOpensUrl_QRCode) {
         EXPECT_EQ(params.url.path(), "/chrome/go-mobile/");
         EXPECT_TRUE(params.url.query().contains("ios-campaign"));
         EXPECT_TRUE(params.url.query().contains("android-campaign"));
-        EXPECT_EQ(params.disposition,
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB);
+        EXPECT_EQ(params.disposition, WindowOpenDisposition::kNewForegroundTab);
       });
 
   // Click Accept. Expect it to return true (close bubble).

@@ -43,7 +43,7 @@ class BackForwardButton : public ToolbarButton {
   // for heuristic purposes. Only the modifiers of the actual click determine
   // which tab is navigated.
   WindowOpenDisposition last_back_assumed_disposition_ =
-      WindowOpenDisposition::CURRENT_TAB;
+      WindowOpenDisposition::kCurrentTab;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_BACK_FORWARD_BUTTON_H_

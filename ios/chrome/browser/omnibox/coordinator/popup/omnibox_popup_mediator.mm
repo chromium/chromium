@@ -197,7 +197,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     [self.omniboxAutocompleteController
         selectMatchForOpening:match
                         inRow:row
-                       openIn:WindowOpenDisposition::CURRENT_TAB];
+                       openIn:WindowOpenDisposition::kCurrentTab];
   } else {
     DUMP_WILL_BE_NOTREACHED()
         << "Suggestion type " << NSStringFromClass(suggestion.class)
@@ -279,7 +279,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       [self.omniboxAutocompleteController
           selectMatchForOpening:match
                           inRow:row
-                         openIn:WindowOpenDisposition::SWITCH_TO_TAB];
+                         openIn:WindowOpenDisposition::kSwitchToTab];
     } else {
       if (AutocompleteMatch::IsSearchType(match.type)) {
         base::RecordAction(

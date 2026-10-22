@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(
   // Open a new tab to make the first one hidden.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url.spec() + "#2"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(web_contents_to_kill->GetVisibility(), content::Visibility::HIDDEN);

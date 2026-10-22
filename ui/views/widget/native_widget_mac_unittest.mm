@@ -667,9 +667,9 @@ TEST_F(NativeWidgetMacTest, NotImplemented) {
           gfx::NativeWindow(native_parent));
 
   EXPECT_FALSE(window_host->native_widget_mac()->WillExecuteCommand(
-      5001, WindowOpenDisposition::CURRENT_TAB, true));
+      5001, WindowOpenDisposition::kCurrentTab, true));
   EXPECT_FALSE(window_host->native_widget_mac()->ExecuteCommand(
-      5001, WindowOpenDisposition::CURRENT_TAB, true));
+      5001, WindowOpenDisposition::kCurrentTab, true));
 
   [native_parent close];
 }

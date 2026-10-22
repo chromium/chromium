@@ -81,7 +81,7 @@ class TelemetryExtensionUtilBrowserTest : public InProcessBrowserTest {
                                const GURL& url) {
     return content::WebContents::FromRenderFrameHost(
         ui_test_utils::NavigateToURLWithDisposition(
-            target_browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            target_browser, url, WindowOpenDisposition::kNewForegroundTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 

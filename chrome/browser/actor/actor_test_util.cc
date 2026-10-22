@@ -772,8 +772,8 @@ std::unique_ptr<ToolRequest> MakeWaitRequest(TabInterface* observe_tab) {
 std::unique_ptr<ToolRequest> MakeCreateTabRequest(SessionID window_id,
                                                   bool foreground) {
   return std::make_unique<CreateTabToolRequest>(
-      window_id.id(), foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                 : WindowOpenDisposition::NEW_BACKGROUND_TAB);
+      window_id.id(), foreground ? WindowOpenDisposition::kNewForegroundTab
+                                 : WindowOpenDisposition::kNewBackgroundTab);
 }
 
 std::unique_ptr<ToolRequest> MakeActivateTabRequest(TabHandle tab) {

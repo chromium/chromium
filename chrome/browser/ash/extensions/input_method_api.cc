@@ -307,7 +307,7 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
     if (browser) {
       content::OpenURLParams url_params =
           content::OpenURLParams::CreateBrowserInitiated(
-              options_page_url, WindowOpenDisposition::SINGLETON_TAB,
+              options_page_url, WindowOpenDisposition::kSingletonTab,
               ui::PAGE_TRANSITION_LINK);
       browser->GetBrowser().OpenURL(url_params,
                                     /*navigation_handle_callback=*/{});

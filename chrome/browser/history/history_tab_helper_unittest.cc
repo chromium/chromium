@@ -490,7 +490,7 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsHasOpenerWebContentsFirstPage) {
   HistoryTabHelper::FromWebContents(opener_web_contents.get())
       ->DidOpenRequestedURL(web_contents(), nullptr,
                             GURL("http://someurl.com/"), content::Referrer(),
-                            WindowOpenDisposition::NEW_WINDOW,
+                            WindowOpenDisposition::kNewWindow,
                             ui::PAGE_TRANSITION_LINK, false, true);
 
   content::RenderFrameHostTester* main_rfh_tester =
@@ -535,7 +535,7 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsHasLiveOriginalOpenerChain) {
   HistoryTabHelper::FromWebContents(web_contents())
       ->DidOpenRequestedURL(web_contents(), nullptr,
                             GURL("http://someurl.com/"), content::Referrer(),
-                            WindowOpenDisposition::NEW_WINDOW,
+                            WindowOpenDisposition::kNewWindow,
                             ui::PAGE_TRANSITION_LINK, false, true);
 
   // Preparing the NavigationHandle that HistoryTabHelper will use to construct
@@ -592,7 +592,7 @@ TEST_F(HistoryTabHelperTest,
   HistoryTabHelper::FromWebContents(opener_web_contents.get())
       ->DidOpenRequestedURL(web_contents(), nullptr,
                             GURL("http://someurl.com/"), content::Referrer(),
-                            WindowOpenDisposition::NEW_WINDOW,
+                            WindowOpenDisposition::kNewWindow,
                             ui::PAGE_TRANSITION_LINK, false, true);
 
   content::RenderFrameHostTester* main_rfh_tester =

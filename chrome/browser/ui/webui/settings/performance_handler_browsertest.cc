@@ -52,7 +52,7 @@ class PerformanceHandlerTest : public InProcessBrowserTest {
   content::WebContents* AddTabToBrowser(BrowserWindowInterface* browser,
                                         const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser, url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     return browser->GetTabStripModel()->GetActiveWebContents();
   }

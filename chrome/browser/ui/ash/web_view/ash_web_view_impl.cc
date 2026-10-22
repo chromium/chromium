@@ -128,7 +128,7 @@ bool AshWebViewImpl::IsWebContentsCreationOverridden(
     const GURL& target_url) {
   if (params_.suppress_navigation) {
     NotifyDidSuppressNavigation(target_url,
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                WindowOpenDisposition::kNewForegroundTab,
                                 /*from_user_gesture=*/true);
     return true;
   }

@@ -93,7 +93,7 @@ void AppListControllerDelegate::ShowOptionsPage(Profile* profile,
     return;
 
   OpenURL(profile, extensions::OptionsPageInfo::GetOptionsPage(extension),
-          ui::PAGE_TRANSITION_LINK, WindowOpenDisposition::CURRENT_TAB);
+          ui::PAGE_TRANSITION_LINK, WindowOpenDisposition::kCurrentTab);
 }
 
 extensions::LaunchType AppListControllerDelegate::GetExtensionLaunchType(

@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadEnabledBrowserTest,
 
   // This call will not wait for the download to finish.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), download_url, WindowOpenDisposition::CURRENT_TAB,
+      browser(), download_url, WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Wait for the download itself to complete.

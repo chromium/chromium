@@ -568,7 +568,7 @@ void SuspiciousSiteControllerAndroid::OnHelpCenterLinkClicked() {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(chrome::kUnsafeSiteWarningHelpCenterURL),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
+          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK);
 
   contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }

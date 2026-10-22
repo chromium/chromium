@@ -86,7 +86,7 @@ BrowserWindowInterface* PreventCloseTestBase::LaunchPWA(
     bool launch_in_window) {
   return launch_in_window
              ? web_app::LaunchWebAppBrowserAndWait(
-                   profile(), app_id, WindowOpenDisposition::NEW_WINDOW)
+                   profile(), app_id, WindowOpenDisposition::kNewWindow)
              : web_app::LaunchBrowserForWebAppInTab(profile(), app_id);
 }
 

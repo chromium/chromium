@@ -201,7 +201,7 @@ void SupervisedUserVerificationPage::CommandReceived(
 #else
       content::OpenURLParams params =
           content::OpenURLParams::CreateBrowserInitiated(
-              reauth_url_, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              reauth_url_, WindowOpenDisposition::kNewForegroundTab,
               ui::PAGE_TRANSITION_LINK);
       auto* signin_web_contents =
           SecurityInterstitialPage::web_contents()->OpenURL(

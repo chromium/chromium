@@ -219,7 +219,7 @@ class LensOverlayLiveTest : public base::test::WithFeatureOverride,
   // the current tab.
   void WaitForPaint(
       std::string_view url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab,
       int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url), disposition, browser_test_flags));

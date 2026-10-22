@@ -767,7 +767,7 @@ class NavigationEnabledTestClient : public TestClient {
 
  private:
   std::string url_;
-  WindowOpenDisposition disposition_ = WindowOpenDisposition::UNKNOWN;
+  WindowOpenDisposition disposition_ = WindowOpenDisposition::kUnknown;
   int page_ = -1;
   float x_in_pixels_ = 0;
   float y_in_pixels_ = 0;
@@ -787,7 +787,7 @@ TEST_P(AccessibilityTest, WebLinkClickActionHandling) {
   action_data.annotation_index = 0;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ("http://yahoo.com", client.url());
-  EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB, client.disposition());
+  EXPECT_EQ(WindowOpenDisposition::kCurrentTab, client.disposition());
 }
 
 TEST_P(AccessibilityTest, InternalLinkClickActionHandling) {

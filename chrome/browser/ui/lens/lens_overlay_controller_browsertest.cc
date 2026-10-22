@@ -916,7 +916,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   // the current tab.
   void WaitForPaint(
       std::string_view relative_url = kDocumentWithNamedElement,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
+      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab,
       int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
     const GURL url = embedded_test_server()->GetURL(relative_url);
     lens::WaitForPaint(browser(), url, disposition, browser_test_flags);
@@ -2467,7 +2467,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Opening a new tab should background the overlay UI.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
@@ -2528,7 +2528,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Opening a new tab should background the lens session.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // Overlay controller state should remain off.
@@ -2814,7 +2814,7 @@ IN_PROC_BROWSER_TEST_F(
   // navigated.
   const content::OpenURLParams params = MakeRendererInitiatedParams(
       results_frame, embedded_test_server()->GetURL("/title1.html"),
-      WindowOpenDisposition::CURRENT_TAB, /*user_gesture=*/true,
+      WindowOpenDisposition::kCurrentTab, /*user_gesture=*/true,
       results_frame->GetFrameTreeNodeId());
 
   // The request should be handled safely without crashing on frame tree
@@ -2846,8 +2846,8 @@ IN_PROC_BROWSER_TEST_F(
   // Send OpenURL requests with user_gesture = false and no transient
   // activation anywhere.
   const WindowOpenDisposition kDispositions[] = {
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
+      WindowOpenDisposition::kNewForegroundTab,
   };
 
   size_t expected_blocked_popups = 0;
@@ -2893,7 +2893,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const content::OpenURLParams params = MakeRendererInitiatedParams(
       main_frame, embedded_test_server()->GetURL("/title1.html"),
-      WindowOpenDisposition::CURRENT_TAB, /*user_gesture=*/true,
+      WindowOpenDisposition::kCurrentTab, /*user_gesture=*/true,
       main_frame->GetFrameTreeNodeId());
 
   side_panel_contents->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -2929,11 +2929,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(popup_blocker);
 
   const WindowOpenDisposition kDispositions[] = {
-      WindowOpenDisposition::SAVE_TO_DISK,
-      WindowOpenDisposition::OFF_THE_RECORD,
-      WindowOpenDisposition::CURRENT_TAB,
-      WindowOpenDisposition::SWITCH_TO_TAB,
-      WindowOpenDisposition::NEW_PICTURE_IN_PICTURE,
+      WindowOpenDisposition::kSaveToDisk,
+      WindowOpenDisposition::kOffTheRecord,
+      WindowOpenDisposition::kCurrentTab,
+      WindowOpenDisposition::kSwitchToTab,
+      WindowOpenDisposition::kNewPictureInPicture,
   };
 
   size_t expected_blocked_popups = 0;
@@ -2989,7 +2989,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   for (const GURL& target_url : non_web_urls) {
     SCOPED_TRACE(testing::Message() << "url " << target_url);
     const content::OpenURLParams params = MakeRendererInitiatedParams(
-        results_frame, target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        results_frame, target_url, WindowOpenDisposition::kNewForegroundTab,
         /*user_gesture=*/true);
 
     // The request is rejected outright, so it is neither navigated nor
@@ -3089,7 +3089,7 @@ IN_PROC_BROWSER_TEST_F(
   // user_gesture=true, and stamps the frame that was right clicked as both the
   // source and the initiator.
   const content::OpenURLParams params = MakeContextMenuParams(
-      results_frame, nav_url, WindowOpenDisposition::NEW_BACKGROUND_TAB);
+      results_frame, nav_url, WindowOpenDisposition::kNewBackgroundTab);
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   side_panel_contents->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -3127,7 +3127,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL nav_url = embedded_test_server()->GetURL("/title1.html");
 
   const content::OpenURLParams params = MakeContextMenuParams(
-      results_frame, nav_url, WindowOpenDisposition::OFF_THE_RECORD);
+      results_frame, nav_url, WindowOpenDisposition::kOffTheRecord);
 
   auto* popup_blocker = blocked_content::PopupBlockerTabHelper::FromWebContents(
       browser()->GetTabStripModel()->GetActiveWebContents());
@@ -3181,7 +3181,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL nav_url = embedded_test_server()->GetURL("/title1.html");
 
   const content::OpenURLParams params = MakeRendererInitiatedParams(
-      results_frame, nav_url, WindowOpenDisposition::OFF_THE_RECORD,
+      results_frame, nav_url, WindowOpenDisposition::kOffTheRecord,
       /*user_gesture=*/true);
 
   side_panel_contents->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -5048,7 +5048,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Simulate user pressing the reload button.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
 
   // Overlay should close
   ASSERT_TRUE(base::test::RunUntil(
@@ -5398,7 +5398,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEntrypointsBrowserTest,
 
   // Switch to a new tab.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_TRUE(base::test::RunUntil(
@@ -5549,7 +5549,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Opening a new tab to background the overlay UI.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
@@ -5588,7 +5588,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Opening a new tab to background the overlay UI.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
@@ -9874,7 +9874,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
   // Opening a new tab should background the overlay UI.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
@@ -10167,7 +10167,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
   // Opening a new tab should background the overlay UI.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
@@ -10225,7 +10225,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
   // Opening a new tab should background the overlay UI.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
@@ -10404,7 +10404,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // 2. Background the tab by opening a new tab.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
@@ -10429,7 +10429,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // 6. Background the tab again.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
@@ -10489,7 +10489,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Background the tab by opening a new tab.
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
@@ -10955,7 +10955,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, MediaPauseResume) {
   int active_controller_tab_index =
       browser()->GetTabStripModel()->active_index();
   WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               WindowOpenDisposition::kNewForegroundTab,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_TRUE(base::test::RunUntil(

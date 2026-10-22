@@ -232,7 +232,7 @@ class SaveCardBubbleControllerImplTest
     ON_CALL(mock_browser_window_, OpenGURL(testing::_, testing::_))
         .WillByDefault(
             [this](const GURL& url, WindowOpenDisposition disposition) {
-              if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+              if (disposition == WindowOpenDisposition::kNewForegroundTab) {
                 content::WebContents* new_contents = AddTab(url);
                 int new_index =
                     tab_strip_model_->GetIndexOfWebContents(new_contents);

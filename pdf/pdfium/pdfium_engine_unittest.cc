@@ -1081,7 +1081,7 @@ TEST_P(PDFiumEngineTest, LinkNavigates) {
   // Plugin size chosen so all pages of the document are visible.
   engine->PluginSizeUpdated({1024, 4096});
 
-  EXPECT_CALL(client, NavigateTo("", WindowOpenDisposition::CURRENT_TAB));
+  EXPECT_CALL(client, NavigateTo("", WindowOpenDisposition::kCurrentTab));
   constexpr gfx::PointF kMiddlePosition(100, 230);
   EXPECT_TRUE(engine->HandleInputEvent(
       CreateLeftClickWebMouseEventAtPosition(kMiddlePosition)));

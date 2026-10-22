@@ -612,7 +612,7 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
       // gets executed.
       apps::AppLaunchParams params(
           app_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromOmnibox);
+          WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromOmnibox);
       params.override_url = launch_url;
       content::WebContents* new_web_contents =
           WebAppLaunchProcess::CreateAndRun(
@@ -702,7 +702,7 @@ void MaybeAddPinnedHomeTab(BrowserWindowInterface* browser,
       pinned_home_tab_url.has_value()) {
     NavigateParams home_tab_nav_params(browser, pinned_home_tab_url.value(),
                                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    home_tab_nav_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    home_tab_nav_params.disposition = WindowOpenDisposition::kNewBackgroundTab;
     home_tab_nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
     Navigate(&home_tab_nav_params);
   }

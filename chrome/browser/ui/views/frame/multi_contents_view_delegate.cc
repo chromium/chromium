@@ -121,7 +121,7 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
   NavigateParams params(&browser_.get(), filtered_urls.front(),
                         ui::PAGE_TRANSITION_LINK);
   params.tabstrip_index = new_tab_idx;
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.initiator_origin = event.data().GetRendererTaintedOrigin();
   if (active_tab->IsPinned()) {
     params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;

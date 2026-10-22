@@ -461,8 +461,8 @@ std::unique_ptr<ToolRequest> CreateCreateTabRequest(
   // an error or default to what? For now we default to foreground.
   WindowOpenDisposition disposition =
       !action.has_foreground() || action.foreground()
-          ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-          : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+          ? WindowOpenDisposition::kNewForegroundTab
+          : WindowOpenDisposition::kNewBackgroundTab;
 
   return std::make_unique<CreateTabToolRequest>(window_id, disposition);
 }

@@ -28,7 +28,7 @@ base::WeakPtr<content::NavigationHandle> BrowserNavigatorTabModal::ShowImpl(
       ui::PAGE_TRANSITION_LINK);
   params.source_contents = &source_contents;
   params.window_features.bounds = gfx::Rect(size);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.disposition = WindowOpenDisposition::kNewPopup;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   return internal::ShowTabModalPopup(params);
 }

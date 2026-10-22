@@ -338,7 +338,7 @@ void AccountConsistencyService::AccountConsistencyHandler::
     return;
   }
   web_state_->OpenURL(web::WebState::OpenURLParams(
-      url, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      url, web::Referrer(), WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
   if (delegate_) {
     delegate_->OnRestoreGaiaCookies();

@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   app_launch_info->container =
       static_cast<int32_t>(apps::LaunchContainer::kLaunchContainerWindow);
   app_launch_info->disposition =
-      static_cast<int32_t>(WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      static_cast<int32_t>(WindowOpenDisposition::kNewForegroundTab);
   app_launch_info->browser_extra_info.urls = {GURL(kExampleUrl1)};
   app_launch_info->browser_extra_info.tab_group_infos = {group_info};
 
@@ -816,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
 
   EXPECT_EQ(static_cast<int>(apps::LaunchContainer::kLaunchContainerWindow),
             data2->container.value());
-  EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),
+  EXPECT_EQ(static_cast<int>(WindowOpenDisposition::kNewWindow),
             data2->disposition.value());
   // Verify window info are correctly captured.
   EXPECT_THAT(data2->window_info.current_bounds, Optional(settings_app_bounds));
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithChromeApp) {
       profile()->GetPath(),
       std::make_unique<app_restore::AppLaunchInfo>(
           extension_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
+          WindowOpenDisposition::kNewWindow, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
   extensions::AppWindow* app_window = CreateAppWindow(profile(), extension);
@@ -2189,7 +2189,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 
   EXPECT_EQ(static_cast<int>(apps::LaunchContainer::kLaunchContainerWindow),
             data2->container.value());
-  EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),
+  EXPECT_EQ(static_cast<int>(WindowOpenDisposition::kNewWindow),
             data2->disposition.value());
   // Verify window info are correctly captured.
   EXPECT_THAT(data2->window_info.current_bounds, Optional(settings_app_bounds));
@@ -2213,7 +2213,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithChromeApp) {
       profile()->GetPath(),
       std::make_unique<app_restore::AppLaunchInfo>(
           extension_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
+          WindowOpenDisposition::kNewWindow, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
   extensions::AppWindow* app_window = CreateAppWindow(profile(), extension);

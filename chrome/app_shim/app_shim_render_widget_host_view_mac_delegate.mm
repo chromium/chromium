@@ -108,9 +108,9 @@
   bool was_executed = false;
   if (direction == history_swiper::kForwards) {
     bridge->host()->ExecuteCommand(
-        IDC_FORWARD, WindowOpenDisposition::CURRENT_TAB, false, &was_executed);
+        IDC_FORWARD, WindowOpenDisposition::kCurrentTab, false, &was_executed);
   } else {
-    bridge->host()->ExecuteCommand(IDC_BACK, WindowOpenDisposition::CURRENT_TAB,
+    bridge->host()->ExecuteCommand(IDC_BACK, WindowOpenDisposition::kCurrentTab,
                                    false, &was_executed);
   }
   DCHECK(was_executed);

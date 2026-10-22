@@ -110,7 +110,7 @@ class LiveCaptionSurfaceTest : public InProcessBrowserTest {
   // Opens a new tab and waits for it to load the given URL.
   content::WebContents* LoadNewTab(GURL url) {
     content::RenderFrameHost* rfh = ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     return content::WebContents::FromRenderFrameHost(rfh);
   }
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, Sessions) {
     surface_1->Activate();
     ASSERT_EQ(wc_1, browser()->tab_strip_model()->GetActiveWebContents());
 
-    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
     content::WaitForLoadStop(wc_1);
     base::RunLoop().RunUntilIdle();
     checkpointer.Call(2);

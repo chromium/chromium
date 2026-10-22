@@ -138,7 +138,7 @@ class BrowserNavigatorParamsUtilsTest : public ChromeRenderViewHostTestHarness {
   NavigateParams NavigateParamsForTest(
       GURL url,
       WindowOpenDisposition disposition =
-          WindowOpenDisposition::SINGLETON_TAB) {
+          WindowOpenDisposition::kSingletonTab) {
     NavigateParams params(profile(), url,
                           ui::PageTransition::PAGE_TRANSITION_TYPED);
     params.disposition = disposition;
@@ -186,8 +186,8 @@ TEST_F(BrowserNavigatorParamsUtilsTest, FindsWithDifferentRef) {
 }
 
 TEST_F(BrowserNavigatorParamsUtilsTest, DoesNotFindNonSingletonDisposition) {
-  auto params = NavigateParamsForTest(
-      GURL(kUrl1), WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  auto params = NavigateParamsForTest(GURL(kUrl1),
+                                      WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(GetIndexOfExistingTabMatchingURL(browser(), params), -1);
 }
 

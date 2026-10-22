@@ -378,11 +378,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
 #endif  // BUILDFLAG(IS_ANDROID)
   };
 
-  send_input(u"alpha current tab", WindowOpenDisposition::CURRENT_TAB);
-  send_input(u"alpha new tab", WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  send_input(u"alpha current tab", WindowOpenDisposition::kCurrentTab);
+  send_input(u"alpha new tab", WindowOpenDisposition::kNewForegroundTab);
 
   ExtensionTestMessageListener listener;
-  send_input(u"alpha send results", WindowOpenDisposition::CURRENT_TAB);
+  send_input(u"alpha send results", WindowOpenDisposition::kCurrentTab);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   static constexpr char kExpectedResult[] =
@@ -1284,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnInputEntered) {
 #if BUILDFLAG(IS_ANDROID)
   ExtensionOmniboxEventRouter::OnInputEntered(
       GetActiveWebContents(), extension->id(), "sending input",
-      WindowOpenDisposition::CURRENT_TAB);
+      WindowOpenDisposition::kCurrentTab);
 #else   // BUILDFLAG(IS_ANDROID)
   chrome::FocusLocationBar(browser());
 
@@ -1299,7 +1299,7 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnInputEntered) {
   // Select the suggestion created by the extension, which will trigger the
   // `onInputEntered` event.
   location_bar->GetOmniboxController()->edit_model()->OpenCurrentSelection(
-      base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB);
+      base::TimeTicks(), WindowOpenDisposition::kCurrentTab);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -1483,7 +1483,7 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnActionExecuted) {
           /*line=*/1,
           /*state=*/OmniboxPopupSelection::LineState::kFocusedButtonAction,
           /*action_index=*/0),
-      base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB);
+      base::TimeTicks(), WindowOpenDisposition::kCurrentTab);
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("do_something-sending input", listener.message());

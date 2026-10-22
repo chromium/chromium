@@ -117,13 +117,13 @@ content::WebContents* ExtensionViewHost::OpenURLFromTab(
         navigation_handle_callback) {
   // Allowlist the dispositions we will allow to be opened.
   switch (params.disposition) {
-    case WindowOpenDisposition::SINGLETON_TAB:
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::NEW_POPUP:
-    case WindowOpenDisposition::NEW_WINDOW:
-    case WindowOpenDisposition::SAVE_TO_DISK:
-    case WindowOpenDisposition::OFF_THE_RECORD: {
+    case WindowOpenDisposition::kSingletonTab:
+    case WindowOpenDisposition::kNewForegroundTab:
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kNewPopup:
+    case WindowOpenDisposition::kNewWindow:
+    case WindowOpenDisposition::kSaveToDisk:
+    case WindowOpenDisposition::kOffTheRecord: {
       // Only allow these from hosts that are bound to a browser (e.g. popups).
       // Otherwise they are not driven by a user gesture.
       return delegate_->OpenURL(params, std::move(navigation_handle_callback));

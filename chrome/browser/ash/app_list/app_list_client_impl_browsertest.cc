@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
     content::CreateAndLoadWebContentsObserver app_loaded_observer;
     apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
         extension_app->id(),
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+        apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
                             false /* preferred_containner */),
         apps::LaunchSource::kFromTest,
         std::make_unique<apps::WindowInfo>(
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
 }
 
 // Verifies that opening a URL search result from the Launcher with Ctrl+Alt
-// (which maps to WindowOpenDisposition::NEW_SPLIT_VIEW) works when a browser
+// (which maps to WindowOpenDisposition::kNewSplitView) works when a browser
 // has an unsplit active tab, and does not crash when the active tab is already
 // in a split view or when no regular browser window is open for the profile.
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,

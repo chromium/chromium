@@ -134,7 +134,7 @@ class NewTabPageHandlerCustomizeChromeAutoOpenBrowserTest
   void OpenNewTabPageInForeground() {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), chrome::ChromeUINewTabPageURLAsGURL(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -229,7 +229,7 @@ class NewTabPageHandlerManagedTest : public NewTabPageHandlerBaseBrowserTest,
   void NavigateToNewTabPage() {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), chrome::ChromeUINewTabPageURLAsGURL(),
-        WindowOpenDisposition::CURRENT_TAB,
+        WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

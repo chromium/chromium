@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                              EXPECT_TRUE(chrome::CanGoBack(browser()));
                              util->set_page_identifier(kWebContentsElementId);
                              chrome::GoBack(browser(),
-                                            WindowOpenDisposition::CURRENT_TAB);
+                                            WindowOpenDisposition::kCurrentTab);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                              EXPECT_TRUE(chrome::CanGoForward(browser()));
                              util->set_page_identifier(kWebContentsElementId2);
                              chrome::GoForward(
-                                 browser(), WindowOpenDisposition::CURRENT_TAB);
+                                 browser(), WindowOpenDisposition::kCurrentTab);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -2375,7 +2375,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   NavigateParams params(browser(),
                         embedded_test_server()->GetURL(kDocumentWithLinksURL),
                         ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.disposition = WindowOpenDisposition::kCurrentTab;
   Navigate(&params);
 
   // Using this constructor hits all of the rest of the constructors, saving us

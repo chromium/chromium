@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
       browser()->GetTabStripModel()->GetActiveWebContents());
   popup_blocker->ShowBlockedPopup(
       popup_blocker->GetBlockedPopupRequests().begin()->first,
-      WindowOpenDisposition::NEW_BACKGROUND_TAB);
+      WindowOpenDisposition::kNewBackgroundTab);
 
   const char kPopupActions[] = "ContentSettings.Popups.BlockerActions";
   tester.ExpectBucketCount(

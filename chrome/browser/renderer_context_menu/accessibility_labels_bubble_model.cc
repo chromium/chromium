@@ -99,7 +99,7 @@ GURL AccessibilityLabelsBubbleModel::GetHelpPageURL() const {
 
 void AccessibilityLabelsBubbleModel::OpenHelpPage() {
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      GetHelpPageURL(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      GetHelpPageURL(), WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK);
   if (web_contents_) {
     web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});

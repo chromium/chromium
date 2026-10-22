@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
   const GURL url(ash::kChromeUIDiagnosticsAppUrl);
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
       browser(), url, /*number_of_navigations=*/2,
-      WindowOpenDisposition::CURRENT_TAB, /*browser_test_flags=*/0);
+      WindowOpenDisposition::kCurrentTab, /*browser_test_flags=*/0);
 
   auto* browser_web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();

@@ -175,7 +175,7 @@ void RequestOpenApp(Profile* profile) {
   CHECK(extensions::util::IsAppLaunchable(arc::kPlayStoreAppId, profile));
   ::OpenApplication(profile,
                     CreateAppLaunchParamsUserContainer(
-                        profile, extension, WindowOpenDisposition::NEW_WINDOW,
+                        profile, extension, WindowOpenDisposition::kNewWindow,
                         apps::LaunchSource::kFromChromeInternal));
 }
 

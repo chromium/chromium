@@ -51,8 +51,8 @@ content::WebContents* AddAndReturnTabAt(
     std::optional<NavigateParams::WindowAction> window_action) {
   const GURL resolved_url = url.is_empty() ? GetNewTabURL(browser) : url;
   NavigateParams params(browser, resolved_url, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                  : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params.disposition = foreground ? WindowOpenDisposition::kNewForegroundTab
+                                  : WindowOpenDisposition::kNewBackgroundTab;
   if (window_action) {
     params.window_action = window_action.value();
   }
@@ -88,7 +88,7 @@ content::WebContents* AddSelectedTabWithURL(BrowserWindowInterface* browser,
                                             const GURL& url,
                                             ui::PageTransition transition) {
   NavigateParams params(browser, url, transition);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
   params.web_app_navigation_data.emplace();
   params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
   Navigate(&params);
@@ -105,10 +105,10 @@ content::WebContents* AddWebContents(
     NavigateParams::WindowAction window_action,
     bool user_gesture) {
   // No code for this yet.
-  CHECK(disposition != WindowOpenDisposition::SAVE_TO_DISK,
+  CHECK(disposition != WindowOpenDisposition::kSaveToDisk,
         base::NotFatalUntil::M162);
   // Can't create a new contents for the current tab - invalid case.
-  CHECK(disposition != WindowOpenDisposition::CURRENT_TAB,
+  CHECK(disposition != WindowOpenDisposition::kCurrentTab,
         base::NotFatalUntil::M162);
 
   NavigateParams params(browser, std::move(new_contents));
@@ -180,8 +180,8 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
     return;
   }
 
-  if (nav_params->disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      nav_params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (nav_params->disposition == WindowOpenDisposition::kNewForegroundTab ||
+      nav_params->disposition == WindowOpenDisposition::kNewBackgroundTab) {
     nav_params->group = model->GetTabGroupForTab(source_index);
   }
 }

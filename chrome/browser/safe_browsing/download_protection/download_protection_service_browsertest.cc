@@ -75,7 +75,7 @@ class DownloadProtectionServiceBrowserTest : public InProcessBrowserTest {
     // This call will block until the navigation completes, but will not wait
     // for the download to finish.
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        browser(), url, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     observer.WaitForFinished();

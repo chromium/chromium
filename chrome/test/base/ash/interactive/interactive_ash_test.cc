@@ -520,7 +520,7 @@ InteractiveAshTest::CreateBrowserWindow(const GURL& url) {
   Profile* profile = GetActiveUserProfile();
   CHECK(profile);
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  params.disposition = WindowOpenDisposition::kNewWindow;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   return Navigate(&params);
 }

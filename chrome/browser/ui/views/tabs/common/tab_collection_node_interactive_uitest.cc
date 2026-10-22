@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeInteractiveUiTest,
   for (size_t i = 0; i < 5; i++) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeInteractiveUiTest,
   for (size_t i = 0; i < 2; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

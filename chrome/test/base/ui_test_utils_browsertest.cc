@@ -34,16 +34,16 @@ IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, OpenTwoTabsInBackground) {
   const GURL url3 = embedded_test_server()->GetURL("a.com", "/title3.html");
 
   NavigateToURLWithDisposition(browser(), url1,
-                               WindowOpenDisposition::CURRENT_TAB,
+                               WindowOpenDisposition::kCurrentTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   NavigateToURLWithDisposition(browser(), url2,
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               WindowOpenDisposition::kNewBackgroundTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // This test will pass if this call does not time out, which requires
   //   // NavigateToURLWithDisposition to pick correct tab to wait for.
   NavigateToURLWithDisposition(browser(), url3,
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               WindowOpenDisposition::kNewBackgroundTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 

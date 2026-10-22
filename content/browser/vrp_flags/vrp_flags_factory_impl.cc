@@ -104,9 +104,9 @@ void VrpFlagsFactoryImpl::StartRendererForVrpFlags(
   }
 
   WindowOpenDisposition open_disposition =
-      WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      WindowOpenDisposition::kNewForegroundTab;
   if (disposition == vrp_flags::mojom::VictimDisposition::kSpawnBackgroundTab) {
-    open_disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    open_disposition = WindowOpenDisposition::kNewBackgroundTab;
   }
 
   GURL target_url(base::StringPrintf("http://victim.test:%u/poc.html", port));

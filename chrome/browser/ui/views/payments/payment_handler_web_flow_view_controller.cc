@@ -483,7 +483,7 @@ content::WebContents* PaymentHandlerWebFlowViewController::OpenURLFromTab(
   // Reject CURRENT_TAB to maintain existing behavior for internal navigations.
   // OpenURLFromTab is implemented so that external links (e.g. PageInfo "Learn
   // more") are routed to the parent tab.
-  if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
+  if (params.disposition == WindowOpenDisposition::kCurrentTab) {
     return nullptr;
   }
   if (!state() || !state()->GetWebContents()) {
@@ -505,8 +505,8 @@ content::WebContents* PaymentHandlerWebFlowViewController::AddNewContents(
   BrowserWindowInterface* const browser =
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   if (browser && user_gesture &&
-      (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-       disposition == WindowOpenDisposition::NEW_POPUP)) {
+      (disposition == WindowOpenDisposition::kNewForegroundTab ||
+       disposition == WindowOpenDisposition::kNewPopup)) {
     chrome::AddWebContents(browser, source, std::move(new_contents), target_url,
                            disposition, window_features);
   }

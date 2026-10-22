@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
   content::WebContents* target_webui_window = browser()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(chrome::kChromeUIWebUIJsErrorURL),
-          WindowOpenDisposition::NEW_WINDOW, ui::PAGE_TRANSITION_TYPED),
+          WindowOpenDisposition::kNewWindow, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   content::WaitForLoadStop(target_webui_window);
 

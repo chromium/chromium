@@ -497,7 +497,7 @@ void ContextHubTabProviderDesktop::OpenTopic(
   // Navigate() resolves the target window itself: for a new foreground tab it
   // reuses a tabbed browser for this profile, or creates one if none is open.
   NavigateParams navigate_params(profile_, url, ui::PAGE_TRANSITION_LINK);
-  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  navigate_params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&navigate_params);
 }
 

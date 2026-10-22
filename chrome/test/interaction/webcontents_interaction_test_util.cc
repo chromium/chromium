@@ -1161,8 +1161,8 @@ void TabWebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
                        : GetBrowserWindowForWebContentsInTab(web_contents());
   NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
   navigate_params.disposition = activate_tab
-                                    ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                    : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+                                    ? WindowOpenDisposition::kNewForegroundTab
+                                    : WindowOpenDisposition::kNewBackgroundTab;
   auto navigate_result = Navigate(&navigate_params);
   CHECK(navigate_result);
 }

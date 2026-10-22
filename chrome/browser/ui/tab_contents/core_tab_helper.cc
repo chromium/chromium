@@ -573,7 +573,7 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
   }
   content::OpenURLParams open_url_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   const std::string& content_type = post_content.first;
   const std::string& post_data = post_content.second;

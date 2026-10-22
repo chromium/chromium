@@ -89,7 +89,7 @@ TEST_P(SessionRestoreInfoBarDelegateTest, DismissedHistogram) {
 // When the link is clicked, the "link clicked" histogram should be recorded.
 TEST_P(SessionRestoreInfoBarDelegateTest, LinkClickedHistogram) {
   infobars::InfoBar* infobar = CreateDelegate();
-  infobar->delegate()->LinkClicked(WindowOpenDisposition::CURRENT_TAB);
+  infobar->delegate()->LinkClicked(WindowOpenDisposition::kCurrentTab);
   histogram_tester().ExpectBucketCount(GetParam().histogram_name,
                                        InfobarAction::kLinkClicked, 1);
 }

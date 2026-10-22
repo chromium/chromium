@@ -396,7 +396,7 @@ void ContextualTasksPageHandler::OpenOnboardingHelpUi() {
   OpenUrlWithDisposition(
       web_ui_controller_->GetProfile(),
       GURL(contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl()),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
+      WindowOpenDisposition::kNewForegroundTab, browser);
 }
 
 void ContextualTasksPageHandler::OpenAskGHelpUi() {
@@ -406,7 +406,7 @@ void ContextualTasksPageHandler::OpenAskGHelpUi() {
   }
   OpenUrlWithDisposition(web_ui_controller_->GetProfile(),
                          GURL(contextual_tasks::GetContextualTasksTabHelpUrl()),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
+                         WindowOpenDisposition::kNewForegroundTab, browser);
 }
 
 void ContextualTasksPageHandler::OnWebviewMessage(

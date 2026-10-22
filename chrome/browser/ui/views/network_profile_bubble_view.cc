@@ -95,7 +95,7 @@ void NetworkProfileBubbleView::LinkClicked(const ui::Event& event) {
   NetworkProfileBubble::RecordUmaEvent(
       NetworkProfileBubble::METRIC_LEARN_MORE_CLICKED);
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
-      event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      event.flags(), WindowOpenDisposition::kNewForegroundTab);
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://sites.google.com/a/chromium.org/dev/administrators/"

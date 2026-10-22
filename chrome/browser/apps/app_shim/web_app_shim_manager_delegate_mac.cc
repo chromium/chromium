@@ -268,7 +268,7 @@ void WebAppShimManagerDelegate::LaunchApp(
   }
 
   apps::AppLaunchParams params(app_id, launch_container,
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               WindowOpenDisposition::kNewForegroundTab,
                                launch_source);
   // Don't assign `files` to `params.launch_files` until we're sure this is a
   // permitted file launch.

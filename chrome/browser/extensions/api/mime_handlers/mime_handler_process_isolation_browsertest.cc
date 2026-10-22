@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerProcessIsolationBrowserTest,
   content::RenderProcessHost* process_a = frame_a->GetProcess();
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   GURL pdf_url_b = embedded_test_server()->GetURL(kHostB, kPdfPath);
   content::RenderFrameHost* frame_b =
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerProcessIsolationBrowserTest,
   content::RenderProcessHost* process_a = frame_a->GetProcess();
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   content::RenderFrameHost* frame_b =
       NavigateToPdfAndGetExtensionFrame(pdf_url);
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerProcessIsolationBrowserTest,
 
   // Viewer 2 in a fresh tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   GURL pdf_url_b = embedded_test_server()->GetURL(kHostB, kPdfPath);
   content::RenderFrameHost* viewer2 =
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerProcessIsolationBrowserTest,
 
   // Viewer 2 in a fresh tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   GURL pdf_url_b = embedded_test_server()->GetURL(kHostB, kPdfPath);
   content::RenderFrameHost* viewer2 =
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerProcessIsolationBrowserTest,
   // process -- `IsSuitableHost()` rejects it on the per-instance id -- so it
   // lands in its own isolated process.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   GURL pdf_url_b = embedded_test_server()->GetURL(kHostB, kPdfPath);
   content::RenderFrameHost* viewer2 =
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerProcessIsolationBrowserTest,
   // close the viewer tab. (Closing the only tab in a browser closes the
   // browser too, which is more disruptive than this test needs.)
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   GURL pdf_url = embedded_test_server()->GetURL(kHostA, kPdfPath);
   content::RenderFrameHost* viewer_frame =

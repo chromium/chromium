@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
                      .Build();
 
   EXPECT_TRUE(chrome::ExecuteCommandWithDispositionAndContext(
-      browser(), IDC_BACK, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), IDC_BACK, WindowOpenDisposition::kNewForegroundTab,
       std::move(context)));
   EXPECT_TRUE(action_invoked_);
   EXPECT_EQ(last_context_.GetProperty(kTestPropertyKey), 99);

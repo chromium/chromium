@@ -24,14 +24,14 @@ WindowOpenDisposition DispositionFromClick(
     bool meta_key,
     bool shift_key,
     WindowOpenDisposition disposition_for_current_tab =
-        WindowOpenDisposition::CURRENT_TAB);
+        WindowOpenDisposition::kCurrentTab);
 
 // As with DispositionFromClick(), but using |event_flags| as in ui::MouseEvent.
 COMPONENT_EXPORT(UI_BASE)
 WindowOpenDisposition DispositionFromEventFlags(
     int event_flags,
     WindowOpenDisposition disposition_for_current_tab =
-        WindowOpenDisposition::CURRENT_TAB);
+        WindowOpenDisposition::kCurrentTab);
 
 }  // namespace ui
 

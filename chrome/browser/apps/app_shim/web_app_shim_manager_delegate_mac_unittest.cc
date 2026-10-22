@@ -149,7 +149,7 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
       const GURL& override_url) {
     apps::AppLaunchParams params(app_id_,
                                  apps::LaunchContainer::kLaunchContainerWindow,
-                                 WindowOpenDisposition::NEW_WINDOW,
+                                 WindowOpenDisposition::kNewWindow,
                                  apps::LaunchSource::kFromCommandLine);
 
     params.launch_files = launch_files;

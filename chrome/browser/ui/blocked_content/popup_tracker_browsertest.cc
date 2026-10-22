@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, AllowlistedPopup_HasTracker) {
       blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
   popup_blocker->ShowBlockedPopup(
       popup_blocker->GetBlockedPopupRequests().begin()->first,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      WindowOpenDisposition::kNewForegroundTab);
   navigation_observer.Wait();
 
   // Close the popup and check metric.
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, AllowlistedPopup_HasTracker) {
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, NoOpener_NoTracker) {
   const GURL url = embedded_test_server()->GetURL("/title1.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::WebContents* new_contents =
@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
   auto* entry = ExpectAndGetEntry(first_url);
   test_ukm_recorder_->ExpectEntryMetric(
       entry, kUkmWindowOpenDisposition,
-      static_cast<int>(WindowOpenDisposition::NEW_FOREGROUND_TAB));
+      static_cast<int>(WindowOpenDisposition::kNewForegroundTab));
 }
 
 // TODO(crbug.com/40749398): Test is flaky on Linux.
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   auto* entry = ExpectAndGetEntry(first_url);
   test_ukm_recorder_->ExpectEntryMetric(
       entry, kUkmWindowOpenDisposition,
-      static_cast<int>(WindowOpenDisposition::NEW_POPUP));
+      static_cast<int>(WindowOpenDisposition::kNewPopup));
 }
 
 // TODO(crbug.com/40730174): Test is flaky on Linux Ozone Wayland.

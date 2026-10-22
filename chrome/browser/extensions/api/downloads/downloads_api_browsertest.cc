@@ -460,7 +460,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     GURL url(extension_->GetResourceURL("empty.html"));
     // NOTE: `current_browser()` could be incognito.
     NavigateParams params(current_browser(), url, ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
     CHECK(handle);
     content::WebContents* const tab = handle->GetWebContents();
@@ -735,7 +735,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     DownloadManager* manager = GetCurrentManager();
 
     const GURL url = embedded_test_server()->GetURL(path);
-    LoadURLNoWait(url, WindowOpenDisposition::CURRENT_TAB);
+    LoadURLNoWait(url, WindowOpenDisposition::kCurrentTab);
 
     response->WaitForRequest();
     response->Send(
@@ -880,7 +880,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
                            : extension->GetResourceURL("empty.html");
       // Recreate the tab each time for insulation.
       content::WebContents* tab =
-          LoadURLNoWait(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+          LoadURLNoWait(url, WindowOpenDisposition::kNewForegroundTab);
       CHECK(tab);
       CHECK(content::WaitForLoadStop(tab));
       function->set_extension(extension);
@@ -916,7 +916,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     CHECK(extension);
     GURL url = extension->GetResourceURL("empty.html");
     content::WebContents* tab =
-        LoadURLNoWait(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+        LoadURLNoWait(url, WindowOpenDisposition::kNewForegroundTab);
     EXPECT_TRUE(content::WaitForLoadStop(tab));
     EventRouter::Get(current_profile())
         ->AddEventListener(downloads::OnCreated::kEventName,

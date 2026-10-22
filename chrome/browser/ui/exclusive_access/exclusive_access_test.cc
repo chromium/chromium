@@ -222,14 +222,14 @@ bool ExclusiveAccessTest::IsWindowFullscreenForTabOrPending() {
 void ExclusiveAccessTest::GoBack() {
   content::TestNavigationObserver observer(
       browser()->GetTabStripModel()->GetActiveWebContents(), 1);
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
   observer.Wait();
 }
 
 void ExclusiveAccessTest::Reload() {
   content::TestNavigationObserver observer(
       browser()->GetTabStripModel()->GetActiveWebContents(), 1);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
   observer.Wait();
 }
 

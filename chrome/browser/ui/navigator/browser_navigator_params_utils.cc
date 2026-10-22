@@ -127,8 +127,8 @@ bool CompareURLsWithReplacements(const GURL& url,
 
 int GetIndexOfExistingTabMatchingURL(BrowserWindowInterface* browser,
                                      const NavigateParams& params) {
-  if (params.disposition != WindowOpenDisposition::SINGLETON_TAB &&
-      params.disposition != WindowOpenDisposition::SWITCH_TO_TAB) {
+  if (params.disposition != WindowOpenDisposition::kSingletonTab &&
+      params.disposition != WindowOpenDisposition::kSwitchToTab) {
     return -1;
   }
 

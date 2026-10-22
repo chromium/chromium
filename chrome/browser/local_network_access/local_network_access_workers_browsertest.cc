@@ -396,7 +396,7 @@ class ChromeAppLocalNetworkAccessWorkersBrowserTest
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+            WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
   }
 
   // Install and launch ChromeApp with main html page taken from

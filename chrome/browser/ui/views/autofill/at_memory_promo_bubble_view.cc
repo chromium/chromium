@@ -122,7 +122,7 @@ void AtMemoryPromoBubbleView::OnLearnMoreClicked() {
                                       kPersonalContextOptedInLearnMoreURL),
                              ui::PAGE_TRANSITION_LINK);
                          params.disposition =
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                             WindowOpenDisposition::kNewForegroundTab;
                          Navigate(&params);
                        },
                        browser->GetWeakPtr()));

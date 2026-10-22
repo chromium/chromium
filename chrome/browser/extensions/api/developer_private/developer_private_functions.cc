@@ -647,7 +647,7 @@ DeveloperPrivateOpenReviewPageFunction::Run() {
   GURL review_url = util::GetCWSWritingReviewUrl(
       params->extension_id, util::CWSReviewSource::kExtensionsPage);
 
-  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::kNewForegroundTab,
                                   web_contents, review_url, base::DoNothing());
 
   return RespondNow(NoArguments());

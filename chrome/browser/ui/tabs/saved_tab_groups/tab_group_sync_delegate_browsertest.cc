@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateSessionRestoreBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls[0]));
   for (int i = 1; i < 6; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), urls[i], WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        browser(), urls[i], WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

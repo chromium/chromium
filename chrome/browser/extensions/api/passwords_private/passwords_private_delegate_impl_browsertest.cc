@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
                             embedded_test_server()->GetURL("/empty.html"),
                             ui::PAGE_TRANSITION_TYPED);
   nav_params.tabstrip_index = 0;
-  nav_params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  nav_params.disposition = WindowOpenDisposition::kCurrentTab;
   Navigate(&nav_params);
 
   webapps::WebappsClientDesktop::CreateSingleton();

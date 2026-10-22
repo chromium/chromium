@@ -56,8 +56,8 @@ content::WebContents* OpenLinkInBrowser(
   if (!tab_interface || !user_gesture) {
     return nullptr;
   }
-  if (disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
-      disposition != WindowOpenDisposition::NEW_POPUP) {
+  if (disposition != WindowOpenDisposition::kNewForegroundTab &&
+      disposition != WindowOpenDisposition::kNewPopup) {
     return nullptr;
   }
   return chrome::AddWebContents(

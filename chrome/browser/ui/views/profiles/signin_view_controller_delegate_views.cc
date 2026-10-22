@@ -751,7 +751,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
             active_contents->GetVisibleURL(),
-            WindowOpenDisposition::CURRENT_TAB,
+            WindowOpenDisposition::kCurrentTab,
             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

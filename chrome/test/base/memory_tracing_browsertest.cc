@@ -73,7 +73,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
       std::string* json_events) {
     GURL url1("about:blank");
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url1, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_NO_FATAL_FAILURE(ExecuteJavascriptOnCurrentTab());
 
@@ -87,7 +87,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
     // Create and destroy renderers while tracing is enabled.
     GURL url2("chrome://credits");
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), url2, WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_NO_FATAL_FAILURE(ExecuteJavascriptOnCurrentTab());
 
@@ -96,7 +96,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
 
     GURL url3("chrome://chrome-urls");
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url3, WindowOpenDisposition::CURRENT_TAB,
+        browser(), url3, WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_NO_FATAL_FAILURE(ExecuteJavascriptOnCurrentTab());
 

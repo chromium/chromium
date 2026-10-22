@@ -437,7 +437,7 @@ void OnCitationClicked(base::WeakPtr<AutofillPopupController> controller,
   }
   if (content::WebContents* web_contents = controller->GetWebContents()) {
     content::OpenURLParams params(url, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  WindowOpenDisposition::kNewForegroundTab,
                                   ui::PAGE_TRANSITION_LINK,
                                   /*is_renderer_initiated=*/false);
     params.user_gesture = true;

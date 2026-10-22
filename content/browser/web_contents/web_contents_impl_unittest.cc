@@ -2190,7 +2190,7 @@ TEST_F(WebContentsImplTest, CreateNewWindowBlockedBySystem) {
   contents()->SetDelegate(&delegate);
 
   mojom::CreateNewWindowParams params;
-  params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+  params.disposition = WindowOpenDisposition::kNewPictureInPicture;
 
   FrameTree* result =
       static_cast<WebContentsImpl*>(contents())

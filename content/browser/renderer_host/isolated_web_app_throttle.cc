@@ -87,7 +87,7 @@ void RunNavigationInDefaultBrowser(NavigationHandle* handle) {
   // TODO(crbug.com/40830234): Should we set the referrer?
   // TODO(crbug.com/429618748): Rethink the default browser behavior on WML.
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      handle->GetURL(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      handle->GetURL(), WindowOpenDisposition::kNewForegroundTab,
       ui::PageTransition::PAGE_TRANSITION_LINK);
 
   params.initiator_origin =

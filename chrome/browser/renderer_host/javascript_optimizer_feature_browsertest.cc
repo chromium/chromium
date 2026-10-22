@@ -1581,7 +1581,7 @@ IN_PROC_BROWSER_TEST_P(JavascriptOptimizerBubbleBrowserTest,
   // Open new tab and go to the same site.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_https_test_server().GetURL("/simple.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   // TODO: crbug.com/457420369 - Use reload functionality to check settings
   // application instead of opening a new tab

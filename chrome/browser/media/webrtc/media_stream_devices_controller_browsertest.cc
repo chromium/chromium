@@ -869,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
                        WebContentsDestroyedDuringRequest) {
   InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   prompt_factory()->set_response_type(

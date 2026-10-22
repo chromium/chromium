@@ -111,7 +111,7 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
   bool was_executed = false;
   FindBridgeForSender(sender, window)
       ->host()
-      ->ExecuteCommand(command, WindowOpenDisposition::CURRENT_TAB,
+      ->ExecuteCommand(command, WindowOpenDisposition::kCurrentTab,
                        /*is_before_first_responder=*/false, &was_executed);
   CHECK(was_executed, base::NotFatalUntil::M162);
 }

@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
   // Open a second tab so that closing the first one keeps the browser alive.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   content::WebContentsDestroyedWatcher destroyed_watcher(web_contents());
   browser()->GetTabStripModel()->CloseWebContentsAt(

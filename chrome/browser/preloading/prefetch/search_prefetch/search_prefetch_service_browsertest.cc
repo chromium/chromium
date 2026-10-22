@@ -2970,7 +2970,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   content::TestNavigationManager navigation_manager(GetWebContents(),
                                                     search_url);
   GetWebContents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                                search_url, WindowOpenDisposition::CURRENT_TAB,
+                                search_url, WindowOpenDisposition::kCurrentTab,
                                 ui::PAGE_TRANSITION_LINK),
                             /*navigation_handle_callback=*/{});
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
@@ -3058,7 +3058,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, NoServePost) {
                                                     search_url);
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          search_url, WindowOpenDisposition::CURRENT_TAB,
+          search_url, WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_TYPED);
   std::string post_data = "test=body";
   params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(

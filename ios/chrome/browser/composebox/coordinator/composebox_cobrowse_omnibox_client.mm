@@ -211,7 +211,7 @@ void ComposeboxCobrowseOmniboxClient::OnTextChanged(
 void ComposeboxCobrowseOmniboxClient::OnThumbnailOnlyAccept() {
   UrlLoadParams params = CreateOmniboxUrlLoadParams(
       GURL(),
-      /*post_content=*/nullptr, WindowOpenDisposition::CURRENT_TAB,
+      /*post_content=*/nullptr, WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_GENERATED,
       /*destination_url_entered_without_scheme=*/false,
       profile_->IsOffTheRecord());

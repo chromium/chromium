@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
       "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), english_url(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), english_url(), WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   RetryForHistogramUntilCountReached(
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
       "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), english_url(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      browser(), english_url(), WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // Opening the browser causes the first model deferral event. The second

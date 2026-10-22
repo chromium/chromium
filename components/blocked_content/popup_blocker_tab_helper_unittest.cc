@@ -111,11 +111,11 @@ TEST_F(PopupBlockerTabHelperTest, BlocksAndShowsPopup) {
   EXPECT_THAT(observer.blocked_urls(),
               UnorderedElementsAre(Pair(0, GURL(kUrl1))));
 
-  helper()->ShowBlockedPopup(0, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  helper()->ShowBlockedPopup(0, WindowOpenDisposition::kNewForegroundTab);
   EXPECT_TRUE(result.did_navigate);
   EXPECT_TRUE(result.navigation_window_features.has_x);
   EXPECT_EQ(result.navigation_disposition,
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+            WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(PopupBlockerTabHelperTest, MultiplePopups) {
@@ -138,14 +138,14 @@ TEST_F(PopupBlockerTabHelperTest, MultiplePopups) {
               UnorderedElementsAre(Pair(0, GURL(kUrl1)), Pair(1, GURL(kUrl2))));
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 2u);
 
-  helper()->ShowBlockedPopup(1, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  helper()->ShowBlockedPopup(1, WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 1u);
   EXPECT_TRUE(result2.did_navigate);
   EXPECT_EQ(result2.navigation_disposition,
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+            WindowOpenDisposition::kNewForegroundTab);
   EXPECT_FALSE(result1.did_navigate);
 
-  helper()->ShowBlockedPopup(0, WindowOpenDisposition::CURRENT_TAB);
+  helper()->ShowBlockedPopup(0, WindowOpenDisposition::kCurrentTab);
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 0u);
   EXPECT_TRUE(result1.did_navigate);
   EXPECT_FALSE(result1.navigation_disposition.has_value());
@@ -159,11 +159,11 @@ TEST_F(PopupBlockerTabHelperTest, DoesNotShowPopupWithInvalidID) {
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 1u);
 
   // Invalid ID should not do anything.
-  helper()->ShowBlockedPopup(1, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  helper()->ShowBlockedPopup(1, WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 1u);
   EXPECT_FALSE(result.did_navigate);
 
-  helper()->ShowBlockedPopup(0, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  helper()->ShowBlockedPopup(0, WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 0u);
   EXPECT_TRUE(result.did_navigate);
 }
@@ -185,10 +185,10 @@ TEST_F(PopupBlockerTabHelperTest, SetsContentSettingsPopupState) {
       blink::mojom::WindowFeatures(), PopupBlockType::kNoGesture);
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::POPUPS));
 
-  helper()->ShowBlockedPopup(0, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  helper()->ShowBlockedPopup(0, WindowOpenDisposition::kNewForegroundTab);
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::POPUPS));
 
-  helper()->ShowBlockedPopup(1, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  helper()->ShowBlockedPopup(1, WindowOpenDisposition::kNewForegroundTab);
   EXPECT_FALSE(content_settings->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 

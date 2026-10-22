@@ -10607,7 +10607,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
     // Try recording the AdClickMainFrameNavigation use counter for navigation
     // targeting this page's main frame, or targeting a new tab.
-    if (params->disposition != WindowOpenDisposition::CURRENT_TAB ||
+    if (params->disposition != WindowOpenDisposition::kCurrentTab ||
         IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
           /*initiator_frame=*/initiator_frame, params->user_gesture,
@@ -10783,7 +10783,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   }
 
   // Only top-most frames can open picture-in-picture windows.
-  if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE &&
+  if (params->disposition == WindowOpenDisposition::kNewPictureInPicture &&
       !IsOutermostMainFrame()) {
     frame_host_associated_receiver_.ReportBadMessage(
         "Only top-most frames can open picture-in-picture windows.");
@@ -10806,14 +10806,14 @@ void RenderFrameHostImpl::CreateNewWindow(
   GetProcess()->FilterURL(false, &params->target_url);
 
   bool is_accepted_popup_disposition =
-      params->disposition == WindowOpenDisposition::NEW_POPUP ||
-      params->disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-      params->disposition == WindowOpenDisposition::NEW_WINDOW;
+      params->disposition == WindowOpenDisposition::kNewPopup ||
+      params->disposition == WindowOpenDisposition::kNewForegroundTab ||
+      params->disposition == WindowOpenDisposition::kNewBackgroundTab ||
+      params->disposition == WindowOpenDisposition::kNewWindow;
   bool effective_transient_activation_state =
       HasTransientUserActivation() ||
       (transient_allow_popup_.IsActive() &&
-       params->disposition == WindowOpenDisposition::NEW_POPUP) ||
+       params->disposition == WindowOpenDisposition::kNewPopup) ||
       (popup_delegation_token_.IsActive() && is_accepted_popup_disposition);
 
   if (!effective_transient_activation_state && params->allow_popup) {

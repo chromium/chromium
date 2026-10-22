@@ -101,7 +101,7 @@ void OpenExtensionsShortcutsPage(
                                 chrome::kExtensionConfigureCommandsSubPage}));
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          kUrl, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          kUrl, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   web_contents->OpenURL(params, {});
 }

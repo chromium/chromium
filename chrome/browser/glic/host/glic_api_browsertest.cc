@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testPanelActive) {
   auto params = std::make_unique<NavigateParams>(
       InProcessBrowserTest::browser()->GetProfile(), GURL("about:blank"),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::NEW_WINDOW;
+  params->disposition = WindowOpenDisposition::kNewWindow;
   base::WeakPtr<content::NavigationHandle> navigation_handle =
       glic::Navigate(std::move(params));
 

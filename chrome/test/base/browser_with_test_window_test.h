@@ -94,7 +94,7 @@ class TestingProfileManager;
 //   // This is equivalent to the above, and lets you test pending navigations.
 //   browser()->OpenURL(
 //       OpenURLParams::CreateBrowserInitiated(
-//           GURL("http://foo/2"), WindowOpenDisposition::CURRENT_TAB,
+//           GURL("http://foo/2"), WindowOpenDisposition::kCurrentTab,
 //           ui::PAGE_TRANSITION_TYPED),
 //       /*navigation_handle_callback=*/{});
 //   CommitPendingLoad(&contents->GetController());

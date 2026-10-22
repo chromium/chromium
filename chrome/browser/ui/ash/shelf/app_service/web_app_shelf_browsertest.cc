@@ -54,7 +54,7 @@ class WebAppShelfBrowserTest : public InProcessBrowserTest {
     auto* const proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->LaunchAppWithParams(apps::AppLaunchParams(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOmnibox));
+        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromOmnibox));
     BrowserWindowInterface* app_browser = browser_created_observer.Wait();
     ash::ShelfModel::Get()->PinExistingItemWithID(app_id);
     app_browser->GetWindow()->Close();
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
   {
     ui_test_utils::TabAddedWaiter waiter(browser());
     NavigateParams params(browser(), start_d, ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.disposition = WindowOpenDisposition::kNewForegroundTab;
     ui_test_utils::NavigateToURL(&params);
     waiter.Wait();
     contents_d = browser()->GetTabStripModel()->GetActiveWebContents();
