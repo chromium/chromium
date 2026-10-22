@@ -16,19 +16,19 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
-#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
-#include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/transport_channel.h"
 #include "components/browser_actuator/public/transport/transport_handler.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
+#include "components/browser_actuator/public/transport/transport_service.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -153,13 +153,14 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
 }
 
 TEST_F(ChromeActuationTransportHandlerFactoryTest,
-       RegisteredWithBrowserActuatorServiceWhenEnabled) {
-  browser_actuator::BrowserActuatorService* actuator_service =
-      browser_actuator::BrowserActuatorServiceFactory::GetForProfile(profile_);
-  ASSERT_TRUE(actuator_service);
-  ASSERT_TRUE(actuator_service->GetChannel());
+       RegisteredWithTransportServiceWhenEnabled) {
+  browser_actuator::transport::TransportService* transport_service =
+      browser_actuator::transport::TransportServiceFactory::GetForProfile(
+          profile_);
+  ASSERT_TRUE(transport_service);
+  ASSERT_TRUE(transport_service->GetChannel());
   browser_actuator::transport::TransportHandlerFactoryRegistry* registry =
-      actuator_service->GetChannel()->GetHandlerFactoryRegistry();
+      transport_service->GetChannel()->GetHandlerFactoryRegistry();
   ASSERT_TRUE(registry);
 
   std::vector<browser_actuator::transport::TransportHandlerFactory*> factories =
@@ -170,7 +171,7 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
             browser_actuator::transport::FactoryId::kActuation);
 
   browser_actuator::transport::TransportSession* session =
-      actuator_service->GetOrCreateSession("enabled_session_1");
+      transport_service->GetOrCreateSession("enabled_session_1");
   ASSERT_TRUE(session);
   proto::ServerToBrowserPayload downstream;
   downstream.set_request_id("req_enabled_start");

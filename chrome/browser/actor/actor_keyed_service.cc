@@ -42,7 +42,7 @@
 #include "chrome/browser/actor/transport/chrome_actuation_transport_handler_factory.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
-#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -59,10 +59,10 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport/transport_channel.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
+#include "components/browser_actuator/public/transport/transport_service.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/task_policy_config_slot.h"
@@ -180,13 +180,13 @@ ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   // TODO(crbug.com/572907956): Reconsider ownership of
   // ChromeActuationTransportHandlerFactory.
   if (base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator)) {
-    browser_actuator::BrowserActuatorService* browser_actuator_service =
-        browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+    browser_actuator::transport::TransportService* transport_service =
+        browser_actuator::transport::TransportServiceFactory::GetForProfile(
             profile_);
-    if (browser_actuator_service && browser_actuator_service->GetChannel()) {
+    if (transport_service && transport_service->GetChannel()) {
       actuation_transport_handler_factory_ =
           std::make_unique<ChromeActuationTransportHandlerFactory>(this);
-      browser_actuator_service->GetChannel()
+      transport_service->GetChannel()
           ->GetHandlerFactoryRegistry()
           ->RegisterFactory(actuation_transport_handler_factory_.get());
     }
@@ -250,11 +250,11 @@ void ActorKeyedService::Shutdown() {
   CHECK(active_tasks_.empty());
   pending_delete_tasks_.clear();
   if (actuation_transport_handler_factory_) {
-    browser_actuator::BrowserActuatorService* browser_actuator_service =
-        browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+    browser_actuator::transport::TransportService* transport_service =
+        browser_actuator::transport::TransportServiceFactory::GetForProfile(
             profile_);
-    if (browser_actuator_service && browser_actuator_service->GetChannel()) {
-      browser_actuator_service->GetChannel()
+    if (transport_service && transport_service->GetChannel()) {
+      transport_service->GetChannel()
           ->GetHandlerFactoryRegistry()
           ->UnregisterFactory(actuation_transport_handler_factory_.get());
     }
