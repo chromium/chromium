@@ -588,6 +588,9 @@
   <message name="IDS_GLIC_SELECTION_ASK_GEMINI_MORE" desc="Label for the button in the explanation card that opens Gemini to ask more about the selection.">
     Ask Gemini more about this
   </message>
+  <message name="IDS_GLIC_SELECTION_SUBMIT_PROMPT" desc="Accessibility label for the arrow button in the selection prompt box that sends the typed prompt to Gemini.">
+    Send
+  </message>
   <message name="IDS_GLIC_SELECTION_SHARING_DISCLAIMER" desc="Notice at the bottom of the explanation card telling the user that the current page and the highlighted text are shared with Google.">
     This page and highlighted text are shared with Google
   </message>

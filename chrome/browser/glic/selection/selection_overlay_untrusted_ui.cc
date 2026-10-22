@@ -57,6 +57,7 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
       {"close", IDS_CLOSE},
       {"askGemini", IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL},
       {"askGeminiMore", IDS_GLIC_SELECTION_ASK_GEMINI_MORE},
+      {"submitPrompt", IDS_GLIC_SELECTION_SUBMIT_PROMPT},
       {"sharingDisclaimer", IDS_GLIC_SELECTION_SHARING_DISCLAIMER},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

@@ -276,7 +276,9 @@
   display: flex;
   height: 48px;
   max-width: 100%;
-  padding: 0 16px;
+  padding: 0;
+  padding-inline-end: 6px;
+  padding-inline-start: 16px;
   transition: box-shadow 200ms ease;
   width: 360px;
 }
@@ -307,6 +309,21 @@
 
 #promptInput::placeholder {
   color: #747775;
+}
+
+#submitPromptButton {
+  --cr-icon-button-fill-color: #0B57D0;
+  --cr-icon-button-hover-background-color: #A8C7FA;
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 8px;
+  --cr-icon-button-size: 36px;
+  --cr-icon-image: url('/arrow_upward.svg');
+  background-color: #C2E7FF;
+}
+
+#submitPromptButton[hidden] {
+  display: none;
 }
 
 .action-chips-row {

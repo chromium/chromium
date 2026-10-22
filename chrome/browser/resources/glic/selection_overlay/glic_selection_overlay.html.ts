@@ -73,9 +73,17 @@ export function getHtml(this: GlicSelectionOverlayElement) {
                 type="text"
                 placeholder="$i18n{askGemini}"
                 aria-label="$i18n{askGemini}"
+                @input="${this.onPromptInput}"
                 @keydown="${this.onInputKeydown}"
                 @pointerdown="${this.onPromptPointerdown}"
                 autocomplete="off">
+            <cr-icon-button id="submitPromptButton"
+                ?hidden="${!this.hasPromptText}"
+                title="$i18n{submitPrompt}"
+                aria-label="$i18n{submitPrompt}"
+                @click="${this.onSubmitPromptClick}"
+                @pointerdown="${this.onPromptPointerdown}">
+            </cr-icon-button>
           </div>
         ` : ''}
 

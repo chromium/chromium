@@ -90,6 +90,7 @@ export class GlicSelectionOverlayElement extends
       hideHandles: {type: Boolean},
       disableMultiSelect: {type: Boolean, reflect: true},
       skipIntroAnimation: {type: Boolean, reflect: true},
+      hasPromptText: {type: Boolean},
     };
   }
 
@@ -108,6 +109,9 @@ export class GlicSelectionOverlayElement extends
   accessor hideHandles: boolean = false;
   accessor disableMultiSelect: boolean = false;
   accessor skipIntroAnimation: boolean = false;
+  // Whether the prompt input has non-whitespace text, which shows the submit
+  // button.
+  accessor hasPromptText: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -555,16 +559,30 @@ export class GlicSelectionOverlayElement extends
     this.updateFloatingPromptPosition();
   }
 
+  protected onPromptInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.hasPromptText = input.value.trim().length > 0;
+  }
+
   protected onInputKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
-      const input =
-          this.shadowRoot.querySelector<HTMLInputElement>('#promptInput');
-      if (input && input.value.trim().length > 0) {
-        this.submitPrompt(input.value.trim());
-      }
+      this.submitPromptInput_();
     } else if (event.key === 'Escape') {
       (this.baseHandler as SelectionOverlayBaseHandlerImpl)
           .dismissOverlay(DismissOverlayReason.kCloseButton);
+    }
+  }
+
+  protected onSubmitPromptClick() {
+    this.submitPromptInput_();
+  }
+
+  private submitPromptInput_() {
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement>('#promptInput');
+    const prompt = input?.value.trim() ?? '';
+    if (prompt.length > 0) {
+      this.submitPrompt(prompt);
     }
   }
 
