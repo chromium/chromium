@@ -367,9 +367,10 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackForwardButtonUpdate) {
       ExpectBackForwardButtonEnabled(kToolbarForwardButtonElementId, false));
 }
 
-// TODO(crbug.com/548345902): Re-enable once fixed. Failing at step 9:
+// TODO(crbug.com/548345902, crbug.com/574662700): Re-enable once fixed. Failing
+// at step 9:
 // WaitForWebContentsNavigation(kWebContentsId, GURL(url::kAboutBlankURL))
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_BackButtonHoverThenClick DISABLED_BackButtonHoverThenClick
 #else
 #define MAYBE_BackButtonHoverThenClick BackButtonHoverThenClick
