@@ -141,21 +141,19 @@ export class IwaDevAppElement extends CrLitElement {
     }
   }
 
-  protected async onRequestLaunch_(e: CustomEvent<{app: IwaDevModeAppInfo}>) {
-    const result =
-        await this.browserProxy_.handler.launchApp(e.detail.app.appId);
+  protected async onRequestLaunch_(e: CustomEvent<{appId: string}>) {
+    const result = await this.browserProxy_.handler.launchApp(e.detail.appId);
     if (!result.success) {
       this.toastMessage_ = 'Failed to launch app.';
       this.shadowRoot.querySelector<CrToastElement>('#toast')!.show();
     }
   }
 
-  protected async onRequestUninstall_(
-      e: CustomEvent<{app: IwaDevModeAppInfo}>) {
+  protected async onRequestUninstall_(e: CustomEvent<{appId: string}>) {
     const result =
-        await this.browserProxy_.handler.uninstallApp(e.detail.app.appId);
+        await this.browserProxy_.handler.uninstallApp(e.detail.appId);
     if (result.success) {
-      removeStoredUpdateOptions(e.detail.app.appId);
+      removeStoredUpdateOptions(e.detail.appId);
     }
   }
 

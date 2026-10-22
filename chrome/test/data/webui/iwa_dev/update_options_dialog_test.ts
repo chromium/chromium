@@ -31,6 +31,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
           updateChannel: updateChannel,
         },
       } as unknown as IwaDevModeAppInfo['source'],
+      subApps: [],
     };
   }
 

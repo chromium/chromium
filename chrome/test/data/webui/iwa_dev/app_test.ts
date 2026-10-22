@@ -96,6 +96,7 @@ suite('<iwa-dev-app>', () => {
           path: '/path/to/app.swbn',
         },
       } as unknown as IwaDevModeAppInfo['source'],
+      subApps: [],
     };
   }
 
@@ -113,6 +114,7 @@ suite('<iwa-dev-app>', () => {
           nonceIfOpaque: null,
         },
       },
+      subApps: [],
     };
   }
 
@@ -128,6 +130,7 @@ suite('<iwa-dev-app>', () => {
           updateChannel: 'default',
         },
       } as unknown as IwaDevModeAppInfo['source'],
+      subApps: [],
     };
   }
 
@@ -153,8 +156,8 @@ suite('<iwa-dev-app>', () => {
   function getAppIconElement(itemIndex: number = 0): HTMLElement {
     const items = getListItems();
     assertTrue(items.length > itemIndex);
-    const appIcon =
-        items[itemIndex]!.shadowRoot.querySelector<HTMLElement>('#icon-circle');
+    const appIcon = items[itemIndex]!.shadowRoot.querySelector<HTMLElement>(
+        '#main-row .icon-circle');
     assertTrue(!!appIcon);
     return appIcon;
   }
@@ -166,8 +169,8 @@ suite('<iwa-dev-app>', () => {
   function getAppNameElement(itemIndex: number = 0): HTMLElement {
     const items = getListItems();
     assertTrue(items.length > itemIndex);
-    const appName =
-        items[itemIndex]!.shadowRoot.querySelector<HTMLElement>('#name');
+    const appName = items[itemIndex]!.shadowRoot.querySelector<HTMLElement>(
+        '#main-row .app-name');
     assertTrue(!!appName);
     return appName;
   }
@@ -301,6 +304,7 @@ suite('<iwa-dev-app>', () => {
             nonceIfOpaque: null,
           },
         },
+        subApps: [],
       },
     ];
 
@@ -1070,7 +1074,7 @@ suite('<iwa-dev-app>', () => {
     handler.setResultFor('uninstallApp', Promise.resolve({success: true}));
 
     getListItems()[0]!.dispatchEvent(
-        new CustomEvent('request-uninstall', {detail: {app: appInfo}}));
+        new CustomEvent('request-uninstall', {detail: {appId: appInfo.appId}}));
     await handler.whenCalled('uninstallApp');
     await microtasksFinished();
 
@@ -1109,6 +1113,154 @@ suite('<iwa-dev-app>', () => {
           assertEquals('Failed to launch app.', getToast().textContent?.trim());
         });
   }
+
+  test('hides sub-apps section when app has no sub-apps', async () => {
+    await setupManifestInstalledApp();
+
+    const items = getListItems();
+    assertEquals(1, items.length);
+    assertFalse(!!items[0]!.shadowRoot.querySelector('#sub-apps-section'));
+  });
+
+  test(
+      'toggles collapsible sub-apps section and renders sub-apps', async () => {
+        const appInfo: IwaDevModeAppInfo = {
+          ...createProxyInstalledAppInfo(),
+          subApps: [
+            {appId: 'sub-app-1', name: 'Sub App One'},
+            {appId: 'sub-app-2', name: 'Sub App Two'},
+          ],
+        };
+        handler.setResultFor(
+            'getInstalledAppsInfo', Promise.resolve({apps: [appInfo]}));
+        createApp(/*devModeEnabled=*/ true);
+        await handler.whenCalled('getInstalledAppsInfo');
+        await microtasksFinished();
+
+        const item = getListItems()[0]!;
+        const section = item.shadowRoot.querySelector('#sub-apps-section');
+        assertTrue(!!section);
+
+        const toggle = item.shadowRoot.querySelector<HTMLButtonElement>(
+            '#sub-apps-toggle');
+        assertTrue(!!toggle);
+        assertEquals('false', toggle.getAttribute('aria-expanded'));
+        assertTrue(toggle.textContent.includes('Sub-apps (2)'));
+        assertFalse(!!item.shadowRoot.querySelector('#sub-apps-list'));
+
+        // Expand sub-apps section.
+        toggle.click();
+        await microtasksFinished();
+
+        assertEquals('true', toggle.getAttribute('aria-expanded'));
+        const subAppItems = item.shadowRoot.querySelectorAll('.sub-app-item');
+        assertEquals(2, subAppItems.length);
+        assertEquals(
+            'Sub App One',
+            subAppItems[0]!.querySelector('.sub-app-name')
+                ?.textContent?.trim());
+        assertEquals(
+            'Sub App Two',
+            subAppItems[1]!.querySelector('.sub-app-name')
+                ?.textContent?.trim());
+
+        // Collapse sub-apps section.
+        toggle.click();
+        await microtasksFinished();
+
+        assertEquals('false', toggle.getAttribute('aria-expanded'));
+        assertFalse(!!item.shadowRoot.querySelector('#sub-apps-list'));
+      });
+
+  test('launches and uninstalls sub-app from expanded list', async () => {
+    const appInfo: IwaDevModeAppInfo = {
+      ...createProxyInstalledAppInfo(),
+      subApps: [
+        {appId: 'sub-app-1', name: 'Sub App One'},
+      ],
+    };
+    handler.setResultFor(
+        'getInstalledAppsInfo', Promise.resolve({apps: [appInfo]}));
+    handler.setResultFor('uninstallApp', Promise.resolve({success: true}));
+    createApp(/*devModeEnabled=*/ true);
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
+
+    const item = getListItems()[0]!;
+    const toggle =
+        item.shadowRoot.querySelector<HTMLButtonElement>('#sub-apps-toggle')!;
+    toggle.click();
+    await microtasksFinished();
+
+    for (const selector of ['.sub-app-icon-circle', '.sub-app-name']) {
+      handler.resetResolver('launchApp');
+      handler.setResultFor('launchApp', Promise.resolve({success: true}));
+      const launchTarget = item.shadowRoot.querySelector<HTMLElement>(selector);
+      assertTrue(!!launchTarget);
+      launchTarget.click();
+      const launchedAppId = await handler.whenCalled('launchApp');
+      assertEquals('sub-app-1', launchedAppId);
+    }
+
+    const subAppUninstallBtn =
+        item.shadowRoot.querySelector<HTMLElement>('.sub-app-uninstall-btn');
+    assertTrue(!!subAppUninstallBtn);
+    subAppUninstallBtn.click();
+    const uninstalledAppId = await handler.whenCalled('uninstallApp');
+    assertEquals('sub-app-1', uninstalledAppId);
+  });
+
+  test('updates sub-apps list when parent app is updated', async () => {
+    const parentApp = createProxyInstalledAppInfo();
+    handler.setResultFor(
+        'getInstalledAppsInfo', Promise.resolve({apps: [parentApp]}));
+    createApp(/*devModeEnabled=*/ true);
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
+
+    const item = getListItems()[0]!;
+    assertFalse(!!item.shadowRoot.querySelector('#sub-apps-section'));
+
+    assertTrue(!!updatedListener);
+    updatedListener({
+      ...parentApp,
+      subApps: [
+        {appId: 'sub-app-1', name: 'Sub App One'},
+      ],
+    });
+    await microtasksFinished();
+
+    const toggle =
+        item.shadowRoot.querySelector<HTMLButtonElement>('#sub-apps-toggle');
+    assertTrue(!!toggle);
+    assertTrue(toggle.textContent.includes('Sub-apps (1)'));
+    toggle.click();
+    await microtasksFinished();
+    assertEquals(
+        'Sub App One',
+        item.shadowRoot.querySelector('.sub-app-name')?.textContent?.trim());
+
+    // Removing all sub-apps hides the section and resets expanded state.
+    updatedListener({
+      ...parentApp,
+      subApps: [],
+    });
+    await microtasksFinished();
+    assertFalse(!!item.shadowRoot.querySelector('#sub-apps-section'));
+
+    // Adding a sub-app again renders the section collapsed by default.
+    updatedListener({
+      ...parentApp,
+      subApps: [
+        {appId: 'sub-app-2', name: 'Sub App Two'},
+      ],
+    });
+    await microtasksFinished();
+    assertEquals(
+        'false',
+        item.shadowRoot.querySelector('#sub-apps-toggle')
+            ?.getAttribute('aria-expanded'));
+  });
 });
 
 suite('storage helpers', () => {

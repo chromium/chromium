@@ -29,12 +29,19 @@ union IwaDevModeSource {
   UpdateInfo update_info;                // Manifest install source
 };
 
+// Represents a sub-app installed under a parent dev mode IWA.
+struct SubAppInfo {
+  string app_id;
+  string name;
+};
+
 struct IwaDevModeAppInfo {
   string app_id;
   string web_bundle_id;
   string name;
   IwaDevModeSource source;
   string installed_version;
+  array<SubAppInfo> sub_apps;
 };
 
 // Mimics web_app::UpdateManifest::VersionEntry.
@@ -70,7 +77,7 @@ interface PageHandler {
                                UpdateInfo update_info)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
-  // Launches an IWA with a given ID.
+  // Launches a dev mode IWA or its sub-app with a given ID.
   LaunchApp(string app_id) => (bool success);
 
   // Attempts to fetch and parse an IWA update manifest from the provided url.
@@ -90,7 +97,7 @@ interface PageHandler {
   SetUpdateChannel(string app_id, string update_channel)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
-  // Uninstalls an IWA with a given ID.
+  // Uninstalls a dev mode IWA or its sub-app with a given ID.
   UninstallApp(string app_id) => (bool success);
 
   // Triggers an update for an app installed through dev proxy.
@@ -107,7 +114,7 @@ interface Page {
   // Notifies the page that an app has been installed.
   OnAppInstalled(IwaDevModeAppInfo app_info);
 
-  // Notifies the page that an app's manifest has been updated.
+  // Notifies the page that an app's manifest or sub-apps list has been updated.
   OnAppUpdated(IwaDevModeAppInfo app_info);
 
   // Notifies the page that an app has been uninstalled.

@@ -71,6 +71,7 @@ export class InstalledAppListItemElement extends CrLitElement {
       sourceMetadata: {type: Object},
       isUpdating: {type: Boolean},
       copied_: {type: Boolean, state: true},
+      subAppsExpanded_: {type: Boolean, state: true},
     };
   }
 
@@ -87,6 +88,7 @@ export class InstalledAppListItemElement extends CrLitElement {
       },
     },
     installedVersion: '',
+    subApps: [],
   };
 
   accessor isUpdating: boolean = false;
@@ -97,6 +99,7 @@ export class InstalledAppListItemElement extends CrLitElement {
   };
 
   protected accessor copied_: boolean = false;
+  protected accessor subAppsExpanded_: boolean = false;
   private copiedTimeoutId_: number|null = null;
 
   override disconnectedCallback() {
@@ -126,8 +129,10 @@ export class InstalledAppListItemElement extends CrLitElement {
     }
   }
 
-  protected onLaunchClick() {
-    this.fire('request-launch', {app: this.app});
+  protected onLaunchClick(e: Event) {
+    const appId =
+        (e.currentTarget as HTMLElement).dataset['appId'] ?? this.app.appId;
+    this.fire('request-launch', {appId});
   }
 
   protected onUpdateOptionsClick() {
@@ -138,8 +143,14 @@ export class InstalledAppListItemElement extends CrLitElement {
     this.fire('request-update', {app: this.app});
   }
 
-  protected onUninstallClick() {
-    this.fire('request-uninstall', {app: this.app});
+  protected onUninstallClick(e: Event) {
+    const appId =
+        (e.currentTarget as HTMLElement).dataset['appId'] ?? this.app.appId;
+    this.fire('request-uninstall', {appId});
+  }
+
+  protected onToggleSubAppsClick() {
+    this.subAppsExpanded_ = !this.subAppsExpanded_;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -147,6 +158,9 @@ export class InstalledAppListItemElement extends CrLitElement {
 
     if (changedProperties.has('app')) {
       this.sourceMetadata = this.computeSourceMetadata();
+      if (this.app.subApps.length === 0) {
+        this.subAppsExpanded_ = false;
+      }
     }
   }
 

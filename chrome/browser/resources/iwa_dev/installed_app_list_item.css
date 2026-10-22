@@ -10,16 +10,22 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  align-items: center;
   background-color: var(--cr-card-background-color);
   border: 1px solid var(--cr-separator-color);
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-elevation-1);
   display: flex;
-  gap: 16px;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 12px;
   padding: 16px 20px;
+}
+
+#main-row {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
 }
 
 #actions {
@@ -40,7 +46,8 @@
   }
 }
 
-#actions > cr-button {
+#actions > cr-button,
+.sub-app-uninstall-btn {
   min-width: 81px;
 }
 
@@ -106,19 +113,19 @@
   gap: 8px;
 }
 
-#name {
+.app-name {
   color: var(--cr-primary-text-color);
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
 }
 
-#name:hover {
+.app-name:hover {
   color: var(--cr-link-color);
   text-decoration: underline;
 }
 
-#name cr-icon {
+.app-name cr-icon {
   vertical-align: -2px;
 }
 
@@ -160,7 +167,7 @@
   word-break: break-all;
 }
 
-#icon-circle {
+.icon-circle {
   align-items: center;
   border-radius: 50%;
   cursor: pointer;
@@ -173,7 +180,12 @@
   width: 48px;
 }
 
-#launch-overlay {
+.sub-app-icon-circle {
+  height: 32px;
+  width: 32px;
+}
+
+.launch-overlay {
   align-items: center;
   background-color: rgba(0, 0, 0, 0.55);
   color: white;
@@ -185,16 +197,68 @@
   transition: opacity 150ms ease-in-out;
 }
 
-#launch-overlay cr-icon {
+.launch-overlay cr-icon {
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
 }
 
-#icon-circle:hover #launch-overlay {
+.sub-app-icon-circle .launch-overlay cr-icon {
+  --iron-icon-height: 14px;
+  --iron-icon-width: 14px;
+}
+
+.icon-circle:hover .launch-overlay {
   opacity: 1;
 }
 
-#app-icon {
-  width: 100%;
+.app-icon {
   height: 100%;
+  width: 100%;
+}
+
+#sub-apps-section {
+  border-top: 1px solid var(--cr-separator-color);
+  padding-top: 10px;
+}
+
+#sub-apps-toggle {
+  align-items: center;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  color: var(--cr-secondary-text-color);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  gap: 4px;
+  padding: 2px 4px;
+}
+
+#sub-apps-toggle:hover {
+  background-color: var(--cr-hover-background-color);
+  color: var(--cr-primary-text-color);
+}
+
+#sub-apps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding-inline-start: 24px;
+}
+
+.sub-app-item {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.sub-app-name {
+  font-size: 0.85rem;
+}
+
+.sub-app-uninstall-btn {
+  margin-inline-start: auto;
 }

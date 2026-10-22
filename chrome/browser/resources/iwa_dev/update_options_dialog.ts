@@ -79,6 +79,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     name: '',
     source: {},
     installedVersion: '',
+    subApps: [],
   };
 
   accessor currentPinnedVersion: string|null = null;

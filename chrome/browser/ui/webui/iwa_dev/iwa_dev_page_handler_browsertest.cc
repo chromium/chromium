@@ -120,6 +120,14 @@ class IwaDevHandlerBrowserTest
     return BuildAndInstallBundle(kLocalBundleName, kAppBaseVersion);
   }
 
+  web_app::IsolatedWebAppUrlInfo InstallNonDevModeBundleApp() {
+    return web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
+                                              .SetName(kLocalBundleName)
+                                              .SetVersion(kAppBaseVersion))
+        .BuildBundle()
+        ->InstallChecked(profile());
+  }
+
   web_app::IsolatedWebAppUrlInfo InstallUpdateManifestApp() {
     web_app::IsolatedWebAppUrlInfo app =
         BuildAndInstallBundle(kManifestAppName, kAppBaseVersion);
@@ -208,6 +216,22 @@ class IwaDevHandlerBrowserTest
         profile(), &web_app::IsolatedWebAppInstallSource::FromDevUi);
     CHECK(result.has_value()) << result.error();
     return result.value();
+  }
+
+  webapps::AppId InstallSubApp(const web_app::IsolatedWebAppUrlInfo& parent_app,
+                               std::string_view relative_path,
+                               std::u16string_view name) {
+    GURL sub_app_url = parent_app.origin().GetURL().Resolve(relative_path);
+    auto install_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(sub_app_url);
+    install_info->title = std::u16string(name);
+    install_info->parent_app_id = parent_app.app_id();
+    install_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
+    return web_app::test::InstallWebApp(
+        profile(), std::move(install_info),
+        /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::SUB_APP);
   }
 
   void ExpectBundleInstalledAtTruncatedPath(const base::FilePath& bundle_path) {
@@ -1261,6 +1285,70 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerObserverBrowserTest, IgnoresNormalWebApps) {
   EXPECT_FALSE(mock_page().uninstalled_future().IsReady());
 }
 
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerObserverBrowserTest,
+                       OnSubAppInstalledUpdatedAndUninstalled) {
+  web_app::IsolatedWebAppUrlInfo parent_app = InstallBundleApp();
+  ASSERT_EQ(mock_page().installed_future().Take()->app_id, parent_app.app_id());
+
+  webapps::AppId sub_app_id =
+      InstallSubApp(parent_app, "/sub-app", u"Sub App 1");
+
+  iwa_dev::mojom::IwaDevModeAppInfoPtr updated_after_install =
+      mock_page().updated_future().Take();
+  EXPECT_EQ(updated_after_install->app_id, parent_app.app_id());
+  ASSERT_EQ(updated_after_install->sub_apps.size(), 1u);
+  EXPECT_EQ(updated_after_install->sub_apps[0]->app_id, sub_app_id);
+  EXPECT_EQ(updated_after_install->sub_apps[0]->name, "Sub App 1");
+
+  provider().install_manager().NotifyWebAppManifestUpdated(sub_app_id);
+  iwa_dev::mojom::IwaDevModeAppInfoPtr updated_after_manifest_update =
+      mock_page().updated_future().Take();
+  EXPECT_EQ(updated_after_manifest_update->app_id, parent_app.app_id());
+  ASSERT_EQ(updated_after_manifest_update->sub_apps.size(), 1u);
+  EXPECT_EQ(updated_after_manifest_update->sub_apps[0]->app_id, sub_app_id);
+  EXPECT_EQ(updated_after_manifest_update->sub_apps[0]->name, "Sub App 1");
+
+  web_app::test::UninstallWebApp(profile(), sub_app_id);
+  iwa_dev::mojom::IwaDevModeAppInfoPtr updated_after_uninstall =
+      mock_page().updated_future().Take();
+  EXPECT_EQ(updated_after_uninstall->app_id, parent_app.app_id());
+  EXPECT_TRUE(updated_after_uninstall->sub_apps.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerObserverBrowserTest,
+                       OnParentAppWithSubAppUninstalled) {
+  web_app::IsolatedWebAppUrlInfo parent_app = InstallBundleApp();
+  ASSERT_EQ(mock_page().installed_future().Take()->app_id, parent_app.app_id());
+
+  InstallSubApp(parent_app, "/sub-app", u"Sub App 1");
+  ASSERT_EQ(mock_page().updated_future().Take()->app_id, parent_app.app_id());
+
+  web_app::test::UninstallWebApp(profile(), parent_app.app_id());
+  EXPECT_EQ(mock_page().uninstalled_future().Take(), parent_app.app_id());
+  mock_page().FlushForTesting();
+  EXPECT_FALSE(mock_page().updated_future().IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerObserverBrowserTest,
+                       IgnoresNonDevModeIwaAndSubApps) {
+  web_app::IsolatedWebAppUrlInfo parent_app = InstallNonDevModeBundleApp();
+  webapps::AppId sub_app_id =
+      InstallSubApp(parent_app, "/sub-app", u"Sub App 1");
+
+  mock_page().FlushForTesting();
+  EXPECT_FALSE(mock_page().installed_future().IsReady());
+  EXPECT_FALSE(mock_page().updated_future().IsReady());
+
+  provider().install_manager().NotifyWebAppManifestUpdated(sub_app_id);
+  mock_page().FlushForTesting();
+  EXPECT_FALSE(mock_page().updated_future().IsReady());
+
+  web_app::test::UninstallWebApp(profile(), sub_app_id);
+  mock_page().FlushForTesting();
+  EXPECT_FALSE(mock_page().updated_future().IsReady());
+  EXPECT_FALSE(mock_page().uninstalled_future().IsReady());
+}
+
 struct IwaDevAppTestCase {
   const char* name;
   web_app::IsolatedWebAppUrlInfo (IwaDevHandlerBrowserTest::*installer)();
@@ -1291,6 +1379,58 @@ IN_PROC_BROWSER_TEST_P(IwaDevHandlerAppTypeBrowserTest, LaunchApp) {
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest, LaunchApp_AppNotFound) {
   EXPECT_FALSE(LaunchApp("non-existent-app-id"));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest, SubApps_LaunchApp) {
+  web_app::IsolatedWebAppUrlInfo parent_app = InstallBundleApp();
+  webapps::AppId sub_app_id =
+      InstallSubApp(parent_app, "/sub-app", u"Test Sub App");
+
+  EXPECT_TRUE(LaunchApp(sub_app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest, SubApps_UninstallApp) {
+  web_app::IsolatedWebAppUrlInfo parent_app = InstallBundleApp();
+  webapps::AppId sub_app_id =
+      InstallSubApp(parent_app, "/sub-app", u"Test Sub App");
+
+  auto apps = GetInstalledAppsInfo();
+  ASSERT_EQ(apps.size(), 1u);
+  ASSERT_EQ(apps[0]->sub_apps.size(), 1u);
+  EXPECT_EQ(apps[0]->sub_apps[0]->app_id, sub_app_id);
+  EXPECT_EQ(apps[0]->sub_apps[0]->name, "Test Sub App");
+
+  EXPECT_TRUE(UninstallApp(sub_app_id));
+
+  auto apps_after = GetInstalledAppsInfo();
+  ASSERT_EQ(apps_after.size(), 1u);
+  EXPECT_TRUE(apps_after[0]->sub_apps.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest, SubApps_SortedByName) {
+  web_app::IsolatedWebAppUrlInfo parent_app = InstallBundleApp();
+  webapps::AppId sub_app_2_id =
+      InstallSubApp(parent_app, "/sub-app-2", u"Sub App 2");
+  webapps::AppId sub_app_1_id =
+      InstallSubApp(parent_app, "/sub-app-1", u"Sub App 1");
+
+  auto apps = GetInstalledAppsInfo();
+  ASSERT_EQ(apps.size(), 1u);
+  ASSERT_EQ(apps[0]->sub_apps.size(), 2u);
+  EXPECT_EQ(apps[0]->sub_apps[0]->app_id, sub_app_1_id);
+  EXPECT_EQ(apps[0]->sub_apps[0]->name, "Sub App 1");
+  EXPECT_EQ(apps[0]->sub_apps[1]->app_id, sub_app_2_id);
+  EXPECT_EQ(apps[0]->sub_apps[1]->name, "Sub App 2");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
+                       SubApps_RejectsNonDevModeSubApp) {
+  web_app::IsolatedWebAppUrlInfo parent_app = InstallNonDevModeBundleApp();
+  webapps::AppId sub_app_id =
+      InstallSubApp(parent_app, "/sub-app", u"Test Sub App");
+
+  EXPECT_FALSE(LaunchApp(sub_app_id));
+  EXPECT_FALSE(UninstallApp(sub_app_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
