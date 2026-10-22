@@ -664,6 +664,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mComposeplateCoordinator.setOptionalButtonIcon(R.drawable.image_create_24dp);
             mComposeplateCoordinator.setOptionalButtonText(
                     mActivity.getString(R.string.ntp_action_chip_create_image));
+            mComposeplateCoordinator.setOptionalButtonContentDescription(
+                    mActivity.getString(R.string.ntp_action_chip_create_image_accessibility));
         } else if (chipType == NewTabPageUtils.ActionChips.GALLERY) {
             mComposeplateCoordinator.setOptionalButtonClickListener(
                     this::onGalleryButtonClicked, chipType);

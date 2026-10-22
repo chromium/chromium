@@ -51,7 +51,8 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link ComposeplateViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ComposeplateViewBinderUnitTest {
-    private static final String OPTIONAL_BUTTON_LABEL = "Create image";
+    private static final String OPTIONAL_BUTTON_LABEL = "Create";
+    private static final String OPTIONAL_BUTTON_CONTENT_DESCRIPTION = "Create image";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private OnClickListener mOnClickListener;
@@ -208,13 +209,36 @@ public class ComposeplateViewBinderUnitTest {
         View optionalButton = mView.findViewById(R.id.optional_button);
         TextView optionalButtonText = mView.findViewById(R.id.optional_button_text);
 
+        CharSequence defaultContentDescription = optionalButton.getContentDescription();
+
         mPropertyModel.set(ComposeplateProperties.OPTIONAL_BUTTON_TEXT, OPTIONAL_BUTTON_LABEL);
         assertEquals(OPTIONAL_BUTTON_LABEL, optionalButtonText.getText().toString());
-        assertEquals(OPTIONAL_BUTTON_LABEL, optionalButton.getContentDescription());
+        // The text doesn't affect the content description.
+        assertEquals(defaultContentDescription, optionalButton.getContentDescription());
 
         mPropertyModel.set(ComposeplateProperties.OPTIONAL_BUTTON_TEXT, null);
         assertEquals("", optionalButtonText.getText().toString());
+        assertEquals(defaultContentDescription, optionalButton.getContentDescription());
+    }
+
+    @Test
+    public void testSetOptionalButtonContentDescription() {
+        View optionalButton = mView.findViewById(R.id.optional_button);
+        TextView optionalButtonText = mView.findViewById(R.id.optional_button_text);
+        String defaultText = optionalButtonText.getText().toString();
+
+        mPropertyModel.set(
+                ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION,
+                OPTIONAL_BUTTON_CONTENT_DESCRIPTION);
+        assertEquals(OPTIONAL_BUTTON_CONTENT_DESCRIPTION, optionalButton.getContentDescription());
+        assertEquals(OPTIONAL_BUTTON_CONTENT_DESCRIPTION, optionalButton.getTooltipText());
+        // The content description doesn't affect the text.
+        assertEquals(defaultText, optionalButtonText.getText().toString());
+
+        mPropertyModel.set(ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION, null);
         assertNull(optionalButton.getContentDescription());
+        assertNull(optionalButton.getTooltipText());
+        assertEquals(defaultText, optionalButtonText.getText().toString());
     }
 
     @Test

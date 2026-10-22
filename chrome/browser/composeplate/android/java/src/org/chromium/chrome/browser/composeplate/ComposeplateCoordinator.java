@@ -285,13 +285,23 @@ public class ComposeplateCoordinator {
     }
 
     /**
-     * Sets the text of the optional button. It is shown on large form factors, and is always used
-     * as the content description of the button.
+     * Sets the text of the optional button. It is only shown on large form factors; see {@link
+     * #setOptionalButtonContentDescription(String)} for the accessible name.
      *
      * @param text The text of the optional button.
      */
     public void setOptionalButtonText(@Nullable String text) {
         mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_TEXT, text);
+    }
+
+    /**
+     * Sets the content description of the optional button, which is also used as its tooltip. It
+     * should be more descriptive than the text, since the button is icon-only on mobiles.
+     *
+     * @param contentDescription The content description of the optional button.
+     */
+    public void setOptionalButtonContentDescription(@Nullable String contentDescription) {
+        mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION, contentDescription);
     }
 
     public void applyWhiteBackground(boolean apply) {

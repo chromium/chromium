@@ -171,19 +171,28 @@ public class ComposeplateView extends LinearLayout {
     }
 
     /**
-     * Updates the text of the optional button. The text is also used as the content description of
-     * the button, since the text is only shown on large form factors.
+     * Updates the text of the optional button. The text is only shown on large form factors; see
+     * {@link #setOptionalButtonContentDescription(String)} for the accessible name.
      *
      * @param text The text of the optional button.
      */
     void setOptionalButtonText(@Nullable String text) {
+        if (mOptionalButtonText == null) return;
+
+        mOptionalButtonText.setText(text);
+    }
+
+    /**
+     * Updates the content description of the optional button. It is also used as the tooltip of the
+     * button.
+     *
+     * @param contentDescription The content description of the optional button.
+     */
+    void setOptionalButtonContentDescription(@Nullable String contentDescription) {
         if (mOptionalButton == null) return;
 
-        mOptionalButton.setContentDescription(text);
-        mOptionalButton.setTooltipText(text);
-        if (mOptionalButtonText != null) {
-            mOptionalButtonText.setText(text);
-        }
+        mOptionalButton.setContentDescription(contentDescription);
+        mOptionalButton.setTooltipText(contentDescription);
     }
 
     /**

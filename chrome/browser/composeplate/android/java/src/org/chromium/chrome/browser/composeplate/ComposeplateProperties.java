@@ -71,11 +71,15 @@ interface ComposeplateProperties {
     WritableObjectPropertyKey<View.@Nullable OnClickListener> OPTIONAL_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /**
-     * The text of the optional button. It is shown on large form factors, and is always used as the
-     * content description of the button.
-     */
+    /** The text of the optional button. It is only shown on large form factors. */
     WritableObjectPropertyKey<@Nullable String> OPTIONAL_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
+
+    /**
+     * The content description of the optional button, also used as its tooltip. It is more
+     * descriptive than {@link #OPTIONAL_BUTTON_TEXT}, since the button is icon-only on mobiles.
+     */
+    WritableObjectPropertyKey<@Nullable String> OPTIONAL_BUTTON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
     /** The lateral (start and end) padding of the optional and incognito buttons, in pixels. */
@@ -107,6 +111,7 @@ interface ComposeplateProperties {
                 OPTIONAL_BUTTON_ICON_RES_ID,
                 OPTIONAL_BUTTON_CLICK_LISTENER,
                 OPTIONAL_BUTTON_TEXT,
+                OPTIONAL_BUTTON_CONTENT_DESCRIPTION,
                 OPTIONAL_BUTTON_LATERAL_PADDING,
                 OPTIONAL_BUTTON_MARGIN_END,
                 IS_INCOGNITO_BUTTON_TEXT_VISIBLE,

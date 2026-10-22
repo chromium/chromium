@@ -369,13 +369,27 @@ public class ComposeplateCoordinatorUnitTest {
 
     @Test
     public void testSetOptionalButtonText() {
-        String text = "Create image";
+        String text = "Create";
+        CharSequence defaultContentDescription = mOptionalButton.getContentDescription();
         mCoordinator.setOptionalButtonText(text);
 
         assertEquals(text, mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_TEXT));
-        assertEquals(text, mOptionalButton.getContentDescription());
         TextView optionalButtonText = mComposeplateView.findViewById(R.id.optional_button_text);
         assertEquals(text, optionalButtonText.getText().toString());
+        // The text doesn't affect the content description.
+        assertEquals(defaultContentDescription, mOptionalButton.getContentDescription());
+    }
+
+    @Test
+    public void testSetOptionalButtonContentDescription() {
+        String contentDescription = "Create image";
+        mCoordinator.setOptionalButtonContentDescription(contentDescription);
+
+        assertEquals(
+                contentDescription,
+                mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION));
+        assertEquals(contentDescription, mOptionalButton.getContentDescription());
+        assertEquals(contentDescription, mOptionalButton.getTooltipText());
     }
 
     @Test

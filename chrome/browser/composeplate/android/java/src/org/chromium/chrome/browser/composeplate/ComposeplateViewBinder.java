@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_ICON_RES_ID;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_LATERAL_PADDING;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_MARGIN_END;
@@ -62,6 +63,9 @@ public class ComposeplateViewBinder {
             view.setOptionalButtonClickListener(model.get(OPTIONAL_BUTTON_CLICK_LISTENER));
         } else if (OPTIONAL_BUTTON_TEXT == propertyKey) {
             view.setOptionalButtonText(model.get(OPTIONAL_BUTTON_TEXT));
+        } else if (OPTIONAL_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
+            view.setOptionalButtonContentDescription(
+                    model.get(OPTIONAL_BUTTON_CONTENT_DESCRIPTION));
         } else if (OPTIONAL_BUTTON_LATERAL_PADDING == propertyKey) {
             view.setButtonLateralPadding(model.get(OPTIONAL_BUTTON_LATERAL_PADDING));
         } else if (OPTIONAL_BUTTON_MARGIN_END == propertyKey) {
