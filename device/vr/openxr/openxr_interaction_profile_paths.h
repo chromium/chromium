@@ -27,6 +27,10 @@ inline constexpr char kHTCViveCosmosInteractionProfilePath[] =
     "/interaction_profiles/htc/vive_cosmos_controller";
 inline constexpr char kExtHandInteractionProfilePath[] =
     "/interaction_profiles/ext/hand_interaction_ext";
+inline constexpr char kMetaTouchPlusInteractionProfilePath[] =
+    "/interaction_profiles/meta/touch_controller_plus";
+inline constexpr char kMetaTouchProInteractionProfilePath[] =
+    "/interaction_profiles/facebook/touch_controller_pro";
 }  // namespace device
 
 #endif  // DEVICE_VR_OPENXR_OPENXR_INTERACTION_PROFILE_PATHS_H_

@@ -24,5 +24,7 @@ enum OpenXrInteractionProfileType {
   kViveCosmos = 8,
   kExtHand = 9,
   kMetaHandAim = 10,
+  kMetaTouchPlus = 11,
+  kMetaTouchPro = 12,
   kInvalid,
 };

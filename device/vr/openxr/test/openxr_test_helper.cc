@@ -66,6 +66,8 @@ const std::vector<const char*>& OpenXrTestHelper::GetSupportedExtensions() {
       XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
       XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME,
       XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
+      XR_META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME,
+      XR_FB_TOUCH_CONTROLLER_PRO_EXTENSION_NAME,
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
       XR_EXT_HAND_TRACKING_EXTENSION_NAME,
       XR_KHR_VISIBILITY_MASK_EXTENSION_NAME,
@@ -1410,6 +1412,12 @@ void OpenXrTestHelper::UpdateInteractionProfile(
       break;
     case device::mojom::OpenXrInteractionProfileType::kExtHand:
       interaction_profile_ = device::kExtHandInteractionProfilePath;
+      break;
+    case device::mojom::OpenXrInteractionProfileType::kMetaTouchPlus:
+      interaction_profile_ = device::kMetaTouchPlusInteractionProfilePath;
+      break;
+    case device::mojom::OpenXrInteractionProfileType::kMetaTouchPro:
+      interaction_profile_ = device::kMetaTouchProInteractionProfilePath;
       break;
     case device::mojom::OpenXrInteractionProfileType::kInvalid:
     case device::mojom::OpenXrInteractionProfileType::kMetaHandAim:

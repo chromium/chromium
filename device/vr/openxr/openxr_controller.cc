@@ -135,6 +135,10 @@ const char* GetStringFromInteractionProfile(
       return "ext-hand";
     case mojom::OpenXrInteractionProfileType::kMetaHandAim:
       return "meta-hand-aim";
+    case mojom::OpenXrInteractionProfileType::kMetaTouchPlus:
+      return "meta-touch-plus";
+    case mojom::OpenXrInteractionProfileType::kMetaTouchPro:
+      return "meta-touch-pro";
   }
 }
 

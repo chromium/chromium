@@ -456,6 +456,45 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestProfilesFixedHand) {
   TestHandProfiles(this, false);
 }
 
+void TestTouchControllerProfiles(
+    WebXrVrBrowserTestBase* t,
+    device::mojom::OpenXrInteractionProfileType profile_type,
+    const std::string& expected_profile,
+    const std::string& unexpected_profile) {
+  MockXRDeviceHookBase my_mock;
+  my_mock.SimulateInteractionProfileChanged(profile_type);
+  my_mock.CreateInputSource(device::mojom::XRHandedness::RIGHT);
+
+  t->LoadFileAndAwaitInitialization("test_webxr_profiles");
+  t->EnterSessionWithUserGestureOrFail();
+
+  // We should only have seen the first change indicating we have input sources.
+  t->PollJavaScriptBooleanOrFail("inputChangeEvents === 1",
+                                 WebXrVrBrowserTestBase::kPollTimeoutShort);
+  t->PollJavaScriptBooleanOrFail("getCurrentInputSources().length === 1",
+                                 WebXrVrBrowserTestBase::kPollTimeoutShort);
+
+  t->RunJavaScriptOrFail("validateAllInputSourcesContainProfile('" +
+                         expected_profile + "')");
+  t->RunJavaScriptOrFail("validateNoInputSourcesContainProfile('" +
+                         unexpected_profile + "')");
+  // Pages that only know the Touch controller get its profile as a fallback.
+  t->RunJavaScriptOrFail(
+      "validateAllInputSourcesContainProfile('oculus-touch')");
+}
+
+IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestProfilesMetaTouchPlus) {
+  TestTouchControllerProfiles(
+      this, device::mojom::OpenXrInteractionProfileType::kMetaTouchPlus,
+      "meta-quest-touch-plus", "meta-quest-touch-pro");
+}
+
+IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestProfilesMetaTouchPro) {
+  TestTouchControllerProfiles(
+      this, device::mojom::OpenXrInteractionProfileType::kMetaTouchPro,
+      "meta-quest-touch-pro", "meta-quest-touch-plus");
+}
+
 // Ensure that OpenXR can change between all known Interaction Profile types.
 // If you're adding a new interaction profile, you may need to validate that
 // openxr_test_helper has any required extensions listed as supported in it's
