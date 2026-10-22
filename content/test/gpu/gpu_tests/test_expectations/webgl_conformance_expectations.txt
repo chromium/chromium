@@ -597,7 +597,9 @@ crbug.com/513192891 [ android android-pixel-10 angle-opengles ] conformance/rend
 
 crbug.com/558993697 [ android android-pixel-11-pro-xl ] WebglExtension_OES_texture_float_linear [ Failure ]
 crbug.com/558993697 [ android android-pixel-11-pro-xl ] conformance/glsl/functions/glsl-function-cross.html [ Failure ]
+crbug.com/576731808 [ android android-pixel-11-pro-xl angle-opengles passthrough ] conformance/misc/uninitialized-test.html [ Failure ]
 crbug.com/558993697 [ android android-pixel-11-pro-xl ] conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
+crbug.com/576731808 [ android android-pixel-11-pro-xl angle-opengles passthrough ] conformance/textures/misc/tex-input-validation.html [ Failure ]
 
 ## Misc failures ##
 
