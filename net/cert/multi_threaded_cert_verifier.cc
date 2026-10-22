@@ -110,7 +110,7 @@ scoped_refptr<X509Certificate> DoVerify2QwacBindingOnWorkerThread(
 // that the provided callback will not be invoked if the Request is deleted.
 class MultiThreadedCertVerifier::InternalRequest
     : public CertVerifier::Request,
-      public base::LinkNode<InternalRequest> {
+      public base::UnsafeLinkNode<InternalRequest> {
  public:
   InternalRequest(CompletionOnceCallback callback,
                   CertVerifyResult* caller_result);
@@ -240,11 +240,11 @@ MultiThreadedCertVerifier::~MultiThreadedCertVerifier() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Reset the callbacks for each InternalRequest to fulfill the respective
   // net::CertVerifier contract.
-  for (base::LinkNode<InternalRequest>* node = request_list_.head();
+  for (base::UnsafeLinkNode<InternalRequest>* node = request_list_.head();
        node != request_list_.end();) {
     // Resetting the callback may delete the request, so save a pointer to the
     // next node first.
-    base::LinkNode<InternalRequest>* next_node = node->next();
+    base::UnsafeLinkNode<InternalRequest>* next_node = node->next();
     node->value()->ResetCallback();
     node = next_node;
   }

@@ -225,7 +225,7 @@ void CookieMonsterChangeDispatcher::DispatchChangeToNameKey(
     return;
 
   SubscriptionList& subscription_list = it->second;
-  for (base::LinkNode<Subscription>* node = subscription_list.head();
+  for (base::UnsafeLinkNode<Subscription>* node = subscription_list.head();
        node != subscription_list.end(); node = node->next()) {
     node->value()->DispatchChange(change,
                                   cookie_monster_->cookie_access_delegate());

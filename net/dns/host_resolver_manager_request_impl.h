@@ -48,7 +48,7 @@ class ResolveContext;
 // (~RequestImpl).
 class HostResolverManager::RequestImpl
     : public HostResolver::ResolveHostRequest,
-      public base::LinkNode<HostResolverManager::RequestImpl> {
+      public base::UnsafeLinkNode<HostResolverManager::RequestImpl> {
  public:
   RequestImpl(NetLogWithSource source_net_log,
               HostResolver::Host request_host,

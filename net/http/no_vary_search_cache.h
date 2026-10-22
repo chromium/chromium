@@ -262,7 +262,7 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
       absl::node_hash_map<HttpNoVarySearchData, Queries>;
   using BaseUrlToNVSDataMap =
       absl::node_hash_map<std::string, NVSDataToQueriesMap>;
-  struct Partition : public base::LinkNode<Partition> {
+  struct Partition : public base::UnsafeLinkNode<Partition> {
     Partition();
     ~Partition();
     Partition(const Partition&) = delete;
@@ -270,10 +270,10 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
     Partition(Partition&&);
     Partition& operator=(Partition&&) = delete;
 
-    void MoveToHead(base::LinkedList<Partition>& linked_list);
+    void MoveToHead(base::UnsafeLinkedList<Partition>& linked_list);
 
     // lru.tail() is the least-recently-used Query.
-    base::LinkedList<Query> lru;
+    base::UnsafeLinkedList<Query> lru;
     BaseUrlToNVSDataMap base_url_map;
     size_t size = 0u;
   };
@@ -345,7 +345,7 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   CachePartitionKeyToPartitionMap partitions_;
 
   // partition_lru_.tail() is the least-recently-used Partition.
-  base::LinkedList<Partition> partition_lru_;
+  base::UnsafeLinkedList<Partition> partition_lru_;
 
   // The number of Query objects in the cache.
   size_t size_ = 0u;

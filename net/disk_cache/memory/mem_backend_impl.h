@@ -153,7 +153,7 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend,
 
   // Stored in increasing order of last use time, from least recently used to
   // most recently used.
-  base::LinkedList<MemEntryImpl> lru_list_;
+  base::UnsafeLinkedList<MemEntryImpl> lru_list_;
 
   // Maximum data size for this instance, assuming no memory pressure.
   int32_t max_size_ = 0;

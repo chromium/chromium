@@ -142,7 +142,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   bool IsEmptyForTesting();
 
  private:
-  struct TrackedFiles : public base::LinkNode<TrackedFiles> {
+  struct TrackedFiles : public base::UnsafeLinkNode<TrackedFiles> {
     // We can potentially run through this state machine multiple times for
     // FILE_1, as that's often missing, so SimpleSynchronousEntry can sometimes
     // close and remove the file for an empty stream, then re-open it on actual
@@ -222,7 +222,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   // intrusive list, the next/previous pointers are stored directly in
   // TrackedFiles (via base::LinkNode), reducing overhead and improving
   // performance for LRU operations.
-  base::LinkedList<TrackedFiles> lru_;
+  base::UnsafeLinkedList<TrackedFiles> lru_;
   int file_limit_;
   // How many actually open files we are using.
   // Note that when a thread commits to closing a file, but hasn't actually

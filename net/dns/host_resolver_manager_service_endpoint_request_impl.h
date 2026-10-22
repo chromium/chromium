@@ -33,7 +33,8 @@ namespace net {
 // Implementation of HostResolver::ServiceEndpointRequest.
 class HostResolverManager::ServiceEndpointRequestImpl
     : public HostResolver::ServiceEndpointRequest,
-      public base::LinkNode<HostResolverManager::ServiceEndpointRequestImpl> {
+      public base::UnsafeLinkNode<
+          HostResolverManager::ServiceEndpointRequestImpl> {
  public:
   ServiceEndpointRequestImpl(HostResolver::Host host,
                              NetworkAnonymizationKey network_anonymization_key,

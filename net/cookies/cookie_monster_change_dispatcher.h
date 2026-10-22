@@ -70,7 +70,7 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
   void DispatchChange(const CookieChangeInfo& change, bool notify_global_hooks);
 
  private:
-  class Subscription : public base::LinkNode<Subscription>,
+  class Subscription : public base::UnsafeLinkNode<Subscription>,
                        public CookieChangeSubscription {
    public:
     Subscription(base::WeakPtr<CookieMonsterChangeDispatcher> change_dispatcher,
@@ -119,7 +119,7 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
   };
 
   // The last level of the subscription data structures.
-  using SubscriptionList = base::LinkedList<Subscription>;
+  using SubscriptionList = base::UnsafeLinkedList<Subscription>;
 
   // Buckets subscriptions according to cookie names.
   //

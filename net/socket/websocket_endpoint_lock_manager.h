@@ -47,7 +47,7 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
   // any endpoint at a time. It is safe to destroy an EndpointLock at any time,
   // including before it has a lock.
   class NET_EXPORT_PRIVATE EndpointLock final
-      : public base::LinkNode<EndpointLock> {
+      : public base::UnsafeLinkNode<EndpointLock> {
    public:
     EndpointLock(WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
                  const IPEndPoint& endpoint,
@@ -100,7 +100,7 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
 
  private:
   struct LockInfo {
-    typedef base::LinkedList<EndpointLock> WaiterQueue;
+    typedef base::UnsafeLinkedList<EndpointLock> WaiterQueue;
 
     LockInfo();
     ~LockInfo();

@@ -133,7 +133,7 @@ class CoalescingCertVerifier::Job {
   base::TimeTicks start_time_;
   std::unique_ptr<CertVerifier::Request> pending_request_;
 
-  base::LinkedList<CoalescingCertVerifier::Request> attached_requests_;
+  base::UnsafeLinkedList<CoalescingCertVerifier::Request> attached_requests_;
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
 };
 
@@ -148,7 +148,7 @@ class CoalescingCertVerifier::Job {
 //     Jobs should be orphaned, and do nothing when the Request is (eventually)
 //     deleted.
 class CoalescingCertVerifier::Request
-    : public base::LinkNode<CoalescingCertVerifier::Request>,
+    : public base::UnsafeLinkNode<CoalescingCertVerifier::Request>,
       public CertVerifier::Request {
  public:
   // Create a request that will be attached to |job|, and will notify

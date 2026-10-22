@@ -143,14 +143,14 @@ GURL ReconstructOriginalURLFromQuery(std::string_view base_url,
 // query string, ie. everything between the "?" and the "#" in the original URL.
 // Combined with the `base_url`, this can be used to reconstruct the original
 // URL that was used to store the original request in the disk cache.
-class NoVarySearchCache::Query final : public base::LinkNode<Query> {
+class NoVarySearchCache::Query final : public base::UnsafeLinkNode<Query> {
  public:
   using PassKey = base::PassKey<Query>;
 
   // Creates a Query and adds it to `lru_list`.
   static std::unique_ptr<Query> CreateAndInsert(
       std::optional<std::string> query,
-      base::LinkedList<Query>& lru_list,
+      base::UnsafeLinkedList<Query>& lru_list,
       base::Time update_time,
       const std::string* canonicalized_query,
       Queries* queries) {
@@ -185,7 +185,7 @@ class NoVarySearchCache::Query final : public base::LinkNode<Query> {
   }
 
   // Moves this object to the head of `linked_list`.
-  void MoveToHead(base::LinkedList<Query>& linked_list) {
+  void MoveToHead(base::UnsafeLinkedList<Query>& linked_list) {
     auto* head_node = linked_list.head();
     if (head_node != this) {
       if (next()) {
@@ -312,7 +312,7 @@ NoVarySearchCache::Partition::~Partition() {
 NoVarySearchCache::Partition::Partition(Partition&&) = default;
 
 void NoVarySearchCache::Partition::MoveToHead(
-    base::LinkedList<Partition>& linked_list) {
+    base::UnsafeLinkedList<Partition>& linked_list) {
   auto* head_node = linked_list.head();
   if (head_node != this) {
     if (next()) {

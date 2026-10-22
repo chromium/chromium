@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE MultiThreadedCertVerifier
   // deleted. It is used to ensure that when the MultiThreadedCertVerifier is
   // deleted, we eagerly reset all of the callbacks provided to Verify(), and
   // don't call them later, as required by the CertVerifier contract.
-  base::LinkedList<InternalRequest> request_list_;
+  base::UnsafeLinkedList<InternalRequest> request_list_;
 
   THREAD_CHECKER(thread_checker_);
 };

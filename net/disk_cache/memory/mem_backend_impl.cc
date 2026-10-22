@@ -57,9 +57,9 @@ int32_t CalculateDefaultMaxSize() {
 // Returns the next entry after |node| in |lru_list| that's not a child
 // of |node|.  This is useful when dooming, since dooming a parent entry
 // will also doom its children.
-base::LinkNode<MemEntryImpl>* NextSkippingChildren(
-    const base::LinkedList<MemEntryImpl>& lru_list,
-    base::LinkNode<MemEntryImpl>* node) {
+base::UnsafeLinkNode<MemEntryImpl>* NextSkippingChildren(
+    const base::UnsafeLinkedList<MemEntryImpl>& lru_list,
+    base::UnsafeLinkNode<MemEntryImpl>* node) {
   MemEntryImpl* cur = node->value();
   do {
     node = node->next();
@@ -123,7 +123,7 @@ void MemBackendImpl::OnEntryInserted(MemEntryImpl* entry) {
 }
 
 void MemBackendImpl::OnEntryUpdated(MemEntryImpl* entry) {
-  // LinkedList<>::RemoveFromList() removes |entry| from |lru_list_|.
+  // UnsafeLinkedList<>::RemoveFromList() removes |entry| from |lru_list_|.
   entry->RemoveFromList();
   lru_list_.Append(entry);
 }
@@ -131,7 +131,7 @@ void MemBackendImpl::OnEntryUpdated(MemEntryImpl* entry) {
 void MemBackendImpl::OnEntryDoomed(MemEntryImpl* entry) {
   if (entry->type() == MemEntryImpl::EntryType::kParent)
     entries_.erase(entry->key());
-  // LinkedList<>::RemoveFromList() removes |entry| from |lru_list_|.
+  // UnsafeLinkedList<>::RemoveFromList() removes |entry| from |lru_list_|.
   entry->RemoveFromList();
 }
 
@@ -227,7 +227,7 @@ net::Error MemBackendImpl::DoomEntriesBetween(Time initial_time,
     end_time = Time::Max();
   DCHECK_GE(end_time, initial_time);
 
-  base::LinkNode<MemEntryImpl>* node = lru_list_.head();
+  base::UnsafeLinkNode<MemEntryImpl>* node = lru_list_.head();
   while (node != lru_list_.end()) {
     MemEntryImpl* candidate = node->value();
     node = NextSkippingChildren(lru_list_, node);
@@ -260,7 +260,7 @@ int64_t MemBackendImpl::CalculateSizeOfEntriesBetween(
   DCHECK_GE(end_time, initial_time);
 
   int size = 0;
-  base::LinkNode<MemEntryImpl>* node = lru_list_.head();
+  base::UnsafeLinkNode<MemEntryImpl>* node = lru_list_.head();
   while (node != lru_list_.end()) {
     MemEntryImpl* entry = node->value();
     if (entry->GetLastUsed() >= initial_time &&
@@ -356,7 +356,7 @@ void MemBackendImpl::EvictIfNeeded() {
 }
 
 void MemBackendImpl::EvictTill(int target_size) {
-  base::LinkNode<MemEntryImpl>* entry = lru_list_.head();
+  base::UnsafeLinkNode<MemEntryImpl>* entry = lru_list_.head();
   while (current_size_ > target_size && entry != lru_list_.end()) {
     MemEntryImpl* to_doom = entry->value();
     entry = NextSkippingChildren(lru_list_, entry);
