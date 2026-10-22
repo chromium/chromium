@@ -150,9 +150,12 @@ WaylandDataDragController::~WaylandDataDragController() {
   data_device_manager_->GetDevice()->ResetDragDelegate();
 }
 
-bool WaylandDataDragController::StartSession(const OSExchangeData& data,
-                                             int operations,
-                                             DragEventSource source) {
+bool WaylandDataDragController::StartSession(
+    const OSExchangeData& data,
+    int operations,
+    DragEventSource source,
+    WaylandWindow* drag_handler_window) {
+  CHECK(drag_handler_window);
   if (IsDragInProgress()) {
     LOG(WARNING) << "Cannot start a new drag session while an active drag "
                     "is in progress.";
@@ -186,6 +189,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   state_ = State::kStarting;
   drag_source_ = source;
   origin_window_ = origin_window;
+  drag_handler_window_ = drag_handler_window;
 
   // Create new data source and offers |data|.
   offered_exchange_data_provider_ = data.provider().Clone();
@@ -664,6 +668,10 @@ void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
     origin_window_ = nullptr;
   }
 
+  if (window == drag_handler_window_) {
+    drag_handler_window_ = nullptr;
+  }
+
   if (window == pointer_grabber_for_window_drag_) {
     pointer_grabber_for_window_drag_ = nullptr;
   }
@@ -839,6 +847,7 @@ void WaylandDataDragController::Reset() {
   data_source_.reset();
   data_offer_.reset();
   origin_window_ = nullptr;
+  drag_handler_window_ = nullptr;
   origin_surface_.reset();
   icon_buffer_.reset();
   icon_surface_.reset();
@@ -858,12 +867,21 @@ void WaylandDataDragController::Reset() {
 // conditionally depending on the state it would be transitioning to.
 void WaylandDataDragController::HandleDragEnd(DragResult result,
                                               base::TimeTicks timestamp) {
-  if (origin_window_) {
+  // Notify the window that runs the drag loop, rather than |origin_window_|:
+  // only the former can end the loop, and they differ when the drag started
+  // while the pointer or touch focus was on another window, e.g. a bubble.
+  if (drag_handler_window_) {
     DragOperation operation =
         (result == DragResult::kCompleted)
             ? DndActionToDragOperation(data_source_->dnd_action())
             : DragOperation::kNone;
-    origin_window_->OnDragSessionClose(operation);
+    drag_handler_window_->OnDragSessionClose(operation);
+    drag_handler_window_ = nullptr;
+  }
+
+  // |origin_window_| may have been removed while handling the session close
+  // above.
+  if (origin_window_) {
     // DnD handlers expect DragLeave to be sent for drag sessions that end up
     // with no data fetching (wl_data_source::cancelled event).
     if (result != DragResult::kCompleted) {

@@ -99,10 +99,12 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // Starts a data drag and drop session for |data|. Returns true if it is
   // successfully started, false otherwise. Only one DND session can run at a
-  // given time.
+  // given time. |drag_handler_window| is the window that requested the session
+  // and runs the drag loop; it is notified when the session ends.
   bool StartSession(const ui::OSExchangeData& data,
                     int operations,
-                    mojom::DragEventSource source);
+                    mojom::DragEventSource source,
+                    WaylandWindow* drag_handler_window);
 
   // Cancels the currently running drag and drop session.
   //
@@ -298,6 +300,12 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // The window that initiated the drag session. Can be null when the session
   // has been started by an external Wayland client.
   raw_ptr<WaylandWindow> origin_window_ = nullptr;
+
+  // The window that requested the outgoing drag session and runs the drag
+  // loop, which is notified when the session ends. It may differ from
+  // |origin_window_|, which is the window with pointer or touch focus, e.g.
+  // when the focus is on a bubble (a subsurface of the requesting window).
+  raw_ptr<WaylandWindow> drag_handler_window_ = nullptr;
 
   std::unique_ptr<WaylandSurface> origin_surface_;
 

@@ -313,7 +313,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
   os_exchange_data.SetHtml(sample_text_for_dnd(), {});
   int operations = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
   drag_controller()->StartSession(os_exchange_data, operations,
-                                  DragEventSource::kMouse);
+                                  DragEventSource::kMouse, window());
 
   // The server should get an empty data buffer in ReadData callback when trying
   // to read it with a different mime type.
@@ -328,7 +328,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithLink) {
   os_exchange_data.SetURL(GURL("www.abc.com"), u"ABC");
   int operations = DragDropTypes::DRAG_LINK;
   drag_controller()->StartSession(os_exchange_data, operations,
-                                  DragEventSource::kMouse);
+                                  DragEventSource::kMouse, window());
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* data_source = server->data_device_manager()->data_source();
@@ -355,7 +355,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
 
   // The client starts dragging offering pickled data with custom formats.
   drag_controller()->StartSession(data, DragDropTypes::DRAG_MOVE,
-                                  DragEventSource::kMouse);
+                                  DragEventSource::kMouse, window());
 
   PostToServerAndWait([kCustomFormats](wl::TestWaylandServerThread* server) {
     auto* data_source = server->data_device_manager()->data_source();
@@ -379,7 +379,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
       base::byte_span_from_cstring(kSampleTextForDragAndDrop));
   int operations = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
   drag_controller()->StartSession(os_exchange_data, operations,
-                                  DragEventSource::kMouse);
+                                  DragEventSource::kMouse, window());
 
   constexpr char kText[] = "application/octet-stream;name=\"t\\\\est\\\".jpg\"";
   ReadAndCheckData(kText,
@@ -397,7 +397,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithEmptyMimeTypeList) {
 
   OSExchangeData os_exchange_data;
   bool started = drag_controller()->StartSession(
-      os_exchange_data, DragDropTypes::DRAG_MOVE, DragEventSource::kMouse);
+      os_exchange_data, DragDropTypes::DRAG_MOVE, DragEventSource::kMouse,
+      window());
   ASSERT_TRUE(started);
 
   PostToServerAndWait([kExpectedMimeType = "chromium/x-empty-drag-data"](
@@ -945,6 +946,62 @@ TEST_P(WaylandDataDragControllerTest,
   EXPECT_FALSE(window_);
 }
 
+// The StartDragWithPointerFocusOnBubble_* tests start a drag from `window_`
+// while the pointer focus is on a bubble, i.e. a subsurface of `window_`. The
+// bubble is then the origin window of the session, but only `window_` can end
+// its drag loop, so it must be the one notified when the session ends.
+
+// The drag is cancelled.
+TEST_P(WaylandDataDragControllerTest,
+       StartDragWithPointerFocusOnBubble_Cancel) {
+  MockPlatformWindowDelegate bubble_delegate;
+  auto bubble = CreateTestWindow(PlatformWindowType::kBubble, gfx::Size(80, 80),
+                                 &bubble_delegate, window_->GetWidget());
+  FocusAndPressLeftPointerButton(bubble.get(), &bubble_delegate);
+
+  ScheduleDragCancel();
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+}
+
+// The drag is dropped on `window_`, which accepts it.
+TEST_P(WaylandDataDragControllerTest, StartDragWithPointerFocusOnBubble_Drop) {
+  MockPlatformWindowDelegate bubble_delegate;
+  auto bubble = CreateTestWindow(PlatformWindowType::kBubble, gfx::Size(80, 80),
+                                 &bubble_delegate, window_->GetWidget());
+  FocusAndPressLeftPointerButton(bubble.get(), &bubble_delegate);
+
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    SendDndLeave();
+    SendDndEnter(window(), gfx::Point(20, 20));
+    SendDndAction(WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
+
+    EXPECT_CALL(drag_finished_callback_, Run(DragOperation::kCopy)).Times(1);
+    SendDndDropPerformed();
+    SendDndFinished();
+  }));
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+}
+
+// The bubble is destroyed during the drag, e.g. when a popup closes.
+TEST_P(WaylandDataDragControllerTest,
+       StartDragWithPointerFocusOnBubble_BubbleDestroyed) {
+  MockPlatformWindowDelegate bubble_delegate;
+  auto bubble = CreateTestWindow(PlatformWindowType::kBubble, gfx::Size(80, 80),
+                                 &bubble_delegate, window_->GetWidget());
+  FocusAndPressLeftPointerButton(bubble.get(), &bubble_delegate);
+
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    SendDndLeave();
+    bubble->PrepareForShutdown();
+    bubble.reset();
+    SendDndEnter(window(), gfx::Point(20, 20));
+
+    EXPECT_CALL(drag_finished_callback_, Run(DragOperation::kNone)).Times(1);
+    SendDndCancelled();
+  }));
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+}
+
 // Ensures drag/drop events are properly propagated to non-toplevel windows.
 TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
   auto* origin_window = window_.get();
@@ -1150,7 +1207,7 @@ TEST_P(WaylandDataDragControllerTest, SuppressPointerButtonReleasesAfterEnter) {
   // Press left pointer button and request to start a drag session.
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
   drag_controller()->StartSession(os_exchange_data, DragDropTypes::DRAG_COPY,
-                                  DragEventSource::kMouse);
+                                  DragEventSource::kMouse, window());
 
   // Ensure start_drag request is processed at compositor side and a first enter
   // is received by the client. From that point onwards, any pointer button
@@ -1543,7 +1600,7 @@ TEST_P(WaylandDataDragControllerTest, OutgoingSessionWithoutDndFinished) {
   os_exchange_data.SetHtml(sample_text_for_dnd(), {});
   bool started = drag_controller()->StartSession(
       os_exchange_data, DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE,
-      DragEventSource::kMouse);
+      DragEventSource::kMouse, window());
   WaylandTestBase::SyncDisplay();
   ASSERT_FALSE(started);
 
@@ -1605,7 +1662,8 @@ TEST_P(WaylandDataDragControllerTest,
 
   // Start window drag session on window 1.
   bool started = drag_controller()->StartSession(
-      window_drag_data, DragDropTypes::DRAG_MOVE, DragEventSource::kMouse);
+      window_drag_data, DragDropTypes::DRAG_MOVE, DragEventSource::kMouse,
+      window());
   ASSERT_TRUE(started);
   EXPECT_TRUE(drag_controller()->IsDragInProgress());
 
@@ -1624,8 +1682,9 @@ TEST_P(WaylandDataDragControllerTest,
   FocusAndPressLeftPointerButton(window_2.get(), &delegate_2);
   OSExchangeData attacker_data;
   attacker_data.SetString(u"payload");
-  bool second_started = drag_controller()->StartSession(
-      attacker_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse);
+  bool second_started =
+      drag_controller()->StartSession(attacker_data, DragDropTypes::DRAG_COPY,
+                                      DragEventSource::kMouse, window_2.get());
 
   // The re-entrant session request should be rejected, preserving the active
   // window drag session.

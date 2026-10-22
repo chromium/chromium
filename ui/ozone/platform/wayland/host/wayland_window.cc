@@ -415,7 +415,7 @@ bool WaylandWindow::StartDrag(
     WmDragHandler::DragFinishedCallback drag_finished_callback,
     WmDragHandler::LocationDelegate* location_delegate) {
   if (!connection_->data_drag_controller()->StartSession(data, operations,
-                                                         source)) {
+                                                         source, this)) {
     return false;
   }
 
