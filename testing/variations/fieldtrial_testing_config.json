@@ -12866,21 +12866,6 @@
             ]
         }
     ],
-    "OpenEditGroupViewByTappingTitle": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OpenEditGroupViewByTappingTitle"
-                    ]
-                }
-            ]
-        }
-    ],
     "OpenTranslationSettings": [
         {
             "platforms": [
