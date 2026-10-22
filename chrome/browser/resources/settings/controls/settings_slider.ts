@@ -138,7 +138,7 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
     this.onSliderChanged_();
   }
 
-  protected onUpdatingFromKey_() {
+  protected onUpdatingFromKeyChanged_() {
     this.onSliderChanged_();
   }
 

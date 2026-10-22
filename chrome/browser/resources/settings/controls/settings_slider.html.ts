@@ -23,7 +23,7 @@ ${this.pref?.controlledBy ? html`
       .min="${this.min ?? 0}"
       @cr-slider-value-changed="${this.onCrSliderValueChanged_}"
       @dragging-changed="${this.onDraggingChanged_}"
-      @updating-from-key="${this.onUpdatingFromKey_}"
+      @updating-from-key-changed="${this.onUpdatingFromKeyChanged_}"
       aria-roledescription="${this.getRoleDescription_()}"
       aria-label="${this.labelAria}"
       aria-disabled="${this.ariaDisabled}">

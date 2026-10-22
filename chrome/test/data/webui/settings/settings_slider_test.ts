@@ -317,4 +317,25 @@ suite('SettingsSlider', function() {
   });
 
 
+  test('value updated while updatingFromKey is true', async () => {
+    slider.ticks = ticks;
+    await checkSliderValueFromPref(4, 1);
+
+    keyDownOn(crSlider, 0, [], 'ArrowRight');
+    assertTrue(crSlider.updatingFromKey);
+    assertEquals(2, crSlider.value);
+    assertEquals(8, prefService.getPref<number>('test_pref').value);
+
+    // Simulate an external pref change arriving while key is held down.
+    prefsBrowserProxy.fakeApi.sendPrefChanges([
+      {key: 'test_pref', value: 4},
+    ]);
+    await microtasksFinished();
+    assertEquals(2, crSlider.value);
+
+    keyUpOn(crSlider, 0, [], 'ArrowRight');
+    await microtasksFinished();
+    assertFalse(crSlider.updatingFromKey);
+    assertEquals(8, prefService.getPref<number>('test_pref').value);
+  });
 });
