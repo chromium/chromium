@@ -6,11 +6,43 @@
 
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
 namespace {
+
+HTMLFrameOwnerElement* FindFrameOwnerIfNested(
+    const ExecutionContext& possible_outer_context,
+    const ExecutionContext& possible_inner_context) {
+  const auto* possible_outer_window =
+      DynamicTo<LocalDOMWindow>(possible_outer_context);
+  const auto* possible_inner_window =
+      DynamicTo<LocalDOMWindow>(possible_inner_context);
+  if (!possible_outer_window || !possible_inner_window) {
+    return nullptr;
+  }
+  const Frame* possible_outer_frame = possible_outer_window->GetFrame();
+  const Frame* possible_inner_frame = possible_inner_window->GetFrame();
+  if (!possible_outer_frame || !possible_inner_frame) {
+    return nullptr;
+  }
+  const Frame* child_frame = possible_inner_frame;
+  while (child_frame && child_frame->Parent() != possible_outer_frame) {
+    child_frame = child_frame->Parent();
+  }
+  if (!child_frame) {
+    return nullptr;
+  }
+  return DynamicTo<HTMLFrameOwnerElement>(child_frame->Owner());
+}
 
 void BuildAncestorChain(EventTarget* target,
                         HeapVector<Member<Node>, 20>* ancestors) {
@@ -56,6 +88,51 @@ void BuildAncestorChainsAndFindCommonAncestors(
 }  // namespace
 
 void BoundaryEventDispatcher::SendBoundaryEvents(
+    EventTarget* exited_target,
+    bool original_exited_target_removed,
+    EventTarget* entered_target) {
+  // An EventTarget must never be exposed to a cross-origin ExecutionContext
+  // through `relatedTarget` (e.g. the touch pointer stream is owned by the
+  // local-root frame's PointerEventManager, which hit-tests through every
+  // same-process child frame).
+  // When the contexts have an inner/outer relationship in the frame hierarchy,
+  // the event in the outer document uses the frame owner (e.g. iframe) element
+  // that lives in that context as its relatedTarget. In other cases (e.g. for
+  // the event in the inner document, or sibling/cousin frames), the related
+  // target is null.
+  if (RuntimeEnabledFeatures::ClearCrossOriginRelatedTargetEnabled() &&
+      exited_target && entered_target) {
+    const ExecutionContext* exited_context =
+        exited_target->GetExecutionContext();
+    const ExecutionContext* entered_context =
+        entered_target->GetExecutionContext();
+    if (exited_context && entered_context &&
+        exited_context != entered_context) {
+      const SecurityOrigin* exited_origin = exited_context->GetSecurityOrigin();
+      const SecurityOrigin* entered_origin =
+          entered_context->GetSecurityOrigin();
+      if (!exited_origin->CanAccess(entered_origin) ||
+          !entered_origin->CanAccess(exited_origin)) {
+        EventTarget* exited_related_target =
+            FindFrameOwnerIfNested(*exited_context, *entered_context);
+        EventTarget* entered_related_target =
+            FindFrameOwnerIfNested(*entered_context, *exited_context);
+        SendBoundaryEventsSameOrigin(exited_target,
+                                     original_exited_target_removed,
+                                     exited_related_target);
+        SendBoundaryEventsSameOrigin(entered_related_target,
+                                     /*original_exited_target_removed=*/false,
+                                     entered_target);
+        return;
+      }
+    }
+  }
+
+  SendBoundaryEventsSameOrigin(exited_target, original_exited_target_removed,
+                               entered_target);
+}
+
+void BoundaryEventDispatcher::SendBoundaryEventsSameOrigin(
     EventTarget* exited_target,
     bool original_exited_target_removed,
     EventTarget* entered_target) {

@@ -1270,6 +1270,13 @@
       status: "stable",
     },
     {
+      // Killswitch for preventing cross-origin relatedTarget on boundary
+      // events.
+      // https://issues.chromium.org/issues/574379564
+      name: "ClearCrossOriginRelatedTarget",
+      status: "stable",
+    },
+    {
       // Set currentTarget to null after dispatch for EventTarget.
       // This was added in M142 and can be removed after M144.
       // https://issues.chromium.org/issues/346766786

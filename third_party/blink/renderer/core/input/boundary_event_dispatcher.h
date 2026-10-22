@@ -38,6 +38,10 @@ class BoundaryEventDispatcher {
                         bool check_for_listener) = 0;
 
  private:
+  void SendBoundaryEventsSameOrigin(EventTarget* exited_target,
+                                    bool original_exited_target_removed,
+                                    EventTarget* entered_target);
+
   const AtomicString& over_event_;
   const AtomicString& out_event_;
   const AtomicString& enter_event_;
