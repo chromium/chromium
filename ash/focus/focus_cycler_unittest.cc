@@ -405,8 +405,8 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes_MoveOntoNext) {
   EXPECT_TRUE(GetPrimaryStatusAreaWidget()->IsActive());
 
   // Manually deallocate to ensure delegate outlives widget.
-  browser_widget.release();
-  test_widget_delegate.release();
+  browser_widget.reset();
+  test_widget_delegate.reset();
 }
 
 // Test that when the shelf widget & status area widget are removed, they should

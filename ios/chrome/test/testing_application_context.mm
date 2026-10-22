@@ -98,6 +98,7 @@ void TestingApplicationContext::SetProfileManagerAndAccountProfileMapper(
   DCHECK(!default_account_profile_mapper_);
   DCHECK(!custom_account_profile_mapper_ || !mapper);
   DCHECK(!!manager == !!mapper);
+  push_notification_service_.reset();
   profile_manager_ = manager;
   custom_account_profile_mapper_ = mapper;
 }

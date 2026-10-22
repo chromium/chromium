@@ -220,6 +220,7 @@ void ApplicationContextImpl::StartTearDown() {
   CHECK_EQ(profile_manager_->GetLoadedProfiles().size(), 0u);
 
   account_profile_mapper_.reset();
+  push_notification_service_.reset();
   profile_manager_.reset();
 
   // The policy providers managed by `browser_policy_connector_` need to shut

@@ -163,7 +163,12 @@ class MainPartitionConstructor {
     // the decision to turn the thread cache on until then.
     // Also tests, such as the ThreadCache tests create a thread cache.
     opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)
+    opts.backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled;
+#else
     opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
+#endif
     auto* new_root = new (buffer) partition_alloc::PartitionRoot(opts);
 
     return new_root;

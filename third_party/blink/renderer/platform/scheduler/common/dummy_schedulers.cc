@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/common/simple_main_thread_scheduler.h"
@@ -243,12 +244,19 @@ class SimpleMainThread : public MainThread {
     main_thread_task_runner_for_testing_ = std::move(task_runner);
   }
 
+  void ClearScheduler() { scheduler_ptr_ = nullptr; }
+
+  base::WeakPtr<SimpleMainThread> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   bool IsSimpleMainThread() const override { return true; }
 
   raw_ptr<ThreadScheduler> scheduler_ptr_;
   scoped_refptr<base::SingleThreadTaskRunner>
       main_thread_task_runner_for_testing_;
+  base::WeakPtrFactory<SimpleMainThread> weak_ptr_factory_{this};
 };
 
 class SimpleMainThreadWithScheduler : public SimpleMainThread {
@@ -265,7 +273,11 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
                                     public MainThreadScheduler {
  public:
   DummyWebMainThreadScheduler() = default;
-  ~DummyWebMainThreadScheduler() override = default;
+  ~DummyWebMainThreadScheduler() override {
+    if (main_thread_) {
+      main_thread_->ClearScheduler();
+    }
+  }
 
   // WebThreadScheduler implementation:
   void Shutdown() override {}
@@ -305,7 +317,9 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   }
 
   std::unique_ptr<MainThread> CreateMainThread() override {
-    return std::make_unique<SimpleMainThread>(this);
+    auto main_thread = std::make_unique<SimpleMainThread>(this);
+    main_thread_ = main_thread->GetWeakPtr();
+    return main_thread;
   }
 
   AgentGroupScheduler* CreateAgentGroupScheduler() override {
@@ -352,6 +366,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
 
  private:
   raw_ptr<v8::Isolate> isolate_ = nullptr;
+  base::WeakPtr<SimpleMainThread> main_thread_;
 };
 
 class DummyAgentGroupScheduler : public AgentGroupScheduler {

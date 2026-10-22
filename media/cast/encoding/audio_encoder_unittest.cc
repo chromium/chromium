@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -189,38 +190,38 @@ TEST_P(AudioEncoderTest, EncodeAac) {
 }
 #endif
 
-static const std::vector<int64_t> kOneCall_3Millis = {3};
-static const std::vector<int64_t> kOneCall_10Millis = {10};
-static const std::vector<int64_t> kOneCall_13Millis = {13};
-static const std::vector<int64_t> kOneCall_20Millis = {20};
+static constexpr auto kOneCall_3Millis = std::to_array<int64_t>({3});
+static constexpr auto kOneCall_10Millis = std::to_array<int64_t>({10});
+static constexpr auto kOneCall_13Millis = std::to_array<int64_t>({13});
+static constexpr auto kOneCall_20Millis = std::to_array<int64_t>({20});
 
-static const std::vector<int64_t> kTwoCalls_3Millis = {3, 3};
-static const std::vector<int64_t> kTwoCalls_10Millis = {10, 10};
-static const std::vector<int64_t> kTwoCalls_Mixed1 = {3, 10};
-static const std::vector<int64_t> kTwoCalls_Mixed2 = {10, 3};
-static const std::vector<int64_t> kTwoCalls_Mixed3 = {3, 17};
-static const std::vector<int64_t> kTwoCalls_Mixed4 = {17, 3};
+static constexpr auto kTwoCalls_3Millis = std::to_array<int64_t>({3, 3});
+static constexpr auto kTwoCalls_10Millis = std::to_array<int64_t>({10, 10});
+static constexpr auto kTwoCalls_Mixed1 = std::to_array<int64_t>({3, 10});
+static constexpr auto kTwoCalls_Mixed2 = std::to_array<int64_t>({10, 3});
+static constexpr auto kTwoCalls_Mixed3 = std::to_array<int64_t>({3, 17});
+static constexpr auto kTwoCalls_Mixed4 = std::to_array<int64_t>({17, 3});
 
-static const std::vector<int64_t> kManyCalls_3Millis = {3, 3, 3, 3, 3, 3, 3, 3,
-                                                        3, 3, 3, 3, 3, 3, 3};
-static const std::vector<int64_t> kManyCalls_10Millis = {
-    10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
-static const std::vector<int64_t> kManyCalls_Mixed1 = {
-    3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10};
-static const std::vector<int64_t> kManyCalls_Mixed2 = {
-    10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3};
-static const std::vector<int64_t> kManyCalls_Mixed3 = {
-    3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4};
-static const std::vector<int64_t> kManyCalls_Mixed4 = {
-    31, 4, 15, 9, 26, 53, 5, 8, 9, 7, 9, 32, 38, 4, 62, 64, 3};
-static const std::vector<int64_t> kManyCalls_Mixed5 = {
-    3, 14, 15, 9, 26, 53, 58, 9, 7, 9, 3, 23, 8, 4, 6, 2, 6, 43};
-static const std::vector<int64_t> kOneBigUnderrun = {10,    10, 10, 10,
-                                                     -1000, 10, 10, 10};
-static const std::vector<int64_t> kTwoBigUnderruns = {
-    10, 10, 10, 10, -712, 10, 10, 10, -1311, 10, 10, 10};
-static const std::vector<int64_t> kMixedUnderruns = {
-    31, -64, 4, 15, 9, 26, -53, 5, 8, -9, 7, 9, 32, 38, -4, 62, -64, 3};
+static constexpr auto kManyCalls_3Millis =
+    std::to_array<int64_t>({3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3});
+static constexpr auto kManyCalls_10Millis = std::to_array<int64_t>(
+    {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10});
+static constexpr auto kManyCalls_Mixed1 = std::to_array<int64_t>(
+    {3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10});
+static constexpr auto kManyCalls_Mixed2 = std::to_array<int64_t>(
+    {10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3});
+static constexpr auto kManyCalls_Mixed3 = std::to_array<int64_t>(
+    {3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4});
+static constexpr auto kManyCalls_Mixed4 = std::to_array<int64_t>(
+    {31, 4, 15, 9, 26, 53, 5, 8, 9, 7, 9, 32, 38, 4, 62, 64, 3});
+static constexpr auto kManyCalls_Mixed5 = std::to_array<int64_t>(
+    {3, 14, 15, 9, 26, 53, 58, 9, 7, 9, 3, 23, 8, 4, 6, 2, 6, 43});
+static constexpr auto kOneBigUnderrun =
+    std::to_array<int64_t>({10, 10, 10, 10, -1000, 10, 10, 10});
+static constexpr auto kTwoBigUnderruns = std::to_array<int64_t>(
+    {10, 10, 10, 10, -712, 10, 10, 10, -1311, 10, 10, 10});
+static constexpr auto kMixedUnderruns = std::to_array<int64_t>(
+    {31, -64, 4, 15, 9, 26, -53, 5, 8, -9, 7, 9, 32, 38, -4, 62, -64, 3});
 
 INSTANTIATE_TEST_SUITE_P(AudioEncoderTestScenarios,
                          AudioEncoderTest,
