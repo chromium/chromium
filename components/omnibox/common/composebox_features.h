@@ -56,6 +56,13 @@ BASE_DECLARE_FEATURE(kComposeboxPersistentAimButtonOmnibox);
 // the persistent AIM button is also enabled for the surface.
 BASE_DECLARE_FEATURE(kComposeboxPersistentAimButtonWithX);
 
+// If enabled, dynamically routes Realbox Composebox queries between SRP and AIM
+// based on active tools, models, and inputs.
+BASE_DECLARE_FEATURE(kDynamicAimFulfillmentRealbox);
+// If enabled, dynamically routes Omnibox Composebox queries between SRP and AIM
+// based on active tools, models, and inputs.
+BASE_DECLARE_FEATURE(kDynamicAimFulfillmentOmnibox);
+
 // If enabled, clicking outside the Realbox Composebox closes the suggestions
 // dropdown and restores page interaction while keeping the Composebox open.
 BASE_DECLARE_FEATURE(kComposeboxRealboxOutsideClick);

@@ -843,6 +843,9 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
   dict.Set("composeboxPersistentAimButtonWithX",
            base::FeatureList::IsEnabled(
                omnibox::kComposeboxPersistentAimButtonWithX));
+  dict.Set(
+      "dynamicAimFulfillmentEnabled",
+      base::FeatureList::IsEnabled(omnibox::kDynamicAimFulfillmentRealbox));
 
   dict.Merge(SearchboxHandler::GetWebUIDataSourceDict(
       profile, {.enable_voice_search = true,

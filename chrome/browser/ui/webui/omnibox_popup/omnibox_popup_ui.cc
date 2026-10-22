@@ -227,6 +227,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxRichImageSuggestionsEnabled",
                      base::FeatureList::IsEnabled(
                          omnibox::kComposeboxRichImageSuggestionsOmnibox));
+  source->AddBoolean(
+      "dynamicAimFulfillmentEnabled",
+      base::FeatureList::IsEnabled(omnibox::kDynamicAimFulfillmentOmnibox));
   // The popup chip UI entrypoint is enabled by the AskG experiment
   // (kAskGShowChip).
   source->AddBoolean(
