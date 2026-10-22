@@ -394,4 +394,23 @@ TEST_F(LevelUpServiceTest, TestGetOrderedStatTypes) {
   EXPECT_EQ(expected, service_->GetOrderedStatTypes());
 }
 
+// Tests that every task has at least one non-empty trigger user action and that
+// no two tasks share the same trigger user action.
+TEST_F(LevelUpServiceTest, TestTaskTriggerUserActionsAreUniqueAndNonEmpty) {
+  const auto& tasks = service_->GetTasks();
+  ASSERT_FALSE(tasks.empty());
+
+  std::set<std::string> seen_actions;
+  for (const auto& [type, info] : tasks) {
+    SCOPED_TRACE(TaskTypeToString(type));
+    std::vector<std::string> actions = info->GetTriggerUserActions();
+    EXPECT_FALSE(actions.empty());
+    for (const std::string& action : actions) {
+      EXPECT_FALSE(action.empty());
+      EXPECT_TRUE(seen_actions.insert(action).second)
+          << "Duplicate trigger user action: " << action;
+    }
+  }
+}
+
 }  // namespace

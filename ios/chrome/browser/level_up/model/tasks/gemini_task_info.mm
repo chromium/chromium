@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
-#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
@@ -116,8 +115,8 @@ class GeminiTaskInfo : public TaskInfo {
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kProductivity;
   }
-  std::string GetTriggerUserAction() const override {
-    return "MobileGeminiPromptSent";
+  std::vector<std::string> GetTriggerUserActions() const override {
+    return {"MobileGeminiPromptSent"};
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_TASK_COMPLETED_GEMINI);

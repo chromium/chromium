@@ -62,13 +62,17 @@ source_set("unit_tests") {
   ]
   deps = [
     ":model",
+    ":task_info",
     "//base",
     "//base/test:test_support",
+    "//components/prefs",
     "//components/tab_groups",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/tips/model",
+    "//ios/chrome/browser/lens_overlay/model:metrics_recorder",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene/test",
@@ -79,10 +83,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }
 

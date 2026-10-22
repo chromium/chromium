@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
-#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
@@ -106,8 +104,8 @@ class LensWebsiteSearchTaskInfo : public TaskInfo {
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSearch;
   }
-  std::string GetTriggerUserAction() const override {
-    return "Mobile.LensOverlay.WebsiteSearch.Performed";
+  std::vector<std::string> GetTriggerUserActions() const override {
+    return {"Mobile.LensOverlay.WebsiteSearch.Performed"};
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(

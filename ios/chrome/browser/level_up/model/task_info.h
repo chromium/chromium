@@ -5,10 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_LEVEL_UP_MODEL_TASK_INFO_H_
 #define IOS_CHROME_BROWSER_LEVEL_UP_MODEL_TASK_INFO_H_
 
-#include <string>
+#import <string>
+#import <vector>
 
-#include "base/functional/callback.h"
-#include "ios/chrome/browser/level_up/model/task_types.h"
+#import "base/functional/callback.h"
+#import "ios/chrome/browser/level_up/model/task_types.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 class Browser;
@@ -37,8 +38,8 @@ class TaskInfo {
   // The category this task belongs to.
   virtual LevelUpTaskCategory GetCategory() const = 0;
 
-  // The user action string that triggers completion of this task.
-  virtual std::string GetTriggerUserAction() const = 0;
+  // The user action strings that trigger completion of this task.
+  virtual std::vector<std::string> GetTriggerUserActions() const = 0;
 
   // The localized completion snackbar message.
   virtual std::string GetCompletionSnackbarMessage() const = 0;

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -31,8 +30,8 @@ class TabGroupsTaskInfo : public TaskInfo {
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kProductivity;
   }
-  std::string GetTriggerUserAction() const override {
-    return "MobileTabGroupUserCreatedNewGroup";
+  std::vector<std::string> GetTriggerUserActions() const override {
+    return {"MobileTabGroupUserCreatedNewGroup"};
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_TASK_COMPLETED_TAB_GROUPS);

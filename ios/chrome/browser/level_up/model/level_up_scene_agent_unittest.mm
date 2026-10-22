@@ -12,6 +12,7 @@
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_view_finder_metrics_recorder.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -24,11 +25,14 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -207,6 +211,180 @@ TEST_F(LevelUpSceneAgentTest, TestAIModeSearchActionTriggersTaskCompletion) {
   // Verify that kAISearch task is completed and kGemini is not.
   EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kAISearch));
   EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kGemini));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+}
+
+// Tests that recording `Mobile.LensOverlay.CameraSearch.Performed` completes
+// the `kLensCameraSearch` task, increments `kPhotoSearchesPerformed`, and shows
+// the snackbar only once even if `LensViewFinderMetricsRecorder` subsequently
+// records a viewfinder dismissal.
+TEST_F(LevelUpSceneAgentTest,
+       TestLensCameraSearchActionTriggersTaskCompletionAndStatIncrement) {
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kLensCameraSearch));
+  EXPECT_EQ(
+      0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  LensViewFinderMetricsRecorder* metrics_recorder =
+      [[LensViewFinderMetricsRecorder alloc] init];
+
+  NSString* expected_title = l10n_util::GetNSString(
+      IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_CAMERA_SEARCH);
+  OCMExpect([mock_snackbar_handler_
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                      SnackbarMessage* message) {
+        return [message.title isEqualToString:expected_title];
+      }]]);
+
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensOverlay.CameraSearch.Performed"));
+
+  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kLensCameraSearch));
+  EXPECT_EQ(
+      1, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+
+  // Subsequent dismiss action should not show another snackbar or increment the
+  // stat.
+  OCMReject([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+  [metrics_recorder recordLensViewFinderDismissTapped];
+
+  EXPECT_EQ(
+      1, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+}
+
+// Tests that `recordLensViewFinderDismissTapped` on
+// `LensViewFinderMetricsRecorder` completes the `kLensCameraSearch` task and
+// shows the snackbar without incrementing `kPhotoSearchesPerformed`, while a
+// subsequent `Mobile.LensOverlay.CameraSearch.Performed` still increments the
+// stat without showing a second snackbar.
+TEST_F(LevelUpSceneAgentTest,
+       TestLensViewFinderDismissActionTriggersTaskCompletionWithoutStat) {
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kLensCameraSearch));
+  EXPECT_EQ(
+      0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  LensViewFinderMetricsRecorder* metrics_recorder =
+      [[LensViewFinderMetricsRecorder alloc] init];
+
+  NSString* expected_title = l10n_util::GetNSString(
+      IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_CAMERA_SEARCH);
+  OCMExpect([mock_snackbar_handler_
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                      SnackbarMessage* message) {
+        return [message.title isEqualToString:expected_title];
+      }]]);
+
+  [metrics_recorder recordLensViewFinderDismissTapped];
+
+  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kLensCameraSearch));
+  EXPECT_EQ(
+      0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+
+  // A subsequent camera search should still increment the stat without showing
+  // a second snackbar.
+  OCMReject([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensOverlay.CameraSearch.Performed"));
+
+  EXPECT_EQ(
+      1, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+}
+
+// Tests that `recordLensViewFinderCameraURLOpen` on
+// `LensViewFinderMetricsRecorder` completes the `kLensCameraSearch` task and
+// shows the snackbar without incrementing `kPhotoSearchesPerformed`, and that
+// subsequent dismiss or camera search actions do not show duplicate snackbars.
+TEST_F(LevelUpSceneAgentTest,
+       TestLensViewFinderCameraURLOpenActionTriggersTaskCompletionWithoutStat) {
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kLensCameraSearch));
+  EXPECT_EQ(
+      0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  LensViewFinderMetricsRecorder* metrics_recorder =
+      [[LensViewFinderMetricsRecorder alloc] init];
+
+  NSString* expected_title = l10n_util::GetNSString(
+      IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_CAMERA_SEARCH);
+  OCMExpect([mock_snackbar_handler_
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                      SnackbarMessage* message) {
+        return [message.title isEqualToString:expected_title];
+      }]]);
+
+  [metrics_recorder recordLensViewFinderCameraURLOpen];
+
+  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kLensCameraSearch));
+  EXPECT_EQ(
+      0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+
+  // Dismissing the viewfinder after opening a URL should not show another
+  // snackbar or increment the stat.
+  OCMReject([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+  [metrics_recorder recordLensViewFinderDismissTapped];
+
+  EXPECT_EQ(
+      0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+
+  // A subsequent photo search should increment the stat without showing a
+  // second snackbar.
+  OCMReject([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensOverlay.CameraSearch.Performed"));
+
+  EXPECT_EQ(
+      1, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+}
+
+// Tests that actions are ignored before activation and while backgrounded, and
+// that cycling scene activation levels (or calling `startListening` repeatedly)
+// does not register duplicate callbacks.
+TEST_F(LevelUpSceneAgentTest,
+       TestSceneActivationLifecycleStopsAndRestartsListeningWithoutDuplicates) {
+  LensViewFinderMetricsRecorder* metrics_recorder =
+      [[LensViewFinderMetricsRecorder alloc] init];
+
+  // Before the scene becomes foreground active, actions should be ignored.
+  [metrics_recorder recordLensViewFinderDismissTapped];
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kLensCameraSearch));
+
+  // Activate, background, and re-activate the scene, then call `startListening`
+  // again to verify idempotency.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  [agent_ startListening];
+
+  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensOverlay.CameraSearch.Performed"));
+
+  // Stat should increment by 1 (not 2), confirming no duplicate callbacks.
+  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kLensCameraSearch));
+  EXPECT_EQ(
+      1, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+
+  // Transition to background and verify subsequent task and stat actions are
+  // ignored.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  OCMReject([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensOverlay.CameraSearch.Performed"));
+
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
+  EXPECT_EQ(
+      1, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
   EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
 }
 

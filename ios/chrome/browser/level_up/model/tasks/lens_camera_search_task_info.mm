@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/functional/callback_helpers.h"
-#import "base/strings/sys_string_conversions.h"
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -31,8 +30,13 @@ class LensCameraSearchTaskInfo : public TaskInfo {
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSearch;
   }
-  std::string GetTriggerUserAction() const override {
-    return "Mobile.LensOverlay.CameraSearch.Performed";
+  std::vector<std::string> GetTriggerUserActions() const override {
+    // Complete the task whether the user performs a photo search, opens a
+    // scanned URL/QR code, or opens the camera viewfinder to explore and
+    // dismisses it.
+    return {"Mobile.LensOverlay.CameraSearch.Performed",
+            "Mobile.LensViewFinder.CameraURLOpen",
+            "Mobile.LensViewFinder.DismissTapped"};
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(

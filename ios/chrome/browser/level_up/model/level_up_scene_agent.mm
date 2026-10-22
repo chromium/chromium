@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/level_up/model/level_up_scene_agent.h"
 
 #import <map>
+#import <string>
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
@@ -71,7 +73,9 @@
 
   _actionToTaskMap.clear();
   for (const auto& [type, info] : _levelUpService->GetTasks()) {
-    _actionToTaskMap[info->GetTriggerUserAction()] = type;
+    for (const std::string& action : info->GetTriggerUserActions()) {
+      _actionToTaskMap[action] = type;
+    }
   }
   _actionToStatMap = _levelUpService->GetStatTriggerUserActions();
 

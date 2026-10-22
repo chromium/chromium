@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
-#import "base/functional/callback_helpers.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
@@ -35,8 +33,8 @@ class AutofillTaskInfo : public TaskInfo {
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kProductivity;
   }
-  std::string GetTriggerUserAction() const override {
-    return kSavePasswordsPromoDismissedAction;
+  std::vector<std::string> GetTriggerUserActions() const override {
+    return {kSavePasswordsPromoDismissedAction};
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_TASK_COMPLETED_AUTOFILL);
