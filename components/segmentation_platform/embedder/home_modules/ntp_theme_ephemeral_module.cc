@@ -73,7 +73,8 @@ bool NTPThemeEphemeralModule::IsEnabled(PrefService* profile_prefs) {
   int impression_count =
       profile_prefs->GetInteger(kNTPThemeEphemeralModuleImpressionCounterPref);
 
-  return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
+  return base::FeatureList::IsEnabled(features::kMagicStackNTPThemeTipIos) &&
+         impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
 }
 
 void NTPThemeEphemeralModule::OnShow(PrefService* profile_prefs,

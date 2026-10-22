@@ -102,7 +102,10 @@ void AddCardForTip(TipIdentifier tip,
 
 // Returns the default sequence of tips variations for iOS.
 std::string GetDefaultTipsExperimentTrain() {
-  return base::StrCat({kLensEphemeralModuleSearchVariation, ",",
+  return base::StrCat({kNTPThemeEphemeralModule, ",",
+                       kNTPCustomizationEphemeralModule, ",",
+                       kTipsNotificationsEphemeralModule, ",",
+                       kLensEphemeralModuleSearchVariation, ",",
                        kEnhancedSafeBrowsingEphemeralModule});
 }
 

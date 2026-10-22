@@ -73,7 +73,9 @@ bool NTPCustomizationEphemeralModule::IsEnabled(PrefService* profile_prefs) {
   int impression_count = profile_prefs->GetInteger(
       kNTPCustomizationEphemeralModuleImpressionCounterPref);
 
-  return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
+  return base::FeatureList::IsEnabled(
+             features::kMagicStackNTPCustomizationTipIos) &&
+         impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
 }
 
 void NTPCustomizationEphemeralModule::OnShow(PrefService* profile_prefs,

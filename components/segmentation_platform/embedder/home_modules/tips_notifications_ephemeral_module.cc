@@ -74,7 +74,9 @@ bool TipsNotificationsEphemeralModule::IsEnabled(PrefService* profile_prefs) {
   int impression_count = profile_prefs->GetInteger(
       kTipsNotificationsEphemeralModuleImpressionCounterPref);
 
-  return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
+  return base::FeatureList::IsEnabled(
+             features::kMagicStackTipsNotificationTipIos) &&
+         impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
 }
 
 void TipsNotificationsEphemeralModule::OnShow(PrefService* profile_prefs,

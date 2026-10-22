@@ -145,4 +145,40 @@ TEST_F(HomeModulesCardRegistryIOSTest, TestDefaultBrowserPromoCard) {
                        {kIsDefaultBrowserSignalKey});
 }
 
+// Tests that the Registry registers the `NTPThemeEphemeralModule` card when its
+// feature is enabled.
+TEST_F(HomeModulesCardRegistryIOSTest, TestNTPThemeEphemeralModuleCard) {
+  feature_list_.InitAndEnableFeature(features::kMagicStackNTPThemeTipIos);
+  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
+                                              &local_state_pref_service_);
+  ExpectCardRegistered(
+      registry_.get(), kNTPThemeEphemeralModule,
+      {kLacksNTPBackground, kNTPBackgroundNotSelectedRecently});
+}
+
+// Tests that the Registry registers the `NTPCustomizationEphemeralModule` card
+// when its feature is enabled.
+TEST_F(HomeModulesCardRegistryIOSTest,
+       TestNTPCustomizationEphemeralModuleCard) {
+  feature_list_.InitAndEnableFeature(
+      features::kMagicStackNTPCustomizationTipIos);
+  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
+                                              &local_state_pref_service_);
+  ExpectCardRegistered(registry_.get(), kNTPCustomizationEphemeralModule,
+                       {kNeverCustomizeNTP});
+}
+
+// Tests that the Registry registers the `TipsNotificationsEphemeralModule` card
+// when its feature is enabled.
+TEST_F(HomeModulesCardRegistryIOSTest,
+       TestTipsNotificationsEphemeralModuleCard) {
+  feature_list_.InitAndEnableFeature(
+      features::kMagicStackTipsNotificationTipIos);
+  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
+                                              &local_state_pref_service_);
+  ExpectCardRegistered(
+      registry_.get(), kTipsNotificationsEphemeralModule,
+      {kNotOptInTipsNotifications, kTipsOptInPromptNotReceivedRecently});
+}
+
 }  // namespace segmentation_platform::home_modules
