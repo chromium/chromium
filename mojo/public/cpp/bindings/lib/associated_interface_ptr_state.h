@@ -8,27 +8,24 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
-#include "mojo/public/cpp/bindings/message.h"
-#include "mojo/public/cpp/bindings/message_metadata_helpers.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
-#include "mojo/public/cpp/bindings/thread_safe_proxy.h"
 
 namespace mojo {
-
-class AssociatedGroup;
-class InterfaceEndpointClient;
-
 namespace internal {
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedInterfacePtrStateBase {
@@ -45,34 +42,53 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedInterfacePtrStateBase {
 
   bool is_bound() const { return !!endpoint_client_; }
 
-  bool encountered_error() const;
+  bool encountered_error() const {
+    return endpoint_client_ ? endpoint_client_->encountered_error() : false;
+  }
 
-  void set_connection_error_handler(base::OnceClosure error_handler);
+  void set_connection_error_handler(base::OnceClosure error_handler) {
+    DCHECK(endpoint_client_);
+    endpoint_client_->set_connection_error_handler(std::move(error_handler));
+  }
 
   void set_connection_error_with_reason_handler(
-      ConnectionErrorWithReasonCallback error_handler);
+      ConnectionErrorWithReasonCallback error_handler) {
+    DCHECK(endpoint_client_);
+    endpoint_client_->set_connection_error_with_reason_handler(
+        std::move(error_handler));
+  }
 
   // Returns true if bound and awaiting a response to a message.
-  bool has_pending_callbacks() const;
+  bool has_pending_callbacks() const {
+    return endpoint_client_ && endpoint_client_->has_pending_responders();
+  }
 
-  AssociatedGroup* associated_group();
+  AssociatedGroup* associated_group() {
+    return endpoint_client_ ? endpoint_client_->associated_group() : nullptr;
+  }
 
-  void ForwardMessage(Message message);
+  void ForwardMessage(Message message) { endpoint_client_->Accept(&message); }
+
+  void ForwardMessageWithResponder(Message message,
+                                   std::unique_ptr<MessageReceiver> responder) {
+    endpoint_client_->AcceptWithResponder(&message, std::move(responder));
+  }
 
   scoped_refptr<ThreadSafeProxy> CreateThreadSafeProxy(
       scoped_refptr<ThreadSafeProxy::Target> target,
-      const base::Location& location);
+      const base::Location& location) {
+    return endpoint_client_->CreateThreadSafeProxy(std::move(target), location);
+  }
 
  protected:
   void Swap(AssociatedInterfacePtrStateBase* other);
-  MessageReceiverWithResponder* Bind(
-      ScopedInterfaceEndpointHandle handle,
-      uint32_t version,
-      std::unique_ptr<MessageReceiver> validator,
-      scoped_refptr<base::SequencedTaskRunner> runner,
-      const char* interface_name,
-      MessageToMethodInfoCallback method_info_callback,
-      MessageToMethodNameCallback method_name_callback);
+  void Bind(ScopedInterfaceEndpointHandle handle,
+            uint32_t version,
+            std::unique_ptr<MessageReceiver> validator,
+            scoped_refptr<base::SequencedTaskRunner> runner,
+            const char* interface_name,
+            MessageToMethodInfoCallback method_info_callback,
+            MessageToMethodNameCallback method_name_callback);
   ScopedInterfaceEndpointHandle PassHandle();
 
   InterfaceEndpointClient* endpoint_client() { return endpoint_client_.get(); }
@@ -109,11 +125,12 @@ class AssociatedInterfacePtrState : public AssociatedInterfacePtrStateBase {
   void Bind(AssociatedInterfacePtrInfo<Interface> info,
             scoped_refptr<base::SequencedTaskRunner> runner) {
     DCHECK(!proxy_);
-    proxy_ = std::make_unique<Proxy>(AssociatedInterfacePtrStateBase::Bind(
+    AssociatedInterfacePtrStateBase::Bind(
         info.PassHandle(), info.version(),
         std::make_unique<typename Interface::ResponseValidator_>(),
         std::move(runner), Interface::Name_, Interface::MessageToMethodInfo_,
-        Interface::MessageToMethodName_));
+        Interface::MessageToMethodName_);
+    proxy_ = std::make_unique<Proxy>(endpoint_client());
   }
 
   // After this method is called, the object is in an invalid state and

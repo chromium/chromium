@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "components/speech/endpointer/endpointer.h"
 #include "components/speech/speech_recognizer_fsm.h"
 #include "media/mojo/common/audio_data_s16_converter.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
+class OneShotTimer;
 class SequencedTaskRunner;
 }  // namespace base
 

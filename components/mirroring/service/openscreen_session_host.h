@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
@@ -44,6 +43,10 @@
 #include "third_party/openscreen/src/cast/streaming/public/sender_session.h"
 
 using openscreen::cast::capture_recommendations::Recommendations;
+
+namespace base {
+class OneShotTimer;
+}
 
 namespace media {
 class AudioInputDevice;

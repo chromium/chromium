@@ -14,23 +14,21 @@
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/pending_receiver_state.h"
 #include "mojo/public/cpp/bindings/lib/sync_method_traits.h"
-#include "mojo/public/cpp/bindings/message.h"
-#include "mojo/public/cpp/bindings/message_metadata_helpers.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
 namespace mojo {
-
-class InterfaceEndpointClient;
 
 namespace internal {
 
@@ -54,12 +52,19 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BindingStateBase {
   void Close();
   void CloseWithReason(uint32_t custom_reason, std::string_view description);
 
-  void RaiseError();
+  void RaiseError() { endpoint_client_->RaiseError(); }
 
-  void set_connection_error_handler(base::OnceClosure error_handler);
+  void set_connection_error_handler(base::OnceClosure error_handler) {
+    DCHECK(is_bound());
+    endpoint_client_->set_connection_error_handler(std::move(error_handler));
+  }
 
   void set_connection_error_with_reason_handler(
-      ConnectionErrorWithReasonCallback error_handler);
+      ConnectionErrorWithReasonCallback error_handler) {
+    DCHECK(is_bound());
+    endpoint_client_->set_connection_error_with_reason_handler(
+        std::move(error_handler));
+  }
 
   bool is_bound() const { return !!router_; }
 
@@ -79,17 +84,16 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BindingStateBase {
   scoped_refptr<internal::MultiplexRouter> RouterForTesting();
 
  protected:
-  void Bind(PendingReceiverState* receiver_state,
-            scoped_refptr<base::SequencedTaskRunner> runner,
-            const char* interface_name,
-            std::unique_ptr<MessageReceiver> request_validator,
-            bool passes_associated_kinds,
-            base::span<const uint32_t> sync_method_ordinals,
-            MessageReceiverWithResponderStatus* stub,
-            uint32_t interface_version,
-            MessageToMethodInfoCallback method_info_callback,
-            MessageToMethodNameCallback method_name_callback);
-  ScopedMessagePipeHandle Unbind();
+  void BindInternal(PendingReceiverState* receiver_state,
+                    scoped_refptr<base::SequencedTaskRunner> runner,
+                    const char* interface_name,
+                    std::unique_ptr<MessageReceiver> request_validator,
+                    bool passes_associated_kinds,
+                    base::span<const uint32_t> sync_method_ordinals,
+                    MessageReceiverWithResponderStatus* stub,
+                    uint32_t interface_version,
+                    MessageToMethodInfoCallback method_info_callback,
+                    MessageToMethodNameCallback method_name_callback);
 
   scoped_refptr<internal::MultiplexRouter> router_;
   std::unique_ptr<InterfaceEndpointClient> endpoint_client_;
@@ -113,7 +117,7 @@ class BindingState : public BindingStateBase {
 
   void Bind(PendingReceiverState* receiver_state,
             scoped_refptr<base::SequencedTaskRunner> runner) {
-    BindingStateBase::Bind(
+    BindingStateBase::BindInternal(
         std::move(receiver_state), runner, Interface::Name_,
         std::make_unique<typename Interface::RequestValidator_>(),
         Interface::PassesAssociatedKinds_,
@@ -122,7 +126,11 @@ class BindingState : public BindingStateBase {
   }
 
   PendingReceiver<Interface> Unbind() {
-    return PendingReceiver<Interface>(BindingStateBase::Unbind());
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    endpoint_client_.reset();
+    PendingReceiver<Interface> request(router_->PassMessagePipe());
+    router_ = nullptr;
+    return request;
   }
 
   Interface* impl() { return ImplRefTraits::GetRawPointer(&stub_.sink()); }

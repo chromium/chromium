@@ -10,9 +10,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 
 namespace mojo {
@@ -57,42 +55,6 @@ void AssociatedInterfacePtrStateBase::CloseWithReason(
   endpoint_client_->CloseWithReason(custom_reason, description);
 }
 
-bool AssociatedInterfacePtrStateBase::encountered_error() const {
-  return endpoint_client_ ? endpoint_client_->encountered_error() : false;
-}
-
-void AssociatedInterfacePtrStateBase::set_connection_error_handler(
-    base::OnceClosure error_handler) {
-  DCHECK(endpoint_client_);
-  endpoint_client_->set_connection_error_handler(std::move(error_handler));
-}
-
-void AssociatedInterfacePtrStateBase::set_connection_error_with_reason_handler(
-    ConnectionErrorWithReasonCallback error_handler) {
-  DCHECK(endpoint_client_);
-  endpoint_client_->set_connection_error_with_reason_handler(
-      std::move(error_handler));
-}
-
-bool AssociatedInterfacePtrStateBase::has_pending_callbacks() const {
-  return endpoint_client_ && endpoint_client_->has_pending_responders();
-}
-
-AssociatedGroup* AssociatedInterfacePtrStateBase::associated_group() {
-  return endpoint_client_ ? endpoint_client_->associated_group() : nullptr;
-}
-
-void AssociatedInterfacePtrStateBase::ForwardMessage(Message message) {
-  endpoint_client_->Accept(&message);
-}
-
-scoped_refptr<ThreadSafeProxy>
-AssociatedInterfacePtrStateBase::CreateThreadSafeProxy(
-    scoped_refptr<ThreadSafeProxy::Target> target,
-    const base::Location& location) {
-  return endpoint_client_->CreateThreadSafeProxy(std::move(target), location);
-}
-
 void AssociatedInterfacePtrStateBase::Swap(
     AssociatedInterfacePtrStateBase* other) {
   using std::swap;
@@ -100,7 +62,7 @@ void AssociatedInterfacePtrStateBase::Swap(
   swap(other->version_, version_);
 }
 
-MessageReceiverWithResponder* AssociatedInterfacePtrStateBase::Bind(
+void AssociatedInterfacePtrStateBase::Bind(
     ScopedInterfaceEndpointHandle handle,
     uint32_t version,
     std::unique_ptr<MessageReceiver> validator,
@@ -120,11 +82,12 @@ MessageReceiverWithResponder* AssociatedInterfacePtrStateBase::Bind(
       /*sync_method_ordinals=*/base::span<const uint32_t>(),
       GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner)), 0u,
       interface_name, method_info_callback, method_name_callback);
-  return endpoint_client_.get();
 }
 
 ScopedInterfaceEndpointHandle AssociatedInterfacePtrStateBase::PassHandle() {
-  return std::exchange(endpoint_client_, nullptr)->PassHandle();
+  auto handle = endpoint_client_->PassHandle();
+  endpoint_client_.reset();
+  return handle;
 }
 
 }  // namespace internal
