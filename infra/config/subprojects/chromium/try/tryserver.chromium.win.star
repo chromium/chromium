@@ -586,6 +586,10 @@ shared_gpu.try_.win_optional_builder(
     ),
     # default is 6 for GPU optional builders.
     execution_timeout = 5 * time.hour,
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 5,
+        "luci.buildbucket.run_in_turboci.grpc_client": 100,
+    },
     main_list_view = "try",
     # This is higher than the default of 7 for optional GPU builders
     # because Windows builds take longer than other platforms even
