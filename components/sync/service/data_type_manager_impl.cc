@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -20,7 +19,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/data_type_state_helper.h"
@@ -35,9 +33,6 @@
 namespace syncer {
 
 namespace {
-
-BASE_FEATURE(kDataTypeManagerImplCorrectActiveTypes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 DataTypeController::TypeMap BuildControllerMap(
     DataTypeController::TypeVector controllers) {
@@ -859,13 +854,6 @@ DataTypeSet DataTypeManagerImpl::GetDataTypesForTransportOnlyMode() const {
 }
 
 DataTypeSet DataTypeManagerImpl::GetActiveDataTypes() const {
-  if (!base::FeatureList::IsEnabled(kDataTypeManagerImplCorrectActiveTypes)) {
-    if (state_ != CONFIGURED) {
-      return DataTypeSet();
-    }
-    return GetEnabledTypes();
-  }
-
   DataTypeSet types;
   // ControlTypes() (in practice, NIGORI) are not controlled by this class, by
   // by the `configurer_` (in practice, the SyncEngine). If the `configurer_`
