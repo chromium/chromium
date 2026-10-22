@@ -235,6 +235,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/rts_complement_runner",
+    bootstrappable = POLYMORPHIC,
+)
+
+build_recipe(
     name = "recipe:chromium/universal_test_runner_test",
 )
 

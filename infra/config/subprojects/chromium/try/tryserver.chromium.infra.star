@@ -417,3 +417,14 @@ try_.builder(
     #     ],
     # ),
 )
+
+try_.builder(
+    name = "rts-complement-runner",
+    description_html = "Runs RTS-skipped (complement) test suites for a CQ build to measure post-submit RTS safety.",
+    executable = "recipe:chromium/rts_complement_runner",
+    builderless = True,
+    cores = 2,
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "chrome-test-infra-mx@google.com",
+    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+)
