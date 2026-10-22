@@ -16,6 +16,7 @@ import android.content.Context;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,8 +26,8 @@ import org.chromium.base.Holder;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
@@ -171,11 +172,9 @@ public class ActiveTabCacheTest {
 
     @Test
     @MediumTest
-    @DisabledTest(
-            message =
-                    "Test consistently fails on CI; to be fixed as part of"
-                            + " http://crbug.com/485907357")
     public void testSaveIncognito_NullCipherFactory_ThrowsException() {
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
+
         WebPageStation page = mActivityTestRule.startOnIncognitoBlankPage();
         Tab tab = page.getTab();
         initActiveTabCache(/* hasCipherFactory= */ false);
@@ -194,11 +193,9 @@ public class ActiveTabCacheTest {
 
     @Test
     @MediumTest
-    @DisabledTest(
-            message =
-                    "Test consistently fails on CI; to be fixed as part of"
-                            + " http://crbug.com/485907357")
     public void testRestoreIncognito_NullCipherFactory_ThrowsException() {
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
+
         WebPageStation page = mActivityTestRule.startOnIncognitoBlankPage();
         Tab tab = page.getTab();
         initActiveTabCache(/* hasCipherFactory= */ true);
