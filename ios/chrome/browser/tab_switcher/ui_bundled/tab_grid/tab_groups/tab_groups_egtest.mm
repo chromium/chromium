@@ -1619,9 +1619,9 @@ TAG_SMOKE_TEST(TabGroupsTestCase, testCompleteTabGroupCreation);
 
 // Ensures to create a group from a pinned tab and the tab is no longer pinned.
 - (void)testCreateGroupFromPinnedTab {
-  // This test is not relevant on iPads because there is no pinned tabs in iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  // This test is not relevant if pinned tabs are not enabled.
+  if (![ChromeEarlGrey isPinnedTabsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Pinned tabs not enabled.");
   }
 
   CreatePinnedTabs(1, self.testServer);
@@ -1831,9 +1831,9 @@ TAG_SMOKE_TEST(TabGroupsTestCase, testCompleteTabGroupCreation);
 
 // Ensures that creating a group doesn't change the state of pinned tabs.
 - (void)testCreateGroupWithPinnedTab {
-  // This test is not relevant on iPads because there is no pinned tabs in iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  // This test is not relevant if pinned tabs are not enabled.
+  if (![ChromeEarlGrey isPinnedTabsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Pinned tabs not enabled.");
   }
 
   // Create a pinned tab.
