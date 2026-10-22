@@ -17657,6 +17657,31 @@
             ]
         }
     ],
+    "TruncateSearchUrl": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "truncate_search_url_oq_length": "2048",
+                        "truncate_search_url_q_length": "60416"
+                    },
+                    "enable_features": [
+                        "TruncateSearchUrlOq",
+                        "TruncateSearchUrlQ"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [
