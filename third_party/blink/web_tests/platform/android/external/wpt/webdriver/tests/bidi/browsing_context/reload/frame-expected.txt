@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_origin[same_origin]
+  webdriver.bidi.error.UnknownErrorException: unknown error (navigation canceled by context disposal)
+[FAIL] test_origin[cross_origin]
+  webdriver.bidi.error.UnknownErrorException: unknown error (navigation canceled by context disposal)
+Harness: the test ran to completion.

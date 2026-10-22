@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_new_shared_worker_multiple_contexts
+  AssertionError: assert 'Asia/Yekaterinburg' == 'Europe/Berlin'
+Harness: the test ran to completion.

@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_iframe[cross_origin]
+  AssertionError: assert {'width': 800, 'height': 600, 'availWidth': 800, 'availHeight': 600} == {'width': 100, 'height': 100, 'availWidth': 100, 'availHeight': 100}
+Harness: the test ran to completion.

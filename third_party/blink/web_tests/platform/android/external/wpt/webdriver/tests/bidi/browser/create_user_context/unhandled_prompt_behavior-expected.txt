@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_beforeunload[accept]
+  asyncio.exceptions.CancelledError
+[FAIL] test_beforeunload[dismiss]
+  asyncio.exceptions.CancelledError
+[FAIL] test_beforeunload[ignore]
+  asyncio.exceptions.CancelledError
+Harness: the test ran to completion.

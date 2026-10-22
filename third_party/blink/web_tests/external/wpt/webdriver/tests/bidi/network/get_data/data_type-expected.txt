@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_data_type_request_image
+  AssertionError: assert 'string' == 'base64'
+[FAIL] test_data_type_request_no_postdata
+  webdriver.bidi.error.UnknownErrorException: unknown error (No post data available for the request)
+Harness: the test ran to completion.

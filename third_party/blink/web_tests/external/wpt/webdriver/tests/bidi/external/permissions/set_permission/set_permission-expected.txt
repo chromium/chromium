@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_set_permission[camera]
+  AssertionError: assert 'granted' == 'prompt'
+[FAIL] test_set_permission[microphone]
+  AssertionError: assert 'granted' == 'prompt'
+Harness: the test ran to completion.
