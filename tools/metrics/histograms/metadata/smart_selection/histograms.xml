@@ -56,9 +56,12 @@ chromium-metrics-reviews@google.com.
                  backend"/>
     <variant name="ModelDecode"
         summary="output token decoding on the model server"/>
+    <variant name="ModelDecodeQueueWait"
+        summary="queue wait before decode starts on the model server"/>
     <variant name="ModelOther"
         summary="model execution time not accounted for by content
-                 processing, prefill queue wait, prefill, and decode"/>
+                 processing, prefill queue wait, prefill, decode queue wait,
+                 and decode"/>
     <variant name="ModelPrefill" summary="prompt prefill on the model server"/>
     <variant name="ModelPrefillQueueWait"
         summary="queue wait before prefill starts on the model server"/>

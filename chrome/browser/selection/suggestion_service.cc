@@ -229,6 +229,7 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
     base::TimeDelta model_content_proc;
     base::TimeDelta model_prefill_queue_wait;
     base::TimeDelta model_prefill;
+    base::TimeDelta model_decode_queue_wait;
     base::TimeDelta model_decode;
     base::TimeDelta model_other;
   } durations = {
@@ -251,18 +252,22 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
       }
       if (metrics.has_model_content_processing_ms() &&
           metrics.has_model_prefill_queue_wait_ms() &&
-          metrics.has_model_prefill_ms() && metrics.has_model_decode_ms()) {
+          metrics.has_model_prefill_ms() &&
+          metrics.has_model_decode_queue_wait_ms() &&
+          metrics.has_model_decode_ms()) {
         durations.model_content_proc =
             base::Milliseconds(metrics.model_content_processing_ms());
         durations.model_prefill_queue_wait =
             base::Milliseconds(metrics.model_prefill_queue_wait_ms());
         durations.model_prefill =
             base::Milliseconds(metrics.model_prefill_ms());
+        durations.model_decode_queue_wait =
+            base::Milliseconds(metrics.model_decode_queue_wait_ms());
         durations.model_decode = base::Milliseconds(metrics.model_decode_ms());
         durations.model_other =
             durations.model_run - durations.model_content_proc -
             durations.model_prefill_queue_wait - durations.model_prefill -
-            durations.model_decode;
+            durations.model_decode_queue_wait - durations.model_decode;
       }
     }
   }
@@ -290,13 +295,17 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
                                durations.mes_other_overhead);
       }
       if (metrics.has_model_content_processing_ms() &&
-          metrics.has_model_prefill_queue_wait_ms() && metrics.has_model_prefill_ms() &&
+          metrics.has_model_prefill_queue_wait_ms() &&
+          metrics.has_model_prefill_ms() &&
+          metrics.has_model_decode_queue_wait_ms() &&
           metrics.has_model_decode_ms()) {
         RecordLatencyHistogram("ModelContentProc",
                                durations.model_content_proc);
         RecordLatencyHistogram("ModelPrefillQueueWait",
                                durations.model_prefill_queue_wait);
         RecordLatencyHistogram("ModelPrefill", durations.model_prefill);
+        RecordLatencyHistogram("ModelDecodeQueueWait",
+                               durations.model_decode_queue_wait);
         RecordLatencyHistogram("ModelDecode", durations.model_decode);
         RecordLatencyHistogram("ModelOther", durations.model_other);
       }
@@ -316,6 +325,7 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
           << " [content proc: " << durations.model_content_proc
           << ", prefill queue wait: " << durations.model_prefill_queue_wait
           << ", prefill: " << durations.model_prefill
+          << ", decode queue wait: " << durations.model_decode_queue_wait
           << ", decode: " << durations.model_decode
           << ", other: " << durations.model_other << "]"
           << ") (suggestions=" << num_suggestions << ")";
