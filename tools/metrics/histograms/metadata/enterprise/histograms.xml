@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Needed for health check. -->
 
   <owner>igorcov@chromium.org</owner>
-  <owner>vsavu@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Consistency between TPM lock state and absence/presence of install
     attributes at boot.
@@ -529,7 +529,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.AutoEnrollmentControllerTimeout"
     enum="EnterpriseAutoEnrollmentControllerTimeoutReport"
     expires_after="2026-07-12">
-  <owner>vsavu@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -3502,7 +3501,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
     enum="InvalidDevicePolicyFilesStatus" expires_after="2027-10-07">
   <owner>igorcov@chromium.org</owner>
-  <owner>vsavu@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Chrome OS only. Result of checking if device policy files are valid when
@@ -4022,7 +4020,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.Policies" enum="EnterprisePolicies"
     expires_after="2027-03-07">
-  <owner>vsavu@google.com</owner>
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
