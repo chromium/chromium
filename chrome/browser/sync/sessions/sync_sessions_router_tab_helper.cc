@@ -17,8 +17,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace sync_sessions {
@@ -82,20 +80,6 @@ void SyncSessionsRouterTabHelper::DidFinishLoad(
   if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
     NotifyRouter(true);
   }
-}
-
-void SyncSessionsRouterTabHelper::DidOpenRequestedURL(
-    content::WebContents* new_contents,
-    content::RenderFrameHost* source_render_frame_host,
-    const GURL& url,
-    const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
-    ui::PageTransition transition,
-    bool started_from_context_menu,
-    bool renderer_initiated) {
-  // TODO(crbug.com/40649749): This is a relic from when we actually did change
-  // something about the tab here. It should be safe to remove now.
-  NotifyRouter();
 }
 
 void SyncSessionsRouterTabHelper::OnVisibilityChanged(

@@ -51,14 +51,6 @@ class SyncSessionsRouterTabHelper
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-  void DidOpenRequestedURL(content::WebContents* new_contents,
-                           content::RenderFrameHost* source_render_frame_host,
-                           const GURL& url,
-                           const content::Referrer& referrer,
-                           WindowOpenDisposition disposition,
-                           ui::PageTransition transition,
-                           bool started_from_context_menu,
-                           bool renderer_initiated) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   // TranslateDriver::LanguageDetectionObserver implementation.
