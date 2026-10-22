@@ -72,6 +72,9 @@ cfg_if! {
     } else if #[cfg(target_os = "haiku")] {
         mod haiku;
         pub(crate) use haiku::*;
+    } else if #[cfg(target_os = "helenos")] {
+        mod helenos;
+        pub(crate) use helenos::*;
     } else if #[cfg(target_os = "hermit")] {
         mod hermit_abi;
         // pub(crate) use hermit_abi::*;
@@ -177,6 +180,7 @@ cfg_if! {
         pub use linux::types::*;
         pub use sys::socket::*;
     } else if #[cfg(target_os = "linux")] {
+        pub use asm::socket::*;
         pub use linux::can::bcm::*;
         pub use linux::can::error::*;
         pub use linux::can::j1939::*;
@@ -194,10 +198,24 @@ cfg_if! {
         pub use linux::sctp::*;
         pub use linux::tls::*;
         pub use linux::types::*;
+
         #[cfg(target_env = "gnu")]
-        pub use net::route::*;
+        pub use self::{
+            net::route::*,
+            signal::*,
+            sys::socket::*,
+            sys::statvfs::*,
+        };
+        #[cfg(target_env = "uclibc")]
+        pub use self::{
+            socket::*,
+            sysdeps::linux::common::bits::siginfo::*,
+        };
     } else if #[cfg(target_vendor = "apple")] {
+        #[cfg(target_os = "macos")]
         pub use net::bpf::*;
+        pub use netinet::tcp::*;
+        #[cfg(target_os = "macos")]
         pub use netinet6::in6_var::*;
         pub use pthread_::introspection::*;
         pub use pthread_::pthread_spis::*;
@@ -222,21 +240,37 @@ cfg_if! {
         pub use utmpx_::*;
     } else if #[cfg(target_os = "openbsd")] {
         pub use sys::ipc::*;
+        pub use sys::sensors::*;
+        pub use sys::sysctl::*;
     } else if #[cfg(any(target_os = "nto", target_os = "qnx"))] {
         pub use net::bpf::*;
         pub use net::if_::*;
     } else if #[cfg(target_os = "freebsd")] {
         pub use net::dlt::*;
+        // FIXME(1.0,remove): these bindings should be left in a public submodule.
+        pub use net::if_mib::*;
+        pub use net::route::*;
         pub use netinet6::in6_var::*;
         pub use sys::file::*;
         pub use sys::ioccom::*;
         pub use sys::socket::*;
+    } else if #[cfg(target_os = "helenos")] {
+        pub use abi::errno::*;
+        pub use bits::*;
+        pub use dirent_mod::*;
+        pub use errno::*;
+        pub use fibril_synch::*;
+        pub use inet::dnsr::*;
+        pub use inet::tcp::*;
+        pub use stdlib::*;
+        pub use vfs::vfs::*;
     }
 }
 
 // Per-env headers we export
 cfg_if! {
     if #[cfg(any(target_env = "musl", target_env = "ohos"))] {
+        pub use signal::*;
         pub use sys::socket::*;
     }
 }

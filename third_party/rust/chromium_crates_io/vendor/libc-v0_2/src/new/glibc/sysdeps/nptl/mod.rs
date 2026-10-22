@@ -2,7 +2,7 @@
 //!
 //! Native POSIX threading library.
 //!
-//! <https://github.com/bminor/glibc/tree/master/sysdeps/nptl>
+//! <https://github.com/sailfishos-mirror/glibc/tree/master/sysdeps/nptl>
 
 pub(crate) mod bits {
     #[cfg_attr(

@@ -1,6 +1,7 @@
 //! Header: `pthread.h`
 //!
-//! <https://github.com/kraj/musl/blob/kraj/master/include/pthread.h>
+//! * Headers: <https://git.musl-libc.org/cgit/musl/blob/include/pthread.h> (official)
+//! * Headers: <https://github.com/kraj/musl/blob/master/include/pthread.h> (mirror)
 
 pub use crate::new::common::linux_like::pthread::{
     pthread_getaffinity_np,

@@ -1,4 +1,3 @@
-use crate::off64_t;
 use crate::prelude::*;
 
 pub type shmatt_t = c_ulong;
@@ -9,6 +8,12 @@ pub type __priority_which_t = c_uint;
 
 pub type _pthread_descr = *mut c_void;
 pub type __pthread_cond_align_t = c_long;
+
+#[cfg(target_pointer_width = "64")]
+pub type __sword_type = c_long;
+
+#[cfg(target_pointer_width = "32")]
+pub type __sword_type = c_int;
 
 cfg_if! {
     if #[cfg(doc)] {
@@ -44,48 +49,33 @@ s! {
     }
 
     pub struct statfs {
-        pub f_type: fsword_t,
-        pub f_bsize: fsword_t,
+        pub f_type: __sword_type,
+        pub f_bsize: __sword_type,
         pub f_blocks: crate::fsblkcnt_t,
         pub f_bfree: crate::fsblkcnt_t,
         pub f_bavail: crate::fsblkcnt_t,
         pub f_files: crate::fsfilcnt_t,
         pub f_ffree: crate::fsfilcnt_t,
         pub f_fsid: crate::fsid_t,
-        pub f_namelen: fsword_t,
-        pub f_frsize: fsword_t,
-        pub f_flags: fsword_t,
-        pub f_spare: [fsword_t; 4],
+        pub f_namelen: __sword_type,
+        pub f_frsize: __sword_type,
+        pub f_flags: __sword_type,
+        pub f_spare: [__sword_type; 4],
     }
 
     pub struct statfs64 {
-        pub f_type: fsword_t,
-        pub f_bsize: fsword_t,
+        pub f_type: __sword_type,
+        pub f_bsize: __sword_type,
         pub f_blocks: crate::fsblkcnt64_t,
         pub f_bfree: crate::fsblkcnt64_t,
         pub f_bavail: crate::fsblkcnt64_t,
         pub f_files: crate::fsfilcnt64_t,
         pub f_ffree: crate::fsfilcnt64_t,
         pub f_fsid: crate::fsid_t,
-        pub f_namelen: fsword_t,
-        pub f_frsize: fsword_t,
-        pub f_flags: fsword_t,
-        pub f_spare: [fsword_t; 4],
-    }
-
-    pub struct statvfs64 {
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_blocks: crate::fsfilcnt64_t,
-        pub f_bfree: crate::fsfilcnt64_t,
-        pub f_bavail: crate::fsfilcnt64_t,
-        pub f_files: crate::fsfilcnt64_t,
-        pub f_ffree: crate::fsfilcnt64_t,
-        pub f_favail: crate::fsfilcnt64_t,
-        pub f_fsid: c_ulong,
-        pub f_flag: c_ulong,
-        pub f_namemax: c_ulong,
-        pub __f_spare: [c_int; 6],
+        pub f_namelen: __sword_type,
+        pub f_frsize: __sword_type,
+        pub f_flags: __sword_type,
+        pub f_spare: [__sword_type; 4],
     }
 
     pub struct ipc_perm {
@@ -99,11 +89,11 @@ s! {
         #[cfg(target_pointer_width = "64")]
         pub mode: c_uint,
         #[cfg(target_pointer_width = "32")]
-        __pad1: c_ushort,
+        __pad1: Padding<c_ushort>,
         pub __seq: c_ushort,
-        __pad2: c_ushort,
-        __unused1: c_ulong,
-        __unused2: c_ulong,
+        __pad2: Padding<c_ushort>,
+        __unused1: Padding<c_ulong>,
+        __unused2: Padding<c_ulong>,
     }
 
     pub struct statvfs {
@@ -116,15 +106,30 @@ s! {
         pub f_files: crate::fsfilcnt_t,
         pub f_ffree: crate::fsfilcnt_t,
         pub f_favail: crate::fsfilcnt_t,
-        #[cfg(target_endian = "little")]
         pub f_fsid: c_ulong,
         #[cfg(target_pointer_width = "32")]
-        __f_unused: c_int,
-        #[cfg(target_endian = "big")]
-        pub f_fsid: c_ulong,
+        __f_unused: Padding<c_int>,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
+        __f_spare: Padding<[c_int; 6]>,
+    }
+
+    pub struct statvfs64 {
+        // Different than GNU!
+        pub f_bsize: c_ulong,
+        pub f_frsize: c_ulong,
+        pub f_blocks: crate::fsblkcnt64_t,
+        pub f_bfree: crate::fsblkcnt64_t,
+        pub f_bavail: crate::fsblkcnt64_t,
+        pub f_files: crate::fsfilcnt64_t,
+        pub f_ffree: crate::fsfilcnt64_t,
+        pub f_favail: crate::fsfilcnt64_t,
+        pub f_fsid: c_ulong,
+        #[cfg(target_pointer_width = "32")]
+        __f_unused: Padding<c_int>,
+        pub f_flag: c_ulong,
+        pub f_namemax: c_ulong,
+        __f_spare: Padding<[c_int; 6]>,
     }
 
     pub struct sysinfo {
@@ -232,7 +237,7 @@ s! {
     pub struct pthread_cond_t {
         __c_lock: _pthread_fastlock,
         __c_waiting: _pthread_descr,
-        __padding: [u8; PTHREAD_COND_PADDING_SIZE],
+        __padding: Padding<[u8; PTHREAD_COND_PADDING_SIZE]>,
         __align: __pthread_cond_align_t,
     }
 
@@ -241,7 +246,7 @@ s! {
     }
 
     pub struct pthread_mutex_t {
-        __m_reserved: c_int,
+        __m_reserved: Padding<c_int>,
         __m_count: c_int,
         __m_owner: _pthread_descr,
         __m_kind: c_int,
@@ -284,6 +289,7 @@ s! {
         pub __wc: crate::wchar_t,
     }
 
+    // FIXME(1.0,deprecate): lfs binding to be removed
     pub struct fpos64_t {
         pub __pos: crate::off64_t,
         pub __mbstate: __mbstate_t,
@@ -299,8 +305,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: crate::shmatt_t,
-        __unused4: c_ulong,
-        __unused5: c_ulong,
+        __unused4: Padding<c_ulong>,
+        __unused5: Padding<c_ulong>,
     }
 }
 
@@ -385,8 +391,6 @@ pub const MCL_CURRENT: c_int = 0x0001;
 pub const MCL_FUTURE: c_int = 0x0002;
 pub const MCL_ONFAULT: c_int = 0x0004;
 
-pub const SIGEV_THREAD_ID: c_int = 4;
-
 pub const AF_VSOCK: c_int = 40;
 
 pub const POSIX_FADV_DONTNEED: c_int = 4;
@@ -410,6 +414,8 @@ pub const ENOTSUP: c_int = EOPNOTSUPP;
 
 pub const IPV6_JOIN_GROUP: c_int = 20;
 pub const IPV6_LEAVE_GROUP: c_int = 21;
+
+pub const IPPROTO_MAX: c_int = 256;
 
 // Different than Gnu.
 pub const FILENAME_MAX: c_uint = 4095;
@@ -472,13 +478,17 @@ pub const PTHREAD_MUTEX_ADAPTIVE_NP: c_int = 3;
 
 pub const __LT_SPINLOCK_INIT: c_int = 0;
 
+// include/paths.h
+pub const _PATH_DEFPATH: *const c_char = cstr(b"/usr/bin:/bin\0");
+pub const _PATH_BSHELL: *const c_char = cstr(b"/bin/sh\0");
+
 pub const __LOCK_INITIALIZER: _pthread_fastlock = _pthread_fastlock {
     __status: 0,
     __spinlock: __LT_SPINLOCK_INIT,
 };
 
 pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
-    __m_reserved: 0,
+    __m_reserved: Padding::new(0),
     __m_count: 0,
     __m_owner: ptr::null_mut(),
     __m_kind: PTHREAD_MUTEX_TIMED_NP,
@@ -493,7 +503,7 @@ const PTHREAD_COND_PADDING_SIZE: usize = 48
 pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = pthread_cond_t {
     __c_lock: __LOCK_INITIALIZER,
     __c_waiting: ptr::null_mut(),
-    __padding: [0; PTHREAD_COND_PADDING_SIZE],
+    __padding: Padding::new([0; PTHREAD_COND_PADDING_SIZE]),
     __align: 0,
 };
 
@@ -537,10 +547,26 @@ extern "C" {
         flags: c_int,
     ) -> c_int;
 
-    pub fn pwritev(fd: c_int, iov: *const crate::iovec, iovcnt: c_int, offset: off64_t) -> ssize_t;
-    pub fn preadv(fd: c_int, iov: *const crate::iovec, iovcnt: c_int, offset: off64_t) -> ssize_t;
+    pub fn pwritev(fd: c_int, iov: *const crate::iovec, iovcnt: c_int, offset: off_t) -> ssize_t;
+    pub fn preadv(fd: c_int, iov: *const crate::iovec, iovcnt: c_int, offset: off_t) -> ssize_t;
 
+    #[cfg_attr(
+        all(target_os = "l4re", target_pointer_width = "64"),
+        deprecated(
+            since = "0.2.190",
+            note = "Use `getrlimit` instead. LFS is being phased out, see rust-lang/libc#4805."
+        ),
+        allow(deprecated)
+    )]
     pub fn getrlimit64(resource: crate::__rlimit_resource_t, rlim: *mut crate::rlimit64) -> c_int;
+    #[cfg_attr(
+        all(target_os = "l4re", target_pointer_width = "64"),
+        deprecated(
+            since = "0.2.190",
+            note = "Use `setrlimit` instead. LFS is being phased out, see rust-lang/libc#4805."
+        ),
+        allow(deprecated)
+    )]
     pub fn setrlimit64(resource: crate::__rlimit_resource_t, rlim: *const crate::rlimit64)
         -> c_int;
     pub fn getrlimit(resource: crate::__rlimit_resource_t, rlim: *mut crate::rlimit) -> c_int;

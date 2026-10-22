@@ -50,6 +50,18 @@ s! {
         pub sdl_slen: c_uchar,
         pub sdl_data: [c_char; 46],
     }
+
+    pub struct ip_mreqn {
+        pub imr_multiaddr: crate::in_addr,
+        pub imr_address: crate::in_addr,
+        pub imr_ifindex: c_int,
+    }
+
+    pub struct ip_mreq_source {
+        pub imr_multiaddr: crate::in_addr,
+        pub imr_sourceaddr: crate::in_addr,
+        pub imr_interface: crate::in_addr,
+    }
 }
 
 pub const SCM_CREDS: c_int = 0x03;
@@ -89,6 +101,12 @@ pub const PF_NATM: c_int = AF_NATM;
 pub const pseudo_AF_HDRCMPLT: c_int = 31;
 pub const SIOCGIFADDR: c_int = u32_cast_int(0xc0206921);
 pub const SO_SETFIB: c_int = 0x1014;
+pub const TCP_KEEPIDLE: c_int = 256;
+pub const TCP_KEEPINTVL: c_int = 512;
+pub const TCP_KEEPCNT: c_int = 1024;
+pub const IP_RECVTOS: c_int = 68;
+pub const IP_ADD_SOURCE_MEMBERSHIP: c_int = 70;
+pub const IP_DROP_SOURCE_MEMBERSHIP: c_int = 71;
 
 extern "C" {
     pub fn sendmmsg(

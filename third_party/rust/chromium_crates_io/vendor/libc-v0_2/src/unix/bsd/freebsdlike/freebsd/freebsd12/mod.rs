@@ -281,11 +281,11 @@ s! {
         pub f_asyncwrites: u64,
         pub f_syncreads: u64,
         pub f_asyncreads: u64,
-        f_spare: [u64; 10],
+        f_spare: Padding<[u64; 10]>,
         pub f_namemax: u32,
         pub f_owner: crate::uid_t,
         pub f_fsid: crate::fsid_t,
-        f_charspare: [c_char; 80],
+        f_charspare: Padding<[c_char; 80]>,
         pub f_fstypename: [c_char; 16],
         pub f_mntfromname: [c_char; 1024],
         pub f_mntonname: [c_char; 1024],
@@ -317,7 +317,7 @@ pub const KI_NSPARE_PTR: usize = 6;
 
 pub const MINCORE_SUPER: c_int = 0x20;
 
-safe_f! {
+f! {
     pub const safe fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;

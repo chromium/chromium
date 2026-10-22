@@ -907,6 +907,7 @@ pub const PIPE_BUF: usize = 4096;
 /// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
 /// for details.
 pub const NGROUPS_MAX: c_int = 1024;
+pub const HOST_NAME_MAX: c_int = 255;
 
 pub const FILENAME_MAX: c_int = 4096;
 
@@ -1657,12 +1658,12 @@ pub const _IOLBF: c_int = 1;
 pub const _IONBF: c_int = 2;
 pub const BUFSIZ: c_int = 1024;
 
-pub const POSIX_SPAWN_RESETIDS: c_int = 0x01;
-pub const POSIX_SPAWN_SETPGROUP: c_int = 0x02;
-pub const POSIX_SPAWN_SETSCHEDPARAM: c_int = 0x04;
-pub const POSIX_SPAWN_SETSCHEDULER: c_int = 0x08;
-pub const POSIX_SPAWN_SETSIGDEF: c_int = 0x10;
-pub const POSIX_SPAWN_SETSIGMASK: c_int = 0x20;
+pub const POSIX_SPAWN_RESETIDS: c_short = 0x01;
+pub const POSIX_SPAWN_SETPGROUP: c_short = 0x02;
+pub const POSIX_SPAWN_SETSCHEDPARAM: c_short = 0x04;
+pub const POSIX_SPAWN_SETSCHEDULER: c_short = 0x08;
+pub const POSIX_SPAWN_SETSIGDEF: c_short = 0x10;
+pub const POSIX_SPAWN_SETSIGMASK: c_short = 0x20;
 
 pub const POSIX_FADV_NORMAL: c_int = 0;
 pub const POSIX_FADV_SEQUENTIAL: c_int = 1;
@@ -1678,23 +1679,36 @@ pub const FALLOC_FL_COLLAPSE_RANGE: c_int = 0x0008;
 pub const FALLOC_FL_INSERT_RANGE: c_int = 0x0010;
 pub const FALLOC_FL_KEEP_SIZE: c_int = 0x1000;
 
+// include/paths.h
+pub const _PATH_DEFPATH: *const c_char = cstr(b"/bin\0");
+pub const _PATH_BSHELL: *const c_char = cstr(b"/bin/sh\0");
+
 f! {
     pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] &= !(1 << (fd % size));
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot &= !(1 << (fd % size));
     }
 
     pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0
+        let Some(slot) = (*set).fds_bits.get(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        (*slot & (1 << (fd % size))) != 0
     }
 
     pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] |= 1 << (fd % size);
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot |= 1 << (fd % size);
     }
 
     pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
@@ -1710,7 +1724,7 @@ f! {
     pub unsafe fn CPU_COUNT_S(size: usize, cpuset: &cpu_set_t) -> c_int {
         let mut s: u32 = 0;
         let size_of_mask = size_of_val(&cpuset.bits[0]);
-        for i in cpuset.bits[..(size / size_of_mask)].iter() {
+        for i in &cpuset.bits[..(size / size_of_mask)] {
             s += i.count_ones();
         }
         s as c_int
@@ -1783,9 +1797,7 @@ f! {
     pub unsafe fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
         cmsg.offset(1).cast_mut().cast()
     }
-}
 
-safe_f! {
     pub const safe fn makedev(ma: c_uint, mi: c_uint) -> dev_t {
         let ma = ma as dev_t;
         let mi = mi as dev_t;

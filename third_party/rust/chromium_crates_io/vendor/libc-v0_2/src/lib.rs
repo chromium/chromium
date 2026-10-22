@@ -1,17 +1,61 @@
 //! Raw FFI bindings to platform system libraries.
 //!
+//! # Documentation
+//!
+//! `libc` only provides the bindings, not instructions on how to use them. For this, please refer
+//! to the relevant C documentation.
+//!
+//! POSIX provides OS-agnostic API definitions, which most platforms aim to comply with. Its
+//! specifications are often the best place to look:
+//!
+//! * POSIX Base Definitions: <https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/toc.html>.
+//!   Types and structures are defined within the _Headers_ section.
+//! * POSIX System Interfaces: <https://pubs.opengroup.org/onlinepubs/9799919799/functions/toc.html>.
+//!   Functions are defined under the _System Interfaces_ section.
+//!
+//! For platform-specific API and caveats to the standard API, platform-specific manual pages are
+//! usually the place to look. Locally you can run commands like `man 2 stat` or `man 3 printf`
+//! (2 for kernel interfaces, 3 for standard library) to get documentation, but there are also
+//! a number of platforms with manual pages available online:
+//!
+//! * Apple: Official manpages exist at <https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man5/manpages.5.html>
+//!   but are severly outdated. <https://developer.apple.com/documentation/kernel> exists but
+//!   only provides API signatures without documenttion. <https://manp.gs/mac/> or
+//!   <https://ss64.com/mac/> are better options.
+//! * DragonFlyBSD: <https://www.dragonflybsd.org/cgi/web-man>
+//! * FreeBSD: <https://man.freebsd.org/cgi/man.cgi>
+//! * IBM AIX: <https://www.ibm.com/docs/en/aix/7.3.0>
+//! * Illumos: <https://illumos.org/man/>
+//! * Linux:
+//!   * <https://man7.org/linux/man-pages/index.html> or <https://linux.die.net/man/> provide
+//!     documentation of Linux API as well as the C library, with a focus on glibc.
+//!   * Glibc-specific documentation is available at
+//!     <https://sourceware.org/glibc/manual/latest/html_mono/libc.html>.
+//!   * Musl documentation states to refer to POSIX, linked above, and the C standard, available at
+//!     <https://www.open-std.org/JTC1/SC22/WG14/www/projects#9899> (published versions must be
+//!     purchased but the drafts are free).
+//! * NetBSD: <https://man.netbsd.org/>
+//! * OpenBSD: <https://man.openbsd.org/>
+//! * Solaris: <https://docs.oracle.com/cd/E88353_01/>
+//! * Windows MSVC: <https://learn.microsoft.com/en-us/cpp/c-runtime-library/c-run-time-library-reference?view=msvc-180>
+//!
 //! # Usage Guidelines
 //!
 //! `libc` exposes non-Rust interfaces in Rust, which makes for some caveats to its use that are
 //! not present in most Rust libraries. Observing the following guidelines are recommended to help
 //! avoid soundness and stability pitfalls.
 //!
-//! 1. *Never* construct a `libc` struct with `MaybeUninit::uninit()`, initialize it, then call
-//!    `assume_init`. Many structures have padding fields or may gain fields in the future, and
-//!    it is far too easy to end up calling `assume_init` on partially initialized data.
+//! 1. *Never* construct a `libc` struct with `MaybeUninit::uninit()`, call a `libc` function with
+//!    it, then call `assume_init`. Library functions do not always initialize all fields; this
+//!    includes obvious cases like padding fields, but also less obvious cases like fields present
+//!    in the `libc` struct but not on older versions of the platform's C library. It is far too
+//!    easy to end up with a bogus `assume_init` because not all fields have been written.
 //!
 //!    Instead, use `MaybeUninit::zeroed()` or the `Default` implementations that are slowly being
 //!    added. Alternatively, access fields only via raw pointer without ever using `assume_init`.
+//!
+//!    See also the safety docs for `MaybeUninit::assume_init`
+//!    <https://doc.rust-lang.org/beta/std/mem/union.MaybeUninit.html#method.assume_init>.
 //!
 //! 2. Avoid relying on the exact value of constants, the exact length of arrays, or the exact
 //!    types of type aliases, as they may change across `libc` versions. That is, if `libc`
@@ -253,6 +297,14 @@ cfg_if! {
 
         mod unix;
         pub use crate::unix::*;
+
+        prelude!();
+    } else if #[cfg(target_os = "helenos")] {
+        mod primitives;
+        pub use primitives::*;
+
+        mod helenos;
+        pub use self::helenos::*;
 
         prelude!();
     } else if #[cfg(target_os = "hermit")] {

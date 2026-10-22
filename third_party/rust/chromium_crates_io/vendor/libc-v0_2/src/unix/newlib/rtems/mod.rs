@@ -1,15 +1,70 @@
-// defined in architecture specific module
-
 use crate::prelude::*;
 
+// RTEMS defines `clock_t` as `__uint64_t` (`<machine/_types.h>` via
+// `<sys/types.h>`), not `long` as plain newlib arm targets did.
+pub type clock_t = u64;
+pub type wchar_t = u32;
+
 s! {
+    pub struct sockaddr {
+        pub sa_len: u8,
+        pub sa_family: crate::sa_family_t,
+        pub sa_data: [c_char; 14],
+    }
+
+    pub struct sockaddr_in {
+        pub sin_len: u8,
+        pub sin_family: crate::sa_family_t,
+        pub sin_port: crate::in_port_t,
+        pub sin_addr: crate::in_addr,
+        pub sin_zero: [c_char; 8],
+    }
+
+    pub struct sockaddr_in6 {
+        pub sin6_len: u8,
+        pub sin6_family: crate::sa_family_t,
+        pub sin6_port: crate::in_port_t,
+        pub sin6_flowinfo: u32,
+        pub sin6_addr: crate::in6_addr,
+        pub sin6_scope_id: u32,
+    }
+
     pub struct sockaddr_un {
+        pub sun_len: u8,
         pub sun_family: crate::sa_family_t,
-        pub sun_path: [c_char; 108usize],
+        pub sun_path: [c_char; 104usize],
+    }
+
+    pub struct sockaddr_storage {
+        pub ss_len: u8,
+        pub ss_family: crate::sa_family_t,
+        __ss_pad1: Padding<[u8; 6]>,
+        __ss_align: i64,
+        __ss_pad2: Padding<[u8; 112]>,
     }
 }
 
 pub const AF_UNIX: c_int = 1;
+pub const AF_INET6: c_int = 28;
+
+pub const FIONBIO: c_ulong = 0x8004667e;
+
+pub const POLLIN: c_short = 0x0001;
+pub const POLLPRI: c_short = 0x0002;
+pub const POLLOUT: c_short = 0x0004;
+pub const POLLERR: c_short = 0x0008;
+pub const POLLHUP: c_short = 0x0010;
+pub const POLLNVAL: c_short = 0x0020;
+
+pub const SOL_SOCKET: c_int = 0xffff;
+
+pub const MSG_OOB: c_int = 0x1;
+pub const MSG_PEEK: c_int = 0x2;
+pub const MSG_DONTROUTE: c_int = 0x4;
+pub const MSG_WAITALL: c_int = 0x40;
+pub const MSG_DONTWAIT: c_int = 0x80;
+pub const MSG_NOSIGNAL: c_int = 0x20000;
+pub const MSG_MORE: c_int = 0;
 
 pub const RTLD_DEFAULT: *mut c_void = -2isize as *mut c_void;
 
@@ -86,7 +141,7 @@ pub const WUNTRACED: c_int = 2;
 // sys/socket.h
 pub const SOMAXCONN: c_int = 128;
 
-safe_f! {
+f! {
     pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         (status & 0xff) == 0x7f
     }

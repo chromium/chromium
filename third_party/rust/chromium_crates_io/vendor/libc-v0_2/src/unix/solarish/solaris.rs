@@ -87,7 +87,7 @@ s_no_extra_traits! {
 
     pub union door_desc_t__d_data {
         pub d_desc: door_desc_t__d_data__d_desc,
-        d_resv: [c_int; 5], /* Check out /usr/include/sys/door.h */
+        d_resv: Padding<[c_int; 5]>, /* Check out /usr/include/sys/door.h */
     }
 
     pub struct door_desc_t {

@@ -79,7 +79,6 @@ pub const MSG_NOSIGNAL: c_int = 0x4000;
 pub const MSG_PEEK: c_int = 0x0002;
 
 pub const SO_REUSEADDR: c_int = 2;
-pub const SO_TYPE: c_int = 3;
 pub const SO_ERROR: c_int = 4;
 pub const SO_BROADCAST: c_int = 6;
 pub const SO_SNDBUF: c_int = 7;
@@ -94,9 +93,6 @@ pub const SO_SNDTIMEO: c_int = 67;
 
 pub const SOCK_DGRAM: c_int = 5;
 pub const SOCK_STREAM: c_int = 6;
-pub const SOCK_NONBLOCK: c_int = 0x00004000;
-
-pub const SOL_SOCKET: c_int = 0x7fffffff;
 
 pub const AF_UNSPEC: c_int = 0;
 pub const AF_INET: c_int = 1;

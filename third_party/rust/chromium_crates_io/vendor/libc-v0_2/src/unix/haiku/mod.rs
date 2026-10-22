@@ -368,12 +368,6 @@ s! {
         sa_userdata: *mut c_void,
     }
 
-    pub struct sem_t {
-        pub type_: i32,
-        pub named_sem_id: i32, // actually a union with unnamed_sem (i32)
-        padding: Padding<[i32; 2]>,
-    }
-
     pub struct ucred {
         pub pid: crate::pid_t,
         pub uid: crate::uid_t,
@@ -496,6 +490,19 @@ s! {
         pub ut_line: [c_char; 16],
         pub ut_host: [c_char; 128],
         __ut_reserved: Padding<[c_char; 64]>,
+    }
+}
+
+s_no_extra_traits! {
+    pub struct sem_t {
+        pub type_: i32,
+        pub named_sem_id: __c_anonymous_sem_t_u,
+        padding: Padding<[i32; 2]>,
+    }
+
+    pub union __c_anonymous_sem_t_u {
+        pub named_sem_id: i32,
+        pub unnamed_sem: i32,
     }
 }
 
@@ -932,6 +939,7 @@ pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 pub const BUFSIZ: c_uint = 8192;
 pub const FILENAME_MAX: c_uint = 256;
 pub const FOPEN_MAX: c_uint = 128;
+pub const HOST_NAME_MAX: c_int = 255;
 pub const L_tmpnam: c_uint = 512;
 pub const TMP_MAX: c_uint = 32768;
 
@@ -1381,6 +1389,10 @@ pub const POSIX_SPAWN_SETSIGDEF: c_int = 0x10;
 pub const POSIX_SPAWN_SETSIGMASK: c_int = 0x20;
 pub const POSIX_SPAWN_SETSID: c_int = 0x40;
 
+// include/paths.h
+pub const _PATH_DEFPATH: *const c_char = cstr(b"/usr/bin:/bin\0");
+pub const _PATH_BSHELL: *const c_char = cstr(b"/bin/sh\0");
+
 const fn CMSG_ALIGN(len: usize) -> usize {
     len + size_of::<usize>() - 1 & !(size_of::<usize>() - 1)
 }
@@ -1424,29 +1436,34 @@ f! {
     pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] &= !(1 << (fd % size));
-        return;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot &= !(1 << (fd % size));
     }
 
     pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
+        let Some(slot) = (*set).fds_bits.get(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        (*slot & (1 << (fd % size))) != 0
     }
 
     pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] |= 1 << (fd % size);
-        return;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot |= 1 << (fd % size);
     }
 
     pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
         (*set).fds_bits.fill(0);
     }
-}
 
-safe_f! {
     pub const safe fn WIFEXITED(status: c_int) -> bool {
         (status & !0xff) == 0
     }

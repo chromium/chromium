@@ -1,7 +1,6 @@
 use crate::prelude::*;
 
 pub type wchar_t = u32;
-pub type stat64 = crate::stat;
 
 s! {
     pub struct stat {
@@ -47,9 +46,9 @@ s! {
     }
 
     pub struct ipc_perm {
-        #[cfg(musl_v1_2_3)]
+        #[cfg(musl_v1_2)]
         pub __key: crate::key_t,
-        #[cfg(not(musl_v1_2_3))]
+        #[cfg(not(musl_v1_2))]
         #[deprecated(
             since = "0.2.173",
             note = "This field is incorrectly named and will be changed

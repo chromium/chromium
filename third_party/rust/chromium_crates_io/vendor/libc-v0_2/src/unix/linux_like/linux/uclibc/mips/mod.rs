@@ -56,8 +56,6 @@ pub const O_ASYNC: c_int = 0x1000;
 pub const O_LARGEFILE: c_int = 0x2000;
 pub const O_NDELAY: c_int = 0x80;
 
-pub const SOCK_NONBLOCK: c_int = 128;
-
 pub const EDEADLK: c_int = 45;
 pub const ENAMETOOLONG: c_int = 78;
 pub const ENOLCK: c_int = 46;
@@ -154,10 +152,6 @@ pub const MAP_NONBLOCK: c_int = 0x20000;
 pub const MAP_STACK: c_int = 0x40000;
 
 pub const NLDLY: crate::tcflag_t = 0o0000400;
-
-pub const SOCK_STREAM: c_int = 2;
-pub const SOCK_DGRAM: c_int = 1;
-pub const SOCK_SEQPACKET: c_int = 5;
 
 pub const SA_ONSTACK: c_uint = 0x08000000;
 pub const SA_SIGINFO: c_uint = 0x00000008;

@@ -19,8 +19,11 @@ pub const FUTEX_LOCK_PI2: c_int = 13;
 
 pub const FUTEX_PRIVATE_FLAG: c_int = 128;
 pub const FUTEX_CLOCK_REALTIME: c_int = 256;
+pub const FUTEX_ROBUST_UNLOCK: c_int = 512;
+pub const FUTEX_ROBUST_LIST32: c_int = 1024;
 
-pub const FUTEX_CMD_MASK: c_int = !(FUTEX_PRIVATE_FLAG | FUTEX_CLOCK_REALTIME);
+pub const FUTEX_CMD_MASK: c_int =
+    !(FUTEX_PRIVATE_FLAG | FUTEX_CLOCK_REALTIME | FUTEX_ROBUST_UNLOCK | FUTEX_ROBUST_LIST32);
 
 pub const FUTEX2_SIZE_U8: c_int = 0x00;
 pub const FUTEX2_SIZE_U16: c_int = 0x01;

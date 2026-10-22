@@ -2,6 +2,7 @@
 
 pub use crate::new::common::linux_like::pthread::{
     pthread_getattr_np,
+    pthread_gettid_np,
     pthread_setname_np,
 };
 pub use crate::new::common::posix::pthread::{

@@ -46,7 +46,7 @@ s! {
         pub f_fsid: crate::fsid_t,
 
         pub f_namelen: c_long,
-        f_spare: [c_long; 6],
+        f_spare: Padding<[c_long; 6]>,
     }
 
     pub struct flock {
@@ -103,61 +103,14 @@ s! {
         pub f_spare: [c_long; 5],
     }
 
-    pub struct statvfs {
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_blocks: crate::fsblkcnt_t,
-        pub f_bfree: crate::fsblkcnt_t,
-        pub f_bavail: crate::fsblkcnt_t,
-        pub f_files: crate::fsfilcnt_t,
-        pub f_ffree: crate::fsfilcnt_t,
-        pub f_favail: crate::fsfilcnt_t,
-        pub f_fsid: c_ulong,
-        pub f_flag: c_ulong,
-        pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
-    }
-
-    pub struct statvfs64 {
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_blocks: u64,
-        pub f_bfree: u64,
-        pub f_bavail: u64,
-        pub f_files: u64,
-        pub f_ffree: u64,
-        pub f_favail: u64,
-        pub f_fsid: c_ulong,
-        pub f_flag: c_ulong,
-        pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
-    }
-
     pub struct pthread_attr_t {
         __size: [c_ulong; 7],
-    }
-
-    // FIXME(1.0): This should not implement `PartialEq`
-    #[allow(unpredictable_function_pointer_comparisons)]
-    pub struct sigaction {
-        pub sa_flags: c_int,
-        pub sa_sigaction: crate::sighandler_t,
-        pub sa_mask: crate::sigset_t,
-        pub sa_restorer: Option<extern "C" fn()>,
     }
 
     pub struct stack_t {
         pub ss_sp: *mut c_void,
         pub ss_size: size_t,
         pub ss_flags: c_int,
-    }
-
-    pub struct siginfo_t {
-        pub si_signo: c_int,
-        pub si_code: c_int,
-        pub si_errno: c_int,
-        _pad: Padding<c_int>,
-        _pad2: Padding<[c_long; 14]>,
     }
 
     pub struct ipc_perm {
@@ -368,14 +321,11 @@ pub const SYS_swapoff: c_long = 5000 + 163;
 pub const SYS_reboot: c_long = 5000 + 164;
 pub const SYS_sethostname: c_long = 5000 + 165;
 pub const SYS_setdomainname: c_long = 5000 + 166;
-#[deprecated(since = "0.2.70", note = "Functional up to 2.6 kernel")]
-pub const SYS_create_module: c_long = 5000 + 167;
+// 167 was SYS_create_module
 pub const SYS_init_module: c_long = 5000 + 168;
 pub const SYS_delete_module: c_long = 5000 + 169;
-#[deprecated(since = "0.2.70", note = "Functional up to 2.6 kernel")]
-pub const SYS_get_kernel_syms: c_long = 5000 + 170;
-#[deprecated(since = "0.2.70", note = "Functional up to 2.6 kernel")]
-pub const SYS_query_module: c_long = 5000 + 171;
+// 170 was SYS_get_kernel_syms
+// 171 was SYS_query_module
 pub const SYS_quotactl: c_long = 5000 + 172;
 pub const SYS_nfsservctl: c_long = 5000 + 173;
 pub const SYS_getpmsg: c_long = 5000 + 174;
@@ -584,11 +534,6 @@ pub const ECOMM: c_int = 70;
 pub const EPROTO: c_int = 71;
 pub const EDOTDOT: c_int = 73;
 
-pub const SA_NODEFER: c_int = 0x40000000;
-pub const SA_RESETHAND: c_int = u32_cast_int(0x80000000);
-pub const SA_RESTART: c_int = 0x10000000;
-pub const SA_NOCLDSTOP: c_int = 0x00000001;
-
 pub const POSIX_FADV_DONTNEED: c_int = 4;
 pub const POSIX_FADV_NOREUSE: c_int = 5;
 
@@ -707,37 +652,6 @@ pub const MAP_POPULATE: c_int = 0x10000;
 pub const MAP_NONBLOCK: c_int = 0x20000;
 pub const MAP_STACK: c_int = 0x40000;
 pub const MAP_HUGETLB: c_int = 0x080000;
-
-pub const SOCK_STREAM: c_int = 2;
-pub const SOCK_DGRAM: c_int = 1;
-
-pub const SA_ONSTACK: c_int = 0x08000000;
-pub const SA_SIGINFO: c_int = 0x00000008;
-pub const SA_NOCLDWAIT: c_int = 0x00010000;
-
-pub const SIGEMT: c_int = 7;
-pub const SIGCHLD: c_int = 18;
-pub const SIGBUS: c_int = 10;
-pub const SIGTTIN: c_int = 26;
-pub const SIGTTOU: c_int = 27;
-pub const SIGXCPU: c_int = 30;
-pub const SIGXFSZ: c_int = 31;
-pub const SIGVTALRM: c_int = 28;
-pub const SIGPROF: c_int = 29;
-pub const SIGWINCH: c_int = 20;
-pub const SIGUSR1: c_int = 16;
-pub const SIGUSR2: c_int = 17;
-pub const SIGCONT: c_int = 25;
-pub const SIGSTOP: c_int = 23;
-pub const SIGTSTP: c_int = 24;
-pub const SIGURG: c_int = 21;
-pub const SIGIO: c_int = 22;
-pub const SIGSYS: c_int = 12;
-pub const SIGPOLL: c_int = 22;
-pub const SIGPWR: c_int = 19;
-pub const SIG_SETMASK: c_int = 3;
-pub const SIG_BLOCK: c_int = 0x1;
-pub const SIG_UNBLOCK: c_int = 0x2;
 
 pub const POLLWRNORM: c_short = 0x004;
 pub const POLLWRBAND: c_short = 0x100;

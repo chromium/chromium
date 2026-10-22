@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 pub type boolean_t = c_uint;
 
-s! {
+s2! {
     pub struct malloc_introspection_t {
         _private: [crate::uintptr_t; 16], // FIXME(macos): keeping private for now
     }
@@ -34,6 +34,7 @@ s! {
             ) -> *mut c_void,
         >,
         pub destroy: Option<unsafe extern "C" fn(zone: *mut malloc_zone_t)>,
+        #[custom_default(ptr::null_mut())]
         pub zone_name: *const c_char,
         pub batch_malloc: Option<
             unsafe extern "C" fn(
@@ -50,6 +51,7 @@ s! {
                 num_to_be_freed: c_uint,
             ),
         >,
+        #[custom_default(ptr::null_mut())]
         pub introspect: *mut malloc_introspection_t,
         pub version: c_uint,
         pub memalign: Option<
@@ -69,7 +71,7 @@ s! {
     }
 }
 
-s_no_extra_traits! {
+s_no_extra_traits2! {
     #[repr(align(16))]
     pub struct max_align_t {
         priv_: [f64; 2],

@@ -176,8 +176,10 @@ s! {
     }
 }
 
-pub const INT_MIN: c_int = -2147483648;
-pub const INT_MAX: c_int = 2147483647;
+#[deprecated(since = "0.2.190", note = "Use `c_int::MIN` instead.")]
+pub const INT_MIN: c_int = c_int::MIN;
+#[deprecated(since = "0.2.190", note = "Use `c_int::MAX` instead.")]
+pub const INT_MAX: c_int = c_int::MAX;
 
 pub const EXIT_FAILURE: c_int = 1;
 pub const EXIT_SUCCESS: c_int = 0;
@@ -459,6 +461,10 @@ extern "C" {
     pub fn vprintf(arg1: *const c_char, arg2: __va_list) -> c_int;
     pub fn gets(arg1: *mut c_char) -> *mut c_char;
     pub fn sprintf(arg1: *mut c_char, arg2: *const c_char, ...) -> c_int;
+    #[deprecated(
+        since = "0.2.190",
+        note = "function is obsolete; prefer tmpfile, mkstemp, or similar"
+    )]
     pub fn tmpnam(arg1: *const c_char) -> *mut c_char;
     pub fn vsprintf(arg1: *mut c_char, arg2: *const c_char, arg3: __va_list) -> c_int;
     pub fn rename(arg1: *const c_char, arg2: *const c_char) -> c_int;
@@ -505,6 +511,10 @@ extern "C" {
     ) -> c_int;
     pub fn getw(arg1: *mut FILE) -> c_int;
     pub fn putw(arg1: c_int, arg2: *mut FILE) -> c_int;
+    #[deprecated(
+        since = "0.2.190",
+        note = "function is obsolete; prefer tmpfile, mkstemp, or similar"
+    )]
     pub fn tempnam(arg1: *const c_char, arg2: *const c_char) -> *mut c_char;
     pub fn fseeko(stream: *mut FILE, offset: off_t, whence: c_int) -> c_int;
     pub fn ftello(stream: *mut FILE) -> off_t;

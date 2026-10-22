@@ -27,6 +27,7 @@ s! {
         __unused5: Padding<c_uint>,
     }
 
+    // FIXME(1.0,deprecate): lfs binding to be removed
     pub struct stat64 {
         pub st_dev: crate::dev_t,
         pub st_ino: crate::ino_t,
@@ -62,6 +63,9 @@ s! {
         pub uc_link: *mut ucontext_t,
         pub uc_stack: crate::stack_t,
         pub uc_sigmask: crate::sigset_t,
+        /* The kernel adds extra padding after uc_sigmask to match
+         * glibc sigset_t on ARM64. */
+        __padding: Padding<[c_char; 128 - size_of::<crate::sigset_t>()]>,
         pub uc_mcontext: mcontext_t,
     }
 

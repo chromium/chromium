@@ -1,6 +1,6 @@
 //! Header: `sys/file.h`
 //!
-//! https://github.com/freebsd/freebsd-src/blob/main/sys/sys/file.h
+//! <https://github.com/freebsd/freebsd-src/blob/main/sys/sys/file.h>
 
 use crate::prelude::*;
 

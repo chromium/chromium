@@ -192,7 +192,7 @@ pub const GRND_NONBLOCK: c_uint = 0x1;
 pub const GRND_RANDOM: c_uint = 0x2;
 
 // Horizon OS works doesn't or can't hold any of this information
-safe_f! {
+f! {
     pub const safe fn WIFSTOPPED(_status: c_int) -> bool {
         false
     }
@@ -282,5 +282,3 @@ extern "C" {
 
     pub fn gethostid() -> c_long;
 }
-
-pub use crate::unix::newlib::generic::dirent;

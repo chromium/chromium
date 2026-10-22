@@ -1,6 +1,6 @@
 //! Header: `sys/ioccom.h`
 //!
-//! https://github.com/freebsd/freebsd-src/blob/main/sys/sys/ioccom.h
+//! <https://github.com/freebsd/freebsd-src/blob/main/sys/sys/ioccom.h>
 
 use crate::prelude::*;
 

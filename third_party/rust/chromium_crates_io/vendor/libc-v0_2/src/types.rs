@@ -117,8 +117,10 @@ pub(crate) const fn u32_cast_ioctl(x: u32) -> crate::Ioctl {
 #[allow(unused)]
 pub(crate) const fn u8_slice_cast_char_slice(x: &[u8]) -> &[c_char] {
     assert!(size_of::<u8>() == size_of::<c_char>());
+    let len = x.len();
+    let ptr = x.as_ptr();
     // SAFETY: same repr, possibly just a sign cast
-    unsafe { mem::transmute::<&[u8], &[c_char]>(x) }
+    unsafe { core::slice::from_raw_parts(ptr.cast::<c_char>(), len) }
 }
 
 /// Replace bytes in an array with those from a slice. This is a polyfill for `[T]::copy_from_slice`
@@ -137,4 +139,12 @@ pub const fn replace_array_items<T: Copy, const N: usize>(
         i += 1;
     }
     dst
+}
+
+/// Constructs a compile time cstring literal from a byte array
+// FIXME(msrv): we can opt to use C-string literals directly in 1.77
+#[allow(dead_code)]
+pub(crate) const fn cstr(bytes: &[u8]) -> *const c_char {
+    assert!(!bytes.is_empty() && bytes[bytes.len() - 1] == 0);
+    bytes.as_ptr().cast::<c_char>()
 }

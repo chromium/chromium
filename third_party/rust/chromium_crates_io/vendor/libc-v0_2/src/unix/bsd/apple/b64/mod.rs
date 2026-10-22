@@ -2,13 +2,14 @@
 
 use crate::prelude::*;
 
-s! {
-    #[derive(Default)]
+s2! {
+    #[exhaustive] // unlikely to change
     pub struct timeval32 {
         pub tv_sec: i32,
         pub tv_usec: i32,
     }
 
+    #[exhaustive] // FIXME(exhaustive): review for 1.0
     pub struct if_data {
         pub ifi_type: c_uchar,
         pub ifi_typelen: c_uchar,
@@ -41,6 +42,8 @@ s! {
         pub ifi_reserved2: u32,
     }
 
+    #[exhaustive] // FIXME(exhaustive): review for 1.0
+    #[cfg(target_os = "macos")]
     pub struct bpf_hdr {
         pub bh_tstamp: crate::timeval32,
         pub bh_caplen: u32,
@@ -49,16 +52,18 @@ s! {
     }
 }
 
-#[doc(hidden)]
-#[deprecated(since = "0.2.55")]
-pub const NET_RT_MAXID: c_int = 11;
-
-pub const BIOCSETF: c_ulong = 0x80104267;
-pub const BIOCSRTIMEOUT: c_ulong = 0x8010426d;
-pub const BIOCGRTIMEOUT: c_ulong = 0x4010426e;
-pub const BIOCSETFNR: c_ulong = 0x8010427e;
+cfg_if! {
+    if #[cfg(target_os = "macos")] {
+        pub const BIOCSETF: c_ulong = 0x80104267;
+        pub const BIOCSRTIMEOUT: c_ulong = 0x8010426d;
+        pub const BIOCGRTIMEOUT: c_ulong = 0x4010426e;
+        pub const BIOCSETFNR: c_ulong = 0x8010427e;
+    }
+}
 
 extern "C" {
+    // `exchangedata` is prohibited on tvOS and watchOS.
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
     pub fn exchangedata(path1: *const c_char, path2: *const c_char, options: c_uint) -> c_int;
 }
 

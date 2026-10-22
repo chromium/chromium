@@ -1,6 +1,6 @@
 //! Source header: `sysdeps/nptl/pthread.h`
 //!
-//! <https://github.com/bminor/glibc/blob/master/sysdeps/nptl/pthread.h>
+//! <https://github.com/sailfishos-mirror/glibc/blob/master/sysdeps/nptl/pthread.h>
 
 use super::bits::struct_mutex::*;
 use crate::prelude::*;
@@ -28,6 +28,7 @@ pub use crate::new::common::linux_like::pthread::{
     pthread_getaffinity_np,
     pthread_getattr_np,
     pthread_getname_np,
+    pthread_gettid_np,
     pthread_setaffinity_np,
     pthread_setname_np,
 };

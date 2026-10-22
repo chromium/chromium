@@ -579,6 +579,11 @@ pub const MAP_ANONYMOUS: c_int = MAP_ANON;
 
 pub const MAP_FAILED: *mut c_void = !0 as *mut c_void;
 
+// minherit syscall inherit values
+pub const INHERIT_SHARE: c_int = 0;
+pub const INHERIT_COPY: c_int = 1;
+pub const INHERIT_NONE: c_int = 2;
+
 pub const MCL_CURRENT: c_int = 0x0001;
 pub const MCL_FUTURE: c_int = 0x0002;
 
@@ -995,18 +1000,6 @@ pub const LOCK_NB: c_int = 4;
 pub const LOCK_UN: c_int = 8;
 
 pub const MAP_COPY: c_int = 0x0002;
-#[doc(hidden)]
-#[deprecated(
-    since = "0.2.54",
-    note = "Removed in FreeBSD 11, unused in DragonFlyBSD"
-)]
-pub const MAP_RENAME: c_int = 0x0020;
-#[doc(hidden)]
-#[deprecated(
-    since = "0.2.54",
-    note = "Removed in FreeBSD 11, unused in DragonFlyBSD"
-)]
-pub const MAP_NORESERVE: c_int = 0x0040;
 pub const MAP_HASSEMAPHORE: c_int = 0x0200;
 pub const MAP_STACK: c_int = 0x0400;
 pub const MAP_NOSYNC: c_int = 0x0800;
@@ -1323,6 +1316,10 @@ pub const EUI64_LEN: usize = 8;
 // https://github.com/freebsd/freebsd/blob/HEAD/sys/net/bpf.h
 pub const BPF_ALIGNMENT: usize = SIZEOF_LONG;
 
+pub const fn BPF_WORDALIGN(x: usize) -> usize {
+    (x + (BPF_ALIGNMENT - 1)) & !(BPF_ALIGNMENT - 1)
+}
+
 // Values for rtprio struct (prio field) and syscall (function argument)
 pub const RTP_PRIO_MIN: c_ushort = 0;
 pub const RTP_PRIO_MAX: c_ushort = 31;
@@ -1447,7 +1444,7 @@ pub const POSIX_SPAWN_SETSCHEDULER: c_int = 0x08;
 pub const POSIX_SPAWN_SETSIGDEF: c_int = 0x10;
 pub const POSIX_SPAWN_SETSIGMASK: c_int = 0x20;
 
-safe_f! {
+f! {
     pub const safe fn WIFCONTINUED(status: c_int) -> bool {
         status == 0x13
     }

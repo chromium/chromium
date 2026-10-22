@@ -1,6 +1,6 @@
 //! Header: `sys/socket.h`
 //!
-//! https://github.com/freebsd/freebsd-src/blob/main/sys/sys/socket.h
+//! <https://github.com/freebsd/freebsd-src/blob/main/sys/sys/socket.h>
 
 use crate::prelude::*;
 

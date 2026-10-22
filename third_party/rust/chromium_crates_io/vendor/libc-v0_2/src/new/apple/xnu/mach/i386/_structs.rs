@@ -86,7 +86,7 @@ s! {
         pub __fpu_xmm15: __darwin_xmm_reg,
         // FIXME(apple): this field is actually [u8; 96], but defining it with a bigger type allows
         // us to auto-implement traits for it since the length of the array is less than 32
-        __fpu_rsrv4: [u32; 24],
+        __fpu_rsrv4: Padding<[u32; 24]>,
         pub __fpu_reserved1: c_int,
     }
 }

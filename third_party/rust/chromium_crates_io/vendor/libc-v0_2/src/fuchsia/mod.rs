@@ -18,34 +18,61 @@ pub type intptr_t = isize;
 pub type uintptr_t = usize;
 pub type ssize_t = isize;
 
-pub type pid_t = i32;
-pub type uid_t = u32;
-pub type gid_t = u32;
+pub type pid_t = c_int;
+pub type uid_t = c_uint;
+pub type gid_t = c_uint;
 pub type in_addr_t = u32;
 pub type in_port_t = u16;
 pub type sighandler_t = size_t;
 pub type cc_t = c_uchar;
-pub type sa_family_t = u16;
+pub type sa_family_t = c_ushort;
 pub type pthread_key_t = c_uint;
 pub type speed_t = c_uint;
 pub type tcflag_t = c_uint;
 pub type clockid_t = c_int;
 pub type key_t = c_int;
 pub type id_t = c_uint;
-pub type useconds_t = u32;
-pub type dev_t = u64;
-pub type socklen_t = u32;
+pub type useconds_t = c_uint;
+pub type dev_t = c_ulonglong;
+pub type socklen_t = c_uint;
 pub type pthread_t = c_ulong;
-pub type mode_t = u32;
-pub type ino64_t = u64;
-pub type off64_t = i64;
-pub type blkcnt64_t = i64;
-pub type rlim64_t = u64;
-pub type mqd_t = c_int;
+pub type mode_t = c_uint;
 pub type nfds_t = c_ulong;
 pub type nl_item = c_int;
 pub type idtype_t = c_uint;
-pub type loff_t = c_longlong;
+pub type loff_t = crate::off_t;
+pub type nlink_t = c_ulong;
+pub type blksize_t = c_long;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
+pub type mqd_t = c_int;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
+pub type off64_t = i64;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
+pub type ino64_t = u64;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
+pub type blkcnt64_t = i64;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
+pub type rlim64_t = u64;
 
 pub type __u8 = c_uchar;
 pub type __u16 = c_ushort;
@@ -76,12 +103,30 @@ pub type msgqnum_t = c_ulong;
 pub type msglen_t = c_ulong;
 pub type fsblkcnt_t = c_ulonglong;
 pub type fsfilcnt_t = c_ulonglong;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
 pub type rlim_t = c_ulonglong;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "Use `statfs` instead. This type does not exist upstream and will \
+            eventually be removed."
+)]
+pub type statfs64 = statfs;
 
 extern_ty! {
     pub type timezone;
     pub type DIR;
-    pub type fpos64_t; // FIXME(fuchsia): fill this out with a struct
+
+    #[deprecated(
+        since = "0.2.189",
+        note = "Use `fpos_t` instead. This type does not exist upstream and \
+                will eventually be removed."
+    )]
+    pub type fpos64_t;
 }
 
 // Deprecated impls: see #5296
@@ -115,8 +160,11 @@ s! {
         pub tv_nsec: c_long,
     }
 
-    // FIXME(fuchsia): the rlimit and rusage related functions and types don't exist
-    // within zircon. Are there reasons for keeping them around?
+    #[deprecated(
+        since = "0.2.189",
+        note = "This type does not exist upstream and will eventually be \
+                removed."
+    )]
     pub struct rlimit {
         pub rlim_cur: rlim_t,
         pub rlim_max: rlim_t,
@@ -271,9 +319,9 @@ s! {
         __next: *mut c_void,
         __prev: *mut c_void,
         #[cfg(target_pointer_width = "32")]
-        __dummy4: [c_char; 24],
+        __dummy4: Padding<[c_char; 24]>,
         #[cfg(target_pointer_width = "64")]
-        __dummy4: [c_char; 16],
+        __dummy4: Padding<[c_char; 16]>,
     }
 
     // FIXME(1.0): This should not implement `PartialEq`
@@ -363,7 +411,7 @@ s! {
     }
 
     pub struct fd_set {
-        fds_bits: [c_ulong; FD_SETSIZE as usize / ULONG_SIZE],
+        fds_bits: [c_ulong; FD_SETSIZE as usize / 8 / size_of::<c_long>()],
     }
 
     pub struct tm {
@@ -395,6 +443,12 @@ s! {
         pub dli_saddr: *mut c_void,
     }
 
+    #[deprecated(
+        since = "0.2.189",
+        note = "This type does not exist upstream and will eventually be \
+                removed."
+    )]
+    #[allow(deprecated)]
     pub struct epoll_event {
         pub events: u32,
         pub u64: u64,
@@ -427,6 +481,11 @@ s! {
         pub int_n_sign_posn: c_char,
     }
 
+    #[deprecated(
+        since = "0.2.189",
+        note = "This type does not exist upstream and will eventually be \
+                removed."
+    )]
     pub struct rlimit64 {
         pub rlim_cur: rlim64_t,
         pub rlim_max: rlim64_t,
@@ -436,13 +495,8 @@ s! {
         pub gl_pathc: size_t,
         pub gl_pathv: *mut *mut c_char,
         pub gl_offs: size_t,
-        pub gl_flags: c_int,
-
-        __unused1: Padding<*mut c_void>,
-        __unused2: Padding<*mut c_void>,
-        __unused3: Padding<*mut c_void>,
-        __unused4: Padding<*mut c_void>,
-        __unused5: Padding<*mut c_void>,
+        __dummy1: Padding<c_int>,
+        __dummy2: Padding<[*mut c_void; 5]>,
     }
 
     pub struct ifaddrs {
@@ -486,15 +540,10 @@ s! {
         pub f_files: crate::fsfilcnt_t,
         pub f_ffree: crate::fsfilcnt_t,
         pub f_favail: crate::fsfilcnt_t,
-        #[cfg(target_endian = "little")]
-        pub f_fsid: c_ulong,
-        #[cfg(all(target_pointer_width = "32", not(target_arch = "x86_64")))]
-        __f_unused: Padding<c_int>,
-        #[cfg(target_endian = "big")]
         pub f_fsid: c_ulong,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
+        __f_spare: Padding<[c_int; 6]>,
     }
 
     pub struct dqblk {
@@ -544,10 +593,7 @@ s! {
     }
 
     pub struct cpu_set_t {
-        #[cfg(all(target_pointer_width = "32", not(target_arch = "x86_64")))]
-        bits: [u32; 32],
-        #[cfg(not(all(target_pointer_width = "32", not(target_arch = "x86_64"))))]
-        bits: [u64; 16],
+        __bits: [c_ulonglong; 128 / size_of::<c_long>()],
     }
 
     pub struct if_nameindex {
@@ -672,6 +718,11 @@ s! {
         pub weak_magnitude: crate::__u16,
     }
 
+    #[deprecated(
+        since = "0.2.189",
+        note = "This type does not exist upstream and will eventually be \
+                removed."
+    )]
     pub struct ff_effect {
         pub type_: crate::__u16,
         pub id: crate::__s16,
@@ -686,23 +737,10 @@ s! {
     }
 
     pub struct dl_phdr_info {
-        #[cfg(target_pointer_width = "64")]
         pub dlpi_addr: Elf64_Addr,
-        #[cfg(target_pointer_width = "32")]
-        pub dlpi_addr: Elf32_Addr,
-
         pub dlpi_name: *const c_char,
-
-        #[cfg(target_pointer_width = "64")]
         pub dlpi_phdr: *const Elf64_Phdr,
-        #[cfg(target_pointer_width = "32")]
-        pub dlpi_phdr: *const Elf32_Phdr,
-
-        #[cfg(target_pointer_width = "64")]
         pub dlpi_phnum: Elf64_Half,
-        #[cfg(target_pointer_width = "32")]
-        pub dlpi_phnum: Elf32_Half,
-
         pub dlpi_adds: c_ulonglong,
         pub dlpi_subs: c_ulonglong,
         pub dlpi_tls_modid: size_t,
@@ -731,21 +769,11 @@ s! {
         pub p_align: Elf64_Xword,
     }
 
-    pub struct statfs64 {
-        pub f_type: c_ulong,
-        pub f_bsize: c_ulong,
-        pub f_blocks: crate::fsblkcnt_t,
-        pub f_bfree: crate::fsblkcnt_t,
-        pub f_bavail: crate::fsblkcnt_t,
-        pub f_files: crate::fsfilcnt_t,
-        pub f_ffree: crate::fsfilcnt_t,
-        pub f_fsid: crate::fsid_t,
-        pub f_namelen: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_flags: c_ulong,
-        pub f_spare: [c_ulong; 4],
-    }
-
+    #[deprecated(
+        since = "0.2.189",
+        note = "Use `statvfs` instead. This type does not exist upstream and \
+                will eventually be removed."
+    )]
     pub struct statvfs64 {
         pub f_bsize: c_ulong,
         pub f_frsize: c_ulong,
@@ -758,7 +786,7 @@ s! {
         pub f_fsid: c_ulong,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
+        __f_spare: Padding<[c_int; 6]>,
     }
 
     pub struct stack_t {
@@ -768,11 +796,19 @@ s! {
     }
 
     pub struct pthread_attr_t {
-        __size: [u64; 7],
+        __name: *const c_char,
+        __c11: c_int,
+        _a_stacksize: crate::size_t,
+        _a_guardsize: crate::size_t,
+        _a_stackaddr: *mut c_void,
+        _a_detach: c_int,
+        _a_sched: c_int,
+        _a_policy: c_int,
+        _a_prio: c_int,
     }
 
     pub struct sigset_t {
-        __val: [c_ulong; 16],
+        __bits: [c_ulong; 128 / size_of::<c_long>()],
     }
 
     pub struct shmid_ds {
@@ -837,17 +873,23 @@ s! {
     }
 
     pub struct sem_t {
-        __val: [c_int; 8],
+        _s_value: c_int,
+        _s_waiters: c_int,
     }
 
+    #[repr(align(8))]
     pub struct siginfo_t {
         pub si_signo: c_int,
         pub si_errno: c_int,
         pub si_code: c_int,
-        pub _pad: [c_int; 29],
-        _align: [usize; 0],
+        __si_fields: Padding<__c_anonymous_siginfo_t___si_fields>,
     }
 
+    #[deprecated(
+        since = "0.2.189",
+        note = "Use `termios`. This type does not exist upstream and will \
+                eventually be removed."
+    )]
     pub struct termios2 {
         pub c_iflag: crate::tcflag_t,
         pub c_oflag: crate::tcflag_t,
@@ -864,29 +906,23 @@ s! {
         pub ipi6_ifindex: c_uint,
     }
 
-    #[cfg_attr(
-        any(target_pointer_width = "32", target_arch = "x86_64"),
-        repr(align(4))
-    )]
-    #[cfg_attr(
-        not(any(target_pointer_width = "32", target_arch = "x86_64")),
-        repr(align(8))
-    )]
     pub struct pthread_mutexattr_t {
-        size: [u8; crate::__SIZEOF_PTHREAD_MUTEXATTR_T],
+        __attr: c_uint,
     }
 
-    #[cfg_attr(target_pointer_width = "32", repr(align(4)))]
-    #[cfg_attr(target_pointer_width = "64", repr(align(8)))]
     pub struct pthread_rwlockattr_t {
-        size: [u8; crate::__SIZEOF_PTHREAD_RWLOCKATTR_T],
+        __attr: [c_uint; 2],
     }
 
-    #[repr(align(4))]
     pub struct pthread_condattr_t {
-        size: [u8; crate::__SIZEOF_PTHREAD_CONDATTR_T],
+        __attr: c_uint,
     }
 
+    #[deprecated(
+        since = "0.2.189",
+        note = "This type does not exist upstream and will eventually be \
+                removed."
+    )]
     pub struct sysinfo {
         pub uptime: c_ulong,
         pub loads: [c_ulong; 3],
@@ -911,13 +947,14 @@ s! {
 
     pub struct sockaddr_storage {
         pub ss_family: sa_family_t,
-        __ss_pad2: Padding<[u8; 128 - 2 - 8]>,
-        __ss_align: size_t,
+        __ss_padding:
+            Padding<[c_char; 128 - size_of::<c_long>() - size_of::<crate::sa_family_t>()]>,
+        __ss_align: c_ulong,
     }
 
     pub struct utsname {
         pub sysname: [c_char; 65],
-        pub nodename: [c_char; 65],
+        pub nodename: [c_char; HOST_NAME_MAX as usize + 1],
         pub release: [c_char; 65],
         pub version: [c_char; 65],
         pub machine: [c_char; 65],
@@ -925,13 +962,19 @@ s! {
     }
 
     pub struct dirent {
-        pub d_ino: crate::ino_t,
+        pub d_ino: ino_t,
         pub d_off: off_t,
         pub d_reclen: c_ushort,
         pub d_type: c_uchar,
         pub d_name: [c_char; 256],
     }
 
+    #[deprecated(
+        since = "0.2.189",
+        note = "Use `dirent` instead. This type does not exist upstream and \
+                will eventually be removed."
+    )]
+    #[allow(deprecated)]
     pub struct dirent64 {
         pub d_ino: crate::ino64_t,
         pub d_off: off64_t,
@@ -940,8 +983,11 @@ s! {
         pub d_name: [c_char; 256],
     }
 
-    // x32 compatibility
-    // See https://sourceware.org/bugzilla/show_bug.cgi?id=21279
+    #[deprecated(
+        since = "0.2.189",
+        note = "This type does not exist upstream and will eventually be \
+                removed."
+    )]
     pub struct mq_attr {
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
         pub mq_flags: i64,
@@ -966,6 +1012,11 @@ s! {
         pad: Padding<[c_long; 4]>,
     }
 
+    #[deprecated(
+        since = "0.2.189",
+        note = "This type does not exist upstream and will eventually be \
+                removed."
+    )]
     pub struct sockaddr_nl {
         pub nl_family: crate::sa_family_t,
         nl_pad: Padding<c_ushort>,
@@ -979,60 +1030,107 @@ s! {
         pub sigev_value: crate::sigval,
         pub sigev_signo: c_int,
         pub sigev_notify: c_int,
-        pub sigev_notify_function: fn(crate::sigval),
+        pub sigev_notify_function: Option<extern "C" fn(crate::sigval)>,
         pub sigev_notify_attributes: *mut pthread_attr_t,
-        pub __pad: [c_char; 56 - 3 * 8],
+        __pad: Padding<[c_char; 56 - 3 * size_of::<c_long>()]>,
     }
 
-    #[cfg_attr(
-        all(
-            target_pointer_width = "32",
-            any(target_arch = "arm", target_arch = "x86_64")
-        ),
-        repr(align(4))
-    )]
-    #[cfg_attr(
-        any(
-            target_pointer_width = "64",
-            not(any(target_arch = "arm", target_arch = "x86_64"))
-        ),
-        repr(align(8))
-    )]
     pub struct pthread_mutex_t {
-        size: [u8; crate::__SIZEOF_PTHREAD_MUTEX_T],
+        _m_attr: c_uint,
+        _m_lock: c_int,
+        _m_waiters: c_int,
+        _m_count: c_int,
     }
 
-    #[cfg_attr(
-        all(
-            target_pointer_width = "32",
-            any(target_arch = "arm", target_arch = "x86_64")
-        ),
-        repr(align(4))
-    )]
-    #[cfg_attr(
-        any(
-            target_pointer_width = "64",
-            not(any(target_arch = "arm", target_arch = "x86_64"))
-        ),
-        repr(align(8))
-    )]
     pub struct pthread_rwlock_t {
-        size: [u8; crate::__SIZEOF_PTHREAD_RWLOCK_T],
+        _rw_lock: c_int,
+        _rw_waiters: c_int,
     }
 
-    #[cfg_attr(target_pointer_width = "32", repr(align(4)))]
-    #[cfg_attr(target_pointer_width = "64", repr(align(8)))]
-    #[cfg_attr(target_arch = "x86", repr(align(4)))]
-    #[cfg_attr(not(target_arch = "x86"), repr(align(8)))]
     pub struct pthread_cond_t {
-        size: [u8; crate::__SIZEOF_PTHREAD_COND_T],
+        _c_head: *mut c_void,
+        _c_clock: c_int,
+        _c_tail: *mut c_void,
+        _c_lock: c_int,
+    }
+}
+
+s_no_extra_traits! {
+    pub union fpos_t {
+        __opaque: [c_char; 16],
+        __align: c_double,
+    }
+
+    pub union __c_anonymous_siginfo_t___si_fields {
+        __pad: Padding<[c_char; 128 - 2 * size_of::<c_int>() - size_of::<c_long>()]>,
+        __si_common: __c_anonymous___si_fields___si_common,
+        __sigfault: __c_anonymous___si_fields___sigfault,
+        __sigpoll: __c_anonymous___si_fields___sigpoll,
+        __sigsys: __c_anonymous___si_fields___sigsys,
+    }
+
+    pub struct __c_anonymous___si_fields___si_common {
+        __first: Padding<__c_anonymous___si_common___first>,
+        __second: Padding<__c_anonymous___si_common___second>,
+    }
+
+    pub union __c_anonymous___si_common___first {
+        __piduid: __c_anonymous___first___piduid,
+        __timer: __c_anonymous___first___timer,
+    }
+
+    pub struct __c_anonymous___first___piduid {
+        si_pid: pid_t,
+        si_uid: uid_t,
+    }
+
+    pub struct __c_anonymous___first___timer {
+        si_timerid: c_int,
+        si_overrun: c_int,
+    }
+
+    pub union __c_anonymous___si_common___second {
+        si_value: sigval,
+        __sigchld: __c_anonymous___second___sigchld,
+    }
+
+    pub struct __c_anonymous___second___sigchld {
+        si_status: c_int,
+        si_utime: clock_t,
+        si_stime: clock_t,
+    }
+
+    pub struct __c_anonymous___si_fields___sigfault {
+        si_addr: *mut c_void,
+        si_dadr_lsb: c_short,
+        __addr_bnd: __c_anonymous___sigfault___addr_bnd,
+    }
+
+    pub struct __c_anonymous___sigfault___addr_bnd {
+        si_lower: *mut c_void,
+        si_upper: *mut c_void,
+    }
+
+    pub struct __c_anonymous___si_fields___sigpoll {
+        si_band: c_long,
+        si_fd: c_int,
+    }
+
+    pub struct __c_anonymous___si_fields___sigsys {
+        si_call_addr: *mut c_void,
+        si_syscall: c_int,
+        si_arch: c_uint,
     }
 }
 
 // PUB_CONST
 
-pub const INT_MIN: c_int = -2147483648;
-pub const INT_MAX: c_int = 2147483647;
+pub const HOST_NAME_MAX: c_int = 255;
+
+#[deprecated(since = "0.2.190", note = "Use `c_int::MIN` instead.")]
+pub const INT_MIN: c_int = c_int::MIN;
+#[deprecated(since = "0.2.190", note = "Use `c_int::MAX` instead.")]
+pub const INT_MAX: c_int = c_int::MAX;
 
 pub const SIG_DFL: sighandler_t = 0 as sighandler_t;
 pub const SIG_IGN: sighandler_t = 1 as sighandler_t;
@@ -1052,7 +1150,7 @@ pub const FD_CLOEXEC: c_int = 0x1;
 pub const USRQUOTA: c_int = 0;
 pub const GRPQUOTA: c_int = 1;
 
-pub const SIGIOT: c_int = 6;
+pub const SIGIOT: c_int = SIGABRT;
 
 pub const S_ISUID: mode_t = 0o4000;
 pub const S_ISGID: mode_t = 0o2000;
@@ -1982,7 +2080,20 @@ pub const _SC_XOPEN_STREAMS: c_int = 246;
 pub const _SC_THREAD_ROBUST_PRIO_INHERIT: c_int = 247;
 pub const _SC_THREAD_ROBUST_PRIO_PROTECT: c_int = 248;
 
+#[deprecated(
+    since = "0.2.189",
+    note = "This constant does not exist upstream and will eventually be \
+            removed."
+)]
+#[allow(deprecated)]
 pub const RLIM_SAVED_MAX: crate::rlim_t = RLIM_INFINITY;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This constant does not exist upstream and will eventually be \
+            removed."
+)]
+#[allow(deprecated)]
 pub const RLIM_SAVED_CUR: crate::rlim_t = RLIM_INFINITY;
 
 pub const GLOB_ERR: c_int = 1 << 0;
@@ -2035,13 +2146,20 @@ pub const RTLD_NOW: c_int = 0x2;
 pub const TCP_MD5SIG: c_int = 14;
 
 pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
-    size: [0; __SIZEOF_PTHREAD_MUTEX_T],
+    _m_attr: 0,
+    _m_lock: 0,
+    _m_waiters: 0,
+    _m_count: 0,
 };
 pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = pthread_cond_t {
-    size: [0; __SIZEOF_PTHREAD_COND_T],
+    _c_head: ptr::null_mut(),
+    _c_clock: 0,
+    _c_tail: ptr::null_mut(),
+    _c_lock: 0,
 };
 pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
-    size: [0; __SIZEOF_PTHREAD_RWLOCK_T],
+    _rw_lock: 0,
+    _rw_waiters: 0,
 };
 pub const PTHREAD_MUTEX_NORMAL: c_int = 0;
 pub const PTHREAD_MUTEX_RECURSIVE: c_int = 1;
@@ -2049,6 +2167,11 @@ pub const PTHREAD_MUTEX_ERRORCHECK: c_int = 2;
 pub const PTHREAD_MUTEX_DEFAULT: c_int = PTHREAD_MUTEX_NORMAL;
 pub const PTHREAD_PROCESS_PRIVATE: c_int = 0;
 pub const PTHREAD_PROCESS_SHARED: c_int = 1;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
 pub const __SIZEOF_PTHREAD_COND_T: usize = 48;
 
 pub const RENAME_NOREPLACE: c_int = 1;
@@ -2526,12 +2649,34 @@ pub const POSIX_FADV_NOREUSE: c_int = 5;
 
 pub const POSIX_MADV_DONTNEED: c_int = 4;
 
-pub const RLIM_INFINITY: crate::rlim_t = !0;
-pub const RLIMIT_RTTIME: c_int = 15;
-#[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
-pub const RLIMIT_NLIMITS: c_int = 16;
+#[deprecated(
+    since = "0.2.189",
+    note = "This constant does not exist upstream and will eventually be \
+            removed."
+)]
 #[allow(deprecated)]
-#[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
+pub const RLIM_INFINITY: crate::rlim_t = !0;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This constant does not exist upstream and will eventually be \
+            removed."
+)]
+#[allow(deprecated)]
+pub const RLIMIT_RTTIME: c_int = 15;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This constant does not exist upstream and will eventually be \
+            removed."
+)]
+pub const RLIMIT_NLIMITS: c_int = 16;
+#[deprecated(
+    since = "0.2.189",
+    note = "This constant does not exist upstream and will eventually be \
+            removed."
+)]
+#[allow(deprecated)]
 pub const RLIM_NLIMITS: c_int = RLIMIT_NLIMITS;
 
 pub const MAP_ANONYMOUS: c_int = MAP_ANON;
@@ -2552,8 +2697,22 @@ pub const TCP_TIMESTAMP: c_int = 24;
 
 pub const SIGUNUSED: c_int = crate::SIGSYS;
 
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
 pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
 pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 8;
 
 pub const CPU_SETSIZE: c_int = 128;
@@ -2692,7 +2851,16 @@ pub const B3000000: crate::speed_t = 0o010015;
 pub const B3500000: crate::speed_t = 0o010016;
 pub const B4000000: crate::speed_t = 0o010017;
 
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
+
+#[deprecated(
+    since = "0.2.189",
+    note = "This type does not exist upstream and will eventually be removed."
+)]
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 40;
 
 pub const O_ASYNC: c_int = 0x00000400;
@@ -2956,38 +3124,34 @@ pub const O_NOFOLLOW: c_int = 0x00000080;
 pub const HUGETLB_FLAG_ENCODE_SHIFT: u32 = 26;
 pub const MAP_HUGE_SHIFT: u32 = 26;
 
-// intentionally not public, only used for fd_set
-cfg_if! {
-    if #[cfg(target_pointer_width = "32")] {
-        const ULONG_SIZE: usize = 32;
-    } else if #[cfg(target_pointer_width = "64")] {
-        const ULONG_SIZE: usize = 64;
-    } else {
-        // Unknown target_pointer_width
-    }
-}
-
 // END_PUB_CONST
 
 f! {
     pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] &= !(1 << (fd % size));
-        return;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot &= !(1 << (fd % size));
     }
 
     pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
+        let Some(slot) = (*set).fds_bits.get(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        (*slot & (1 << (fd % size))) != 0
     }
 
     pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] |= 1 << (fd % size);
-        return;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot |= 1 << (fd % size);
     }
 
     pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
@@ -2995,31 +3159,34 @@ f! {
     }
 
     pub unsafe fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
-        cpuset.bits.fill(0);
+        cpuset.__bits.fill(0);
     }
 
     pub unsafe fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
-        let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
-        cpuset.bits[idx] |= 1 << offset;
-        ()
+        if !(cpu / 8 >= size_of::<crate::cpu_set_t>()) {
+            cpuset.__bits[cpu / 8 / size_of::<c_long>()] |= 1 << (cpu % (8 * size_of::<c_long>()));
+        }
     }
 
     pub unsafe fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
-        let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
-        cpuset.bits[idx] &= !(1 << offset);
-        ()
+        if !(cpu / 8 >= size_of::<crate::cpu_set_t>()) {
+            cpuset.__bits[cpu / 8 / size_of::<c_long>()] &=
+                !(1 << (cpu % (8 * size_of::<c_long>())));
+        }
     }
 
     pub unsafe fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
-        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]);
-        let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
-        0 != (cpuset.bits[idx] & (1 << offset))
+        if !(cpu / 8 >= size_of::<crate::cpu_set_t>()) {
+            (cpuset.__bits[cpu / 8 / size_of::<c_long>()]
+                & (1 << (cpu % (8 * size_of::<c_long>()))))
+                != 0
+        } else {
+            false
+        }
     }
 
     pub unsafe fn CPU_EQUAL(set1: &cpu_set_t, set2: &cpu_set_t) -> bool {
-        set1.bits == set2.bits
+        set1.__bits == set2.__bits
     }
 
     pub unsafe fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
@@ -3055,9 +3222,7 @@ f! {
     pub const unsafe fn CMSG_LEN(len: c_uint) -> c_uint {
         (CMSG_ALIGN(size_of::<cmsghdr>()) + len as size_t) as c_uint
     }
-}
 
-safe_f! {
     pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         (status & 0xff) == 0x7f
     }
@@ -3141,7 +3306,6 @@ extern "C" {}
 
 extern_ty! {
     pub type FILE;
-    pub type fpos_t; // FIXME(fuchsia): fill this out with a struct
 }
 
 extern "C" {
@@ -3622,6 +3786,10 @@ extern "C" {
     pub fn mkstemp(template: *mut c_char) -> c_int;
     pub fn mkdtemp(template: *mut c_char) -> *mut c_char;
 
+    #[deprecated(
+        since = "0.2.190",
+        note = "function is obsolete; prefer tmpfile, mkstemp, or similar"
+    )]
     pub fn tmpnam(ptr: *mut c_char) -> *mut c_char;
 
     pub fn openlog(ident: *const c_char, logopt: c_int, facility: c_int);
@@ -3758,7 +3926,7 @@ extern "C" {
 
     pub fn fallocate(fd: c_int, mode: c_int, offset: off_t, len: off_t) -> c_int;
     pub fn posix_fallocate(fd: c_int, offset: off_t, len: off_t) -> c_int;
-    pub fn readahead(fd: c_int, offset: off64_t, count: size_t) -> ssize_t;
+    pub fn readahead(fd: c_int, offset: off_t, count: size_t) -> ssize_t;
     pub fn signalfd(fd: c_int, mask: *const crate::sigset_t, flags: c_int) -> c_int;
     pub fn timerfd_create(clockid: c_int, flags: c_int) -> c_int;
     pub fn timerfd_gettime(fd: c_int, curr_value: *mut itimerspec) -> c_int;
@@ -3798,7 +3966,7 @@ extern "C" {
     pub fn mkfifoat(dirfd: c_int, pathname: *const c_char, mode: mode_t) -> c_int;
     pub fn if_nameindex() -> *mut if_nameindex;
     pub fn if_freenameindex(ptr: *mut if_nameindex);
-    pub fn sync_file_range(fd: c_int, offset: off64_t, nbytes: off64_t, flags: c_uint) -> c_int;
+    pub fn sync_file_range(fd: c_int, offset: off_t, nbytes: off_t, flags: c_uint) -> c_int;
     pub fn getifaddrs(ifap: *mut *mut crate::ifaddrs) -> c_int;
     pub fn freeifaddrs(ifa: *mut crate::ifaddrs);
 

@@ -129,9 +129,3 @@ extern "C" {
 
     pub fn eventfd(initval: c_uint, flags: c_int) -> c_int;
 }
-
-pub use crate::unix::newlib::generic::{
-    dirent,
-    sigset_t,
-    stat,
-};

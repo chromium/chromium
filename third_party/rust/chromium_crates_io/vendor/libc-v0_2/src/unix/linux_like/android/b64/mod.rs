@@ -4,6 +4,7 @@ use crate::prelude::*;
 // but may be wrong for mips64
 
 pub type mode_t = u32;
+// FIXME(1.0,deprecate): lfs binding to be removed
 pub type off64_t = i64;
 pub type socklen_t = u32;
 
@@ -21,6 +22,7 @@ s! {
         pub sa_restorer: Option<extern "C" fn()>,
     }
 
+    // FIXME(1.0,deprecate): lfs binding to be removed
     pub struct rlimit64 {
         pub rlim_cur: c_ulonglong,
         pub rlim_max: c_ulonglong,
@@ -78,6 +80,7 @@ s! {
         pub _f: [c_char; 0],
     }
 
+    // FIXME(1.0,deprecate): lfs binding to be removed
     pub struct statfs64 {
         pub f_type: u64,
         pub f_bsize: u64,
@@ -93,6 +96,7 @@ s! {
         pub f_spare: [u64; 4],
     }
 
+    // FIXME(1.0,deprecate): lfs binding to be removed
     pub struct statvfs64 {
         pub f_bsize: c_ulong,
         pub f_frsize: c_ulong,
@@ -105,7 +109,7 @@ s! {
         pub f_fsid: c_ulong,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
+        __f_spare: Padding<[c_int; 6]>,
     }
 
     pub struct pthread_barrier_t {
@@ -135,6 +139,7 @@ s! {
         __reserved: Padding<[c_char; 36]>,
     }
 
+    // FIXME(1.0,deprecate): lfs binding to be removed
     pub struct sigset64_t {
         __bits: [c_ulong; 1],
     }
@@ -152,6 +157,7 @@ pub const SA_SIGINFO: c_int = 0x00000004;
 pub const RTLD_GLOBAL: c_int = 0x00100;
 pub const RTLD_NOW: c_int = 2;
 pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
+pub const RTLD_NEXT: *mut c_void = -1isize as *mut c_void;
 
 pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
     value: 0,

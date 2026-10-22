@@ -10,10 +10,6 @@ pub type pthread_t = *mut c_void;
 pub type dev_t = u64;
 pub type socklen_t = u32;
 pub type mode_t = u32;
-pub type ino64_t = u64;
-pub type off64_t = i64;
-pub type blkcnt64_t = i64;
-pub type rlim64_t = u64;
 pub type nfds_t = c_ulong;
 pub type nl_item = c_int;
 pub type idtype_t = c_uint;
@@ -21,6 +17,40 @@ pub type loff_t = c_longlong;
 pub type pthread_key_t = c_uint;
 pub type pthread_once_t = c_int;
 pub type pthread_spinlock_t = c_int;
+
+#[cfg_attr(
+    all(target_os = "l4re", target_pointer_width = "64"),
+    deprecated(
+        since = "0.2.190",
+        note = "Use `ino_t` instead. LFS is being phased out, see rust-lang/libc#4805."
+    )
+)]
+pub type ino64_t = u64;
+#[cfg_attr(
+    all(target_os = "l4re", target_pointer_width = "64"),
+    deprecated(
+        since = "0.2.190",
+        note = "Use `off_t` instead. LFS is being phased out, see rust-lang/libc#4805."
+    )
+)]
+pub type off64_t = i64;
+#[cfg_attr(
+    all(target_os = "l4re", target_pointer_width = "64"),
+    deprecated(
+        since = "0.2.190",
+        note = "Use `blkcnt_t` instead. LFS is being phased out, see
+                rust-lang/libc#4805."
+    )
+)]
+pub type blkcnt64_t = i64;
+#[cfg_attr(
+    all(target_os = "l4re", target_pointer_width = "64"),
+    deprecated(
+        since = "0.2.190",
+        note = "Use `rlim_t` instead. LFS is being phased out, see rust-lang/libc#4805."
+    )
+)]
+pub type rlim64_t = u64;
 
 s! {
     /// CPU sets.
@@ -55,7 +85,22 @@ s! {
         pub affinity: l4_sched_cpu_set_t,
         pub create_flags: c_uint,
     }
+
+    pub struct mmsghdr {
+        pub msg_hdr: crate::msghdr,
+        pub msg_len: c_uint,
+    }
 }
+
+// socket.h
+
+pub const SHUT_RD: c_int = 0;
+pub const SHUT_WR: c_int = 1;
+pub const SHUT_RDWR: c_int = 2;
+
+pub const SOCK_RAW: c_int = 3;
+pub const SOCK_RDM: c_int = 4;
+pub const SOCK_CLOEXEC: c_int = O_CLOEXEC;
 
 // L4Re requires a min stack size of 64k; that isn't defined in uClibc, but
 // somewhere in the core libraries. uClibc wants 16k, but that's not enough.
@@ -84,7 +129,7 @@ pub const RLIM_NLIMITS: crate::__rlimit_resource_t = 16;
 
 pub const SOL_SOCKET: c_int = 1;
 
-// pub const SO_DEBUG: c_int = 1;
+pub const SO_DEBUG: c_int = 1;
 pub const SO_REUSEADDR: c_int = 2;
 pub const SO_TYPE: c_int = 3;
 pub const SO_ERROR: c_int = 4;
@@ -114,6 +159,8 @@ pub const SO_PEERNAME: c_int = 28;
 
 pub const SO_ACCEPTCONN: c_int = 30;
 pub const SO_PEERSEC: c_int = 31;
+
+pub const SCM_TIMESTAMP: c_int = SO_TIMESTAMP;
 
 pub const TCGETS: Ioctl = 0x5401;
 pub const TCSETS: Ioctl = 0x5402;

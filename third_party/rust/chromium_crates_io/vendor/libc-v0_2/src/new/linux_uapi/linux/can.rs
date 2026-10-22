@@ -37,14 +37,14 @@ pub const CANXL_MAX_DLC_MASK: c_int = 0x07FF;
 pub const CANXL_MIN_DLEN: usize = 1;
 pub const CANXL_MAX_DLEN: usize = 2048;
 
-s! {
+s2! {
     #[repr(align(8))]
     pub struct can_frame {
         pub can_id: canid_t,
         // FIXME(1.0): this field was renamed to `len` in Linux 5.11
         pub can_dlc: u8,
         __pad: Padding<u8>,
-        __res0: u8,
+        __res0: Padding<u8>,
         pub len8_dlc: u8,
         pub data: [u8; CAN_MAX_DLEN],
     }
@@ -54,14 +54,15 @@ pub const CANFD_BRS: c_int = 0x01;
 pub const CANFD_ESI: c_int = 0x02;
 pub const CANFD_FDF: c_int = 0x04;
 
-s! {
+s2! {
     #[repr(align(8))]
     pub struct canfd_frame {
         pub can_id: canid_t,
         pub len: u8,
         pub flags: u8,
-        __res0: u8,
-        __res1: u8,
+        __res0: Padding<u8>,
+        __res1: Padding<u8>,
+        #[custom_default([0; CANFD_MAX_DLEN])]
         pub data: [u8; CANFD_MAX_DLEN],
     }
 }
@@ -69,13 +70,15 @@ s! {
 pub const CANXL_XLF: c_int = 0x80;
 pub const CANXL_SEC: c_int = 0x01;
 
-s! {
+s2! {
+    #[exhaustive]
     pub struct canxl_frame {
         pub prio: canid_t,
         pub flags: u8,
         pub sdt: u8,
         pub len: u16,
         pub af: u32,
+        #[custom_default([0; CANXL_MAX_DLEN])]
         pub data: [u8; CANXL_MAX_DLEN],
     }
 }
@@ -101,10 +104,12 @@ pub const CAN_NPROTO: c_int = 8;
 
 pub const SOL_CAN_BASE: c_int = 100;
 
-s_no_extra_traits! {
+s_no_extra_traits2! {
+    #[exhaustive]
     pub struct sockaddr_can {
         pub can_family: crate::sa_family_t,
         pub can_ifindex: c_int,
+        #[custom_default(unsafe { mem::zeroed::<__c_anonymous_sockaddr_can_can_addr>() })]
         pub can_addr: __c_anonymous_sockaddr_can_can_addr,
     }
 
@@ -114,18 +119,21 @@ s_no_extra_traits! {
     }
 }
 
-s! {
+s2! {
+    #[exhaustive]
     pub struct __c_anonymous_sockaddr_can_tp {
         pub rx_id: canid_t,
         pub tx_id: canid_t,
     }
 
+    #[exhaustive]
     pub struct __c_anonymous_sockaddr_can_j1939 {
         pub name: u64,
         pub pgn: u32,
         pub addr: u8,
     }
 
+    #[exhaustive]
     pub struct can_filter {
         pub can_id: canid_t,
         pub can_mask: canid_t,

@@ -13,6 +13,9 @@ extern "C" {
     #[cfg(target_os = "linux")]
     pub fn pthread_getname_np(thread: crate::pthread_t, name: *mut c_char, len: size_t) -> c_int;
 
+    #[cfg(any(target_os = "android", all(target_os = "linux", target_env = "gnu")))]
+    pub fn pthread_gettid_np(thread: crate::pthread_t) -> crate::pid_t;
+
     #[cfg(any(target_os = "linux", target_os = "l4re"))]
     pub fn pthread_setaffinity_np(
         thread: crate::pthread_t,

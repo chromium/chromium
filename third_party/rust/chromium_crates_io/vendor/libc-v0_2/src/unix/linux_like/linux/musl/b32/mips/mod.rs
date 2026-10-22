@@ -3,8 +3,6 @@ use crate::prelude::*;
 
 pub type wchar_t = c_int;
 
-pub type stat64 = stat;
-
 s! {
     pub struct stat {
         pub st_dev: crate::dev_t,
@@ -25,11 +23,11 @@ s! {
         #[cfg(musl32_time64)]
         __st_ctim32: Padding<__c_anonymous_timespec32>,
 
-        #[cfg(musl_v1_2_3)]
+        #[cfg(musl_v1_2)]
         pub st_blksize: crate::blksize_t,
-        #[cfg(musl_v1_2_3)]
+        #[cfg(musl_v1_2)]
         __st_padding3: Padding<c_long>,
-        #[cfg(musl_v1_2_3)]
+        #[cfg(musl_v1_2)]
         pub st_blocks: crate::blkcnt_t,
 
         pub st_atime: crate::time_t,
@@ -51,16 +49,16 @@ s! {
         #[cfg(all(musl32_time64, target_endian = "little"))]
         __pad2: Padding<u32>,
 
-        #[cfg(not(musl_v1_2_3))]
+        #[cfg(not(musl_v1_2))]
         pub st_blksize: crate::blksize_t,
-        #[cfg(not(musl_v1_2_3))]
+        #[cfg(not(musl_v1_2))]
         __st_padding3: Padding<c_long>,
-        #[cfg(not(musl_v1_2_3))]
+        #[cfg(not(musl_v1_2))]
         pub st_blocks: crate::blkcnt_t,
 
-        #[cfg(not(musl_v1_2_3))]
+        #[cfg(not(musl_v1_2))]
         __st_padding4: Padding<[c_long; 14]>,
-        #[cfg(musl_v1_2_3)]
+        #[cfg(musl_v1_2)]
         __st_padding4: Padding<[c_long; 2]>,
     }
 
@@ -76,9 +74,9 @@ s! {
     }
 
     pub struct ipc_perm {
-        #[cfg(musl_v1_2_3)]
+        #[cfg(musl_v1_2)]
         pub __key: crate::key_t,
-        #[cfg(not(musl_v1_2_3))]
+        #[cfg(not(musl_v1_2))]
         #[deprecated(
             since = "0.2.173",
             note = "This field is incorrectly named and will be changed
@@ -149,6 +147,7 @@ s! {
         pub f_spare: [c_ulong; 5],
     }
 
+    // FIXME(1.0,deprecate): lfs binding to be removed
     pub struct statfs64 {
         pub f_type: c_ulong,
         pub f_bsize: c_ulong,
@@ -613,12 +612,10 @@ pub const SYS_modify_ldt: c_long = 4000 + 123;
 pub const SYS_adjtimex: c_long = 4000 + 124;
 pub const SYS_mprotect: c_long = 4000 + 125;
 pub const SYS_sigprocmask: c_long = 4000 + 126;
-#[deprecated(since = "0.2.70", note = "Functional up to 2.6 kernel")]
-pub const SYS_create_module: c_long = 4000 + 127;
+// 127 was SYS_create_module
 pub const SYS_init_module: c_long = 4000 + 128;
 pub const SYS_delete_module: c_long = 4000 + 129;
-#[deprecated(since = "0.2.70", note = "Functional up to 2.6 kernel")]
-pub const SYS_get_kernel_syms: c_long = 4000 + 130;
+// 130 was SYS_get_kernel_syms
 pub const SYS_quotactl: c_long = 4000 + 131;
 pub const SYS_getpgid: c_long = 4000 + 132;
 pub const SYS_fchdir: c_long = 4000 + 133;
@@ -673,8 +670,7 @@ pub const SYS_socket: c_long = 4000 + 183;
 pub const SYS_socketpair: c_long = 4000 + 184;
 pub const SYS_setresuid: c_long = 4000 + 185;
 pub const SYS_getresuid: c_long = 4000 + 186;
-#[deprecated(since = "0.2.70", note = "Functional up to 2.6 kernel")]
-pub const SYS_query_module: c_long = 4000 + 187;
+// 187 was SYS_query_module
 pub const SYS_poll: c_long = 4000 + 188;
 pub const SYS_nfsservctl: c_long = 4000 + 189;
 pub const SYS_setresgid: c_long = 4000 + 190;

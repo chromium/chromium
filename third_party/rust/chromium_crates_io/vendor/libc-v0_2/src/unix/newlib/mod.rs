@@ -3,21 +3,29 @@ use crate::prelude::*;
 pub type blkcnt_t = i32;
 pub type blksize_t = i32;
 
-pub type clockid_t = c_ulong;
+cfg_if! {
+    if #[cfg(target_os = "rtems")] {
+        pub type clockid_t = c_int;
+    } else {
+        pub type clockid_t = c_ulong;
+    }
+}
 
 cfg_if! {
-    if #[cfg(any(target_os = "espidf"))] {
+    if #[cfg(any(target_os = "espidf", target_os = "vita"))] {
         pub type dev_t = c_short;
         pub type ino_t = c_ushort;
         pub type off_t = c_long;
-    } else if #[cfg(any(target_os = "vita"))] {
-        pub type dev_t = c_short;
-        pub type ino_t = c_ushort;
-        pub type off_t = c_int;
-    } else {
+    } else if #[cfg(target_os = "rtems")] {
+        pub type dev_t = u64;
+        pub type ino_t = u64;
+        pub type off_t = i64;
+    } else if #[cfg(any(target_arch = "arm", target_arch = "powerpc"))] {
         pub type dev_t = u32;
         pub type ino_t = u32;
         pub type off_t = i64;
+    } else {
+        compile_error!("unsupported target");
     }
 }
 
@@ -31,7 +39,13 @@ pub type nfds_t = u32;
 pub type nlink_t = c_ushort;
 pub type pthread_t = c_ulong;
 pub type pthread_key_t = c_uint;
-pub type rlim_t = u32;
+cfg_if! {
+    if #[cfg(target_os = "rtems")] {
+        pub type rlim_t = i64;
+    } else {
+        pub type rlim_t = u32;
+    }
+}
 
 cfg_if! {
     if #[cfg(target_os = "horizon")] {
@@ -55,12 +69,12 @@ pub type useconds_t = u32;
 
 cfg_if! {
     if #[cfg(any(
-        target_os = "horizon",
-        all(target_os = "espidf", not(espidf_time32))
+        all(target_os = "espidf", espidf_time32),
+        target_os = "vita"
     ))] {
-        pub type time_t = c_longlong;
+        pub type time_t = c_long;
     } else {
-        pub type time_t = i32;
+        pub type time_t = i64;
     }
 }
 
@@ -325,6 +339,36 @@ s! {
         // Unverified
         size: [u8; crate::__SIZEOF_PTHREAD_CONDATTR_T],
     }
+
+    #[cfg(all(not(target_os = "vita"), not(target_os = "horizon")))]
+    pub struct sigset_t {
+        __val: u32,
+    }
+
+    #[cfg(not(target_os = "vita"))]
+    pub struct stat {
+        pub st_dev: crate::dev_t,
+        pub st_ino: crate::ino_t,
+        pub st_mode: crate::mode_t,
+        pub st_nlink: crate::nlink_t,
+        pub st_uid: crate::uid_t,
+        pub st_gid: crate::gid_t,
+        pub st_rdev: crate::dev_t,
+        pub st_size: crate::off_t,
+        pub st_atim: crate::timespec,
+        pub st_mtim: crate::timespec,
+        pub st_ctim: crate::timespec,
+        pub st_blksize: crate::blksize_t,
+        pub st_blocks: crate::blkcnt_t,
+        pub st_spare4: [c_long; 2usize],
+    }
+
+    #[cfg(not(target_os = "vita"))]
+    pub struct dirent {
+        pub d_ino: crate::ino_t,
+        pub d_type: c_uchar,
+        pub d_name: [c_char; 256usize],
+    }
 }
 
 // unverified constants
@@ -341,6 +385,8 @@ pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
 cfg_if! {
     if #[cfg(target_os = "espidf")] {
         pub const NCCS: usize = 11;
+    } else if #[cfg(target_os = "rtems")] {
+        pub const NCCS: usize = 20;
     } else {
         pub const NCCS: usize = 32;
     }
@@ -400,7 +446,7 @@ pub const PTHREAD_MUTEX_ERRORCHECK: c_int = 2;
 cfg_if! {
     if #[cfg(any(target_os = "horizon", target_os = "espidf"))] {
         pub const FD_SETSIZE: usize = 64;
-    } else if #[cfg(target_os = "vita")] {
+    } else if #[cfg(any(target_os = "vita", target_os = "rtems"))] {
         pub const FD_SETSIZE: usize = 256;
     } else {
         pub const FD_SETSIZE: usize = 1024;
@@ -532,7 +578,7 @@ pub const O_NONBLOCK: c_int = 16384;
 
 pub const O_ACCMODE: c_int = 3;
 cfg_if! {
-    if #[cfg(target_os = "espidf")] {
+    if #[cfg(any(target_os = "espidf", target_os = "rtems"))] {
         pub const O_CLOEXEC: c_int = 0x40000;
     } else {
         pub const O_CLOEXEC: c_int = 0x80000;
@@ -578,6 +624,8 @@ pub const PF_INET: c_int = 2;
 cfg_if! {
     if #[cfg(target_os = "espidf")] {
         pub const PF_INET6: c_int = 10;
+    } else if #[cfg(target_os = "rtems")] {
+        pub const PF_INET6: c_int = 28;
     } else {
         pub const PF_INET6: c_int = 23;
     }
@@ -639,7 +687,13 @@ cfg_if! {
 }
 pub const SO_TYPE: c_int = 0x1008;
 
-pub const SOCK_CLOEXEC: c_int = O_CLOEXEC;
+cfg_if! {
+    if #[cfg(target_os = "rtems")] {
+        pub const SOCK_CLOEXEC: c_int = 0x10000000;
+    } else {
+        pub const SOCK_CLOEXEC: c_int = O_CLOEXEC;
+    }
+}
 
 pub const INET_ADDRSTRLEN: c_int = 16;
 
@@ -663,7 +717,7 @@ pub const IFF_ALTPHYS: c_int = IFF_LINK2; // use alternate physical connection
 pub const IFF_MULTICAST: c_int = 0x8000; // supports multicast
 
 cfg_if! {
-    if #[cfg(target_os = "vita")] {
+    if #[cfg(any(target_os = "vita", target_os = "rtems"))] {
         pub const TCP_NODELAY: c_int = 1;
         pub const TCP_MAXSEG: c_int = 2;
     } else if #[cfg(target_os = "espidf")] {
@@ -699,7 +753,7 @@ cfg_if! {
     }
 }
 cfg_if! {
-    if #[cfg(target_os = "vita")] {
+    if #[cfg(any(target_os = "vita", target_os = "rtems"))] {
         pub const IP_TTL: c_int = 4;
     } else if #[cfg(target_os = "espidf")] {
         pub const IP_TTL: c_int = 2;
@@ -721,7 +775,7 @@ cfg_if! {
 }
 
 cfg_if! {
-    if #[cfg(target_os = "vita")] {
+    if #[cfg(any(target_os = "vita", target_os = "rtems"))] {
         pub const IP_ADD_MEMBERSHIP: c_int = 12;
         pub const IP_DROP_MEMBERSHIP: c_int = 13;
     } else if #[cfg(target_os = "espidf")] {
@@ -756,6 +810,11 @@ cfg_if! {
         pub const NO_DATA: c_int = 211;
         pub const NO_RECOVERY: c_int = 212;
         pub const TRY_AGAIN: c_int = 213;
+    } else if #[cfg(target_os = "rtems")] {
+        pub const HOST_NOT_FOUND: c_int = 1;
+        pub const TRY_AGAIN: c_int = 2;
+        pub const NO_RECOVERY: c_int = 3;
+        pub const NO_DATA: c_int = 4;
     } else {
         pub const HOST_NOT_FOUND: c_int = 1;
         pub const NO_DATA: c_int = 2;
@@ -763,7 +822,13 @@ cfg_if! {
         pub const TRY_AGAIN: c_int = 4;
     }
 }
-pub const NO_ADDRESS: c_int = 2;
+cfg_if! {
+    if #[cfg(target_os = "rtems")] {
+        pub const NO_ADDRESS: c_int = NO_DATA;
+    } else {
+        pub const NO_ADDRESS: c_int = 2;
+    }
+}
 
 pub const AI_PASSIVE: c_int = 1;
 pub const AI_CANONNAME: c_int = 2;
@@ -772,6 +837,9 @@ cfg_if! {
     if #[cfg(target_os = "espidf")] {
         pub const AI_NUMERICSERV: c_int = 8;
         pub const AI_ADDRCONFIG: c_int = 64;
+    } else if #[cfg(target_os = "rtems")] {
+        pub const AI_NUMERICSERV: c_int = 0x00000008;
+        pub const AI_ADDRCONFIG: c_int = 0x00000400;
     } else {
         pub const AI_NUMERICSERV: c_int = 0;
         pub const AI_ADDRCONFIG: c_int = 0;
@@ -784,7 +852,7 @@ pub const NI_NOFQDN: c_int = 1;
 pub const NI_NUMERICHOST: c_int = 2;
 pub const NI_NAMEREQD: c_int = 4;
 cfg_if! {
-    if #[cfg(target_os = "espidf")] {
+    if #[cfg(any(target_os = "espidf", target_os = "rtems"))] {
         pub const NI_NUMERICSERV: c_int = 8;
         pub const NI_DGRAM: c_int = 16;
     } else {
@@ -799,6 +867,11 @@ cfg_if! {
         pub const EAI_FAMILY: c_int = 204;
         pub const EAI_MEMORY: c_int = 203;
         pub const EAI_NONAME: c_int = 200;
+        pub const EAI_SOCKTYPE: c_int = 10;
+    } else if #[cfg(target_os = "rtems")] {
+        pub const EAI_FAMILY: c_int = 5;
+        pub const EAI_MEMORY: c_int = 6;
+        pub const EAI_NONAME: c_int = 8;
         pub const EAI_SOCKTYPE: c_int = 10;
     } else if #[cfg(not(target_os = "vita"))] {
         pub const EAI_FAMILY: c_int = -303;
@@ -815,25 +888,35 @@ pub const PRIO_PROCESS: c_int = 0;
 pub const PRIO_PGRP: c_int = 1;
 pub const PRIO_USER: c_int = 2;
 
+// include/paths.h from newlib's libc
+pub const _PATH_BSHELL: *const c_char = cstr(b"/bin/sh\0");
+
 f! {
     pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
-        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
-        (*set).fds_bits[fd / bits] &= !(1 << (fd % bits));
-        return;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / bits) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot &= !(1 << (fd % bits));
     }
 
     pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
-        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
-        return ((*set).fds_bits[fd / bits] & (1 << (fd % bits))) != 0;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
+        let Some(slot) = (*set).fds_bits.get(fd / bits) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        (*slot & (1 << (fd % bits))) != 0
     }
 
     pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
-        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
-        (*set).fds_bits[fd / bits] |= 1 << (fd % bits);
-        return;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / bits) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot |= 1 << (fd % bits);
     }
 
     pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
@@ -842,6 +925,7 @@ f! {
 }
 
 extern "C" {
+    pub fn __errno() -> *mut c_int;
     pub fn getrlimit(resource: c_int, rlim: *mut crate::rlimit) -> c_int;
     pub fn setrlimit(resource: c_int, rlim: *const crate::rlimit) -> c_int;
 
@@ -939,8 +1023,6 @@ extern "C" {
     pub fn uname(buf: *mut crate::utsname) -> c_int;
 }
 
-mod generic;
-
 cfg_if! {
     if #[cfg(target_os = "espidf")] {
         mod espidf;
@@ -951,25 +1033,10 @@ cfg_if! {
     } else if #[cfg(target_os = "vita")] {
         mod vita;
         pub use self::vita::*;
-    } else if #[cfg(target_arch = "arm")] {
-        mod arm;
-        pub use self::arm::*;
-    } else if #[cfg(target_arch = "aarch64")] {
-        mod aarch64;
-        pub use self::aarch64::*;
-    } else if #[cfg(target_arch = "powerpc")] {
-        mod powerpc;
-        pub use self::powerpc::*;
-    } else {
-        // Only tested on ARM so far. Other platforms might have different
-        // definitions for types and constants.
-        pub use target_arch_not_implemented;
-    }
-}
-
-cfg_if! {
-    if #[cfg(target_os = "rtems")] {
+    } else if #[cfg(target_os = "rtems")] {
         mod rtems;
         pub use self::rtems::*;
+    } else {
+        compile_error!("unsupported target");
     }
 }

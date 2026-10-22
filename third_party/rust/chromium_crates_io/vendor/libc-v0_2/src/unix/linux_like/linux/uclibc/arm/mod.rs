@@ -63,8 +63,8 @@ s! {
 
     pub struct stat64 {
         pub st_dev: c_ulonglong,
-        pub __pad1: c_uint,
-        pub __st_ino: crate::ino_t,
+        __pad1: Padding<c_uint>,
+        __st_ino: crate::ino_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
@@ -152,7 +152,7 @@ s! {
         __f_unused: Padding<c_int>,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
+        __f_spare: Padding<[c_int; 6]>,
     }
 
     pub struct sigset_t {
@@ -177,13 +177,6 @@ s! {
         pub c_cc: [crate::cc_t; crate::NCCS],
         pub c_ispeed: crate::speed_t,
         pub c_ospeed: crate::speed_t,
-    }
-
-    pub struct siginfo_t {
-        pub si_signo: c_int,
-        pub si_errno: c_int,
-        pub si_code: c_int,
-        pub _pad: [c_int; 29],
     }
 
     pub struct stack_t {
@@ -227,10 +220,13 @@ s! {
         pub shm_perm: crate::ipc_perm,
         pub shm_segsz: size_t,
         pub shm_atime: crate::time_t,
+        #[cfg(not(uclibc32_time64))]
         __unused1: Padding<c_ulong>,
         pub shm_dtime: crate::time_t,
+        #[cfg(not(uclibc32_time64))]
         __unused2: Padding<c_ulong>,
         pub shm_ctime: crate::time_t,
+        #[cfg(not(uclibc32_time64))]
         __unused3: Padding<c_ulong>,
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
@@ -508,10 +504,6 @@ pub const SIGXFSZ: c_int = 0x19;
 pub const SIG_BLOCK: c_int = 0;
 pub const SIG_SETMASK: c_int = 0x2;
 pub const SIG_UNBLOCK: c_int = 0x1;
-pub const SOCK_DGRAM: c_int = 0x2;
-pub const SOCK_NONBLOCK: c_int = 0o0004000;
-pub const SOCK_SEQPACKET: c_int = 0x5;
-pub const SOCK_STREAM: c_int = 0x1;
 
 pub const TAB1: c_int = 0x800;
 pub const TAB2: c_int = 0x1000;

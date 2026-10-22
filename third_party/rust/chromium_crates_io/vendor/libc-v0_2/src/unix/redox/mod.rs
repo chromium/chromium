@@ -28,15 +28,25 @@ pub type suseconds_t = c_int;
 pub type tcflag_t = u32;
 pub type time_t = c_longlong;
 pub type id_t = c_uint;
+pub type pid_t = c_int;
 pub type uid_t = c_int;
 pub type gid_t = c_int;
+pub type ucontext_t = ucontext;
+pub type stack_t = sigaltstack;
+pub type siginfo_t = siginfo;
+#[cfg(any(
+    target_arch = "x86",
+    target_arch = "x86_64",
+    target_arch = "aarch64",
+    target_arch = "riscv64"
+))]
+pub type mcontext_t = mcontext;
 
 extern_ty! {
     pub type timezone;
 }
 
 s! {
-    #[repr(C)]
     pub struct utsname {
         pub sysname: [c_char; UTSLENGTH],
         pub nodename: [c_char; UTSLENGTH],
@@ -158,12 +168,21 @@ s! {
         pub sa_mask: crate::sigset_t,
     }
 
-    pub struct siginfo_t {
+    pub struct siginfo {
         pub si_signo: c_int,
         pub si_errno: c_int,
         pub si_code: c_int,
-        _pad: Padding<[c_int; 29]>,
-        _align: [usize; 0],
+        pub si_pid: pid_t,
+        pub si_uid: uid_t,
+        pub si_addr: *mut c_void,
+        pub si_status: c_int,
+        pub si_value: crate::sigval,
+    }
+
+    pub struct sigaltstack {
+        pub ss_sp: *mut c_void,
+        pub ss_flags: c_int,
+        pub ss_size: size_t,
     }
 
     pub struct sockaddr {
@@ -251,62 +270,152 @@ s! {
         pub gid: gid_t,
     }
 
-    #[cfg_attr(target_pointer_width = "32", repr(C, align(4)))]
-    #[cfg_attr(target_pointer_width = "64", repr(C, align(8)))]
+    #[cfg_attr(target_pointer_width = "32", repr(align(4)))]
+    #[cfg_attr(target_pointer_width = "64", repr(align(8)))]
     pub struct pthread_attr_t {
         bytes: [u8; _PTHREAD_ATTR_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(4))]
     pub struct pthread_barrier_t {
         bytes: [u8; _PTHREAD_BARRIER_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(4))]
     pub struct pthread_barrierattr_t {
         bytes: [u8; _PTHREAD_BARRIERATTR_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(4))]
     pub struct pthread_mutex_t {
         bytes: [u8; _PTHREAD_MUTEX_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(4))]
     pub struct pthread_rwlock_t {
         bytes: [u8; _PTHREAD_RWLOCK_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(4))]
     pub struct pthread_mutexattr_t {
         bytes: [u8; _PTHREAD_MUTEXATTR_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(1))]
     pub struct pthread_rwlockattr_t {
         bytes: [u8; _PTHREAD_RWLOCKATTR_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(4))]
     pub struct pthread_cond_t {
         bytes: [u8; _PTHREAD_COND_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(4))]
     pub struct pthread_condattr_t {
         bytes: [u8; _PTHREAD_CONDATTR_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(4))]
     pub struct pthread_once_t {
         bytes: [u8; _PTHREAD_ONCE_SIZE],
     }
-    #[repr(C)]
+
     #[repr(align(4))]
     pub struct pthread_spinlock_t {
         bytes: [u8; _PTHREAD_SPINLOCK_SIZE],
     }
+
+    pub struct ucontext {
+        #[cfg(any(
+            target_arch = "x86_64",
+            target_arch = "aarch64",
+            target_arch = "riscv64"
+        ))]
+        _pad: [c_ulong; 1], // pad from 7*8 to 64
+
+        #[cfg(target_arch = "x86")]
+        _pad: [c_ulong; 3], // pad from 9*4 to 12*4
+
+        pub uc_link: *mut ucontext_t,
+        pub uc_stack: stack_t,
+        pub uc_sigmask: sigset_t,
+        _sival: c_ulong,
+        _sigcode: c_uint,
+        _signum: c_uint,
+        pub uc_mcontext: mcontext_t,
+    }
+
+    #[cfg(target_arch = "x86")]
+    pub struct mcontext {
+        _opaque: [c_uchar; 512],
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    pub struct mcontext {
+        pub ymm_upper: [[c_ulong; 2]; 16],
+        pub fxsave: [[c_ulong; 2]; 29],
+        pub r15: c_ulong, // fxsave "available" +0
+        pub r14: c_ulong, // available +8
+        pub r13: c_ulong, // available +16
+        pub r12: c_ulong, // available +24
+        pub rbp: c_ulong, // available +32
+        pub rbx: c_ulong, // available +40
+        pub r11: c_ulong, // outside fxsave, and so on
+        pub r10: c_ulong,
+        pub r9: c_ulong,
+        pub r8: c_ulong,
+        pub rax: c_ulong,
+        pub rcx: c_ulong,
+        pub rdx: c_ulong,
+        pub rsi: c_ulong,
+        pub rdi: c_ulong,
+        pub rflags: c_ulong,
+        pub rip: c_ulong,
+        pub rsp: c_ulong,
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    pub struct mcontext {
+        _opaque: [c_uchar; 272],
+    }
+
+    #[cfg(target_arch = "riscv64")]
+    pub struct mcontext {
+        _opaque: [c_uchar; 520],
+    }
 }
+
+impl siginfo_t {
+    pub unsafe fn si_addr(&self) -> *mut c_void {
+        self.si_addr
+    }
+
+    pub unsafe fn si_code(&self) -> c_int {
+        self.si_code
+    }
+
+    pub unsafe fn si_errno(&self) -> c_int {
+        self.si_errno
+    }
+
+    pub unsafe fn si_pid(&self) -> crate::pid_t {
+        self.si_pid
+    }
+
+    pub unsafe fn si_uid(&self) -> uid_t {
+        self.si_uid
+    }
+
+    pub unsafe fn si_value(&self) -> crate::sigval {
+        self.si_value
+    }
+
+    pub unsafe fn si_status(&self) -> c_int {
+        self.si_status
+    }
+}
+
 const _PTHREAD_ATTR_SIZE: usize = 32;
 const _PTHREAD_RWLOCKATTR_SIZE: usize = 1;
 const _PTHREAD_RWLOCK_SIZE: usize = 4;
@@ -336,6 +445,7 @@ cfg_if! {
 /// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
 /// for details.
 pub const PATH_MAX: c_int = 4096;
+pub const HOST_NAME_MAX: c_int = 255;
 
 // fcntl.h
 pub const F_GETLK: c_int = 5;
@@ -684,6 +794,9 @@ pub const SA_NODEFER: c_int = 0x1000_0000;
 pub const SA_RESETHAND: c_int = 0x2000_0000;
 pub const SA_NOCLDSTOP: c_int = 0x4000_0000;
 
+pub const SS_ONSTACK: c_int = 0x00000001;
+pub const SS_DISABLE: c_int = 0x00000002;
+
 // sys/file.h
 pub const LOCK_SH: c_int = 1;
 pub const LOCK_EX: c_int = 2;
@@ -777,6 +890,10 @@ pub const MAP_FAILED: *mut c_void = !0 as _;
 pub const MS_ASYNC: c_int = 0x0001;
 pub const MS_INVALIDATE: c_int = 0x0002;
 pub const MS_SYNC: c_int = 0x0004;
+
+// sys/random.h
+pub const GRND_NONBLOCK: c_uint = 1;
+pub const GRND_RANDOM: c_uint = 2;
 
 // sys/resource.h
 pub const RLIM_INFINITY: rlim_t = !0;
@@ -902,8 +1019,8 @@ pub const OLCUC: crate::tcflag_t = 0o000_004;
 pub const OCRNL: crate::tcflag_t = 0o000_010;
 pub const ONOCR: crate::tcflag_t = 0o000_020;
 pub const ONLRET: crate::tcflag_t = 0o000_040;
-pub const OFILL: crate::tcflag_t = 0o0000_100;
-pub const OFDEL: crate::tcflag_t = 0o0000_200;
+pub const OFILL: crate::tcflag_t = 0o0_000_100;
+pub const OFDEL: crate::tcflag_t = 0o0_000_200;
 
 pub const B0: speed_t = 0o000_000;
 pub const B50: speed_t = 0o000_001;
@@ -1074,6 +1191,7 @@ pub const X_OK: c_int = 1;
 
 // stdio.h
 pub const BUFSIZ: c_uint = 1024;
+pub const FILENAME_MAX: c_int = 4096;
 pub const _IOFBF: c_int = 0;
 pub const _IOLBF: c_int = 1;
 pub const _IONBF: c_int = 2;
@@ -1109,6 +1227,9 @@ pub const PRIO_USER: c_int = 2;
 
 pub const RENAME_NOREPLACE: c_uint = 1;
 
+// include/paths.h from relibc
+pub const _PATH_BSHELL: *const c_char = cstr(b"/bin/sh\0");
+
 f! {
     //sys/socket.h
     pub const unsafe fn CMSG_ALIGN(len: size_t) -> size_t {
@@ -1125,29 +1246,34 @@ f! {
     pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] &= !(1 << (fd % size));
-        return;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot &= !(1 << (fd % size));
     }
 
     pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
+        let Some(slot) = (*set).fds_bits.get(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        (*slot & (1 << (fd % size))) != 0
     }
 
     pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] |= 1 << (fd % size);
-        return;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot |= 1 << (fd % size);
     }
 
     pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
         (*set).fds_bits.fill(0);
     }
-}
 
-safe_f! {
     pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         (status & 0xff) == 0x7f
     }
@@ -1343,6 +1469,7 @@ extern "C" {
         timeout: *const crate::timespec,
     ) -> c_int;
     pub fn sigwait(set: *const sigset_t, sig: *mut c_int) -> c_int;
+    pub fn sigaltstack(ss: *const stack_t, oss: *mut stack_t) -> c_int;
 
     // stdlib.h
     pub fn getsubopt(
@@ -1388,6 +1515,9 @@ extern "C" {
     pub fn mprotect(addr: *mut c_void, len: size_t, prot: c_int) -> c_int;
     pub fn shm_open(name: *const c_char, oflag: c_int, mode: mode_t) -> c_int;
     pub fn shm_unlink(name: *const c_char) -> c_int;
+
+    // sys/random.h
+    pub fn getrandom(buf: *mut c_void, buflen: size_t, flags: c_uint) -> ssize_t;
 
     // sys/resource.h
     pub fn getpriority(which: c_int, who: crate::id_t) -> c_int;
@@ -1438,6 +1568,7 @@ extern "C" {
     pub fn gettimeofday(tp: *mut crate::timeval, tz: *mut crate::timezone) -> c_int;
     pub fn clock_getres(clk_id: crate::clockid_t, tp: *mut crate::timespec) -> c_int;
     pub fn clock_gettime(clk_id: crate::clockid_t, tp: *mut crate::timespec) -> c_int;
+    pub fn clock_settime(clk_id: crate::clockid_t, tp: *const crate::timespec) -> c_int;
     pub fn strftime(
         s: *mut c_char,
         max: size_t,

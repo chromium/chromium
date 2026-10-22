@@ -650,7 +650,7 @@ pub const B_DIRECTORY_NODE: u32 = 0x04;
 pub const B_ANY_NODE: u32 = 0x07;
 
 // support/Errors.h
-pub const B_GENERAL_ERROR_BASE: status_t = core::i32::MIN;
+pub const B_GENERAL_ERROR_BASE: status_t = i32::MIN;
 pub const B_OS_ERROR_BASE: status_t = B_GENERAL_ERROR_BASE + 0x1000;
 pub const B_APP_ERROR_BASE: status_t = B_GENERAL_ERROR_BASE + 0x2000;
 pub const B_INTERFACE_ERROR_BASE: status_t = B_GENERAL_ERROR_BASE + 0x3000;

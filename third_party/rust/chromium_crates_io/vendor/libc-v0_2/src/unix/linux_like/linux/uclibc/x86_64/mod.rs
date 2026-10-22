@@ -51,14 +51,6 @@ s! {
         __sched_priority: c_int,
     }
 
-    pub struct siginfo_t {
-        si_signo: c_int,       // signal number
-        si_errno: c_int,       // if not zero: error value of signal, see errno.h
-        si_code: c_int,        // signal code
-        pub _pad: [c_int; 28], // unported union
-        _align: [usize; 0],
-    }
-
     pub struct shmid_ds {
         pub shm_perm: crate::ipc_perm,
         pub shm_segsz: size_t,        // segment size in bytes
@@ -82,8 +74,8 @@ s! {
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __ignored1: c_ulong,
-        __ignored2: c_ulong,
+        __ignored1: Padding<c_ulong>,
+        __ignored2: Padding<c_ulong>,
     }
 
     pub struct sockaddr {
@@ -168,7 +160,7 @@ s! {
         pub f_fsid: crate::fsid_t,
         pub f_namelen: fsword_t,
         pub f_frsize: fsword_t,
-        f_spare: [fsword_t; 5],
+        f_spare: Padding<[fsword_t; 5]>,
     }
 
     pub struct statfs64 {
@@ -199,7 +191,7 @@ s! {
         __f_unused: Padding<c_int>,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
+        __f_spare: Padding<[c_int; 6]>,
     }
 
     pub struct msghdr {
@@ -246,19 +238,6 @@ s! {
         pub _f: [c_char; 0],
     }
 
-    pub struct glob_t {
-        // FIXME(ulibc)
-        pub gl_pathc: size_t,
-        pub gl_pathv: *mut *mut c_char,
-        pub gl_offs: size_t,
-        pub gl_flags: c_int,
-        __unused1: Padding<*mut c_void>,
-        __unused2: Padding<*mut c_void>,
-        __unused3: Padding<*mut c_void>,
-        __unused4: Padding<*mut c_void>,
-        __unused5: Padding<*mut c_void>,
-    }
-
     pub struct cpu_set_t {
         // FIXME(ulibc)
         #[cfg(target_pointer_width = "32")]
@@ -285,16 +264,6 @@ s! {
         pub cmsg_len: size_t,
         pub cmsg_level: c_int,
         pub cmsg_type: c_int,
-    }
-}
-
-s_no_extra_traits! {
-    pub struct dirent {
-        pub d_ino: crate::ino64_t,
-        pub d_off: off64_t,
-        pub d_reclen: u16,
-        pub d_type: u8,
-        pub d_name: [c_char; 256],
     }
 }
 
@@ -331,8 +300,6 @@ pub const NCCS: usize = 32;
 pub const SIG_SETMASK: c_int = 2; // Set the set of blocked signals
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 40;
 pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
-pub const SOCK_DGRAM: c_int = 2; // connectionless, unreliable datagrams
-pub const SOCK_STREAM: c_int = 1; // …/common/bits/socket_type.h
 pub const __SIZEOF_PTHREAD_COND_T: usize = 48;
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;

@@ -1,6 +1,6 @@
 //! Header: `unistd.h`
 //!
-//! <https://github.com/bminor/glibc/blob/master/posix/unistd.h>
+//! <https://github.com/sailfishos-mirror/glibc/blob/master/posix/unistd.h>
 
 pub use crate::new::common::posix::unistd::{
     STDERR_FILENO,

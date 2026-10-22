@@ -713,6 +713,10 @@ extern "C" {
         addrlen: *mut crate::socklen_t,
         flags: c_int,
     ) -> c_int;
+    #[cfg_attr(
+        target_os = "openbsd",
+        deprecated(since = "0.2.190", note = "Removed in OpenBSD 6.5")
+    )]
     pub fn mincore(addr: *mut c_void, len: size_t, vec: *mut c_char) -> c_int;
     #[cfg_attr(target_os = "netbsd", link_name = "__clock_getres50")]
     pub fn clock_getres(clk_id: crate::clockid_t, tp: *mut crate::timespec) -> c_int;

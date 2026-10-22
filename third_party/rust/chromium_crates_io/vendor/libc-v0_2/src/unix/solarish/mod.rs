@@ -2253,31 +2253,36 @@ f! {
     }
 
     pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
-        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
-        (*set).fds_bits[fd / bits] &= !(1 << (fd % bits));
-        return;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / bits) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot &= !(1 << (fd % bits));
     }
 
     pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
-        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
-        return ((*set).fds_bits[fd / bits] & (1 << (fd % bits))) != 0;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
+        let Some(slot) = (*set).fds_bits.get(fd / bits) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        (*slot & (1 << (fd % bits))) != 0
     }
 
     pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
-        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
-        (*set).fds_bits[fd / bits] |= 1 << (fd % bits);
-        return;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / bits) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot |= 1 << (fd % bits);
     }
 
     pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
         (*set).fds_bits.fill(0);
     }
-}
 
-safe_f! {
     pub safe fn SIGRTMAX() -> c_int {
         unsafe { crate::sysconf(_SC_SIGRT_MAX) as c_int }
     }

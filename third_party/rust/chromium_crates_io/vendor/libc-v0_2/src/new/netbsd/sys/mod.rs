@@ -1,6 +1,6 @@
 //! Directory: `sys/`
 //!
-//! https://github.com/NetBSD/src/tree/trunk/sys/sys
+//! <https://github.com/NetBSD/src/tree/trunk/sys/sys>
 
 pub(crate) mod file;
 pub(crate) mod ipc;

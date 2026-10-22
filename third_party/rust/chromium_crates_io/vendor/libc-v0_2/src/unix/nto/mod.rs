@@ -81,6 +81,8 @@ pub type posix_spawnattr_t = crate::uintptr_t;
 
 pub type pthread_mutex_t = crate::sync_t;
 pub type pthread_mutexattr_t = crate::_sync_attr;
+#[cfg(target_os = "qnx")]
+pub type pthread_rwlock_t = crate::sync_t;
 pub type pthread_cond_t = crate::sync_t;
 pub type pthread_condattr_t = crate::_sync_attr;
 pub type pthread_rwlockattr_t = crate::_sync_attr;
@@ -109,9 +111,9 @@ s! {
         pub st_rdev: crate::dev_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
-        pub __old_st_mtime: crate::_Time32t,
-        pub __old_st_atime: crate::_Time32t,
-        pub __old_st_ctime: crate::_Time32t,
+        __old_st_mtime: crate::_Time32t,
+        __old_st_atime: crate::_Time32t,
+        __old_st_ctime: crate::_Time32t,
         pub st_mode: mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_blocksize: crate::blksize_t,
@@ -282,7 +284,7 @@ s! {
         pub gl_pathv: *mut *mut c_char,
         pub gl_offs: size_t,
         pub gl_flags: c_int,
-        pub gl_errfunc: extern "C" fn(*const c_char, c_int) -> c_int,
+        pub gl_errfunc: Option<unsafe extern "C" fn(*const c_char, c_int) -> c_int>,
 
         __unused1: Padding<*mut c_void>,
         __unused2: Padding<*mut c_void>,
@@ -458,6 +460,7 @@ s! {
         pub c_ospeed: crate::speed_t,
     }
 
+    #[cfg(target_os = "nto")]
     pub struct mallinfo {
         pub arena: c_int,
         pub ordblks: c_int,
@@ -469,6 +472,20 @@ s! {
         pub uordblks: c_int,
         pub fordblks: c_int,
         pub keepcost: c_int,
+    }
+
+    #[cfg(target_os = "qnx")]
+    pub struct mallinfo {
+        pub arena: size_t,
+        pub ordblks: size_t,
+        pub smblks: size_t,
+        pub hblks: size_t,
+        pub hblkhd: size_t,
+        pub usmblks: size_t,
+        pub fsmblks: size_t,
+        pub uordblks: size_t,
+        pub fordblks: size_t,
+        pub keepcost: size_t,
     }
 
     pub struct flock {
@@ -494,7 +511,7 @@ s! {
         pub f_basetype: [c_char; 16],
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
-        f_filler: [c_uint; 21],
+        f_filler: Padding<[c_uint; 21]>,
     }
 
     pub struct aiocb {
@@ -542,6 +559,7 @@ s! {
     }
 
     // FIXME(1.0): This should not implement `PartialEq`
+    #[cfg(target_os = "nto")]
     #[allow(unpredictable_function_pointer_comparisons)]
     pub struct _thread_attr {
         pub __flags: c_int,
@@ -552,7 +570,22 @@ s! {
         pub __param: crate::__sched_param,
         pub __guardsize: c_uint,
         pub __prealloc: c_uint,
-        __spare: [c_int; 2],
+        __spare: Padding<[c_int; 2]>,
+    }
+
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[cfg(target_os = "qnx")]
+    #[allow(unpredictable_function_pointer_comparisons)]
+    pub struct _thread_attr {
+        pub __flags: c_int,
+        pub __stacksize: size_t,
+        pub __stackaddr: *mut c_void,
+        __reserved0: Padding<crate::uintptr_t>,
+        pub __policy: c_int,
+        pub __param: crate::__sched_param,
+        pub __guardsize: c_uint,
+        pub __prealloc: c_uint,
+        __reserved1: Padding<crate::uintptr_t>,
     }
 
     pub struct _sync_attr {
@@ -655,7 +688,10 @@ s! {
     }
 
     pub struct sigset_t {
+        #[cfg(target_os = "nto")]
         __val: [u32; 2],
+        #[cfg(target_os = "qnx")] // different alignment
+        __val: u64,
     }
 
     pub struct mq_attr {
@@ -702,10 +738,14 @@ s_no_extra_traits! {
 
     #[repr(align(4))]
     pub struct pthread_barrier_t {
-        // union
+        #[cfg(target_os = "qnx")]
+        __pad: Padding<[u8; 8]>, // union
+        #[cfg(target_os = "nto")]
         __pad: Padding<[u8; 28]>, // union
     }
 
+    // `target_os = "qnx"` is handled by a `type` alias
+    #[cfg(target_os = "nto")]
     pub struct pthread_rwlock_t {
         pub __active: c_int,
         pub __blockedwriters: c_int,
@@ -731,7 +771,7 @@ s_no_extra_traits! {
     // form would be bogus and it would potentially change the size of the data type. On QNX SDP 8, this
     // got fixed and both C and C++ are using the same definition.
     pub struct max_align_t {
-        _ll: crate::c_longlong,
+        _ll: c_longlong,
         _ld: i128,
     }
 }
@@ -1048,7 +1088,7 @@ pub const POLLRDBAND: c_short = 0x0004;
 pub const IPTOS_LOWDELAY: u8 = 0x10;
 pub const IPTOS_THROUGHPUT: u8 = 0x08;
 pub const IPTOS_RELIABILITY: u8 = 0x04;
-pub const IPTOS_MINCOST: u8 = 0x02;
+pub const IPTOS_MINCOST: u8 = if cfg!(target_os = "nto") { 0x02 } else { 0x00 };
 
 pub const IPTOS_PREC_NETCONTROL: u8 = 0xe0;
 pub const IPTOS_PREC_INTERNETCONTROL: u8 = 0xc0;
@@ -1218,11 +1258,27 @@ pub const IN_MOVE_SELF: u32 = 0x00000800;
 pub const IN_UNMOUNT: u32 = 0x00002000;
 pub const IN_Q_OVERFLOW: u32 = 0x00004000;
 pub const IN_IGNORED: u32 = 0x00008000;
-pub const IN_ONLYDIR: u32 = 0x01000000;
-pub const IN_DONT_FOLLOW: u32 = 0x02000000;
+pub const IN_ONLYDIR: u32 = if cfg!(target_os = "nto") {
+    0x01000000
+} else {
+    0x00400000
+};
+pub const IN_DONT_FOLLOW: u32 = if cfg!(target_os = "nto") {
+    0x02000000
+} else {
+    0x00100000
+};
 
-pub const IN_ISDIR: u32 = 0x40000000;
-pub const IN_ONESHOT: u32 = 0x80000000;
+pub const IN_ISDIR: u32 = if cfg!(target_os = "nto") {
+    0x40000000
+} else {
+    0x00010000
+};
+pub const IN_ONESHOT: u32 = if cfg!(target_os = "nto") {
+    0x80000000
+} else {
+    0x00800000
+};
 
 pub const REG_EXTENDED: c_int = 0o0001;
 pub const REG_ICASE: c_int = 0o0002;
@@ -1656,9 +1712,10 @@ pub const ENOTSUP: c_int = 48;
 pub const BUFSIZ: c_uint = 1024;
 pub const TMP_MAX: c_uint = 26 * 26 * 26;
 pub const FOPEN_MAX: c_uint = 16;
-pub const FILENAME_MAX: c_uint = 255;
+pub const FILENAME_MAX: c_uint = if cfg!(target_os = "nto") { 255 } else { 1024 };
 
 pub const NI_MAXHOST: crate::socklen_t = 1025;
+#[cfg(target_os = "nto")] // removed in QNX8
 pub const M_KEEP: c_int = 4;
 pub const REG_STARTEND: c_int = 0o00004;
 pub const VEOF: usize = 4;
@@ -1700,6 +1757,8 @@ pub const SOCK_CLOEXEC: c_int = 0x10000000;
 pub const SA_SIGINFO: c_int = 0x0002;
 pub const SA_NOCLDWAIT: c_int = 0x0020;
 pub const SA_NODEFER: c_int = 0x0010;
+#[cfg(target_os = "qnx")] // QNX8 only
+pub const SA_ONSTACK: c_int = 0x0008;
 pub const SA_RESETHAND: c_int = 0x0004;
 pub const SA_NOCLDSTOP: c_int = 0x0001;
 
@@ -1994,6 +2053,7 @@ pub const KERN_PROF: c_int = 16;
 pub const KERN_SAVED_IDS: c_int = 20;
 pub const KERN_SECURELVL: c_int = 9;
 pub const KERN_VERSION: c_int = 4;
+#[cfg(target_os = "nto")] // removed in QNX8
 pub const KERN_VNODE: c_int = 13;
 
 pub const LC_ALL: c_int = 63;
@@ -2005,8 +2065,11 @@ pub const LC_NUMERIC: c_int = 8;
 pub const LC_TIME: c_int = 16;
 
 pub const MAP_STACK: c_int = 0x00001000;
+#[cfg(target_os = "nto")] // private (`/devs/sys/*.h`) in QNX8
 pub const MNT_NOEXEC: c_int = 0x02;
+#[cfg(target_os = "nto")] // private (`/devs/sys/*.h`) in QNX8
 pub const MNT_NOSUID: c_int = 0x04;
+#[cfg(target_os = "nto")] // private (`/devs/sys/*.h`) in QNX8
 pub const MNT_RDONLY: c_int = 0x01;
 
 pub const NET_RT_DUMP: c_int = 1;
@@ -2073,11 +2136,11 @@ pub const RLIMIT_RSS: c_int = 6;
 pub const RLIMIT_STACK: c_int = 3;
 pub const RLIMIT_VMEM: c_int = 6;
 #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
-pub const RLIM_NLIMITS: c_int = 14;
+pub const RLIM_NLIMITS: c_int = if cfg!(target_os = "nto") { 14 } else { 19 };
 
 pub const SCHED_ADJTOHEAD: c_int = 5;
 pub const SCHED_ADJTOTAIL: c_int = 6;
-pub const SCHED_MAXPOLICY: c_int = 7;
+pub const SCHED_MAXPOLICY: c_int = if cfg!(target_os = "nto") { 7 } else { 9 };
 pub const SCHED_SETPRIO: c_int = 7;
 pub const SCHED_SPORADIC: c_int = 4;
 
@@ -2086,8 +2149,8 @@ pub const SIGCLD: c_int = SIGCHLD;
 pub const SIGDEADLK: c_int = 7;
 pub const SIGEMT: c_int = 7;
 pub const SIGEV_NONE: c_int = 0;
-pub const SIGEV_SIGNAL: c_int = 129;
-pub const SIGEV_THREAD: c_int = 135;
+pub const SIGEV_SIGNAL: c_int = if cfg!(target_os = "nto") { 129 } else { 1 };
+pub const SIGEV_THREAD: c_int = if cfg!(target_os = "nto") { 135 } else { 7 };
 pub const SO_USELOOPBACK: c_int = 0x0040;
 pub const _SS_ALIGNSIZE: usize = size_of::<i64>();
 pub const _SS_MAXSIZE: usize = 128;
@@ -2211,7 +2274,11 @@ pub const PTHREAD_CREATE_DETACHED: c_int = 0x01;
 pub const PTHREAD_MUTEX_ERRORCHECK: c_int = 1;
 pub const PTHREAD_MUTEX_RECURSIVE: c_int = 2;
 pub const PTHREAD_MUTEX_NORMAL: c_int = 3;
-pub const PTHREAD_STACK_MIN: size_t = 256;
+pub const PTHREAD_STACK_MIN: size_t = if cfg!(target_os = "nto") {
+    256
+} else {
+    4 * 1024
+};
 pub const PTHREAD_MUTEX_DEFAULT: c_int = 0;
 pub const PTHREAD_MUTEX_STALLED: c_int = 0x00;
 pub const PTHREAD_MUTEX_ROBUST: c_int = 0x10;
@@ -2239,6 +2306,7 @@ pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = pthread_cond_t {
     __u: CLOCK_REALTIME as u32,
     __owner: 0xfffffffb,
 };
+#[cfg(target_os = "nto")]
 pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
     __active: 0,
     __blockedwriters: 0,
@@ -2250,6 +2318,8 @@ pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
     __owner: -2i32 as c_uint,
     __spare: 0,
 };
+#[cfg(target_os = "qnx")]
+pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t { __u: 0, __owner: 0 };
 
 const fn _CMSG_ALIGN(len: usize) -> usize {
     len + size_of::<usize>() - 1 & !(size_of::<usize>() - 1)
@@ -2293,21 +2363,28 @@ f! {
     pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] &= !(1 << (fd % size));
-        return;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot &= !(1 << (fd % size));
     }
 
     pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
+        let Some(slot) = (*set).fds_bits.get(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        (*slot & (1 << (fd % size))) != 0
     }
 
     pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
-        (*set).fds_bits[fd / size] |= 1 << (fd % size);
-        return;
+        let Some(slot) = (*set).fds_bits.get_mut(fd / size) else {
+            panic!("fd {fd} out of range: valid fds are 0..FD_SETSIZE (0..{FD_SETSIZE})");
+        };
+        *slot |= 1 << (fd % size);
     }
 
     pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
@@ -2343,9 +2420,7 @@ f! {
         let ngrps = if ngrps > 0 { ngrps - 1 } else { 0 };
         size_of::<sockcred>() + size_of::<crate::gid_t>() * ngrps
     }
-}
 
-safe_f! {
     pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         (status & 0xff) == 0x7f
     }
@@ -2400,6 +2475,8 @@ safe_f! {
 // In QNX <=7.0, libregex functions were included in libc itself.
 #[link(name = "socket")]
 #[cfg_attr(not(target_env = "nto70"), link(name = "regex"))]
+// `inotify_*` functions are provided by `fsnotify` on QNX 8.0
+#[cfg_attr(target_os = "qnx", link(name = "fsnotify"))]
 extern "C" {
     pub fn sem_destroy(sem: *mut sem_t) -> c_int;
     pub fn sem_init(sem: *mut sem_t, pshared: c_int, value: c_uint) -> c_int;
@@ -2828,12 +2905,12 @@ extern "C" {
     pub fn pthread_setname_np(thread: crate::pthread_t, name: *const c_char) -> c_int;
 
     pub fn sysctl(
-        _: *const c_int,
-        _: c_uint,
-        _: *mut c_void,
-        _: *mut size_t,
-        _: *const c_void,
-        _: size_t,
+        name: *const c_int,
+        namelen: c_uint,
+        oldp: *mut c_void,
+        oldlenp: *mut size_t,
+        newp: *const c_void,
+        newlen: size_t,
     ) -> c_int;
 
     pub fn getrlimit(resource: c_int, rlim: *mut crate::rlimit) -> c_int;

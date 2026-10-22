@@ -1,5 +1,163 @@
 # Changelog
 
+## [0.2.190](https://github.com/rust-lang/libc/compare/0.2.189...0.2.190) - 2026-10-02
+
+There is now a single config for enabling 64-bit `time_t`: `libc_unstable_time64`. This can be set
+unconditionally; it opts in to 64-bit `time_t` on the following platforms that use 32-bit by
+default:
+
+* 32-bit Linux-GNU
+* 32-bit Linux-uClibc
+* 32-bit Linux-musl. Note that setting this flag also enables some other changes that happend in
+  musl v1.2.
+* 32-bit Windows-GNU
+* ESP-IDF (all targets with this environment are 32-bit)
+
+Most other 32-bit platforms are either already using 64-bit `time_t`, or are considered legacy
+and will not be gaining support from their upstream maintainers.
+
+You can enable this using `RUSTFLAGS`:
+
+```sh
+RUSTFLAGS='--cfg=libc_unstable_time64' cargo ...
+```
+
+Note that there may still be some changes to features gated by this config option, hence "unstable"
+in its name. In the near future we will rename it to just `libc_time64`. Until then, please test it
+out and report any bugs you find!
+
+### Support
+
+- Add initial support for HelenOS ([#4355](https://github.com/rust-lang/libc/pull/4355))
+
+### Added
+
+We are slowly filling out the `Default` implementations, to reduce the need for `mem::zeroed()` in user code:
+
+- Unix: Implement `Default` for a number of structs, especially on Apple platforms ([#5576](https://github.com/rust-lang/libc/pull/5576))
+- Linux, NetBSD: Give `statvfs` a `Default` impl ([#5583](https://github.com/rust-lang/libc/pull/5583))
+- Linux: Add `Default` to a `linux/can.rs` structs ([#5257](https://github.com/rust-lang/libc/pull/5257))
+
+Other additions:
+
+- Expose the `libc_unstable_time64` cfg ([#5411](https://github.com/rust-lang/libc/pull/5411))
+- Android, Glibc: Add `pthread_gettid_np` ([#5359](https://github.com/rust-lang/libc/pull/5359))
+- Android: Add `RTLD_NEXT` ([#5323](https://github.com/rust-lang/libc/pull/5323))
+- Android: Add reuseport BPF socket options ([#5366](https://github.com/rust-lang/libc/pull/5366))
+- Apple: Add TCP header flags, options and SACK limits ([#5358](https://github.com/rust-lang/libc/pull/5358))
+- Apple: Add `NET_RT_DUMP2` ([#5442](https://github.com/rust-lang/libc/pull/5442))
+- Apple: Add `posix_spawn_file_actions_add(f)chdir(_np)` ([#5558](https://github.com/rust-lang/libc/pull/5558))
+- BSD: Add `BPF_WORDALIGN` ([#5320](https://github.com/rust-lang/libc/pull/5320))
+- BSD: Add `lchmod` and `lchflags` where supported ([#5400](https://github.com/rust-lang/libc/pull/5400))
+- BSD: Add `minherit` and related constants ([#4849](https://github.com/rust-lang/libc/pull/4849))
+- Docs: Add more links to public headers and manual pages ([#5407](https://github.com/rust-lang/libc/pull/5407)), ([#5485](https://github.com/rust-lang/libc/pull/5485))
+- Emscripten: Add epoll support ([#5427](https://github.com/rust-lang/libc/pull/5427))
+- FreeBSD: Add `AT_RENAME_*` and `RENAME_*` constants ([#5560](https://github.com/rust-lang/libc/pull/5560))
+- FreeBSD: Add `renameat2` ([#5563](https://github.com/rust-lang/libc/pull/5563))
+- FreeBSD: Add `rt_msghdr` and `rt_metrics` ([#5367](https://github.com/rust-lang/libc/pull/5367))
+- Hurd: Add handling of LFS under `libc_unstable_gnu_time_bits` ([#5242](https://github.com/rust-lang/libc/pull/5242))
+- Linux-GNU: Add `environ` ([#5339](https://github.com/rust-lang/libc/pull/5339))
+- Linux-GNU: Add the new `f_type` field to `statvfs` and `statvfs64` ([#5434](https://github.com/rust-lang/libc/pull/5434))
+- Linux-like: Add additional `STATX_*` constants ([#5412](https://github.com/rust-lang/libc/pull/5412))
+- Linux-musl, Emscripten: Add `SIGEV_THREAD_ID` ([#5375](https://github.com/rust-lang/libc/pull/5375))
+- Linux-musl: Add `*_SUPER_MAGIC` constants ([#5453](https://github.com/rust-lang/libc/pull/5453))
+- Linux-musl: Make `statx` always available ([#5448](https://github.com/rust-lang/libc/pull/5448))
+- Linux-s390x: Add `max_align_t` ([#5389](https://github.com/rust-lang/libc/pull/5389))
+- Linux: Add `BCACHEFS_SUPER_MAGIC` ([#5516](https://github.com/rust-lang/libc/pull/5516))
+- Linux: Add `ETH_P_LLDP` ([#5438](https://github.com/rust-lang/libc/pull/5438))
+- Linux: Add `FUTEX_ROBUST_UNLOCK` and `FUTEX_ROBUST_LIST32` ([#5525](https://github.com/rust-lang/libc/pull/5525))
+- Linux: Add `NLMSG_*` helpers ([#5321](https://github.com/rust-lang/libc/pull/5321))
+- Linux: Update the definition of `siginfo_t` and add more getter functions ([#5345](https://github.com/rust-lang/libc/pull/5345))
+- Musl riscv64: Add `SYS_futex_waitv` ([#5527](https://github.com/rust-lang/libc/pull/5527))
+- Newlib: Add `__errno` ([#5346](https://github.com/rust-lang/libc/pull/5346))
+- OpenBSD: Add `RTLD_NODELETE` and `RTLD_NOLOAD` ([#5377](https://github.com/rust-lang/libc/pull/5377))
+- OpenBSD: Add `getexecpath` ([#5465](https://github.com/rust-lang/libc/pull/5465))
+- OpenBSD: Add bindings from `sensors.h` ([#5510](https://github.com/rust-lang/libc/pull/5510))
+- OpenBSD: Add missing `HW_*` sysctl constants ([#5371](https://github.com/rust-lang/libc/pull/5371))
+- QNX: Add definitions for io-sock ([#5469](https://github.com/rust-lang/libc/pull/5469))
+- Redox: Add `FILENAME_MAX` ([#5530](https://github.com/rust-lang/libc/pull/5530))
+- Redox: Add `clock_settime` and `pause` ([#5363](https://github.com/rust-lang/libc/pull/5363))
+- Redox: Add `getrandom` bindings ([#5333](https://github.com/rust-lang/libc/pull/5333))
+- Unix: Add RFC 3678 multicast `group_req`/`group_source_req` and `MCAST_*` where supported ([#5236](https://github.com/rust-lang/libc/pull/5236))
+- Unix: Add `HOST_NAME_MAX` ([#5531](https://github.com/rust-lang/libc/pull/5531))
+- Unix: Add `_PATH_BSHELL` and `_PATH_DEFPATH` where available ([#5449](https://github.com/rust-lang/libc/pull/5449))
+- WASI: Add `SOCK_CLOEXEC` ([#5336](https://github.com/rust-lang/libc/pull/5336))
+- WASI: Add locale category constants ([#5378](https://github.com/rust-lang/libc/pull/5378))
+- WASI: Add more pthread APIs ([#5310](https://github.com/rust-lang/libc/pull/5310))
+- uClibc: Support 64-bit `time_t` on 32-bit platforms via cfg ([#5261](https://github.com/rust-lang/libc/pull/5261))
+
+### Deprecated
+
+- AIX: deprecate `_kernel_simple_lock` ([#5380](https://github.com/rust-lang/libc/pull/5380))
+- Deprecate integer `*_MIN`/`*_MAX` in favor of e.g. `c_int::MAX` ([#5404](https://github.com/rust-lang/libc/pull/5404))
+- Fuchsia: Deprecate types that do not exist upstream ([#5127](https://github.com/rust-lang/libc/pull/5127))
+- Hurd: Deprecate `fallocate64`, which does not exist on the platform ([#5242](https://github.com/rust-lang/libc/pull/5242))
+- Hurd: Deprecate redundant `glob64` types and routines ([#5242](https://github.com/rust-lang/libc/pull/5242))
+- L4Re: deprecate LFS bindings ([#5173](https://github.com/rust-lang/libc/pull/5173))
+- OpenBSD: Deprecate `syscall`, `mincore`, and `KERN_NSELCOLL`, all of which have been removed upstream ([87992e9895c2](https://github.com/rust-lang/libc/commit/87992e9895c2bfc6daab97d2e8f20ae895fd9f7b))
+- Unix: Deprecate the POSIX-obsoleted `tmpnam`, `tempnam` ([#5478](https://github.com/rust-lang/libc/pull/5478))
+
+### Fixed
+
+- **breaking** AIX: Change the type of `BPF_ALIGNMENT` to `size_t`  to match upstream and harmonize with other platforms. ([#5373](https://github.com/rust-lang/libc/pull/5373))
+- **breaking** Apple: change the type of `BPF_ALIGNMENT` to `size_t` to match upstream and harmonize with other platforms. ([#5348](https://github.com/rust-lang/libc/pull/5348))
+- Exclude non-required repository files from the published crate ([#5312](https://github.com/rust-lang/libc/pull/5312))
+- AIX: Correct the function signature in `fileops_t.fo_select` ([#5380](https://github.com/rust-lang/libc/pull/5380))
+- AIX: Fix the alignment of `file` ([#5380](https://github.com/rust-lang/libc/pull/5380))
+- Android: Add missing padding to `ucontext_t` ([#5189](https://github.com/rust-lang/libc/pull/5189))
+- Android: Fix the value of RISC-V `O_` flags ([#5554](https://github.com/rust-lang/libc/pull/5554))
+- Fuchsia: Correct `mcontext_t` and `ucontext_t` and make them usable on more platforms ([#5127](https://github.com/rust-lang/libc/pull/5127))
+- Fuchsia: Fix available fields in `glob_t` and `statvfs` ([#5127](https://github.com/rust-lang/libc/pull/5127))
+- Fuchsia: Fix the definition of `sigevent` and correct the layout of other `pthread.h` types ([#5127](https://github.com/rust-lang/libc/pull/5127))
+- Haiku: Correct the definition of `sem_t` ([#5351](https://github.com/rust-lang/libc/pull/5351))
+- Linux-GNU: Fix the padding field in `statvfs64` on 32-bit RISC-V ([#5518](https://github.com/rust-lang/libc/pull/5518))
+- Linux: Correct PowerPC64 speed symbols with elfv2 ([#5342](https://github.com/rust-lang/libc/pull/5342))
+- Linux: Fix syscall numbers on 32-bit RISC-V ([#5455](https://github.com/rust-lang/libc/pull/5455))
+- Musl riscv64: Fix the definition of `ipc_perm` ([#5527](https://github.com/rust-lang/libc/pull/5527))
+- Musl riscv64: Fix the name of the `uc_flags` field in `ucontext_t` ([#5527](https://github.com/rust-lang/libc/pull/5527))
+- NetBSD: Fix `WIFSTOPPED` ([#5458](https://github.com/rust-lang/libc/pull/5458))
+- Newlib: Update the `time_t` alias. This is a correction on Arm32 RTEMS ([#5132](https://github.com/rust-lang/libc/pull/5132))
+- NuttX: Correct `O_` open flags ([#5414](https://github.com/rust-lang/libc/pull/5414))
+- RTEMS: Correct `socket.h` definitions ([#5313](https://github.com/rust-lang/libc/pull/5313))
+- RTEMS: Correct the size of clock and storage type aliases  ([#5450](https://github.com/rust-lang/libc/pull/5450))
+- Redox: Correct `signal.h` types ([#5436](https://github.com/rust-lang/libc/pull/5436))
+
+### Changed
+
+- The unstable cfg `libc_unstable_musl_v1_2_3` has been renamed to a more accurate
+  `libc_unstable_musl_v1_2`. The old version will continue to work for now, but will be removed in
+  1-2 releases. ([#5376](https://github.com/rust-lang/libc/pull/5376))
+- AIX: Make function pointers in signatures `unsafe` ([#5380](https://github.com/rust-lang/libc/pull/5380))
+- Cygwin: Change `POSIX_SPAWN_*` flags to `c_short` ([#5572](https://github.com/rust-lang/libc/pull/5572))
+- Hermit: Make iovec fields public ([#5460](https://github.com/rust-lang/libc/pull/5460))
+- Improve the panic message for out-of-range fds in `FD_*` functions ([#5528](https://github.com/rust-lang/libc/pull/5528))
+- Musl riscv64: Fix the name of `__riscv_mc_q_ext_state.__reserved` and make it private ([#5533](https://github.com/rust-lang/libc/pull/5533))
+- Various: Make obsolete `stat` fields non-`pub` ([#5542](https://github.com/rust-lang/libc/pull/5542))
+- uClibc: No longer link to libutil ([#5165](https://github.com/rust-lang/libc/pull/5165))
+
+### Removed
+
+`libc` exposed quite a bit of API on all Apple platforms that is not actually available anywhere other than MacOS. This release removes a number of these cases.
+
+- **breaking** Apple: Disable `mach.h` API on Apple mobile OSs ([e6bfb187513c](https://github.com/rust-lang/libc/commit/e6bfb187513c665c94683b9738a855e982173c2f))
+- **breaking** Apple: Remove a large number of items from iOS, tvOS, watchOS, and visionOS that are only available on MacOS. ([#5158](https://github.com/rust-lang/libc/pull/5158))
+- **breaking** Apple: Remove the unsupported `exec*` and `fork` calls from tvOS and watchOS ([#5158](https://github.com/rust-lang/libc/pull/5158))
+
+Additionally, this release cleans up a lot of API that has been deprecated since at least libc 0.2.100, released 2021-08-20.
+
+- **breaking** Android, Linux: remove unsound `af_alg_iv` trait implementations. The have been deprecated for a long time because they allowed out-of-bounds reads via safe functions. ([444db4456f38](https://github.com/rust-lang/libc/commit/444db4456f3866519b7eacd35a8bb59484bb7bbf))
+- **breaking** Remove most items that have been deprecated since before 0.2.100 ([#5401](https://github.com/rust-lang/libc/pull/5401))
+
+Other removed items:
+
+- Dragonfly: Remove `INHERIT_ZERO` that does not exist upstream ([#5587](https://github.com/rust-lang/libc/pull/5587))
+- Musl riscv64: Remove GNU-gated `REG_*` definitions ([#5527](https://github.com/rust-lang/libc/pull/5527))
+- Musl riscv64: Remove non-esxistant `REG_NARGS` ([#5527](https://github.com/rust-lang/libc/pull/5527))
+
+A huge thank you to our GSoC student Adam Martinez ([@dybucc](https://github.com/dybucc)) who did a
+huge amount of the time64 work, as well as many of the platform fixes!
+
+
 ## [0.2.189](https://github.com/rust-lang/libc/compare/0.2.188...0.2.189) - 2026-07-21
 
 ### Added
@@ -23,7 +181,7 @@
 
 ### Changed
 
-- Restore `Send` and `Sync` for `DIR` ([35b062263401](https://github.com/rust-lang/libc/commit/35b062263401733cd89065c6a553640f2ba51ff1))
+- Restore `Send` and `Sync` for `DIR` ([ba6a6b56ae09](https://github.com/rust-lang/libc/commit/ba6a6b56ae09e0640a2b2e27f3f6abdb4b3d243f))
 
 These were removed in 0.2.187 because `libc` does not actually make `Send` and `Sync`
 guarantees about `DIR` (or other extern types), but this caused some crates to break.

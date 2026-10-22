@@ -74,9 +74,7 @@ f! {
         *flags &= !SCTP_PR_SCTP_MASK;
         *flags |= policy;
     }
-}
 
-safe_f! {
     pub const safe fn SCTP_PR_TTL_ENABLED(policy: c_int) -> bool {
         policy == SCTP_PR_SCTP_TTL
     }

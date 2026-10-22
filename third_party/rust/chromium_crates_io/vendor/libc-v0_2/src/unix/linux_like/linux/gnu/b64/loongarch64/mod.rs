@@ -101,68 +101,14 @@ s! {
         pub l_pid: crate::pid_t,
     }
 
-    pub struct statvfs {
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_blocks: crate::fsblkcnt_t,
-        pub f_bfree: crate::fsblkcnt_t,
-        pub f_bavail: crate::fsblkcnt_t,
-        pub f_files: crate::fsfilcnt_t,
-        pub f_ffree: crate::fsfilcnt_t,
-        pub f_favail: crate::fsfilcnt_t,
-        pub f_fsid: c_ulong,
-        pub f_flag: c_ulong,
-        pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
-    }
-
-    pub struct statvfs64 {
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_blocks: u64,
-        pub f_bfree: u64,
-        pub f_bavail: u64,
-        pub f_files: u64,
-        pub f_ffree: u64,
-        pub f_favail: u64,
-        pub f_fsid: c_ulong,
-        pub f_flag: c_ulong,
-        pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
-    }
-
     pub struct pthread_attr_t {
         __size: [c_ulong; 7],
-    }
-
-    // FIXME(1.0): This should not implement `PartialEq`
-    #[allow(unpredictable_function_pointer_comparisons)]
-    pub struct sigaction {
-        pub sa_sigaction: crate::sighandler_t,
-        pub sa_mask: crate::sigset_t,
-        pub sa_flags: c_int,
-        pub sa_restorer: Option<extern "C" fn()>,
     }
 
     pub struct stack_t {
         pub ss_sp: *mut c_void,
         pub ss_flags: c_int,
         pub ss_size: size_t,
-    }
-
-    pub struct siginfo_t {
-        pub si_signo: c_int,
-        pub si_errno: c_int,
-        pub si_code: c_int,
-        #[doc(hidden)]
-        #[deprecated(
-            since = "0.2.54",
-            note = "Please leave a comment on \
-                  https://github.com/rust-lang/libc/pull/1316 if you're using \
-                  this field"
-        )]
-        pub _pad: [c_int; 29],
-        _align: [u64; 0],
     }
 
     pub struct ipc_perm {
@@ -719,42 +665,8 @@ pub const MCL_CURRENT: c_int = 0x0001;
 pub const MCL_FUTURE: c_int = 0x0002;
 pub const MCL_ONFAULT: c_int = 0x0004;
 
-pub const SOCK_STREAM: c_int = 1;
-pub const SOCK_DGRAM: c_int = 2;
-
 pub const SFD_NONBLOCK: c_int = 0x800;
 pub const SFD_CLOEXEC: c_int = 0x080000;
-pub const SA_NODEFER: c_int = 0x40000000;
-pub const SA_RESETHAND: c_int = u32_cast_int(0x80000000);
-pub const SA_RESTART: c_int = 0x10000000;
-pub const SA_NOCLDSTOP: c_int = 0x00000001;
-pub const SA_ONSTACK: c_int = 0x08000000;
-pub const SA_SIGINFO: c_int = 0x00000004;
-pub const SA_NOCLDWAIT: c_int = 0x00000002;
-pub const SIG_BLOCK: c_int = 0;
-pub const SIG_UNBLOCK: c_int = 1;
-pub const SIG_SETMASK: c_int = 2;
-pub const SIGBUS: c_int = 7;
-pub const SIGUSR1: c_int = 10;
-pub const SIGUSR2: c_int = 12;
-pub const SIGSTKFLT: c_int = 16;
-pub const SIGCHLD: c_int = 17;
-pub const SIGCONT: c_int = 18;
-pub const SIGSTOP: c_int = 19;
-pub const SIGTSTP: c_int = 20;
-pub const SIGTTIN: c_int = 21;
-pub const SIGTTOU: c_int = 22;
-pub const SIGURG: c_int = 23;
-pub const SIGXCPU: c_int = 24;
-pub const SIGXFSZ: c_int = 25;
-pub const SIGVTALRM: c_int = 26;
-pub const SIGPROF: c_int = 27;
-pub const SIGWINCH: c_int = 28;
-pub const SIGIO: c_int = 29;
-pub const SIGPOLL: c_int = 29;
-pub const SIGPWR: c_int = 30;
-pub const SIGSYS: c_int = 31;
-pub const SIGUNUSED: c_int = 31;
 
 pub const POLLWRNORM: c_short = 0x100;
 pub const POLLWRBAND: c_short = 0x200;

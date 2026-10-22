@@ -1,6 +1,7 @@
 //! Source directory: `arch/`
 //!
-//! <https://github.com/kraj/musl/tree/master/arch>
+//! * Headers: <https://git.musl-libc.org/cgit/musl/tree/arch> (official)
+//! * Headers: <https://github.com/kraj/musl/tree/master/arch> (mirror)
 
 pub(crate) mod generic;
 

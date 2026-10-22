@@ -5,24 +5,38 @@ use crate::prelude::*;
 
 // Character properties
 pub const CHAR_BIT: c_uint = 8;
-pub const CHAR_MAX: c_char = 255; // unsigned char on Hexagon
-pub const CHAR_MIN: c_char = 0;
-pub const SCHAR_MAX: i8 = 127;
-pub const SCHAR_MIN: i8 = -128;
-pub const UCHAR_MAX: c_uchar = 255;
+#[deprecated(since = "0.2.190", note = "Use `c_char::MAX` instead.")]
+pub const CHAR_MAX: c_char = c_char::MAX; // unsigned char on Hexagon
+#[deprecated(since = "0.2.190", note = "Use `c_char::MIN` instead.")]
+pub const CHAR_MIN: c_char = c_char::MIN;
+#[deprecated(since = "0.2.190", note = "Use `i8::MAX` instead.")]
+pub const SCHAR_MAX: i8 = i8::MAX;
+#[deprecated(since = "0.2.190", note = "Use `i8::MIN` instead.")]
+pub const SCHAR_MIN: i8 = i8::MIN;
+#[deprecated(since = "0.2.190", note = "Use `c_uchar::MAX` instead.")]
+pub const UCHAR_MAX: c_uchar = c_uchar::MAX;
 
 // Integer properties
-pub const INT_MAX: c_int = 2147483647;
-pub const INT_MIN: c_int = -2147483647 - 1;
-pub const UINT_MAX: c_uint = 4294967295;
+#[deprecated(since = "0.2.190", note = "Use `c_int::MAX` instead.")]
+pub const INT_MAX: c_int = c_int::MAX;
+#[deprecated(since = "0.2.190", note = "Use `c_int::MIN` instead.")]
+pub const INT_MIN: c_int = c_int::MIN;
+#[deprecated(since = "0.2.190", note = "Use `c_uint::MAX` instead.")]
+pub const UINT_MAX: c_uint = c_uint::MAX;
 
-pub const LONG_MAX: c_long = 2147483647;
-pub const LONG_MIN: c_long = -2147483647 - 1;
-pub const ULONG_MAX: c_ulong = 4294967295;
+#[deprecated(since = "0.2.190", note = "Use `c_long::MAX` instead.")]
+pub const LONG_MAX: c_long = c_long::MAX;
+#[deprecated(since = "0.2.190", note = "Use `c_long::MIN` instead.")]
+pub const LONG_MIN: c_long = c_long::MIN;
+#[deprecated(since = "0.2.190", note = "Use `c_ulong::MAX` instead.")]
+pub const ULONG_MAX: c_ulong = c_ulong::MAX;
 
-pub const SHRT_MAX: c_short = 32767;
-pub const SHRT_MIN: c_short = -32768;
-pub const USHRT_MAX: c_ushort = 65535;
+#[deprecated(since = "0.2.190", note = "Use `c_short::MAX` instead.")]
+pub const SHRT_MAX: c_short = c_short::MAX;
+#[deprecated(since = "0.2.190", note = "Use `c_short::MIN` instead.")]
+pub const SHRT_MIN: c_short = c_short::MIN;
+#[deprecated(since = "0.2.190", note = "Use `c_ushort::MAX` instead.")]
+pub const USHRT_MAX: c_ushort = c_ushort::MAX;
 
 // POSIX Limits
 pub const ARG_MAX: c_int = 4096;

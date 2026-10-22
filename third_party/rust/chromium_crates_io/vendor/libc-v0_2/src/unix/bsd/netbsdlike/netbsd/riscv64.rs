@@ -17,7 +17,7 @@ s! {
     pub struct mcontext_t {
         pub __gregs: __gregset_t,
         pub __fregs: __fregset_t,
-        __spare: [crate::__greg_t; 7],
+        __spare: Padding<[crate::__greg_t; 7]>,
     }
 }
 

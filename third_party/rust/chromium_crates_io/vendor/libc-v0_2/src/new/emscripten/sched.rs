@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 cfg_if! {
-    if #[cfg(musl_v1_2_3)] {
+    if #[cfg(musl_v1_2)] {
         s! {
             struct __c_anon_sched_param__reserved2 {
                 __reserved1: crate::time_t,

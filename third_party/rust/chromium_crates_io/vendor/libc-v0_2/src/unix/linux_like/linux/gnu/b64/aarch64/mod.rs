@@ -12,17 +12,6 @@ pub type blksize_t = i32;
 pub type suseconds_t = i64;
 
 s! {
-    // FIXME(1.0): This should not implement `PartialEq`
-    #[allow(unpredictable_function_pointer_comparisons)]
-    pub struct sigaction {
-        pub sa_sigaction: crate::sighandler_t,
-        pub sa_mask: crate::sigset_t,
-        #[cfg(target_arch = "sparc64")]
-        __reserved0: Padding<c_int>,
-        pub sa_flags: c_int,
-        pub sa_restorer: Option<extern "C" fn()>,
-    }
-
     pub struct statfs {
         pub f_type: crate::__fsword_t,
         pub f_bsize: crate::__fsword_t,
@@ -36,7 +25,7 @@ s! {
 
         pub f_namelen: crate::__fsword_t,
         pub f_frsize: crate::__fsword_t,
-        f_spare: [crate::__fsword_t; 5],
+        f_spare: Padding<[crate::__fsword_t; 5]>,
     }
 
     pub struct flock {
@@ -114,36 +103,6 @@ s! {
         pub f_spare: [crate::__fsword_t; 4],
     }
 
-    pub struct statvfs {
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_blocks: crate::fsblkcnt_t,
-        pub f_bfree: crate::fsblkcnt_t,
-        pub f_bavail: crate::fsblkcnt_t,
-        pub f_files: crate::fsfilcnt_t,
-        pub f_ffree: crate::fsfilcnt_t,
-        pub f_favail: crate::fsfilcnt_t,
-        pub f_fsid: c_ulong,
-        pub f_flag: c_ulong,
-        pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
-    }
-
-    pub struct statvfs64 {
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_blocks: u64,
-        pub f_bfree: u64,
-        pub f_bavail: u64,
-        pub f_files: u64,
-        pub f_ffree: u64,
-        pub f_favail: u64,
-        pub f_fsid: c_ulong,
-        pub f_flag: c_ulong,
-        pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
-    }
-
     pub struct pthread_attr_t {
         __size: [usize; 8],
     }
@@ -179,21 +138,6 @@ s! {
         pub shm_nattch: crate::shmatt_t,
         __unused4: Padding<c_ulong>,
         __unused5: Padding<c_ulong>,
-    }
-
-    pub struct siginfo_t {
-        pub si_signo: c_int,
-        pub si_errno: c_int,
-        pub si_code: c_int,
-        #[doc(hidden)]
-        #[deprecated(
-            since = "0.2.54",
-            note = "Please leave a comment on \
-                  https://github.com/rust-lang/libc/pull/1316 if you're using \
-                  this field"
-        )]
-        pub _pad: [c_int; 29],
-        _align: [usize; 0],
     }
 
     pub struct stack_t {
@@ -358,39 +302,6 @@ pub const ERFKILL: c_int = 132;
 pub const POSIX_FADV_DONTNEED: c_int = 4;
 pub const POSIX_FADV_NOREUSE: c_int = 5;
 
-pub const SOCK_STREAM: c_int = 1;
-pub const SOCK_DGRAM: c_int = 2;
-
-pub const SA_ONSTACK: c_int = 0x08000000;
-pub const SA_SIGINFO: c_int = 0x00000004;
-pub const SA_NOCLDWAIT: c_int = 0x00000002;
-
-pub const SIGTTIN: c_int = 21;
-pub const SIGTTOU: c_int = 22;
-pub const SIGXCPU: c_int = 24;
-pub const SIGXFSZ: c_int = 25;
-pub const SIGVTALRM: c_int = 26;
-pub const SIGPROF: c_int = 27;
-pub const SIGWINCH: c_int = 28;
-pub const SIGCHLD: c_int = 17;
-pub const SIGBUS: c_int = 7;
-pub const SIGUSR1: c_int = 10;
-pub const SIGUSR2: c_int = 12;
-pub const SIGCONT: c_int = 18;
-pub const SIGSTOP: c_int = 19;
-pub const SIGTSTP: c_int = 20;
-pub const SIGURG: c_int = 23;
-pub const SIGIO: c_int = 29;
-pub const SIGSYS: c_int = 31;
-pub const SIGSTKFLT: c_int = 16;
-#[deprecated(since = "0.2.55", note = "Use SIGSYS instead")]
-pub const SIGUNUSED: c_int = 31;
-pub const SIGPOLL: c_int = 29;
-pub const SIGPWR: c_int = 30;
-pub const SIG_SETMASK: c_int = 2;
-pub const SIG_BLOCK: c_int = 0x000000;
-pub const SIG_UNBLOCK: c_int = 0x01;
-
 pub const POLLWRNORM: c_short = 0x100;
 pub const POLLWRBAND: c_short = 0x200;
 
@@ -438,11 +349,6 @@ pub const ESRMNT: c_int = 69;
 pub const ECOMM: c_int = 70;
 pub const EPROTO: c_int = 71;
 pub const EDOTDOT: c_int = 73;
-
-pub const SA_NODEFER: c_int = 0x40000000;
-pub const SA_RESETHAND: c_int = u32_cast_int(0x80000000);
-pub const SA_RESTART: c_int = 0x10000000;
-pub const SA_NOCLDSTOP: c_int = 0x00000001;
 
 pub const EPOLL_CLOEXEC: c_int = 0x80000;
 

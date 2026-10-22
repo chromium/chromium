@@ -258,14 +258,14 @@ s! {
         pub aio_offset: off_t,
         pub aio_buf: *mut c_void,
         pub aio_nbytes: size_t,
-        __unused1: [c_int; 2],
-        __unused2: *mut c_void,
+        __unused1: Padding<[c_int; 2]>,
+        __unused2: Padding<*mut c_void>,
         pub aio_lio_opcode: c_int,
         pub aio_reqprio: c_int,
         // unused 3 through 5 are the __aiocb_private structure
-        __unused3: c_long,
-        __unused4: c_long,
-        __unused5: *mut c_void,
+        __unused3: Padding<c_long>,
+        __unused4: Padding<c_long>,
+        __unused5: Padding<*mut c_void>,
         pub aio_sigevent: sigevent,
     }
 
@@ -280,10 +280,22 @@ s! {
         pub ip6: *mut crate::in6_addr,
     }
 
+    // netinet/in.h: RFC 3678 multicast group membership requests
     pub struct ip_mreq_source {
         pub imr_multiaddr: crate::in_addr,
         pub imr_sourceaddr: crate::in_addr,
         pub imr_interface: crate::in_addr,
+    }
+
+    pub struct group_req {
+        pub gr_interface: u32,
+        pub gr_group: crate::sockaddr_storage,
+    }
+
+    pub struct group_source_req {
+        pub gsr_interface: u32,
+        pub gsr_group: crate::sockaddr_storage,
+        pub gsr_source: crate::sockaddr_storage,
     }
 
     pub struct statvfs {
@@ -426,14 +438,14 @@ s! {
         m_rb_link: crate::uintptr_t,
         #[cfg(target_pointer_width = "32")]
         m_pad: Padding<u32>,
-        m_spare: [u32; 2],
+        m_spare: Padding<[u32; 2]>,
     }
 
     pub struct ucond {
         c_has_waiters: u32,
         c_flags: u32,
         c_clockid: u32,
-        c_spare: [u32; 1],
+        c_spare: Padding<[u32; 1]>,
     }
 
     pub struct uuid {
@@ -493,9 +505,9 @@ s! {
         #[cfg(not(freebsd11))]
         pub kve_vn_rdev: u64,
         #[cfg(not(freebsd11))]
-        _kve_is_spare: [c_int; 8],
+        _kve_is_spare: Padding<[c_int; 8]>,
         #[cfg(freebsd11)]
-        _kve_is_spare: [c_int; 12],
+        _kve_is_spare: Padding<[c_int; 12]>,
         pub kve_path: [[c_char; 32]; 32],
     }
 
@@ -837,7 +849,9 @@ s! {
         pub offset: u8,
         /// read length
         pub len: u8,
+        // "page" on FreeBSD 16
         pub spare0: u8,
+        // "bank" plus "spare" on FreeBSD 16
         pub spare1: u32,
         /// read buffer
         pub data: [u8; 8],
@@ -1653,9 +1667,9 @@ s! {
         _priv: [u8; 304], // FIXME(freebsd): this is really a giant union
         pub kf_status: u16,
         _kf_pad1: Padding<u16>,
-        _kf_ispare0: c_int,
+        _kf_ispare0: Padding<c_int>,
         pub kf_cap_rights: crate::cap_rights_t,
-        _kf_cap_spare: u64,
+        _kf_cap_spare: Padding<u64>,
         pub kf_path: [c_char; crate::PATH_MAX as usize],
     }
 }
@@ -1721,17 +1735,17 @@ s_no_extra_traits! {
         pub uc_link: *mut crate::ucontext_t,
         pub uc_stack: crate::stack_t,
         pub uc_flags: c_int,
-        __spare__: [c_int; 4],
+        __spare__: Padding<[c_int; 4]>,
     }
 
     #[repr(align(8))]
     pub struct xinpgen {
         pub xig_len: ksize_t,
         pub xig_count: u32,
-        _xig_spare32: u32,
+        _xig_spare32: Padding<u32>,
         pub xig_gen: inp_gen_t,
         pub xig_sogen: so_gen_t,
-        _xig_spare64: [u64; 4],
+        _xig_spare64: Padding<[u64; 4]>,
     }
 
     pub struct in_addr_4in6 {
@@ -1763,8 +1777,8 @@ s_no_extra_traits! {
         // Note: this field is called `gen` in upstream FreeBSD, but `gen` is
         // reserved keyword in Rust since the 2024 Edition, hence `gennum`.
         pub gennum: u64,
-        _rsrv1: [u64; 8],
-        _rsrv2: [u32; 8],
+        _rsrv1: Padding<[u64; 8]>,
+        _rsrv2: Padding<[u32; 8]>,
         pub iv: [u8; 32],
         pub cipher_algorithm: i32,
         pub auth_algorithm: i32,
@@ -2266,7 +2280,6 @@ pub const NOTE_EXIT: u32 = 0x80000000;
 pub const NOTE_FORK: u32 = 0x40000000;
 pub const NOTE_EXEC: u32 = 0x20000000;
 pub const NOTE_PDATAMASK: u32 = 0x000fffff;
-pub const NOTE_PCTRLMASK: u32 = 0xf0000000;
 pub const NOTE_TRACK: u32 = 0x00000001;
 pub const NOTE_TRACKERR: u32 = 0x00000002;
 pub const NOTE_CHILD: u32 = 0x00000004;
@@ -2278,12 +2291,8 @@ pub const NOTE_ABSTIME: u32 = 0x00000010;
 
 pub const MADV_PROTECT: c_int = 10;
 
-#[doc(hidden)]
-#[deprecated(
-    since = "0.2.72",
-    note = "CTL_UNSPEC is deprecated. Use CTL_SYSCTL instead"
-)]
-pub const CTL_UNSPEC: c_int = 0;
+pub const INHERIT_ZERO: c_int = 3;
+
 pub const CTL_SYSCTL: c_int = 0;
 pub const CTL_KERN: c_int = 1;
 pub const CTL_VM: c_int = 2;
@@ -2751,13 +2760,6 @@ pub const IFF_POINTOPOINT: c_int = 0x10;
 pub const IFF_KNOWSEPOCH: c_int = 0x20;
 /// (d) resources allocated
 pub const IFF_RUNNING: c_int = 0x40;
-#[doc(hidden)]
-#[deprecated(
-    since = "0.2.54",
-    note = "IFF_DRV_RUNNING is deprecated. Use the portable IFF_RUNNING instead"
-)]
-/// (d) resources allocate
-pub const IFF_DRV_RUNNING: c_int = 0x40;
 /// (n) no address resolution protocol
 pub const IFF_NOARP: c_int = 0x80;
 /// (n) receive all packets
@@ -2766,10 +2768,6 @@ pub const IFF_PROMISC: c_int = 0x100;
 pub const IFF_ALLMULTI: c_int = 0x200;
 /// (d) tx hardware queue is full
 pub const IFF_OACTIVE: c_int = 0x400;
-#[doc(hidden)]
-#[deprecated(since = "0.2.54", note = "Use the portable `IFF_OACTIVE` instead")]
-/// (d) tx hardware queue is full
-pub const IFF_DRV_OACTIVE: c_int = 0x400;
 /// (i) can't hear own transmissions
 pub const IFF_SIMPLEX: c_int = 0x800;
 /// per link layer defined bit
@@ -2908,51 +2906,6 @@ pub const IFDR_MSG_SIZE: c_int = 64;
 pub const IFDR_REASON_MSG: c_int = 1;
 pub const IFDR_REASON_VENDOR: c_int = 2;
 
-// sys/net/if_mib.h
-
-/// non-interface-specific
-pub const IFMIB_SYSTEM: c_int = 1;
-/// per-interface data table
-pub const IFMIB_IFDATA: c_int = 2;
-
-/// generic stats for all kinds of ifaces
-pub const IFDATA_GENERAL: c_int = 1;
-/// specific to the type of interface
-pub const IFDATA_LINKSPECIFIC: c_int = 2;
-/// driver name and unit
-pub const IFDATA_DRIVERNAME: c_int = 3;
-
-/// number of interfaces configured
-pub const IFMIB_IFCOUNT: c_int = 1;
-
-/// functions not specific to a type of iface
-pub const NETLINK_GENERIC: c_int = 0;
-
-pub const DOT3COMPLIANCE_STATS: c_int = 1;
-pub const DOT3COMPLIANCE_COLLS: c_int = 2;
-
-pub const dot3ChipSetAMD7990: c_int = 1;
-pub const dot3ChipSetAMD79900: c_int = 2;
-pub const dot3ChipSetAMD79C940: c_int = 3;
-
-pub const dot3ChipSetIntel82586: c_int = 1;
-pub const dot3ChipSetIntel82596: c_int = 2;
-pub const dot3ChipSetIntel82557: c_int = 3;
-
-pub const dot3ChipSetNational8390: c_int = 1;
-pub const dot3ChipSetNationalSonic: c_int = 2;
-
-pub const dot3ChipSetFujitsu86950: c_int = 1;
-
-pub const dot3ChipSetDigitalDC21040: c_int = 1;
-pub const dot3ChipSetDigitalDC21140: c_int = 2;
-pub const dot3ChipSetDigitalDC21041: c_int = 3;
-pub const dot3ChipSetDigitalDC21140A: c_int = 4;
-pub const dot3ChipSetDigitalDC21142: c_int = 5;
-
-pub const dot3ChipSetWesternDigital83C690: c_int = 1;
-pub const dot3ChipSetWesternDigital83C790: c_int = 2;
-
 // sys/netinet/in.h
 // Protocols (RFC 1700)
 // NOTE: These are in addition to the constants defined in src/unix/mod.rs
@@ -3019,12 +2972,6 @@ pub const IPPROTO_BLT: c_int = 30;
 pub const IPPROTO_NSP: c_int = 31;
 /// Merit Internodal
 pub const IPPROTO_INP: c_int = 32;
-#[doc(hidden)]
-#[deprecated(
-    since = "0.2.72",
-    note = "IPPROTO_SEP is deprecated. Use IPPROTO_DCCP instead"
-)]
-pub const IPPROTO_SEP: c_int = 33;
 /// Datagram Congestion Control Protocol
 pub const IPPROTO_DCCP: c_int = 33;
 /// Third Party Connect
@@ -3197,6 +3144,14 @@ pub const IPPROTO_DONE: c_int = 257;
 pub const IPPROTO_DIVERT: c_int = 258;
 /// SeND pseudo-protocol
 pub const IPPROTO_SEND: c_int = 259;
+
+// RFC 3678 protocol-independent multicast
+pub const MCAST_JOIN_GROUP: c_int = 80;
+pub const MCAST_LEAVE_GROUP: c_int = 81;
+pub const MCAST_JOIN_SOURCE_GROUP: c_int = 82;
+pub const MCAST_LEAVE_SOURCE_GROUP: c_int = 83;
+pub const MCAST_BLOCK_SOURCE: c_int = 84;
+pub const MCAST_UNBLOCK_SOURCE: c_int = 85;
 
 // sys/netinet/TCP.h
 pub const TCP_MD5SIG: c_int = 16;
@@ -3394,6 +3349,10 @@ pub const AT_SYMLINK_FOLLOW: c_int = 0x400;
 pub const AT_REMOVEDIR: c_int = 0x800;
 pub const AT_RESOLVE_BENEATH: c_int = 0x2000;
 pub const AT_EMPTY_PATH: c_int = 0x4000;
+pub const AT_RENAME_NOREPLACE: c_int = 0x0001;
+pub const AT_RENAME_EXCHANGE: c_int = 0x0002;
+pub const RENAME_NOREPLACE: c_uint = AT_RENAME_NOREPLACE as c_uint;
+pub const RENAME_EXCHANGE: c_uint = AT_RENAME_EXCHANGE as c_uint;
 
 pub const AT_NULL: c_int = 0;
 pub const AT_IGNORE: c_int = 1;
@@ -3436,7 +3395,6 @@ pub const _UUID_NODE_LEN: usize = 6;
 // Flags which can be passed to pdfork(2)
 pub const PD_DAEMON: c_int = 0x00000001;
 pub const PD_CLOEXEC: c_int = 0x00000002;
-pub const PD_ALLOWED_AT_FORK: c_int = PD_DAEMON | PD_CLOEXEC;
 
 // Values for struct rtprio (type_ field)
 pub const RTP_PRIO_REALTIME: c_ushort = 2;
@@ -4461,6 +4419,11 @@ const fn _ALIGN(p: usize) -> usize {
     (p + _ALIGNBYTES) & !_ALIGNBYTES
 }
 
+// include/paths.h
+pub const _PATH_DEFPATH: *const c_char =
+    cstr(b"/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin\0");
+pub const _PATH_BSHELL: *const c_char = cstr(b"/bin/sh\0");
+
 f! {
     pub unsafe fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
         (cmsg as *mut c_uchar).add(_ALIGN(size_of::<cmsghdr>()))
@@ -4517,19 +4480,19 @@ f! {
     }
 
     pub unsafe fn CPU_SET(cpu: usize, cpuset: &mut cpuset_t) -> () {
-        let bitset_bits = 8 * size_of::<c_long>();
+        let bitset_bits = 8 * size_of_val(&cpuset.__bits[0]);
         let (idx, offset) = (cpu / bitset_bits, cpu % bitset_bits);
         cpuset.__bits[idx] |= 1 << offset;
     }
 
     pub unsafe fn CPU_CLR(cpu: usize, cpuset: &mut cpuset_t) -> () {
-        let bitset_bits = 8 * size_of::<c_long>();
+        let bitset_bits = 8 * size_of_val(&cpuset.__bits[0]);
         let (idx, offset) = (cpu / bitset_bits, cpu % bitset_bits);
         cpuset.__bits[idx] &= !(1 << offset);
     }
 
     pub unsafe fn CPU_ISSET(cpu: usize, cpuset: &cpuset_t) -> bool {
-        let bitset_bits = 8 * size_of::<c_long>();
+        let bitset_bits = 8 * size_of_val(&cpuset.__bits[0]);
         let (idx, offset) = (cpu / bitset_bits, cpu % bitset_bits);
         0 != cpuset.__bits[idx] & (1 << offset)
     }
@@ -4537,9 +4500,8 @@ f! {
     pub unsafe fn CPU_COUNT(cpuset: &cpuset_t) -> c_int {
         let mut s: u32 = 0;
         let cpuset_size = size_of::<cpuset_t>();
-        let bitset_size = size_of::<c_long>();
-
-        for i in cpuset.__bits[..(cpuset_size / bitset_size)].iter() {
+        let bitset_size = size_of_val(&cpuset.__bits[0]);
+        for i in &cpuset.__bits[..(cpuset_size / bitset_size)] {
             s += i.count_ones();
         }
         s as c_int
@@ -4557,9 +4519,7 @@ f! {
     pub unsafe fn PROT_MAX_EXTRACT(x: c_int) -> c_int {
         (x >> 16) & (crate::PROT_READ | crate::PROT_WRITE | crate::PROT_EXEC)
     }
-}
 
-safe_f! {
     pub const safe fn WIFSIGNALED(status: c_int) -> bool {
         (status & 0o177) != 0o177 && (status & 0o177) != 0 && status != 0x13
     }
@@ -5083,11 +5043,20 @@ extern "C" {
         idx1: c_ulong,
         idx2: c_ulong,
     ) -> c_int;
+    pub fn renameat2(
+        olddirfd: c_int,
+        oldpath: *const c_char,
+        newdirfd: c_int,
+        newpath: *const c_char,
+        flags: c_uint,
+    ) -> c_int;
     pub fn dlvsym(
         handle: *mut c_void,
         symbol: *const c_char,
         version: *const c_char,
     ) -> *mut c_void;
+
+    pub fn lchmod(path: *const c_char, mode: crate::mode_t) -> c_int;
 }
 
 #[link(name = "memstat")]

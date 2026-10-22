@@ -51,8 +51,8 @@ s! {
     }
 
     pub struct iovec {
-        iov_base: *mut c_void,
-        iov_len: usize,
+        pub iov_base: *mut c_void,
+        pub iov_len: usize,
     }
 
     pub struct pollfd {

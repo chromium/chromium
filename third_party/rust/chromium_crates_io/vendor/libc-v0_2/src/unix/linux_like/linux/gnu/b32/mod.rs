@@ -125,22 +125,6 @@ cfg_if! {
 }
 
 s! {
-    pub struct statvfs {
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_blocks: crate::fsblkcnt_t,
-        pub f_bfree: crate::fsblkcnt_t,
-        pub f_bavail: crate::fsblkcnt_t,
-        pub f_files: crate::fsfilcnt_t,
-        pub f_ffree: crate::fsfilcnt_t,
-        pub f_favail: crate::fsfilcnt_t,
-        pub f_fsid: c_ulong,
-        __f_unused: Padding<c_int>,
-        pub f_flag: c_ulong,
-        pub f_namemax: c_ulong,
-        __f_spare: [c_int; 6],
-    }
-
     pub struct pthread_attr_t {
         __size: [u32; 9],
     }
@@ -159,11 +143,7 @@ s! {
         pub totalswap: c_ulong,
         pub freeswap: c_ulong,
         pub procs: c_ushort,
-        #[deprecated(
-            since = "0.2.58",
-            note = "This padding field might become private in the future"
-        )]
-        pub pad: c_ushort,
+        pad: Padding<c_ushort>,
         pub totalhigh: c_ulong,
         pub freehigh: c_ulong,
         pub mem_unit: c_uint,
@@ -303,8 +283,6 @@ cfg_if! {
         pub const O_PATH: c_int = 0x1000000;
         pub const O_TMPFILE: c_int = 0x2000000 | O_DIRECTORY;
 
-        pub const SA_ONSTACK: c_int = 1;
-
         pub const PTRACE_DETACH: c_uint = 11;
 
         pub const F_RDLCK: c_int = 1;
@@ -333,11 +311,6 @@ cfg_if! {
         pub const EPROTO: c_int = 86;
         pub const EDOTDOT: c_int = 88;
 
-        pub const SA_NODEFER: c_int = 0x20;
-        pub const SA_RESETHAND: c_int = 0x4;
-        pub const SA_RESTART: c_int = 0x2;
-        pub const SA_NOCLDSTOP: c_int = 0x00000008;
-
         pub const EPOLL_CLOEXEC: c_int = 0x400000;
 
         pub const EFD_CLOEXEC: c_int = 0x400000;
@@ -345,8 +318,6 @@ cfg_if! {
         pub const O_NOATIME: c_int = 0o1000000;
         pub const O_PATH: c_int = 0o10000000;
         pub const O_TMPFILE: c_int = 0o20000000 | O_DIRECTORY;
-
-        pub const SA_ONSTACK: c_int = 0x08000000;
 
         pub const PTRACE_DETACH: c_uint = 17;
 
@@ -374,11 +345,6 @@ cfg_if! {
         pub const ECOMM: c_int = 70;
         pub const EPROTO: c_int = 71;
         pub const EDOTDOT: c_int = 73;
-
-        pub const SA_NODEFER: c_int = 0x40000000;
-        pub const SA_RESETHAND: c_int = u32_cast_int(0x80000000);
-        pub const SA_RESTART: c_int = 0x10000000;
-        pub const SA_NOCLDSTOP: c_int = 0x00000001;
 
         pub const EPOLL_CLOEXEC: c_int = 0x80000;
 

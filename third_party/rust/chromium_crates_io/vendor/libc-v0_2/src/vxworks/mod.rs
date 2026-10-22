@@ -680,8 +680,10 @@ pub const EAI_SERVICE: c_int = 9;
 pub const EAI_SOCKTYPE: c_int = 10;
 pub const EAI_SYSTEM: c_int = 11;
 
-pub const INT_MAX: c_int = 0x7fffffff;
-pub const INT_MIN: c_int = -INT_MAX - 1;
+#[deprecated(since = "0.2.190", note = "Use `c_int::MAX` instead.")]
+pub const INT_MAX: c_int = c_int::MAX;
+#[deprecated(since = "0.2.190", note = "Use `c_int::MIN` instead.")]
+pub const INT_MIN: c_int = c_int::MIN;
 
 // FIXME(vxworks): This is not defined in vxWorks, but we have to define it here
 // to make the building pass for getrandom and std
@@ -1496,6 +1498,30 @@ f! {
     pub const unsafe fn CMSG_LEN(length: c_uint) -> c_uint {
         CMSG_ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
+
+    // Dummy functions, these don't really exist in VxWorks.
+    // wait.h macros
+    pub const safe fn WIFEXITED(status: c_int) -> bool {
+        (status & 0xFF00) == 0
+    }
+    pub const safe fn WIFSIGNALED(status: c_int) -> bool {
+        (status & 0xFF00) != 0
+    }
+    pub const safe fn WIFSTOPPED(status: c_int) -> bool {
+        (status & 0xFF0000) != 0
+    }
+    pub const safe fn WEXITSTATUS(status: c_int) -> c_int {
+        status & 0xFF
+    }
+    pub const safe fn WIFCONTINUED(status: c_int) -> c_int {
+        (status >> 24) & 0xFF
+    }
+    pub const safe fn WTERMSIG(status: c_int) -> c_int {
+        (status >> 8) & 0xFF
+    }
+    pub const safe fn WSTOPSIG(status: c_int) -> c_int {
+        (status >> 16) & 0xFF
+    }
 }
 
 extern "C" {
@@ -1754,6 +1780,10 @@ extern "C" {
     pub fn ftello(stream: *mut crate::FILE) -> off_t;
     pub fn mkstemp(template: *mut c_char) -> c_int;
 
+    #[deprecated(
+        since = "0.2.190",
+        note = "function is obsolete; prefer tmpfile, mkstemp, or similar"
+    )]
     pub fn tmpnam(ptr: *mut c_char) -> *mut c_char;
 
     pub fn openlog(ident: *const c_char, logopt: c_int, facility: c_int);
@@ -2408,33 +2438,6 @@ extern "C" {
     // vxCpuLib.h
     pub fn vxCpuEnabledGet() -> crate::cpuset_t; // Get set of running CPU's in the system
     pub fn vxCpuConfiguredGet() -> crate::cpuset_t; // Get set of Configured CPU's in the system
-}
-
-//Dummy functions, these don't really exist in VxWorks.
-
-// wait.h macros
-safe_f! {
-    pub const safe fn WIFEXITED(status: c_int) -> bool {
-        (status & 0xFF00) == 0
-    }
-    pub const safe fn WIFSIGNALED(status: c_int) -> bool {
-        (status & 0xFF00) != 0
-    }
-    pub const safe fn WIFSTOPPED(status: c_int) -> bool {
-        (status & 0xFF0000) != 0
-    }
-    pub const safe fn WEXITSTATUS(status: c_int) -> c_int {
-        status & 0xFF
-    }
-    pub const safe fn WIFCONTINUED(status: c_int) -> c_int {
-        (status >> 24) & 0xFF
-    }
-    pub const safe fn WTERMSIG(status: c_int) -> c_int {
-        (status >> 8) & 0xFF
-    }
-    pub const safe fn WSTOPSIG(status: c_int) -> c_int {
-        (status >> 16) & 0xFF
-    }
 }
 
 pub unsafe fn posix_memalign(memptr: *mut *mut c_void, align: size_t, size: size_t) -> c_int {

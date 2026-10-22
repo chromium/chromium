@@ -67,6 +67,47 @@ pub const NLM_F_NONREC: c_int = 0x100;
 pub const NLM_F_CAPPED: c_int = 0x100;
 pub const NLM_F_ACK_TLVS: c_int = 0x200;
 
+const NLMSG_ALIGNTO: c_uint = 4;
+
+const NLMSG_HDRLEN: c_int = NLMSG_ALIGN(size_of::<nlmsghdr>());
+
+f! {
+    pub const safe fn NLMSG_ALIGN(size: size_t) -> c_int {
+        ((size + NLMSG_ALIGNTO as size_t - 1) & !(NLMSG_ALIGNTO as size_t - 1)) as c_int
+    }
+
+    pub const safe fn NLMSG_LENGTH(size: size_t) -> c_int {
+        size as c_int + NLMSG_HDRLEN
+    }
+
+    pub const safe fn NLMSG_SPACE(size: size_t) -> c_int {
+        NLMSG_ALIGN(NLMSG_LENGTH(size) as size_t)
+    }
+
+    pub unsafe fn NLMSG_DATA(nlh: *mut nlmsghdr) -> *mut c_void {
+        nlh.cast::<c_char>()
+            .wrapping_add(NLMSG_HDRLEN as usize)
+            .cast::<c_void>()
+    }
+
+    pub unsafe fn NLMSG_NEXT(nlh: *mut nlmsghdr, size: &mut c_int) -> *mut nlmsghdr {
+        *size -= NLMSG_ALIGN((*nlh).nlmsg_len as size_t);
+        nlh.cast::<c_char>()
+            .wrapping_add(NLMSG_ALIGN((*nlh).nlmsg_len as size_t) as usize)
+            .cast::<nlmsghdr>()
+    }
+
+    pub unsafe fn NLMSG_OK(nlh: *const nlmsghdr, size: c_int) -> bool {
+        size >= size_of::<nlmsghdr>() as c_int
+            && (*nlh).nlmsg_len >= size_of::<nlmsghdr>() as c_uint
+            && (*nlh).nlmsg_len <= size as c_uint
+    }
+
+    pub unsafe fn NLMSG_PAYLOAD(nlh: *const nlmsghdr, size: c_int) -> c_int {
+        (*nlh).nlmsg_len as c_int - NLMSG_SPACE(size as size_t)
+    }
+}
+
 pub const NLMSG_NOOP: c_int = 0x1;
 pub const NLMSG_ERROR: c_int = 0x2;
 pub const NLMSG_DONE: c_int = 0x3;

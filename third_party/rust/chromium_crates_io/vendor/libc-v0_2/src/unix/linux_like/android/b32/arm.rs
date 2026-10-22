@@ -31,7 +31,7 @@ s! {
 
     pub struct __c_anonymous_uc_sigmask_with_padding {
         pub uc_sigmask: crate::sigset_t,
-        /* Android has a wrong (smaller) sigset_t on x86. */
+        /* Android has a wrong (smaller) sigset_t on ARM. */
         __padding_rt_sigset: Padding<u32>,
     }
 

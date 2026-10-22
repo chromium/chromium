@@ -1,6 +1,6 @@
 //! Header: `net/dlt.h`
 //!
-//! https://github.com/freebsd/freebsd-src/blob/main/sys/net/dlt.h
+//! <https://github.com/freebsd/freebsd-src/blob/main/sys/net/dlt.h>
 
 use crate::prelude::*;
 

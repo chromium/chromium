@@ -65,6 +65,10 @@ extern "C" {
     pub fn remove(filename: *const c_char) -> c_int;
     pub fn rename(old: *const c_char, new: *const c_char) -> c_int;
     pub fn tmpfile() -> *mut FILE;
+    #[deprecated(
+        since = "0.2.190",
+        note = "function is obsolete; prefer tmpfile, mkstemp, or similar"
+    )]
     pub fn tmpnam(s: *mut c_char) -> *mut c_char;
 
     // Buffer control

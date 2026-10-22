@@ -1,6 +1,6 @@
 //! Header: `netinet6/in6_var.h`
 //!
-//! https://github.com/freebsd/freebsd-src/blob/main/sys/netinet6/in6_var.h
+//! <https://github.com/freebsd/freebsd-src/blob/main/sys/netinet6/in6_var.h>
 
 use crate::prelude::*;
 use crate::sys::ioccom::*;

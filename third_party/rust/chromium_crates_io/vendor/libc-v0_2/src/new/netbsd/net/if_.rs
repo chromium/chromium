@@ -50,7 +50,7 @@ pub const IFF_LINK2: c_int = 0x4000; // per link layer defined bit
 pub const IFF_MULTICAST: c_int = 0x8000; // supports multicast
 
 s! {
-    #[repr(C, align(8))]
+    #[repr(align(8))]
     pub struct if_msghdr {
         pub ifm_msglen: c_ushort,
         pub ifm_version: c_uchar,

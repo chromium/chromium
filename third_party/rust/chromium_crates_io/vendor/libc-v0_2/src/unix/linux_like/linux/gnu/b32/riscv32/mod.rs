@@ -75,49 +75,10 @@ s! {
         pub f_spare: [c_long; 4],
     }
 
-    pub struct statvfs64 {
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_blocks: crate::fsblkcnt64_t,
-        pub f_bfree: crate::fsblkcnt64_t,
-        pub f_bavail: crate::fsblkcnt64_t,
-        pub f_files: crate::fsfilcnt64_t,
-        pub f_ffree: crate::fsfilcnt64_t,
-        pub f_favail: crate::fsfilcnt64_t,
-        pub f_fsid: c_ulong,
-        pub f_flag: c_ulong,
-        pub f_namemax: c_ulong,
-        pub __f_spare: [c_int; 6],
-    }
-
-    pub struct siginfo_t {
-        pub si_signo: c_int,
-        pub si_errno: c_int,
-        pub si_code: c_int,
-        #[doc(hidden)]
-        #[deprecated(
-            since = "0.2.54",
-            note = "Please leave a comment on \
-                  https://github.com/rust-lang/libc/pull/1316 if you're using \
-                  this field"
-        )]
-        pub _pad: [c_int; 29],
-        _align: [u64; 0],
-    }
-
     pub struct stack_t {
         pub ss_sp: *mut c_void,
         pub ss_flags: c_int,
         pub ss_size: size_t,
-    }
-
-    // FIXME(1.0): This should not implement `PartialEq`
-    #[allow(unpredictable_function_pointer_comparisons)]
-    pub struct sigaction {
-        pub sa_sigaction: crate::sighandler_t,
-        pub sa_mask: crate::sigset_t,
-        pub sa_flags: c_int,
-        pub sa_restorer: Option<unsafe extern "C" fn()>,
     }
 
     pub struct ipc_perm {
@@ -333,33 +294,6 @@ pub const ENOTRECOVERABLE: c_int = 131;
 pub const EHWPOISON: c_int = 133;
 pub const ERFKILL: c_int = 132;
 
-pub const SOCK_STREAM: c_int = 1;
-pub const SOCK_DGRAM: c_int = 2;
-pub const SA_SIGINFO: c_int = 4;
-pub const SA_NOCLDWAIT: c_int = 2;
-pub const SIGTTIN: c_int = 21;
-pub const SIGTTOU: c_int = 22;
-pub const SIGXCPU: c_int = 24;
-pub const SIGXFSZ: c_int = 25;
-pub const SIGVTALRM: c_int = 26;
-pub const SIGPROF: c_int = 27;
-pub const SIGWINCH: c_int = 28;
-pub const SIGCHLD: c_int = 17;
-pub const SIGBUS: c_int = 7;
-pub const SIGUSR1: c_int = 10;
-pub const SIGUSR2: c_int = 12;
-pub const SIGCONT: c_int = 18;
-pub const SIGSTOP: c_int = 19;
-pub const SIGTSTP: c_int = 20;
-pub const SIGURG: c_int = 23;
-pub const SIGIO: c_int = 29;
-pub const SIGSYS: c_int = 31;
-pub const SIGSTKFLT: c_int = 16;
-pub const SIGPOLL: c_int = 29;
-pub const SIGPWR: c_int = 30;
-pub const SIG_SETMASK: c_int = 2;
-pub const SIG_BLOCK: c_int = 0;
-pub const SIG_UNBLOCK: c_int = 1;
 pub const POLLWRNORM: c_short = 256;
 pub const POLLWRBAND: c_short = 512;
 pub const O_ASYNC: c_int = 8192;
@@ -532,7 +466,6 @@ pub const SYS_shmget: c_long = 194;
 pub const SYS_shmat: c_long = 196;
 pub const SYS_shmctl: c_long = 195;
 pub const SYS_dup: c_long = 23;
-pub const SYS_nanosleep: c_long = 101;
 pub const SYS_getitimer: c_long = 102;
 pub const SYS_setitimer: c_long = 103;
 pub const SYS_getpid: c_long = 172;
@@ -555,7 +488,6 @@ pub const SYS_getsockopt: c_long = 209;
 pub const SYS_clone: c_long = 220;
 pub const SYS_execve: c_long = 221;
 pub const SYS_exit: c_long = 93;
-pub const SYS_wait4: c_long = 260;
 pub const SYS_kill: c_long = 129;
 pub const SYS_uname: c_long = 160;
 pub const SYS_semget: c_long = 190;
@@ -578,7 +510,6 @@ pub const SYS_fchdir: c_long = 50;
 pub const SYS_fchmod: c_long = 52;
 pub const SYS_fchown: c_long = 55;
 pub const SYS_umask: c_long = 166;
-pub const SYS_gettimeofday: c_long = 169;
 pub const SYS_getrlimit: c_long = 163;
 pub const SYS_getrusage: c_long = 165;
 pub const SYS_sysinfo: c_long = 179;
@@ -609,7 +540,7 @@ pub const SYS_getsid: c_long = 156;
 pub const SYS_capget: c_long = 90;
 pub const SYS_capset: c_long = 91;
 pub const SYS_rt_sigpending: c_long = 136;
-pub const SYS_rt_sigtimedwait: c_long = 137;
+pub const SYS_rt_sigtimedwait_time64: c_long = 421;
 pub const SYS_rt_sigqueueinfo: c_long = 138;
 pub const SYS_rt_sigsuspend: c_long = 133;
 pub const SYS_sigaltstack: c_long = 132;
@@ -624,7 +555,7 @@ pub const SYS_sched_setscheduler: c_long = 119;
 pub const SYS_sched_getscheduler: c_long = 120;
 pub const SYS_sched_get_priority_max: c_long = 125;
 pub const SYS_sched_get_priority_min: c_long = 126;
-pub const SYS_sched_rr_get_interval: c_long = 127;
+pub const SYS_sched_rr_get_interval_time64: c_long = 423;
 pub const SYS_mlock: c_long = 228;
 pub const SYS_munlock: c_long = 229;
 pub const SYS_mlockall: c_long = 230;
@@ -632,12 +563,10 @@ pub const SYS_munlockall: c_long = 231;
 pub const SYS_vhangup: c_long = 58;
 pub const SYS_pivot_root: c_long = 41;
 pub const SYS_prctl: c_long = 167;
-pub const SYS_adjtimex: c_long = 171;
 pub const SYS_setrlimit: c_long = 164;
 pub const SYS_chroot: c_long = 51;
 pub const SYS_sync: c_long = 81;
 pub const SYS_acct: c_long = 89;
-pub const SYS_settimeofday: c_long = 170;
 pub const SYS_mount: c_long = 40;
 pub const SYS_umount2: c_long = 39;
 pub const SYS_swapon: c_long = 224;
@@ -664,12 +593,12 @@ pub const SYS_removexattr: c_long = 14;
 pub const SYS_lremovexattr: c_long = 15;
 pub const SYS_fremovexattr: c_long = 16;
 pub const SYS_tkill: c_long = 130;
-pub const SYS_futex: c_long = 98;
+pub const SYS_futex_time64: c_long = 422;
 pub const SYS_sched_setaffinity: c_long = 122;
 pub const SYS_sched_getaffinity: c_long = 123;
 pub const SYS_io_setup: c_long = 0;
 pub const SYS_io_destroy: c_long = 1;
-pub const SYS_io_getevents: c_long = 4;
+pub const SYS_io_pgetevents_time64: c_long = 416;
 pub const SYS_io_submit: c_long = 2;
 pub const SYS_io_cancel: c_long = 3;
 pub const SYS_lookup_dcookie: c_long = 18;
@@ -677,17 +606,17 @@ pub const SYS_remap_file_pages: c_long = 234;
 pub const SYS_getdents64: c_long = 61;
 pub const SYS_set_tid_address: c_long = 96;
 pub const SYS_restart_syscall: c_long = 128;
-pub const SYS_semtimedop: c_long = 192;
+pub const SYS_semtimedop_time64: c_long = 420;
 pub const SYS_fadvise64: c_long = 223;
 pub const SYS_timer_create: c_long = 107;
-pub const SYS_timer_settime: c_long = 110;
-pub const SYS_timer_gettime: c_long = 108;
+pub const SYS_timer_settime64: c_long = 409;
+pub const SYS_timer_gettime64: c_long = 408;
 pub const SYS_timer_getoverrun: c_long = 109;
 pub const SYS_timer_delete: c_long = 111;
-pub const SYS_clock_settime: c_long = 112;
-pub const SYS_clock_gettime: c_long = 113;
-pub const SYS_clock_getres: c_long = 114;
-pub const SYS_clock_nanosleep: c_long = 115;
+pub const SYS_clock_settime64: c_long = 404;
+pub const SYS_clock_gettime64: c_long = 403;
+pub const SYS_clock_getres_time64: c_long = 406;
+pub const SYS_clock_nanosleep_time64: c_long = 407;
 pub const SYS_exit_group: c_long = 94;
 pub const SYS_epoll_ctl: c_long = 21;
 pub const SYS_tgkill: c_long = 131;
@@ -696,8 +625,8 @@ pub const SYS_set_mempolicy: c_long = 237;
 pub const SYS_get_mempolicy: c_long = 236;
 pub const SYS_mq_open: c_long = 180;
 pub const SYS_mq_unlink: c_long = 181;
-pub const SYS_mq_timedsend: c_long = 182;
-pub const SYS_mq_timedreceive: c_long = 183;
+pub const SYS_mq_timedsend_time64: c_long = 418;
+pub const SYS_mq_timedreceive_time64: c_long = 419;
 pub const SYS_mq_notify: c_long = 184;
 pub const SYS_mq_getsetattr: c_long = 185;
 pub const SYS_kexec_load: c_long = 104;
@@ -721,8 +650,8 @@ pub const SYS_symlinkat: c_long = 36;
 pub const SYS_readlinkat: c_long = 78;
 pub const SYS_fchmodat: c_long = 53;
 pub const SYS_faccessat: c_long = 48;
-pub const SYS_pselect6: c_long = 72;
-pub const SYS_ppoll: c_long = 73;
+pub const SYS_pselect6_time64: c_long = 413;
+pub const SYS_ppoll_time64: c_long = 414;
 pub const SYS_unshare: c_long = 97;
 pub const SYS_set_robust_list: c_long = 99;
 pub const SYS_get_robust_list: c_long = 100;
@@ -731,12 +660,12 @@ pub const SYS_tee: c_long = 77;
 pub const SYS_sync_file_range: c_long = 84;
 pub const SYS_vmsplice: c_long = 75;
 pub const SYS_move_pages: c_long = 239;
-pub const SYS_utimensat: c_long = 88;
+pub const SYS_utimensat_time64: c_long = 412;
 pub const SYS_epoll_pwait: c_long = 22;
 pub const SYS_timerfd_create: c_long = 85;
 pub const SYS_fallocate: c_long = 47;
-pub const SYS_timerfd_settime: c_long = 86;
-pub const SYS_timerfd_gettime: c_long = 87;
+pub const SYS_timerfd_settime64: c_long = 411;
+pub const SYS_timerfd_gettime64: c_long = 410;
 pub const SYS_accept4: c_long = 242;
 pub const SYS_signalfd4: c_long = 74;
 pub const SYS_eventfd2: c_long = 19;
@@ -748,13 +677,13 @@ pub const SYS_preadv: c_long = 69;
 pub const SYS_pwritev: c_long = 70;
 pub const SYS_rt_tgsigqueueinfo: c_long = 240;
 pub const SYS_perf_event_open: c_long = 241;
-pub const SYS_recvmmsg: c_long = 243;
+pub const SYS_recvmmsg_time64: c_long = 417;
 pub const SYS_fanotify_init: c_long = 262;
 pub const SYS_fanotify_mark: c_long = 263;
 pub const SYS_prlimit64: c_long = 261;
 pub const SYS_name_to_handle_at: c_long = 264;
 pub const SYS_open_by_handle_at: c_long = 265;
-pub const SYS_clock_adjtime: c_long = 266;
+pub const SYS_clock_adjtime64: c_long = 405;
 pub const SYS_syncfs: c_long = 267;
 pub const SYS_sendmmsg: c_long = 269;
 pub const SYS_setns: c_long = 268;
