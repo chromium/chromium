@@ -226,6 +226,32 @@ TEST_F(ManifestTest, ValidWithConflictingComponentForDifferentDevices) {
   ASSERT_TRUE(result.has_value());
 }
 
+TEST_F(ManifestTest, GetAssetByIdAndUseCasesRequiringAsset) {
+  auto result = CreateCpuManifest(
+      ValidManifest()
+          .Add("second_component", OnDemandComponent("second_key", "2.0"))
+          .Add("second_base", BaseModelRecipe(FileReference("second_component",
+                                                            "second_base.bin"),
+                                              GenericRecipeArgs()))
+          .Add({DeviceCategory::kCpu, "second_feature"},
+               SolutionRecipe("second_base",
+                              FileReference("valid_component", "config.pb"))));
+  ASSERT_TRUE(result.has_value());
+
+  const proto::OnDemandComponent* comp =
+      result->GetAssetById("valid_component");
+  ASSERT_NE(comp, nullptr);
+  EXPECT_EQ(comp->public_key(), "valid_key");
+  EXPECT_EQ(comp->target_version(), "1.0");
+  EXPECT_EQ(result->GetAssetById("non_existent_component"), nullptr);
+
+  EXPECT_THAT(result->GetUseCasesRequiringAsset("valid_component"),
+              UnorderedElementsAre("feature", "second_feature"));
+  EXPECT_THAT(result->GetUseCasesRequiringAsset("second_component"),
+              UnorderedElementsAre("second_feature"));
+  EXPECT_TRUE(result->GetUseCasesRequiringAsset("unknown_asset").empty());
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

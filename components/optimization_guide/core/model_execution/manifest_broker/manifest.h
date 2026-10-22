@@ -66,7 +66,8 @@ class Manifest final {
     kDisallowedByUser = 5,
     kObsolete = 6,
     kEvicted = 7,
-    kMaxValue = kEvicted,
+    kUserRequested = 8,
+    kMaxValue = kUserRequested,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OnDeviceModelUninstallReason)
 
@@ -96,14 +97,23 @@ class Manifest final {
 
   UninstallReason uninstall_reason() const { return uninstall_reason_; }
 
-  // Returns the OnDemandComponent for the given public key, or nullopt if it is
+  // Returns the OnDemandComponent for the given asset ID, or nullptr if it is
+  // not found in the manifest.
+  const proto::OnDemandComponent* GetAssetById(const AssetId& asset_id) const;
+
+  // Returns the OnDemandComponent for the given public key, or nullptr if it is
   // not found in the manifest.
   const proto::OnDemandComponent* GetAssetByPublicKey(
       const std::string& public_key) const;
 
+  // Returns the names of all use cases in the device category config that
+  // require `asset_id`.
+  std::vector<UseCaseName> GetUseCasesRequiringAsset(
+      const AssetId& asset_id) const;
+
   // Returns the identifiers of the Assets required for a single use case.
   // Returns nullopt if the use case is not defined in the manifest.
-  std::optional<absl::flat_hash_set<AssetId>> GetRequiredAssets(
+  base::optional_ref<const absl::flat_hash_set<AssetId>> GetRequiredAssets(
       const UseCaseName& use_case) const;
   // Returns the identifiers of all of the Assets for the given use_cases.
   // If a use case is not defined in the manifest, it is ignored.
@@ -130,6 +140,9 @@ class Manifest final {
   proto::Assets assets_;
   // A map from public key to the factory's manifest's OnDemandComponent.
   absl::flat_hash_map<std::string, std::string> asset_id_by_public_key_;
+  // Precomputed required assets for each use case in device_category_config_.
+  absl::flat_hash_map<UseCaseName, absl::flat_hash_set<AssetId>>
+      required_assets_by_use_case_;
 
   // The reason to give for uninstalling an asset not listed in this manifest.
   UninstallReason uninstall_reason_ = UninstallReason::kObsolete;

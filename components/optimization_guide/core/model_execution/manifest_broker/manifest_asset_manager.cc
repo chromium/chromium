@@ -434,8 +434,8 @@ ManifestAssetManager::GetRequiredComponentIdsForUseCase(
     return std::nullopt;
   }
 
-  std::optional<absl::flat_hash_set<Manifest::AssetId>> required_assets =
-      factory_->manifest().GetRequiredAssets(use_case);
+  base::optional_ref<const absl::flat_hash_set<Manifest::AssetId>>
+      required_assets = factory_->manifest().GetRequiredAssets(use_case);
   if (!required_assets) {
     return std::nullopt;
   }
@@ -546,25 +546,48 @@ void ManifestAssetManager::RecomputeAssetPriorities() {
   asset_priorities_.Clear();
   for (const auto& [use_case_name, _] :
        factory_->manifest().GetDeviceCategoryConfig().use_cases()) {
-    asset_priorities_.Raise(
-        ToAssetPriority(usage_tracker_->GetPriority(use_case_name)),
-        *factory_->manifest().GetRequiredAssets(use_case_name));
+    if (usage_tracker_->IsUninstallRequested(use_case_name)) {
+      asset_priorities_.Raise(
+          AssetPriority::kUninstall,
+          *factory_->manifest().GetRequiredAssets(use_case_name));
+    } else if (usage_tracker_->HasUseCaseUsage(use_case_name)) {
+      // Skip use cases that have never been used.
+      // `GetPriority()` returns `kEvictable` for both expired (>30d) and
+      // never-used use cases; raising `kEvictable` for a never-used use case
+      // would overwrite `kUninstall` on shared assets (e.g. a shared safety
+      // model) when another capability is uninstalled.
+      asset_priorities_.Raise(
+          ToAssetPriority(usage_tracker_->GetPriority(use_case_name)),
+          *factory_->manifest().GetRequiredAssets(use_case_name));
+    }
   }
   UpdateRegistrations();
 }
 
-void ManifestAssetManager::EnableEviction() {
+void ManifestAssetManager::UninstallAllAssets() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_eviction_enabled_ = true;
+  for (const auto& [use_case_name, _] :
+       factory_->manifest().GetDeviceCategoryConfig().use_cases()) {
+    usage_tracker_->RequestUninstall(use_case_name);
+  }
+  RecomputeAssetPriorities();
+}
+
+void ManifestAssetManager::UninstallCapability(
+    const Manifest::AssetId& model_asset_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& use_case_name :
+       factory_->manifest().GetUseCasesRequiringAsset(model_asset_id)) {
+    usage_tracker_->RequestUninstall(use_case_name);
+  }
+  RecomputeAssetPriorities();
 }
 
 bool ManifestAssetManager::IsEvictionEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_eviction_enabled_ ||
-         (base::FeatureList::IsEnabled(kOnDeviceModelEviction) &&
-          local_state_->GetBoolean(
-              model_execution::prefs::localstate::
-                  kOnDeviceAiAutoRemoveUnusedModelsEnabled));
+  return base::FeatureList::IsEnabled(kOnDeviceModelEviction) &&
+         local_state_->GetBoolean(model_execution::prefs::localstate::
+                                      kOnDeviceAiAutoRemoveUnusedModelsEnabled);
 }
 
 void ManifestAssetManager::ScanForOrphanedAssets() {
@@ -619,6 +642,10 @@ bool ManifestAssetManager::CanSupportProactiveDownload() const {
 
 bool ManifestAssetManager::ShouldRetain(const ComponentContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!asset_priorities_.IsAtLeast(AssetPriority::kEvictable,
+                                   context.asset_id())) {
+    return false;
+  }
   // If the component already has the target version requested (downloading or
   // installed), retain it unless eviction is enabled and its priority has
   // dropped below kRetain.
@@ -690,6 +717,9 @@ void ManifestAssetManager::RecordEvictableAssetsCount() const {
         factory_->manifest().GetAssetByPublicKey(public_key);
     if (component &&
         context.requested_version() == component->target_version() &&
+        // Exclude assets explicitly requested to be uninstalled.
+        asset_priorities_.IsAtLeast(AssetPriority::kEvictable,
+                                    context.asset_id()) &&
         !asset_priorities_.IsAtLeast(AssetPriority::kRetain,
                                      context.asset_id())) {
       evictable_assets_count++;
@@ -705,9 +735,13 @@ void ManifestAssetManager::RecordUninstallReason(
     const proto::OnDemandComponent* component) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Manifest::UninstallReason log_reason =
-      (component && context.requested_version() == component->target_version())
-          ? Manifest::UninstallReason::kEvicted
-          : factory_->manifest().uninstall_reason();
+      factory_->manifest().uninstall_reason();
+  if (component && context.requested_version() == component->target_version()) {
+    log_reason = !asset_priorities_.IsAtLeast(AssetPriority::kEvictable,
+                                              context.asset_id())
+                     ? Manifest::UninstallReason::kUserRequested
+                     : Manifest::UninstallReason::kEvicted;
+  }
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason." +
           ConvertComponentKeyToUmaModelName(context.asset_id()),

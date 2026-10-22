@@ -55,11 +55,15 @@ class UsageTracker;
 
 // Priorities for assets in the manifest.
 enum class AssetPriority {
-  kEvictable = 0,
-  kRetain = 1,
-  kSpeculative = 2,
-  kBestEffort = 3,
-  kUserBlocking = 4,
+  // Unconditionally uninstalled when auto removal is disabled, because the user
+  // explicitly requested uninstall.
+  kUninstall = 0,
+  // Evicted only auto removal is enabled, otherwise retained on disk.
+  kEvictable = 1,
+  kRetain = 2,
+  kSpeculative = 3,
+  kBestEffort = 4,
+  kUserBlocking = 5,
 };
 
 // Tracks the priority of assets in the manifest.
@@ -142,9 +146,13 @@ class ManifestAssetManager : public UsageTracker::Observer,
   // Recomputes the priorities of assets required by use cases.
   void RecomputeAssetPriorities();
 
-  // Forces eviction of evictable assets to be enabled regardless of the
-  // `kOnDeviceModelEviction` feature flag.
-  void EnableEviction();
+  // Requests uninstall for all use cases in the manifest and updates component
+  // registrations.
+  void UninstallAllAssets();
+
+  // Requests uninstall for all use cases requiring the base model asset
+  // identified by `model_asset_id` and recomputes asset priorities.
+  void UninstallCapability(const Manifest::AssetId& model_asset_id);
 
  private:
   enum class ComponentState {
@@ -348,8 +356,6 @@ class ManifestAssetManager : public UsageTracker::Observer,
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   AssetPriorities asset_priorities_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  bool is_eviction_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<UsageTracker, UsageTracker::Observer>

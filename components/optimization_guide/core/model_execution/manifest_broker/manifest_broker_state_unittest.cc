@@ -302,6 +302,119 @@ TEST_F(ManifestBrokerStateTest, SetUseCaseRequestedFalseBeforeManifestLoaded) {
   }));
 }
 
+TEST_F(ManifestBrokerStateTest, UninstallCapabilityBeforeManifestLoaded) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
+
+  // Call UninstallCapability immediately on startup before the manifest has
+  // finished loading and creating ManifestAssetManager.
+  fake_.state().UninstallCapability("model_A_asset");
+
+  EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_.client().GetSubscriber("test").unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingUsage;
+  }));
+}
+
+TEST_F(ManifestBrokerStateTest,
+       UninstallCapabilityWithAdaptationsAndSharedPostprocessorModel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kOnDeviceModelEviction, kOnDeviceWebSpeechPolisherModel}, {});
+  fake_.local_state().SetBoolean(model_execution::prefs::localstate::
+                                     kOnDeviceAiAutoRemoveUnusedModelsEnabled,
+                                 false);
+
+  proto::SolutionConfig compose_config;
+  *compose_config.mutable_feature() = SimpleComposeConfig();
+
+  // Include `model_C` ("prompt_api") which also references `polisher` but is
+  // never used, to verify that an unused use case in the manifest does not
+  // retain the shared auxiliary model when all used base models are
+  // uninstalled.
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("model_A")
+      .AddBaseModel("model_B")
+      .AddBaseModel("model_C")
+      .AddBaseModel("polisher")
+      .AddAdaptation("adapt_A", "model_A")
+      .AddPostprocessedModel("post_A", "model_A", "polisher")
+      .AddPostprocessedModel("post_B", "model_B", "polisher")
+      .AddPostprocessedModel("post_C", "model_C", "polisher")
+      .AddUnsafeSolution("test", "adapt_A")
+      .AddUnsafeSolution("summarize", "post_A")
+      .AddUnsafeSolution("compose", "post_B", std::move(compose_config))
+      .AddUnsafeSolution("prompt_api", "post_C")
+      .Finish();
+  fake_.Startup();
+
+  fake_.client().RequestAssetsFor("test");
+  fake_.client().RequestAssetsFor("summarize");
+  fake_.client().RequestAssetsFor("compose");
+
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"model_A_key", base::Version("1.0.0.0")}));
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"adapt_A_key", base::Version("12345")}));
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"model_B_key", base::Version("1.0.0.0")}));
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"polisher_key", base::Version("1.0.0.0")}));
+
+  {
+    base::test::TestFuture<ModelBrokerClient::CreateSessionResult> test_future;
+    fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                                 SessionConfigParams{},
+                                 test_future.GetCallback());
+    EXPECT_TRUE(test_future.Take());
+
+    base::test::TestFuture<ModelBrokerClient::CreateSessionResult>
+        compose_future;
+    fake_.client().CreateSession(mojom::OnDeviceFeature::kCompose,
+                                 SessionConfigParams{},
+                                 compose_future.GetCallback());
+    EXPECT_TRUE(compose_future.Take());
+  }
+
+  // Advance past the 30-day retention window so that "test"/"summarize"
+  // (model_A) and "compose" (model_B) become kEvictable. With Auto-Removal
+  // disabled, uninstalling model_A should still retain the expired model_B and
+  // the shared polisher model.
+  task_environment_.FastForwardBy(base::Days(31));
+
+  OnDeviceModelControl* model_control = fake_.state().GetModelControl();
+  ASSERT_NE(model_control, nullptr);
+
+  // Uninstalling model_A should uninstall model_A and its adaptation adapt_A,
+  // while keeping model_B and the shared polisher model.
+  model_control->UninstallCapability("model_A_asset");
+
+  EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
+  EXPECT_TRUE(fake_.component_state().WaitForUninstall("adapt_A_key"));
+  EXPECT_FALSE(fake_.component_state().WasUninstallRequested("model_B_key"));
+  EXPECT_FALSE(fake_.component_state().WasUninstallRequested("polisher_key"));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_.client().GetSubscriber("test").unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingUsage;
+  }));
+  EXPECT_EQ(fake_.client().GetSubscriber("compose").unavailable_reason(),
+            std::nullopt);
+
+  // Uninstalling the remaining used model_B should now also uninstall the
+  // shared polisher model even though unused model_C also references polisher
+  // in the manifest.
+  model_control->UninstallCapability("model_B_asset");
+
+  EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_B_key"));
+  EXPECT_TRUE(fake_.component_state().WaitForUninstall("polisher_key"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_.client().GetSubscriber("compose").unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingUsage;
+  }));
+}
+
 TEST_F(ManifestBrokerStateTest,
        CreateSessionFailedOnInsufficientDiskSpaceForCaches) {
   // Use a base model without cache files so that has_caches is false,

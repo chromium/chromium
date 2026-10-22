@@ -114,6 +114,7 @@ TEST_F(UsageTrackerTest, SetPriority) {
 
   usage_tracker().SetPriority("test_use_case", Priority::kEvictable);
   EXPECT_EQ(usage_tracker().GetPriority("test_use_case"), Priority::kEvictable);
+  EXPECT_TRUE(usage_tracker().IsUninstallRequested("test_use_case"));
 }
 
 TEST_F(UsageTrackerTest, SetPriorityBestEffort) {
@@ -152,11 +153,45 @@ TEST_F(UsageTrackerTest, ClearAllUseCaseUsages) {
             Priority::kUserBlocking);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"),
             Priority::kBestEffort);
+  EXPECT_TRUE(usage_tracker().HasUseCaseUsage("use_case_1"));
+  EXPECT_FALSE(usage_tracker().IsUninstallRequested("use_case_1"));
 
   usage_tracker().ClearAllUseCaseUsages();
 
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kEvictable);
+  EXPECT_FALSE(usage_tracker().HasUseCaseUsage("use_case_1"));
+  EXPECT_FALSE(usage_tracker().HasUseCaseUsage("use_case_2"));
+  EXPECT_TRUE(usage_tracker().IsUninstallRequested("use_case_1"));
+  EXPECT_TRUE(usage_tracker().IsUninstallRequested("use_case_2"));
+  EXPECT_FALSE(usage_tracker().IsUninstallRequested("never_used"));
+}
+
+TEST_F(UsageTrackerTest, RequestUninstallAndReUse) {
+  EXPECT_FALSE(usage_tracker().HasUseCaseUsage("test_use_case"));
+  EXPECT_FALSE(usage_tracker().IsUninstallRequested("test_use_case"));
+
+  usage_tracker().RaisePriority("test_use_case", Priority::kUserBlocking);
+  EXPECT_TRUE(usage_tracker().HasUseCaseUsage("test_use_case"));
+  EXPECT_FALSE(usage_tracker().IsUninstallRequested("test_use_case"));
+
+  usage_tracker().RequestUninstall("test_use_case");
+  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"), Priority::kEvictable);
+  EXPECT_FALSE(usage_tracker().HasUseCaseUsage("test_use_case"));
+  EXPECT_TRUE(usage_tracker().IsUninstallRequested("test_use_case"));
+
+  // Uninstall request persists across restarts and is not pruned after 180d.
+  task_environment().FastForwardBy(base::Days(181));
+  ResetUsageTracker();
+  EXPECT_FALSE(usage_tracker().HasUseCaseUsage("test_use_case"));
+  EXPECT_TRUE(usage_tracker().IsUninstallRequested("test_use_case"));
+
+  // Raising priority again clears the uninstall request and records usage.
+  usage_tracker().RaisePriority("test_use_case", Priority::kBestEffort);
+  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"),
+            Priority::kBestEffort);
+  EXPECT_TRUE(usage_tracker().HasUseCaseUsage("test_use_case"));
+  EXPECT_FALSE(usage_tracker().IsUninstallRequested("test_use_case"));
 }
 
 // TODO(crbug.com/548711885): Remove this test when scam detection code is
@@ -264,6 +299,18 @@ TEST_F(UsageTrackerTest, PrefPruningAfterTrackingPeriod) {
   }
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kEvictable);
+}
+
+TEST_F(UsageTrackerTest, PrefPruningSkippedWhenAutoRemoveDisabled) {
+  local_state().SetBoolean(model_execution::prefs::localstate::
+                               kOnDeviceAiAutoRemoveUnusedModelsEnabled,
+                           false);
+  usage_tracker().RaisePriority("use_case_1", Priority::kBestEffort);
+
+  task_environment().FastForwardBy(base::Days(181));
+  ResetUsageTracker();
+
+  EXPECT_TRUE(usage_tracker().HasUseCaseUsage("use_case_1"));
 }
 
 TEST_F(UsageTrackerTest, CustomFeatureParams) {

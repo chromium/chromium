@@ -338,6 +338,19 @@ class OnDeviceSession {
   virtual void SetPriority(on_device_model::mojom::Priority priority) = 0;
 };
 
+// Interface for managing and controlling installed on-device models.
+class OnDeviceModelControl {
+ public:
+  virtual ~OnDeviceModelControl() = default;
+
+  // Uninstalls all downloaded on-device models and clears their usage history.
+  virtual void UninstallModels() = 0;
+
+  // Uninstalls a specific base model capability identified by `model_asset_id`
+  // along with any dependent adaptations and unshared safety models.
+  virtual void UninstallCapability(const std::string& model_asset_id) = 0;
+};
+
 // Provides capability information about the on-device models to be served by
 // the Optimization Guide.
 class OnDeviceCapability {
@@ -356,6 +369,10 @@ class OnDeviceCapability {
   virtual void BindModelBrokerDebug(
       base::PassKey<on_device_internals::PageHandler> key,
       mojo::PendingReceiver<mojom::ModelBrokerDebug> receiver) {}
+
+  // Returns the interface for managing installed on-device models, or nullptr
+  // if not supported.
+  virtual OnDeviceModelControl* GetModelControl();
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should

@@ -112,6 +112,10 @@ void ManifestBrokerState::BindModelBrokerDebug(
   receivers_.Add(this, std::move(receiver));
 }
 
+OnDeviceModelControl* ManifestBrokerState::GetModelControl() {
+  return this;
+}
+
 std::unique_ptr<OnDeviceSession> ManifestBrokerState::StartSession(
     mojom::OnDeviceFeature feature,
     const SessionConfigParams& config_params,
@@ -224,9 +228,6 @@ void ManifestBrokerState::OnManifestUpdated() {
     asset_manager_ = std::make_unique<ManifestAssetManager>(
         *local_state_, usage_tracker_, *delegate_, component_update_service_,
         std::move(factory));
-    if (is_eviction_enabled_) {
-      asset_manager_->EnableEviction();
-    }
   } else {
     asset_manager_->UpdateSolutionFactory(std::move(factory));
   }
@@ -344,22 +345,33 @@ void ManifestBrokerState::SetUseCaseRequested(const std::string& use_case,
   usage_tracker_.SetPriority(use_case,
                              requested ? UsageTracker::Priority::kUserBlocking
                                        : UsageTracker::Priority::kEvictable);
-  if (!requested) {
-    is_eviction_enabled_ = true;
-    if (asset_manager_) {
-      asset_manager_->EnableEviction();
-      asset_manager_->RecomputeAssetPriorities();
-    }
+  if (!requested && asset_manager_) {
+    asset_manager_->RecomputeAssetPriorities();
   }
 }
 
 void ManifestBrokerState::UninstallModels() {
   usage_tracker_.ClearAllUseCaseUsages();
-  is_eviction_enabled_ = true;
-  if (asset_manager_) {
-    asset_manager_->EnableEviction();
-    asset_manager_->RecomputeAssetPriorities();
-  }
+  EnsureInitialization(base::BindOnce(
+      [](base::WeakPtr<ManifestBrokerState> self,
+         const on_device_model::Capabilities&) {
+        if (self && self->asset_manager_) {
+          self->asset_manager_->UninstallAllAssets();
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ManifestBrokerState::UninstallCapability(
+    const std::string& model_asset_id) {
+  EnsureInitialization(base::BindOnce(
+      [](base::WeakPtr<ManifestBrokerState> self, std::string model_asset_id,
+         const on_device_model::Capabilities&) {
+        if (self && self->asset_manager_) {
+          self->asset_manager_->UninstallCapability(model_asset_id);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), model_asset_id));
 }
 
 void ManifestBrokerState::ResetModelCrashCount() {

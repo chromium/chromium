@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/json/values_util.h"
@@ -24,10 +25,9 @@ namespace optimization_guide {
 
 namespace {
 
-std::string PrefKey(mojom::OnDeviceFeature feature) {
-  return base::NumberToString(
-      static_cast<uint64_t>(ToModelExecutionFeatureProto(feature)));
-}
+// Value stored in `kLastUsageByFeature` when a use case's model was explicitly
+// uninstalled by the user.
+constexpr char kUninstallRequestedPrefValue[] = "uninstall_requested";
 
 bool WasUsedWithin(std::optional<base::Time> last_use, base::TimeDelta period) {
   if (!last_use) {
@@ -103,6 +103,30 @@ UsageTracker::Priority UsageTracker::GetPriority(
   return Priority::kEvictable;
 }
 
+bool UsageTracker::HasUseCaseUsage(const std::string& use_case_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetLastUseTime(use_case_name).has_value();
+}
+
+bool UsageTracker::IsUninstallRequested(
+    const std::string& use_case_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto& dict = local_state_->GetDict(
+      model_execution::prefs::localstate::kLastUsageByFeature);
+  if (const std::string* value = dict.FindString(use_case_name)) {
+    return *value == kUninstallRequestedPrefValue;
+  }
+  return false;
+}
+
+void UsageTracker::RequestUninstall(const std::string& use_case_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  user_blocking_use_cases_.erase(use_case_name);
+  ::prefs::ScopedDictionaryPrefUpdate update(
+      local_state_, model_execution::prefs::localstate::kLastUsageByFeature);
+  update->Set(use_case_name, base::Value(kUninstallRequestedPrefValue));
+}
+
 void UsageTracker::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
@@ -117,8 +141,7 @@ void UsageTracker::SetPriority(const std::string& use_case_name,
                                Priority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (priority == Priority::kEvictable) {
-    user_blocking_use_cases_.erase(use_case_name);
-    ClearUseCaseUsage(use_case_name);
+    RequestUninstall(use_case_name);
     return;
   }
   // Only `kBestEffort` and `kUserBlocking` can be set directly. A use case
@@ -133,16 +156,30 @@ void UsageTracker::SetPriority(const std::string& use_case_name,
 void UsageTracker::ClearAllUseCaseUsages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   user_blocking_use_cases_.clear();
-  local_state_->ClearPref(
-      model_execution::prefs::localstate::kLastUsageByFeature);
+  ::prefs::ScopedDictionaryPrefUpdate update(
+      local_state_, model_execution::prefs::localstate::kLastUsageByFeature);
+  std::vector<std::string> keys;
+  for (auto kv : *update->AsConstDict()) {
+    keys.emplace_back(kv.first);
+  }
+  for (const auto& key : keys) {
+    update->Set(key, base::Value(kUninstallRequestedPrefValue));
+  }
 }
 
 void UsageTracker::PruneOldUsagePrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!local_state_->GetBoolean(model_execution::prefs::localstate::
+                                    kOnDeviceAiAutoRemoveUnusedModelsEnabled)) {
+    return;
+  }
   ::prefs::ScopedDictionaryPrefUpdate update(
       local_state_, model_execution::prefs::localstate::kLastUsageByFeature);
   std::vector<std::string> keys_to_prune;  // Avoid iterator invalidation.
   for (auto kv : *update->AsConstDict()) {
+    if (kv.second == kUninstallRequestedPrefValue) {
+      continue;
+    }
     if (!WasUsedWithin(base::ValueToTime(kv.second), kTrackingPeriod.Get())) {
       keys_to_prune.emplace_back(kv.first);
     }
@@ -159,41 +196,22 @@ void UsageTracker::RecordUseCaseUsage(const std::string& use_case_name) {
   update->Set(use_case_name, base::TimeToValue(base::Time::Now()));
 }
 
-void UsageTracker::ClearUseCaseUsage(const std::string& use_case_name) {
+std::optional<base::Time> UsageTracker::GetLastUseTime(
+    const std::string& use_case_name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ::prefs::ScopedDictionaryPrefUpdate update(
-      local_state_, model_execution::prefs::localstate::kLastUsageByFeature);
-  update->Remove(use_case_name);
-  // TODO(crbug.com/489511499): Remove this fallback once all features have
-  // migrated to using RecordUseCaseUsage with string names.
-  if (std::optional<mojom::OnDeviceFeature> feature =
-          GetFeatureForUseCase(use_case_name)) {
-    update->Remove(PrefKey(*feature));
+  const auto& dict = local_state_->GetDict(
+      model_execution::prefs::localstate::kLastUsageByFeature);
+
+  if (const auto* value = dict.Find(use_case_name)) {
+    return base::ValueToTime(*value);
   }
+  return std::nullopt;
 }
 
 bool UsageTracker::WasUseCaseUsedWithin(const std::string& use_case_name,
                                         base::TimeDelta period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto& dict = local_state_->GetDict(
-      model_execution::prefs::localstate::kLastUsageByFeature);
-
-  const auto* value = dict.Find(use_case_name);
-  if (value && WasUsedWithin(base::ValueToTime(*value), period)) {
-    return true;
-  }
-
-  // Fallback to legacy integer keys mapped to this use case.
-  // TODO(crbug.com/489511499): Remove this fallback once all features have
-  // migrated to using RecordUseCaseUsage with string names.
-  if (std::optional<mojom::OnDeviceFeature> feature =
-          GetFeatureForUseCase(use_case_name)) {
-    value = dict.Find(PrefKey(*feature));
-    if (value && WasUsedWithin(base::ValueToTime(*value), period)) {
-      return true;
-    }
-  }
-  return false;
+  return WasUsedWithin(GetLastUseTime(use_case_name), period);
 }
 
 }  // namespace optimization_guide

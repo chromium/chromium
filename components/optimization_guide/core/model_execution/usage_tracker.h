@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_USAGE_TRACKER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_USAGE_TRACKER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -73,21 +74,33 @@ class UsageTracker {
   // Returns the priority at which `use_case_name` was used.
   Priority GetPriority(const std::string& use_case_name) const;
 
+  // Returns true if `use_case_name` has a recorded usage timestamp in prefs.
+  bool HasUseCaseUsage(const std::string& use_case_name) const;
+
+  // Returns true if `use_case_name` has an active uninstall request.
+  bool IsUninstallRequested(const std::string& use_case_name) const;
+
+  // Clears usage for `use_case_name` and records an uninstall request.
+  void RequestUninstall(const std::string& use_case_name);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
   // Set / Clear use case requested priority.
-  // Setting Priority::kEvictable clears the use case priority.
+  // Setting Priority::kEvictable clears the use case priority and requests
+  // uninstallation.
   // Supported for debug through chrome://on-device-internals.
   void SetPriority(const std::string& use_case_name, Priority priority);
 
-  // Clears all use case usages both in-memory and in prefs.
+  // Clears all use case usages both in-memory and in prefs, marking previously
+  // tracked use cases for uninstall.
   void ClearAllUseCaseUsages();
 
  private:
   void PruneOldUsagePrefs();
   void RecordUseCaseUsage(const std::string& use_case_name);
-  void ClearUseCaseUsage(const std::string& use_case_name);
+  std::optional<base::Time> GetLastUseTime(
+      const std::string& use_case_name) const;
   bool WasUseCaseUsedWithin(const std::string& use_case_name,
                             base::TimeDelta period) const;
 

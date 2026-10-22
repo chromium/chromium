@@ -162,6 +162,10 @@ OnDeviceCapability::BindAndPassRemoteBroker() {
   return remote;
 }
 
+OnDeviceModelControl* OnDeviceCapability::GetModelControl() {
+  return nullptr;
+}
+
 std::unique_ptr<OnDeviceSession> OnDeviceCapability::StartSession(
     mojom::OnDeviceFeature feature,
     const SessionConfigParams& config_params,
