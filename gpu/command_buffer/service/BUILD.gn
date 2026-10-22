@@ -73,7 +73,7 @@ source_set("service_sources") {
   configs += [
     "//build/config:precompiled_headers",
     ":implementation",
-    "//third_party/khronos:khronos_headers",
+    "//gpu:gl_headers",
   ]
 
   public_deps = [
@@ -359,7 +359,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu:gpu_gles2_implementation",
     "//gpu:raster_implementation",
     "//gpu:webgpu_implementation",
-    "//third_party/khronos:khronos_headers",
+    "//gpu:gl_headers",
   ]
 
   # This target pulls in angle headers that can't be built with this

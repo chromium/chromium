@@ -80,7 +80,7 @@ source_set("client_sources") {
   ]
   configs += [ ":implementation" ]
 
-  all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
+  all_dependent_configs = [ "//gpu:gl_headers" ]
 
   public_deps = [
     "//base",
@@ -170,7 +170,7 @@ gles2_implementation_source_files = [
 
 source_set("interface_base") {
   sources = [ "interface_base.h" ]
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
+  public_configs = [ "//gpu:gl_headers" ]
   deps = [ "//base" ]
 }
 
@@ -186,7 +186,7 @@ source_set("gles2_interface") {
     "gles2_interface_stub_autogen.h",
     "gles2_interface_stub_impl_autogen.h",
   ]
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
+  public_configs = [ "//gpu:gl_headers" ]
   public_deps = [
     "//gpu/command_buffer/common",
     "//skia",
@@ -204,7 +204,7 @@ source_set("raster_interface") {
     "raster_interface.h",
     "raster_interface_autogen.h",
   ]
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
+  public_configs = [ "//gpu:gl_headers" ]
   deps = [
     ":client",
     ":interface_base",
@@ -224,7 +224,7 @@ source_set("webgpu_interface") {
     "webgpu_interface.h",
     "webgpu_interface_autogen.h",
   ]
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
+  public_configs = [ "//gpu:gl_headers" ]
   deps = [
     ":interface_base",
     "//base",
@@ -241,7 +241,7 @@ component("gles2_implementation") {
   if (enable_gpu_client_logging) {
     defines += [ "GPU_ENABLE_CLIENT_LOGGING" ]
   }
-  all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
+  all_dependent_configs = [ "//gpu:gl_headers" ]
 
   deps = [
     ":client",
@@ -261,7 +261,7 @@ source_set("raster_sources") {
   # External code should depend on this via //gpu:raster above rather than
   # depending on this directly or the component build will break.
   visibility = [ "//gpu/*" ]
-  all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
+  all_dependent_configs = [ "//gpu:gl_headers" ]
 
   configs += [ "//gpu:raster_implementation" ]
   deps = [

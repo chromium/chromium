@@ -227,5 +227,5 @@ component("gles2_utils") {
     "//ui/gl:gl_enums",
   ]
 
-  all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
+  all_dependent_configs = [ "//gpu:gl_headers" ]
 }

@@ -70,8 +70,8 @@ source_set("ipc_common_sources") {
   }
 
   configs += [
+    "//gpu:gl_headers",
     "//gpu:gpu_implementation",
-    "//third_party/khronos:khronos_headers",
   ]
 
   public_deps = [

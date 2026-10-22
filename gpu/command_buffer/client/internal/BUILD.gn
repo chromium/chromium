@@ -40,8 +40,8 @@ component("internal") {
   }
 
   configs += [
+    "//gpu:gl_headers",
     "//gpu/command_buffer/client:implementation",
-    "//third_party/khronos:khronos_headers",
   ]
 
   public_deps = [ "//gpu/command_buffer/client:export" ]
