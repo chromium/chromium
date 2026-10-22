@@ -2600,7 +2600,15 @@ class CertVerifyProcInternalWithNetFetchingTest
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &CertVerifyProcInternalWithNetFetchingTest::DispatchToRequestHandler,
         base::Unretained(this)));
-    EXPECT_TRUE(test_server_.Start());
+    // Starting in iOS 27.2 Beta 3, `trustd` enforces SSRF protections
+    // (`UseSSRFLiteralEnforcement` and `UseSSRFPortEnforcement`) that block AIA
+    // fetches to numeric loopback/private IP literals and to ports other than
+    // 80 or 8080. Use port 8080 and `localhost` on `CERT_VERIFY_PROC_IOS`.
+    static constexpr int kTrustdAllowedHttpPort = 8080;
+    const int port = (verify_proc_type() == CERT_VERIFY_PROC_IOS)
+                         ? kTrustdAllowedHttpPort
+                         : 0;
+    EXPECT_TRUE(test_server_.Start(port));
   }
 
   void SetUpCertVerifyProc(scoped_refptr<CRLSet> crl_set) override {
@@ -2642,8 +2650,12 @@ class CertVerifyProcInternalWithNetFetchingTest
     return "/" + MakeRandomHexString(12) + std::string(suffix);
   }
 
-  // Returns a URL to |path| for the current test server.
+  // Returns a URL to `path` for the current test server.
   GURL GetTestServerAbsoluteUrl(const std::string& path) {
+    if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+      static constexpr std::string_view kLocalhost = "localhost";
+      return test_server_.GetURL(kLocalhost, path);
+    }
     return test_server_.GetURL(path);
   }
 
