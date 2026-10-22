@@ -7,8 +7,10 @@
 #include <array>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/types/to_address.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 
 namespace crypto::aes_ctr {
@@ -19,6 +21,10 @@ void DoCTR(base::span<const uint8_t> key,
            base::span<const uint8_t, kCounterSize> counter,
            base::span<const uint8_t> in,
            base::span<uint8_t> out) {
+  CHECK_EQ(in.size(), out.size());
+  CHECK(in.data() == out.data() || base::to_address(in.end()) <= out.data() ||
+        base::to_address(out.end()) <= in.data());
+
   AES_KEY aes_key;
   CHECK_EQ(AES_set_encrypt_key(key.data(), key.size() * 8, &aes_key), 0);
 

@@ -46,6 +46,9 @@ std::optional<std::vector<uint8_t>> Decrypt(
     base::span<const uint8_t> ciphertext) {
   const EVP_CIPHER* cipher =
       key.size() == 32 ? EVP_aes_256_cbc() : EVP_aes_128_cbc();
+
+  CHECK_EQ(EVP_CIPHER_key_length(cipher), key.size());
+
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   bssl::ScopedEVP_CIPHER_CTX ctx;
   CHECK(EVP_DecryptInit_ex(ctx.get(), cipher, nullptr, key.data(), iv.data()));

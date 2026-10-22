@@ -37,3 +37,125 @@ TEST(AesCtrTests, KnownAnswers) {
   EXPECT_EQ(kPlaintext, plaintext);
   EXPECT_EQ(kExpectedCiphertext, ciphertext);
 }
+
+TEST(AesCtrTests, InPlaceAndOverlappingBuffers) {
+  constexpr auto kKey = std::to_array<uint8_t>({
+      0xff,
+      0x00,
+      0xee,
+      0x11,
+      0xdd,
+      0x22,
+      0xcc,
+      0x33,
+      0xbb,
+      0x44,
+      0xaa,
+      0x55,
+      0x99,
+      0x66,
+      0x88,
+      0x77,
+  });
+  constexpr auto kCounter = std::to_array<uint8_t>({
+      0x01,
+      0x23,
+      0x45,
+      0x67,
+      0x89,
+      0xab,
+      0xcd,
+      0xef,
+      0x01,
+      0x23,
+      0x45,
+      0x67,
+      0x89,
+      0xab,
+      0xcd,
+      0xef,
+  });
+  constexpr auto kPlaintext = std::to_array<uint8_t>({
+      0x0a,
+      0x0b,
+      0x0c,
+      0x0d,
+      0x0e,
+  });
+  constexpr auto kExpectedCiphertext = std::to_array<uint8_t>({
+      0xd7,
+      0x07,
+      0x48,
+      0x4f,
+      0x58,
+  });
+
+  std::array<uint8_t, std::size(kPlaintext)> in_place = kPlaintext;
+  crypto::aes_ctr::Encrypt(kKey, kCounter, in_place, in_place);
+  EXPECT_EQ(kExpectedCiphertext, in_place);
+  crypto::aes_ctr::Decrypt(kKey, kCounter, in_place, in_place);
+  EXPECT_EQ(kPlaintext, in_place);
+
+  std::array<uint8_t, 8> buffer = {};
+  auto first_span = base::span(buffer).first<5>();
+  auto second_span = base::span(buffer).subspan<1, 5>();
+  EXPECT_DEATH_IF_SUPPORTED(
+      crypto::aes_ctr::Encrypt(kKey, kCounter, first_span, second_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      crypto::aes_ctr::Encrypt(kKey, kCounter, second_span, first_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      crypto::aes_ctr::Decrypt(kKey, kCounter, first_span, second_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      crypto::aes_ctr::Decrypt(kKey, kCounter, second_span, first_span), "");
+}
+
+TEST(AesCtrTests, MismatchedBufferSizesDie) {
+  constexpr auto kKey = std::to_array<uint8_t>({
+      0xff,
+      0x00,
+      0xee,
+      0x11,
+      0xdd,
+      0x22,
+      0xcc,
+      0x33,
+      0xbb,
+      0x44,
+      0xaa,
+      0x55,
+      0x99,
+      0x66,
+      0x88,
+      0x77,
+  });
+  constexpr auto kCounter = std::to_array<uint8_t>({
+      0x01,
+      0x23,
+      0x45,
+      0x67,
+      0x89,
+      0xab,
+      0xcd,
+      0xef,
+      0x01,
+      0x23,
+      0x45,
+      0x67,
+      0x89,
+      0xab,
+      0xcd,
+      0xef,
+  });
+  std::array<uint8_t, 5> in = {};
+  std::array<uint8_t, 4> small_out = {};
+  std::array<uint8_t, 6> large_out = {};
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      crypto::aes_ctr::Encrypt(kKey, kCounter, in, small_out), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      crypto::aes_ctr::Encrypt(kKey, kCounter, in, large_out), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      crypto::aes_ctr::Decrypt(kKey, kCounter, in, small_out), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      crypto::aes_ctr::Decrypt(kKey, kCounter, in, large_out), "");
+}

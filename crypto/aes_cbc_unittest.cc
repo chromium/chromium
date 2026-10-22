@@ -95,4 +95,16 @@ TEST(AesCbcTests, DecryptFailure) {
   ASSERT_FALSE(result.has_value());
 }
 
+TEST(AesCbcTests, WrongKeySizeDies) {
+  std::array<uint8_t, 8> short_key = {};
+  std::array<uint8_t, 24> medium_key = {};
+  std::array<uint8_t, crypto::aes_cbc::kBlockSize> iv = {};
+  std::array<uint8_t, crypto::aes_cbc::kBlockSize> data = {};
+
+  EXPECT_DEATH_IF_SUPPORTED(crypto::aes_cbc::Encrypt(short_key, iv, data), "");
+  EXPECT_DEATH_IF_SUPPORTED(crypto::aes_cbc::Encrypt(medium_key, iv, data), "");
+  EXPECT_DEATH_IF_SUPPORTED(crypto::aes_cbc::Decrypt(short_key, iv, data), "");
+  EXPECT_DEATH_IF_SUPPORTED(crypto::aes_cbc::Decrypt(medium_key, iv, data), "");
+}
+
 }  // namespace
