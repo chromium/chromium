@@ -162,6 +162,4 @@ component("mojom_traits") {
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

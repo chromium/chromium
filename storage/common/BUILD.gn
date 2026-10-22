@@ -20,8 +20,6 @@ component("common") {
     "quota/padding_key.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   defines = [ "IS_STORAGE_COMMON_IMPL" ]
 
   public_deps = [

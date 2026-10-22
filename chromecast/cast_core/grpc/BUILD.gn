@@ -36,10 +36,7 @@ source_set("grpc") {
     "//third_party/grpc:grpc++",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 }
 
 source_set("status_matchers") {

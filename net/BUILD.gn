@@ -101,8 +101,6 @@ config("net_internal_config") {
 net_configs = [
   ":net_internal_config",
   "//build/config:precompiled_headers",
-
-  "//build/config/compiler:wexit_time_destructors",
 ]
 
 if (is_linux || is_chromeos) {
@@ -2129,8 +2127,6 @@ proto_library("net_nqe_proto") {
   link_deps = [ "//net/base:net_export_header" ]
 
   defines = [ "NET_IMPLEMENTATION" ]
-
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 proto_library("isolation_info_proto") {
@@ -2148,7 +2144,6 @@ component("extras") {
     "extras/sqlite/sqlite_persistent_store_backend_base.h",
   ]
   defines = [ "IS_NET_EXTRAS_IMPL" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     ":net",
     "//base",
@@ -2172,7 +2167,6 @@ component("shared_dictionary_info") {
     "extras/shared_dictionary/shared_dictionary_usage_info.h",
   ]
   defines = [ "IS_NET_SHARED_DICTIONARY_IMPL" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     ":net",
     "//base",

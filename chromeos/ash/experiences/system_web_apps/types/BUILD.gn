@@ -16,8 +16,6 @@ static_library("types") {
     "system_web_app_delegate_map.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/common",

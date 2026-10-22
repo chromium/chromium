@@ -205,8 +205,6 @@ source_set("core") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]

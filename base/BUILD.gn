@@ -1137,7 +1137,6 @@ component("base") {
   configs += [
     "//build/config:precompiled_headers",
     "//build/config/compiler:prevent_unsafe_narrowing",
-    "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
   ]
 
@@ -2717,10 +2716,7 @@ source_set("dcheck_is_on") {
 # build config for ":base".
 source_set("simdutf_shim") {
   visibility = [ ":base" ]
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
   if (!is_win) {
     # Generates -Werror,-Wsign-conversion
     configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
@@ -3306,7 +3302,6 @@ component("i18n") {
     "i18n/utf8_validator_tables.h",
   ]
   defines = [ "BASE_I18N_IMPLEMENTATION" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     ":base",
     "//base/i18n:base_i18n_export",

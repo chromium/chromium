@@ -213,10 +213,7 @@ component("browser") {
   ]
 
   defines = [ "IS_STORAGE_BROWSER_IMPL" ]
-  configs += [
-    "//build/config:precompiled_headers",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
     "//components/services/filesystem/public/mojom",

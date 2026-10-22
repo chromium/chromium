@@ -23,8 +23,6 @@ source_set("icubridge") {
 
   defines = [ "BASE_I18N_IMPLEMENTATION" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//base/i18n:base_i18n_export",

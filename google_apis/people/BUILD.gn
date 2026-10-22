@@ -24,8 +24,6 @@ static_library("people") {
     "//services/network/public/cpp",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("people_unittest_sources") {

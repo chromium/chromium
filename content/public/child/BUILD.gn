@@ -31,10 +31,7 @@ source_set("child_sources") {
     sources += [ "font_integration_init.h" ]
   }
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//content:content_implementation",
-  ]
+  configs += [ "//content:content_implementation" ]
 
   deps = [
     "//content/public/common:common_sources",

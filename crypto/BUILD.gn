@@ -192,7 +192,6 @@ component("crypto") {
   }
 
   defines = [ "CRYPTO_IMPLEMENTATION" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (is_apple) {
@@ -233,7 +232,6 @@ source_set("cose") {
     "//components/cbor",
     "//third_party/boringssl",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 test("crypto_unittests") {
@@ -318,8 +316,6 @@ test("crypto_unittests") {
   if (is_apple) {
     deps += [ ":mock_apple_keychain" ]
   }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -381,8 +377,6 @@ static_library("test_support") {
     "//base",
     "//testing/gmock",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 bundle_data("unittests_bundle_data") {

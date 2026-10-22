@@ -13,8 +13,6 @@ source_set("views") {
     "app_window_frame_view.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//cc/paint",
     "//chrome/app/theme:theme_resources",

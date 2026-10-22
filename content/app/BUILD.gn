@@ -7,7 +7,6 @@ import("//build/config/chrome_build.gni")
 import("//third_party/tflite/features.gni")
 
 extra_configs = [
-  "//build/config/compiler:wexit_time_destructors",
   "//content:content_implementation",
   "//v8:external_startup_data",
 ]

@@ -5,7 +5,6 @@
 import("//build/config/mac/rules.gni")
 
 executable("launch_application_test_helper") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   sources = [ "test/launch_application_test_helper_main.m" ]
   deps = [ "//base:compiler_specific" ]
 

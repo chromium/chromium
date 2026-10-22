@@ -211,7 +211,6 @@ static_library("backend_cdp_bindings") {
   sources = get_target_outputs(":protocol_sources")
   visibility = [ ":headless_browser" ]
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     ":headless_defines_config",
     ":inside_headless_component",
   ]
@@ -227,7 +226,6 @@ source_set("headless_common") {
   ]
   deps = [ "//base" ]
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     ":inside_headless_component",
     ":headless_defines_config",
   ]
@@ -266,7 +264,6 @@ source_set("headless_renderer") {
     ]
   }
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     ":inside_headless_component",
     ":headless_defines_config",
   ]
@@ -295,7 +292,6 @@ source_set("headless_utility") {
   configs += [
     ":headless_defines_config",
     ":inside_headless_component",
-    "//build/config/compiler:wexit_time_destructors",
   ]
 }
 
@@ -450,7 +446,6 @@ source_set("headless_browser") {
   }
 
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     ":inside_headless_component",
     ":headless_defines_config",
   ]
@@ -825,7 +820,6 @@ component("headless_shell_lib") {
   configs += [
     ":headless_defines_config",
     ":inside_headless_component",
-    "//build/config/compiler:wexit_time_destructors",
   ]
 
   if (use_ozone) {
@@ -941,8 +935,5 @@ executable("headless_shell") {
     deps += [ "//components/crash/core/app" ]
   }
 
-  configs += [
-    ":headless_defines_config",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ ":headless_defines_config" ]
 }

@@ -26,8 +26,6 @@ source_set("text_detection") {
     "//mojo/public/cpp/bindings",
     "//ui/gfx/geometry",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

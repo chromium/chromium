@@ -112,8 +112,6 @@ proto_library("net_quic_proto") {
   link_deps = [ "//base" ]
 
   defines = [ "IS_QUICHE_IMPL" ]
-
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 proto_library("net_quic_test_tools_proto") {
@@ -127,8 +125,6 @@ proto_library("net_quic_test_tools_proto") {
   link_deps = [ "//net/base:net_export_header" ]
 
   defines = [ "NET_IMPLEMENTATION" ]
-
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (build_epoll_based_tools) {
@@ -908,8 +904,6 @@ proto_library("blind_sign_auth_proto") {
   import_dirs = [ "//third_party/anonymous_tokens/src/" ]
 
   defines = [ "IS_QUICHE_IMPL" ]
-
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("blind_sign_auth_test_support") {

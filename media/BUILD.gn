@@ -124,10 +124,7 @@ config("subcomponent_config") {
     visibility += [ "//media/base/mac" ]
   }
   defines = [ "IS_MEDIA_IMPL" ]
-  configs = [
-    ":media_config",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs = [ ":media_config" ]
 }
 
 component("media") {

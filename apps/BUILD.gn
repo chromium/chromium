@@ -33,8 +33,6 @@ static_library("apps") {
     "switches.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//components/keyed_service/content",

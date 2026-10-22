@@ -8,7 +8,6 @@ import("//tools/grit/grit_rule.gni")
 # Applied by targets internal to content.
 config("content_implementation") {
   defines = [ "CONTENT_IMPLEMENTATION" ]
-  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 assert(use_blink, "Chromium without blink shouldn't use anything in //content")
