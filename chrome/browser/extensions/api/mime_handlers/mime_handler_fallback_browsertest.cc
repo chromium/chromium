@@ -18,7 +18,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -387,26 +386,17 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
 
 // Calling abortAndFallbackToNativeHandler from the built-in PDF
 // extension must reject with an error and not navigate.
-// TODO(crbug.com/551592354): Flaky on Linux MSAN.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_BuiltInExtensionRejectsAbortAndFallback \
-  DISABLED_BuiltInExtensionRejectsAbortAndFallback
-#else
-#define MAYBE_BuiltInExtensionRejectsAbortAndFallback \
-  BuiltInExtensionRejectsAbortAndFallback
-#endif
 IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
-                       MAYBE_BuiltInExtensionRejectsAbortAndFallback) {
+                       BuiltInExtensionRejectsAbortAndFallback) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   const GURL pdf_url = embedded_test_server()->GetURL(kFallbackPdfPath);
 
   // With no generic MIME handler loaded, the built-in PDF extension
-  // handles the navigation. Wait for its OOPIF to commit before reaching
+  // handles the navigation. Wait for the viewer to load before reaching
   // into it with EvalJs.
-  auto pdf_extension_observer = MakePdfExtensionObserver();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
-  pdf_extension_observer->WaitForNavigationFinished();
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
 
   content::RenderFrameHost* pdf_ext_frame =
       pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
