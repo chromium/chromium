@@ -379,6 +379,7 @@ CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(
         &svg_names::kStrokeWidthAttr,
         &svg_names::kTextAnchorAttr,
         &svg_names::kTextDecorationAttr,
+        &svg_names::kTextOverflowAttr,
         &svg_names::kTextRenderingAttr,
         &svg_names::kTransformOriginAttr,
         &svg_names::kUnicodeBidiAttr,
