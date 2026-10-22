@@ -7,6 +7,7 @@ package org.chromium.ui.base;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.AdditionalMatchers.aryEq;
@@ -1290,6 +1291,105 @@ public class SelectFileDialogTest {
         assertTrue(validTask.doInBackground() != null);
         Mockito.verify(mFileUtilsMocks).getAbsoluteFilePath(validFile.getPath());
         assertEquals(validFile.getCanonicalPath(), validTask.mFilePaths[0]);
+    }
+
+    @Test
+    public void testVirtualDocumentPathResultsAreRejected() throws IOException {
+        File validFile = mTempFolder.newFile("doc.pdf");
+        Mockito.lenient()
+                .doReturn(validFile.getCanonicalPath())
+                .when(mFileUtilsMocks)
+                .getAbsoluteFilePath(any());
+
+        SelectFileDialog selectFileDialog = new SelectFileDialog(null);
+        Uri[] virtualPathUris =
+                new Uri[] {
+                    Uri.parse("file:/SAF/authority/tree/123/doc.pdf"),
+                    Uri.parse("file:///SAF/authority/tree/123/note.txt"),
+                };
+        for (Uri uri : virtualPathUris) {
+            SelectFileDialog.GetDisplayNameTask task =
+                    selectFileDialog
+                    .new GetDisplayNameTask(
+                            ContextUtils.getApplicationContext(),
+                            /* isMultiple= */ false,
+                            new Uri[] {uri});
+            assertNull("Expected null for " + uri, task.doInBackground());
+        }
+        SelectFileDialog.GetDisplayNameTask multiTask =
+                selectFileDialog
+                .new GetDisplayNameTask(
+                        ContextUtils.getApplicationContext(),
+                        /* isMultiple= */ true,
+                        virtualPathUris);
+        assertNull(multiTask.doInBackground());
+
+        String[] virtualPaths = new String[] {"/SAF", "/SAF/", "/SAF/authority/tree/123/doc.pdf"};
+        for (String path : virtualPaths) {
+            SelectFileDialog.FilePathSelectedTask task =
+                    selectFileDialog
+                    .new FilePathSelectedTask(ContextUtils.getApplicationContext(), path, null);
+            assertFalse("Expected false for " + path, task.doInBackground());
+        }
+
+        TestSelectFileDialog testDialog = new TestSelectFileDialog(null);
+        ClipData clipData =
+                ClipData.newUri(
+                        ContextUtils.getApplicationContext().getContentResolver(),
+                        "label",
+                        virtualPathUris[0]);
+        clipData.addItem(new ClipData.Item(virtualPathUris[1]));
+        Intent clipIntent = new Intent(Intent.ACTION_VIEW);
+        clipIntent.setClipData(clipData);
+        testDialog.onIntentCompleted(Activity.RESULT_OK, clipIntent);
+        runAllAsyncTasks();
+        assertEquals(0, testDialog.mFileSelectionSuccess);
+        assertEquals(1, testDialog.mFileSelectionAborted);
+        testDialog.resetFileSelectionAttempts();
+
+        Intent dataIntent = new Intent(Intent.ACTION_VIEW, virtualPathUris[0]);
+        testDialog.onIntentCompleted(Activity.RESULT_OK, dataIntent);
+        runAllAsyncTasks();
+        assertEquals(0, testDialog.mFileSelectionSuccess);
+        assertEquals(1, testDialog.mFileSelectionAborted);
+        testDialog.resetFileSelectionAttempts();
+
+        Mockito.verify(mFileUtilsMocks, Mockito.never()).getAbsoluteFilePath(any());
+
+        SelectFileDialog.GetDisplayNameTask mixedMultiTask =
+                selectFileDialog
+                .new GetDisplayNameTask(
+                        ContextUtils.getApplicationContext(),
+                        /* isMultiple= */ true,
+                        new Uri[] {Uri.fromFile(validFile), virtualPathUris[0]});
+        assertNull(mixedMultiTask.doInBackground());
+
+        doReturn(validFile.getCanonicalPath())
+                .when(mFileUtilsMocks)
+                .getAbsoluteFilePath("/SAFE/doc.pdf");
+        SelectFileDialog.FilePathSelectedTask safePrefixTask =
+                selectFileDialog
+                .new FilePathSelectedTask(
+                        ContextUtils.getApplicationContext(), "/SAFE/doc.pdf", null);
+        assertTrue(safePrefixTask.doInBackground());
+        Mockito.verify(mFileUtilsMocks).getAbsoluteFilePath("/SAFE/doc.pdf");
+
+        doReturn("/SAF/authority/tree/123/doc.pdf")
+                .when(mFileUtilsMocks)
+                .getAbsoluteFilePath("//SAF/doc.pdf");
+        SelectFileDialog.FilePathSelectedTask postResolveFileTask =
+                selectFileDialog
+                .new FilePathSelectedTask(
+                        ContextUtils.getApplicationContext(), "//SAF/doc.pdf", null);
+        assertFalse(postResolveFileTask.doInBackground());
+        SelectFileDialog.GetDisplayNameTask postResolveUriTask =
+                selectFileDialog
+                .new GetDisplayNameTask(
+                        ContextUtils.getApplicationContext(),
+                        /* isMultiple= */ false,
+                        new Uri[] {Uri.parse("file:////SAF/doc.pdf")});
+        assertNull(postResolveUriTask.doInBackground());
+        Mockito.verify(mFileUtilsMocks, Mockito.times(2)).getAbsoluteFilePath("//SAF/doc.pdf");
     }
 
     @Test
