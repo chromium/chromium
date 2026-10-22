@@ -1604,6 +1604,61 @@ TEST_F(ActionAppMenuTest, ZoomLabelAccessibilityAnnouncementOnZoomChange) {
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+// Regression test for crbug.com/575090745: Firing a synchronous native
+// accessibility event during zoom label text updates can spin the Windows COM
+// STA message pump and re-entrantly close and destroy the menu.
+TEST_F(ActionAppMenuTest, ZoomLabelUpdateSurvivesReentrantMenuDestruction) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  zoom::ZoomController::CreateForWebContents(web_contents.get());
+
+  EXPECT_CALL(mock_window_interface_, GetActiveTabInterface())
+      .WillRepeatedly(testing::Return(&mock_tab));
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(testing::Return(web_contents.get()));
+
+  auto menu = std::make_unique<ActionAppMenu>(&mock_window_interface_,
+                                              base::DoNothing());
+  menu->RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu->IsShowing());
+
+  views::MenuItemView* const root = menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+
+  auto* zoom_view =
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+
+  views::Label* const zoom_label = zoom_view->zoom_label_for_testing();
+  ASSERT_NE(zoom_label, nullptr);
+
+  // Simulate a UIA client re-entrantly invoking AppMenuButton::CloseMenu()
+  // during the kTextChanged accessibility event raise inside Label::SetText().
+  zoom_label->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindLambdaForTesting(
+          [&menu](const ui::AXPlatformNodeDelegate*, ax::mojom::Event event) {
+            if (event == ax::mojom::Event::kTextChanged && menu) {
+              menu->CloseMenu();
+              menu.reset();
+            }
+          }));
+
+  actions::ActionItem* normal_action =
+      actions::ActionManager::Get().FindAction(kActionZoomNormal, nullptr);
+  ASSERT_TRUE(normal_action);
+
+  normal_action->SetText(base::FormatPercent(200));
+  EXPECT_EQ(zoom_label->GetText(), base::FormatPercent(200));
+  EXPECT_TRUE(menu->IsShowing());
+  menu->CloseMenu();
+}
+
 TEST_F(ActionAppMenuTest, FullscreenActionUpdatesAccessibilityName) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());

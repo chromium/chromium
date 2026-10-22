@@ -121,15 +121,33 @@ void AppMenuZoomView::BuildZoomChildControls(
       zoom_label_->SetPreferredSize(gfx::Size(
           GetZoomLabelMaxWidth(), zoom_label_->GetPreferredSize().height()));
 
+      // Bind a WeakPtr to `this` rather than a raw pointer to `zoom_label_`
+      // because `zoom_child` is owned by BrowserActions and outlives the menu;
+      // synchronous native accessibility event dispatch (e.g., UIA on Windows)
+      // can also spin an STA message pump and re-entrantly close/destroy the
+      // menu while action callbacks are being notified. This is needed to
+      // prevent a UAF bug as reported in crbug.com/575090745.
       zoom_label_subscription_ =
           zoom_child->AddActionChangedCallback(base::BindRepeating(
-              [](views::Label* label, actions::ActionItem* item) {
+              [](base::WeakPtr<AppMenuZoomView> self,
+                 actions::ActionItem* item) {
+                if (!self || !self->zoom_label_) {
+                  return;
+                }
+                views::Label* label = self->zoom_label_;
                 if (label->GetText() != item->GetText()) {
-                  label->SetText(std::u16string(item->GetText()));
+                  // Block the intermediate kTextChanged event during SetText()
+                  // so synchronous UIA event dispatch cannot re-entrantly
+                  // destroy `label` mid-update before AnnounceAlert() runs.
+                  {
+                    views::ScopedAccessibilityEventBlocker blocker(
+                        label->GetViewAccessibility());
+                    label->SetText(std::u16string(item->GetText()));
+                  }
                   label->GetViewAccessibility().AnnounceAlert(item->GetText());
                 }
               },
-              zoom_label_, zoom_child));
+              weak_ptr_factory_.GetWeakPtr(), zoom_child));
     } else {
       views::ImageButton* const zoom_child_button =
           AddChildView(CreateZoomButton(zoom_child));
