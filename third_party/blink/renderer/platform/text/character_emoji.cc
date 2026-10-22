@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/text/character.h"
 
+#include <unicode/uniset.h>
 #include <unicode/uvernum.h>
 
 namespace blink::unicode {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <unicode/uniset.h>
+#include <unicode/unistr.h>
 #include <unicode/uvernum.h>
 
 #include "third_party/blink/renderer/platform/text/character.h"

@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_H_
 
 #include <unicode/uchar.h>
-#include <unicode/uniset.h>
 #include <unicode/uscript.h>
 
 #include "base/containers/span.h"
@@ -45,6 +44,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+U_NAMESPACE_BEGIN
+class UnicodeSet;
+U_NAMESPACE_END
 
 namespace blink::unicode {
 

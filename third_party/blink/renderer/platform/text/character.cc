@@ -32,6 +32,8 @@
 
 #include <unicode/uchar.h>
 #include <unicode/ucptrie.h>
+#include <unicode/uniset.h>
+#include <unicode/unistr.h>
 #include <unicode/uobject.h>
 #include <unicode/uscript.h>
 
