@@ -1702,6 +1702,99 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerContextManagementBrowserTest,
   EXPECT_EQ(get_submenu_label(), u"Sharing 2 tabs");
 }
 
+class OmniboxContextMenuControllerSingleTabItemBrowserTest
+    : public OmniboxContextMenuControllerBrowserTest {
+ public:
+  OmniboxContextMenuControllerSingleTabItemBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::kContextManagementInComposebox,
+          {{omnibox::kContextManagementInComposeboxSingleTabMenuItem.name,
+            "true"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The standalone single tab row sits directly above the "Add tabs" row and
+// mirrors the flyout row that carries the "Current tab" / "Recent tab" suffix.
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerSingleTabItemBrowserTest,
+                       SingleTabItemTracksCurrentAndRecentTab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+  auto* web_contents = GetWebContents();
+  tabs::TabInterface* popup_tab = browser()->GetTabStripModel()->GetActiveTab();
+
+  ui::UserDataFactory::ScopedOverride controller_override =
+      CreateMockTabContextualizationControllerOverride();
+
+  tabs::TabInterface* tab1 =
+      AddTabToBrowser(1, embedded_test_server()->GetURL("/title2.html"));
+  tabs::TabInterface* tab2 =
+      AddTabToBrowser(2, embedded_test_server()->GetURL("/title3.html"));
+  ASSERT_TRUE(tab1 && tab2);
+
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
+
+  // Builds a fresh menu and returns {single tab label, single tab minor text,
+  // index of single tab row, index of "Add tabs" row, label of the flyout row
+  // carrying the same suffix}.
+  struct MenuSnapshot {
+    std::u16string label;
+    std::u16string minor_text;
+    std::optional<size_t> single_tab_index;
+    std::optional<size_t> submenu_index;
+    std::u16string flyout_label;
+  };
+  auto snapshot = [&]() {
+    OmniboxContextMenuController controller(&file_selector, web_contents);
+    ui::SimpleMenuModel* menu = controller.menu_model();
+    MenuSnapshot snap;
+    snap.single_tab_index =
+        menu->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SINGLE_TAB);
+    snap.submenu_index =
+        menu->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU);
+    if (snap.single_tab_index) {
+      snap.label = menu->GetLabelAt(*snap.single_tab_index);
+      snap.minor_text = menu->GetMinorTextAt(*snap.single_tab_index);
+      EXPECT_EQ(menu->GetElementIdentifierAt(*snap.single_tab_index),
+                OmniboxContextMenuController::kSingleTabMenuItemIdForTesting);
+    }
+    ui::SimpleMenuModel* flyout = controller.shared_tabs_menu_model();
+    if (flyout) {
+      for (size_t i = 0; i < flyout->GetItemCount(); ++i) {
+        if (!flyout->GetMinorTextAt(i).empty()) {
+          snap.flyout_label = flyout->GetLabelAt(i);
+        }
+      }
+    }
+    return snap;
+  };
+
+  // `tab2` was opened last and is the active tab.
+  {
+    MenuSnapshot snap = snapshot();
+    ASSERT_TRUE(snap.single_tab_index.has_value());
+    ASSERT_TRUE(snap.submenu_index.has_value());
+    EXPECT_EQ(*snap.single_tab_index + 1, *snap.submenu_index);
+    EXPECT_EQ(snap.minor_text, u"");
+    EXPECT_EQ(snap.label, snap.flyout_label);
+  }
+
+  // Activate the WebUI popup tab, which is not a valid tab suggestion, so the
+  // row falls back to the most recent tab.
+  browser()->GetTabStripModel()->ActivateTabAt(
+      browser()->GetTabStripModel()->GetIndexOfTab(popup_tab));
+  {
+    MenuSnapshot snap = snapshot();
+    ASSERT_TRUE(snap.single_tab_index.has_value());
+    EXPECT_EQ(snap.minor_text, u"");
+    EXPECT_EQ(snap.label, snap.flyout_label);
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
                        TabsSubmenuDisabledWhenTabContextDisabled) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

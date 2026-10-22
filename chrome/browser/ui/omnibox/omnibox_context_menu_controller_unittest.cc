@@ -5,9 +5,14 @@
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -29,6 +34,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/composebox_features.h"
@@ -50,6 +56,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
  public:
@@ -93,6 +100,7 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
   using OmniboxContextMenuController::input_type_for_command_id_;
   using OmniboxContextMenuController::IsInputTypeEnabled;
   using OmniboxContextMenuController::OmniboxContextMenuController;
+  using OmniboxContextMenuController::OnFaviconDataAvailable;
   using OmniboxContextMenuController::OnGetInputState;
   using OmniboxContextMenuController::OnInputStateChanged;
 
@@ -1415,4 +1423,242 @@ TEST_F(OmniboxContextMenuControllerTest,
       "ContextualSearch.TabPicker.SelectedTabIsActive.Omnibox", 0);
   histogram_tester.ExpectUniqueSample(
       "ContextualSearch.TabPicker.SelectedTabPosition.Omnibox", 0, 1);
+}
+
+class OmniboxContextMenuControllerSingleTabItemTest
+    : public OmniboxContextMenuControllerTest {
+ public:
+  OmniboxContextMenuControllerSingleTabItemTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::kContextManagementInComposebox,
+          {{omnibox::kContextManagementInComposeboxSingleTabMenuItem.name,
+            "true"}}},
+         {omnibox::kContextManagementInOmnibox, {}},
+         {omnibox::kAimUsePecApi, {}}},
+        {});
+  }
+
+  void SetUp() override {
+    OmniboxContextMenuControllerTest::SetUp();
+    omnibox::InputState state;
+    state.allowed_input_types.push_back(
+        omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+    controller()->OnInputStateChanged(state);
+  }
+
+  static OmniboxContextMenuController::TabInfo MakeTab(
+      int tab_id,
+      std::u16string title,
+      bool is_active_tab,
+      bool is_checked = false) {
+    OmniboxContextMenuController::TabInfo tab;
+    tab.tab_id = tab_id;
+    tab.title = std::move(title);
+    tab.url = GURL("https://example.com/" + base::NumberToString(tab_id));
+    tab.is_active_tab = is_active_tab;
+    tab.is_checked = is_checked;
+    return tab;
+  }
+
+  std::optional<size_t> SingleTabIndex() {
+    return controller()->menu_model()->GetIndexOfCommandId(
+        IDC_OMNIBOX_CONTEXT_SINGLE_TAB);
+  }
+
+  std::optional<size_t> SubmenuIndex() {
+    return controller()->menu_model()->GetIndexOfCommandId(
+        IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       ShowsCurrentTabAboveAddTabsRow) {
+  controller()->SetMockTabs({MakeTab(1, u"Active", /*is_active_tab=*/true),
+                             MakeTab(2, u"Other", /*is_active_tab=*/false)});
+  controller()->RebuildMenu();
+
+  ui::SimpleMenuModel* menu = controller()->menu_model();
+  ASSERT_TRUE(SingleTabIndex().has_value());
+  ASSERT_TRUE(SubmenuIndex().has_value());
+  EXPECT_EQ(*SingleTabIndex() + 1, *SubmenuIndex());
+
+  const size_t index = *SingleTabIndex();
+  EXPECT_EQ(menu->GetTypeAt(index), ui::MenuModel::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(index), u"Active");
+  EXPECT_EQ(menu->GetMinorTextAt(index), u"");
+  EXPECT_TRUE(menu->GetMinorIconAt(index).IsEmpty());
+  EXPECT_FALSE(menu->GetIconAt(index).IsEmpty());
+  EXPECT_EQ(menu->GetElementIdentifierAt(index),
+            OmniboxContextMenuController::kSingleTabMenuItemIdForTesting);
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       ShowsRecentTabWhenNoActiveTab) {
+  controller()->SetMockTabs({MakeTab(1, u"Recent", /*is_active_tab=*/false),
+                             MakeTab(2, u"Older", /*is_active_tab=*/false)});
+  controller()->RebuildMenu();
+
+  ui::SimpleMenuModel* menu = controller()->menu_model();
+  ASSERT_TRUE(SingleTabIndex().has_value());
+  const size_t index = *SingleTabIndex();
+  EXPECT_EQ(menu->GetLabelAt(index), u"Recent");
+  EXPECT_EQ(menu->GetMinorTextAt(index), u"");
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       SurfacesActiveTabEvenWhenNotFirst) {
+  // Checked tabs sort ahead of the active tab in `GetRecentTabs()`, so the
+  // active tab is not necessarily at index 0.
+  controller()->SetMockTabs(
+      {MakeTab(1, u"Checked", /*is_active_tab=*/false, /*is_checked=*/true),
+       MakeTab(2, u"Active", /*is_active_tab=*/true)});
+  controller()->RebuildMenu();
+
+  ui::SimpleMenuModel* menu = controller()->menu_model();
+  ASSERT_TRUE(SingleTabIndex().has_value());
+  EXPECT_EQ(menu->GetLabelAt(*SingleTabIndex()), u"Active");
+  EXPECT_EQ(menu->GetMinorTextAt(*SingleTabIndex()), u"");
+
+  // The flyout labels the same tab, and only that tab.
+  ui::SimpleMenuModel* submenu = controller()->shared_tabs_menu_model();
+  ASSERT_TRUE(submenu);
+  ASSERT_EQ(submenu->GetItemCount(), 2u);
+  EXPECT_EQ(submenu->GetMinorTextAt(0), u"");
+  EXPECT_EQ(submenu->GetMinorTextAt(1),
+            l10n_util::GetStringUTF16(IDS_COMPOSE_CURRENT_TAB));
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       CheckmarkReflectsSelection) {
+  controller()->SetMockTabs(
+      {MakeTab(1, u"Active", /*is_active_tab=*/true, /*is_checked=*/true)});
+  controller()->RebuildMenu();
+
+  ui::SimpleMenuModel* menu = controller()->menu_model();
+  ASSERT_TRUE(SingleTabIndex().has_value());
+  EXPECT_FALSE(menu->GetMinorIconAt(*SingleTabIndex()).IsEmpty());
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest, TabRemainsInFlyout) {
+  controller()->SetMockTabs({MakeTab(1, u"Active", /*is_active_tab=*/true),
+                             MakeTab(2, u"Other", /*is_active_tab=*/false)});
+  controller()->RebuildMenu();
+
+  ui::SimpleMenuModel* submenu = controller()->shared_tabs_menu_model();
+  ASSERT_TRUE(submenu);
+  ASSERT_EQ(submenu->GetItemCount(), 2u);
+  EXPECT_EQ(submenu->GetLabelAt(0), u"Active");
+  EXPECT_EQ(submenu->GetLabelAt(1), u"Other");
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       HiddenWhenSmartTabSharingActive) {
+  base::test::ScopedFeatureList sts_feature_list;
+  sts_feature_list.InitFromCommandLine(
+      "ContextualTasksForceEntryPointEligibility,"
+      "ContextualTasksContext<ContextualTasksContextStudy."
+      "ContextualTasksContextGroup:ContextualTasksContextSmartTabSharing/true",
+      "");
+
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetContextualSearchboxHandler(&fake_handler);
+  controller()->SetMockTabs({MakeTab(1, u"Active", /*is_active_tab=*/true)});
+
+  fake_handler.active_ = true;
+  controller()->RebuildMenu();
+  EXPECT_FALSE(SingleTabIndex().has_value());
+  EXPECT_TRUE(controller()
+                  ->menu_model()
+                  ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
+                  .has_value());
+
+  fake_handler.active_ = false;
+  controller()->RebuildMenu();
+  EXPECT_TRUE(SingleTabIndex().has_value());
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest, HiddenWhenNoTabs) {
+  controller()->SetMockTabs({});
+  controller()->RebuildMenu();
+  EXPECT_FALSE(SingleTabIndex().has_value());
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       AliasResolvesToUnderlyingTabCommand) {
+  controller()->SetMockTabs({MakeTab(1, u"Other", /*is_active_tab=*/false),
+                             MakeTab(2, u"Active", /*is_active_tab=*/true)});
+  controller()->RebuildMenu();
+
+  // The active tab is the second suggestion, i.e. command 33000 + 1.
+  constexpr int kActiveTabCommandId = 33000 + 1;
+  EXPECT_TRUE(controller()->IsCommandIdEnabled(IDC_OMNIBOX_CONTEXT_SINGLE_TAB));
+  EXPECT_TRUE(controller()->IsCommandIdEnabled(kActiveTabCommandId));
+  EXPECT_TRUE(controller()->IsCommandIdVisible(IDC_OMNIBOX_CONTEXT_SINGLE_TAB));
+  EXPECT_TRUE(controller()->IsCommandIdVisible(kActiveTabCommandId));
+
+  controller()->SetTabContextEnabled(false);
+  EXPECT_FALSE(
+      controller()->IsCommandIdEnabled(IDC_OMNIBOX_CONTEXT_SINGLE_TAB));
+  controller()->SetTabContextEnabled(true);
+
+  // Executing the alias behaves like executing the flyout row for the same
+  // tab, including the tab picker telemetry for that tab's position.
+  base::HistogramTester histogram_tester;
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.TabPicker.SelectedTabIsActive.Omnibox", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.TabPicker.SelectedTabPosition.Omnibox", 1, 1);
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       FaviconUpdatesMainMenuRow) {
+  controller()->SetMockTabs({MakeTab(1, u"Active", /*is_active_tab=*/true)});
+  controller()->RebuildMenu();
+  ASSERT_TRUE(SingleTabIndex().has_value());
+
+  favicon_base::FaviconImageResult result;
+  result.image = gfx::test::CreateImage(16, 16);
+  controller()->OnFaviconDataAvailable(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, result);
+
+  ui::ImageModel icon =
+      controller()->menu_model()->GetIconAt(*SingleTabIndex());
+  EXPECT_TRUE(icon.IsImage());
+  // The flyout row keeps its own (default) icon.
+  EXPECT_FALSE(controller()->shared_tabs_menu_model()->GetIconAt(0).IsImage());
+}
+
+TEST_F(OmniboxContextMenuControllerTest, SingleTabItem_HiddenWhenParamOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kContextManagementInComposebox,
+        {{omnibox::kContextManagementInComposeboxSingleTabMenuItem.name,
+          "false"}}},
+       {omnibox::kContextManagementInOmnibox, {}},
+       {omnibox::kAimUsePecApi, {}}},
+      {});
+
+  OmniboxContextMenuController::TabInfo tab;
+  tab.tab_id = 1;
+  tab.title = u"Active";
+  tab.url = GURL("https://example.com");
+  tab.is_active_tab = true;
+  controller()->SetMockTabs({tab});
+  omnibox::InputState state;
+  state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  controller()->OnInputStateChanged(state);
+
+  EXPECT_FALSE(controller()
+                   ->menu_model()
+                   ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SINGLE_TAB)
+                   .has_value());
+  // The flyout still labels the current tab.
+  ASSERT_TRUE(controller()->shared_tabs_menu_model());
+  EXPECT_EQ(controller()->shared_tabs_menu_model()->GetMinorTextAt(0),
+            l10n_util::GetStringUTF16(IDS_COMPOSE_CURRENT_TAB));
 }
