@@ -1000,7 +1000,7 @@
     },
     {
       name: "BlockingFocusWithoutUserActivation",
-      status: "experimental",
+      status: "stable",
       origin_trial_feature_name: "BlockingFocusWithoutUserActivation",
     },
     {
