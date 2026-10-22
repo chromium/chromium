@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
@@ -272,7 +274,13 @@ void BackToOpenerController::GoBackToOpener() {
     TabCloseObserver::CreateForWebContents(dst_contents, opener_web_contents_,
                                            close_start_time);
 
-    tab().Close();
+    BrowserWindowInterface* window = tab().GetBrowserWindowInterface();
+    TabStripModel* model = window ? window->GetTabStripModel() : nullptr;
+    CHECK(model);
+    // Record the closed tab in TabRestoreService so it can be restored.
+    model->CloseWebContents(dst_contents,
+                            TabCloseTypes::CLOSE_USER_GESTURE |
+                                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   }
 }
 

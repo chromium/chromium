@@ -4,6 +4,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -18,8 +20,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -123,6 +127,36 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, BasicBackToOpener) {
 }
 
 IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
+                       ClosedDestinationWithoutUnloadHandlersIsRestorable) {
+  content::WebContents* opener_contents = nullptr;
+  content::WebContents* dest_contents = nullptr;
+  ASSERT_NO_FATAL_FAILURE(OpenDestinationTab(&opener_contents, &dest_contents));
+  ASSERT_FALSE(dest_contents->NeedToFireBeforeUnloadOrUnloadEvents());
+  const GURL dest_url = dest_contents->GetLastCommittedURL();
+
+  content::WebContentsDestroyedWatcher close_watcher(dest_contents);
+  chrome::ExecuteCommand(browser(), IDC_BACK);
+  close_watcher.Wait();
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(opener_contents,
+            browser()->tab_strip_model()->GetActiveWebContents());
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(tab_restore_service, nullptr);
+  ASSERT_EQ(1u, tab_restore_service->entries().size());
+
+  ui_test_utils::TabAddedWaiter restore_waiter(browser());
+  chrome::RestoreTab(browser());
+  content::WebContents* restored_contents = restore_waiter.Wait();
+  ASSERT_NE(restored_contents, nullptr);
+  ASSERT_TRUE(content::WaitForLoadStop(restored_contents));
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(dest_url, restored_contents->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
                        BeforeUnloadAcceptedClosesDestination) {
   content::WebContents* opener_contents = nullptr;
   content::WebContents* dest_contents = nullptr;
@@ -143,6 +177,10 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
             browser()->tab_strip_model()->GetActiveWebContents());
   histogram_tester.ExpectTotalCount(
       "Navigation.BackToOpener.DestinationTabCloseDuration", 1);
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(tab_restore_service, nullptr);
+  EXPECT_EQ(1u, tab_restore_service->entries().size());
 }
 
 IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
