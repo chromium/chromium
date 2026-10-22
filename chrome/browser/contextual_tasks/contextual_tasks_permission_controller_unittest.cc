@@ -6,14 +6,18 @@
 
 #include "base/test/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_util.h"
+#include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -160,6 +164,119 @@ TEST_F(ContextualTasksPermissionControllerTest, ForwardsChipInteractions) {
 
   EXPECT_TRUE(pressed_callback_ran);
   EXPECT_TRUE(pressed_with_pointer);
+}
+
+TEST_F(ContextualTasksPermissionControllerTest,
+       TracksVerboseIndicatorStateForNonTabWebContents) {
+  const GURL url1("https://example.com");
+  const GURL url2("https://other.com");
+  NavigateAndCommit(url1);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+
+  auto* location_bar = controller()->GetLocationBarForTesting();
+  auto* indicator_chip = location_bar->permission_dashboard()->indicator_chip();
+  auto* dashboard_controller = location_bar->GetPermissionDashboardController();
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(pscs);
+
+  // 1. First blocked mic indicator on `url1` expands to verbose state.
+  pscs->OnMediaStreamPermissionSet(
+      url1,
+      {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+       content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_FALSE(indicator_chip->IsFullyCollapsed());
+
+  controller()->OnChipExpandAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+  EXPECT_TRUE(dashboard_controller->is_verbose());
+
+  dashboard_controller->get_collapse_timer_for_testing().FireNow();
+  controller()->OnChipCollapseAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+  EXPECT_FALSE(dashboard_controller->is_verbose());
+
+  pscs->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_MIC,
+                               /*update_indicators=*/true);
+  EXPECT_FALSE(indicator_chip->GetVisible());
+
+  // 2. Second blocked mic indicator on `url1` stays collapsed.
+  pscs->OnMediaStreamPermissionSet(
+      url1,
+      {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+       content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_TRUE(indicator_chip->IsFullyCollapsed());
+  EXPECT_FALSE(dashboard_controller->is_verbose());
+
+  pscs->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_MIC,
+                               /*update_indicators=*/true);
+  EXPECT_FALSE(indicator_chip->GetVisible());
+
+  // 3. Switching the shared location bar to another task WebContents (A -> B)
+  // allows B's first indicator to expand, and switching back (B -> A) preserves
+  // A's already-displayed indicator state so A stays collapsed.
+  std::unique_ptr<content::WebContents> second_web_contents =
+      CreateTestWebContents();
+  controller()->RegisterWebContents(second_web_contents.get());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      second_web_contents.get(), url1);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      second_web_contents.get(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(
+          second_web_contents.get()));
+  controller()->Update(second_web_contents.get());
+
+  auto* second_pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          second_web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(second_pscs);
+  second_pscs->OnMediaStreamPermissionSet(
+      url1,
+      {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+       content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_FALSE(indicator_chip->IsFullyCollapsed());
+
+  controller()->OnChipExpandAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+  dashboard_controller->get_collapse_timer_for_testing().FireNow();
+  controller()->OnChipCollapseAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+  second_pscs->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_MIC,
+                                      /*update_indicators=*/true);
+
+  // Switch back to the first WebContents (B -> A): a new indicator on `url1`
+  // must still stay collapsed.
+  controller()->Update(web_contents());
+  pscs->OnMediaStreamPermissionSet(
+      url1,
+      {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+       content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_TRUE(indicator_chip->IsFullyCollapsed());
+  EXPECT_FALSE(dashboard_controller->is_verbose());
+
+  pscs->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_MIC,
+                               /*update_indicators=*/true);
+  EXPECT_FALSE(indicator_chip->GetVisible());
+
+  // 4. Navigating the side panel WebContents cross-origin resets its verbose
+  // indicator state without relying on an active browser tab.
+  NavigateAndCommit(url2);
+  pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(pscs);
+
+  pscs->OnMediaStreamPermissionSet(
+      url2,
+      {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+       content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_FALSE(indicator_chip->IsFullyCollapsed());
 }
 
 }  // namespace contextual_tasks

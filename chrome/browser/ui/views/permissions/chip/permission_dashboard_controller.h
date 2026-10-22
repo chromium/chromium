@@ -23,6 +23,10 @@ class ContentSettingImageModel;
 class ContentSettingImageViewDelegate;
 class PermissionDashboardInterface;
 
+namespace permissions {
+class PermissionIndicatorsTabData;
+}  // namespace permissions
+
 class PermissionDashboardController : public PermissionChipInterface::Observer {
  public:
   PermissionDashboardController(
@@ -101,6 +105,7 @@ class PermissionDashboardController : public PermissionChipInterface::Observer {
   std::u16string GetIndicatorTitle(ContentSettingImageModel* model);
   std::u16string GetSensorsIndicatorTitle(ContentSettingImageModel* model);
   std::u16string GetMediaStreamIndicatorTitle(ContentSettingImageModel* model);
+  permissions::PermissionIndicatorsTabData* GetPermissionIndicatorsTabData();
 
   // The implementation of `LocationBar` owns this.
   raw_ptr<LocationBar> location_bar_ = nullptr;
