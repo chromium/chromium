@@ -185,7 +185,15 @@ bool PinnedActionToolbarButtonMenuModel::IsEnabledAt(size_t index) const {
 
 bool PinnedActionToolbarButtonMenuModel::IsVisibleAt(size_t index) const {
   if (GetTypeAt(index) == TYPE_SEPARATOR) {
-    return true;
+    for (size_t i = index; i > 0; --i) {
+      if (GetTypeAt(i - 1) == TYPE_SEPARATOR) {
+        return false;
+      }
+      if (IsVisibleAt(i - 1)) {
+        return true;
+      }
+    }
+    return false;
   }
   const bool is_pinned = IsPinned();
   if (is_pinned && items_[index].action_id == kActionPinActionToToolbar) {

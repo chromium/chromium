@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/pref_names.h"
@@ -91,6 +93,13 @@ const float kFlatEdgeBottomRadius = 0.0f;
 
 // Margin to outset the background painted layer so the shadow is not clipped.
 const int kShadowOutset = 12;
+
+// Width of the status indicator shown across the button.
+constexpr int kStatusIndicatorWidth = 14;
+// Height of the status indicator shown across the button.
+constexpr int kStatusIndicatorHeight = 2;
+// Spacing between the button's icon and the status indicator.
+constexpr int kStatusIndicatorSpacing = 1;
 
 gfx::Insets GetPillShadowInsets(ContextualTasksButton::Shape shape) {
   gfx::Insets shadow_insets =
@@ -292,6 +301,10 @@ ContextualTasksButton::ContextualTasksButton(
   SetVisible(false);
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksEphemeralToolbarButtonElementId);
+  status_indicator_ =
+      PinnedToolbarButtonStatusIndicator::Install(image_container_view());
+  status_indicator_->SetColorId(kColorToolbarActionItemEngaged,
+                                kColorToolbarButtonIconInactive);
   UpdateTooltipText();
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
@@ -552,6 +565,43 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
   SetLayoutInsets(insets + *GetProperty(views::kInternalPaddingKey));
 
   UpdateDropShadow();
+  UpdateStatusIndicator();
+}
+
+void ContextualTasksButton::Layout(PassKey) {
+  LayoutSuperclass<ToolbarButton>(this);
+  if (!status_indicator_) {
+    return;
+  }
+  gfx::Rect status_rect(kStatusIndicatorWidth, kStatusIndicatorHeight);
+  const gfx::Rect image_container_bounds =
+      image_container_view()->GetLocalBounds();
+  const int new_x = image_container_bounds.x() +
+                    (image_container_bounds.width() - status_rect.width()) / 2;
+  const int new_y =
+      image_container_bounds.bottom() +
+      (features::IsRoundedIconsEnabled() ? 0 : kStatusIndicatorSpacing);
+  status_rect.set_origin(gfx::Point(new_x, new_y));
+  status_indicator_->SetBoundsRect(status_rect);
+}
+
+void ContextualTasksButton::UpdateIcon() {
+  const std::optional<VectorIcons>& icons = GetVectorIcons();
+  if (!icons.has_value() || !GetColorProvider()) {
+    return;
+  }
+  const gfx::VectorIcon& icon = ui::TouchUiController::Get()->touch_ui()
+                                    ? icons->touch_icon
+                                    : icons->icon;
+  if (contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorEnabled()) {
+    const SkColor engaged_color =
+        GetColorProvider()->GetColor(kColorToolbarActionItemEngaged);
+    UpdateIconsWithColors(icon, engaged_color, engaged_color, engaged_color,
+                          GetForegroundColor(ButtonState::STATE_DISABLED));
+  } else {
+    ToolbarButton::UpdateIcon();
+  }
 }
 
 void ContextualTasksButton::OnViewLayerBoundsSet(views::View* observed_view) {
@@ -775,6 +825,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
     SetVisible(will_be_visible);
   }
   was_panel_open_ = controller->IsPanelOpen();
+  UpdateStatusIndicator();
   UpdateHighlight();
   UpdateTooltipText();
 }
@@ -928,6 +979,19 @@ void ContextualTasksButton::UpdateDropShadowLayerBounds() {
   drop_shadow_painted_layer_->layer()->SetBounds(layer_bounds);
 }
 
+void ContextualTasksButton::UpdateStatusIndicator() {
+  if (!status_indicator_) {
+    return;
+  }
+  if (contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorEnabled() &&
+      GetVisible()) {
+    status_indicator_->Show();
+  } else {
+    status_indicator_->Hide();
+  }
+}
+
 void ContextualTasksButton::AnimateShow() {
   UpdateDropShadow(/*force_paint=*/true, /*initial_opacity=*/0.0f);
   if (!layer()) {
@@ -962,18 +1026,24 @@ void ContextualTasksButton::ClearDropShadow() {
 }
 
 ui::ImageModel ContextualTasksButton::GetButtonImage() {
+  const bool use_active_indicator =
+      contextual_tasks::IsContextualTasksPinnedButtonActiveIndicatorEnabled();
+  const ui::ColorId icon_color_id =
+      use_active_indicator ? ui::ColorId{kColorToolbarActionItemEngaged}
+                           : ui::ColorId{ui::kColorIcon};
   if (contextual_tasks::ShouldUseSparkIconForPinButtons()) {
     return ui::ImageModel::FromVectorIcon(
         features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
                                           : omnibox::kSearchSparkOldIcon,
-        ui::kColorIcon,
+        icon_color_id,
         GetShape() == Shape::kCircle ? GetIconSize()
                                      : kGLogoPillShapeIconSize);
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
-      contextual_tasks::kShowEntryPoint.Get() ==
-          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+  if (!use_active_indicator &&
+      (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
+       contextual_tasks::kShowEntryPoint.Get() ==
+           contextual_tasks::EntryPointOption::kToolbarEphemeralBranded)) {
     return ui::ImageModel::FromImageSkia(
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_GOOGLE_G_GRADIENT_16_ALT));
@@ -986,7 +1056,7 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
       features::IsRoundedIconsEnabled() ? kChromeProductIcon
                                         : kBrowserLogoOldIcon;
 #endif
-  return ui::ImageModel::FromVectorIcon(contextual_tasks_icon, ui::kColorIcon,
+  return ui::ImageModel::FromVectorIcon(contextual_tasks_icon, icon_color_id,
                                         GetShape() == Shape::kCircle
                                             ? GetIconSize()
                                             : kGLogoPillShapeIconSize);

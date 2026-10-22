@@ -24,6 +24,7 @@
 
 class BrowserWindowInterface;
 class PinnedActionToolbarButtonMenuModel;
+class PinnedToolbarButtonStatusIndicator;
 
 namespace ui {
 class ImageModel;
@@ -59,6 +60,13 @@ class ContextualTasksButton
   bool IsSidePanelRightAligned() const;
   bool IsHighlighted() const;
   ui::Layer* GetDropShadowLayerForTesting() const;
+  PinnedToolbarButtonStatusIndicator* GetStatusIndicatorForTesting() const {
+    return status_indicator_;
+  }
+
+  // ToolbarButton:
+  void Layout(PassKey) override;
+  void UpdateIcon() override;
 
   // contextual_tasks::ContextualTasksPanelController::Observer:
   void OnSurfaceStateChanged(
@@ -99,6 +107,7 @@ class ContextualTasksButton
   void MaybeShowFeaturePromo();
   void UpdateDropShadow(bool force_paint = false, float initial_opacity = 1.0f);
   void UpdateDropShadowLayerBounds();
+  void UpdateStatusIndicator();
   void AnimateShow();
   void ClearDropShadow();
   ui::ImageModel GetButtonImage();
@@ -108,6 +117,7 @@ class ContextualTasksButton
   base::CallbackListSubscription eligibility_change_subscription_;
   base::CallbackListSubscription vertical_tabs_subscription_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+  raw_ptr<PinnedToolbarButtonStatusIndicator> status_indicator_ = nullptr;
   std::unique_ptr<PinnedActionToolbarButtonMenuModel> pinned_action_menu_model_;
 
   std::optional<Button::ScopedAnchorHighlight> anchor_highlight_;
