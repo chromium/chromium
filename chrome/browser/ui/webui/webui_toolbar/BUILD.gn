@@ -38,6 +38,31 @@ source_set("webui_toolbar") {
   ]
 }
 
+# Generates layout_constants*.css: LayoutConstants, layout insets, and fonts as
+# CSS variables. Shared by the WebUI toolbar, contextual tasks, and the Full
+# WebUI omnibox popup, so it carries none of the toolbar's deps.
+source_set("layout_css_helper") {
+  sources = [
+    "webui_toolbar_layout_css_helper.cc",
+    "webui_toolbar_layout_css_helper.h",
+  ]
+  public_deps = [
+    "//content/public/browser",
+    "//url",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/location_bar:icon_label_bubble",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
 source_set("impl") {
   sources = [
     "browser_controls_service.cc",
@@ -46,11 +71,10 @@ source_set("impl") {
     "webui_toolbar_drag_state.cc",
     "webui_toolbar_extensions_container.cc",
     "webui_toolbar_extensions_container.h",
-    "webui_toolbar_layout_css_helper.cc",
-    "webui_toolbar_layout_css_helper.h",
     "webui_toolbar_ui.cc",
   ]
   deps = [
+    ":layout_css_helper",
     ":webui_toolbar",
     "adapters",
     "adapters:impl",
@@ -62,14 +86,11 @@ source_set("impl") {
     "//chrome/browser/resources/webui_toolbar:resources_grit",
     "//chrome/browser/resources/webui_toolbar_shared:resources_grit",
     "//chrome/browser/ui:browser_element_identifiers",
-    "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/interaction",
-    "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/user_education",
-    "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/extensions:extension_action_delegate_desktop",
     "//chrome/browser/ui/views/extensions:extensions_container_views",
     "//chrome/browser/ui/views/extensions:extensions_menu_coordinator",
@@ -118,6 +139,7 @@ source_set("unit_tests") {
 
   deps = [
     ":impl",
+    ":layout_css_helper",
     ":test_support",
     ":webui_toolbar",
     "adapters",

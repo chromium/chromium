@@ -13,6 +13,9 @@
 :host {
   --cr-searchbox-icon-top-position: 0;
   --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
+  --cr-searchbox-font-size: var(--omnibox-primary-font-size);
+  --cr-searchbox-height: var(--location-bar-height);
+  --cr-searchbox-icon-size-in-searchbox: var(--location-bar-icon-size);
   --cr-searchbox-icon-spacing: 11px;
   --cr-searchbox-icon-width: 26px;
   --cr-searchbox-inner-icon-margin: 8px;
@@ -24,18 +27,6 @@
       var(--cr-searchbox-height) -
       2 * var(--location-bar-page-info-icon-vertical-padding));
   --cr-searchbox-width: calc(100% - 2 * var(--alignment-inset-horizontal));
-
-  /* Baseline layout constants matching 'FullWebUIOmniboxLayoutHelper'. In
-   * production, these are dynamically overridden as inline style properties
-   * on ':host' by 'updateLayoutConstants_()' via 'loadTimeData' to reflect
-   * the active platform and Touch UI mode. */
-  --alignment-inset-top: 5px;
-  --alignment-inset-horizontal: 6px;
-  --alignment-inset-bottom: 5px;
-  --cr-searchbox-font-size: 14px;
-  --cr-searchbox-height: 34px;
-  --cr-searchbox-icon-size-in-searchbox: 16px;
-  --location-bar-page-info-icon-vertical-padding: 5px;
 
   border-radius: var(--cr-searchbox-border-radius);
   display: block;

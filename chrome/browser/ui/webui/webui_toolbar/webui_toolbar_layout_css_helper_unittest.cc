@@ -28,6 +28,7 @@ class WebUIToolbarLayoutCssHelperTest : public testing::Test {
 TEST_F(WebUIToolbarLayoutCssHelperTest, GenerateLayoutConstantsCss) {
   std::string css = WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss();
   EXPECT_FALSE(css.empty());
+  EXPECT_TRUE(css.find(":host,:root{") != std::string::npos);
   EXPECT_TRUE(css.find("--toolbar-button-icon-size:") != std::string::npos);
   EXPECT_TRUE(css.find("--avatar-ring-delta:") != std::string::npos);
   EXPECT_TRUE(css.find("--toolbar-button-refresh-expanded-margin:5px;") !=
@@ -76,12 +77,13 @@ TEST_F(WebUIToolbarLayoutCssHelperTest, HandleRequest) {
 TEST_F(WebUIToolbarLayoutCssHelperTest, PopulateLocalResourceLoaderConfig) {
   blink::mojom::LocalResourceLoaderConfigPtr local_config =
       blink::mojom::LocalResourceLoaderConfig::New();
+  const url::Origin toolbar_origin =
+      url::Origin::Create(GURL(chrome::kChromeUIWebUIToolbarURL));
   WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(
-      local_config.get());
+      local_config.get(), toolbar_origin);
   ASSERT_EQ(1u, local_config->sources.size());
   auto it = local_config->sources.begin();
-  EXPECT_EQ(it->first,
-            url::Origin::Create(GURL(chrome::kChromeUIWebUIToolbarURL)));
+  EXPECT_EQ(it->first, toolbar_origin);
   ASSERT_TRUE(it->second);
 
   ASSERT_EQ(1u, it->second->path_to_resource_map.size());
@@ -91,6 +93,21 @@ TEST_F(WebUIToolbarLayoutCssHelperTest, PopulateLocalResourceLoaderConfig) {
   ASSERT_TRUE(it2->second->is_response_body());
   EXPECT_EQ(WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss(),
             it2->second->get_response_body());
+
+  const url::Origin popup_origin =
+      url::Origin::Create(GURL(chrome::kChromeUIOmniboxPopupURL));
+  WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(
+      local_config.get(), popup_origin);
+  ASSERT_EQ(2u, local_config->sources.size());
+  auto popup_it = local_config->sources.find(popup_origin);
+  ASSERT_NE(popup_it, local_config->sources.end());
+  ASSERT_TRUE(popup_it->second);
+  auto popup_resource_it =
+      popup_it->second->path_to_resource_map.find("layout_constants_v0.css");
+  ASSERT_NE(popup_resource_it, popup_it->second->path_to_resource_map.end());
+  ASSERT_TRUE(popup_resource_it->second->is_response_body());
+  EXPECT_EQ(WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss(),
+            popup_resource_it->second->get_response_body());
 }
 
 TEST_F(WebUIToolbarLayoutCssHelperTest, EscapeCssFontName) {

@@ -14,11 +14,12 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/omnibox_popup/full_webui_omnibox_layout_helper.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -177,6 +178,49 @@ TEST_P(OmniboxPopupUIInProcessColorsTest, PopulateLocalResourceLoaderConfig) {
   theme_colors_manager->SetColorProviderForTesting(nullptr);
 }
 
+class OmniboxPopupUIInProcessLayoutCssTest
+    : public OmniboxPopupUITest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OmniboxPopupUIInProcessLayoutCssTest() {
+    feature_list_.InitWithFeatureState(
+        omnibox::internal::kWebUIOmniboxFullPopup, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  views::test::TestLayoutProvider layout_provider_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OmniboxPopupUIInProcessLayoutCssTest,
+                         testing::Bool());
+
+TEST_P(OmniboxPopupUIInProcessLayoutCssTest,
+       PopulateLocalResourceLoaderConfig) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(web_contents());
+  auto omnibox_popup_ui = std::make_unique<OmniboxPopupUI>(&web_ui);
+
+  const url::Origin popup_origin =
+      url::Origin::Create(GURL("chrome://omnibox-popup.top-chrome/"));
+  blink::mojom::LocalResourceLoaderConfig config;
+  omnibox_popup_ui->PopulateLocalResourceLoaderConfig(&config, popup_origin);
+
+  auto popup_source_it = config.sources.find(popup_origin);
+  if (!GetParam()) {
+    EXPECT_EQ(popup_source_it, config.sources.end());
+    return;
+  }
+  ASSERT_NE(popup_source_it, config.sources.end());
+  auto layout_css_it = popup_source_it->second->path_to_resource_map.find(
+      "layout_constants_v0.css");
+  ASSERT_NE(layout_css_it, popup_source_it->second->path_to_resource_map.end());
+  ASSERT_TRUE(layout_css_it->second->is_response_body());
+  EXPECT_EQ(layout_css_it->second->get_response_body(),
+            WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss());
+}
+
 // Every window builds popups, so the session is created on first use rather
 // than with the popup.
 TEST_F(OmniboxPopupUITest, CreatesContextualSessionLazily) {
@@ -193,12 +237,6 @@ TEST_F(OmniboxPopupUITest, CreatesContextualSessionLazily) {
 
 TEST_F(OmniboxPopupUITest, FullWebUIOmniboxLayoutHelperStandardMode) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(false);
-  EXPECT_EQ(FullWebUIOmniboxLayoutHelper::GetLocationBarHeight(), 34);
-  EXPECT_EQ(
-      FullWebUIOmniboxLayoutHelper::GetLocationBarPageInfoIconVerticalPadding(),
-      5);
-  EXPECT_EQ(FullWebUIOmniboxLayoutHelper::GetLocationBarIconSize(), 16);
-  EXPECT_EQ(FullWebUIOmniboxLayoutHelper::GetFontSize(), 14);
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ(FullWebUIOmniboxLayoutHelper::GetLocationBarAlignmentInsets(),
             gfx::Insets::TLBR(5, 5, 4, 5));
@@ -210,12 +248,6 @@ TEST_F(OmniboxPopupUITest, FullWebUIOmniboxLayoutHelperStandardMode) {
 
 TEST_F(OmniboxPopupUITest, FullWebUIOmniboxLayoutHelperTouchUiMode) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(true);
-  EXPECT_EQ(FullWebUIOmniboxLayoutHelper::GetLocationBarHeight(), 36);
-  EXPECT_EQ(
-      FullWebUIOmniboxLayoutHelper::GetLocationBarPageInfoIconVerticalPadding(),
-      3);
-  EXPECT_EQ(FullWebUIOmniboxLayoutHelper::GetLocationBarIconSize(), 20);
-  EXPECT_EQ(FullWebUIOmniboxLayoutHelper::GetFontSize(), 15);
   EXPECT_EQ(FullWebUIOmniboxLayoutHelper::GetLocationBarAlignmentInsets(),
             gfx::Insets::TLBR(6, 1, 5, 1));
 }
@@ -236,26 +268,8 @@ TEST_F(OmniboxPopupUITest, FullWebUIOmniboxLayoutHelperPopulateLoadTimeData) {
   EXPECT_EQ(
       dict.FindInt("alignmentInsetBottom"),
       FullWebUIOmniboxLayoutHelper::GetLocationBarAlignmentInsets().bottom());
-  EXPECT_EQ(dict.FindInt("locationBarHeight"),
-            FullWebUIOmniboxLayoutHelper::GetLocationBarHeight());
-  EXPECT_EQ(dict.FindInt("locationBarPageInfoIconVerticalPadding"),
-            FullWebUIOmniboxLayoutHelper::
-                GetLocationBarPageInfoIconVerticalPadding());
-  EXPECT_EQ(dict.FindInt("locationBarIconSize"),
-            FullWebUIOmniboxLayoutHelper::GetLocationBarIconSize());
-  EXPECT_EQ(dict.FindInt("locationBarFontSize"),
-            FullWebUIOmniboxLayoutHelper::GetFontSize());
-}
-
-TEST_F(OmniboxPopupUITest,
-       FullWebUIOmniboxLayoutHelperFontSizeWithLayoutProvider) {
-  views::test::TestLayoutProvider layout_provider;
-  layout_provider.SetFontDetails(
-      CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY,
-      ui::ResourceBundle::FontDetails("Roboto", /*size_delta=*/2,
-                                      /*weight=*/gfx::Font::Weight::NORMAL));
-  EXPECT_EQ(FullWebUIOmniboxLayoutHelper::GetFontSize(),
-            views::TypographyProvider::Get()
-                .GetFont(CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY)
-                .GetFontSize());
+  EXPECT_FALSE(dict.contains("locationBarHeight"));
+  EXPECT_FALSE(dict.contains("locationBarPageInfoIconVerticalPadding"));
+  EXPECT_FALSE(dict.contains("locationBarIconSize"));
+  EXPECT_FALSE(dict.contains("locationBarFontSize"));
 }
