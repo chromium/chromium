@@ -409,20 +409,6 @@
     Dangerous site. Chromium removed notifications.
   </message>
 
-  <!-- Bundled Security Settings (chrome://settings/security) -->
-  <message name="IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_DESC" desc="Text that briefly describes the 'Password Leak Detection' feature.">
-    Get warned if Chromium finds one of your passwords in a public data breach
-  </message>
-  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_STANDARD_HOW_IT_WORKS_CONTENT" desc="Content of the Safe Browsing standard protection column describing how it works">
-    When you visit a site, Chromium sends an obfuscated portion of the URL to <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://safebrowsing.google.com/"&gt;</ph>Google Safe Browsing<ph name="END_LINK">&lt;/a&gt;</ph> through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.
-  </message>
-  <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_GUARDRAILS_UNRECOGNIZED_SITES_DESCRIPTION" desc="Description of JavaScript Guardrails unrecognized sites option.">
-    Enhanced protection turns off JavaScript optimization for sites Chromium doesn’t recognize
-  </message>
-  <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_ONE" desc="First bullet point under the security settings enhanced bundle section">
-    Turns on additional features to provide Chromium’s strongest protections
-  </message>
-
   <!-- Secure connections -->
   <message name="IDS_SETTINGS_SECURE_CONNECTIONS_SECTION_DESCRIPTION" desc="Description for the Secure Connections section in Security settings, explaining the baseline behavior of the browser even if the 'Always use secure connections' toggle is disabled.">
     Chromium upgrades insecure connections to HTTPS automatically when possible
