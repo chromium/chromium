@@ -8,9 +8,15 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
+
+namespace user_data_auth {
+class Pkcs11GetTpmTokenInfoReply;
+class Pkcs11GetTpmTokenInfoRequest;
+class Pkcs11IsTpmTokenReadyReply;
+class Pkcs11IsTpmTokenReadyRequest;
+}  // namespace user_data_auth
 
 namespace dbus {
 class Bus;

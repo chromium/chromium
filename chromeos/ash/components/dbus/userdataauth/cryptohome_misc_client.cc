@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 
+#include <google/protobuf/message_lite.h>
+
 #include <memory>
 #include <utility>
-
-#include <google/protobuf/message_lite.h>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/common/blocking_method_caller.h"
 #include "dbus/bus.h"

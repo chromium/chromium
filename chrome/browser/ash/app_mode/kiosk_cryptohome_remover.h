@@ -11,7 +11,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+
+namespace user_data_auth {
+class RemoveReply;
+}  // namespace user_data_auth
 
 class AccountId;
 class PrefRegistrySimple;

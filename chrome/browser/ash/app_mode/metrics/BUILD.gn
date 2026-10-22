@@ -22,6 +22,7 @@ static_library("metrics") {
   deps = [
     "//ash/constants",
     "//chrome/common:constants",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//services/preferences/public/cpp",
     "//ui/base",
   ]

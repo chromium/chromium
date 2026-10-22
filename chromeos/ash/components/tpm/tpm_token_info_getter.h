@@ -15,10 +15,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/account_id/account_id.h"
+
+namespace user_data_auth {
+class Pkcs11GetTpmTokenInfoReply;
+class TpmTokenInfo;
+}  // namespace user_data_auth
 
 namespace base {
 class TaskRunner;

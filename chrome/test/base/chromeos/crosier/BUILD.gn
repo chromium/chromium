@@ -68,6 +68,7 @@ source_set("test_support") {
     "//chrome/browser/lifetime",
     "//chrome/test/base/chromeos/crosier/helper:common",
     "//chrome/utility",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/dbus/power:power_manager_proto",
     "//services/test/echo:lib",
     "//ui/events:test_support",

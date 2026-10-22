@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"

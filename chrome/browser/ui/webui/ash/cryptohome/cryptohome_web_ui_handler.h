@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -19,6 +18,12 @@ namespace base {
 class Value;
 
 }  // namespace base
+
+namespace user_data_auth {
+class GetAuthFactorExtendedInfoReply;
+class IsMountedReply;
+class Pkcs11IsTpmTokenReadyReply;
+}  // namespace user_data_auth
 
 namespace ash {
 

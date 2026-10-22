@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/tpm/buildflags.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"

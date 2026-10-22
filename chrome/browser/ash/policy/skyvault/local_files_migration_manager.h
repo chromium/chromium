@@ -19,8 +19,11 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+namespace user_data_auth {
+class SetUserDataStorageWriteEnabledReply;
+}  // namespace user_data_auth
 
 class PrefService;
 

@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 
-#include <utility>
-
 #include <google/protobuf/message_lite.h>
+
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
 #include "chromeos/dbus/common/blocking_method_caller.h"
 #include "dbus/bus.h"

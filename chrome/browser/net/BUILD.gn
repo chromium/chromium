@@ -322,6 +322,7 @@ source_set("impl") {
       deps += [
         "//chromeos/ash/components/dbus",
         "//chromeos/ash/components/dbus/userdataauth",
+        "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
         "//chromeos/ash/components/tpm",
         "//chromeos/components/certificate_provider",
       ]

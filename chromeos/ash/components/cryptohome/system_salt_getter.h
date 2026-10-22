@@ -14,7 +14,10 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+
+namespace user_data_auth {
+class GetSystemSaltReply;
+}  // namespace user_data_auth
 
 namespace ash {
 

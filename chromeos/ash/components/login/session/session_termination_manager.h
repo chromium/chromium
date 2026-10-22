@@ -11,9 +11,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
+
+namespace user_data_auth {
+class GetLoginStatusReply;
+}  // namespace user_data_auth
 
 namespace ash {
 

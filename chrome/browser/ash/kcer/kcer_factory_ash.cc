@@ -17,6 +17,7 @@
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/ash/components/kcer/extra_instances.h"
 #include "chromeos/ash/components/kcer/kcer.h"

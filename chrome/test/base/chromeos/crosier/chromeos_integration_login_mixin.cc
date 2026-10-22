@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/chromeos/crosier/gaia_host_util.h"
 #include "chrome/test/base/chromeos/crosier/test_accounts.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "google_apis/gaia/gaia_auth_util.h"

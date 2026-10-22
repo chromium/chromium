@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/app_mode/pref_names.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
