@@ -499,6 +499,11 @@ crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/textures/vid
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/textures/video/tex-2d-srgb8-rgb-unsigned_byte.html [ Skip ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/textures/video/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ Skip ]
 
+# Based on findings from crbug.com/576312224, this test likely loses the GL
+# context very quickly, but the underlying test continues to run, eventually
+# causing issues due to reporting failures hundreds of thousands of times.
+crbug.com/487128735 [ android android-pixel-2 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -529,7 +534,6 @@ crbug.com/891953 [ android mobile ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/486945330 conformance/glsl/misc/shader-with-double-underscore.html [ Failure ]
 
 # Failing new ASTC offset tests on multiple Android devices
-crbug.com/487128735 [ android android-pixel-2 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/487128735 [ android android-pixel-4 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 
 # Test needs to be revised for new mipmap/texture completeness rules.
