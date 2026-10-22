@@ -27,7 +27,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/devices/device_data_manager.h"
 
 namespace ash {
 
@@ -132,7 +131,6 @@ class ProjectorUtilsTest : public testing::Test {
   }
 
   void TearDown() override {
-    ui::DeviceDataManager::DeleteInstance();
     user_manager_.Reset();
     profile_.reset();
   }
