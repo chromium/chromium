@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/uuid.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
@@ -23,6 +29,13 @@
 #include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/model/metadata_change_list.h"
+#include "components/sync/model/model_error.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/unknown_field_util.h"
@@ -229,6 +242,56 @@ class SingleClientSkillsSyncTest
                                                             skill_id));
   }
 
+  void SetPossiblyTrimmedSpecificsInStore(
+      syncer::DataType data_type,
+      const std::string& storage_key,
+      const sync_pb::EntitySpecifics& trimmed_specifics) {
+    base::test::TestFuture<const std::optional<syncer::ModelError>&,
+                           std::unique_ptr<syncer::DataTypeStore>>
+        init_future;
+    DataTypeStoreServiceFactory::GetForProfile(GetProfile(0))
+        ->GetStoreFactory()
+        .Run(data_type, init_future.GetCallback());
+    ASSERT_FALSE(init_future.Get<0>().has_value());
+    std::unique_ptr<syncer::DataTypeStore> store =
+        std::get<1>(init_future.Take());
+    ASSERT_NE(store, nullptr);
+
+    base::test::TestFuture<const std::optional<syncer::ModelError>&,
+                           std::unique_ptr<syncer::MetadataBatch>>
+        read_future;
+    store->ReadAllMetadata(read_future.GetCallback());
+    ASSERT_FALSE(read_future.Get<0>().has_value());
+    std::unique_ptr<syncer::MetadataBatch> metadata_batch =
+        std::get<1>(read_future.Take());
+    ASSERT_NE(metadata_batch, nullptr);
+
+    syncer::EntityMetadataMap metadata_map = metadata_batch->TakeAllMetadata();
+    auto it = metadata_map.find(storage_key);
+    ASSERT_NE(it, metadata_map.end());
+
+    sync_pb::EntityMetadata metadata = *it->second;
+    *metadata.mutable_possibly_trimmed_base_specifics() = trimmed_specifics;
+
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
+        store->CreateWriteBatch();
+    write_batch->GetMetadataChangeList()->UpdateMetadata(storage_key, metadata);
+    base::test::TestFuture<const std::optional<syncer::ModelError>&>
+        commit_future;
+    store->CommitWriteBatch(std::move(write_batch),
+                            commit_future.GetCallback());
+    ASSERT_FALSE(commit_future.Get().has_value());
+  }
+
+  void SetPossiblyTrimmedSkillSpecificsInStore(
+      const std::string& storage_key,
+      const sync_pb::SkillSpecifics& trimmed_specifics) {
+    sync_pb::EntitySpecifics entity_specifics;
+    *entity_specifics.mutable_skill() = trimmed_specifics;
+    SetPossiblyTrimmedSpecificsInStore(syncer::SKILL, storage_key,
+                                       entity_specifics);
+  }
+
  private:
   base::test::ScopedFeatureList feature_overrides_;
 };
@@ -342,10 +405,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldMergeRemoteData) {
 // Verifies that fields unknown to the current client version are preserved when
 // committing local updates back to the server (via sync metadata's
 // `possibly_trimmed_base_specifics`).
-// Note: This does not cover the browser upgrade scenario where a previously
-// unknown field becomes supported after a restart (which relies on
-// `OnReadAllDataAndMetadata()` merging `possibly_trimmed_base_specifics` from
-// sync metadata with `SkillLocalData`, covered by `SkillsSyncBridgeTest`).
 IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
                        ShouldPreserveUnknownFields) {
   const std::string kSkillId =
@@ -385,6 +444,59 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
               HasUnknownField("specifics_unknown_field"),
               HasSimpleSkill(HasUnknownField("simple_skill_unknown_field")))))
           .Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
+                       PRE_ShouldPopulateNewlySupportedFieldsOnBrowserUpgrade) {
+  const std::string kSkillId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  InjectSpecificsToFakeServer(
+      CreateSkillSpecifics(kSkillId, /*source_skill_id=*/"", "name", "icon",
+                           "prompt", /*description=*/""));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SkillsServiceChecker(GetSkillsService(),
+                                   UnorderedElementsAre(Pointee(HasSkill(
+                                       /*source_skill_id=*/"", "name", "icon",
+                                       "prompt", /*description=*/""))))
+                  .Wait());
+
+  // Simulate that `source_skill_id` and `description` were unknown to this
+  // browser version when the entity was received, so they were stored in sync
+  // metadata's `possibly_trimmed_base_specifics` rather than `SkillLocalData`.
+  sync_pb::SkillSpecifics trimmed_specifics;
+  trimmed_specifics.set_source_skill_id("newly_supported_source_skill_id");
+  trimmed_specifics.mutable_simple_skill()->set_description(
+      "newly_supported_description");
+  SetPossiblyTrimmedSkillSpecificsInStore(kSkillId, trimmed_specifics);
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
+                       ShouldPopulateNewlySupportedFieldsOnBrowserUpgrade) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // Upon restart (simulating a browser upgrade), the newly-supported fields
+  // from sync metadata should be merged on load and surfaced in `SkillsService`
+  // without requiring a server redownload.
+  ASSERT_THAT(GetSkillsService().GetSkills(),
+              UnorderedElementsAre(Pointee(
+                  HasSkill("newly_supported_source_skill_id", "name", "icon",
+                           "prompt", "newly_supported_description"))));
+
+  // Subsequent local edits should preserve the newly-populated
+  // `source_skill_id` when committing back to the server.
+  const std::string skill_id = GetSkillsService().GetSkills()[0]->id;
+  const skills::Skill* skill = GetSkillsService().UpdateSkill(
+      skill_id, "updated name", "updated icon", "updated prompt");
+  ASSERT_NE(skill, nullptr);
+
+  EXPECT_TRUE(ServerSkillsMatchChecker(
+                  UnorderedElementsAre(HasSkillSpecifics(
+                      skill_id, "newly_supported_source_skill_id",
+                      "updated name", "updated icon", "updated prompt",
+                      /*description=*/"")))
+                  .Wait());
 }
 
 // ChromeOS does not support signout.

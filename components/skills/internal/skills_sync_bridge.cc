@@ -429,11 +429,15 @@ void SkillsSyncBridge::OnReadAllDataAndMetadata(
     // Merge stored specifics with `possibly_trimmed_base_specifics` from sync
     // metadata so that any fields that were unknown when the entity was stored
     // (and have since become supported after a browser upgrade) are recovered.
-    sync_pb::SkillSpecifics specifics;
+    // Note: In production, the two protos have disjoint sets of fields, so the
+    // merge order does not matter; merging `possibly_trimmed_base_specifics` on
+    // top of `local_data` allows tests to simulate browser upgrades by setting
+    // already-known fields in `possibly_trimmed_base_specifics`.
+    sync_pb::SkillSpecifics specifics = local_data.specifics();
     if (auto it = sync_metadata.find(record.id); it != sync_metadata.end()) {
-      specifics = it->second->possibly_trimmed_base_specifics().skill();
+      specifics.MergeFrom(
+          it->second->possibly_trimmed_base_specifics().skill());
     }
-    specifics.MergeFrom(local_data.specifics());
 
     if (!IsEntityDataValid(SpecificsToEntityData(specifics))) {
       continue;

@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "components/skills/mocks/mock_skills_service.h"
 #include "components/skills/proto/skill_local_data.pb.h"
@@ -718,19 +719,17 @@ TEST_F(SkillsSyncBridgeTest,
   const std::string kSkillId =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
 
-  // Simulate data stored by an older browser version where `description`,
-  // `source_skill_id`, and `enabled` were not yet supported:
-  // `SkillLocalData` only has the previously-known fields, while the newly
-  // supported fields were saved in `EntityMetadata`'s
-  // `possibly_trimmed_base_specifics`.
-  proto::SkillLocalData local_data;
-  sync_pb::SkillSpecifics* local_specifics = local_data.mutable_specifics();
-  local_specifics->set_guid(kSkillId);
-  local_specifics->set_name("name");
-  local_specifics->set_icon("icon");
-  local_specifics->mutable_simple_skill()->set_prompt("prompt");
-  local_specifics->set_skill_source(sync_pb::SKILL_SOURCE_USER_CREATED);
+  // Store a skill with default/empty values for `description`,
+  // `source_skill_id`, and `enabled`, simulating an older browser version where
+  // those fields were not yet populated in `SkillLocalData`.
+  Skill skill(kSkillId, "name", "icon", "prompt");
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId))
+      .WillByDefault(Return(&skill));
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal,
+                          /*is_position_changed=*/false);
 
+  // Simulate that the newly supported fields were saved in `EntityMetadata`'s
+  // `possibly_trimmed_base_specifics`.
   sync_pb::EntityMetadata metadata;
   sync_pb::SkillSpecifics* trimmed_specifics =
       metadata.mutable_possibly_trimmed_base_specifics()->mutable_skill();
@@ -741,22 +740,15 @@ TEST_F(SkillsSyncBridgeTest,
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       store().CreateWriteBatch();
-  write_batch->WriteData(kSkillId, local_data.SerializeAsString());
   write_batch->GetMetadataChangeList()->UpdateMetadata(kSkillId, metadata);
-  base::RunLoop commit_loop;
-  store().CommitWriteBatch(
-      std::move(write_batch),
-      base::BindOnce(
-          [](base::RunLoop* loop,
-             const std::optional<syncer::ModelError>& error) {
-            EXPECT_FALSE(error.has_value());
-            loop->Quit();
-          },
-          &commit_loop));
-  commit_loop.Run();
+  base::test::TestFuture<const std::optional<syncer::ModelError>&>
+      commit_future;
+  store().CommitWriteBatch(std::move(write_batch), commit_future.GetCallback());
+  ASSERT_FALSE(commit_future.Get().has_value());
 
   // Simulate a browser upgrade and restart: the newly supported fields from
-  // sync metadata should be merged with `SkillLocalData` when loading skills.
+  // sync metadata should be merged on top of `SkillLocalData` when loading
+  // skills.
   EXPECT_CALL(
       mock_skills_service(),
       LoadInitialSkills(UnorderedElementsAre(Pointee(AllOf(
