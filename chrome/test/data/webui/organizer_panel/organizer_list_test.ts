@@ -402,17 +402,27 @@ suite('OrganizerListTest', () => {
         list.focusFirstSection();
 
         // From Section 1, firing focus-next-section focuses Section 2 header
-        sections[0]!.fire('focus-next-section');
+        // and prevents default on the source event.
+        const intermediateEvent =
+            new KeyboardEvent('keydown', {key: 'Tab', cancelable: true});
+        sections[0]!.fire(
+            'focus-next-section', {sourceEvent: intermediateEvent});
         await microtasksFinished();
         assertEquals(
             sections[1]!.$.header.$.expandButton.$.icon,
             getDeepActiveElement());
+        assertTrue(intermediateEvent.defaultPrevented);
 
         // From Section 2 (last section), firing focus-next-section fires
-        // focus-after-list
+        // focus-after-list, forwarding sourceEvent without preventing default.
+        const lastSectionEvent =
+            new KeyboardEvent('keydown', {key: 'Tab', cancelable: true});
         const whenFocusAfterList = eventToPromise('focus-after-list', list);
-        sections[1]!.fire('focus-next-section');
-        await whenFocusAfterList;
+        sections[1]!.fire(
+            'focus-next-section', {sourceEvent: lastSectionEvent});
+        const afterEvent = await whenFocusAfterList as CustomEvent;
+        assertEquals(lastSectionEvent, afterEvent.detail.sourceEvent);
+        assertFalse(lastSectionEvent.defaultPrevented);
       });
 
   test(

@@ -134,26 +134,30 @@ export class OrganizerListElement extends CrLitElement {
   }
 
   private onFocusNextSection_(e: Event) {
+    const customEvent = e as CustomEvent<{sourceEvent?: KeyboardEvent}>;
     const sections = this.getVisibleSections();
     const path = e.composedPath();
     const currentSection = sections.find(s => path.includes(s));
     const currentIndex = currentSection ? sections.indexOf(currentSection) : -1;
 
     if (currentIndex === -1 || currentIndex === sections.length - 1) {
-      this.fire('focus-after-list');
+      this.fire('focus-after-list', customEvent.detail);
     } else {
       sections[currentIndex + 1]!.focus();
+      customEvent.detail?.sourceEvent?.preventDefault();
+      customEvent.detail?.sourceEvent?.stopPropagation();
     }
   }
 
   private onFocusPreviousSection_(e: Event) {
+    const customEvent = e as CustomEvent<{sourceEvent?: KeyboardEvent}>;
     const sections = this.getVisibleSections();
     const path = e.composedPath();
     const currentSection = sections.find(s => path.includes(s));
     const currentIndex = currentSection ? sections.indexOf(currentSection) : -1;
 
     if (currentIndex <= 0) {
-      this.fire('focus-before-list');
+      this.fire('focus-before-list', customEvent.detail);
     } else {
       const prevSection = sections[currentIndex - 1]!;
       if (prevSection.$.header.isMenuButtonVisible()) {
@@ -161,15 +165,20 @@ export class OrganizerListElement extends CrLitElement {
       } else {
         prevSection.focus();
       }
+      customEvent.detail?.sourceEvent?.preventDefault();
+      customEvent.detail?.sourceEvent?.stopPropagation();
     }
   }
 
   private onFocusCurrentSection_(e: Event) {
+    const customEvent = e as CustomEvent<{sourceEvent?: KeyboardEvent}>;
     const sections = this.getVisibleSections();
     const path = e.composedPath();
     const currentSection = sections.find(s => path.includes(s));
     if (currentSection) {
       currentSection.focus();
+      customEvent.detail?.sourceEvent?.preventDefault();
+      customEvent.detail?.sourceEvent?.stopPropagation();
     }
   }
 }

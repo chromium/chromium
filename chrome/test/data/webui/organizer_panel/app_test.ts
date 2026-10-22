@@ -7,6 +7,7 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerPanelAppElement, OrganizerPanelPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -324,5 +325,75 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals('', app.$.searchField.getValue());
     assertEquals('', app.$.list.searchQuery);
     assertEquals(0, app.$.list.scrollTop);
+  });
+
+  test('tab navigation with close button', async () => {
+    const closeBtn = document.createElement('button');
+    closeBtn.id = 'closeButton';
+    closeBtn.tabIndex = 0;
+    app.shadowRoot.appendChild(closeBtn);
+    await microtasksFinished();
+
+    // Tab on close button focuses search field input
+    closeBtn.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await microtasksFinished();
+    assertEquals(app.$.searchField.getSearchInput(), getDeepActiveElement());
+
+    // Shift+Tab on close button focuses last section header
+    closeBtn.focus();
+    closeBtn.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await microtasksFinished();
+    const sections = app.$.list.getVisibleSections();
+    const lastSection = sections[sections.length - 1]!;
+    assertEquals(
+        lastSection.$.header.$.expandButton.$.icon, getDeepActiveElement());
+  });
+
+  test('focus-after-list and focus-before-list events from list', async () => {
+    // focus-before-list focuses search field
+    app.$.list.fire('focus-before-list');
+    await microtasksFinished();
+    assertEquals(app.$.searchField.getSearchInput(), getDeepActiveElement());
+
+    // Without close button, focus-after-list does not focus search field
+    // and does not prevent default.
+    const dummyButton = document.createElement('button');
+    document.body.appendChild(dummyButton);
+    dummyButton.focus();
+    assertEquals(dummyButton, getDeepActiveElement());
+
+    const withoutCloseEvent =
+        new KeyboardEvent('keydown', {key: 'Tab', cancelable: true});
+    app.$.list.fire('focus-after-list', {sourceEvent: withoutCloseEvent});
+    await microtasksFinished();
+    assertEquals(dummyButton, getDeepActiveElement());
+    assertFalse(withoutCloseEvent.defaultPrevented);
+    dummyButton.remove();
+
+    // With close button, focus-after-list focuses close button and prevents
+    // default.
+    const closeBtn = document.createElement('button');
+    closeBtn.id = 'closeButton';
+    closeBtn.tabIndex = 0;
+    app.shadowRoot.appendChild(closeBtn);
+    await microtasksFinished();
+
+    const withCloseEvent =
+        new KeyboardEvent('keydown', {key: 'Tab', cancelable: true});
+    app.$.list.fire('focus-after-list', {sourceEvent: withCloseEvent});
+    await microtasksFinished();
+    assertEquals(closeBtn, getDeepActiveElement());
+    assertTrue(withCloseEvent.defaultPrevented);
   });
 });

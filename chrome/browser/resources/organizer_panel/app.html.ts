@@ -18,7 +18,9 @@ export function getHtml(this: OrganizerPanelAppElement) {
   </div>
 </cr-toolbar-search-field>
 <organizer-list id="list" .sectionDelegates="${this.sectionDelegates_}"
-    .searchQuery="${this.searchQuery_}">
+    .searchQuery="${this.searchQuery_}"
+    @focus-after-list="${this.onFocusAfterList_}"
+    @focus-before-list="${this.onFocusBeforeList_}">
 </organizer-list>
 <div id="dragRegion"></div>
 <!--_html_template_end_-->`;

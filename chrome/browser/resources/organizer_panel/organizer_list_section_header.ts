@@ -126,26 +126,26 @@ export class OrganizerListSectionHeaderElement extends
       if (!e.shiftKey) {
         if (this.isMenuButtonVisible()) {
           this.focusMenuButton();
+          e.preventDefault();
+          e.stopPropagation();
         } else {
-          this.fire('focus-next-section');
+          this.fire('focus-next-section', {sourceEvent: e});
         }
       } else {
-        this.fire('focus-previous-section');
+        this.fire('focus-previous-section', {sourceEvent: e});
       }
-      e.preventDefault();
-      e.stopPropagation();
     }
   }
 
   protected onMenuButtonKeydown_(e: KeyboardEvent) {
     if (e.key === 'Tab') {
       if (!e.shiftKey) {
-        this.fire('focus-next-section');
+        this.fire('focus-next-section', {sourceEvent: e});
       } else {
         this.focus();
+        e.preventDefault();
+        e.stopPropagation();
       }
-      e.preventDefault();
-      e.stopPropagation();
     }
   }
 

@@ -66,6 +66,22 @@ export class OrganizerPanelAppElement extends CrLitElement {
 
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private verticalTabsEnabledChangedListenerId_: number|null = null;
+  private onKeydown_: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {
+    if (e.key === 'Tab') {
+      const closeButton = this.getCloseButton_();
+      if (closeButton && e.composedPath().includes(closeButton)) {
+        if (!e.shiftKey) {
+          this.$.searchField.getSearchInput().focus();
+        } else {
+          if (!this.$.list.focusLastSection()) {
+            this.$.searchField.getSearchInput().focus();
+          }
+        }
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  };
   private onWindowFocused_: () => void = () => {
     // Autofocus only works when the window is initially shown; for subsequent
     // focus events, focus the search field.
@@ -85,6 +101,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().start();
+    this.addEventListener('keydown', this.onKeydown_);
     window.addEventListener('focus', this.onWindowFocused_);
     window.addEventListener('contextmenu', this.onContextMenu_);
     document.addEventListener('visibilitychange', this.onVisibilityChange_);
@@ -97,6 +114,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.removeEventListener('keydown', this.onKeydown_);
     window.removeEventListener('focus', this.onWindowFocused_);
     window.removeEventListener('contextmenu', this.onContextMenu_);
     document.removeEventListener('visibilitychange', this.onVisibilityChange_);
@@ -104,6 +122,29 @@ export class OrganizerPanelAppElement extends CrLitElement {
     this.browserProxy_.callbackRouter.removeListener(
         this.verticalTabsEnabledChangedListenerId_);
     this.verticalTabsEnabledChangedListenerId_ = null;
+  }
+
+  private getCloseButton_(): HTMLElement|null {
+    const button = this.shadowRoot?.querySelector<HTMLElement>('#closeButton');
+    if (!button || button.hidden || button.style.display === 'none') {
+      return null;
+    }
+    return button;
+  }
+
+  protected onFocusAfterList_(e: CustomEvent<{sourceEvent?: KeyboardEvent}>) {
+    const closeButton = this.getCloseButton_();
+    if (closeButton) {
+      closeButton.focus();
+      e.detail?.sourceEvent?.preventDefault();
+      e.detail?.sourceEvent?.stopPropagation();
+    }
+  }
+
+  protected onFocusBeforeList_(e: CustomEvent<{sourceEvent?: KeyboardEvent}>) {
+    this.$.searchField.getSearchInput().focus();
+    e.detail?.sourceEvent?.preventDefault();
+    e.detail?.sourceEvent?.stopPropagation();
   }
 
   private getSectionDelegates_(): Array<OrganizerListSectionDelegate<unknown>> {
