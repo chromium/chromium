@@ -169,6 +169,13 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
     ScriptPromiseResolver<ImageBitmap>* resolver) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  // Hold a reference across `OnVideoFrame()` (`WeakPtr` only checks validity at
+  // callback entry). Creating or accessing the GPU context below can
+  // synchronously flush pending GPU channel callbacks, which may allocate on
+  // the Oilpan heap and trigger lazy sweeping of an unreachable `ImageCapture`
+  // owner (`~ImageCapture()`), dropping `ImageCapture::frame_grabber_`.
+  scoped_refptr<ImageCaptureFrameGrabber> keep_alive(this);
+
   auto required_provider_info = CreateSnapshotProviderInfoForVideoFrame(*frame);
 
   if (!cached_draw_info_ ||

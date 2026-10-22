@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_IMAGECAPTURE_IMAGE_CAPTURE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_IMAGECAPTURE_IMAGE_CAPTURE_H_
 
-#include <memory>
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "media/capture/mojom/image_capture.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -177,7 +177,7 @@ class MODULES_EXPORT ImageCapture final
       MediaTrackConstraintSetType) const;
 
   Member<MediaStreamTrack> stream_track_;
-  std::unique_ptr<ImageCaptureFrameGrabber> frame_grabber_;
+  scoped_refptr<ImageCaptureFrameGrabber> frame_grabber_;
   HeapMojoRemote<media::mojom::blink::ImageCapture> service_;
 
   // Whether the user has granted permission for the user to control camera PTZ.
