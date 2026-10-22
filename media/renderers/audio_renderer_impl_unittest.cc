@@ -21,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_buffer_converter.h"
@@ -292,9 +293,13 @@ class AudioRendererImplTest : public ::testing::Test,
     hardware_params_.Reset(AudioParameters::AUDIO_BITSTREAM_EAC3,
                            ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                            kOutputSamplesPerSecond, 512);
+    hardware_params_.set_hardware_capabilities(
+        AudioParameters::HardwareCapabilities(
+            AudioParameters::AUDIO_BITSTREAM_EAC3,
+            /*require_encapsulation=*/false));
     sink_ = base::MakeRefCounted<FakeAudioRendererSink>(hardware_params_);
     AudioDecoderConfig audio_config(
-        AudioCodec::kAC3, kSampleFormatEac3,
+        AudioCodec::kEAC3, kSampleFormatEac3,
         ChannelLayoutConfig::FromLayout<kChannelLayout>(),
         kInputSamplesPerSecond, EmptyExtraData(),
         EncryptionScheme::kUnencrypted);
@@ -307,6 +312,7 @@ class AudioRendererImplTest : public ::testing::Test,
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
         &media_log_, MediaPlayerLoggingID(0), this);
+    renderer_->tick_clock_ = &tick_clock_;
 
     Initialize();
   }
@@ -1672,6 +1678,89 @@ TEST_F(AudioRendererImplTest, BitstreamEndOfStream) {
 
   // Clear the use of |media_client_|, which was set in
   // InitializeBitstreamFormat().
+  SetMediaClient(nullptr);
+}
+
+TEST_F(AudioRendererImplTest, BitstreamEndOfStreamWithDelay) {
+  // The sink keeps reporting `kHardwareDelay`, even after EOS.
+  const base::TimeDelta kHardwareDelay = AudioTimestampHelper::FramesToTime(
+      kInputFramesChunk, kInputSamplesPerSecond);
+  constexpr base::TimeDelta kPostEosDuration = base::Milliseconds(20);
+
+  InitializeBitstreamFormat();
+  Preroll();
+  StartTicking();
+
+  // Leave one packet so the renderer reads again, then end the stream.
+  EXPECT_TRUE(ConsumeBitstreamBufferedData(
+      OutputFrames(frames_buffered().value - kInputFramesChunk),
+      kHardwareDelay));
+  WaitForPendingRead();
+  DeliverEndOfStream();
+  EXPECT_TRUE(ConsumeBitstreamBufferedData(frames_buffered(), kHardwareDelay));
+
+  auto render_after = [&](base::TimeDelta elapsed) {
+    tick_clock_.Advance(elapsed);
+    EXPECT_FALSE(ConsumeBitstreamBufferedData(OutputFrames(1), kHardwareDelay));
+    base::RunLoop run_loop;
+    main_thread_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  };
+
+  // `kHardwareDelay` is still in the sink, so we haven't ended yet.
+  render_after(base::TimeDelta());
+  EXPECT_FALSE(ended());
+  const base::TimeDelta eos_time = CurrentMediaTime();
+
+  // The sink drains in real time, even though its delay doesn't change.
+  render_after(kHardwareDelay / 2);
+  EXPECT_FALSE(ended());
+  EXPECT_EQ(CurrentMediaTime(), eos_time + kHardwareDelay / 2);
+
+  render_after(kHardwareDelay / 2);
+  EXPECT_TRUE(ended());
+  EXPECT_EQ(CurrentMediaTime(), eos_time + kHardwareDelay);
+
+  // Media time keeps moving after EOS.
+  render_after(kPostEosDuration);
+  EXPECT_EQ(CurrentMediaTime(), eos_time + kHardwareDelay + kPostEosDuration);
+
+  SetMediaClient(nullptr);
+}
+
+TEST_F(AudioRendererImplTest,
+       BitstreamUnderflowDoesNotAdvanceClockOrLeaveStaleData) {
+  const base::TimeDelta kHardwareDelay = AudioTimestampHelper::FramesToTime(
+      kInputFramesChunk, kInputSamplesPerSecond);
+
+  InitializeBitstreamFormat();
+  Preroll();
+  StartTicking();
+
+  testing::Mock::VerifyAndClearExpectations(this);
+  base::test::TestFuture<void> underflow;
+  EXPECT_CALL(*this, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _))
+      .WillOnce(base::test::RunOnceClosure(underflow.GetCallback()));
+
+  // Render one packet into `bus`, then drain the rest.
+  std::unique_ptr<AudioBus> bus = AudioBus::Create(hardware_params_);
+  int frames_read = 0;
+  EXPECT_TRUE(sink_->Render(bus.get(), kHardwareDelay, &frames_read));
+  ASSERT_EQ(frames_read, kInputFramesChunk);
+  EXPECT_TRUE(ConsumeBitstreamBufferedData(frames_buffered(), kHardwareDelay));
+
+  // Underflow with `kHardwareDelay` still in the sink. `bus` must not keep the
+  // previous packet.
+  EXPECT_TRUE(sink_->Render(bus.get(), kHardwareDelay, &frames_read));
+  EXPECT_EQ(frames_read, 0);
+  EXPECT_TRUE(bus->bitstream_data().empty());
+
+  // Underflowing again with the same delay must not move media time.
+  const base::TimeDelta media_time = CurrentMediaTime();
+  EXPECT_TRUE(sink_->Render(bus.get(), kHardwareDelay, &frames_read));
+  EXPECT_EQ(CurrentMediaTime(), media_time);
+
+  EXPECT_TRUE(underflow.Wait());
   SetMediaClient(nullptr);
 }
 

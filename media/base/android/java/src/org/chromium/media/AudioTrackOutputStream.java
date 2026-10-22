@@ -65,6 +65,8 @@ class AudioTrackOutputStream {
     private static final String TAG = "AudioTrackOutput";
     // Must be the same as AudioBus::kChannelAlignment.
     private static final int CHANNEL_ALIGNMENT = 16;
+    // Matches the 10ms source-exhausted delay in AlsaPcmOutputStream::ScheduleNextWrite.
+    private static final long NO_DATA_SLEEP_MS = 10;
 
     private long mNativeAudioTrackOutputStream;
     private final Callback mCallback;
@@ -94,8 +96,6 @@ class AudioTrackOutputStream {
 
         @Override
         public void run() {
-            // This should not be a busy loop, since the thread would be blocked in either
-            // AudioSyncReader::WaitUntilDataIsReady() or AudioTrack.write().
             while (!mDone) {
                 int left = writeData();
                 // AudioTrack.write() failed, exit the run loop.
@@ -103,7 +103,20 @@ class AudioTrackOutputStream {
                 // Only partial data is written, retry again.
                 if (left > 0) continue;
 
-                readMoreData();
+                if (!readMoreData() && !mDone) {
+                    // For PCM streams, onMoreData() always returns a full buffer (zero-filled on
+                    // underflow), so AudioTrack.write(WRITE_BLOCKING) paces this loop. For
+                    // compressed bitstream streams, silence cannot be synthesized so onMoreData()
+                    // returns null when no packet is available (e.g. during renderer underflow or
+                    // while draining the AudioTrack buffer at end-of-stream). Sleep briefly
+                    // (matching AlsaPcmOutputStream::ScheduleNextWrite) to avoid busy-polling IPC;
+                    // stop() interrupts this thread to wake it immediately.
+                    try {
+                        Thread.sleep(NO_DATA_SLEEP_MS);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
             }
         }
     }
@@ -307,7 +320,7 @@ class AudioTrackOutputStream {
         return new AudioBufferInfo(frames, size);
     }
 
-    private void readMoreData() {
+    private boolean readMoreData() {
         assert mNativeAudioTrackOutputStream != 0;
 
         // Although the return value of AudioTrack.getPlaybackHeadPosition() should be unsigned
@@ -323,12 +336,13 @@ class AudioTrackOutputStream {
 
         ByteBuffer readBuffer = assumeNonNull(mReadBuffer);
         AudioBufferInfo info = mCallback.onMoreData(readBuffer.duplicate(), delayInFrames);
-        if (info == null || info.getNumBytes() <= 0) return;
+        if (info == null || info.getNumBytes() <= 0) return false;
 
         mTotalReadFrames += info.getNumFrames();
 
         mWriteBuffer = readBuffer.asReadOnlyBuffer();
         mLeftSize = info.getNumBytes();
+        return true;
     }
 
     private int writeData() {

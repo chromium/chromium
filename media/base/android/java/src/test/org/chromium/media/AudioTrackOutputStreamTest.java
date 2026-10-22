@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for AudioTrackOutputStream. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -80,6 +81,7 @@ public class AudioTrackOutputStreamTest {
     static class DataProvider implements AudioTrackOutputStream.Callback {
         private static final int MIN_BUFFER_SIZE = 800;
         private final List<Byte> mGeneratedData = new ArrayList<Byte>();
+        private final AtomicInteger mUnderflowCalls = new AtomicInteger(0);
         private CountDownLatch mDoneSignal;
         private ObservableAudioTrack mAudioTrack;
 
@@ -121,10 +123,7 @@ public class AudioTrackOutputStreamTest {
         public AudioBufferInfo onMoreData(ByteBuffer audioData, long delayInFrames) {
             mDoneSignal.countDown();
             if (mDoneSignal.getCount() <= 0) {
-                try {
-                    Thread.sleep(3);
-                } catch (Exception e) {
-                }
+                mUnderflowCalls.incrementAndGet();
                 return null;
             }
 
@@ -159,6 +158,10 @@ public class AudioTrackOutputStreamTest {
 
         public int getBufferSize() {
             return MIN_BUFFER_SIZE;
+        }
+
+        public int getUnderflowCalls() {
+            return mUnderflowCalls.get();
         }
     }
 
@@ -207,5 +210,37 @@ public class AudioTrackOutputStreamTest {
 
         stream.stop();
         stream.close();
+    }
+
+    @Test
+    public void underflowPacesCallbacksAndStopsImmediately() throws InterruptedException {
+        DataProvider provider = new DataProvider(1);
+
+        AudioTrackOutputStream stream = AudioTrackOutputStream.create(provider);
+        stream.open(2, 44100, AudioFormat.ENCODING_E_AC3);
+        stream.start(0x888);
+
+        // Wait until the single buffer is written and onMoreData() returns null.
+        provider.waitForOutOfData();
+
+        final long sleepDurationMs = 35;
+        final long noDataSleepMs = 10;
+        final int slackCalls = 5;
+
+        long startTimeNs = System.nanoTime();
+        // Wait while underflowed (no new buffers provided); WorkerThread should sleep
+        // between null onMoreData() responses rather than spinning in a busy loop.
+        Thread.sleep(sleepDurationMs);
+
+        stream.stop();
+        long elapsedMs = (System.nanoTime() - startTimeNs) / 1_000_000;
+        stream.close();
+
+        // With 10ms pacing, onMoreData() should only be polled roughly once per 10ms of
+        // elapsed wall-clock time, whereas an unpaced loop would poll thousands of times.
+        int maxExpectedCalls = (int) (elapsedMs / noDataSleepMs) + slackCalls;
+        int callsDuringUnderflow = provider.getUnderflowCalls();
+        assertThat(callsDuringUnderflow).isAtLeast(2);
+        assertThat(callsDuringUnderflow).isAtMost(maxExpectedCalls);
     }
 }

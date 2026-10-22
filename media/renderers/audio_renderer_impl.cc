@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1387,6 +1388,8 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
     base::AutoLock auto_lock(lock_);
     DCHECK_NE(state_, kReinitializingSink);
 
+    const base::TimeTicks prev_render_time =
+        stop_rendering_time_.is_null() ? last_render_time_ : base::TimeTicks();
     last_render_time_ = tick_clock_->NowTicks();
 
     int64_t frames_delayed = AudioTimestampHelper::TimeToFrames(
@@ -1402,6 +1405,16 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
     // so we need to adjust the playback rate given to AudioClock to avoid a/v
     // sync issues over time.
     double effective_playback_rate = playback_rate_;
+
+    if (audio_bus->is_bitstream_format()) {
+      audio_bus->Zero();
+    }
+
+    // `audio_bus` is oversized for bitstream formats (see Initialize()), so
+    // only report the frames we actually write to `audio_clock_`.
+    if (is_passthrough_) {
+      frames_requested = 0;
+    }
 
     // Ensure Stop() hasn't destroyed our |algorithm_| on the pipeline thread.
     if (!algorithm_) {
@@ -1423,22 +1436,24 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
       return 0;
     }
 
-    if (is_passthrough_ && algorithm_->BufferedFrames() > 0) {
-      DCHECK_EQ(playback_rate_, 1.0);
+    if (is_passthrough_) {
+      if (algorithm_->BufferedFrames() > 0) {
+        DCHECK_EQ(playback_rate_, 1.0);
 
-      // TODO(tsunghung): For compressed bitstream formats, play zeroed buffer
-      // won't generate delay. It could be discarded immediately. Need another
-      // way to generate audio delay.
-      const base::TimeDelta play_delay =
-          first_packet_timestamp_ - audio_clock_->back_timestamp();
-      if (play_delay.is_positive()) {
-        MEDIA_LOG(ERROR, media_log_)
-            << "Cannot add delay for compressed audio bitstream format."
-            << " Requested delay: " << play_delay;
+        // TODO(tsunghung): For compressed bitstream formats, play zeroed buffer
+        // won't generate delay. It could be discarded immediately. Need another
+        // way to generate audio delay.
+        const base::TimeDelta play_delay =
+            first_packet_timestamp_ - audio_clock_->back_timestamp();
+        if (play_delay.is_positive()) {
+          MEDIA_LOG(ERROR, media_log_)
+              << "Cannot add delay for compressed audio bitstream format."
+              << " Requested delay: " << play_delay;
+        }
+
+        frames_written += algorithm_->FillBuffer(
+            audio_bus, 0, audio_bus->frames(), playback_rate_);
       }
-
-      frames_written += algorithm_->FillBuffer(audio_bus, 0, frames_requested,
-                                               playback_rate_);
 
       // See Initialize(), the |audio_bus| should be bigger than we need in
       // bitstream cases. Fix |frames_requested| to avoid incorrect time
@@ -1513,9 +1528,30 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
     int frames_after_end_of_stream = 0;
     if (frames_written == 0) {
       if (received_end_of_stream_) {
-        if (ended_timestamp_ == kInfiniteDuration)
+        if (ended_timestamp_ == kInfiniteDuration) {
           ended_timestamp_ = audio_clock_->back_timestamp();
-        frames_after_end_of_stream = frames_requested;
+        }
+        if (!is_passthrough_) {
+          frames_after_end_of_stream = frames_requested;
+        } else if (!prev_render_time.is_null()) {
+          // Some bitstream sinks may never report a zero `delay` after EOS, so
+          // drain the buffered audio in real time instead.
+          const int64_t elapsed_frames = AudioTimestampHelper::TimeToFrames(
+              last_render_time_ - prev_render_time,
+              audio_parameters_.sample_rate());
+          const int64_t buffered_frames = AudioTimestampHelper::TimeToFrames(
+              audio_clock_->back_timestamp() - audio_clock_->front_timestamp(),
+              audio_parameters_.sample_rate());
+          const int64_t frames_drained =
+              std::min(buffered_frames, elapsed_frames);
+          frames_delayed =
+              std::min(frames_delayed, buffered_frames - frames_drained);
+          if (frames_delayed == 0) {
+            frames_after_end_of_stream =
+                base::saturated_cast<int>(elapsed_frames - frames_drained);
+            frames_requested = frames_after_end_of_stream;
+          }
+        }
       } else if (state_ == kPlaying &&
                  buffering_state_ != BUFFERING_HAVE_NOTHING) {
         // Don't increase queue capacity if the queue latency is explicitly
@@ -1553,6 +1589,13 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
     audio_clock_->WroteAudio(frames_written + frames_after_end_of_stream,
                              frames_requested, frames_delayed,
                              effective_playback_rate);
+    if (is_passthrough_ && frames_after_end_of_stream > 0) {
+      // In passthrough mode, `frames_after_end_of_stream` represents wall-clock
+      // time that has already elapsed since the previous `Render()` call rather
+      // than silence written to the sink for future playout, so flush it into
+      // `front_timestamp()` immediately.
+      audio_clock_->WroteAudio(0, 0, 0, effective_playback_rate);
+    }
 
     if (CanRead_Locked()) {
       task_runner_->PostTask(FROM_HERE,
