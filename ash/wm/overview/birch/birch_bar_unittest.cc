@@ -400,7 +400,7 @@ TEST_F(BirchBarTest, ShowBirchBar) {
 
 TEST_F(BirchBarTest, DoNotShowBirchBarForSecondaryUser) {
   // Sign in a secondary user.
-  SimulateUserLogin({.display_email = "user2@test.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("user2@test.com"));
   ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
 
   EnterOverview();

@@ -155,7 +155,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestSignin) {
 }
 TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestUser) {
   // User
-  SimulateUserLogin({.display_email = kUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
   auto handler = ScreensaverImagesPolicyHandler::Create(active_prefs());
   // Verify that the policy handler detected the new user and created a new
   // image downloader instance.
@@ -166,7 +166,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestUser) {
 TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestManagedGuest) {
   // Managed Guest
   GetSessionControllerClient()->RequestSignOut();
-  SimulateUserLogin({.display_email = kUserEmail,
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUserEmail),
                      .user_type = user_manager::UserType::kPublicAccount});
   auto handler = ScreensaverImagesPolicyHandler::Create(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -195,13 +195,13 @@ class ScreensaverImagesPolicyHandlerForAnySessionTest
     ScreensaverImagesPolicyHandlerTestCase test_case = GetParam();
     switch (test_case.handle_type) {
       case ScreensaverImagesPolicyHandler::HandlerType::kUser:
-        SimulateUserLogin({.display_email = kUserEmail});
+        SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
         break;
       case ScreensaverImagesPolicyHandler::HandlerType::kSignin: {
       } break;
       case ScreensaverImagesPolicyHandler::HandlerType::kManagedGuest:
         SimulateUserLogin(
-            {.display_email = kUserEmail,
+            {.account_id = AccountId::FromUserEmail(kUserEmail),
              .user_type = user_manager::UserType::kPublicAccount});
         break;
     }

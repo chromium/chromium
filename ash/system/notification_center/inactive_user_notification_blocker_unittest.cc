@@ -23,6 +23,7 @@ namespace {
 using base::UTF8ToUTF16;
 
 const char kNotifierSystemPriority[] = "ash.some-high-priority-component";
+constexpr std::string_view kDefaultUserEmail = "user0@tray";
 
 class InactiveUserNotificationBlockerTest
     : public NoSessionAshTestBase,
@@ -129,7 +130,7 @@ TEST_F(InactiveUserNotificationBlockerTest, Basic) {
   EXPECT_TRUE(ShouldShow(random_system_notifier, kEmptyUserId));
 
   // Login triggers blocking state change.
-  SimulateUserLogin({.display_email = kDefaultUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kDefaultUserEmail));
   EXPECT_EQ(1, GetStateChangedCountAndReset());
 
   // Notifications for a single user session are not blocked.
@@ -139,7 +140,7 @@ TEST_F(InactiveUserNotificationBlockerTest, Basic) {
 
   // Notifications from a user other than the active one (in this case, default)
   // are generally blocked unless they're ash system notifications.
-  SimulateUserLogin({.display_email = "user1@tray"});
+  SimulateUserLogin(AccountId::FromUserEmail("user1@tray"));
   SwitchActiveUser(kDefaultUserEmail);
 
   EXPECT_EQ(2, GetStateChangedCountAndReset());

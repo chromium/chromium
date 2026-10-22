@@ -297,7 +297,7 @@ TEST_F(PowerButtonTest, ButtonStatesGuestMode) {
 }
 
 TEST_F(PowerButtonTest, EmailIsShownForRegularAccount) {
-  SimulateUserLogin({.display_email = "user@gmail.com",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("user@gmail.com"),
                      .user_type = user_manager::UserType::kRegular});
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetEmailButton()->GetVisible());
@@ -306,7 +306,7 @@ TEST_F(PowerButtonTest, EmailIsShownForRegularAccount) {
 }
 
 TEST_F(PowerButtonTest, EmailIsShownForChildAccount) {
-  SimulateUserLogin({.display_email = "child@gmail.com",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("child@gmail.com"),
                      .user_type = user_manager::UserType::kChild});
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetEmailButton()->GetVisible());
@@ -316,7 +316,7 @@ TEST_F(PowerButtonTest, EmailIsShownForChildAccount) {
 }
 
 TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
-  SimulateUserLogin({.display_email = "test@test.com",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("test@test.com"),
                      .user_type = user_manager::UserType::kPublicAccount});
   SimulatePowerButtonPress();
   EXPECT_EQ(nullptr, GetEmailButton());
@@ -326,7 +326,7 @@ TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
 // accessed in kiosk mode.
 
 TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
-  SimulateUserLogin({.display_email = "user@gmail.com",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("user@gmail.com"),
                      .user_type = user_manager::UserType::kRegular});
   SimulatePowerButtonPress();
   LeftClickOn(GetEmailButton());
@@ -338,7 +338,7 @@ TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
 }
 
 TEST_F(PowerButtonTest, UserItemButtonTooltipText) {
-  SimulateUserLogin({.display_email = "user@gmail.com",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("user@gmail.com"),
                      .user_type = user_manager::UserType::kRegular});
   SimulatePowerButtonPress();
   LeftClickOn(GetEmailButton());

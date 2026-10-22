@@ -17,10 +17,15 @@
 namespace ash {
 
 struct LoginInfo {
-  // The account ID of the user.
+  // The account ID of the user. If not specified, a default AccountId is used
+  // in `TestSessionControllerClient::AddUserSession()`.
+  // Note: If a test refers to a user or session by `AccountId`, the test must
+  // explicitly provide `account_id` and must not rely on the default AccountId
+  // chosen by `TestSessionControllerClient`.
   const std::optional<AccountId> account_id;
 
-  // The user's non canonicalized email address.
+  // The user's non canonicalized email address. If not specified,
+  // `account_id->GetUserEmail()` is used.
   const std::optional<std::string_view> display_email;
 
   // The user type of the account. See `user_manager::UserType` for more
@@ -44,10 +49,7 @@ struct LoginInfo {
   const bool is_account_managed = false;
 };
 
-inline constexpr std::string_view kDefaultUserEmail("user0@tray");
-
-inline constexpr LoginInfo kRegularUserLoginInfo = {.display_email =
-                                                        kDefaultUserEmail};
+inline constexpr LoginInfo kRegularUserLoginInfo = {};
 
 }  // namespace ash
 

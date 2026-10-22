@@ -464,7 +464,7 @@ class HoldingSpaceTrayTestBase : public NoSessionAshTestBase {
             .Set("ash.holding_space.time_of_first_availability", now.Clone())
             .Set("ash.holding_space.time_of_first_add", now.Clone())
             .Set("ash.holding_space.time_of_first_pin", std::move(now));
-    SimulateUserLogin({.display_email = user_id,
+    SimulateUserLogin({.account_id = user_account,
                        .init_pref_service_value = std::move(init_prefs)});
   }
 

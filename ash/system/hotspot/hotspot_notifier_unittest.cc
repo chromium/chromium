@@ -58,7 +58,9 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
     LogIn();
   }
 
-  void LogIn() { SimulateUserLogin({.display_email = "user1@test.com"}); }
+  void LogIn() {
+    SimulateUserLogin(AccountId::FromUserEmail("user1@test.com"));
+  }
 
   void TearDown() override {
     NoSessionAshTestBase::TearDown();

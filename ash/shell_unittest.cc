@@ -643,7 +643,7 @@ TEST_F(ShellLoginTest, DragAndDropDisabledBeforeLogin) {
   DragDropControllerTestApi drag_drop_controller_test_api(drag_drop_controller);
   EXPECT_FALSE(drag_drop_controller_test_api.enabled());
 
-  SimulateUserLogin({.display_email = "user1@test.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("user1@test.com"));
   EXPECT_TRUE(drag_drop_controller_test_api.enabled());
 }
 

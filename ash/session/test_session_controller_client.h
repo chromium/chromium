@@ -76,11 +76,12 @@ class TestSessionControllerClient final : public SessionControllerClient {
   void SetIsDemoSession();
 
   // Adds a user session from a given `login_info`.
-  // For convenience, `LoginInfo::display_email` can be used to create an
-  // AccountId, in which case `LoginInfo::account_id` should be std::nullopt.
-  // For testing behavior where |AccountId|s are compared, prefer specifying
-  // `LoginInfo::account_id` created with a valid storage key instead. See the
-  // documentation for |AccountId::GetUserEmail| for discussion.
+  // If `login_info.account_id` is not provided, a default `AccountId` is used.
+  // Note that if a test refers to a user or session by `AccountId`, the test
+  // must explicitly provide `login_info.account_id` rather than relying on the
+  // implicit default `AccountId` chosen by `TestSessionControllerClient`.
+  // If `login_info.display_email` is not provided, it is derived from
+  // `account_id.GetUserEmail()`.
   //
   // It will create a new PrefService (initialized with
   // `login_info.init_pref_service_value` if provided). However, if

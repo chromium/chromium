@@ -100,9 +100,9 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
 
     // Create user 2 session its login.
-    SimulateUserLogin({.display_email = kUser2Email});
+    SimulateUserLogin(AccountId::FromUserEmail(kUser2Email));
     // Create user 1 session and switch to it.
-    SimulateUserLogin({.display_email = kUser1Email});
+    SimulateUserLogin(AccountId::FromUserEmail(kUser1Email));
 
     // Place the cursor in the first display.
     GetEventGenerator()->MoveMouseTo(gfx::Point(0, 0));

@@ -140,13 +140,13 @@ class DisplayPrefsTest : public AshTestBase {
   }
 
   void LoggedInAsUser() {
-    SimulateUserLogin({.display_email = "user1@test.com"});
+    SimulateUserLogin(AccountId::FromUserEmail("user1@test.com"));
   }
 
   void LoggedInAsGuest() { SimulateGuestLogin(); }
 
   void LoggedInAsPublicAccount() {
-    SimulateUserLogin({.display_email = "pa@test.com",
+    SimulateUserLogin({.account_id = AccountId::FromUserEmail("pa@test.com"),
                        .user_type = user_manager::UserType::kPublicAccount});
   }
 

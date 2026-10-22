@@ -1095,9 +1095,7 @@ class UnifiedSystemTrayAccessibilityTest : public AshTestBase {
                                  user_manager::UserType user_type) {
     // Create a fake user prefs map.
     ClearLogin();
-    SimulateUserLogin({.account_id = account_id,
-                       .display_email = user_email,
-                       .user_type = user_type});
+    SimulateUserLogin({.account_id = account_id, .user_type = user_type});
   }
 
  protected:

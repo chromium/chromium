@@ -144,7 +144,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
   void InvokePendingMojoCalls() { notification_presenter_->FlushForTesting(); }
 
   void SignIntoAccount() {
-    SimulateUserLogin({.display_email = kTestUserEmail});
+    SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
     InvokePendingMojoCalls();
     EXPECT_TRUE(fake_multidevice_setup_->delegate().is_bound());
   }

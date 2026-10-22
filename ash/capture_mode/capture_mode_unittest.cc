@@ -334,7 +334,7 @@ class CaptureModeTestBase : public AshTestBase {
 
   void SwitchToUser2() {
     constexpr char kUserEmail[] = "user2@capture_mode";
-    SimulateUserLogin({.display_email = kUserEmail});
+    SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
   }
 
   void OpenSettingsView() {

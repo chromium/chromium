@@ -230,7 +230,7 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
                          user_manager::UserType user_type,
                          bool is_user_affiliated) {
     NoSessionAshTestBase::SimulateUserLogin(
-        {.display_email = user_email,
+        {.account_id = AccountId::FromUserEmail(user_email),
          .user_type = user_type,
          .is_account_managed = is_user_affiliated});
   }

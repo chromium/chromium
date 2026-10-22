@@ -6,6 +6,7 @@
 
 #include <ranges>
 #include <string>
+#include <string_view>
 
 #include "ash/login/login_screen_controller.h"
 #include "ash/login_status.h"
@@ -26,6 +27,11 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+namespace {
+
+constexpr std::string_view kDefaultUserEmail = "user0@tray";
+
+}  // namespace
 
 TestSessionControllerClient::TestSessionControllerClient(
     SessionControllerImpl* controller,
@@ -106,14 +112,10 @@ void TestSessionControllerClient::SetIsDemoSession() {
 
 AccountId TestSessionControllerClient::AddUserSession(
     const LoginInfo& login_info) {
-  CHECK(login_info.account_id || login_info.display_email);
-
-  std::string_view display_email = login_info.display_email.value_or(
-      login_info.account_id ? login_info.account_id->GetUserEmail()
-                            : std::string_view());
-
   AccountId account_id = login_info.account_id.value_or(
-      AccountId::FromUserEmail(gaia::CanonicalizeEmail(display_email)));
+      AccountId::FromUserEmail(kDefaultUserEmail));
+  std::string_view display_email =
+      login_info.display_email.value_or(account_id.GetUserEmail());
 
   // When both `account_id` and `display_email` is specified, the account_id's
   // user email must be same as cannonicalized display email.

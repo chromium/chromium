@@ -758,9 +758,10 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
 TEST_P(WelcomeTourControllerChromeVoxTest,
        MaybePreventTourFromStartingIfChromeVoxEnabled) {
   base::HistogramTester histogram_tester;
-  auto primary_account_id = SimulateUserLogin(
-      {.display_email = "primary@test", .is_new_profile = true},
-      /*activate_session=*/false);
+  auto primary_account_id =
+      SimulateUserLogin({.account_id = AccountId::FromUserEmail("primary@test"),
+                         .is_new_profile = true},
+                        /*activate_session=*/false);
 
   // Enable the spoken feedback after the pref service is ready and before the
   // session becomes active.
@@ -991,7 +992,7 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
       .WillByDefault(ReturnRefOfCopy(IsNewUserCrossDevice()));
 
   // Login into the user session and verify expectations.
-  SimulateUserLogin({.display_email = "primary@test",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("primary@test"),
                      .user_type = GetUserType(),
                      .is_new_profile = IsNewUserLocally(),
                      .is_account_managed = IsManagedUser()});

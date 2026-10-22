@@ -250,7 +250,7 @@ TEST_F(PolicyRecommendationRestorerTest,
   SetUserSettings();
 
   ConnectToSigninPrefService();
-  SimulateUserLogin({.display_email = "user@test.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("user@test.com"));
 
   VerifyPrefFollowsUser(prefs::kAccessibilityLargeCursorEnabled,
                         base::Value(true));
@@ -360,7 +360,7 @@ TEST_F(PolicyRecommendationRestorerTest, DoNothingOnSessionStart) {
   ConnectToSigninPrefService();
   SetUserSettings();
 
-  SimulateUserLogin({.display_email = "user@test.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("user@test.com"));
   VerifyPrefsFollowUser();
   EXPECT_FALSE(RestoreTimerIsRunning());
 }

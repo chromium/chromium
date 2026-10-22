@@ -522,7 +522,7 @@ TEST_F(BirchWeatherProviderTest, WeatherManagedUser) {
   EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
 
   // Add and switch to a managed user account.
-  SimulateUserLogin({.display_email = "primary@test",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("primary@test"),
                      .is_new_profile = true,
                      .is_account_managed = true});
 

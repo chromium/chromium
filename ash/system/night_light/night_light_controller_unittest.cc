@@ -476,7 +476,7 @@ TEST_F(NightLightTest, TestUserSwitchAndSettingsPersistence) {
   TestCompositorsTemperature(user1_temperature);
 
   // Switch to user 2, and expect NightLight to be disabled.
-  SimulateUserLogin({.display_email = kUser2Email});
+  SimulateUserLogin(AccountId::FromUserEmail(kUser2Email));
   EXPECT_FALSE(controller->IsNightLightEnabled());
   // Changing user_2's color temperature shouldn't affect user_1's settings.
   const float user2_temperature = 0.2f;
@@ -1082,7 +1082,7 @@ TEST_F(NightLightTest, MultiUserManualStatusToggleWithSchedules) {
   controller->SetCustomEndTime(MakeTimeOfDay(8, kPM));
   controller->SetScheduleType(ScheduleType::kCustom);
   controller->SetColorTemperature(kUser1Temperature);
-  SimulateUserLogin({.display_email = kUser2Email});
+  SimulateUserLogin(AccountId::FromUserEmail(kUser2Email));
   controller->SetScheduleType(ScheduleType::kSunsetToSunrise);
   controller->SetColorTemperature(kUser2Temperature);
   SwitchActiveUser(kUser1Email);
@@ -1837,7 +1837,7 @@ TEST_F(AmbientEQTest, TestAmbientRgbScalingUpdatesOnUserChangedToEnabled) {
   EXPECT_EQ(kDefaultScalingFactors, controller_->ambient_rgb_scaling_factors());
 
   // Enable the pref for user 2 then switch to user2 and the factors update.
-  SimulateUserLogin({.display_email = kUser2Email,
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUser2Email),
                      .init_pref_service_value = base::DictValue().Set(
                          prefs::kAmbientColorEnabled, true)});
   const auto coolest_scaling_factors =
@@ -1857,7 +1857,7 @@ TEST_F(AmbientEQTest, TestAmbientRgbScalingUpdatesOnUserChangedBothDisabled) {
 
   // Disable the pref for user 2 then switch to user2 and the factors still
   // shouldn't update.
-  SimulateUserLogin({.display_email = kUser2Email,
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUser2Email),
                      .init_pref_service_value = base::DictValue().Set(
                          prefs::kAmbientColorEnabled, false)});
   EXPECT_EQ(kDefaultScalingFactors, controller_->ambient_rgb_scaling_factors());

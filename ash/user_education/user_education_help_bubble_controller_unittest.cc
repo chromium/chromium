@@ -159,8 +159,8 @@ class UserEducationHelpBubbleControllerTest : public UserEducationAshTestBase {
 
     // User education in Ash is currently only supported for the primary user
     // profile. This is a self-imposed restriction. Log in the primary user.
-    primary_user_account_id_ =
-        SimulateUserLogin({.display_email = "primary@test"});
+    primary_user_account_id_ = SimulateUserLogin(
+        {.account_id = AccountId::FromUserEmail("primary@test")});
 
     // Create and show a `help_bubble_anchor_widget_`.
     help_bubble_anchor_widget_ = CreateFramelessTestWidget();

@@ -74,7 +74,7 @@ class NotificationIconsControllerTest : public AshTestBase {
 
     // Log in.
     constexpr char kUserEmail[] = "user@gmail.com";
-    SimulateUserLogin({.display_email = kUserEmail});
+    SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
 
     // Set the user's shelf auto-hide preference to always hide.
     auto accountId = AccountId::FromUserEmail(kUserEmail);

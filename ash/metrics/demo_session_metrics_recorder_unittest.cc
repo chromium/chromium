@@ -901,7 +901,7 @@ TEST_F(DemoSessionMetricsRecorderTest,
 TEST_F(DemoSessionMetricsRecorderTest, UserActivelyExitsMGS) {
   // Simulate to enter the demo MGS.
   ClearLogin();
-  SimulateUserLogin({.display_email = kUserEmail,
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUserEmail),
                      .user_type = user_manager::UserType::kPublicAccount});
 
   DemoSessionMetricsRecorder::RecordExitSessionAction(
@@ -936,7 +936,7 @@ TEST_F(DemoSessionMetricsRecorderTest, UserActivelyExitsSignedInSession) {
       DemoSessionMetricsRecorder::SessionType::kSignedInDemoSession);
 
   // Simulate to sign in the session with a regular user.
-  SimulateUserLogin({.display_email = kUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
 
   // Even though it's signed-in, the generic exit demo session user actions are
   // still recorded.

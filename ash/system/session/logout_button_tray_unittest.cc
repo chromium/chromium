@@ -51,7 +51,7 @@ TEST_F(LogoutButtonTrayTest, Visibility) {
   EXPECT_FALSE(button->GetVisible());
 
   // Button is not visible after simulated login.
-  SimulateUserLogin({.display_email = kUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
   EXPECT_FALSE(button->GetVisible());
 
   PrefService* pref_service =
@@ -83,7 +83,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressedSignOutImmediately) {
 
   // Sign out immediately when duration is zero.
   SimulateUserLogin(
-      {.display_email = kUserEmail,
+      {.account_id = AccountId::FromUserEmail(kUserEmail),
        .init_pref_service_value = base::DictValue()
                                       .Set(prefs::kShowLogoutButtonInTray, true)
                                       .Set(prefs::kLogoutDialogDurationMs, 0)});
@@ -109,7 +109,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressedShowConfirmationDialog) {
 
   // Call |LogoutConfirmationController::ConfirmLogout| when duration is
   // non-zero.
-  SimulateUserLogin({.display_email = kUserEmail,
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUserEmail),
                      .init_pref_service_value =
                          base::DictValue()
                              .Set(prefs::kShowLogoutButtonInTray, true)
@@ -147,7 +147,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressedInDemoSession) {
   // Sign out immediately and record user action when duration is zero
   // and it is demo session.
   SimulateUserLogin(
-      {.display_email = kUserEmail,
+      {.account_id = AccountId::FromUserEmail(kUserEmail),
        .init_pref_service_value = base::DictValue()
                                       .Set(prefs::kShowLogoutButtonInTray, true)
                                       .Set(prefs::kLogoutDialogDurationMs, 0)});
@@ -163,7 +163,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressedInDemoSession) {
 }
 
 TEST_F(LogoutButtonTrayTest, AccessibleName) {
-  SimulateUserLogin({.display_email = kUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
   {
     ui::AXNodeData node_data;
     tray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);

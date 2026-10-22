@@ -443,7 +443,7 @@ TEST_F(MahiManagerImplTest, SetMahiPrefOnLogin) {
         Shell::Get()->session_controller()->GetActiveAccountId();
 
     // Sets the pref for the second user.
-    SimulateUserLogin({.display_email = "other@user.test"});
+    SimulateUserLogin(AccountId::FromUserEmail("other@user.test"));
     SetMahiEnabledByUserPref(!mahi_enabled);
     EXPECT_EQ(IsEnabled(), !mahi_enabled);
 

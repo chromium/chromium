@@ -626,7 +626,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
     // TODO(crbug.com/383441831): Remove Reset();
     session_controller_client_->Reset();
 
-    SimulateUserLogin({.account_id = AccountId::FromUserEmail("user0@tray")});
+    SimulateUserLogin({});
   }
 }
 

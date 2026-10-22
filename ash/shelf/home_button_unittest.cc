@@ -1011,13 +1011,10 @@ TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
   EXPECT_EQ(1.0f, home_button_view->layer()->opacity());
 }
 
-inline constexpr LoginInfo k2ndRegularUserLoginInfo = {.display_email =
-                                                           "user1@tray"};
-
 TEST_P(HomeButtonNoSessionTest, LongPressGestureSunfishScanner) {
   // Simulate two users with primary user as active.
   auto primary = SimulateUserLogin(kRegularUserLoginInfo);
-  SimulateUserLogin(k2ndRegularUserLoginInfo);
+  SimulateUserLogin(AccountId::FromUserEmail("user1@tray"));
   SwitchActiveUser(primary);
 
   // Sunfish / Scanner should already be enabled.
@@ -1052,7 +1049,7 @@ TEST_P(HomeButtonNoSessionTest, LongPressGestureSunfishScanner) {
 TEST_P(HomeButtonNoSessionTest, LongPressGestureInTabletModeSunfishScanner) {
   // Simulate two users with primary user as active.
   auto primary = SimulateUserLogin(kRegularUserLoginInfo);
-  SimulateUserLogin(k2ndRegularUserLoginInfo);
+  SimulateUserLogin(AccountId::FromUserEmail("user1@tray"));
   SwitchActiveUser(primary);
 
   // Sunfish / Scanner should already be enabled.

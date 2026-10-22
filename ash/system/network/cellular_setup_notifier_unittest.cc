@@ -112,7 +112,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
   }
 
   void LogIn() {
-    SimulateUserLogin({.display_email = "user1@test.com"});
+    SimulateUserLogin(AccountId::FromUserEmail("user1@test.com"));
     base::RunLoop().RunUntilIdle();
   }
 

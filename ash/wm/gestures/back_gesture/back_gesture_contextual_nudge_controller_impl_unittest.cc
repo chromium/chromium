@@ -69,13 +69,15 @@ class BackGestureContextualNudgeControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    auto accountId1 = SimulateUserLogin({.display_email = kUser1Email});
+    auto accountId1 = SimulateUserLogin(
+        {.account_id = AccountId::FromUserEmail(kUser1Email)});
     user1_pref_service_ =
         GetSessionControllerClient()->GetUserPrefService(accountId1);
 
     PrefService* user2_pref_service_ptr = nullptr;
     if (create_secondary_account_) {
-      auto accountId2 = SimulateUserLogin({.display_email = kUser2Email});
+      auto accountId2 = SimulateUserLogin(
+          {.account_id = AccountId::FromUserEmail(kUser2Email)});
       user2_pref_service_ptr =
           GetSessionControllerClient()->GetUserPrefService(accountId2);
       SwitchActiveUser(accountId1);

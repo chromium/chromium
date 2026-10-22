@@ -356,7 +356,7 @@ TEST_F(NoSessionTrayBackgroundViewTest, HandleSessionChange) {
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
-  SimulateUserLogin({.display_email = "a@tray"});
+  SimulateUserLogin(AccountId::FromUserEmail("a@tray"));
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(
       test_tray_background_view()->layer()->GetAnimator()->is_animating());

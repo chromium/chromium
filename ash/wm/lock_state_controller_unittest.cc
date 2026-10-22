@@ -506,7 +506,7 @@ TEST_F(LockStateControllerTest, LockButtonBasicGuest) {
 TEST_F(LockStateControllerTest, PauseFrameEvictionWhileLocked) {
   // The lock button shouldn't do anything when we're logged in as a guest.
   ClearLogin();
-  SimulateUserLogin({.display_email = "user@example.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("user@example.com"));
   auto window = CreateWindowWithAppType();
   window->TrackOcclusionState();
   EXPECT_EQ(aura::Window::OcclusionState::VISIBLE, window->GetOcclusionState());
@@ -1200,7 +1200,7 @@ TEST_F(LockStateControllerInformedRestoreTest, ShutdownInOverview) {
 }
 
 TEST_F(LockStateControllerInformedRestoreTest, ShutdownInGuest) {
-  SimulateUserLogin({.display_email = "foo@example.com",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("foo@example.com"),
                      .user_type = user_manager::UserType::kGuest});
 
   // Create an empty file to simulate an old informed restore image.
@@ -1462,7 +1462,8 @@ TEST_F(LockStateControllerInformedRestoreTest,
   base::HistogramTester histogram_tester;
 
   // Simulate MUSI setting.
-  auto account_id = SimulateUserLogin({.display_email = "user2@example.com"});
+  auto account_id = SimulateUserLogin(
+      {.account_id = AccountId::FromUserEmail("user2@example.com")});
   SwitchActiveUser(account_id);
 
   // At least one window is needed to trigger screenshot.
@@ -1489,7 +1490,7 @@ TEST_F(LockStateControllerInformedRestoreTest,
 
   // Simulate MUSI setting.
   auto primary_account_id = GetPrimaryUserAccountId();
-  SimulateUserLogin({.display_email = "user2@example.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("user2@example.com"));
   // Activate primary user.
   SwitchActiveUser(primary_account_id);
 
@@ -1515,8 +1516,8 @@ TEST_F(LockStateControllerInformedRestoreTest,
 
   // Simulate MUSI setting.
   auto primary_account_id = GetPrimaryUserAccountId();
-  auto secondary_account_id =
-      SimulateUserLogin({.display_email = "user2@example.com"});
+  auto secondary_account_id = SimulateUserLogin(
+      {.account_id = AccountId::FromUserEmail("user2@example.com")});
   // Activate primary user.
   SwitchActiveUser(primary_account_id);
 

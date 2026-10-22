@@ -2566,9 +2566,9 @@ TEST_P(WallpaperControllerTest, ConfirmSetSeaPenWallpaperInTabletMode) {
 }
 
 TEST_P(WallpaperControllerTest, SetSeaPenWallpaperForPublicAccount) {
-  const auto account_id =
-      SimulateUserLogin({.display_email = "public_session",
-                         .user_type = user_manager::UserType::kPublicAccount});
+  const auto account_id = SimulateUserLogin(
+      {.account_id = AccountId::FromUserEmail("public_session"),
+       .user_type = user_manager::UserType::kPublicAccount});
 
   gfx::ImageSkia expected_image;
   SetSeaPenWallpaper(account_id, SK_ColorBLUE, 12345u, /*preview_mode=*/false,
@@ -2880,7 +2880,7 @@ TEST_P(WallpaperControllerTest, SetDefaultWallpaperCallbackTiming) {
 
 TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
-  SimulateUserLogin({.display_email = "kiosk",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("kiosk"),
                      .user_type = user_manager::UserType::kKioskChromeApp});
 
   // Verify that |SetDecodedCustomWallpaper| doesn't set wallpaper in kiosk
@@ -3078,7 +3078,7 @@ TEST_P(WallpaperControllerTest, VerifyWallpaperCache) {
 
   // After |kUser2| is logged in, |user1|'s wallpaper cache should still be kept
   // (crbug.com/339576). Note the active user is still |user1|.
-  SimulateUserLogin({.display_email = kUser2});
+  SimulateUserLogin(AccountId::FromUserEmail(kUser2));
   SwitchActiveUser(kAccountId1);
   EXPECT_TRUE(
       controller_->GetWallpaperFromCache(kAccountId1, &cached_wallpaper));

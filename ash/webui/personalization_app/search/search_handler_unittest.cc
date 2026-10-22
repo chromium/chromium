@@ -587,7 +587,7 @@ TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest,
   // to false. This cannot happen during a session for a given account, so no
   // need for an observer method. Log in as a non-eligible account and clear and
   // recreate the search handler to receive updates.
-  SimulateUserLogin({.display_email = "asdf@example.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("asdf@example.com"));
   ClearSearchTagRegistry();
   InitSearchHandler();
   {

@@ -56,8 +56,8 @@ class PaletteWelcomeBubbleTest : public AshTestBase {
 
     welcome_bubble_ = std::make_unique<PaletteWelcomeBubble>(
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->palette_tray());
-    SimulateUserLogin({.display_email = kUser1Email});
-    SimulateUserLogin({.display_email = kUser2Email});
+    SimulateUserLogin(AccountId::FromUserEmail(kUser1Email));
+    SimulateUserLogin(AccountId::FromUserEmail(kUser2Email));
     GetSessionControllerClient()->SwitchActiveUser(
         AccountId::FromUserEmail(kUser1Email));
   }
@@ -169,8 +169,9 @@ TEST_F(PaletteWelcomeBubbleEmphemeralAccountTest,
        BubbleNotShownForPublicAccount) {
   auto welcome_bubble = std::make_unique<PaletteWelcomeBubble>(
       StatusAreaWidgetTestHelper::GetStatusAreaWidget()->palette_tray());
-  SimulateUserLogin({.display_email = kPublicAccountEmail,
-                     .user_type = user_manager::UserType::kPublicAccount});
+  SimulateUserLogin(
+      {.account_id = AccountId::FromUserEmail(kPublicAccountEmail),
+       .user_type = user_manager::UserType::kPublicAccount});
   welcome_bubble->ShowIfNeeded();
   EXPECT_FALSE(welcome_bubble->GetBubbleViewForTesting());
 }

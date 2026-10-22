@@ -457,7 +457,8 @@ void AshTestBase::SimulateUserLogin(const AccountId& account_id) {
 AccountId AshTestBase::SimulateNewUserFirstLogin(
     const std::string& user_email) {
   auto account_id = ash_test_helper_->SimulateUserLogin(
-      {.display_email = user_email, .is_new_profile = true});
+      {.account_id = AccountId::FromUserEmail(user_email),
+       .is_new_profile = true});
 
   if (pixel_test_helper_) {
     pixel_test_helper_->StabilizeUi();
@@ -466,8 +467,9 @@ AccountId AshTestBase::SimulateNewUserFirstLogin(
 }
 
 AccountId AshTestBase::SimulateGuestLogin() {
-  return SimulateUserLogin({.display_email = user_manager::kGuestUserName,
-                            .user_type = user_manager::UserType::kGuest});
+  return SimulateUserLogin(
+      {.account_id = AccountId::FromUserEmail(user_manager::kGuestUserName),
+       .user_type = user_manager::UserType::kGuest});
 }
 
 AccountId AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
@@ -476,7 +478,8 @@ AccountId AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
 
   GetSessionControllerClient()->SetIsRunningInAppMode(true);
   return SimulateUserLogin(
-      {.display_email = kKioskUserEmail, .user_type = user_type});
+      {.account_id = AccountId::FromUserEmail(kKioskUserEmail),
+       .user_type = user_type});
 }
 
 void AshTestBase::SwitchActiveUser(const AccountId& account_id) {

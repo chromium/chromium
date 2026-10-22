@@ -213,7 +213,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 
 TEST_F(NearbyShareFeaturePodControllerTest,
        QuickShareV2_ButtonToggles_OnQuickShareToggled) {
-  SimulateUserLogin({.display_email = kDefaultUserEmail});
+  SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->SetEnabled(true);
   SetUpButton();
   EXPECT_TRUE(IsButtonToggled());

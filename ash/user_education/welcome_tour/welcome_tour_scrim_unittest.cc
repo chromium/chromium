@@ -75,7 +75,7 @@ TEST_F(WelcomeTourScrimTest, ResizeRootWindows) {
 // scrims on all root windows.
 TEST_F(WelcomeTourScrimTest, UpdateRootWindowColorProvider) {
   // Log in the user so that the prefs backing dark/light mode are available.
-  SimulateUserLogin({.display_email = "user@test"});
+  SimulateUserLogin(AccountId::FromUserEmail("user@test"));
 
   // Initial state.
   WelcomeTourScrim scrim;

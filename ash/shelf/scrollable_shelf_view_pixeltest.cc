@@ -108,7 +108,7 @@ class ScrollableShelfViewWithGuestModePixelTest
     if (UseGuestMode()) {
       SimulateGuestLogin();
     } else {
-      SimulateUserLogin({.display_email = "user@gmail.com"});
+      SimulateUserLogin(AccountId::FromUserEmail("user@gmail.com"));
     }
   }
 };

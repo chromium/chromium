@@ -84,7 +84,7 @@ TEST_F(PrivacyHubSpeakOnMuteControllerTest, SetSpeakOnMuteOnLogin) {
         Shell::Get()->session_controller()->GetActiveAccountId();
 
     // Sets the pref for the second user.
-    SimulateUserLogin({.display_email = "other@user.test"});
+    SimulateUserLogin(AccountId::FromUserEmail("other@user.test"));
     SetUserPref(!speak_on_mute_enabled);
     EXPECT_EQ(IsSpeakOnMuteDetectionOn(), !speak_on_mute_enabled);
 

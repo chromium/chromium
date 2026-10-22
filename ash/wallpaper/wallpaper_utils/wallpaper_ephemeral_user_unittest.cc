@@ -31,9 +31,9 @@ TEST_F(WallpaperEphemeralUserTest, RegularUserLoggedIn) {
 }
 
 TEST_F(WallpaperEphemeralUserTest, PublicAccount) {
-  auto account_id =
-      SimulateUserLogin({.display_email = "managed_guest@test.com",
-                         .user_type = user_manager::UserType::kPublicAccount});
+  auto account_id = SimulateUserLogin(
+      {.account_id = AccountId::FromUserEmail("managed_guest@test.com"),
+       .user_type = user_manager::UserType::kPublicAccount});
   EXPECT_TRUE(IsEphemeralUser(account_id));
 }
 

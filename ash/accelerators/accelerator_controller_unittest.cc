@@ -1617,7 +1617,7 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
 
 TEST_F(AcceleratorControllerTest, ToggleMultitaskMenu) {
   // Simulate fake user login to ensure pref registration is done correctly.
-  SimulateUserLogin({.display_email = "fakeuser"});
+  SimulateUserLogin(AccountId::FromUserEmail("fakeuser"));
   // Enabling `kShortcutCustomization` will start letting
   // `AcceleratorControllerImpl` to observe changes to the accelerator list.
   // This includes accelerators added by enabling flags.
@@ -2608,7 +2608,8 @@ class SystemShortcutBehaviorTest : public AcceleratorControllerTest {
   void SetUp() override {
     AcceleratorControllerTest::SetUp();
 
-    AccountId account_id = SimulateUserLogin({.display_email = kUserEmail});
+    AccountId account_id =
+        SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUserEmail)});
     user_prefs_ = static_cast<TestingPrefServiceSimple*>(
         GetSessionControllerClient()->GetUserPrefService(account_id));
   }
@@ -3106,7 +3107,7 @@ class MagnifiersAcceleratorsTester : public AcceleratorControllerTest {
   void SetUp() override {
     AcceleratorControllerTest::SetUp();
     // Create user session and simulate its login.
-    SimulateUserLogin({.display_email = kUserEmail});
+    SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
   }
 };
 

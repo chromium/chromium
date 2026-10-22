@@ -99,8 +99,8 @@ TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   auto first_user = session_controller->GetActiveAccountId();
 
   // Add a secondary user then switch back to first user.
-  auto secondary_user =
-      SimulateUserLogin({.display_email = "secondary@gmail.com"});
+  auto secondary_user = SimulateUserLogin(
+      {.account_id = AccountId::FromUserEmail("secondary@gmail.com")});
   SwitchActiveUser(first_user);
   ASSERT_NE(session_controller->GetActiveAccountId(), secondary_user);
 
@@ -135,7 +135,7 @@ TEST_F(UserChooserDetailedViewControllerTest,
   ClearLogin();
 
   // Log in as a child user.
-  SimulateUserLogin({.display_email = "child@gmail.com",
+  SimulateUserLogin({.account_id = AccountId::FromUserEmail("child@gmail.com"),
                      .user_type = user_manager::UserType::kChild});
 
   EXPECT_FALSE(UserChooserDetailedViewController::IsUserChooserEnabled());

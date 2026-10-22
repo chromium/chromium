@@ -139,7 +139,7 @@ class ActiveSessionAuthControllerTest
     NoSessionAshTestBase::SetUp();
 
     ClearLogin();
-    SimulateUserLogin({.display_email = kUserEmail,
+    SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUserEmail),
                        .user_type = user_manager::UserType::kRegular});
   }
 

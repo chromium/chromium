@@ -258,7 +258,7 @@ TEST_F(UserEducationUtilAshTest, GetMatchingViewInRootWindow) {
 
 // Verifies that `GetUserType()` is working as intended.
 TEST_F(UserEducationUtilAshTest, GetUserType) {
-  AccountId regular_account_id = AccountId::FromUserEmail(kDefaultUserEmail);
+  AccountId regular_account_id = AccountId::FromUserEmail("user0@tray");
   AccountId guest_account_id = user_manager::GuestAccountId();
 
   // Case: no user sessions added.

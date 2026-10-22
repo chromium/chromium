@@ -29,7 +29,9 @@ class HotspotInfoCacheTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void LogIn() { SimulateUserLogin({.display_email = "user1@test.com"}); }
+  void LogIn() {
+    SimulateUserLogin(AccountId::FromUserEmail("user1@test.com"));
+  }
 
   void LogOut() { ClearLogin(); }
 };

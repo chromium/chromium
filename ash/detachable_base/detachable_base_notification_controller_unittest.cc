@@ -112,7 +112,7 @@ TEST_F(DetachableBaseNotificationControllerTest,
   detachable_base_handler()->PairChallengeSucceeded({0x01, 0x01});
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 
-  SimulateUserLogin({.display_email = "secondary_user@test.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("secondary_user@test.com"));
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 
   detachable_base_handler()->PairChallengeSucceeded({0x02, 0x02});
@@ -133,7 +133,7 @@ TEST_F(DetachableBaseNotificationControllerTest,
   EXPECT_TRUE(IsBaseChangedNotificationVisible());
   CloseBaseChangedNotification();
 
-  SimulateUserLogin({.display_email = "secondary_user@test.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("secondary_user@test.com"));
   EXPECT_TRUE(IsBaseChangedNotificationVisible());
 }
 
@@ -151,7 +151,7 @@ TEST_F(DetachableBaseNotificationControllerTest,
   // No active user, so the notification should not be shown, yet.
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 
-  SimulateUserLogin({.display_email = kTestUser});
+  SimulateUserLogin(AccountId::FromUserEmail(kTestUser));
   EXPECT_TRUE(IsBaseChangedNotificationVisible());
 }
 
@@ -173,7 +173,7 @@ TEST_F(DetachableBaseNotificationControllerTest,
   // notification when the user logs in.
   EXPECT_TRUE(
       detachable_base_handler()->SetPairedBaseAsLastUsedByUser(test_user_info));
-  SimulateUserLogin({.display_email = kTestUser});
+  SimulateUserLogin(AccountId::FromUserEmail(kTestUser));
   EXPECT_FALSE(IsBaseChangedNotificationVisible());
 }
 

@@ -178,8 +178,8 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
 
   void CreateTestUserSessions() {
     ClearLogin();
-    SimulateUserLogin({.display_email = kUser1Email});
-    SimulateUserLogin({.display_email = kUser2Email});
+    SimulateUserLogin(AccountId::FromUserEmail(kUser1Email));
+    SimulateUserLogin(AccountId::FromUserEmail(kUser2Email));
     SwitchActiveUser({kUser1Email});
   }
 

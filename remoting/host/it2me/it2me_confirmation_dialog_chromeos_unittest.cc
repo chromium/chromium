@@ -424,7 +424,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
 
 TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
        ShowDialogOnUserSessionScreenDuringActiveUserSession) {
-  SimulateUserLogin({.display_email = kTestUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
 
   CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
@@ -440,7 +440,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
   ASSERT_TRUE(DialogVisibleInParentContainer(kLoginScreen));
   ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
 
-  SimulateUserLogin({.display_email = kTestUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
 
   ASSERT_FALSE(DialogVisibleInParentContainer(kLoginScreen));
   ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
@@ -448,7 +448,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
 
 TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
        DialogShouldMoveToLoginScreenOnUserLogout) {
-  SimulateUserLogin({.display_email = kTestUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
 
   CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
@@ -470,7 +470,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
   ASSERT_TRUE(DialogVisibleInParentContainer(kLockScreen));
   ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
 
-  SimulateUserLogin({.display_email = kTestUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
 
   ASSERT_FALSE(DialogVisibleInParentContainer(kLockScreen));
   ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
@@ -478,7 +478,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
 
 TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
        DialogShouldMoveToLockSessionScreenWhenSessionIsLocked) {
-  SimulateUserLogin({.display_email = kTestUserEmail});
+  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
 
   CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 

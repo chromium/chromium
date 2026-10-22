@@ -161,7 +161,7 @@ class CalendarListModelTest : public AshTestBase {
 
   AccountId SimulateLogin(const std::string& email, bool is_child = false) {
     return SimulateUserLogin(
-        {.display_email = email,
+        {.account_id = AccountId::FromUserEmail(email),
          .user_type = is_child ? user_manager::UserType::kChild
                                : user_manager::UserType::kRegular});
   }

@@ -257,7 +257,8 @@ class RetroactivePairingDetectorTest
     if (user_type == user_manager::UserType::kGuest) {
       SimulateGuestLogin();
     } else {
-      SimulateUserLogin({.display_email = kUserEmail, .user_type = user_type});
+      SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUserEmail),
+                         .user_type = user_type});
     }
   }
 

@@ -4809,7 +4809,7 @@ class DesksMultiUserTest : public NoSessionAshTestBase {
 
   void SimulateUser1Login(
       std::optional<base::DictValue> init_prefs = std::nullopt) {
-    SimulateUserLogin({.display_email = kUser1Email,
+    SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUser1Email),
                        .init_pref_service_value = std::move(init_prefs)});
     MultiUserWindowManager::Get()->SetAnimationSpeedForTest(
         MultiUserWindowManager::ANIMATION_SPEED_DISABLED);
@@ -4819,7 +4819,7 @@ class DesksMultiUserTest : public NoSessionAshTestBase {
 
   void SimulateUser2Login(
       std::optional<base::DictValue> init_prefs = std::nullopt) {
-    SimulateUserLogin({.display_email = kUser2Email,
+    SimulateUserLogin({.account_id = AccountId::FromUserEmail(kUser2Email),
                        .init_pref_service_value = std::move(init_prefs)});
   }
 

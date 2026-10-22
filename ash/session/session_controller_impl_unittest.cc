@@ -572,8 +572,8 @@ TEST_F(SessionControllerImplPrefsTest, Observer) {
   controller->AddObserver(&observer);
 
   // Setup 2 users.
-  SimulateUserLogin({.display_email = kUser1});
-  SimulateUserLogin({.display_email = kUser2});
+  SimulateUserLogin(kUserAccount1);
+  SimulateUserLogin(kUserAccount2);
 
   TestSessionControllerClient* session = GetSessionControllerClient();
   session->SwitchActiveUser(kUserAccount1);
@@ -606,12 +606,12 @@ TEST_F(SessionControllerImplPrefsTest, NotifyOnce) {
   controller->AddObserver(&observer);
   ASSERT_EQ(0, observer.user_prefs_changed_count());
 
-  SimulateUserLogin({.display_email = kUser1});
+  SimulateUserLogin(kUserAccount1);
   EXPECT_EQ(1, observer.user_prefs_changed_count());
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount1),
             observer.last_user_pref_service());
 
-  SimulateUserLogin({.display_email = kUser2});
+  SimulateUserLogin(kUserAccount2);
   EXPECT_EQ(2, observer.user_prefs_changed_count());
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount2),
             observer.last_user_pref_service());
@@ -649,7 +649,7 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
   controller->AddObserver(&mock_session_observer);
 
   // Switch to test user.
-  SimulateUserLogin({.display_email = kUser1Email},
+  SimulateUserLogin({.account_id = kUser1AccountId},
                     /*activate_session=*/false);
 
   // Initially time of last session activation is expected to be `base::Time()`.
@@ -743,7 +743,7 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
             *base::ValueToTime(time_of_last_session_activation->GetValue()),
             expected_time_of_last_session_activation);
       });
-  SimulateUserLogin({.display_email = kUser2Email});
+  SimulateUserLogin(kUser2AccountId);
   testing::Mock::VerifyAndClearExpectations(&mock_session_observer);
 
   {
@@ -1095,7 +1095,7 @@ TEST_F(SessionControllerImplUnblockTest, ActiveWindowAfterUnblocking) {
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   // |widget| should not be active as it is blocked by SessionControllerImpl.
   EXPECT_FALSE(widget->IsActive());
-  SimulateUserLogin({.display_email = "user@test.com"});
+  SimulateUserLogin(AccountId::FromUserEmail("user@test.com"));
   EXPECT_FALSE(Shell::Get()->session_controller()->IsUserSessionBlocked());
 
   // |widget| should now be active as SessionControllerImpl no longer is
