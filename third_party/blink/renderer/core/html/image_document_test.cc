@@ -6,22 +6,32 @@
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
+#include "third_party/blink/renderer/core/editing/commands/editor_command.h"
+#include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -344,6 +354,162 @@ TEST_F(ImageDocumentTest, MAYBE(ImageCenteredAtDeviceScaleFactor)) {
     EXPECT_EQ(20, offset.y());
   }
 }
+
+class ImageDocumentClipboardTest
+    : public SimTest,
+      public testing::WithParamInterface<EditorCommandSource> {
+ protected:
+  void LoadImageDocument() {
+    SimRequest request("https://example.com/image.jpg", "image/jpeg");
+    LoadURL("https://example.com/image.jpg");
+    request.Complete(CreateJpegImageData(50, 50));
+    test::RunPendingTasks();
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    ASSERT_TRUE(IsA<ImageDocument>(GetDocument()));
+  }
+
+  HTMLImageElement* InsertImage(const String& url, bool cors_enabled = false) {
+    auto* image = MakeGarbageCollected<HTMLImageElement>(GetDocument());
+    if (cors_enabled) {
+      image->setAttribute(html_names::kCrossoriginAttr,
+                          AtomicString("anonymous"));
+    }
+    image->setAttribute(html_names::kSrcAttr, AtomicString(url));
+    GetDocument().body()->insertBefore(image,
+                                       GetDocument().body()->firstChild());
+    return image;
+  }
+
+  void SetResponseType(const SimRequestBase& request,
+                       network::mojom::FetchResponseType type) {
+    // Supply the response filtering normally done by the network service;
+    // SimRequest still supplies the image bytes.
+    WebURLResponse response(request.GetURL());
+    response.SetMimeType("image/jpeg");
+    response.SetHttpStatusCode(200);
+    response.SetType(type);
+    if (type == network::mojom::FetchResponseType::kCors) {
+      response.AddHttpHeaderField("Access-Control-Allow-Origin", "*");
+    }
+    url_test_helpers::RegisterMockedURLUnregister(request.GetURL());
+    url_test_helpers::RegisterMockedURLLoadWithCustomResponse(request.GetURL(),
+                                                              "", response);
+  }
+
+  void ExpectCopy(bool should_copy) {
+    LocalFrame& frame = *GetDocument().GetFrame();
+    PageTestBase::MockClipboardHostProvider clipboard_provider(
+        frame.GetBrowserInterfaceBroker());
+    SystemClipboard& clipboard = *frame.GetSystemClipboard();
+    clipboard.WritePlainText("original");
+    clipboard.WriteHTML("original markup", NullUrl());
+    clipboard.CommitWrite();
+    test::RunPendingTasks();
+    const auto sequence_number = clipboard.SequenceNumber();
+
+    frame.GetPage()->GetFocusController().SetActive(true);
+    frame.GetPage()->GetFocusController().SetFocused(true);
+    LocalFrame::NotifyUserActivation(
+        &frame, mojom::blink::UserActivationNotificationType::kTest);
+    frame.Selection().Clear();
+    ASSERT_TRUE(frame.GetEditor().CreateCommand("Copy", GetParam()).Execute());
+    test::RunPendingTasks();
+
+    EXPECT_EQ(
+        should_copy,
+        clipboard.ReadPng(mojom::blink::ClipboardBuffer::kStandard).size() >
+            0u);
+    KURL url;
+    unsigned fragment_start = 0;
+    unsigned fragment_end = 0;
+    const String html = clipboard.ReadHTML(url, fragment_start, fragment_end);
+    if (should_copy) {
+      EXPECT_TRUE(html.contains("<img"));
+      EXPECT_NE(sequence_number, clipboard.SequenceNumber());
+    } else {
+      EXPECT_EQ("original", clipboard.ReadPlainText());
+      EXPECT_EQ("original markup", html);
+      EXPECT_EQ(sequence_number, clipboard.SequenceNumber());
+    }
+  }
+};
+
+TEST_P(ImageDocumentClipboardTest, CopyOriginalImage) {
+  LoadImageDocument();
+  ExpectCopy(true);
+}
+
+TEST_P(ImageDocumentClipboardTest, CopyDoesNotExportInsertedCrossOriginImage) {
+  LoadImageDocument();
+  SimSubresourceRequest request("https://other.test/private.jpg", "image/jpeg");
+  SetResponseType(request, network::mojom::FetchResponseType::kOpaque);
+  HTMLImageElement* image = InsertImage("https://other.test/private.jpg");
+  test::RunPendingTasks();
+  request.Complete(CreateJpegImageData(60, 40));
+  test::RunPendingTasks();
+  ASSERT_TRUE(image->CachedImage());
+  ASSERT_TRUE(image->CachedImage()->HasImage());
+  ASSERT_FALSE(image->CachedImage()->IsCorsSameOrigin());
+  ExpectCopy(false);
+}
+
+TEST_P(ImageDocumentClipboardTest, CopyDoesNotExportChangedCrossOriginImage) {
+  LoadImageDocument();
+  SimSubresourceRequest request("https://other.test/private.jpg", "image/jpeg");
+  SetResponseType(request, network::mojom::FetchResponseType::kOpaque);
+  HTMLImageElement* image = To<ImageDocument>(GetDocument()).ImageElement();
+  image->setAttribute(html_names::kSrcAttr,
+                      AtomicString("https://other.test/private.jpg"));
+  test::RunPendingTasks();
+  request.Complete(CreateJpegImageData(60, 40));
+  test::RunPendingTasks();
+  ASSERT_TRUE(image->CachedImage());
+  ASSERT_TRUE(image->CachedImage()->HasImage());
+  ASSERT_FALSE(image->CachedImage()->IsCorsSameOrigin());
+  ExpectCopy(false);
+}
+
+TEST_P(ImageDocumentClipboardTest, CopyCorsApprovedImage) {
+  LoadImageDocument();
+  SimSubresourceRequest request("https://other.test/public.jpg", "image/jpeg");
+  SetResponseType(request, network::mojom::FetchResponseType::kCors);
+  HTMLImageElement* image = InsertImage("https://other.test/public.jpg", true);
+  test::RunPendingTasks();
+  request.Complete(CreateJpegImageData(60, 40));
+  test::RunPendingTasks();
+  ASSERT_TRUE(image->CachedImage());
+  ASSERT_TRUE(image->CachedImage()->HasImage());
+  ASSERT_TRUE(image->CachedImage()->IsCorsSameOrigin());
+  ExpectCopy(true);
+}
+
+TEST_P(ImageDocumentClipboardTest,
+       CopyDoesNotExportCrossOriginGeneratedContent) {
+  LoadImageDocument();
+  SimSubresourceRequest request("https://other.test/private.jpg", "image/jpeg");
+  SetResponseType(request, network::mojom::FetchResponseType::kOpaque);
+  HTMLImageElement* image = To<ImageDocument>(GetDocument()).ImageElement();
+  image->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("content: url(https://other.test/private.jpg)"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  request.Complete(CreateJpegImageData(60, 40));
+  test::RunPendingTasks();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  ASSERT_TRUE(image->CachedImage()->IsCorsSameOrigin());
+  auto* layout_image = DynamicTo<LayoutImage>(image->GetLayoutObject());
+  ASSERT_TRUE(layout_image);
+  ASSERT_TRUE(layout_image->CachedImage());
+  ASSERT_TRUE(layout_image->CachedImage()->HasImage());
+  ASSERT_FALSE(layout_image->CachedImage()->IsCorsSameOrigin());
+  ExpectCopy(false);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ImageDocumentClipboardTest,
+    testing::Values(EditorCommandSource::kDom,
+                    EditorCommandSource::kMenuOrKeyBinding));
 
 class ImageDocumentViewportTest : public SimTest {
  public:
