@@ -1677,7 +1677,7 @@ ScriptPromise<ImageBitmap> ImageCapture::grabFrame(ScriptState* script_state) {
 
   // Create |m_frameGrabber| the first time.
   if (!frame_grabber_) {
-    frame_grabber_ = std::make_unique<ImageCaptureFrameGrabber>();
+    frame_grabber_ = base::MakeRefCounted<ImageCaptureFrameGrabber>();
   }
 
   if (!frame_grabber_) {

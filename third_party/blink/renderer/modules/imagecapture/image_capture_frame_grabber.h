@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 class SkImage;
 
@@ -30,7 +31,9 @@ class MediaStreamComponent;
 // called. This method receives an incoming media::VideoFrame on a background
 // thread and converts it into the appropriate SkBitmap which is sent back to
 // OnSkBitmap(). This class is single threaded throughout.
-class ImageCaptureFrameGrabber final : public MediaStreamVideoSink {
+class ImageCaptureFrameGrabber final
+    : public RefCounted<ImageCaptureFrameGrabber>,
+      public MediaStreamVideoSink {
  public:
   // Helper class to ensure an ImageBitmap promise is always resolved.
   class ScopedPromiseResolver;
@@ -40,14 +43,14 @@ class ImageCaptureFrameGrabber final : public MediaStreamVideoSink {
   ImageCaptureFrameGrabber(const ImageCaptureFrameGrabber&) = delete;
   ImageCaptureFrameGrabber& operator=(const ImageCaptureFrameGrabber&) = delete;
 
-  ~ImageCaptureFrameGrabber() override;
-
   void GrabFrame(MediaStreamComponent* component,
                  ScriptPromiseResolver<ImageBitmap>* resolver,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                  base::TimeDelta timeout);
 
  private:
+  friend class RefCounted<ImageCaptureFrameGrabber>;
+  ~ImageCaptureFrameGrabber() override;
   // Internal class to receive, convert and forward one frame.
   class SingleShotFrameHandler;
 
