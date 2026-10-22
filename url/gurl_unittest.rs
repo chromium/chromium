@@ -70,3 +70,19 @@ fn test_is_about_blank_and_srcdoc() {
     expect_false!(about_version.is_about_blank());
     expect_false!(about_version.is_about_srcdoc());
 }
+
+#[gtest(GURLRustTest, Content)]
+fn test_content() {
+    let https_url = create_gurl_from_str("https://example.com/path?query=1#ref");
+    expect_eq!(https_url.content(), "example.com/path?query=1");
+
+    let blob_url =
+        create_gurl_from_str("blob:https://example.com/550e8400-e29b-41d4-a716-446655440000#ref");
+    expect_eq!(blob_url.content(), "https://example.com/550e8400-e29b-41d4-a716-446655440000");
+
+    let js_url = create_gurl_from_str("javascript:alert(1)#ref");
+    expect_eq!(js_url.content(), "alert(1)#ref");
+
+    let invalid_url = create_gurl_from_str("not a url");
+    expect_eq!(invalid_url.content(), "");
+}

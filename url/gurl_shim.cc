@@ -16,6 +16,11 @@ rust::Str GURLPossiblyInvalidSpec(const GURL& gurl) {
   return rust::Str(gurl.possibly_invalid_spec());
 }
 
+rust::Str GURLContent(const GURL& gurl) {
+  std::string_view content = gurl.GetContentPiece();
+  return rust::Str(content.data(), content.size());
+}
+
 rust::Str GURLScheme(const GURL& gurl) {
   std::string_view scheme = gurl.scheme();
   return rust::Str(scheme.data(), scheme.size());

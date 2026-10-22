@@ -21,6 +21,9 @@ std::unique_ptr<GURL> CreateGURLFromStr(rust::Str spec);
 // Shim for FFI to call GURL::PossiblyInvalidSpec() and get a Rust `str`.
 rust::Str GURLPossiblyInvalidSpec(const GURL& gurl);
 
+// Shim for FFI to call GURL::GetContentPiece() and get a Rust `str`.
+rust::Str GURLContent(const GURL& gurl);
+
 // Shim for FFI to call GURL::scheme() and get a Rust `str`.
 rust::Str GURLScheme(const GURL& gurl);
 

@@ -37,6 +37,10 @@ pub mod ffi {
         fn GURLPossiblyInvalidSpec(gurl: &GURL) -> &str;
 
         #[namespace = "url"]
+        #[rust_name = "gurl_content"]
+        fn GURLContent(gurl: &GURL) -> &str;
+
+        #[namespace = "url"]
         #[rust_name = "gurl_scheme"]
         fn GURLScheme(gurl: &GURL) -> &str;
 
@@ -51,6 +55,10 @@ pub mod ffi {
 impl ffi::GURL {
     pub fn possibly_invalid_spec(&self) -> &str {
         ffi::possibly_invalid_spec(self)
+    }
+
+    pub fn content(&self) -> &str {
+        ffi::gurl_content(self)
     }
 
     pub fn scheme(&self) -> &str {
