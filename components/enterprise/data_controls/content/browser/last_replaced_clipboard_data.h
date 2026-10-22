@@ -61,6 +61,13 @@ class LastReplacedClipboardDataObserver : public ui::ClipboardObserver {
   void AddDataToNextSeqno(content::ClipboardPasteData data,
                           CopyRestrictionLevel restriction_level);
 
+  // The most restrictive level passed to AddDataToNextSeqno() since the last
+  // sequence number change, i.e. the level that will be applied to the data
+  // staged for the next sequence number. Returns kNone when nothing is staged.
+  CopyRestrictionLevel pending_restriction_level() const {
+    return pending_restriction_level_;
+  }
+
   // ui::ClipboardObserver:
   void OnClipboardDataChanged() override;
 

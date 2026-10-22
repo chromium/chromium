@@ -310,21 +310,33 @@ void OnCopyDeepScanComplete(
   if (text_blocked || image_blocked) {
     // In copy case, this could be a KeptInManagedChrome result, so we need to
     // check the result type to determine the enforcement level.
-    data_controls::LastReplacedClipboardDataObserver::GetInstance()
-        ->AddDataToNextSeqno(
-            std::move(clipboard_paste_data),
-            result.is_kept_in_managed_chrome
-                ? data_controls::CopyRestrictionLevel::kKeptInManagedChrome
-                : data_controls::CopyRestrictionLevel::kBlocked);
-    // TODO(b/325455508) The message is being overridden regardless of the
-    // most restrictive enforcement level, this needs to be fixed to override
-    // after all scans are completed.
+    auto* observer =
+        data_controls::LastReplacedClipboardDataObserver::GetInstance();
+    observer->AddDataToNextSeqno(
+        std::move(clipboard_paste_data),
+        result.is_kept_in_managed_chrome
+            ? data_controls::CopyRestrictionLevel::kKeptInManagedChrome
+            : data_controls::CopyRestrictionLevel::kBlocked);
+    // Each format of a copy (e.g. its text and its HTML) is scanned by its own
+    // delegate and every verdict rewrites the text put on the OS clipboard, so
+    // the message has to follow the most restrictive level staged for this
+    // copy so far rather than this format's own verdict. Otherwise a
+    // kept-in-managed-Chrome verdict arriving after a block would leave the
+    // "kept" message next to a blocked restriction level.
+    // TODO(crbug.com/575553037) Address the following gaps
+    // Toasts still follow the last verdict: in the blocked-then-kept order,
+    // the kept verdict shows `"Your organization monitors copying"` over the
+    // `"blocked"` toast and an allowed format still reaches the OS clipboard:
+    // if the bitmap is allowed and the markup is blocked, the image ends up
+    // next to the "blocked" message.
+    bool blocked = observer->pending_restriction_level() ==
+                   data_controls::CopyRestrictionLevel::kBlocked;
     std::move(callback).Run(
         format_type, content::ClipboardPasteData(),
         l10n_util::GetStringUTF16(
-            result.is_kept_in_managed_chrome
-                ? IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_KEPT_IN_MANAGED_CHROME_MESSAGE
-                : IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_BLOCKED_MESSAGE));
+            blocked
+                ? IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_BLOCKED_MESSAGE
+                : IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_KEPT_IN_MANAGED_CHROME_MESSAGE));
     return;
   }
   std::move(callback).Run(format_type, std::move(clipboard_paste_data),
