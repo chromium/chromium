@@ -71,6 +71,7 @@ class FakeServerValuableMetadataChecker
       : matcher_(matcher) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for server valuable metadata to match: ";
     std::vector<sync_pb::AutofillValuableMetadataSpecifics> specifics;
     for (const sync_pb::SyncEntity& entity :
          fake_server()->GetSyncEntitiesByDataType(

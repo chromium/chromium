@@ -106,6 +106,7 @@ class PasskeyModelReadyChecker : public StatusChangeChecker,
 
   // SingleClientStatusChangeChecker:
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for passkey model to become ready.";
     return model_->IsReady();
   }
 

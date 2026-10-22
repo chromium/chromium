@@ -39,6 +39,7 @@ class WebAuthnCredentialsSyncIdEqualsChecker
 
   // MultiClientStatusChangeChecker:
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for passkey sync IDs across clients to match.";
     for (int i = 1; i < test()->num_clients(); ++i) {
       if (GetModel(0).GetAllSyncIds() != GetModel(i).GetAllSyncIds()) {
         return false;
@@ -56,6 +57,7 @@ PasskeySyncActiveChecker::PasskeySyncActiveChecker(
 PasskeySyncActiveChecker::~PasskeySyncActiveChecker() = default;
 
 bool PasskeySyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for passkey sync to become active.";
   return service()->GetActiveDataTypes().Has(syncer::WEBAUTHN_CREDENTIAL);
 }
 
@@ -67,6 +69,7 @@ LocalPasskeysChangedChecker::LocalPasskeysChangedChecker(int profile)
 LocalPasskeysChangedChecker::~LocalPasskeysChangedChecker() = default;
 
 bool LocalPasskeysChangedChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for local passkeys to change.";
   return satisfied_;
 }
 

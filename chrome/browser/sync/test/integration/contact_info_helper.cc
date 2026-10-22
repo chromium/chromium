@@ -49,6 +49,7 @@ AddressDataManagerProfileChecker::~AddressDataManagerProfileChecker() {
 
 bool AddressDataManagerProfileChecker::IsExitConditionSatisfied(
     std::ostream* os) {
+  *os << "Waiting for matching autofill profiles: ";
   std::vector<AutofillProfile> profiles;
   for (const AutofillProfile* profile : adm_->GetProfiles()) {
     profiles.push_back(*profile);

@@ -56,9 +56,13 @@ ServerCvcChecker::ServerCvcChecker(const size_t expected_count)
 ServerCvcChecker::~ServerCvcChecker() = default;
 
 bool ServerCvcChecker::IsExitConditionSatisfied(std::ostream* os) {
-  return fake_server()
-             ->GetSyncEntitiesByDataType(syncer::AUTOFILL_WALLET_CREDENTIAL)
-             .size() == expected_count_;
+  const size_t actual_count =
+      fake_server()
+          ->GetSyncEntitiesByDataType(syncer::AUTOFILL_WALLET_CREDENTIAL)
+          .size();
+  *os << "Waiting for " << expected_count_
+      << " wallet credentials on server, actual: " << actual_count;
+  return actual_count == expected_count_;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

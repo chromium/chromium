@@ -132,6 +132,7 @@ class FakeServerSpecificsChecker
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for server valuables to match: ";
     std::vector<sync_pb::AutofillValuableSpecifics> specifics;
     for (const sync_pb::SyncEntity& entity :
          fake_server()->GetSyncEntitiesByDataType(syncer::AUTOFILL_VALUABLE)) {

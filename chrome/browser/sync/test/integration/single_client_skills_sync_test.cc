@@ -38,6 +38,7 @@ class SkillSyncActiveChecker : public SingleClientStatusChangeChecker {
       : SingleClientStatusChangeChecker(service) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for SKILL to become active.";
     return service()->GetActiveDataTypes().Has(syncer::SKILL);
   }
 };
@@ -48,6 +49,7 @@ class SkillSyncInactiveChecker : public SingleClientStatusChangeChecker {
       : SingleClientStatusChangeChecker(service) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for SKILL to become inactive.";
     return !service()->GetActiveDataTypes().Has(syncer::SKILL);
   }
 };

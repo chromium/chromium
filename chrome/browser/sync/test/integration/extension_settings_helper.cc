@@ -46,8 +46,11 @@ bool AreSettingsSame(Profile* expected_profile,
                      std::ostream* os) {
   const extensions::ExtensionSet& extensions =
       ExtensionRegistry::Get(expected_profile)->enabled_extensions();
-  if (extensions.size() !=
-      ExtensionRegistry::Get(actual_profile)->enabled_extensions().size()) {
+  const extensions::ExtensionSet& actual_extensions =
+      ExtensionRegistry::Get(actual_profile)->enabled_extensions();
+  if (extensions.size() != actual_extensions.size()) {
+    *os << "Expected " << extensions.size() << " enabled extensions, got "
+        << actual_extensions.size();
     return false;
   }
 

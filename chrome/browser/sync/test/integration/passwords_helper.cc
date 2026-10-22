@@ -274,6 +274,7 @@ PasswordSyncActiveChecker::PasswordSyncActiveChecker(
 PasswordSyncActiveChecker::~PasswordSyncActiveChecker() = default;
 
 bool PasswordSyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for passwords sync to become active.";
   return service()->GetActiveDataTypes().Has(syncer::PASSWORDS);
 }
 
@@ -284,6 +285,7 @@ PasswordSyncInactiveChecker::PasswordSyncInactiveChecker(
 PasswordSyncInactiveChecker::~PasswordSyncInactiveChecker() = default;
 
 bool PasswordSyncInactiveChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for passwords sync to become inactive.";
   return !service()->GetActiveDataTypes().Has(syncer::PASSWORDS);
 }
 

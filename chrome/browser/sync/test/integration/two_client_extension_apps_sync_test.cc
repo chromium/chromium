@@ -455,6 +455,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   ASSERT_EQ(InstallHostedApp(GetProfile(0), 1), kHostedAppId1);
   struct HostedApp1Installed : public AppsStatusChangeChecker {
     bool IsExitConditionSatisfied(std::ostream* os) override {
+      *os << "Waiting for kHostedAppId1 to be installed.";
       return GetExtensionRegistry(sync_datatype_helper::test()->GetProfile(1))
           ->enabled_extensions()
           .Contains(kHostedAppId1);

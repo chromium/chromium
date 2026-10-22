@@ -248,6 +248,7 @@ HasSearchEngineChecker::HasSearchEngineChecker(int profile_index,
 HasSearchEngineChecker::~HasSearchEngineChecker() = default;
 
 bool HasSearchEngineChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for search engine with keyword " << keyword_;
   return service_->GetTemplateURLForKeyword(keyword_) != nullptr;
 }
 
@@ -261,6 +262,7 @@ FakeServerHasSearchEngineChecker::FakeServerHasSearchEngineChecker(
 
 bool FakeServerHasSearchEngineChecker::IsExitConditionSatisfied(
     std::ostream* os) {
+  *os << "Waiting for search engine in FakeServer with keyword " << keyword_;
   return HasSearchEngineInFakeServer(keyword_, fake_server());
 }
 

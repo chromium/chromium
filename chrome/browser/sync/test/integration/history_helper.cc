@@ -434,6 +434,7 @@ LocalHistoryMatchChecker::LocalHistoryMatchChecker(
 LocalHistoryMatchChecker::~LocalHistoryMatchChecker() = default;
 
 bool LocalHistoryMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for local history visits to match: ";
   for (const auto& [url, matcher] : matchers_) {
     history::VisitVector visits =
         GetVisitsForURLFromClient(profile_index_, url);
@@ -465,6 +466,7 @@ void ServerHistoryMatchChecker::OnCommit(
 }
 
 bool ServerHistoryMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for server history entities to match: ";
   std::vector<sync_pb::HistorySpecifics> entities =
       SyncEntitiesToHistorySpecifics(
           fake_server()->GetSyncEntitiesByDataType(syncer::HISTORY));

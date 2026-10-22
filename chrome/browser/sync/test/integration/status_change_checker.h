@@ -49,8 +49,8 @@ class StatusChangeChecker {
   virtual void WillStartWaiting();
 
   // Returns whether the state the checker is currently in is its desired
-  // configuration. |os| must not be null and allows subclasses to provide
-  // details about why the condition was not satisfied. |os| must not be null.
+  // configuration. `os` must not be null and subclasses must populate it with
+  // details about why the condition was not satisfied when returning false.
   virtual bool IsExitConditionSatisfied(std::ostream* os) = 0;
 
   // Checks IsExitConditionSatisfied() and calls StopWaiting() if it returns

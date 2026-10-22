@@ -56,6 +56,7 @@ class AutofillProfilesEqualChecker
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for autofill profiles to match across clients: ";
     if (pdms_.empty()) {
       return true;
     }

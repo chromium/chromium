@@ -44,6 +44,8 @@ class WalletSurfacingChecker : public SingleClientStatusChangeChecker {
 
   // SingleClientStatusChangeChecker:
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for kWalletPrivacyContextualSurfacing to become "
+        << expected_state_;
     return setting_service_
                ->GetBoolean(account_settings::kWalletPrivacyContextualSurfacing)
                .value_or(false) == expected_state_;

@@ -173,6 +173,7 @@ class FaviconForPageUrlAvailableChecker : public StatusChangeChecker {
  protected:
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for favicon for " << page_url_ << " to become available.";
     return exit_condition_satisfied_;
   }
 

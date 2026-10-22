@@ -984,6 +984,7 @@ SingleBookmarksModelMatcherChecker::~SingleBookmarksModelMatcherChecker() =
 
 bool SingleBookmarksModelMatcherChecker::IsExitConditionSatisfied(
     std::ostream* os) {
+  *os << "Waiting for bookmark model to match: ";
   const auto all_bookmark_nodes = GetAllBookmarkNodes(bookmark_model());
 
   testing::StringMatchResultListener result_listener;

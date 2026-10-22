@@ -471,6 +471,7 @@ SessionEntitiesChecker::SessionEntitiesChecker(const Matcher& matcher)
 SessionEntitiesChecker::~SessionEntitiesChecker() = default;
 
 bool SessionEntitiesChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for server session entities to match: ";
   std::vector<sync_pb::SessionSpecifics> entities =
       SyncEntitiesToSessionSpecifics(
           fake_server()->GetSyncEntitiesByDataType(syncer::SESSIONS));

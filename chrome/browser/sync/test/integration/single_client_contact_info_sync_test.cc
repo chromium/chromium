@@ -104,6 +104,7 @@ class ContactInfoActiveChecker : public SingleClientStatusChangeChecker {
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for CONTACT_INFO active state to become " << expect_active_;
     return service()->GetActiveDataTypes().Has(syncer::CONTACT_INFO) ==
            expect_active_;
   }
@@ -126,6 +127,7 @@ class FakeServerSpecificsChecker
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for server CONTACT_INFO specifics to match: ";
     std::vector<std::string> specifics;
     for (const sync_pb::SyncEntity& entity :
          fake_server()->GetSyncEntitiesByDataType(syncer::CONTACT_INFO)) {

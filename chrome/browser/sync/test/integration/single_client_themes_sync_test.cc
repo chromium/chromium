@@ -166,10 +166,12 @@ void ServerThemeMatchChecker::OnCommit(
 }
 
 bool ServerThemeMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for server theme to match: ";
   std::vector<sync_pb::SyncEntity> entities =
       fake_server()->GetSyncEntitiesByDataType(syncer::THEMES);
 
   if (entities.empty()) {
+    *os << "no theme entity on server.";
     return false;
   }
   DCHECK_EQ(entities.size(), 1u);

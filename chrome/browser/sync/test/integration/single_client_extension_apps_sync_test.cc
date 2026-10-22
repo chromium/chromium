@@ -198,6 +198,7 @@ class NoBookmarkAppServerChecker
   ~NoBookmarkAppServerChecker() override = default;
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for no bookmark apps on server: ";
     std::vector<sync_pb::SyncEntity> bookmark_entities = FilterForBookmarkApps(
         fake_server()->GetSyncEntitiesByDataType(syncer::APPS));
     testing::StringMatchResultListener result_listener;

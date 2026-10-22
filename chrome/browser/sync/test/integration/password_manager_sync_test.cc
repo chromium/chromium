@@ -140,6 +140,8 @@ class SyncActiveWithoutPasswordsChecker
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for PASSWORDS to become inactive and Sync to become "
+           "active.";
     // DEVICE_INFO is another arbitrary type supported for signed-in users,
     // just so we rule out no type at all is active.
     return !service()->GetActiveDataTypes().Has(syncer::PASSWORDS) &&

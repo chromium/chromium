@@ -62,6 +62,8 @@ class CookiePresenceChecker : public SingleClientStatusChangeChecker {
   }
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for cookie key " << *storage_key_
+        << " to be present in bridge storage.";
     return IsKeyPresentInBridgeStorage();
   }
 
