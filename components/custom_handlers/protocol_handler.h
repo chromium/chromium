@@ -9,23 +9,12 @@
 #include <optional>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "url/gurl.h"
 
 namespace custom_handlers {
-
-namespace features {
-
-// When enabled, it strips credentials from URL to mitigate the mitigate the
-// risk of credential leakage when registering protocol handlers for standard
-// schemes. This feature is enabled by default and meant to be used as a
-// killswitch.
-// https://html.spec.whatwg.org/multipage/system-state.html#security-and-privacy
-BASE_DECLARE_FEATURE(kStripCredentialsForExternalProtocolHandler);
-}  // namespace features
 
 // A single tuple of (protocol, url, last_modified) that indicates how URLs
 // of the given protocol should be rewritten to be handled.

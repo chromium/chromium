@@ -25,13 +25,6 @@ using content::BrowserThread;
 
 namespace custom_handlers {
 
-namespace features {
-
-// https://html.spec.whatwg.org/multipage/system-state.html#security-and-privacy
-BASE_FEATURE(kStripCredentialsForExternalProtocolHandler,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace features
-
 ProtocolHandler::ProtocolHandler(
     const std::string& protocol,
     const GURL& url,
@@ -208,9 +201,7 @@ GURL ProtocolHandler::TranslateUrl(const GURL& url) const {
 
   // Remove credentials from the url if present, in order to mitigate the risk
   // of credential leakage
-  if ((url.has_username() || url.has_password()) &&
-      base::FeatureList::IsEnabled(
-          features::kStripCredentialsForExternalProtocolHandler)) {
+  if (url.has_username() || url.has_password()) {
     GURL::Replacements replacements;
     replacements.ClearUsername();
     replacements.ClearPassword();
