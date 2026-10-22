@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -454,7 +453,7 @@ MobileSetupUI::MobileSetupUI(
 
   // Set up the chrome://mobilesetup/ source.
   content::URLDataSource::Add(
-      Profile::FromWebUI(web_ui),
+      web_ui->GetWebContents()->GetBrowserContext(),
       std::make_unique<MobileSetupUIHTMLSource>(application_locale_storage));
 }
 

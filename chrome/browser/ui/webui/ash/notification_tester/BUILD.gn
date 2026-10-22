@@ -25,7 +25,6 @@ static_library("notification_tester") {
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:resources",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/notification_tester:resources",
     "//chromeos/constants",
     "//ui/base",

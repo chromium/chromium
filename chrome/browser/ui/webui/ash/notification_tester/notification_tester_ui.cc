@@ -6,10 +6,10 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "base/containers/span.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/notification_tester/notification_tester_handler.h"
 #include "chrome/grit/notification_tester_resources.h"
 #include "chrome/grit/notification_tester_resources_map.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -22,7 +22,8 @@ NotificationTesterUI::NotificationTesterUI(content::WebUI* web_ui)
   // Set up the chrome://notification-tester source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
-          Profile::FromWebUI(web_ui), ash::kChromeUINotificationTesterHost);
+          web_ui->GetWebContents()->GetBrowserContext(),
+          ash::kChromeUINotificationTesterHost);
 
   // Add required resources.
   webui::SetupWebUIDataSource(html_source, kNotificationTesterResources,

@@ -15,9 +15,3 @@ include_rules = [
   "+chrome/app/vector_icons",
   "+chrome/grit",
 ]
-
-specific_include_rules = {
-  "notification_tester_ui\\.cc": [
-    "+chrome/browser/profiles",
-  ],
-}
