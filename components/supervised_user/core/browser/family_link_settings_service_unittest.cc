@@ -532,6 +532,35 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+// Tests that `SetActive(true)` emits a single settings notification.
+TEST_F(FamilyLinkSettingsServiceTest, ActivationEmitsNotificationOnce) {
+  settings_service_.SetActive(false);
+
+  base::DictValue empty_settings;
+
+  MockSubscriber mock_subscriber;
+  // Notification sent on subscription while inactive.
+  EXPECT_CALL(mock_subscriber,
+              OnNewSettingsAvailable(testing::Eq(std::ref(empty_settings))))
+      .Times(1);
+  // Single notification sent on activation despite multiple local settings
+  // being updated.
+  EXPECT_CALL(mock_subscriber,
+              OnNewSettingsAvailable(testing::Ne(std::ref(empty_settings))))
+      .Times(1);
+
+  base::CallbackListSubscription subscription =
+      settings_service_.SubscribeForSettingsChange(
+          base::BindRepeating(&MockSubscriber::OnNewSettingsAvailable,
+                              base::Unretained(&mock_subscriber)));
+
+  // Activate several times to verify that a single notification is emitted.
+  settings_service_.SetActive(true);
+  EXPECT_TRUE(settings_service_.IsActive());
+
+  settings_service_.SetActive(true);
+}
+
 TEST_F(FamilyLinkSettingsServiceTest, DeactivationEmitsEmptyNotificationOnce) {
   base::DictValue empty_settings;
 

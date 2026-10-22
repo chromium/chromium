@@ -185,8 +185,6 @@ void FamilyLinkSettingsService::SetActive(bool active) {
     local_settings_.Remove(kCookiesAlwaysAllowed);
   }
 
-  // TODO(crbug.com/320981294): Add a unit test verifying that `SetActive(true)`
-  // emits a single notification.
   InformSubscribers();
 }
 
