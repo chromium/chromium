@@ -11088,6 +11088,23 @@
             ]
         }
     ],
+    "LRUCacheMemoryConsumer": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260929",
+                    "enable_features": [
+                        "LRUCacheMemoryConsumer"
+                    ]
+                }
+            ]
+        }
+    ],
     "LabelDefaultTooltipFastPath": [
         {
             "platforms": [
