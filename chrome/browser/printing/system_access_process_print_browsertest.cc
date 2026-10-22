@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
@@ -55,6 +56,7 @@
 #include "chrome/browser/printing/printer_query_oop.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
+#include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
@@ -1360,6 +1362,45 @@ class SystemAccessProcessUnsandboxedEarlyStartServicePrintBrowserTest
     }
     return false;
   }
+
+  // Waits for the Print Backend utility task to appear in
+  // `TaskManagerInterface` directly rather than via `WaitForTaskManagerRows()`,
+  // because `TaskManagerTableModel` filters out `Task::UTILITY` rows by default
+  // when `DisplayCategory::kTabsAndExtensions` is active.
+  void WaitForPrintBackendServiceTask() {
+    if (DoesPrintBackendServiceTaskExist()) {
+      return;
+    }
+    class PrintBackendTaskObserver : public task_manager::TaskManagerObserver {
+     public:
+      PrintBackendTaskObserver(base::OnceClosure on_found,
+                               std::u16string expected_title)
+          : TaskManagerObserver(base::Seconds(1),
+                                task_manager::REFRESH_TYPE_NONE),
+            on_found_(std::move(on_found)),
+            expected_title_(std::move(expected_title)) {
+        TaskManagerInterface::GetTaskManager()->AddObserver(this);
+      }
+      ~PrintBackendTaskObserver() override {
+        TaskManagerInterface::GetTaskManager()->RemoveObserver(this);
+      }
+      void OnTaskAdded(task_manager::TaskId id) override {
+        if (on_found_ && TaskManagerInterface::GetTaskManager()->GetTitle(id) ==
+                             expected_title_) {
+          std::move(on_found_).Run();
+        }
+      }
+
+     private:
+      base::OnceClosure on_found_;
+      const std::u16string expected_title_;
+    };
+
+    base::RunLoop run_loop;
+    PrintBackendTaskObserver observer(run_loop.QuitClosure(),
+                                      MatchUtility(u"Print Backend Service"));
+    run_loop.Run();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1450,7 +1491,10 @@ IN_PROC_BROWSER_TEST_P(
   // Now that startup is complete, look through the list of processes in the
   // Task Manager to see if a Print Backend service has been started (even
   // though there has not been any request for printing).
-  CHECK_EQ(DoesPrintBackendServiceTaskExist(), EarlyStartService());
+  if (EarlyStartService()) {
+    WaitForPrintBackendServiceTask();
+  }
+  EXPECT_EQ(DoesPrintBackendServiceTaskExist(), EarlyStartService());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
