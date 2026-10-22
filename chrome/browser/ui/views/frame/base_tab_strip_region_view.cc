@@ -94,7 +94,7 @@ void BaseTabStripRegionView::InitializeTabStrip() {
 
   TabStripModel* tab_strip_model = browser_view_->browser()->GetTabStripModel();
   CHECK(tab_strip_model);
-  auto drag_handler = std::make_unique<TabDragHandlerImpl>(
+  auto drag_handler = std::make_unique<TabDragHandler>(
       *tab_strip_model, *root_node_.get(), *this);
   drag_handler->SetProperty(views::kViewIgnoredByLayoutKey, true);
   drag_handler_ = drag_handler.get();

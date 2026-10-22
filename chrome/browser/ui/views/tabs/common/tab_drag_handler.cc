@@ -133,10 +133,9 @@ int GetInsertionIndexForNode(const TabCollectionNode& node,
 
 }  // namespace
 
-TabDragHandlerImpl::TabDragHandlerImpl(
-    TabStripModel& tab_strip_model,
-    TabCollectionNode& root_node,
-    TabStripRegionView& tab_strip_region_view)
+TabDragHandler::TabDragHandler(TabStripModel& tab_strip_model,
+                               TabCollectionNode& root_node,
+                               TabStripRegionView& tab_strip_region_view)
     : tab_strip_model_(tab_strip_model),
       root_node_(root_node),
       tab_strip_region_view_(tab_strip_region_view),
@@ -145,14 +144,14 @@ TabDragHandlerImpl::TabDragHandlerImpl(
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
 
-TabDragHandlerImpl::~TabDragHandlerImpl() = default;
+TabDragHandler::~TabDragHandler() = default;
 
-bool TabDragHandlerImpl::DoesIntersectRect(const views::View* target,
-                                           const gfx::Rect& rect) const {
+bool TabDragHandler::DoesIntersectRect(const views::View* target,
+                                       const gfx::Rect& rect) const {
   return false;
 }
 
-void TabDragHandlerImpl::InitializeDrag(
+void TabDragHandler::InitializeDrag(
     TabCollectionNode& node,
     const ui::ListSelectionModel& original_selection_model,
     const ui::LocatedEvent& event) {
@@ -194,14 +193,14 @@ void TabDragHandlerImpl::InitializeDrag(
   }
 }
 
-TabDragHandlerImpl::DragInitData::DragInitData() = default;
-TabDragHandlerImpl::DragInitData::~DragInitData() = default;
-TabDragHandlerImpl::DragInitData::DragInitData(
-    const TabDragHandlerImpl::DragInitData&) = default;
-TabDragHandlerImpl::DragInitData& TabDragHandlerImpl::DragInitData::operator=(
-    const TabDragHandlerImpl::DragInitData&) = default;
+TabDragHandler::DragInitData::DragInitData() = default;
+TabDragHandler::DragInitData::~DragInitData() = default;
+TabDragHandler::DragInitData::DragInitData(
+    const TabDragHandler::DragInitData&) = default;
+TabDragHandler::DragInitData& TabDragHandler::DragInitData::operator=(
+    const TabDragHandler::DragInitData&) = default;
 
-TabDragHandlerImpl::DragInitData TabDragHandlerImpl::GetDragInitDataForTabDrag(
+TabDragHandler::DragInitData TabDragHandler::GetDragInitDataForTabDrag(
     TabCollectionNode& source_node) {
   const auto& selected_tabs_indices =
       tab_strip_model_->selection_model().GetListSelectionModel();
@@ -259,8 +258,7 @@ TabDragHandlerImpl::DragInitData TabDragHandlerImpl::GetDragInitDataForTabDrag(
   return drag_init_data;
 }
 
-TabDragHandlerImpl::DragInitData
-TabDragHandlerImpl::GetDragInitDataForGroupHeaderDrag(
+TabDragHandler::DragInitData TabDragHandler::GetDragInitDataForGroupHeaderDrag(
     TabCollectionNode& source_node) {
   DragInitData drag_init_data;
   auto* group_view = views::AsViewClass<TabGroupView>(source_node.view());
@@ -281,7 +279,7 @@ TabDragHandlerImpl::GetDragInitDataForGroupHeaderDrag(
 }
 
 std::map<tab_groups::TabGroupId, views::View*>
-TabDragHandlerImpl::GetFullySelectedGroups(
+TabDragHandler::GetFullySelectedGroups(
     const std::vector<tabs::TabInterface*>& selected_tabs) {
   std::map<tab_groups::TabGroupId, int> dragged_group_tab_counts;
   for (tabs::TabInterface* tab : selected_tabs) {
@@ -306,8 +304,8 @@ TabDragHandlerImpl::GetFullySelectedGroups(
   return selected_groups;
 }
 
-bool TabDragHandlerImpl::ContinueDrag(views::View& event_source_view,
-                                      const ui::LocatedEvent& event) {
+bool TabDragHandler::ContinueDrag(views::View& event_source_view,
+                                  const ui::LocatedEvent& event) {
   if (!drag_controller_) {
     return false;
   }
@@ -327,7 +325,7 @@ bool TabDragHandlerImpl::ContinueDrag(views::View& event_source_view,
   return true;
 }
 
-void TabDragHandlerImpl::EndDrag(EndDragReason reason) {
+void TabDragHandler::EndDrag(EndDragReason reason) {
   // Note: we avoid ending the SystemDnD if the `EndDragReason` is "capture
   // lost" because some window managers on Wayland don't send exit events to tab
   // strips, which would cause this to incorrectly end the SystemDnD while the
@@ -347,8 +345,7 @@ void TabDragHandlerImpl::EndDrag(EndDragReason reason) {
   }
 }
 
-void TabDragHandlerImpl::HandleDraggedTabsIntoNode(
-    const TabCollectionNode& node) {
+void TabDragHandler::HandleDraggedTabsIntoNode(const TabCollectionNode& node) {
   CHECK(drag_controller_);
   const auto& drag_session_data = drag_controller_->GetSessionData();
 
@@ -404,11 +401,11 @@ void TabDragHandlerImpl::HandleDraggedTabsIntoNode(
   tab_strip_model_->MoveSelectedTabsTo(target_index, target_group_id);
 }
 
-TabDragContext* TabDragHandlerImpl::GetDragContext() {
+TabDragContext* TabDragHandler::GetDragContext() {
   return this;
 }
 
-bool TabDragHandlerImpl::IsDragging() const {
+bool TabDragHandler::IsDragging() const {
   // We check if the drag controller is attached to this context instead of
   // `started_drag()` because `started_drag()` only becomes true after the
   // initial selection reset that occurs when a drag truly begins. If we
@@ -418,7 +415,7 @@ bool TabDragHandlerImpl::IsDragging() const {
          drag_controller_->active();
 }
 
-bool TabDragHandlerImpl::IsViewDragging(const views::View& view) const {
+bool TabDragHandler::IsViewDragging(const views::View& view) const {
   if (!drag_controller_) {
     return false;
   }
@@ -432,7 +429,7 @@ bool TabDragHandlerImpl::IsViewDragging(const views::View& view) const {
   return false;
 }
 
-bool TabDragHandlerImpl::IsDraggingPinnedTabs() const {
+bool TabDragHandler::IsDraggingPinnedTabs() const {
   if (!drag_controller_) {
     return false;
   }
@@ -441,20 +438,20 @@ bool TabDragHandlerImpl::IsDraggingPinnedTabs() const {
                      [](const auto& tab_data) { return tab_data.pinned; });
 }
 
-bool TabDragHandlerImpl::IsDraggingGroups() const {
+bool TabDragHandler::IsDraggingGroups() const {
   if (!drag_controller_) {
     return false;
   }
   return !drag_controller_->GetSessionData().dragging_groups.empty();
 }
 
-std::optional<tab_groups::TabGroupId>
-TabDragHandlerImpl::GetDraggingGroupHeaderId() const {
+std::optional<tab_groups::TabGroupId> TabDragHandler::GetDraggingGroupHeaderId()
+    const {
   return drag_controller_ ? drag_controller_->GetSessionData().group_header_id()
                           : std::nullopt;
 }
 
-views::View* TabDragHandlerImpl::ViewFromTabSlot(views::View* view) const {
+views::View* TabDragHandler::ViewFromTabSlot(views::View* view) const {
   CHECK(drag_controller_);
   if (auto* tab_view = views::AsViewClass<TabView>(view)) {
     const tabs::TabInterface* tab = tab_view->GetTabInterface();
@@ -487,39 +484,39 @@ views::View* TabDragHandlerImpl::ViewFromTabSlot(views::View* view) const {
   return group_view;
 }
 
-std::optional<gfx::Vector2d> TabDragHandlerImpl::GetOffsetFromSourceAtDragStart(
+std::optional<gfx::Vector2d> TabDragHandler::GetOffsetFromSourceAtDragStart(
     View* view) const {
   gfx::Vector2d* offset = view->GetProperty(kOffsetAtTabDragStart);
   return offset ? std::make_optional(*offset) : std::nullopt;
 }
 
 std::optional<BrowserRootView::DropIndex>
-TabDragHandlerImpl::GetLinkDropIndexForNode(
+TabDragHandler::GetLinkDropIndexForNode(
     const TabCollectionNode& node,
     std::optional<DragPositionHint> position_hint) const {
   return link_drop_handler_->GetDropIndexForNode(node, position_hint);
 }
 
-void TabDragHandlerImpl::OnTabWillBeAdded() {
+void TabDragHandler::OnTabWillBeAdded() {
   if (drag_controller_) {
     drag_controller_->EndDrag(EndDragReason::kModelAddedTab);
   }
 }
 
-void TabDragHandlerImpl::OnTabWillBeRemoved(content::WebContents* contents) {
+void TabDragHandler::OnTabWillBeRemoved(content::WebContents* contents) {
   if (drag_controller_) {
     drag_controller_->OnTabWillBeRemoved(contents);
   }
 }
 
-bool TabDragHandlerImpl::CanAcceptEvent(const ui::Event& event) {
+bool TabDragHandler::CanAcceptEvent(const ui::Event& event) {
   // The drag context has to be able to process mouse events during the drag.
   // By default, this is predicated on visibility, but the handler should not
   // be visible. Instead, defer the check to the parent.
   return parent()->CanAcceptEvent(event);
 }
 
-void TabDragHandlerImpl::OnGestureEvent(ui::GestureEvent* event) {
+void TabDragHandler::OnGestureEvent(ui::GestureEvent* event) {
   if (!drag_controller_) {
     return;
   }
@@ -575,15 +572,15 @@ void TabDragHandlerImpl::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 }
 
-bool TabDragHandlerImpl::OnMouseDragged(const ui::MouseEvent& event) {
+bool TabDragHandler::OnMouseDragged(const ui::MouseEvent& event) {
   return ContinueDrag(*this, event);
 }
 
-void TabDragHandlerImpl::OnMouseReleased(const ui::MouseEvent& event) {
+void TabDragHandler::OnMouseReleased(const ui::MouseEvent& event) {
   EndDrag(EndDragReason::kComplete);
 }
 
-bool TabDragHandlerImpl::GetDropFormats(
+bool TabDragHandler::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
   if (!TabDragController::IsSystemDnDSessionRunning()) {
@@ -594,17 +591,17 @@ bool TabDragHandlerImpl::GetDropFormats(
   return true;
 }
 
-bool TabDragHandlerImpl::CanDrop(const OSExchangeData& data) {
+bool TabDragHandler::CanDrop(const OSExchangeData& data) {
   return TabDragController::IsSystemDnDSessionRunning() &&
          data.HasCustomFormat(ui::ClipboardFormatType::CustomPlatformType(
              ui::kMimeTypeWindowDrag));
 }
 
-void TabDragHandlerImpl::OnDragEntered(const ui::DropTargetEvent& event) {
+void TabDragHandler::OnDragEntered(const ui::DropTargetEvent& event) {
   CHECK(TabDragController::IsSystemDnDSessionRunning());
   TabDragController::OnSystemDnDUpdated(event);
 }
-int TabDragHandlerImpl::OnDragUpdated(const ui::DropTargetEvent& event) {
+int TabDragHandler::OnDragUpdated(const ui::DropTargetEvent& event) {
   // This can be false because we can still receive drag events after
   // TabDragController is destroyed due to the asynchronous nature of the
   // platform DnD.
@@ -615,29 +612,28 @@ int TabDragHandlerImpl::OnDragUpdated(const ui::DropTargetEvent& event) {
   return ui::DragDropTypes::DRAG_NONE;
 }
 
-void TabDragHandlerImpl::OnDragExited() {
+void TabDragHandler::OnDragExited() {
   // See comment in OnDragUpdated().
   if (TabDragController::IsSystemDnDSessionRunning()) {
     TabDragController::OnSystemDnDExited();
   }
 }
 
-void TabDragHandlerImpl::OnMouseCaptureLost() {
+void TabDragHandler::OnMouseCaptureLost() {
   EndDrag(EndDragReason::kCaptureLost);
 }
 
-TabDragContext* TabDragHandlerImpl::GetContextForNewBrowser(
+TabDragContext* TabDragHandler::GetContextForNewBrowser(
     BrowserView* browser_view) const {
   return browser_view->tab_strip_view()->GetDragContext();
 }
 
-views::View* TabDragHandlerImpl::GetTabForContents(
-    content::WebContents* contents) {
+views::View* TabDragHandler::GetTabForContents(content::WebContents* contents) {
   TabCollectionNode* node = GetNodeForContents(contents);
   return node ? node->view() : nullptr;
 }
 
-content::WebContents* TabDragHandlerImpl::GetContentsForTab(views::View* view) {
+content::WebContents* TabDragHandler::GetContentsForTab(views::View* view) {
   if (auto* tab_view = views::AsViewClass<TabView>(view)) {
     const tabs::TabInterface* tab = tab_view->GetTabInterface();
     CHECK(tab);
@@ -646,18 +642,18 @@ content::WebContents* TabDragHandlerImpl::GetContentsForTab(views::View* view) {
   return nullptr;
 }
 
-bool TabDragHandlerImpl::IsTabDetachable(const views::View* view) const {
+bool TabDragHandler::IsTabDetachable(const views::View* view) const {
   return true;
 }
 
-views::View* TabDragHandlerImpl::GetTabGroupHeader(
+views::View* TabDragHandler::GetTabGroupHeader(
     const tab_groups::TabGroupId& group_id) {
   TabCollectionNode* node = GetNodeForTabGroup(group_id);
   return node ? views::AsViewClass<TabGroupView>(node->view())->group_header()
               : nullptr;
 }
 
-std::optional<tab_groups::TabGroupId> TabDragHandlerImpl::GetTabGroupForHeader(
+std::optional<tab_groups::TabGroupId> TabDragHandler::GetTabGroupForHeader(
     const views::View* header_view) const {
   if (views::IsViewClass<TabGroupHeaderView>(header_view)) {
     if (const auto* group_view =
@@ -668,29 +664,28 @@ std::optional<tab_groups::TabGroupId> TabDragHandlerImpl::GetTabGroupForHeader(
   return std::nullopt;
 }
 
-TabStripModel* TabDragHandlerImpl::GetTabStripModel() {
+TabStripModel* TabDragHandler::GetTabStripModel() {
   return base::to_address(tab_strip_model_);
 }
 
-TabDragController* TabDragHandlerImpl::GetDragController() {
+TabDragController* TabDragHandler::GetDragController() {
   return drag_controller_.get();
 }
 
-void TabDragHandlerImpl::OwnDragController(
+void TabDragHandler::OwnDragController(
     std::unique_ptr<TabDragController> controller) {
   drag_controller_ = std::move(controller);
 }
 
-std::unique_ptr<TabDragController> TabDragHandlerImpl::ReleaseDragController() {
+std::unique_ptr<TabDragController> TabDragHandler::ReleaseDragController() {
   return std::move(drag_controller_);
 }
 
-void TabDragHandlerImpl::DestroyDragController() {
+void TabDragHandler::DestroyDragController() {
   drag_controller_.reset();
 }
 
-void TabDragHandlerImpl::StartedDragging(
-    const std::vector<views::View*>& views) {
+void TabDragHandler::StartedDragging(const std::vector<views::View*>& views) {
   const auto& drag_data = drag_controller_->GetSessionData();
   if (base::FeatureList::IsEnabled(features::kCollapseTabGroupDuringDrag) &&
       drag_data.group_header_drag_data_.has_value()) {
@@ -753,12 +748,12 @@ void TabDragHandlerImpl::StartedDragging(
   GetWidget()->LayoutRootViewIfNecessary();
 }
 
-void TabDragHandlerImpl::DraggedTabsDetached() {
+void TabDragHandler::DraggedTabsDetached() {
   expand_on_hover_lock_.reset();
   scroll_synchronizers_.clear();
 }
 
-void TabDragHandlerImpl::StoppedDragging() {
+void TabDragHandler::StoppedDragging() {
   expand_on_hover_lock_.reset();
   scroll_synchronizers_.clear();
 
@@ -815,48 +810,47 @@ void TabDragHandlerImpl::StoppedDragging() {
   }
 }
 
-void TabDragHandlerImpl::SetDragControllerCallbackForTesting(
+void TabDragHandler::SetDragControllerCallbackForTesting(
     base::OnceCallback<void(TabDragController*)> callback) {}
 
-TabDragPositioningDelegate* TabDragHandlerImpl::GetPositioningDelegate() {
+TabDragPositioningDelegate* TabDragHandler::GetPositioningDelegate() {
   // Positioning is implemented through `TabDragDelegate` on individual
   // containers.
   return nullptr;
 }
 
-bool TabDragHandlerImpl::NotifyCustomEvent(
-    ui::CustomElementEventType event_type,
-    views::View* view) {
+bool TabDragHandler::NotifyCustomEvent(ui::CustomElementEventType event_type,
+                                       views::View* view) {
   return views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
       event_type, ViewFromTabSlot(view));
 }
 
-TabCollectionNode* TabDragHandlerImpl::GetNodeForContents(
+TabCollectionNode* TabDragHandler::GetNodeForContents(
     content::WebContents* contents) {
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(contents);
   CHECK(tab);
   return root_node_->GetNodeForHandle(tab->GetHandle());
 }
 
-TabCollectionNode* TabDragHandlerImpl::GetNodeForTabGroup(
+TabCollectionNode* TabDragHandler::GetNodeForTabGroup(
     const tab_groups::TabGroupId& group_id) {
   return const_cast<TabCollectionNode*>(
       std::as_const(*this).GetNodeForTabGroup(group_id));
 }
 
-const TabCollectionNode* TabDragHandlerImpl::GetNodeForTabGroup(
+const TabCollectionNode* TabDragHandler::GetNodeForTabGroup(
     const tab_groups::TabGroupId& group_id) const {
   const auto* group = tab_strip_model_->group_model()->GetTabGroup(group_id);
   CHECK(group);
   return root_node_->GetNodeForHandle(group->GetCollectionHandle());
 }
 
-void TabDragHandlerImpl::ResetDragState() {
+void TabDragHandler::ResetDragState() {
   drag_controller_.reset();
   scroll_synchronizers_.clear();
 }
 
-bool TabDragHandlerImpl::HandleDraggedTabsIntoPosition(
+bool TabDragHandler::HandleDraggedTabsIntoPosition(
     const TabCollectionNode& container_node,
     const TabCollectionNode* target) {
   CHECK(drag_controller_);
@@ -924,5 +918,5 @@ bool TabDragHandlerImpl::HandleDraggedTabsIntoPosition(
   return true;
 }
 
-BEGIN_METADATA(TabDragHandlerImpl)
+BEGIN_METADATA(TabDragHandler)
 END_METADATA
