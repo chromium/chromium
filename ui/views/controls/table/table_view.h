@@ -235,9 +235,15 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
     return selection_model_;
   }
 
-  // Changes the visibility of the specified column (by id).
+  // Changes the visibility of the specified column (by id). The last visible
+  // column cannot be hidden: a request to hide it is ignored, so a table that
+  // has columns always shows at least one of them.
   void SetColumnVisibility(int id, bool is_visible);
   bool IsColumnVisible(int id) const;
+
+  // Returns true if the column with the specified id is the only visible
+  // column, i.e. the one SetColumnVisibility() refuses to hide.
+  bool IsLastVisibleColumn(int id) const;
 
   // Returns true if the column with the specified id is known (either visible
   // or not).

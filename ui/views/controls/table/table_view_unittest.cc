@@ -1004,13 +1004,10 @@ TEST_P(TableViewTest, ColumnVisibility) {
   EXPECT_EQ(1, table_->GetVisibleColumn(0).column.id);
   EXPECT_EQ("rows=0 4 cols=0 1", helper_->GetPaintRegion(table_->bounds()));
 
-  // Hide the second column.
+  // The second column is the last visible one, so it cannot be hidden.
   table_->SetColumnVisibility(1, false);
-  EXPECT_EQ(0u, helper_->visible_col_count());
-
-  // Show the second column.
-  table_->SetColumnVisibility(1, true);
   ASSERT_EQ(1u, helper_->visible_col_count());
+  EXPECT_TRUE(table_->IsColumnVisible(1));
   EXPECT_EQ(1, table_->GetVisibleColumn(0).column.id);
   EXPECT_EQ("rows=0 4 cols=0 1", helper_->GetPaintRegion(table_->bounds()));
 
@@ -1022,17 +1019,30 @@ TEST_P(TableViewTest, ColumnVisibility) {
   EXPECT_EQ("rows=0 4 cols=0 2", helper_->GetPaintRegion(table_->bounds()));
 }
 
-// Regression tests for https://crbug.com/1283805, and
-// https://crbug.com/1283807.
-TEST_P(TableViewTest, NoCrashesWithAllColumnsHidden) {
-  // Set both initially visible columns hidden.
+// Regression test for https://crbug.com/1283805, https://crbug.com/1283807
+// and https://crbug.com/40836680: the table never ends up with rows but no
+// visible column, and the one remaining column keeps working.
+TEST_P(TableViewTest, LastVisibleColumnCannotBeHidden) {
+  EXPECT_FALSE(table_->IsLastVisibleColumn(0));
+  EXPECT_FALSE(table_->IsLastVisibleColumn(1));
   table_->SetColumnVisibility(0, false);
+  EXPECT_TRUE(table_->IsLastVisibleColumn(1));
+  EXPECT_FALSE(table_->IsLastVisibleColumn(0));
   table_->SetColumnVisibility(1, false);
-  EXPECT_EQ(0u, helper_->visible_col_count());
+  ASSERT_EQ(1u, helper_->visible_col_count());
+  EXPECT_TRUE(table_->IsColumnVisible(1));
+  EXPECT_FALSE(table_->IsColumnVisible(0));
 
-  // Remove and add rows in this state, there should be no crashes.
+  // Rows can still be removed and added.
   model_->RemoveRow(0);
   model_->AddRows(1, 2, /*value_multiplier=*/10);
+  EXPECT_EQ(1u, helper_->visible_col_count());
+
+  // Once another column is visible again, the previously last one can go.
+  table_->SetColumnVisibility(0, true);
+  table_->SetColumnVisibility(1, false);
+  ASSERT_EQ(1u, helper_->visible_col_count());
+  EXPECT_EQ(0, table_->GetVisibleColumn(0).column.id);
 }
 
 // Verifies resizing a column using the mouse works.

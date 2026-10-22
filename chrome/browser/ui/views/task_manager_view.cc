@@ -192,16 +192,11 @@ bool TaskManagerView::IsColumnVisible(int column_id) const {
 }
 
 bool TaskManagerView::SetColumnVisibility(int column_id, bool new_visibility) {
-  // Check if there is at least 1 visible column before changing the visibility.
-  // If this column would be the last column to be visible and its hiding, then
-  // prevent this column visibility change. see crbug.com/40836680 for details.
-  if (!new_visibility && tab_table_->visible_columns().size() <= 1) {
-    return false;
-  }
-
-  const bool currently_visible = tab_table_->IsColumnVisible(column_id);
+  // The table keeps its last visible column (crbug.com/40836680), so report
+  // what actually changed rather than what was asked for.
+  const bool was_visible = tab_table_->IsColumnVisible(column_id);
   tab_table_->SetColumnVisibility(column_id, new_visibility);
-  return new_visibility != currently_visible;
+  return tab_table_->IsColumnVisible(column_id) != was_visible;
 }
 
 bool TaskManagerView::IsTableSorted() const {
@@ -353,7 +348,8 @@ bool TaskManagerView::IsCommandIdChecked(int id) const {
 }
 
 bool TaskManagerView::IsCommandIdEnabled(int id) const {
-  return true;
+  // The last visible column cannot be hidden, so do not offer to.
+  return !tab_table_->IsLastVisibleColumn(id);
 }
 
 void TaskManagerView::ExecuteCommand(int id, int event_flags) {

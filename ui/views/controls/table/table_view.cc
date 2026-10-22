@@ -422,10 +422,14 @@ std::optional<size_t> TableView::GetFirstSelectedRow() const {
              : std::make_optional(*selection_model_.selected_indices().begin());
 }
 
-// TODO(dpenning) : Prevent the last column from being closed. See
-// crbug.com/1324306 for details.
 void TableView::SetColumnVisibility(int id, bool is_visible) {
   if (is_visible == IsColumnVisible(id)) {
+    return;
+  }
+
+  // Hiding the last visible column would leave a table with rows but nothing
+  // to show for them (see crbug.com/40836680), so keep it visible.
+  if (!is_visible && IsLastVisibleColumn(id)) {
     return;
   }
 
@@ -519,6 +523,10 @@ bool TableView::IsColumnVisible(int id) const {
   return std::ranges::contains(
       visible_columns_, id,
       [](const VisibleColumn& column) { return column.column.id; });
+}
+
+bool TableView::IsLastVisibleColumn(int id) const {
+  return visible_columns_.size() == 1 && IsColumnVisible(id);
 }
 
 bool TableView::HasColumn(int id) const {
