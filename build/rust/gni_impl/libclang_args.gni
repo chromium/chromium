@@ -60,7 +60,18 @@ if (is_win) {
   # We pass MSVC style flags to clang on Windows, and libclang needs to be
   # told explicitly to accept them.
   _libclang_extra_args += [ "--driver-mode=cl" ]
+}
 
+# Prefix for GCC-style Clang flags.  With `--driver-mode=cl` (Windows), such
+# flags must be spelled `/clang:<flag>`, otherwise clang-cl interprets some
+# of them differently (e.g. `-MD` means `/MD`).
+if (is_win) {
+  clang_flag_prefix = "/clang:"
+} else {
+  clang_flag_prefix = ""
+}
+
+if (is_win) {
   # On Windows, libclang adds arguments that it then fails to understand
   # (-fno-spell-checking, -fallow-editor-placeholders).
   # Replace these two arguments with a version that clang-cl can parse.
@@ -73,11 +84,7 @@ if (is_win) {
 }
 
 # Passes C comments through as rustdoc attributes.
-if (is_win) {
-  _libclang_extra_args += [ "/clang:-fparse-all-comments" ]
-} else {
-  _libclang_extra_args += [ "-fparse-all-comments" ]
-}
+_libclang_extra_args += [ "${clang_flag_prefix}-fparse-all-comments" ]
 
 if (is_cfi) {
   # LLVM searches for a default CFI ignorelist at (exactly)

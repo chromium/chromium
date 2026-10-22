@@ -402,11 +402,7 @@ template("rust_api_from_cpp") {
 
     # Public headers are inputs to this action rather than sources,
     # so GN does not consider this target an owner of the headers.
-    #
-    # TODO(crbug.com/40226863): Add a `depfile` (as `rust_bindgen_generator`
-    # does) when `rs_bindings_from_cc` can write one.  Until then, incremental
-    # builds do not rerun this action when a header that is only included
-    # indirectly (i.e. not listed in `public_headers`) changes.
+    # Headers that are only included indirectly are covered by `depfile`.
     inputs += invoker.public_headers
     outputs = [
       _rs_out_path,
@@ -415,6 +411,7 @@ template("rust_api_from_cpp") {
       # Written by `rust_api_from_cpp_wrapper.py` (see `--flagfile-path`).
       _flagfile_path,
     ]
+    depfile = "${target_out_dir}/${_gen_bindings_target_name}.d"
 
     # Depending on `_bindings_target` provides its `public_configs` (e.g.
     # `{{defines}}` and `{{include_dirs}}` needed to parse `public_headers`) and
@@ -489,5 +486,14 @@ template("rust_api_from_cpp") {
     # items in `namespace std` - e.g. for `std::optional`).  See the WIP PR at
     # https://github.com/google/crubit/pull/2361
     args += [ "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS" ]
+
+    # Clang args that write the `depfile`.  `-MT` sets the target inside the
+    # depfile to the first output of the action (as expected by Ninja and
+    # Siso).
+    args += [
+      "${clang_flag_prefix}-MD",
+      "${clang_flag_prefix}-MF" + rebase_path(depfile, root_build_dir),
+      "${clang_flag_prefix}-MT" + rebase_path(_rs_out_path, root_build_dir),
+    ]
   }
 }
