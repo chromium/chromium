@@ -1331,17 +1331,6 @@ constexpr FeatureEntry::FeatureVariation kPageClassificationVariations[] = {
     {"On-Device with Verticals Fallback",
      kPageClassificationOnDeviceWithFallback, nullptr}};
 
-constexpr FeatureEntry::FeatureParam kMagicStackTipsV2IosNonActionableParams[] =
-    {{segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
-      "false"}};
-constexpr FeatureEntry::FeatureParam kMagicStackTipsV2IosActionableParams[] = {
-    {segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
-     "true"}};
-constexpr FeatureEntry::FeatureVariation kMagicStackTipsV2IosVariations[] = {
-    {"(Non-Actionable)", kMagicStackTipsV2IosNonActionableParams, nullptr},
-    {"(Actionable)", kMagicStackTipsV2IosActionableParams, nullptr},
-};
-
 constexpr FeatureEntry::FeatureParam
     kMagicStackNTPThemeTipIosNonActionableParams[] = {
         {segmentation_platform::features::
@@ -3000,12 +2989,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kGeminiHostExperimentIDsName,
      flag_descriptions::kGeminiHostExperimentIDsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiHostExperimentIDs)},
-    {"magic-stack-tips-v2-ios", flag_descriptions::kMagicStackTipsV2IosName,
-     flag_descriptions::kMagicStackTipsV2IosDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::kMagicStackTipsV2Ios,
-         kMagicStackTipsV2IosVariations,
-         "MagicStackTipsV2Ios")},
     {"enable-segmentation-platform-ephemeral_card_ranker",
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerName,
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerDescription,

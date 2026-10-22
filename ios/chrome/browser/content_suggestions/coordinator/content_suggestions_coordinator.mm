@@ -874,7 +874,7 @@ using segmentation_platform::TipIdentifier;
     }
     case TipIdentifier::kTipsNotifications: {
       CHECK(!segmentation_platform::features::
-                IsMagicStackTipsV2IosActionableEnabled());
+                IsMagicStackTipsNotificationTipIosActionableEnabled());
       [HandlerForProtocol(self.browser->GetCommandDispatcher(),
                           BrowserCoordinatorCommands)
           showNotificationsOptInFromAccessPoint:NotificationOptInAccessPoint::
@@ -884,7 +884,7 @@ using segmentation_platform::TipIdentifier;
     }
     case TipIdentifier::kNTPCustomization: {
       if (segmentation_platform::features::
-              IsMagicStackTipsV2IosActionableEnabled()) {
+              IsMagicStackNTPCustomizationTipIosActionableEnabled()) {
         [_tipsNTPCustomizationCoordinator stop];
         _tipsNTPCustomizationCoordinator =
             [[TipsNTPCustomizationCoordinator alloc]

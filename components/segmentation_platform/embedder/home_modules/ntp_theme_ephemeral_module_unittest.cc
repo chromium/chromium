@@ -27,10 +27,11 @@ class NTPThemeEphemeralModuleTest : public testing::Test {
 
     NTPThemeEphemeralModule::RegisterProfilePrefs(pref_service_.registry());
 
-    // Enable the feature flags for ephemeral modules and Magic Stack Tips V2.
+    // Enable the feature flags for ephemeral modules and Magic Stack NTP Theme
+    // tip.
     scoped_feature_list_.InitWithFeatures(
         {features::kSegmentationPlatformEphemeralCardRanker,
-         features::kMagicStackTipsV2Ios},
+         features::kMagicStackNTPThemeTipIos},
         {});
   }
 

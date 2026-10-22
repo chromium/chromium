@@ -157,8 +157,9 @@ TEST_F(TipsMagicStackMediatorTest,
        ReconfiguresActionableConfigForNTPThemeWhenActionableEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      segmentation_platform::features::kMagicStackTipsV2Ios,
-      {{segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
+      segmentation_platform::features::kMagicStackNTPThemeTipIos,
+      {{segmentation_platform::features::
+            kMagicStackNTPThemeTipIosActionableParam,
         "true"}});
   [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kNTPTheme];
   EXPECT_EQ(TipIdentifier::kNTPTheme, mediator_.config.identifier);
@@ -174,8 +175,9 @@ TEST_F(TipsMagicStackMediatorTest,
 TEST_F(TipsMagicStackMediatorTest, AppliesSelectedNTPThemeAtIndex) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      segmentation_platform::features::kMagicStackTipsV2Ios,
-      {{segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
+      segmentation_platform::features::kMagicStackNTPThemeTipIos,
+      {{segmentation_platform::features::
+            kMagicStackNTPThemeTipIosActionableParam,
         "true"}});
   [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kNTPTheme];
   ASSERT_EQ(ContentSuggestionsModuleType::kTipsNTPThemeActionable,

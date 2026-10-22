@@ -160,7 +160,7 @@ using segmentation_platform::TipIdentifier;
 
   if (identifier == TipIdentifier::kNTPTheme &&
       segmentation_platform::features::
-          IsMagicStackTipsV2IosActionableEnabled()) {
+          IsMagicStackNTPThemeTipIosActionableEnabled()) {
     _actionableConfig = [[NTPThemeActionableTipConfig alloc] init];
     _actionableConfig.audience = self;
     _actionableConfig.colorPalettes = [self buildNTPThemeColorPalettes];

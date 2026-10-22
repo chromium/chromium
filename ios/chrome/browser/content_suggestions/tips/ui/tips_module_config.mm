@@ -289,7 +289,7 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   switch (self.identifier) {
     case TipIdentifier::kTipsNotifications:
       if (segmentation_platform::features::
-              IsMagicStackTipsV2IosActionableEnabled()) {
+              IsMagicStackTipsNotificationTipIosActionableEnabled()) {
         return @[ [UIColor colorNamed:kBlue600Color] ];
       }
       return @[ [UIColor whiteColor] ];
@@ -325,7 +325,7 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
       return [UIColor colorNamed:kBlue500Color];
     case TipIdentifier::kTipsNotifications:
       if (segmentation_platform::features::
-              IsMagicStackTipsV2IosActionableEnabled()) {
+              IsMagicStackTipsNotificationTipIosActionableEnabled()) {
         return nil;
       }
       return [UIColor colorNamed:kPink500Color];
@@ -387,7 +387,7 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 - (BOOL)showSwitch {
   return self.identifier == TipIdentifier::kTipsNotifications &&
          segmentation_platform::features::
-             IsMagicStackTipsV2IosActionableEnabled();
+             IsMagicStackTipsNotificationTipIosActionableEnabled();
 }
 
 #pragma mark - IconDetailViewTapDelegate

@@ -184,18 +184,6 @@ extern const base::FeatureParam<bool> kNewTabPageCustomizationV2ShowPromo;
 extern const base::FeatureParam<int>
     kNewTabPageCustomizationV2PromoDisplayIntervalDays;
 
-// Feature flag for Magic Stack Tips V2 on iOS.
-BASE_DECLARE_FEATURE(kMagicStackTipsV2Ios);
-
-// Parameter to control whether the Actionable variation of Magic Stack Tips V2
-// is shown on iOS.
-extern const base::FeatureParam<bool> kMagicStackTipsV2IosActionable;
-extern const char kMagicStackTipsV2IosActionableParam[];
-
-// Returns true if the Actionable variation of Magic Stack Tips V2 is enabled or
-// false for the Non-Actionable variation.
-bool IsMagicStackTipsV2IosActionableEnabled();
-
 // Feature flags for the new Magic Stack Tips on iOS (NTP Theme, NTP
 // Customization, Tips notification).
 BASE_DECLARE_FEATURE(kMagicStackNTPThemeTipIos);

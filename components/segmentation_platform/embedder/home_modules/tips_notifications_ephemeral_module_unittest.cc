@@ -28,10 +28,11 @@ class TipsNotificationsEphemeralModuleTest : public testing::Test {
     TipsNotificationsEphemeralModule::RegisterProfilePrefs(
         pref_service_.registry());
 
-    // Enable the feature flags for ephemeral modules and Magic Stack Tips V2.
+    // Enable the feature flags for ephemeral modules and Magic Stack Tips
+    // Notifications tip.
     scoped_feature_list_.InitWithFeatures(
         {features::kSegmentationPlatformEphemeralCardRanker,
-         features::kMagicStackTipsV2Ios},
+         features::kMagicStackTipsNotificationTipIos},
         {});
   }
 

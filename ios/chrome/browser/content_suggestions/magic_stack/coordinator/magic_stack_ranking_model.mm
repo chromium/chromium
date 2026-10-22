@@ -578,8 +578,14 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                ->GetString(send_tab_to_self::prefs::
                                kIOSSendTabToSelfLastReceivedTabURLPref)
                .empty()));
-  bool magicStackV2Enabled = base::FeatureList::IsEnabled(
-      segmentation_platform::features::kMagicStackTipsV2Ios);
+
+  bool ntpThemeTipEnabled = base::FeatureList::IsEnabled(
+      segmentation_platform::features::kMagicStackNTPThemeTipIos);
+  bool ntpCustomizationTipEnabled = base::FeatureList::IsEnabled(
+      segmentation_platform::features::kMagicStackNTPCustomizationTipIos);
+  bool tipsNotificationTipEnabled = base::FeatureList::IsEnabled(
+      segmentation_platform::features::kMagicStackTipsNotificationTipIos);
+
   if (_tipsManager) {
     // Profile signals
     inputContext->metadata_args.emplace(
@@ -644,7 +650,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
             !_tipsManager->WasSignalFired(
                 segmentation_platform::tips_manager::signals::
                     kAddressBarPositionChoiceScreenDisplayed)));
-    if (magicStackV2Enabled) {
+    if (tipsNotificationTipEnabled) {
       inputContext->metadata_args.emplace(
           segmentation_platform::kTipsOptInPromptNotReceivedRecently,
           segmentation_platform::processing::ProcessedValue::FromFloat(
@@ -678,7 +684,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         segmentation_platform::processing::ProcessedValue::FromFloat(
             IsChromeLikelyDefaultBrowser()));
 
-    if (magicStackV2Enabled) {
+    if (ntpThemeTipEnabled) {
       inputContext->metadata_args.emplace(
           segmentation_platform::kNTPBackgroundNotSelectedRecently,
           segmentation_platform::processing::ProcessedValue::FromFloat(
@@ -686,6 +692,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                   segmentation_platform::tips_manager::signals::
                       kNTPBackgroundSelected,
                   base::Days(90))));
+    }
+    if (ntpCustomizationTipEnabled) {
       inputContext->metadata_args.emplace(
           segmentation_platform::kNeverCustomizeNTP,
           segmentation_platform::processing::ProcessedValue::FromFloat(
@@ -695,7 +703,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     }
   }
 
-  if (magicStackV2Enabled) {
+  if (tipsNotificationTipEnabled) {
     // TipsNotification is an app-wide client, not tied to any account. An empty
     // `GaiaId` is passed.
     bool notOptedIntoTipsNotifications =
@@ -706,18 +714,18 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         segmentation_platform::kNotOptInTipsNotifications,
         segmentation_platform::processing::ProcessedValue::FromFloat(
             notOptedIntoTipsNotifications));
+  }
 
-    if (_backgroundCustomizationService) {
-      const bool hasNoNTPBackground =
-          !_backgroundCustomizationService->GetCurrentCustomBackground()
-               .has_value() &&
-          !_backgroundCustomizationService->GetCurrentColorTheme().has_value();
+  if (ntpThemeTipEnabled && _backgroundCustomizationService) {
+    const bool hasNoNTPBackground =
+        !_backgroundCustomizationService->GetCurrentCustomBackground()
+             .has_value() &&
+        !_backgroundCustomizationService->GetCurrentColorTheme().has_value();
 
-      inputContext->metadata_args.emplace(
-          segmentation_platform::kLacksNTPBackground,
-          segmentation_platform::processing::ProcessedValue::FromFloat(
-              hasNoNTPBackground));
-    }
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kLacksNTPBackground,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            hasNoNTPBackground));
   }
 
   __weak MagicStackRankingModel* weakSelf = self;

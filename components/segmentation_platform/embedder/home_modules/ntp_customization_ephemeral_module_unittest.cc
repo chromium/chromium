@@ -28,10 +28,11 @@ class NTPCustomizationEphemeralModuleTest : public testing::Test {
     NTPCustomizationEphemeralModule::RegisterProfilePrefs(
         pref_service_.registry());
 
-    // Enable the feature flags for ephemeral modules and Magic Stack Tips V2.
+    // Enable the feature flags for ephemeral modules and Magic Stack NTP
+    // Customization tip.
     scoped_feature_list_.InitWithFeatures(
         {features::kSegmentationPlatformEphemeralCardRanker,
-         features::kMagicStackTipsV2Ios},
+         features::kMagicStackNTPCustomizationTipIos},
         {});
   }
 
