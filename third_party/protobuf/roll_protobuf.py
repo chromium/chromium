@@ -209,6 +209,14 @@ def _RunGit(command: Sequence[str],
     return process
 
 
+def _RunScratchGit(repository_directory: str, *git_arguments: str,
+                   **options) -> subprocess.CompletedProcess:
+    """Runs git in a throwaway repository; options are _RunGit's."""
+    return _RunGit(['git', '-C', repository_directory, *git_arguments],
+                   env=_ScratchGitEnvironment(),
+                   **options)
+
+
 def _SplitNulSeparatedPaths(output: bytes) -> list[str]:
     return [
         path for path in output.decode(
@@ -589,6 +597,117 @@ def FormatTreeVerificationReport(result: TreeVerificationResult) -> str:
             lines += ['', f'{heading} ({len(paths)}):']
             lines += [f'  {symbol} {path}' for path in paths]
     return '\n'.join(lines)
+
+
+def _CommitEverything(repository_directory: str, message: str) -> None:
+    # --force also commits files that .gitignore matches.
+    _RunScratchGit(repository_directory, 'add', '--all', '--force', '.')
+    _RunScratchGit(repository_directory, 'commit', '--quiet', '--no-verify',
+                   '--allow-empty', '-m', message)
+
+
+def _CreateScratchRepository(upstream_repository_path: str,
+                             upstream_commit: str,
+                             repository_directory: str) -> str:
+    """Creates repository_directory holding upstream_commit as one commit.
+
+    The tree comes from `git archive`, like a release tarball and like
+    `check`, so export-ignore paths such as compatibility/ are left out.
+    Returns the commit ID.
+    """
+    os.makedirs(repository_directory)
+    ExtractUpstreamArchive(upstream_repository_path, upstream_commit,
+                           repository_directory)
+    _RunScratchGit(repository_directory, 'init', '--quiet')
+    _CommitEverything(repository_directory,
+                      f'Import upstream protobuf {upstream_commit}')
+    return _RunScratchGit(repository_directory, 'rev-parse',
+                          'HEAD').stdout.decode().strip()
+
+
+@dataclasses.dataclass(frozen=True)
+class ChainPatch:
+    """One patches/*.patch file, re-expressed as a commit on old upstream."""
+
+    patch_name: str  # File name in patches/.
+    # `git diff --full-index --binary --no-renames`. The full blob IDs on every
+    # `index` line are what let `git apply -3` merge on another version.
+    diff: bytes
+    # Maps each modified or deleted upstream-relative POSIX path to its blob ID
+    # as of old upstream plus all earlier patches (`git apply -3` merge base).
+    preimage_blobs: dict[str, str]
+    # Lines added plus removed (`git diff --numstat`); binary files count 0.
+    changed_line_count: int
+
+
+@dataclasses.dataclass(frozen=True)
+class PatchChain:
+    """patches/*.patch applied in order to old upstream, one commit each."""
+
+    # Scratch repository with the commits; the source of preimage blobs.
+    repository_directory: str
+    base_commit: str  # Unmodified old upstream.
+    patches: tuple[ChainPatch, ...]
+
+
+def _CountChangedLines(numstat_output: bytes) -> int:
+    """Sums added and removed lines in `git diff --numstat -z` output.
+
+    Binary files report '-' for both counts and contribute 0.
+    """
+    records = (record.split('\t') for record in numstat_output.decode(
+        'utf-8', errors='surrogateescape').split('\0'))
+    return sum(
+        int(count) for fields in records if len(fields) >= 3
+        for count in fields[:2] if count.isdigit())
+
+
+def BuildPatchChain(upstream_repository_path: str, old_upstream_commit: str,
+                    patch_paths: Sequence[str],
+                    chain_directory: str) -> PatchChain:
+    """Commits patch_paths in order onto old upstream (flow step 1).
+
+    The patches apply exactly there. Re-exporting each commit with
+    `git diff --full-index` attaches the full blob IDs that `git apply -3`
+    needs to merge the patch onto another version. chain_directory must not
+    exist yet; the caller owns it, as the source of preimage blobs.
+    """
+    base_commit = _CreateScratchRepository(upstream_repository_path,
+                                           old_upstream_commit,
+                                           chain_directory)
+    head_range = ('--no-renames', '--no-color', '--no-ext-diff', 'HEAD~1',
+                  'HEAD')
+    chain_patches = []
+    for patch_path in patch_paths:
+        patch_name = os.path.basename(patch_path)
+        patch_error = ApplyPatchFile(patch_path, chain_directory)
+        if patch_error is not None:
+            raise RollProtobufError(
+                f'{patch_name} does not apply to upstream '
+                f'{old_upstream_commit}, the README.chromium Revision; run '
+                f'`roll_protobuf.py check` to diagnose: {patch_error}')
+        _CommitEverything(chain_directory, patch_name)
+        diff = _RunScratchGit(chain_directory, 'diff', '--full-index',
+                              '--binary', '--no-textconv', *head_range)
+        diff_tree_fields = _RunScratchGit(
+            chain_directory, 'diff-tree', '-r', '-z', '--no-abbrev',
+            '--no-renames', 'HEAD~1',
+            'HEAD').stdout.decode('utf-8',
+                                  errors='surrogateescape').split('\0')
+        # Records are ':<old mode> <new mode> <old blob> <new blob> <status>',
+        # NUL, path. Added files have an all-zero old blob and no preimage.
+        preimage_blobs = {
+            path: metadata.split(' ')[2]
+            for metadata, path in zip(diff_tree_fields[::2],
+                                      diff_tree_fields[1::2])
+            if set(metadata.split(' ')[2]) != {'0'}
+        }
+        numstat = _RunScratchGit(chain_directory, 'diff', '--numstat', '-z',
+                                 *head_range)
+        chain_patches.append(
+            ChainPatch(patch_name, diff.stdout, preimage_blobs,
+                       _CountChangedLines(numstat.stdout)))
+    return PatchChain(chain_directory, base_commit, tuple(chain_patches))
 
 
 def main(command_line_arguments: Sequence[str] | None = None) -> int:
