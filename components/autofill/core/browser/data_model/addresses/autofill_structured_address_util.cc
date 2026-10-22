@@ -437,9 +437,7 @@ std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
     }
   }
   // Sort the tokens lexicographically by their normalized value.
-  std::sort(tokens.begin(), tokens.end(), [](const auto& a, const auto& b) {
-    return a.normalized_value < b.normalized_value;
-  });
+  std::ranges::sort(tokens, {}, &AddressToken::normalized_value);
 
   return tokens;
 }

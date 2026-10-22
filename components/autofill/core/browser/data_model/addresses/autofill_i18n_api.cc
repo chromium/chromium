@@ -16,6 +16,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -296,11 +297,11 @@ std::unique_ptr<SynthesizedAddressComponent> BuildSynthesizedNode(
     const TreeDefinition& tree_def,
     const base::flat_map<FieldType, std::unique_ptr<AddressComponent>>&
         nodes_registry) {
-  std::vector<raw_ptr<AddressComponent>> children;
-  children.reserve(tree_def.at(type).size());
-  for (FieldType child_type : tree_def.at(type)) {
-    children.push_back(nodes_registry.at(child_type).get());
-  }
+  std::vector<raw_ptr<AddressComponent>> children =
+      base::ToVector(tree_def.at(type),
+                     [&](FieldType child_type) -> raw_ptr<AddressComponent> {
+                       return nodes_registry.at(child_type).get();
+                     });
   return std::make_unique<SynthesizedAddressComponent>(
       type, std::move(children), MergeMode::kDefault);
 }

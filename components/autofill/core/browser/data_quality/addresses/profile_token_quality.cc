@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/rand_util.h"
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_util.h"
@@ -211,19 +212,15 @@ ProfileTokenQuality::GetObservationTypesForFieldType(FieldType type) const {
   if (it == observations_.end()) {
     return {};
   }
-  std::vector<ObservationType> types;
-  types.reserve(it->second.size());
-  for (const Observation& observation : it->second) {
+  return base::ToVector(it->second, [](const Observation& observation) {
     if (observation.type <= std::to_underlying(ObservationType::kMaxValue)) {
-      types.push_back(static_cast<ObservationType>(observation.type));
-    } else {
-      // This is possible if the `observation.type` was synced from a newer
-      // client that supports additional `ObservationType`s that this client
-      // doesn't understand.
-      types.push_back(ObservationType::kUnknown);
+      return static_cast<ObservationType>(observation.type);
     }
-  }
-  return types;
+    // This is possible if the `observation.type` was synced from a newer
+    // client that supports additional `ObservationType`s that this client
+    // doesn't understand.
+    return ObservationType::kUnknown;
+  });
 }
 
 void ProfileTokenQuality::AddObservation(FieldType type,
