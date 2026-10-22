@@ -7,20 +7,13 @@ import("//build/config/ui.gni")
 assert(toolkit_views)
 
 source_set("qrcode_generator") {
-  public = [
-    "qrcode_generator_bubble.h",
-    "qrcode_window_controller.h",
-  ]
-  sources = [
-    "qrcode_generator_bubble.cc",
-    "qrcode_window_controller.cc",
-  ]
+  public = [ "qrcode_generator_bubble.h" ]
+  sources = [ "qrcode_generator_bubble.cc" ]
   public_deps = [
     "//base",
-    "//chrome/browser/ui/qrcode_generator",
     "//chrome/browser/ui/views/location_bar",
+    "//components/qr_code_generator:bitmap_generator",
     "//ui/base",
-    "//ui/base/unowned_user_data",
     "//ui/views",
   ]
   deps = [
@@ -32,12 +25,9 @@ source_set("qrcode_generator") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/dialogs:browser_dialogs",
-    "//chrome/browser/ui/qrcode_generator",
     "//chrome/browser/ui/views:layout_provider",
-    "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/sharing_hub",
     "//components/qr_code_generator",
-    "//components/qr_code_generator:bitmap_generator",
     "//components/sharing_message",
     "//components/url_formatter",
     "//ui/base/clipboard",

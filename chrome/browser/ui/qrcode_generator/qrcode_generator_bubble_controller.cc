@@ -4,16 +4,21 @@
 
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
-#include "chrome/browser/ui/views/qrcode_generator/qrcode_window_controller.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "url/gurl.h"
 
 namespace {
@@ -79,12 +84,23 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
   }
 
   bubble_shown_ = true;
-  auto* qrcode_window_controller =
-      qrcode_generator::QRCodeWindowController::From(browser);
-  qrcode_generator_bubble_ = qrcode_window_controller
-                                 ? qrcode_window_controller->ShowBubble(
-                                       &GetWebContents(), url, show_back_button)
-                                 : nullptr;
+  if (auto* toolbar_button_provider = ToolbarButtonProvider::From(browser)) {
+    base::OnceClosure on_closing = GetOnBubbleClosedCallback();
+    base::OnceClosure on_back_button_pressed;
+    if (show_back_button) {
+      on_back_button_pressed = GetOnBackButtonPressedCallback();
+    }
+
+    auto anchor =
+        toolbar_button_provider->GetBubbleAnchor(kActionQrCodeGenerator);
+    auto bubble = std::make_unique<QRCodeGeneratorBubble>(
+        anchor, GetWebContents().GetWeakPtr(), std::move(on_closing),
+        std::move(on_back_button_pressed), url);
+    qrcode_generator_bubble_ = bubble.get();
+
+    views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
+    qrcode_generator_bubble_->Show();
+  }
 
   // Start listening for policy pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -102,7 +118,7 @@ void QRCodeGeneratorBubbleController::HideBubble() {
   }
 }
 
-QRCodeGeneratorBubbleView*
+QRCodeGeneratorBubble*
 QRCodeGeneratorBubbleController::qrcode_generator_bubble_view() const {
   return qrcode_generator_bubble_;
 }

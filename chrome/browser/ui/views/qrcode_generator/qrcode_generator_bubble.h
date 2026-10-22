@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/qr_code_generator/bitmap_generator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -35,8 +34,7 @@ class View;
 namespace qrcode_generator {
 
 // Dialog that displays a QR code used to share a page or image.
-class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
-                              public LocationBarBubbleDelegateView,
+class QRCodeGeneratorBubble : public LocationBarBubbleDelegateView,
                               public views::TextfieldController {
   METADATA_HEADER(QRCodeGeneratorBubble, LocationBarBubbleDelegateView)
 
@@ -51,9 +49,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   ~QRCodeGeneratorBubble() override;
 
   void Show();
-
-  // QRCodeGeneratorBubbleView:
-  void Hide() override;
+  void Hide();
 
   // Returns a suggested download filename for a given URL.
   // e.g.: www.foo.com may suggest qrcode_foo.png.

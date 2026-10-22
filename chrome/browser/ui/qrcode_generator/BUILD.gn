@@ -8,10 +8,7 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 assert(toolkit_views)
 
 source_set("qrcode_generator") {
-  sources = [
-    "qrcode_generator_bubble_controller.h",
-    "qrcode_generator_bubble_view.h",
-  ]
+  sources = [ "qrcode_generator_bubble_controller.h" ]
   public_deps = [
     "//base",
     "//content/public/browser",
@@ -23,11 +20,14 @@ source_set("impl") {
   deps = [
     ":qrcode_generator",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/sharing_hub",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/qrcode_generator",
     "//chrome/common:constants",
     "//components/prefs",
+    "//ui/views",
     "//url",
   ]
 }

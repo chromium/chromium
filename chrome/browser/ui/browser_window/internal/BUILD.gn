@@ -149,7 +149,6 @@ source_set("internal") {
       "//chrome/browser/ui/views/location_bar/cookie_controls",
       "//chrome/browser/ui/views/media_router",
       "//chrome/browser/ui/views/new_tab_footer",
-      "//chrome/browser/ui/views/qrcode_generator",
       "//chrome/browser/ui/views/send_tab_to_self",
       "//chrome/browser/ui/views/sharing",
       "//chrome/browser/ui/views/side_panel",

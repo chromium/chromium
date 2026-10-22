@@ -217,10 +217,6 @@ class PdfInfoBarController;
 }  // namespace pdf::infobar
 #endif
 
-namespace qrcode_generator {
-class QRCodeWindowController;
-}  // namespace qrcode_generator
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 namespace session_restore_infobar {
 class SessionRestoreInfobarController;
@@ -424,8 +420,6 @@ class BrowserWindowFeatures {
       most_recent_shared_tab_update_store_;
   std::unique_ptr<ProfileMenuCoordinator> profile_menu_coordinator_;
   std::unique_ptr<OrganizerPanelController> organizer_panel_controller_;
-  std::unique_ptr<qrcode_generator::QRCodeWindowController>
-      qrcode_window_controller_;
   std::unique_ptr<ReadingListSidePanelCoordinator>
       reading_list_side_panel_coordinator_;
   std::unique_ptr<RecentActivityBubbleCoordinator>
