@@ -33,12 +33,18 @@ message AutofillEntitySuppressionSpecifics {
   // Random UUIDv4 identifying this record.
   optional string guid = 1;
 
-  optional EntitySuppressionKey entity_suppression_key = 2;
+  // Only set by older clients, which sync full hashes instead of
+  // `entity_suppression_hash`.
+  optional EntitySuppressionKey entity_suppression_key = 2 [deprecated = true];
 
   // Schema version when suppressed.
   optional int32 schema_version = 3;
 
   // The time the suppression was created.
   optional int64 creation_time_windows_epoch_micros = 4;
+
+  // The leading bits of a SHA-256 hash of the entity type and the merge
+  // constraint values of the suppressed entity.
+  optional uint32 entity_suppression_hash = 5;
 }
 // LINT.ThenChange(//components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.cc:TrimAutofillEntitySuppressionSpecificsDataForCaching)

@@ -64,6 +64,10 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // TODO(crbug.com/501036619): Make `Suppress()`, `Unsuppress()` and
+  // `IsSuppressed()` take an `EntitySuppressionHash` once legacy entries are no
+  // longer supported.
+
   // Adds a suppression `entry`, generates a GUID, encrypts and persists it,
   // and notifies Sync. If this exceeds the maximum number of suppressions, the
   // oldest ones are deleted. Returns `false` if Sync is not tracking metadata
@@ -71,9 +75,9 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
   // was modified.
   bool Suppress(const EntitySuppressionEntry& entry);
 
-  // Deletes all suppression records matching `entry`. Returns `false` if Sync
-  // is not tracking metadata or the `entry` was not suppressed. Returns `true`
-  // if suppression status was modified.
+  // Deletes the suppression records of `entry`, so that it's no longer
+  // suppressed. Returns `false` if Sync is not tracking metadata or there are
+  // no such records. Returns `true` if suppression status was modified.
   bool Unsuppress(const EntitySuppressionEntry& entry);
 
   // Deletes suppression records whose creation timestamp falls within the
@@ -83,8 +87,8 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
   // `true` if suppression status was modified.
   bool ClearSuppressions(base::Time delete_begin, base::Time delete_end);
 
-  // Returns all currently active suppression entries.
-  base::flat_set<EntitySuppressionEntry> GetSuppressions() const;
+  // Returns the keys of all currently active suppressions.
+  base::flat_set<EntitySuppressionKey> GetSuppressions() const;
 
   // Returns true if `entry` is currently suppressed.
   bool IsSuppressed(const EntitySuppressionEntry& entry) const;
@@ -130,13 +134,13 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Applies a remote suppression to persistent storage and in-memory cache:
   // Encrypts `specifics` and writes it to `batch` under `storage_key`, and
-  // indexes the parsed `entry` in `metadata_by_entry_`. Resolves conflicts if
-  // an entry with the same data already exists under a different GUID.
-  // Returns `true` if `entry` was not already suppressed, `false` otherwise.
+  // indexes the parsed `key` in `metadata_by_entry_`. Resolves conflicts if
+  // a suppression with the same key already exists under a different GUID.
+  // Returns `true` if `key` was not already suppressed, `false` otherwise.
   bool ApplyRemoteEntry(
       const std::string& storage_key,
       const sync_pb::AutofillEntitySuppressionSpecifics& specifics,
-      EntitySuppressionEntry entry,
+      EntitySuppressionKey key,
       syncer::DataTypeStore::WriteBatch& batch);
 
   // Deletes the oldest suppressions from `metadata_by_entry_`, local storage
@@ -180,8 +184,8 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
 
   base::ObserverList<Observer> observers_;
 
-  // In-memory mapping from `EntitySuppressionEntry` to its metadata.
-  base::flat_map<EntitySuppressionEntry, EntryMetadata> metadata_by_entry_;
+  // In-memory mapping from `EntitySuppressionKey` to its metadata.
+  base::flat_map<EntitySuppressionKey, EntryMetadata> metadata_by_entry_;
 
   base::WeakPtrFactory<EntitySuppressionSyncBridge> weak_ptr_factory_{this};
 };

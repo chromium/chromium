@@ -126,22 +126,23 @@ bool EntitySuppressionSyncBridge::Suppress(
     return false;
   }
 
-  if (metadata_by_entry_.contains(entry)) {
+  if (IsSuppressed(entry)) {
     return false;
   }
 
+  const EntitySuppressionKey key = GetEntitySuppressionHash(entry);
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   base::Time creation_time = base::Time::Now();
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionEntry(
-          guid, entry, creation_time,
+      CreateSpecificsFromEntitySuppressionKey(
+          guid, key, creation_time,
           GetPossiblyTrimmedEntitySuppressionSpecifics(guid));
 
   const std::string encrypted_value =
       EncryptSuppressionSpecifics(specifics, *encryptor_);
 
   metadata_by_entry_.insert_or_assign(
-      entry, EntryMetadata{.guid = guid, .creation_time = creation_time});
+      key, EntryMetadata{.guid = guid, .creation_time = creation_time});
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
@@ -169,20 +170,29 @@ bool EntitySuppressionSyncBridge::Unsuppress(
     return false;
   }
 
-  const EntryMetadata* stored_metadata =
-      base::FindOrNull(metadata_by_entry_, entry);
-  if (!stored_metadata) {
-    return false;
-  }
-
-  const std::string guid = stored_metadata->guid;
-  metadata_by_entry_.erase(entry);
-
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
-  batch->DeleteData(guid);
-  change_processor()->Delete(guid, syncer::DeletionOrigin::Unspecified(),
-                             batch->GetMetadataChangeList());
+  auto delete_record = [&](const EntitySuppressionKey& key) {
+    auto it = metadata_by_entry_.find(key);
+    if (it == metadata_by_entry_.end()) {
+      return false;
+    }
+    batch->DeleteData(it->second.guid);
+    change_processor()->Delete(it->second.guid,
+                               syncer::DeletionOrigin::Unspecified(),
+                               batch->GetMetadataChangeList());
+    metadata_by_entry_.erase(it);
+    return true;
+  };
+  bool deleted =
+      delete_record(EntitySuppressionKey(GetEntitySuppressionHash(entry)));
+  // TODO(crbug.com/501036619): Remove once legacy entries are no longer
+  // supported.
+  deleted |=
+      delete_record(EntitySuppressionKey(LegacyEntitySuppressionEntry(entry)));
+  if (!deleted) {
+    return false;
+  }
 
   store_->CommitWriteBatch(
       std::move(batch),
@@ -209,7 +219,7 @@ bool EntitySuppressionSyncBridge::ClearSuppressions(base::Time delete_begin,
       store_->CreateWriteBatch();
   const size_t removed_count = base::EraseIf(
       metadata_by_entry_,
-      [&](const std::pair<EntitySuppressionEntry, EntryMetadata>& pair) {
+      [&](const std::pair<EntitySuppressionKey, EntryMetadata>& pair) {
         const EntryMetadata& metadata = pair.second;
         if (metadata.creation_time < delete_begin ||
             metadata.creation_time > delete_end) {
@@ -235,7 +245,7 @@ bool EntitySuppressionSyncBridge::ClearSuppressions(base::Time delete_begin,
   return true;
 }
 
-base::flat_set<EntitySuppressionEntry>
+base::flat_set<EntitySuppressionKey>
 EntitySuppressionSyncBridge::GetSuppressions() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return {base::sorted_unique,
@@ -246,7 +256,14 @@ EntitySuppressionSyncBridge::GetSuppressions() const {
 bool EntitySuppressionSyncBridge::IsSuppressed(
     const EntitySuppressionEntry& entry) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return metadata_by_entry_.contains(entry);
+  if (metadata_by_entry_.contains(
+          EntitySuppressionKey(GetEntitySuppressionHash(entry)))) {
+    return true;
+  }
+  // TODO(crbug.com/501036619): Remove once legacy entries are no longer
+  // supported.
+  return metadata_by_entry_.contains(
+      EntitySuppressionKey(LegacyEntitySuppressionEntry(entry)));
 }
 
 size_t EntitySuppressionSyncBridge::CountSuppressionsCreatedBetween(
@@ -261,7 +278,7 @@ size_t EntitySuppressionSyncBridge::CountSuppressionsCreatedBetween(
   }
   return std::ranges::count_if(
       metadata_by_entry_,
-      [&](const std::pair<EntitySuppressionEntry, EntryMetadata>& pair) {
+      [&](const std::pair<EntitySuppressionKey, EntryMetadata>& pair) {
         const base::Time creation_time = pair.second.creation_time;
         return creation_time >= begin && creation_time <= end;
       });
@@ -287,19 +304,18 @@ EntitySuppressionSyncBridge::CreateMetadataChangeList() {
 bool EntitySuppressionSyncBridge::ApplyRemoteEntry(
     const std::string& storage_key,
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics,
-    EntitySuppressionEntry entry,
+    EntitySuppressionKey key,
     syncer::DataTypeStore::WriteBatch& batch) {
   const std::string encrypted_value =
       EncryptSuppressionSpecifics(specifics, *encryptor_);
   const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(specifics.creation_time_windows_epoch_micros()));
 
-  EntryMetadata* existing_metadata =
-      base::FindOrNull(metadata_by_entry_, entry);
+  EntryMetadata* existing_metadata = base::FindOrNull(metadata_by_entry_, key);
   if (!existing_metadata) {
     batch.WriteData(storage_key, encrypted_value);
     metadata_by_entry_.insert_or_assign(
-        std::move(entry),
+        std::move(key),
         EntryMetadata{.guid = storage_key, .creation_time = creation_time});
     return true;
   }
@@ -386,12 +402,12 @@ EntitySuppressionSyncBridge::MergeFullSyncData(
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics =
         change->data().specifics.autofill_entity_suppression();
-    std::optional<EntitySuppressionEntry> entry =
-        CreateEntitySuppressionEntryFromSpecifics(specifics);
-    CHECK(entry);
+    std::optional<EntitySuppressionKey> key =
+        CreateEntitySuppressionKeyFromSpecifics(specifics);
+    CHECK(key);
 
     synced_remote_guids.insert(change->storage_key());
-    if (ApplyRemoteEntry(change->storage_key(), specifics, std::move(*entry),
+    if (ApplyRemoteEntry(change->storage_key(), specifics, std::move(*key),
                          *batch)) {
       added_remote_suppressions = true;
     }
@@ -403,12 +419,12 @@ EntitySuppressionSyncBridge::MergeFullSyncData(
 
   // Upload local-only entries to Sync (including any local entries that won
   // conflict resolution against remote duplicates).
-  for (const auto& [entry, metadata] : metadata_by_entry_) {
+  for (const auto& [key, metadata] : metadata_by_entry_) {
     if (!synced_remote_guids.contains(metadata.guid)) {
       change_processor()->Put(
           metadata.guid,
-          CreateEntityDataFromEntitySuppressionEntry(
-              metadata.guid, entry, metadata.creation_time,
+          CreateEntityDataFromEntitySuppressionKey(
+              metadata.guid, key, metadata.creation_time,
               GetPossiblyTrimmedEntitySuppressionSpecifics(metadata.guid)),
           batch->GetMetadataChangeList());
     }
@@ -442,12 +458,12 @@ EntitySuppressionSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_ADD: {
         const sync_pb::AutofillEntitySuppressionSpecifics& specifics =
             change->data().specifics.autofill_entity_suppression();
-        std::optional<EntitySuppressionEntry> entry =
-            CreateEntitySuppressionEntryFromSpecifics(specifics);
-        CHECK(entry);
+        std::optional<EntitySuppressionKey> key =
+            CreateEntitySuppressionKeyFromSpecifics(specifics);
+        CHECK(key);
 
-        if (ApplyRemoteEntry(change->storage_key(), specifics,
-                             std::move(*entry), *batch)) {
+        if (ApplyRemoteEntry(change->storage_key(), specifics, std::move(*key),
+                             *batch)) {
           suppressions_changed = true;
         }
         break;
@@ -508,11 +524,11 @@ EntitySuppressionSyncBridge::GetAllData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsLoaded());
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const auto& [entry, metadata] : metadata_by_entry_) {
+  for (const auto& [key, metadata] : metadata_by_entry_) {
     batch->Put(
         metadata.guid,
-        CreateEntityDataFromEntitySuppressionEntry(
-            metadata.guid, entry, metadata.creation_time,
+        CreateEntityDataFromEntitySuppressionKey(
+            metadata.guid, key, metadata.creation_time,
             GetPossiblyTrimmedEntitySuppressionSpecifics(metadata.guid)));
   }
   return batch;
@@ -647,16 +663,16 @@ void EntitySuppressionSyncBridge::OnReadAllDataAndMetadata(
       ++dropped_record_count;
       continue;
     }
-    std::optional<EntitySuppressionEntry> entry =
-        CreateEntitySuppressionEntryFromSpecifics(*specifics);
-    if (!entry) {
+    std::optional<EntitySuppressionKey> key =
+        CreateEntitySuppressionKeyFromSpecifics(*specifics);
+    if (!key) {
       LogEntitySuppressionLoadDropReason(
           EntitySuppressionLoadDropReason::kInvalidEntry);
       ++dropped_record_count;
       continue;
     }
     metadata_by_entry_.insert_or_assign(
-        std::move(*entry),
+        std::move(*key),
         EntryMetadata{
             .guid = record.id,
             .creation_time =
