@@ -6,7 +6,7 @@ import 'chrome://contextual-tasks/strings.m.js';
 import 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 
-import {SmartTabSharingSurface} from 'chrome://resources/cr_components/composebox/common.js';
+import {SingleTabMenuItemAction, SingleTabType, SmartTabSharingSurface} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {DEFAULT_FLYOUT_WIDTH_PX, DEFAULT_MAX_MENU_HEIGHT_PX, MIN_MENU_HEIGHT_PX, SHARE_TABS_FLYOUT_GAP_PX, SHARE_TABS_FLYOUT_MAX_HEIGHT_PX, VIEWPORT_BUFFER_PX} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
@@ -19,6 +19,8 @@ import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/s
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -2875,6 +2877,12 @@ suite('ContextualActionMenu', () => {
       });
 
   suite('SingleTabMenuItem', () => {
+    let metrics: MetricsTracker;
+
+    setup(() => {
+      metrics = fakeMetricsPrivate();
+    });
+
     const recentTab = createTabSuggestion({
       tabId: 1,
       title: 'Recent Tab',
@@ -2982,21 +2990,33 @@ suite('ContextualActionMenu', () => {
 
     test('Click adds the tab as context', async () => {
       await createMenu(/*enabled=*/ true);
+      asInternal(actionMenu).metricsSource_ = 'NewTabPage';
       const item = $$(actionMenu, '#singleTabItem') as HTMLButtonElement;
-      const whenAdded =
-          eventToPromise<CustomEvent<{id: number, title: string, url: string}>>(
-              'add-tab-context', actionMenu);
+      const whenAdded = eventToPromise<CustomEvent<{
+        id: number,
+        title: string,
+        url: string,
+        singleTabType?: SingleTabType,
+      }>>('add-tab-context', actionMenu);
       item.click();
       const event = await whenAdded;
       assertEquals(recentTab.tabId, event.detail.id);
       assertEquals(recentTab.title, event.detail.title);
       assertEquals(recentTab.url, event.detail.url);
+      assertEquals(SingleTabType.RECENT_TAB, event.detail.singleTabType);
+
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualSearch.SingleTabMenuItem.Action.NewTabPage',
+              SingleTabMenuItemAction.RECENT_TAB_SELECTED));
     });
 
     test('Shows checkmark and deselects when already selected', async () => {
       await createMenu(/*enabled=*/ true, {
         selectedTabIds: new Map([[recentTab.tabId, 'some-token']]),
       });
+      asInternal(actionMenu).metricsSource_ = 'NewTabPage';
       const item = $$(actionMenu, '#singleTabItem') as HTMLButtonElement;
       assertEquals('true', item.getAttribute('aria-checked'));
       assertTrue(!!item.querySelector('.share-tabs-check'));
@@ -3006,7 +3026,66 @@ suite('ContextualActionMenu', () => {
       item.click();
       const event = await whenDeleted;
       assertEquals(recentTab.tabId, event.detail.tabId);
+
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualSearch.SingleTabMenuItem.Action.NewTabPage',
+              SingleTabMenuItemAction.RECENT_TAB_DESELECTED));
     });
+
+    test('Records CurrentTab slice when clicked in side panel', async () => {
+      await createMenu(/*enabled=*/ true, {isSidePanel: true});
+      asInternal(actionMenu).metricsSource_ = 'ContextualTasks';
+      const item = $$(actionMenu, '#singleTabItem') as HTMLButtonElement;
+      const whenAdded = eventToPromise<CustomEvent<{
+        singleTabType?: SingleTabType,
+      }>>('add-tab-context', actionMenu);
+      item.click();
+      const event = await whenAdded;
+      assertEquals(SingleTabType.CURRENT_TAB, event.detail.singleTabType);
+
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualSearch.SingleTabMenuItem.Action.ContextualTasks',
+              SingleTabMenuItemAction.CURRENT_TAB_SELECTED));
+
+      actionMenu.selectedTabIds = new Map([[recentTab.tabId, 'token']]);
+      await microtasksFinished();
+      item.click();
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualSearch.SingleTabMenuItem.Action.ContextualTasks',
+              SingleTabMenuItemAction.CURRENT_TAB_DESELECTED));
+    });
+
+    test(
+        'Flyout tab click does not record SingleTabMenuItem metrics',
+        async () => {
+          await createMenu(/*enabled=*/ true);
+          asInternal(actionMenu).metricsSource_ = 'NewTabPage';
+          const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+
+          const flyoutItem =
+              actionMenu.shadowRoot.querySelector<HTMLButtonElement>(
+                  '.share-tabs-flyout .dropdown-item');
+          assertTrue(!!flyoutItem);
+
+          const whenAdded =
+              eventToPromise<CustomEvent<{singleTabType?: SingleTabType}>>(
+                  'add-tab-context', actionMenu);
+          flyoutItem.click();
+          const event = await whenAdded;
+          assertEquals(undefined, event.detail.singleTabType);
+          assertEquals(
+              0,
+              metrics.count(
+                  'ContextualSearch.SingleTabMenuItem.Action.NewTabPage'));
+        });
 
     test('Disabled when tab upload is disabled', async () => {
       await createMenu(/*enabled=*/ true, {

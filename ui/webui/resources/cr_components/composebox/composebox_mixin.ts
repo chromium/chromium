@@ -22,7 +22,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, isValidTabId, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, isValidTabId, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordSingleTabMenuItemAction, recordToolModeSelection, recordToolModeShown, recordUserAction, SingleTabMenuItemAction, SingleTabType, TabSuggestionsState} from './common.js';
 import type {BrowserFileUpload, ComposeboxFuseboxActionRequest, ComposeboxState, ContextualUpload, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -1546,6 +1546,7 @@ export const ComposeboxEmbedderMixin =
           url: Url,
           delayUpload: boolean,
           origin: TabAttachmentSource,
+          singleTabType?: SingleTabType,
         }>) {
           if (!this.browserTabContextAdded) {
             recordContextualElementClickedMetric(
@@ -1558,6 +1559,7 @@ export const ComposeboxEmbedderMixin =
             url: e.detail.url,
             delayUpload: e.detail.delayUpload,
             origin: e.detail.origin,
+            singleTabType: e.detail.singleTabType,
           });
           await this.updateComplete;
           // Only keep menu open if it was from menu and not recent tab.
@@ -1655,6 +1657,7 @@ export const ComposeboxEmbedderMixin =
                   supportsUnimodal: true,
                   origin: tabUpload.origin,
                   delayUpload: tabUpload.delayUpload,
+                  singleTabType: tabUpload.singleTabType,
                   status: uploadInFlight ?
                       ContextUploadStatus.kUploadStarted :
                       ContextUploadStatus.kUploadSuccessful,
@@ -2554,6 +2557,15 @@ export const ComposeboxEmbedderMixin =
         }
 
         submitCleanup() {
+          const singleTabFile = Array.from(this.attachedContext.values())
+                                    .find(file => !!file.singleTabType);
+          if (singleTabFile) {
+            recordSingleTabMenuItemAction(
+                singleTabFile.singleTabType === SingleTabType.CURRENT_TAB ?
+                    SingleTabMenuItemAction.CURRENT_TAB_SUBMITTED :
+                    SingleTabMenuItemAction.RECENT_TAB_SUBMITTED,
+                this.composeboxSource);
+          }
           this.submitting = true;
           this.clearAutocompleteMatches();
           this.resetSmartComposeStats();
