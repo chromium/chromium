@@ -919,3 +919,40 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewRTLInteractiveUiTest,
         EXPECT_GT(draggable_bounds.x(), region_bounds.x());
       }));
 }
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       UnpinAndPinTabSearch) {
+  RunTestSequence(WaitForShow(kTabSearchButtonElementId), Do([this]() {
+                    browser()->GetProfile()->GetPrefs()->SetBoolean(
+                        prefs::kTabSearchPinnedToTabstrip, false);
+                  }),
+                  WaitForHide(kTabSearchButtonElementId), Do([this]() {
+                    browser()->GetProfile()->GetPrefs()->SetBoolean(
+                        prefs::kTabSearchPinnedToTabstrip, true);
+                  }),
+                  WaitForShow(kTabSearchButtonElementId));
+}
+
+class HorizontalTabStripRegionViewNewTabSearchStartsUnpinned
+    : public HorizontalTabStripRegionViewNewInteractiveUiTest {
+ public:
+  HorizontalTabStripRegionViewNewTabSearchStartsUnpinned() = default;
+  ~HorizontalTabStripRegionViewNewTabSearchStartsUnpinned() override = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    HorizontalTabStripRegionViewNewInteractiveUiTest::
+        SetUpBrowserContextKeyedServices(context);
+    Profile::FromBrowserContext(context)->GetPrefs()->SetBoolean(
+        prefs::kTabSearchPinnedToTabstrip, false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewTabSearchStartsUnpinned,
+                       PinTabSearch) {
+  RunTestSequence(EnsureNotPresent(kTabSearchButtonElementId), Do([this]() {
+                    browser()->GetProfile()->GetPrefs()->SetBoolean(
+                        prefs::kTabSearchPinnedToTabstrip, true);
+                  }),
+                  WaitForShow(kTabSearchButtonElementId));
+}
