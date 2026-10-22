@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -56,6 +57,9 @@ class HeapMojoRemote {
   void set_disconnect_with_reason_handler(
       mojo::ConnectionErrorWithReasonCallback handler) {
     wrapper_->remote().set_disconnect_with_reason_handler(std::move(handler));
+  }
+  void reset_on_idle_timeout(base::TimeDelta timeout) {
+    wrapper_->remote().reset_on_idle_timeout(timeout);
   }
   [[nodiscard]] mojo::PendingReceiver<Interface> BindNewPipeAndPassReceiver(
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
