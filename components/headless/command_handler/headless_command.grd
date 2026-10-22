@@ -9,8 +9,8 @@
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_HEADLESS_COMMAND_HTML" file="headless_command.html" type="BINDATA" />
-      <include name="IDR_HEADLESS_COMMAND_JS" file="headless_command.js" type="BINDATA" />
+      <include name="IDR_HEADLESS_COMMAND_HTML" file="headless_command.html" type="BINDATA" compress="brotli" />
+      <include name="IDR_HEADLESS_COMMAND_JS" file="headless_command.js" type="BINDATA" compress="brotli" />
     </includes>
   </release>
 </grit>
