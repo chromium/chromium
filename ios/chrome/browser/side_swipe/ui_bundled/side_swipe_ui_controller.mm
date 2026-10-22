@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/card_side_swipe_view.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/card_swipe_view_delegate.h"
@@ -28,7 +29,6 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/side_swipe_toolbar_interacting.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/web/public/web_state.h"
-#import "ui/base/device_form_factor.h"
 
 namespace {
 
@@ -59,6 +59,10 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
   // If the swipe is for a page change or a tab change.
   SwipeType _swipeType;
+
+  // Whether the current tab swipe gesture is using the card swipe view
+  // (`handleiPhoneTabSwipe:`), latched when the gesture begins.
+  BOOL _usingCardTabSwipe;
 
   // Whether to allow navigating from the leading edge.
   BOOL _leadingEdgeNavigationEnabled;
@@ -483,16 +487,26 @@ const CGFloat kIpadTabSwipeDistance = 100;
 - (void)handleSwipe:(SideSwipeGestureRecognizer*)gesture {
   DCHECK(_swipeType != SwipeType::NONE);
   if (_swipeType == SwipeType::CHANGE_TAB) {
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-      return [self handleiPhoneTabSwipe:gesture];
-    } else {
-      return [self handleiPadTabSwipe:gesture];
-    }
+    return [self handleTabSwipe:gesture];
   }
   if (_swipeType == SwipeType::CHANGE_PAGE) {
     return [self handleSwipeToNavigate:gesture];
   }
   NOTREACHED();
+}
+
+// Routes tab swipe gestures by latching the active handler when the gesture
+// begins so that a mid-gesture size-class change still completes cleanup on the
+// same handler.
+- (void)handleTabSwipe:(SideSwipeGestureRecognizer*)gesture {
+  if (gesture.state == UIGestureRecognizerStateBegan) {
+    _usingCardTabSwipe = !CanShowTabStrip(gesture.view);
+  }
+  if (_usingCardTabSwipe) {
+    [self handleiPhoneTabSwipe:gesture];
+  } else {
+    [self handleiPadTabSwipe:gesture];
+  }
 }
 
 // Handles native WKWebView screen edge pan gestures to track edge-swipe
@@ -622,11 +636,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
   // Do not trigger a CheckForOverRealization here, as it's expected
   // that many WebStates may realize from multiple swipes.
   web::IgnoreOverRealizationCheck();
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    return [self handleiPhoneTabSwipe:gesture];
-  } else {
-    return [self handleiPadTabSwipe:gesture];
-  }
+  [self handleTabSwipe:gesture];
 }
 
 // Show horizontal swipe stack view for iPhone.

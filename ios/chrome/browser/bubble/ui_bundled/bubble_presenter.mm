@@ -723,9 +723,8 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
 }
 
 - (void)presentToolbarSwipeGestureInProductHelp {
-  // Inapplicable on iPad.
-  if (ui::GetDeviceFormFactor() !=
-          ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE ||
+  // Inapplicable when the tab strip is visible.
+  if (CanShowTabStrip(self.rootViewController) ||
       UIAccessibilityIsVoiceOverRunning() ||
       (![self canPresentBubbleWithCheckTabScrolledToTop:NO])) {
     return;
@@ -763,8 +762,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   NSLayoutConstraint* topConstraintForTopEdgeSwipe =
       [guide.topAnchor constraintEqualToAnchor:contentAreaGuide.topAnchor];
   NSLayoutConstraint* initialTopConstraint =
-      self.rootViewController.traitCollection.verticalSizeClass ==
-              UIUserInterfaceSizeClassRegular
+      IsSplitToolbarMode(self.rootViewController)
           ? topConstraintForBottomEdgeSwipe
           : topConstraintForTopEdgeSwipe;
   initialTopConstraint.active = YES;

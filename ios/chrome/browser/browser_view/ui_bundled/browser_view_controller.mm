@@ -3028,7 +3028,6 @@ bool IsFullscreenNextIAEnabled() {
 #pragma mark - CardSwipeViewDelegate
 
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView {
-  DCHECK(!CanShowTabStrip(self));
   // TODO(crbug.com/40842406): Signal to the toolbar coordinator to perform this
   // update. Longer-term, make SideSwipeMediatorDelegate observable instead of
   // delegating.

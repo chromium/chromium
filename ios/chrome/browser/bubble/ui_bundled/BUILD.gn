@@ -127,6 +127,7 @@ source_set("unit_tests") {
     "//base:i18n",
     "//base/test:test_support",
     "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
@@ -138,6 +139,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/web/public/test",
+    "//testing/gmock",
     "//testing/gtest",
   ]
   frameworks = [ "CoreGraphics.framework" ]

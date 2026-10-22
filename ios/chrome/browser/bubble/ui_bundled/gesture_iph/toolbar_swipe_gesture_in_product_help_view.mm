@@ -55,7 +55,9 @@ const int kBidirectionalAnimationRepeatCount = 4;
       _bidirectional = NO;
       _animationRepeatCount = [super animationRepeatCount];
     }
-    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+    [self registerForTraitChanges:@[
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
+    ]
                        withAction:@selector(updateUIOnTraitChange)];
   }
   return self;
@@ -143,6 +145,10 @@ const int kBidirectionalAnimationRepeatCount = 4;
 
 // Updates the view's constraints and resets the `bubbleView`.
 - (void)updateUIOnTraitChange {
+  if (CanShowTabStrip(self)) {
+    [self dismissWithReason:IPHDismissalReasonType::kUnknown];
+    return;
+  }
   [self.bubbleView removeFromSuperview];
   [self
       setInitialBubbleViewWithDirection:(BubbleArrowDirection)0 /* this value is
