@@ -73,6 +73,12 @@ UIView* GetFirstResponderSubview(UIView* view) {
   // The WebViewScrollViewProxy is a wrapper around the web view's
   // UIScrollView to give components access in a limited and controlled manner.
   CRWWebViewScrollViewProxy* _contentViewScrollViewProxy;
+  // Cached so they also apply to content views set later, e.g. when a web view
+  // is created after its WebState was configured.
+  BOOL _shouldUseViewContentInset;
+  BOOL _hasViewportInsets;
+  UIEdgeInsets _minimumViewportInset;
+  UIEdgeInsets _maximumViewportInset;
 }
 @synthesize contentView = _contentView;
 @synthesize ignoreObscuredInsets = _ignoreObscuredInsets;
@@ -159,10 +165,8 @@ UIView* GetFirstResponderSubview(UIView* view) {
 }
 
 - (void)setShouldUseViewContentInset:(BOOL)shouldUseViewContentInset {
-  if ([_contentView
-          respondsToSelector:@selector(setShouldUseViewContentInset:)]) {
-    [_contentView setShouldUseViewContentInset:shouldUseViewContentInset];
-  }
+  _shouldUseViewContentInset = shouldUseViewContentInset;
+  [self applyShouldUseViewContentInset];
 }
 
 - (void)registerInsets:(UIEdgeInsets)insets forCaller:(id)caller {
@@ -189,6 +193,10 @@ UIView* GetFirstResponderSubview(UIView* view) {
 - (void)setContentView:(nonnull CRWContentView*)contentView {
   DCHECK(contentView);
   _contentView = contentView;
+  // Applied before updating the scroll view proxy so that its observers,
+  // notified synchronously, see the configured content view.
+  [self applyShouldUseViewContentInset];
+  [self applyViewportInsets];
   [_contentViewScrollViewProxy setScrollView:contentView.scrollView];
 }
 
@@ -246,7 +254,29 @@ UIView* GetFirstResponderSubview(UIView* view) {
 
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
            maximumViewportInset:(UIEdgeInsets)maxInset {
-  [_contentView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+  _hasViewportInsets = YES;
+  _minimumViewportInset = minInset;
+  _maximumViewportInset = maxInset;
+  [self applyViewportInsets];
+}
+
+#pragma mark - Private
+
+// Applies the cached `shouldUseViewContentInset` value to the content view.
+- (void)applyShouldUseViewContentInset {
+  if ([_contentView
+          respondsToSelector:@selector(setShouldUseViewContentInset:)]) {
+    [_contentView setShouldUseViewContentInset:_shouldUseViewContentInset];
+  }
+}
+
+// Applies the cached viewport insets to the content view, if they were set.
+- (void)applyViewportInsets {
+  if (!_hasViewportInsets) {
+    return;
+  }
+  [_contentView setMinimumViewportInset:_minimumViewportInset
+                   maximumViewportInset:_maximumViewportInset];
 }
 
 @end
