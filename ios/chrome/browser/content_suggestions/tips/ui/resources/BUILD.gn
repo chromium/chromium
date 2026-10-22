@@ -2,6 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("assets") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/ntp_theme_tip.imageset/Contents.json",
+    "Assets.xcassets/ntp_theme_tip.imageset/ntp_theme_tip.png",
+    "Assets.xcassets/ntp_theme_tip.imageset/ntp_theme_tip@2x.png",
+    "Assets.xcassets/ntp_theme_tip.imageset/ntp_theme_tip@3x.png",
+  ]
+}
+
 bundle_data("resources") {
   sources = [
     "ntp_customization.json",
@@ -10,4 +23,5 @@ bundle_data("resources") {
     "use_autofill.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  public_deps = [ ":assets" ]
 }

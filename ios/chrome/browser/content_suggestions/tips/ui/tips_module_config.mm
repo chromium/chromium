@@ -83,6 +83,12 @@ const CGFloat kProductImageBadgeBottomRightRadius = 8;
 // Constant for the symbol width.
 const CGFloat kSymbolWidth = 22;
 
+// Constant for the NTP theme tip icon width.
+constexpr CGFloat kNTPThemeIconWidth = 46;
+
+// Name of the image resource for the NTP theme tip icon.
+NSString* const kNTPThemeTipIconImageName = @"ntp_theme_tip";
+
 // Returns the `Symbol` for the given `tip`.
 Symbol SymbolForTip(TipIdentifier tip) {
   switch (tip) {
@@ -104,8 +110,7 @@ Symbol SymbolForTip(TipIdentifier tip) {
     case TipIdentifier::kEnhancedSafeBrowsing:
       return SymbolPrivacy;
     case TipIdentifier::kNTPTheme:
-      // TODO(crbug.com/566958827): Add the correct `NTPTheme` symbol.
-      return SymbolListBulletClipboard;
+      return SymbolNone;
     case TipIdentifier::kTipsNotifications:
       return SymbolBellBadge;
     case TipIdentifier::kNTPCustomization:
@@ -281,7 +286,17 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   return SymbolForTip(self.identifier);
 }
 
+- (NSString*)iconName {
+  if (self.identifier == TipIdentifier::kNTPTheme) {
+    return kNTPThemeTipIconImageName;
+  }
+  return nil;
+}
+
 - (IconViewSourceType)iconSource {
+  if (self.identifier == TipIdentifier::kNTPTheme) {
+    return IconViewSourceType::kImage;
+  }
   return IconViewSourceType::kSymbol;
 }
 
@@ -331,12 +346,17 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
       return [UIColor colorNamed:kPink500Color];
     case TipIdentifier::kNTPCustomization:
       return [UIColor colorNamed:kPurple500Color];
+    case TipIdentifier::kNTPTheme:
+      return nil;
     default:
       return [UIColor colorNamed:kBackgroundColor];
   }
 }
 
 - (CGFloat)iconWidth {
+  if (self.identifier == TipIdentifier::kNTPTheme) {
+    return kNTPThemeIconWidth;
+  }
   return kSymbolWidth;
 }
 
