@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "cc/base/features.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "third_party/khronos/GLES2/gl2.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 
 namespace cc {
 

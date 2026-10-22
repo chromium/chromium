@@ -11,7 +11,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
-#include "third_party/khronos/GLES2/gl2.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 
 namespace viz {
 class RasterContextProvider;
