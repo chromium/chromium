@@ -68,6 +68,7 @@ permission::-internal-permission-container, geolocation::-internal-permission-co
 
 permission::permission-icon, geolocation::permission-icon, install::permission-icon, usermedia::permission-icon, camera::permission-icon, microphone::permission-icon {
   fill: currentcolor;
+  fill-rule: evenodd;
   height: 1.3em;
   width: auto;
   margin-inline-end: 5px;

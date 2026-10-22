@@ -3578,6 +3578,7 @@
       keywords: ["nonzero", "evenodd"],
       default_value: "RULE_NONZERO",
       typedom_types: ["Keyword"],
+      valid_for_permission_icon: true,
       invalidate: ["paint"],
     },
     {
