@@ -12,6 +12,12 @@ declare_args() {
   # steps rerun when they change.
   apple_tool_wrapper_inputs = []
 
+  # Files that only the wrapped `action()` steps (`compile_ib_files`,
+  # `intentbuilderc`, and `extract_metadata`) depend on. Unlike
+  # `apple_tool_wrapper_inputs`, changing them does not rerun every `swift`
+  # and `compile_xcassets` step.
+  apple_tool_wrapper_action_inputs = []
+
   # Maximum number of wrapped steps that run at once.
   apple_tool_wrapper_jobs = 6
 }

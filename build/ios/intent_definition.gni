@@ -58,7 +58,8 @@ template("intent_definition") {
       args = _args
     } else {
       script = apple_tool_wrapper_script
-      inputs += [ _xcrun_script ] + apple_tool_wrapper_inputs
+      inputs += [ _xcrun_script ] + apple_tool_wrapper_inputs +
+                apple_tool_wrapper_action_inputs
       args = [
                "--tool=intentbuilderc",
                "--input",
@@ -117,7 +118,8 @@ template("intent_definition") {
       args = _args
     } else {
       script = apple_tool_wrapper_script
-      inputs += [ _xcrun_script ] + apple_tool_wrapper_inputs
+      inputs += [ _xcrun_script ] + apple_tool_wrapper_inputs +
+                apple_tool_wrapper_action_inputs
       args = [
         "--tool=intentbuilderc",
         "--input",
