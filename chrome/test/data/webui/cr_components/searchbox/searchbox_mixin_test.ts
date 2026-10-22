@@ -4215,6 +4215,15 @@ suite('SearchboxMixinVirtualFocusTest', () => {
     assertFalse(element.keywordModeManager.isInKeywordMode);
   });
 
+  test('inKeywordMode getter reflects keywordModeManager', () => {
+    assertFalse(element.inKeywordMode);
+    element.keywordModeManager.enter(
+        'google.com', 'Google', KeywordModeEntryMethod.TAB);
+    assertTrue(element.inKeywordMode);
+    element.keywordModeManager.exit();
+    assertFalse(element.inKeywordMode);
+  });
+
   test(
       'mousedown on match prevents focus loss and does not prematurely fill ' +
           'input in zero state under virtual focus',
