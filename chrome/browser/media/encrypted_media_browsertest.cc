@@ -1774,9 +1774,10 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
   const auto& active_gpu =
       content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu();
   if (active_gpu.device_id == 0x2783 || active_gpu.device_id == 0x7480 ||
-      active_gpu.device_id == 0x4680) {
+      active_gpu.device_id == 0x4680 || active_gpu.device_id == 0x9bc5) {
     GTEST_SKIP() << "Skipped on NVIDIA RTX 4070 Super (0x2783), AMD RX 7600 "
-                    "(0x7480), and Intel UHD 770 (0x4680).";
+                    "(0x7480), Intel UHD 770 (0x4680), and Intel UHD 630 "
+                    "(0x9bc5).";
   }
 
   TestMediaFoundationTrackSwitchPlayback(
