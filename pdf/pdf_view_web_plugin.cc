@@ -2255,8 +2255,7 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::DictValue& message) {
     }
 
     paint_manager_.SetTransform(zoom_ratio, pinch_center,
-                                pinch_vector + paint_offset + scroll_delta,
-                                true);
+                                pinch_vector + paint_offset + scroll_delta);
     needs_reraster_ = false;
     return;
   }
@@ -2553,18 +2552,8 @@ void PdfViewWebPlugin::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 
   engine_->PostPaint();
 
-  if (base::FeatureList::IsEnabled(features::kPdfBufferedPaintManager)) {
-    for (const gfx::Rect& ready_rect : ready_rects) {
-      ready.emplace_back(ready_rect, nullptr);
-    }
-  } else {
-    // TODO(crbug.com/40203030): Write pixels directly to the `SkSurface` in
-    // `PaintManager`, rather than using an intermediate `SkBitmap` and
-    // `SkImage`.
-    sk_sp<SkImage> painted_image = image_data_.asImage();
-    for (const gfx::Rect& ready_rect : ready_rects) {
-      ready.emplace_back(ready_rect, painted_image);
-    }
+  for (const gfx::Rect& ready_rect : ready_rects) {
+    ready.emplace_back(ready_rect);
   }
 
   InvalidateAfterPaintDone();
@@ -2579,13 +2568,8 @@ void PdfViewWebPlugin::PrepareForFirstPaint(
   // Fill the image data buffer with the background color.
   first_paint_ = false;
   image_data_.eraseColor(background_color_);
-  if (base::FeatureList::IsEnabled(features::kPdfBufferedPaintManager)) {
-    ready.emplace_back(gfx::SkIRectToRect(image_data_.bounds()), nullptr,
-                       /*flush_now=*/true);
-  } else {
-    ready.emplace_back(gfx::SkIRectToRect(image_data_.bounds()),
-                       image_data_.asImage(), /*flush_now=*/true);
-  }
+  ready.emplace_back(gfx::SkIRectToRect(image_data_.bounds()),
+                     /*flush_now=*/true);
 }
 
 void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
@@ -2794,22 +2778,6 @@ void PdfViewWebPlugin::OnViewportChanged(
   SkAlphaType alpha_type =
       UseSkiaPremultipliedAlpha() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
   paint_manager_.SetSize(plugin_rect_.size(), device_scale_, alpha_type);
-  // In the PdfBufferedPaintManager experiment, all these calculations and
-  // allocations are done in the PaintManager.
-  if (!base::FeatureList::IsEnabled(features::kPdfBufferedPaintManager)) {
-    // Initialize the image data buffer if the context size changes.
-    const gfx::Size old_image_size =
-        gfx::SkISizeToSize(image_data_.dimensions());
-    const gfx::Size new_image_size =
-        PaintManager::GetNewContextSize(old_image_size, plugin_rect_.size());
-    if (new_image_size != old_image_size) {
-      // Ignore the result. If the allocation fails, the image data buffer
-      // will be empty and the code below will handle that.
-      (void)image_data_.tryAllocPixels(SkImageInfo::MakeN32(
-          new_image_size.width(), new_image_size.height(), alpha_type));
-      first_paint_ = true;
-    }
-  }
 
   // Skip updating the geometry if the new image data buffer is empty.
   if (image_data_.drawsNothing()) {

@@ -10,11 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/paint_ready_rect.h"
-#include "pdf/pdf_features.h"
 #include "pdf/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,15 +64,12 @@ class MockPaintManagerClient : public PaintManager::Client {
               (override));
 };
 
-class PaintManagerTest : public testing::TestWithParam<bool> {
+class PaintManagerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    if (GetParam()) {
-      list_.InitAndEnableFeature(features::kPdfBufferedPaintManager);
-    } else {
-      list_.InitAndDisableFeature(features::kPdfBufferedPaintManager);
-    }
-  }
+  struct FakeReadyRect {
+    gfx::Rect rect;
+    sk_sp<SkImage> image;
+  };
 
   void WaitForOnPaint() {
     base::RunLoop run_loop;
@@ -83,58 +78,51 @@ class PaintManagerTest : public testing::TestWithParam<bool> {
   }
 
   void SetSizeAndInstall(const gfx::Size& new_size, float device_scale) {
-    if (GetParam()) {
-      // This size check matches the one in PaintManager::SetSize(), in the
-      // `kPdfBufferedPaintManager` case, to replicate its behavior.
-      gfx::Size old_image_size =
-          gfx::SkISizeToSize(client_bitmap_.info().dimensions());
-      gfx::Size padded_new_size =
-          PaintManager::GetNewContextSize(old_image_size, new_size);
-      if (old_image_size != padded_new_size || client_bitmap_.empty()) {
-        EXPECT_CALL(client_, InstallBuffer)
-            .WillOnce([this](SkImageInfo image_info, base::span<uint8_t> data) {
-              this->client_bitmap_.installPixels(image_info, data.data(),
-                                                 image_info.minRowBytes());
-              return &client_bitmap_;
-            });
-      }
+    // This size check matches the one in PaintManager::SetSize() to replicate
+    // its behavior.
+    gfx::Size old_image_size =
+        gfx::SkISizeToSize(client_bitmap_.info().dimensions());
+    gfx::Size padded_new_size =
+        PaintManager::GetNewContextSize(old_image_size, new_size);
+    if (old_image_size != padded_new_size || client_bitmap_.empty()) {
+      EXPECT_CALL(client_, InstallBuffer)
+          .WillOnce([this](SkImageInfo image_info, base::span<uint8_t> data) {
+            this->client_bitmap_.installPixels(image_info, data.data(),
+                                               image_info.minRowBytes());
+            return &client_bitmap_;
+          });
     }
     paint_manager_.SetSize(new_size, device_scale, kPremul_SkAlphaType);
   }
 
   sk_sp<SkImage> WaitForFlush(
       const std::vector<gfx::Rect>& expected_paint_rects,
-      std::vector<PaintReadyRect> fake_ready,
+      std::vector<FakeReadyRect> fake_ready,
       std::vector<gfx::Rect> fake_pending) {
     EXPECT_CALL(client_, OnPaint(expected_paint_rects, _, _))
         .WillOnce([&fake_ready, &fake_pending, this](
                       const std::vector<gfx::Rect>& paint_rects,
                       std::vector<PaintReadyRect>& ready,
                       std::vector<gfx::Rect>& pending) {
-          if (GetParam()) {
-            sk_sp<SkSurface> draw_surface =
-                SkSurfaces::Raster(client_bitmap_.info());
+          sk_sp<SkSurface> draw_surface =
+              SkSurfaces::Raster(client_bitmap_.info());
 
-            for (auto& ready_rect : fake_ready) {
-              auto skrect = gfx::RectToSkRect(ready_rect.rect());
-              SkPaint paint;
-              paint.setColor(SK_ColorWHITE);
-              draw_surface->getCanvas()->drawRect(skrect, paint);
-              draw_surface->getCanvas()->drawImageRect(
-                  ready_rect.image(), skrect, skrect, SkSamplingOptions(),
-                  nullptr, SkCanvas::kStrict_SrcRectConstraint);
-            }
-
-            ready = std::move(fake_ready);
-            pending = std::move(fake_pending);
-
-            SkPixmap px;
-            draw_surface->peekPixels(&px);
-            client_bitmap_.writePixels(px);
-          } else {
-            ready = std::move(fake_ready);
-            pending = std::move(fake_pending);
+          for (const auto& ready_rect : fake_ready) {
+            auto skrect = gfx::RectToSkRect(ready_rect.rect);
+            SkPaint paint;
+            paint.setColor(SK_ColorWHITE);
+            draw_surface->getCanvas()->drawRect(skrect, paint);
+            draw_surface->getCanvas()->drawImageRect(
+                ready_rect.image, skrect, skrect, SkSamplingOptions(), nullptr,
+                SkCanvas::kStrict_SrcRectConstraint);
+            ready.emplace_back(ready_rect.rect);
           }
+
+          pending = std::move(fake_pending);
+
+          SkPixmap px;
+          draw_surface->peekPixels(&px);
+          client_bitmap_.writePixels(px);
         });
 
     sk_sp<SkImage> saved_snapshot;
@@ -243,46 +231,45 @@ class PaintManagerTest : public testing::TestWithParam<bool> {
                                GetPaintManagerTestDataFilePath(expected_png)));
   }
 
-  base::test::ScopedFeatureList list_;
   NiceMock<MockPaintManagerClient> client_;
   SkBitmap client_bitmap_;
   PaintManager paint_manager_{&client_};
 };
 
-TEST_P(PaintManagerTest, GetNewContextSizeWhenGrowingBelowMaximum) {
+TEST_F(PaintManagerTest, GetNewContextSizeWhenGrowingBelowMaximum) {
   EXPECT_EQ(gfx::Size(450, 350),
             PaintManager::GetNewContextSize({450, 350}, {450, 349}));
   EXPECT_EQ(gfx::Size(450, 350),
             PaintManager::GetNewContextSize({450, 350}, {449, 350}));
 }
 
-TEST_P(PaintManagerTest, GetNewContextSizeWhenGrowingAboveMaximum) {
+TEST_F(PaintManagerTest, GetNewContextSizeWhenGrowingAboveMaximum) {
   EXPECT_EQ(gfx::Size(501, 400),
             PaintManager::GetNewContextSize({450, 350}, {451, 350}));
   EXPECT_EQ(gfx::Size(500, 401),
             PaintManager::GetNewContextSize({450, 350}, {450, 351}));
 }
 
-TEST_P(PaintManagerTest, GetNewContextSizeWhenShrinkingAboveMinimum) {
+TEST_F(PaintManagerTest, GetNewContextSizeWhenShrinkingAboveMinimum) {
   EXPECT_EQ(gfx::Size(450, 350),
             PaintManager::GetNewContextSize({450, 350}, {350, 251}));
   EXPECT_EQ(gfx::Size(450, 350),
             PaintManager::GetNewContextSize({450, 350}, {351, 250}));
 }
 
-TEST_P(PaintManagerTest, GetNewContextSizeWhenShrinkingBelowMinimum) {
+TEST_F(PaintManagerTest, GetNewContextSizeWhenShrinkingBelowMinimum) {
   EXPECT_EQ(gfx::Size(399, 300),
             PaintManager::GetNewContextSize({450, 350}, {349, 250}));
   EXPECT_EQ(gfx::Size(400, 299),
             PaintManager::GetNewContextSize({450, 350}, {350, 249}));
 }
 
-TEST_P(PaintManagerTest, Create) {
+TEST_F(PaintManagerTest, Create) {
   EXPECT_EQ(gfx::Size(0, 0), paint_manager_.GetEffectiveSize());
   EXPECT_EQ(1.0f, paint_manager_.GetEffectiveDeviceScale());
 }
 
-TEST_P(PaintManagerTest, SetSizeWithoutPaint) {
+TEST_F(PaintManagerTest, SetSizeWithoutPaint) {
   EXPECT_CALL(client_, InvalidatePluginContainer).Times(0);
   SetSizeAndInstall({400, 300}, 2.0f);
 
@@ -290,7 +277,7 @@ TEST_P(PaintManagerTest, SetSizeWithoutPaint) {
   EXPECT_EQ(2.0f, paint_manager_.GetEffectiveDeviceScale());
 }
 
-TEST_P(PaintManagerTest, SetSizeWithPaint) {
+TEST_F(PaintManagerTest, SetSizeWithPaint) {
   EXPECT_CALL(client_, UpdateScale(0.5));
   EXPECT_CALL(client_, InvalidatePluginContainer);
   SetSizeAndInstall({400, 300}, 2.0f);
@@ -298,19 +285,18 @@ TEST_P(PaintManagerTest, SetSizeWithPaint) {
   WaitForOnPaint();
 }
 
-TEST_P(PaintManagerTest, SetTransformWithSurface) {
+TEST_F(PaintManagerTest, SetTransformWithSurface) {
   SetSizeAndInstall({400, 300}, 2.0f);
   WaitForOnPaint();
 
   EXPECT_CALL(client_,
               UpdateLayerTransform(0.25f, gfx::Vector2dF(116.5f, 29.5f)));
-  paint_manager_.SetTransform(0.25f, {150, 50}, {-4, 8},
-                              /*schedule_flush=*/true);
+  paint_manager_.SetTransform(0.25f, {150, 50}, {-4, 8});
   paint_manager_.Invalidate();
   WaitForOnPaint();
 }
 
-TEST_P(PaintManagerTest, ClearTransform) {
+TEST_F(PaintManagerTest, ClearTransform) {
   SetSizeAndInstall({400, 300}, 2.0f);
   WaitForOnPaint();
 
@@ -318,7 +304,7 @@ TEST_P(PaintManagerTest, ClearTransform) {
   paint_manager_.ClearTransform();
 }
 
-TEST_P(PaintManagerTest, DoPaintFirst) {
+TEST_F(PaintManagerTest, DoPaintFirst) {
   base::HistogramTester histograms;
 
   SetSizeAndInstall({400, 300}, 2.0f);
@@ -344,7 +330,7 @@ TEST_P(PaintManagerTest, DoPaintFirst) {
   histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 1);
 }
 
-TEST_P(PaintManagerTest, PaintImage) {
+TEST_F(PaintManagerTest, PaintImage) {
   base::HistogramTester histograms;
 
   // Painted area is within the plugin area and the source image.
@@ -371,7 +357,7 @@ TEST_P(PaintManagerTest, PaintImage) {
   histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 4);
 }
 
-TEST_P(PaintManagerTest, Scroll) {
+TEST_F(PaintManagerTest, Scroll) {
   base::HistogramTester histograms;
 
   SetSizeAndInstall({4, 5}, 1.0f);
@@ -389,7 +375,7 @@ TEST_P(PaintManagerTest, Scroll) {
   histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 8);
 }
 
-TEST_P(PaintManagerTest, ScrollIgnored) {
+TEST_F(PaintManagerTest, ScrollIgnored) {
   base::HistogramTester histograms;
 
   SetSizeAndInstall({4, 5}, 1.0f);
@@ -418,7 +404,7 @@ TEST_P(PaintManagerTest, ScrollIgnored) {
   histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 16);
 }
 
-TEST_P(PaintManagerTest, ResizeRecyclesDrawBuffer) {
+TEST_F(PaintManagerTest, ResizeRecyclesDrawBuffer) {
   // 1. Set size to 100x100 and trigger a paint that returns early (no flush).
   // If `draw_buffer_` isn't cleared on SetSize(), this leaves draw_buffer_
   // allocated but not released.
@@ -436,9 +422,9 @@ TEST_P(PaintManagerTest, ResizeRecyclesDrawBuffer) {
   // 3. Paint at 200x200, if `draw_buffer_` is still 150x150, the copy will clip
   // at 150x150 and fail the pixel comparison, however, since it is cleared,
   // this works.
-  auto snapshot = WaitForFlush(
-      {gfx::Rect(0, 0, 200, 200)},
-      {PaintReadyRect(gfx::Rect(0, 0, 200, 200), larger_bitmap.asImage())}, {});
+  auto snapshot =
+      WaitForFlush({gfx::Rect(0, 0, 200, 200)},
+                   {{gfx::Rect(0, 0, 200, 200), larger_bitmap.asImage()}}, {});
   ASSERT_TRUE(snapshot);
 
   snapshot = snapshot->makeSubset(nullptr, SkIRect::MakeWH(200, 200), {});
@@ -450,10 +436,6 @@ TEST_P(PaintManagerTest, ResizeRecyclesDrawBuffer) {
   EXPECT_TRUE(cc::MatchesBitmap(snapshot_bitmap, larger_bitmap,
                                 cc::ExactPixelComparator()));
 }
-
-INSTANTIATE_TEST_SUITE_P(BufferedPaintManager,
-                         PaintManagerTest,
-                         testing::Bool());
 
 }  // namespace
 

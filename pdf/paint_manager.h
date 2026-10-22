@@ -67,8 +67,7 @@ class PaintManager {
                          std::vector<PaintReadyRect>& ready,
                          std::vector<gfx::Rect>& pending) = 0;
 
-    // Install the image buffer into the backing store used by PDFium for the
-    // purposes of the PdfBufferedPaintManager experiment.
+    // Install the image buffer into the backing store used by PDFium.
     virtual SkBitmap* InstallBuffer(SkImageInfo image_info,
                                     base::span<uint8_t> data) = 0;
 
@@ -127,23 +126,15 @@ class PaintManager {
   // The given rect should be scrolled by the given amounts.
   void ScrollRect(const gfx::Rect& clip_rect, const gfx::Vector2d& amount);
 
-  // Returns the size of the graphics context for the next paint operation.
-  // This is the pending size if a resize is pending (the plugin has called
-  // SetSize but we haven't actually painted it yet), or the current size of
-  // no resize is pending.
+  // Returns the effective size and device scale of the graphics context.
   gfx::Size GetEffectiveSize() const;
   float GetEffectiveDeviceScale() const;
 
   // Set the transform for the graphics layer.
-  // If `schedule_flush` is true, it ensures a flush will be scheduled for
-  // this change. If `schedule_flush` is false, then the change will not take
-  // effect until another change causes a flush.
   void SetTransform(float scale,
                     const gfx::Point& origin,
-                    const gfx::Vector2d& translate,
-                    bool schedule_flush);
+                    const gfx::Vector2d& translate);
   // Resets any transform for the graphics layer.
-  // This does not schedule a flush.
   void ClearTransform();
 
   struct BufferData {
@@ -153,9 +144,8 @@ class PaintManager {
     base::WeakPtr<PaintManager> owner;
   };
 
-  // Called by skia to release a data buffer back to the PaintManager, for the
-  // PdfBufferedPaintManager experiment. This is done to avoid the need for
-  // synchronization. Must be called on main thread.
+  // Called by Skia to release a data buffer back to the PaintManager. This is
+  // done to avoid the need for synchronization. Must be called on main thread.
   void BufferFinishedOnMainThread(std::unique_ptr<BufferData> data);
 
  private:
@@ -169,11 +159,7 @@ class PaintManager {
   void DoPaint();
 
   // Executes a Flush.
-  void Flush();
-
-  // Executes a Flush when the PdfBufferedPaintManager experiment is
-  // enabled.
-  void BufferedFlush(sk_sp<SkData> flushing_buffer);
+  void Flush(sk_sp<SkData> flushing_buffer);
 
   // Callback for asynchronous completion of Flush.
   void OnFlushComplete();
@@ -182,46 +168,42 @@ class PaintManager {
   // pending.
   void OnManualCallbackComplete();
 
-  // For the PdfBufferedPaintManager experiment, return an existing or newly
-  // allocated buffer for storing pixel data at least large enough according to
-  // `image_info_`.
+  // Returns an existing or newly allocated buffer for storing pixel data at
+  // least large enough according to `image_info_`.
   std::unique_ptr<BufferData> GetBuffer();
 
   // Non-owning pointer. See the constructor.
   const raw_ptr<Client> client_;
 
-  // Backing Skia surface. If running PdfBufferedPaintManager, the surface's
-  // backing buffer is swapped every frame.
+  // Backing Skia surface. The surface's backing buffer is swapped every frame.
   sk_sp<SkSurface> surface_;
 
   // The surface's ImageInfo, but also client_'s ImageInfo, as well as
   // `client_`'s `engine_`'s.
   SkImageInfo image_info_;
 
-  // In the PdfBufferedPaintManager experiment, there is a rotating stack of
-  // equally-sized buffers which are drawn into largely in sequence. They are
-  // created on demand, given to skia when they are drawn into, and kept
-  // afterwards for reuse, if possible. When buffers are passed to Skia, they
-  // enter the nether realm and it is not knowable when they will return. When
-  // they are passed back, we put them back into free_buffers_ only if
-  // PaintManager is still alive and the buffer is large enough to fit the
-  // current canvas size. UaFs if PaintManager is destroyed while Skia is
-  // holding the buffers are prevented by invaliding WeakPtrs to the
-  // PaintManager on destruction.
+  // There is a rotating stack of equally-sized buffers which are drawn into
+  // largely in sequence. They are created on demand, given to Skia when they
+  // are drawn into, and kept afterwards for reuse, if possible. When buffers
+  // are passed to Skia, they enter the nether realm and it is not knowable when
+  // they will return. When they are passed back, we put them back into
+  // `free_buffers_` only if PaintManager is still alive and the buffer is large
+  // enough to fit the current canvas size. UaFs if PaintManager is destroyed
+  // while Skia is holding the buffers are prevented by invaliding WeakPtrs to
+  // the PaintManager on destruction.
   //
   // The main buffer which is drawn into by PDFium. This buffer is popped from
   // the stack every reraster, installed in `client_` and `surface_`, and
-  // directly modified. Only used in the PdfBufferedPaintManager experiment.
+  // directly modified.
   std::unique_ptr<BufferData> draw_buffer_;
   // Buffers into which can currently be written. Popped from in DoPaint(), it
-  // is handed off to the compositor in BufferedFlush(), and perhaps (assuming
-  // PaintManager is alive and the buffer is not too small) put back once skia
-  // calls BufferFinishedOnMainThread(). Only used in the
-  // PdfBufferedPaintManager experiment.
+  // is handed off to the compositor in Flush(), and perhaps (assuming
+  // PaintManager is alive and the buffer is not too small) put back once Skia
+  // calls BufferFinishedOnMainThread().
   std::vector<std::unique_ptr<BufferData>> free_buffers_;
 
   // Pointer to the previous frame. Cleared when there is a resize. Used for
-  // scrolling. Only used in the PdfBufferedPaintManager experiment.
+  // scrolling.
   std::optional<sk_sp<SkImage>> previous_frame_;
 
   // Buffer that is currently in use by the engine. Changes on resize, but not
@@ -234,15 +216,8 @@ class PaintManager {
   // See comment for EnsureCallbackPending for more on how these work.
   bool manual_callback_pending_ = false;
   bool flush_pending_ = false;
-  bool flush_requested_ = false;
 
-  // When we get a resize, we don't do so right away (see `SetSize()`). The
-  // `has_pending_resize_` tells us that we need to do a resize for the next
-  // paint operation. When true, the new size is in `pending_size_`.
-  bool has_pending_resize_ = false;
-  gfx::Size pending_size_;
   gfx::Size plugin_size_;
-  float pending_device_scale_ = 1.0f;
   float device_scale_ = 1.0f;
 
   // True iff we're in the middle of a paint.

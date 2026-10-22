@@ -5,10 +5,7 @@
 #ifndef PDF_PAINT_READY_RECT_H_
 #define PDF_PAINT_READY_RECT_H_
 
-#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
-
-class SkImage;
 
 namespace chrome_pdf {
 
@@ -17,8 +14,8 @@ namespace chrome_pdf {
 // ready.
 class PaintReadyRect {
  public:
-  PaintReadyRect(const gfx::Rect& rect, sk_sp<SkImage> image);
-  PaintReadyRect(const gfx::Rect& rect, sk_sp<SkImage> image, bool flush_now);
+  explicit PaintReadyRect(const gfx::Rect& rect);
+  PaintReadyRect(const gfx::Rect& rect, bool flush_now);
   PaintReadyRect(PaintReadyRect&&) noexcept;
   PaintReadyRect& operator=(PaintReadyRect&&) noexcept;
   PaintReadyRect(const PaintReadyRect&);
@@ -28,15 +25,12 @@ class PaintReadyRect {
   const gfx::Rect& rect() const { return rect_; }
   void set_rect(const gfx::Rect& rect) { rect_ = rect; }
 
-  const SkImage* image() const { return image_.get(); }
-
   // Whether to flush to screen immediately; otherwise, when the rest of the
   // plugin viewport is ready.
   bool flush_now() const { return flush_now_; }
 
  private:
   gfx::Rect rect_;
-  sk_sp<SkImage> image_;
   bool flush_now_;
 };
 
