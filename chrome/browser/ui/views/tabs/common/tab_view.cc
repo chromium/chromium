@@ -540,7 +540,7 @@ void TabView::Layout(PassKey) {
   alert_indicator_->UpdateAlertIndicatorAnimation();
   if (orientation_ == TabStripOrientation::kHorizontal) {
     icon_->ResizeDiscardIndicatorRadiusForWidth(
-        width() - 2 * tab_styling()->tab_style()->GetBottomCornerRadius());
+        width() - 2 * tab_styling()->tab_style()->GetBottomExtensionWidth());
   }
 }
 

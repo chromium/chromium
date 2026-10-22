@@ -39,10 +39,10 @@ int TabStyle::GetStandardWidth(const bool is_split) const {
   if (is_split) {
     // Split tabs appear as half width with one bottom extension. They also must
     // include half the tab overlap as the tabs fill the space between them.
-    return kTabWidth / 2 + GetBottomCornerRadius() + GetTabOverlap() / 2;
+    return kTabWidth / 2 + GetBottomExtensionWidth() + GetTabOverlap() / 2;
   } else {
-    // The full width includes two extensions with the bottom corner radius.
-    return kTabWidth + 2 * GetBottomCornerRadius();
+    // The full width includes two extensions widths.
+    return kTabWidth + 2 * GetBottomExtensionWidth();
   }
 }
 
@@ -102,11 +102,15 @@ int TabStyle::GetBottomCornerRadius() const {
   return 12;
 }
 
+int TabStyle::GetBottomExtensionWidth() const {
+  return GetBottomCornerRadius();
+}
+
 int TabStyle::GetTabOverlap() const {
   // The overlap removes the width and the margins of the separator.
   const float total_separator_width =
       GetSeparatorMargins().width() + GetSeparatorSize().width();
-  return 2 * GetBottomCornerRadius() - total_separator_width;
+  return 2 * GetBottomExtensionWidth() - total_separator_width;
 }
 
 gfx::Size TabStyle::GetPreviewImageSize() const {
@@ -328,11 +332,11 @@ gfx::Insets TabStyle::GetContentsInsets() const {
   return gfx::Insets::TLBR(
       GetLayoutConstant(LayoutConstant::kTabVerticalPadding) +
           GetLayoutConstant(LayoutConstant::kTabStripPadding),
-      GetBottomCornerRadius() +
+      GetBottomExtensionWidth() +
           GetLayoutConstant(LayoutConstant::kTabHorizontalPadding),
       GetLayoutConstant(LayoutConstant::kTabVerticalPadding) +
           GetLayoutConstant(LayoutConstant::kTabStripPadding),
-      GetBottomCornerRadius() +
+      GetBottomExtensionWidth() +
           GetLayoutConstant(LayoutConstant::kTabHorizontalPadding));
 }
 

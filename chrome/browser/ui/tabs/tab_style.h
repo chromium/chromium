@@ -150,6 +150,9 @@ class TabStyle {
   // Returns the radius of the outer corners of the tab shape.
   int GetBottomCornerRadius() const;
 
+  // Returns the horizontal extent of the tab's bottom corner flare/extension.
+  int GetBottomExtensionWidth() const;
+
   std::tuple<float, float, float, SkColor> GetContrastRatioValues(
       bool frame_active,
       const ui::ColorProvider* color_provider) const;

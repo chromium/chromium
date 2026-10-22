@@ -463,6 +463,13 @@ bool TabStripView::IsTabScrollButtonsPinned() const {
                : true;
 }
 
+void TabStripView::SetLeadingOverlap(int leading_overlap) {
+  if (leading_overlap != leading_overlap_) {
+    leading_overlap_ = leading_overlap;
+    InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+  }
+}
+
 void TabStripView::SetCollapsedState(bool is_collapsed) {
   if (is_collapsed != is_collapsed_) {
     is_collapsed_ = is_collapsed;

@@ -51,6 +51,9 @@ class TabStripView final : public views::View,
   TabScrollButtonContainer* GetScrollButtonContainer() const;
   bool IsTabScrollButtonsPinned() const;
 
+  int leading_overlap() const { return leading_overlap_; }
+  void SetLeadingOverlap(int leading_overlap);
+
   views::ScrollView* pinned_tabs_scroll_view() const {
     return pinned_tabs_scroll_view_;
   }
@@ -147,6 +150,7 @@ class TabStripView final : public views::View,
   raw_ptr<UnpinnedTabContainerView> unpinned_tabs_container_view_ = nullptr;
   raw_ptr<TabScrollButtonContainer> tab_scroll_button_container_ = nullptr;
   bool is_collapsed_ = false;
+  int leading_overlap_ = 0;
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.
   std::optional<base::TimeTicks> mouse_entered_tabstrip_time_;

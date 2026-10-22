@@ -233,10 +233,10 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
   if (tabs::GetTabSearchPosition(browser()) ==
       tabs::TabSearchPosition::kLeadingHorizontalTabstrip) {
     // The tab search button is calculated as controls padding away from the
-    // first tab (not including bottom corner radius)
+    // first tab (not including bottom extension width)
     int tab_search_button_expected_end =
         tab_strip_region_view()->tab_strip()->x() +
-        TabStyle::Get()->GetBottomCornerRadius() -
+        TabStyle::Get()->GetBottomExtensionWidth() -
         (2 * GetLayoutConstant(LayoutConstant::kTabStripPadding));
 
     EXPECT_EQ(tab_search_button()->bounds().right(),

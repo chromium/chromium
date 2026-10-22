@@ -116,12 +116,20 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
         available_width.value(), /*min_pinned_size=*/0);
   }
 
+  const bool has_unpinned = unpinned_preferred_width > 0;
+  const bool is_pinned_overflowing = pinned_width < pinned_preferred_width;
+  if (is_pinned_overflowing) {
+    const int leading_overlap = tab_strip_view->leading_overlap();
+    if (!override_width.has_value()) {
+      pinned_width = std::max(pinned_width - leading_overlap, 0);
+    }
+    x += leading_overlap;
+  }
+
   gfx::Rect pinned_bounds(x, 0, pinned_width, container_height);
   layouts.child_layouts.emplace_back(pinned_tabs_scroll_view,
                                      pinned_tabs_scroll_view->GetVisible(),
                                      pinned_bounds);
-  const bool has_unpinned = unpinned_preferred_width > 0;
-  const bool is_pinned_overflowing = pinned_width < pinned_preferred_width;
 
   const int min_unpinned_width =
       unpinned_container
@@ -130,10 +138,11 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
           : 0;
   bool is_unpinned_overflowing = false;
   if (has_unpinned && available_width.is_bounded()) {
-    const int available_unpinned_with_overlap = std::max(
-        0,
-        available_width.value() -
-            (pinned_width > 0 ? std::max(0, pinned_width - tab_overlap) : 0));
+    const int available_unpinned_with_overlap =
+        std::max(0, available_width.value() -
+                        (pinned_width > 0
+                             ? std::max(0, pinned_bounds.right() - tab_overlap)
+                             : 0));
     is_unpinned_overflowing =
         available_unpinned_with_overlap < min_unpinned_width;
   }
@@ -147,7 +156,7 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
       is_pinned_overflowing || is_unpinned_overflowing;
   const bool keep_non_overlapping_in_closing_mode =
       override_width.has_value() &&
-      unpinned_tabs_scroll_view->x() >= pinned_width;
+      unpinned_tabs_scroll_view->x() >= pinned_bounds.right();
   const int container_overlap =
       (is_any_container_overflowing || !has_unpinned ||
        keep_non_overlapping_in_closing_mode)
@@ -186,6 +195,12 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
     }
 
     if (has_unpinned && will_overflow_without_scroll_buttons) {
+      if (pinned_preferred_width == 0) {
+        const int leading_overlap = tab_strip_view->leading_overlap();
+        available_unpinned_width =
+            std::max(available_unpinned_width - leading_overlap, 0);
+        x += leading_overlap;
+      }
       overflow_padding = GetLayoutConstant(LayoutConstant::kTabStripPadding);
       available_unpinned_width =
           std::max(available_unpinned_width - overflow_padding, 0);
@@ -232,7 +247,7 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   x += overflow_padding;
 
   int total_host_width =
-      has_unpinned ? std::max(pinned_width, x) : pinned_width;
+      has_unpinned ? std::max(pinned_bounds.right(), x) : pinned_bounds.right();
 
   layouts.host_size = gfx::Size(total_host_width, container_height);
   return layouts;

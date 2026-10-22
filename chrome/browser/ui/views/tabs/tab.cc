@@ -529,7 +529,7 @@ void Tab::Layout(PassKey) {
       MaybeAdjustLeftForPinnedTab(&favicon_bounds, gfx::kFaviconSize);
     }
     icon_->ResizeDiscardIndicatorRadiusForWidth(
-        width() - 2 * tab_style()->GetBottomCornerRadius());
+        width() - 2 * tab_style()->GetBottomExtensionWidth());
 
     // Add space for insets outside the favicon bounds.
     favicon_bounds.Inset(-icon_->GetInsets());

@@ -353,7 +353,7 @@ void HorizontalTabStripRegionViewOld::Layout(PassKey) {
     // The y position is measured from the bottom of the tabstrip, and then
     // padding and button height are removed.
     int x = tab_strip_->bounds().right() -
-            TabStyle::Get()->GetBottomCornerRadius() +
+            TabStyle::Get()->GetBottomExtensionWidth() +
             GetLayoutConstant(LayoutConstant::kTabStripPadding) +
             GetLayoutConstant(LayoutConstant::kNewTabButtonLeadingMargin);
 
@@ -667,7 +667,7 @@ void HorizontalTabStripRegionViewOld::UpdateTabStripMargin() {
 #endif
 
   if (subtract_radius) {
-    tab_strip_left_margin.value() -= TabStyle::Get()->GetBottomCornerRadius();
+    tab_strip_left_margin.value() -= TabStyle::Get()->GetBottomExtensionWidth();
   }
 
   UpdateButtonBorders();
@@ -683,7 +683,7 @@ void HorizontalTabStripRegionViewOld::UpdateTabStripMargin() {
 void HorizontalTabStripRegionViewOld::AdjustViewBoundsRect(View* view,
                                                            int offset) {
   const gfx::Size view_size = view->GetPreferredSize();
-  const int x = tab_strip_->x() + TabStyle::Get()->GetBottomCornerRadius() -
+  const int x = tab_strip_->x() + TabStyle::Get()->GetBottomExtensionWidth() -
                 GetLayoutConstant(LayoutConstant::kTabStripPadding) -
                 view_size.width() - offset;
   const gfx::Rect new_bounds =
@@ -1062,13 +1062,16 @@ void HorizontalTabStripRegionViewNew::UpdateTabStripMargin() {
   }
 #endif
 
+  int leading_overlap = 0;
   if (subtract_radius) {
-    tab_strip_left_margin.value() -= TabStyle::Get()->GetBottomCornerRadius();
+    leading_overlap = TabStyle::Get()->GetBottomExtensionWidth();
+    tab_strip_left_margin.value() -= leading_overlap;
   }
 
   UpdateButtonBorders();
 
   if (tab_strip_view()) {
+    tab_strip_view()->SetLeadingOverlap(leading_overlap);
     if (tab_strip_left_margin.has_value()) {
       tab_strip_view()->SetProperty(
           views::kMarginsKey,
@@ -1087,7 +1090,7 @@ void HorizontalTabStripRegionViewNew::AdjustViewBoundsRect(View* view,
 
   const gfx::Size view_size = view->GetPreferredSize();
   const int x = tab_strip_view()->x() +
-                TabStyle::Get()->GetBottomCornerRadius() -
+                TabStyle::Get()->GetBottomExtensionWidth() -
                 GetLayoutConstant(LayoutConstant::kTabStripPadding) -
                 view_size.width() - offset;
   const gfx::Rect new_bounds =

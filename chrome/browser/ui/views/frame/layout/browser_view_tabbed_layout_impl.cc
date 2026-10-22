@@ -374,7 +374,7 @@ BrowserViewTabbedLayoutImpl::CalculateSidePanelContentAnimation() const {
 // and not a tab.
 int BrowserViewTabbedLayoutImpl::GetHorizontalTabStripLeadingMargin(
     const BrowserLayoutParams& params) const {
-  int leading_margin = TabStyle::Get()->GetBottomCornerRadius();
+  int leading_margin = TabStyle::Get()->GetBottomExtensionWidth();
   if (const gfx::Insets* internal_padding =
           views().horizontal_tab_strip_region_view->GetProperty(
               views::kInternalPaddingKey)) {
