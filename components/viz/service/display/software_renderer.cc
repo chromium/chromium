@@ -782,7 +782,7 @@ void SoftwareRenderer::CopyDrawnRenderPass(
     const auto& blit_request = request->blit_request();
 
     auto representation = resource_provider()->GetSharedImageRepresentation(
-        blit_request.shared_image()->mailbox(), blit_request.sync_token());
+        blit_request.shared_image(), blit_request.sync_token());
 
     if (!representation) {
       DLOG(ERROR) << "BlitRequest: Couldn't create shared image representation";
@@ -873,7 +873,7 @@ bool SoftwareRenderer::ReadPixelsIntoBlitDestination(
   }
 
   auto representation = resource_provider()->GetSharedImageRepresentation(
-      blit_request.shared_image()->mailbox(), blit_request.sync_token());
+      blit_request.shared_image(), blit_request.sync_token());
   if (!representation) {
     return false;
   }

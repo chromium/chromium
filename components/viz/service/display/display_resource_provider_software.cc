@@ -29,7 +29,7 @@ DisplayResourceProviderSoftware::~DisplayResourceProviderSoftware() {
 
 std::unique_ptr<gpu::MemoryImageRepresentation>
 DisplayResourceProviderSoftware::GetSharedImageRepresentation(
-    const gpu::Mailbox& mailbox,
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     const gpu::SyncToken& sync_token) {
   if (!blocking_sequence_runner_) {
     // There are cases where a nullptr `gpu_scheduler_` is used. In such cases,
@@ -38,10 +38,13 @@ DisplayResourceProviderSoftware::GetSharedImageRepresentation(
     blocking_sequence_runner_ =
         std::make_unique<gpu::BlockingSequenceRunner>(gpu_scheduler_);
   }
-  blocking_sequence_runner_->AddTask(base::OnceClosure(base::DoNothing()),
-                                     {sync_token}, gpu::SyncToken());
+  blocking_sequence_runner_->AddTask(
+      base::OnceClosure(base::DoNothing()),
+      shared_image->GetSyncTokensForDisplayCompositor(sync_token),
+      gpu::SyncToken());
   blocking_sequence_runner_->RunAllTasks();
-  return shared_image_manager_->ProduceMemory(mailbox, memory_tracker_.get());
+  return shared_image_manager_->ProduceMemory(shared_image->mailbox(),
+                                              memory_tracker_.get());
 }
 
 const DisplayResourceProvider::ChildResource*
@@ -54,10 +57,10 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
   DCHECK(shared_image_manager_);
   auto it = resource_shared_images_.find(id);
   if (it == resource_shared_images_.end()) {
-    const gpu::Mailbox& mailbox = resource->transferable.mailbox();
     auto access = std::make_unique<SharedImageAccess>();
-    access->representation = GetSharedImageRepresentation(
-        mailbox, resource->transferable.sync_token());
+    access->representation =
+        GetSharedImageRepresentation(resource->transferable.shared_image(),
+                                     resource->transferable.sync_token());
     if (!access->representation) {
       return nullptr;
     }

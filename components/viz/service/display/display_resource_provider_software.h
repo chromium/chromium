@@ -55,9 +55,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
   };
 
   // Waits on the SyncToken and returns MemoryImageRepresentation of the
-  // SharedImage pointed by mailbox.
+  // SharedImage pointed by `shared_image`.
   std::unique_ptr<gpu::MemoryImageRepresentation> GetSharedImageRepresentation(
-      const gpu::Mailbox& mailbox,
+      const scoped_refptr<gpu::ClientSharedImage>& shared_image,
       const gpu::SyncToken& sync_token);
 
  private:
