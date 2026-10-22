@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_
 
+#include <unicode/uscript.h>
+
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -12,9 +14,12 @@
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
 #include "third_party/blink/renderer/platform/graphics/lcd_text_preference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
@@ -56,6 +61,15 @@ class CORE_EXPORT DevToolsEmulator final
   void SetViewportMetaEnabled(bool);
   void SetTextSizeAdjustEnabled(bool);
   void SetForceDarkModeEnabled(bool);
+  void SetStandardFontFamily(const AtomicString&, UScriptCode);
+  void SetFixedFontFamily(const AtomicString&, UScriptCode);
+  void SetSerifFontFamily(const AtomicString&, UScriptCode);
+  void SetSansSerifFontFamily(const AtomicString&, UScriptCode);
+  void SetCursiveFontFamily(const AtomicString&, UScriptCode);
+  void SetFantasyFontFamily(const AtomicString&, UScriptCode);
+  void SetMathFontFamily(const AtomicString&, UScriptCode);
+  void SetDefaultFontSize(int);
+  void SetDefaultFixedFontSize(int);
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
   // transform to be used as a result.
@@ -72,6 +86,19 @@ class CORE_EXPORT DevToolsEmulator final
   void SetDocumentCookieDisabled(bool);
   void SetAutoDarkModeOverride(bool);
   void ResetAutoDarkModeOverride();
+
+  // Note: caller must also call Settings::NotifyGenericFontFamilyChange()
+  // after applying all overrides.
+  void SetStandardFontFamilyOverride(const AtomicString&, UScriptCode);
+  void SetFixedFontFamilyOverride(const AtomicString&, UScriptCode);
+  void SetSerifFontFamilyOverride(const AtomicString&, UScriptCode);
+  void SetSansSerifFontFamilyOverride(const AtomicString&, UScriptCode);
+  void SetCursiveFontFamilyOverride(const AtomicString&, UScriptCode);
+  void SetFantasyFontFamilyOverride(const AtomicString&, UScriptCode);
+  void SetMathFontFamilyOverride(const AtomicString&, UScriptCode);
+  void SetDefaultFontSizeOverride(int);
+  void SetDefaultFixedFontSizeOverride(int);
+  void ResetFontOverrides();
 
   void SetAccessibilityFontScaleFactor(double scale);
   void SetEmulatedAccessibilityFontScaleFactor(double scale);
@@ -188,6 +215,19 @@ class CORE_EXPORT DevToolsEmulator final
 
   double embedder_accessibility_font_scale_;
   bool accessibility_font_scale_emulation_enabled_;
+
+  std::optional<GenericFontFamilySettings> embedder_font_families_;
+  Vector<UScriptCode> standard_font_family_override_scripts_;
+  Vector<UScriptCode> fixed_font_family_override_scripts_;
+  Vector<UScriptCode> serif_font_family_override_scripts_;
+  Vector<UScriptCode> sans_serif_font_family_override_scripts_;
+  Vector<UScriptCode> cursive_font_family_override_scripts_;
+  Vector<UScriptCode> fantasy_font_family_override_scripts_;
+  Vector<UScriptCode> math_font_family_override_scripts_;
+  int embedder_default_font_size_ = 0;
+  int embedder_default_fixed_font_size_ = 0;
+  std::optional<int> default_font_size_override_;
+  std::optional<int> default_fixed_font_size_override_;
 };
 
 }  // namespace blink

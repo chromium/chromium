@@ -1,0 +1,7 @@
+Tests that Page.setFontFamilies and Page.setFontSizes overrides are preserved across Page.captureScreenshot with captureBeyondViewport and reset by Page.disable.
+Initial: monospace resolves to Ahem: false, fixed font size: 13px
+After overrides: monospace resolves to Ahem: true, fixed font size: 30px
+Screenshot captured: true
+After Page.captureScreenshot: monospace resolves to Ahem: true, fixed font size: 30px
+After Page.disable: monospace resolves to Ahem: false, fixed font size: 13px
+

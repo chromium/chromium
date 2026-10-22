@@ -49,7 +49,7 @@
 
 namespace blink {
 
-class GenericFontFamilySettings;
+class DevToolsEmulator;
 
 namespace probe {
 class RecalculateStyle;
@@ -309,8 +309,9 @@ class CORE_EXPORT InspectorPageAgent final
 
   void PageLayoutInvalidated(bool resized);
 
+  DevToolsEmulator* GetDevToolsEmulator();
   protocol::Response setFontFamilies(
-      GenericFontFamilySettings& family_settings,
+      DevToolsEmulator& emulator,
       const protocol::Array<protocol::Page::ScriptFontFamilies>& forScripts);
   std::unique_ptr<protocol::Page::Frame> BuildObjectForFrame(LocalFrame*);
   std::unique_ptr<protocol::Page::FrameTree> BuildObjectForFrameTree(

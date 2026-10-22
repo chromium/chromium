@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -63,11 +64,13 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/test_report_body.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/ad_tagging_utils.h"
+#include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
@@ -530,9 +533,7 @@ void InspectorPageAgent::Restore() {
   if (input_visualization_clicks_enabled_.Get()) {
     setInputVisualization(/*clicks=*/true);
   }
-  LocalFrame* frame = inspected_frames_->Root();
-  auto* settings = frame->GetSettings();
-  if (settings) {
+  if (DevToolsEmulator* emulator = GetDevToolsEmulator()) {
     // Re-apply generic fonts overrides.
     if (!script_font_families_cbor_.Get().empty()) {
       protocol::Array<protocol::Page::ScriptFontFamilies> script_font_families;
@@ -541,16 +542,14 @@ void InspectorPageAgent::Restore() {
           protocol::Array<protocol::Page::ScriptFontFamilies>>::
           Deserialize(&state, &script_font_families);
       CHECK(result);
-      auto& family_settings = settings->GetGenericFontFamilySettings();
-      setFontFamilies(family_settings, script_font_families);
-      settings->NotifyGenericFontFamilyChange();
+      setFontFamilies(*emulator, script_font_families);
     }
     // Re-apply default font size overrides.
     if (standard_font_size_.Get() != 0) {
-      settings->SetDefaultFontSize(standard_font_size_.Get());
+      emulator->SetDefaultFontSizeOverride(standard_font_size_.Get());
     }
     if (fixed_font_size_.Get() != 0) {
-      settings->SetDefaultFixedFontSize(fixed_font_size_.Get());
+      emulator->SetDefaultFixedFontSizeOverride(fixed_font_size_.Get());
     }
   }
 }
@@ -567,6 +566,12 @@ protocol::Response InspectorPageAgent::enable(
 protocol::Response InspectorPageAgent::disable() {
   if (input_visualization_clicks_enabled_.Get()) {
     setInputVisualization(/*clicks=*/false);
+  }
+  if (!script_font_families_cbor_.Get().empty() ||
+      standard_font_size_.Get() != 0 || fixed_font_size_.Get() != 0) {
+    if (DevToolsEmulator* emulator = GetDevToolsEmulator()) {
+      emulator->ResetFontOverrides();
+    }
   }
   agent_state_.ClearAllFields();
   pending_isolated_worlds_.clear();
@@ -1772,7 +1777,7 @@ void InspectorPageAgent::CreateIsolatedWorldImpl(
 }
 
 protocol::Response InspectorPageAgent::setFontFamilies(
-    GenericFontFamilySettings& family_settings,
+    DevToolsEmulator& emulator,
     const protocol::Array<protocol::Page::ScriptFontFamilies>&
         script_font_families) {
   for (const auto& entry : script_font_families) {
@@ -1783,44 +1788,55 @@ protocol::Response InspectorPageAgent::setFontFamilies(
     }
     auto* font_families = entry->getFontFamilies();
     if (font_families->hasStandard()) {
-      family_settings.UpdateStandard(
+      emulator.SetStandardFontFamilyOverride(
           AtomicString(font_families->getStandard(String())), script);
     }
     if (font_families->hasFixed()) {
-      family_settings.UpdateFixed(
+      emulator.SetFixedFontFamilyOverride(
           AtomicString(font_families->getFixed(String())), script);
     }
     if (font_families->hasSerif()) {
-      family_settings.UpdateSerif(
+      emulator.SetSerifFontFamilyOverride(
           AtomicString(font_families->getSerif(String())), script);
     }
     if (font_families->hasSansSerif()) {
-      family_settings.UpdateSansSerif(
+      emulator.SetSansSerifFontFamilyOverride(
           AtomicString(font_families->getSansSerif(String())), script);
     }
     if (font_families->hasCursive()) {
-      family_settings.UpdateCursive(
+      emulator.SetCursiveFontFamilyOverride(
           AtomicString(font_families->getCursive(String())), script);
     }
     if (font_families->hasFantasy()) {
-      family_settings.UpdateFantasy(
+      emulator.SetFantasyFontFamilyOverride(
           AtomicString(font_families->getFantasy(String())), script);
     }
     if (font_families->hasMath()) {
-      family_settings.UpdateMath(AtomicString(font_families->getMath(String())),
-                                 script);
+      emulator.SetMathFontFamilyOverride(
+          AtomicString(font_families->getMath(String())), script);
     }
   }
+  if (Settings* settings = inspected_frames_->Root()->GetSettings()) {
+    settings->NotifyGenericFontFamilyChange();
+  }
   return protocol::Response::Success();
+}
+
+DevToolsEmulator* InspectorPageAgent::GetDevToolsEmulator() {
+  WebLocalFrameImpl* web_frame =
+      WebLocalFrameImpl::FromFrame(inspected_frames_->Root());
+  if (!web_frame || !web_frame->ViewImpl()) {
+    return nullptr;
+  }
+  return web_frame->ViewImpl()->GetDevToolsEmulator();
 }
 
 protocol::Response InspectorPageAgent::setFontFamilies(
     std::unique_ptr<protocol::Page::FontFamilies> font_families,
     std::unique_ptr<protocol::Array<protocol::Page::ScriptFontFamilies>>
         for_scripts) {
-  LocalFrame* frame = inspected_frames_->Root();
-  auto* settings = frame->GetSettings();
-  if (!settings) {
+  DevToolsEmulator* emulator = GetDevToolsEmulator();
+  if (!emulator) {
     return protocol::Response::ServerError("No settings");
   }
 
@@ -1839,8 +1855,7 @@ protocol::Response InspectorPageAgent::setFontFamilies(
                              .setFontFamilies(std::move(font_families))
                              .build());
 
-  auto response =
-      setFontFamilies(settings->GetGenericFontFamilySettings(), script_fonts);
+  auto response = setFontFamilies(*emulator, script_fonts);
   if (response.IsError()) {
     return response;
   }
@@ -1849,22 +1864,19 @@ protocol::Response InspectorPageAgent::setFontFamilies(
       protocol::Page::ScriptFontFamilies>>::Serialize(script_fonts,
                                                       &serialized);
   script_font_families_cbor_.Set(serialized);
-  settings->NotifyGenericFontFamilyChange();
   return protocol::Response::Success();
 }
 
 protocol::Response InspectorPageAgent::setFontSizes(
     std::unique_ptr<protocol::Page::FontSizes> font_sizes) {
-  LocalFrame* frame = inspected_frames_->Root();
-  auto* settings = frame->GetSettings();
-  if (settings) {
+  if (DevToolsEmulator* emulator = GetDevToolsEmulator()) {
     if (font_sizes->hasStandard()) {
       standard_font_size_.Set(font_sizes->getStandard(0));
-      settings->SetDefaultFontSize(standard_font_size_.Get());
+      emulator->SetDefaultFontSizeOverride(standard_font_size_.Get());
     }
     if (font_sizes->hasFixed()) {
       fixed_font_size_.Set(font_sizes->getFixed(0));
-      settings->SetDefaultFixedFontSize(fixed_font_size_.Get());
+      emulator->SetDefaultFixedFontSizeOverride(fixed_font_size_.Get());
     }
   }
 

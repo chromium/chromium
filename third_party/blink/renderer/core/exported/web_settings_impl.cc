@@ -60,14 +60,12 @@ void WebSettingsImpl::SetFromStrings(const WebString& name,
 
 void WebSettingsImpl::SetStandardFontFamily(const WebString& font,
                                             UScriptCode script) {
-  if (settings_->GetGenericFontFamilySettings().UpdateStandard(font, script))
-    settings_->NotifyGenericFontFamilyChange();
+  dev_tools_emulator_->SetStandardFontFamily(font, script);
 }
 
 void WebSettingsImpl::SetFixedFontFamily(const WebString& font,
                                          UScriptCode script) {
-  if (settings_->GetGenericFontFamilySettings().UpdateFixed(font, script))
-    settings_->NotifyGenericFontFamilyChange();
+  dev_tools_emulator_->SetFixedFontFamily(font, script);
 }
 
 void WebSettingsImpl::SetNetworkQuietTimeout(double timeout) {
@@ -88,40 +86,35 @@ void WebSettingsImpl::SetFullscreenSupported(bool enabled) {
 
 void WebSettingsImpl::SetSerifFontFamily(const WebString& font,
                                          UScriptCode script) {
-  if (settings_->GetGenericFontFamilySettings().UpdateSerif(font, script))
-    settings_->NotifyGenericFontFamilyChange();
+  dev_tools_emulator_->SetSerifFontFamily(font, script);
 }
 
 void WebSettingsImpl::SetSansSerifFontFamily(const WebString& font,
                                              UScriptCode script) {
-  if (settings_->GetGenericFontFamilySettings().UpdateSansSerif(font, script))
-    settings_->NotifyGenericFontFamilyChange();
+  dev_tools_emulator_->SetSansSerifFontFamily(font, script);
 }
 
 void WebSettingsImpl::SetCursiveFontFamily(const WebString& font,
                                            UScriptCode script) {
-  if (settings_->GetGenericFontFamilySettings().UpdateCursive(font, script))
-    settings_->NotifyGenericFontFamilyChange();
+  dev_tools_emulator_->SetCursiveFontFamily(font, script);
 }
 
 void WebSettingsImpl::SetFantasyFontFamily(const WebString& font,
                                            UScriptCode script) {
-  if (settings_->GetGenericFontFamilySettings().UpdateFantasy(font, script))
-    settings_->NotifyGenericFontFamilyChange();
+  dev_tools_emulator_->SetFantasyFontFamily(font, script);
 }
 
 void WebSettingsImpl::SetMathFontFamily(const WebString& font,
                                         UScriptCode script) {
-  if (settings_->GetGenericFontFamilySettings().UpdateMath(font, script))
-    settings_->NotifyGenericFontFamilyChange();
+  dev_tools_emulator_->SetMathFontFamily(font, script);
 }
 
 void WebSettingsImpl::SetDefaultFontSize(int size) {
-  settings_->SetDefaultFontSize(size);
+  dev_tools_emulator_->SetDefaultFontSize(size);
 }
 
 void WebSettingsImpl::SetDefaultFixedFontSize(int size) {
-  settings_->SetDefaultFixedFontSize(size);
+  dev_tools_emulator_->SetDefaultFixedFontSize(size);
 }
 
 void WebSettingsImpl::SetDefaultVideoPosterURL(const WebString& url) {
