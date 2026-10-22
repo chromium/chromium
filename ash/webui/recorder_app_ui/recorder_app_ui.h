@@ -63,12 +63,16 @@ class RecorderAppUI
 
   // `local_state` must be non-null and must outlive `this`.
   // `media_device_salt_service` provides the persistent salts used to
-  // translate media device IDs. It must outlive `this`.
+  // translate media device IDs. It is null when the browser context has no
+  // such service -- notably in a guest session, where the context is
+  // off-the-record and MediaDeviceSaltServiceFactory is kOriginalOnly -- in
+  // which case the browser context's unique ID is used as the salt instead.
+  // If non-null, it must outlive `this`.
   RecorderAppUI(
       PrefService* local_state,
       content::WebUI* web_ui,
       std::unique_ptr<RecorderAppUIDelegate> delegate,
-      media_device_salt::MediaDeviceSaltService& media_device_salt_service);
+      media_device_salt::MediaDeviceSaltService* media_device_salt_service);
   ~RecorderAppUI() override;
 
   RecorderAppUI(const RecorderAppUI&) = delete;

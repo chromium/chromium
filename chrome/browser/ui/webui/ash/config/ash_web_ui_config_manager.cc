@@ -295,9 +295,9 @@ std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig(
             application_locale_storage, g_browser_process->variations_service(),
             user_manager::UserManager::Get(), account_id, identity_manager,
             consent_auditor);
-        return std::make_unique<RecorderAppUI>(
-            local_state, web_ui, std::move(delegate),
-            CHECK_DEREF(media_device_salt_service));
+        return std::make_unique<RecorderAppUI>(local_state, web_ui,
+                                               std::move(delegate),
+                                               media_device_salt_service);
       },
       base::Unretained(local_state),
       base::Unretained(application_locale_storage));

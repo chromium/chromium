@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <functional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -116,14 +116,29 @@ void GotSalt(
       FROM_HERE, std::move(callback_on_io_thread));
 }
 
+// Where the salt for translating media device IDs comes from: either the
+// browser context's salt service, or, when the context has none, the ephemeral
+// salt the renderer-visible IDs were produced with. See the comment on the
+// RecorderAppUI constructor parameter.
+using SaltSource =
+    std::variant<media_device_salt::MediaDeviceSaltService*, std::string>;
+
 void TranslateAudioDeviceId(
-    media_device_salt::MediaDeviceSaltService& salt_service,
+    const SaltSource& salt_source,
     const url::Origin& origin,
     const std::string& source_id,
     base::OnceCallback<void(const std::optional<std::string>&)> callback) {
-  salt_service.GetSalt(
-      blink::StorageKey::CreateFirstParty(origin),
-      base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
+  if (const auto* salt_service =
+          std::get_if<media_device_salt::MediaDeviceSaltService*>(
+              &salt_source)) {
+    (*salt_service)
+        ->GetSalt(
+            blink::StorageKey::CreateFirstParty(origin),
+            base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
+  } else {
+    GotSalt(origin, source_id, std::move(callback),
+            std::get<std::string>(salt_source));
+  }
 }
 
 int GetResourceIdFromStringName(const std::string& name) {
@@ -216,7 +231,7 @@ RecorderAppUI::RecorderAppUI(
     PrefService* local_state,
     content::WebUI* web_ui,
     std::unique_ptr<RecorderAppUIDelegate> delegate,
-    media_device_salt::MediaDeviceSaltService& media_device_salt_service)
+    media_device_salt::MediaDeviceSaltService* media_device_salt_service)
     : ui::MojoWebUIController(web_ui),
       local_state_(CHECK_DEREF(local_state)),
       delegate_(std::move(delegate)) {
@@ -285,9 +300,14 @@ RecorderAppUI::RecorderAppUI(
     }
   }
 
-  // Add salt translator
+  // Add salt translator. Without a salt service the renderer-side IDs are
+  // salted with the browser context's unique ID, so the translation back has
+  // to use the same value; see
+  // ChromeContentBrowserClient::GetMediaDeviceIDSalt().
   device_id_mapping_callback_ = base::BindRepeating(
-      &TranslateAudioDeviceId, std::ref(media_device_salt_service),
+      &TranslateAudioDeviceId,
+      media_device_salt_service ? SaltSource(media_device_salt_service)
+                                : SaltSource(browser_context->UniqueId()),
       url::Origin::Create(GURL(kChromeUIRecorderAppURL)));
 
   auto* message_center = message_center::MessageCenter::Get();
