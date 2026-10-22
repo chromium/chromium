@@ -121,8 +121,8 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
 *   **Nearly all builtin CodeGenerators are disabled.**
     *   Only these builtin generators are kept: `IntegerGenerator`,
         `StringGenerator`, `TernaryOperationGenerator`,
-        `PlainFunctionGenerator`, `AsyncFunctionGenerator`, `AwaitGenerator`,
-        `SubroutineReturnGenerator` and `TryCatchGenerator`.
+        `PlainFunctionGenerator`, `SubroutineReturnGenerator`, and
+        `TryCatchGenerator`.
     *   Fuzzilli would otherwise spend too much time producing random
         JavaScript code instead of fuzzing the Mojo objects provided. It would
         have access to hundreds of objects in `JavaScriptEnvironment`, making
@@ -152,7 +152,11 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
     harmless.
 *   Two generators give Fuzzilli access to the responses of asynchronous
     methods, with all awaited values sharing one scope: `MojoAwaitGenerator`
-    and `MojoAsyncFunctionGenerator`.
+    and `MojoAsyncFunctionGenerator`. The first replaces the builtin
+    `AwaitGenerator`. It allows the profile to set a custom weight for the
+    generator. The `MojoAsyncFunctionGenerator` is used instead of the
+    `AsyncFunctionGenerator`, both for setting a custom weight and for ensuring
+    that the generated function is itself awaited.
 *   All type generators have a weight of 1. These are registered so that
     `findOrGenerateType` can use them.
 *   Most array and map generators generate a container with only one element.
@@ -171,9 +175,6 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
     available to use at the start of the program.
 *   The response from asynchronous methods can only be used in the scope where
     it is awaited.
-*   Since the outer functions emitted by `MojoAsyncFunctionGenerator` are never
-    awaited, the microtasks inside these async functions won't run until the
-    call stack empties, such as when the program finishes executing.
 
 #### Include every common definition
 
@@ -197,6 +198,21 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
         caches the remote in `globalRemote`.
     *   `codeSuffix` closes that remote after every test case.
     *   Fuzzilli never sees or mutates the prefix and suffix.
+
+#### Waiting for async functions
+
+*   `codePrefix` declares a `mojoAsyncFunctionPromises` array.
+    `MojoAsyncFunctionGenerator` pushes the promise of every async function it
+    emits into that array.
+*   `codeSuffix` awaits every promise in the array and only then closes the
+    primary remote. `ExecJs`, used by the in-process fuzzer, awaits the promise
+    returned by the program's last statement, so the program does not finish
+    until the async functions do.
+
+##### Issues:
+
+*   Mutators and program minimization can remove the `push` call emitted by
+    `MojoAsyncFunctionGenerator`.
 
 #### `maxExecsBeforeRespawn: 50`
 
