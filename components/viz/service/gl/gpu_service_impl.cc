@@ -1437,6 +1437,17 @@ void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
                                        GetDawnInfoCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
 
+  // Return the cached results if Dawn info has already been collected for this
+  // mode. Metrics collection does not populate the info list, and the metrics
+  // only need to be reported once per GPU process.
+  if (collect_metrics ? dawn_metrics_collected_ : dawn_info_list_.has_value()) {
+    io_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  collect_metrics ? std::vector<std::string>()
+                                                  : *dawn_info_list_));
+    return;
+  }
+
   std::vector<std::string> dawn_info_list;
   // Pause the watchdog around Dawn info collection since it is known to be
   // slow loading GPU drivers.
@@ -1456,8 +1467,14 @@ void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
     watchdog_thread_->ResumeWatchdog();
   }
 
-  io_runner_->PostTask(FROM_HERE,
-                       base::BindOnce(std::move(callback), dawn_info_list));
+  if (collect_metrics) {
+    dawn_metrics_collected_ = true;
+  } else {
+    dawn_info_list_ = dawn_info_list;
+  }
+
+  io_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                                 std::move(dawn_info_list)));
 }
 
 #if BUILDFLAG(IS_ANDROID)

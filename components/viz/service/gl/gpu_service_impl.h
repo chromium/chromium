@@ -6,7 +6,9 @@
 #define COMPONENTS_VIZ_SERVICE_GL_GPU_SERVICE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/byte_size.h"
 #include "base/clang_profiling_buildflags.h"
@@ -489,6 +491,13 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #if BUILDFLAG(IS_WIN)
   gfx::mojom::DXGIInfoPtr dxgi_info_;
 #endif
+
+  // Dawn info collection is expensive, as it enumerates adapters on every
+  // backend and creates a device on each of them. The results do not change
+  // over the lifetime of the GPU process, so collect them at most once per
+  // mode. Only accessed on the main thread.
+  std::optional<std::vector<std::string>> dawn_info_list_;
+  bool dawn_metrics_collected_ = false;
 
   // What we would have gotten if we haven't fallen back to SwiftShader or
   // pure software (in the viz case).

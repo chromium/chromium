@@ -5,8 +5,10 @@
 #include "components/viz/service/gl/gpu_service_impl.h"
 
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -15,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/viz/common/resources/peak_gpu_memory_tracker_util.h"
 #include "components/viz/service/gl/mock_gpu_service_impl.h"
@@ -201,6 +204,42 @@ TEST_F(GpuServiceTest, PeakGpuMemoryCallback) {
   histogram.ExpectUniqueSample(
       "Memory.GPU.PeakMemoryAllocationSource2.PageLoad.Unknown", kPeakMemoryMB,
       1);
+}
+
+// Dawn info collection is expensive, so GpuServiceImpl should only collect it
+// once per mode and return cached results for subsequent requests.
+TEST_F(GpuServiceTest, DawnInfoCollectedOncePerMode) {
+  mojo::Remote<mojom::GpuService> gpu_service_remote;
+  gpu_service()->Bind(gpu_service_remote.BindNewPipeAndPassReceiver());
+
+  constexpr char kInfoCollectionTime[] = "GPU.Dawn.InfoCollectionTimeMS";
+  base::HistogramTester histogram;
+
+  auto get_dawn_info = [&](bool collect_metrics) {
+    base::test::TestFuture<const std::vector<std::string>&> future;
+    gpu_service_remote->GetDawnInfo(collect_metrics, future.GetCallback());
+    return future.Take();
+  };
+
+  // The first request for the info list collects it.
+  std::vector<std::string> first_info_list =
+      get_dawn_info(/*collect_metrics=*/false);
+  histogram.ExpectTotalCount(kInfoCollectionTime, 1);
+
+  // Subsequent requests return the same list without collecting it again.
+  EXPECT_EQ(first_info_list, get_dawn_info(/*collect_metrics=*/false));
+  histogram.ExpectTotalCount(kInfoCollectionTime, 1);
+
+  // Metrics collection is tracked separately from the info list, and only
+  // happens once. It never populates the info list.
+  EXPECT_TRUE(get_dawn_info(/*collect_metrics=*/true).empty());
+  histogram.ExpectTotalCount(kInfoCollectionTime, 2);
+  EXPECT_TRUE(get_dawn_info(/*collect_metrics=*/true).empty());
+  histogram.ExpectTotalCount(kInfoCollectionTime, 2);
+
+  // Collecting metrics does not affect the cached info list.
+  EXPECT_EQ(first_info_list, get_dawn_info(/*collect_metrics=*/false));
+  histogram.ExpectTotalCount(kInfoCollectionTime, 2);
 }
 
 }  // namespace viz
