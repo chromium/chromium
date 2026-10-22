@@ -17,7 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "third_party/khronos/EGL/egl.h"
+#include "third_party/angle/include/EGL/egl.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gfx/linux/drm_util_linux.h"

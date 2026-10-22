@@ -3,7 +3,7 @@ include_rules = [
   "+gpu/vulkan",
   "+services/service_manager/public/cpp",
   "+skia/ext",
-  "+third_party/khronos",
+  "+third_party/angle/include",
   "+third_party/skia",
   "+ui/base/ime",
   "-ui/base/ime/init",

@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "third_party/khronos/EGL/egl.h"
+#include "third_party/angle/include/EGL/egl.h"
 
 namespace ui {
 

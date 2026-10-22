@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "components/viz/common/resources/shared_image_format.h"
-#include "third_party/khronos/EGL/eglplatform.h"
+#include "third_party/angle/include/EGL/eglplatform.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/public/gl_ozone.h"

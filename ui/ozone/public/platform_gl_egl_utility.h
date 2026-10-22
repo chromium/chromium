@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/scoped_environment_variable_override.h"
-#include "third_party/khronos/EGL/egl.h"
+#include "third_party/angle/include/EGL/egl.h"
 
 namespace ui {
 

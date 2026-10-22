@@ -1,7 +1,7 @@
 include_rules = [
   "+cc/base",
   "+mojo/public/cpp/bindings",
-  "+third_party/khronos",
+  "+third_party/angle/include",
   "+third_party/libsync",
   "+third_party/re2",
   "+third_party/skia",

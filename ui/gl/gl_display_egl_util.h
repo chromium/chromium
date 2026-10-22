@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/scoped_environment_variable_override.h"
-#include "third_party/khronos/EGL/egl.h"
+#include "third_party/angle/include/EGL/egl.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
 
