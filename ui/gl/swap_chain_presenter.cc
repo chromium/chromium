@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -473,18 +474,13 @@ SwapChainPresenter::SwapChainPresenter(
       swap_chain_buffer_count_(BufferCount(
           layer_tree->force_dcomp_triple_buffer_video_swap_chain())),
       switched_to_BGRA8888_time_tick_(base::TimeTicks::Now()),
-      d3d11_device_(d3d11_device),
-      is_on_battery_power_(
-          base::PowerMonitor::GetInstance()
-              ->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
-          base::PowerStateObserver::BatteryPowerStatus::kBatteryPower) {
+      d3d11_device_(d3d11_device) {
   DVLOG(1) << __func__ << "(" << this << ")";
   CHECK_EQ(dcomp_device.As(&dcomp_device_), S_OK);
 }
 
 SwapChainPresenter::~SwapChainPresenter() {
   DVLOG(1) << __func__ << "(" << this << ")";
-  base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
 }
 
 DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
@@ -975,6 +971,8 @@ base::expected<DCLayerOverlayImage, CommitError>
 SwapChainPresenter::PresentToSwapChain(
     DCLayerOverlayParams& overlay,
     std::optional<OverlayPositionAdjustment>& overlay_position_adjustment) {
+  is_on_battery_power_ = base::PowerMonitor::GetInstance()->IsOnBatteryPower();
+
   RETURN_IF_ERROR(SetupPresentToSwapChain(overlay));
 
   if (overlay.video_params.is_full_screen_video) {
@@ -1873,13 +1871,6 @@ base::expected<void, CommitError> SwapChainPresenter::ReallocateSwapChain(
   enable_vp_super_resolution_ = !layer_tree_->disable_vp_super_resolution();
 
   return base::ok();
-}
-
-void SwapChainPresenter::OnBatteryPowerStatusChange(
-    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
-  is_on_battery_power_ =
-      (battery_power_status ==
-       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 }
 
 bool SwapChainPresenter::ShouldUseVideoProcessorScaling() {

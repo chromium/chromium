@@ -16,7 +16,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/win/scoped_handle.h"
@@ -34,7 +33,7 @@ gfx::Size GetMonitorSizeForWindow(HWND window);
 // SwapChainPresenter holds a swap chain, direct composition visuals, and other
 // associated resources for a single overlay layer.  It is updated by calling
 // PresentToSwapChain(), and can update or recreate resources as necessary.
-class SwapChainPresenter : public base::PowerStateObserver {
+class SwapChainPresenter {
  public:
   SwapChainPresenter(DCLayerTree* layer_tree,
                      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
@@ -43,7 +42,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   SwapChainPresenter(const SwapChainPresenter&) = delete;
   SwapChainPresenter& operator=(const SwapChainPresenter&) = delete;
 
-  ~SwapChainPresenter() override;
+  ~SwapChainPresenter();
 
   // Indicates the modification overlay position required to display the swap
   // chain image.
@@ -206,10 +205,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // decode swap chain.
   void RecordPresentationStatistics();
 
-  // base::PowerStateObserver
-  void OnBatteryPowerStatusChange(
-      PowerStateObserver::BatteryPowerStatus battery_power_status) override;
-
   // If connected with a power source, let the Intel video processor to do
   // the upscaling because it produces better results.
   bool ShouldUseVideoProcessorScaling();
@@ -316,7 +311,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   std::optional<uint32_t> pending_swap_buffer_;
 
-  bool is_on_battery_power_;
+  bool is_on_battery_power_ = false;
 
   bool enable_vp_auto_hdr_ = false;
   bool enable_vp_super_resolution_ = false;
