@@ -330,8 +330,11 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::ImportSharedImage(
     ExportedSharedImage exported_shared_image) {
   shared_images_.insert(exported_shared_image.mailbox_);
 
+  // No pool: this interface has no readback implementation to back one, so an
+  // imported image here serves premapped mappings only.
   return base::WrapRefCounted<ClientSharedImage>(
-      new ClientSharedImage(std::move(exported_shared_image), holder_));
+      new ClientSharedImage(std::move(exported_shared_image), holder_,
+                            /*shared_memory_pool=*/nullptr));
 }
 
 void TestSharedImageInterface::DestroySharedImage(

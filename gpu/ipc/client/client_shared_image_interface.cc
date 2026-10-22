@@ -316,8 +316,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
   AddMailbox(mailbox);
   proxy_->AddReferenceToSharedImage(sync_token, mailbox);
 
-  return base::WrapRefCounted<ClientSharedImage>(
-      new ClientSharedImage(std::move(exported_shared_image), holder_));
+  return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
+      std::move(exported_shared_image), holder_, shared_memory_pool_));
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::NotifyMailboxAdded(

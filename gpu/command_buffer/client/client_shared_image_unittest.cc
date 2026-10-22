@@ -23,6 +23,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/gpu_fence.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/win/scoped_handle.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
+#endif
+
 namespace gpu {
 
 namespace {
@@ -335,6 +343,49 @@ TEST(ClientSharedImageTest, ExportAndImport) {
   EXPECT_EQ(imported_client_si->GetTextureTarget(),
             static_cast<uint32_t>(GL_TEXTURE_2D));
 }
+
+#if BUILDFLAG(IS_WIN)
+// An imported DXGI image without a shared memory pool, as
+// TestSharedImageInterface and ImportUnowned() produce, cannot read pixels
+// back from the GPU. It must still serve premapped mappings, and fail any
+// other mapping without crashing.
+TEST(ClientSharedImageTest, ImportedDXGIImageWithoutPoolMapsOnlyPremapped) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  constexpr uint8_t kMarker = 0x5a;
+
+  // Attach a premapped region to a stand-in DXGI handle, as video capture does.
+  auto region = base::UnsafeSharedMemoryRegion::Create(kSize.GetArea() * 3 / 2);
+  ASSERT_TRUE(region.IsValid());
+  auto region_mapping = region.Map();
+  for (auto& byte : region_mapping.GetMemoryAsSpan<uint8_t>()) {
+    byte = kMarker;
+  }
+  gfx::DXGIHandle dxgi_handle(base::win::ScopedHandle(::CreateEvent(
+      nullptr, /*bManualReset=*/TRUE, /*bInitialState=*/FALSE, nullptr)));
+  ASSERT_TRUE(dxgi_handle.IsValid());
+  dxgi_handle = dxgi_handle.CloneWithRegion(std::move(region));
+
+  auto client_si = sii->CreateSharedImage(
+      CreateSharedImageInfo(viz::MultiPlaneFormat::kNV12,
+                            SHARED_IMAGE_USAGE_DISPLAY_READ),
+      kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+      gfx::GpuMemoryBufferHandle(std::move(dxgi_handle)));
+  ASSERT_TRUE(client_si);
+  auto imported_si =
+      sii->ImportSharedImage(client_si->Export(/*with_buffer_handle=*/true));
+  ASSERT_EQ(imported_si->GetGpuMemoryBufferType(), gfx::DXGI_SHARED_HANDLE);
+
+  // Not premapped: this needs a readback, which needs a pool.
+  imported_si->SetUsePreMappedMemory(false);
+  EXPECT_FALSE(imported_si->Map());
+
+  // Premapped: served from the region that came with the handle.
+  imported_si->SetUsePreMappedMemory(true);
+  auto scoped_mapping = imported_si->Map();
+  ASSERT_TRUE(scoped_mapping);
+  EXPECT_EQ(scoped_mapping->GetMemoryForPlane(0)[0], kMarker);
+}
+#endif
 
 TEST(ClientSharedImageTest, MakeUnowned) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();

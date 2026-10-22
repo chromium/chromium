@@ -160,8 +160,14 @@ std::optional<base::OnceClosure> MappableBufferDXGI::DoMapAsync(
     return base::BindOnce(std::move(result_cb), true);
   }
 
-  CHECK(copy_native_buffer_to_shmem_callback_);
-  CHECK(shared_memory_pool_);
+  // Without a readback callback or a shared memory pool (e.g. for a shared
+  // image imported through ClientSharedImage::ImportUnowned()), only premapped
+  // mappings can be served, so fail the mapping instead of crashing.
+  if (!copy_native_buffer_to_shmem_callback_ || !shared_memory_pool_) {
+    DLOG(ERROR) << "MappableBufferDXGI: cannot map, no readback callback or "
+                   "shared memory pool.";
+    return base::BindOnce(std::move(result_cb), false);
+  }
 
   size_t buffer_size =
       viz::SharedMemorySizeForSharedImageFormat(format_, size_).value();
