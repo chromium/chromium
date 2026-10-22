@@ -124,7 +124,7 @@ class BASE_EXPORT ConditionVariable {
   raw_ptr<pthread_mutex_t> user_mutex_;
 #endif
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   const raw_ptr<base::Lock>
       user_lock_;  // Needed to adjust shadow lock state on wait.
 #endif

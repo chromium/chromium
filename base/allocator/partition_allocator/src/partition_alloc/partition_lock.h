@@ -24,7 +24,7 @@ class PA_LOCKABLE Lock {
  public:
   inline constexpr Lock();
   void Acquire() PA_EXCLUSIVE_LOCK_FUNCTION() {
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     LiftThreadIsolationScope lift_thread_isolation_restrictions;
@@ -62,19 +62,19 @@ class PA_LOCKABLE Lock {
     owning_thread_ref_.store(current_thread, std::memory_order_release);
 #else
     lock_.Acquire();
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
   }
 
   void Release() PA_UNLOCK_FUNCTION() {
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
     owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
     lock_.Release();
   }
@@ -87,7 +87,7 @@ class PA_LOCKABLE Lock {
       return false;
     }
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     LiftThreadIsolationScope lift_thread_isolation_restrictions;
@@ -102,24 +102,24 @@ class PA_LOCKABLE Lock {
 
   void AssertAcquired() const PA_ASSERT_EXCLUSIVE_LOCK() {
     lock_.AssertAcquired();
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
     PA_DCHECK(owning_thread_ref_.load(std ::memory_order_acquire) ==
               base::PlatformThread::CurrentRef());
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
   }
 
   void Reinit() PA_UNLOCK_FUNCTION() {
     lock_.AssertAcquired();
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
     owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
     lock_.Reinit();
   }
@@ -136,13 +136,13 @@ class PA_LOCKABLE Lock {
 
   SpinningMutex lock_;
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
   // Should in theory be protected by |lock_|, but we need to read it to detect
   // recursive lock acquisition (and thus, the allocator becoming reentrant).
   std::atomic<base::PlatformThreadRef> owning_thread_ref_ =
       base::PlatformThreadRef();
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 };
 

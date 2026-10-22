@@ -30,7 +30,7 @@ namespace base {
 
 ConditionVariable::ConditionVariable(Lock* user_lock)
     : user_mutex_(user_lock->lock_.native_handle())
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
       ,
       user_lock_(user_lock)
 #endif
@@ -66,12 +66,12 @@ void ConditionVariable::Wait(const Location& location) {
     scoped_blocking_call.emplace(location, BlockingType::MAY_BLOCK);
   }
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   user_lock_->CheckHeldAndUnmark();
 #endif
   int rv = pthread_cond_wait(&condition_, user_mutex_);
   DCHECK_EQ(0, rv);
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   user_lock_->CheckUnheldAndMark();
 #endif
 }
@@ -91,7 +91,7 @@ void ConditionVariable::TimedWait(TimeDelta max_time,
   relative_time.tv_nsec =
       (usecs % Time::kMicrosecondsPerSecond) * Time::kNanosecondsPerMicrosecond;
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   user_lock_->CheckHeldAndUnmark();
 #endif
 
@@ -123,7 +123,7 @@ void ConditionVariable::TimedWait(TimeDelta max_time,
   // On failure, we only expect the CV to timeout. Any other error value means
   // that we've unexpectedly woken up.
   DCHECK(rv == 0 || rv == ETIMEDOUT);
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   user_lock_->CheckUnheldAndMark();
 #endif
 }

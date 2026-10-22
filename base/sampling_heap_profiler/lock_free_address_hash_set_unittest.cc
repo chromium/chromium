@@ -236,11 +236,13 @@ TEST_F(LockFreeAddressHashSetDeathTest, LockAsserts) {
     EXPECT_EQ(set.size(), 0u);
     EXPECT_EQ(set.load_factor(), 0.0);
   }
+#if EXPENSIVE_DCHECKS_ARE_ON()
   EXPECT_DCHECK_DEATH(set.Insert(&lock));
   EXPECT_DCHECK_DEATH(set.Remove(&lock));
   EXPECT_DCHECK_DEATH(set.Copy(set2));
   EXPECT_DCHECK_DEATH(set.size());
   EXPECT_DCHECK_DEATH(set.load_factor());
+#endif
 }
 
 }  // namespace base

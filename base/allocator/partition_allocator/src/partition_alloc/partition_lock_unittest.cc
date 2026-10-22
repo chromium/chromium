@@ -177,8 +177,8 @@ TEST(PartitionAllocLockTest, AssertAcquired) {
   lock.Release();
 }
 
-#if defined(GTEST_HAS_DEATH_TEST) && \
-    (PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+#if defined(GTEST_HAS_DEATH_TEST) &&           \
+    (PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) || \
      PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK))
 
 // Need to bypass `-Wthread-safety-analysis` for this test.
@@ -197,12 +197,13 @@ TEST(PartitionAllocLockTest, ReentrancyDeathTest) {
 #pragma clang diagnostic pop
 #endif
 
-#endif  // defined(GTEST_HAS_DEATH_TEST) && (PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+#endif  // defined(GTEST_HAS_DEATH_TEST) &&
+        // (PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK))
 
 // AssertAcquired() is only enforced with DCHECK()s.
 // DCHECKs don't work with EXPECT_DEATH on official builds.
-#if defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(DCHECKS_ARE_ON) && \
+#if defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) && \
     (!PA_BUILDFLAG(OFFICIAL) || PA_BUILDFLAG(IS_DEBUG))
 
 TEST(PartitionAllocLockTest, AssertAcquiredDeathTest) {
@@ -238,7 +239,7 @@ TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
   base::PlatformThreadForTesting::Join(handle);
 
   // DCHECKs don't work with EXPECT_DEATH on official builds.
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) && \
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) && \
     (!PA_BUILDFLAG(OFFICIAL) || PA_BUILDFLAG(IS_DEBUG))
   EXPECT_DEATH(lock.AssertAcquired(), "");
 #endif
@@ -278,7 +279,8 @@ TEST(PartitionAllocLockTest, ReinitInOtherThread) PA_NO_THREAD_SAFETY_ANALYSIS {
 }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
-#endif  // defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif  // defined(GTEST_HAS_DEATH_TEST) &&
+        // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 
 // Priority Inheritance Tests --------------------------------------------------
 

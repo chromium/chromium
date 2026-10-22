@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/mutex.h"
 
 #include "base/containers/flat_set.h"
+#include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -85,8 +86,10 @@ TEST_F(MutexTest,
   EXPECT_TRUE(HasSuccessfullyLockedWithAttemptId(attempt_id));
 }
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
 TEST_F(MutexTest, CannotUnlockBeforeAnyLocks) {
   EXPECT_DCHECK_DEATH(mutex().Unlock());
 }
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
 }  // namespace nearby::chrome

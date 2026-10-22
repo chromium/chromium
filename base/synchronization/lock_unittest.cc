@@ -266,7 +266,9 @@ TEST(LockTest, AutoLockMaybe) {
     AutoLockMaybe auto_lock(&lock);
     lock.AssertAcquired();
   }
+#if EXPENSIVE_DCHECKS_ARE_ON()
   EXPECT_DCHECK_DEATH(lock.AssertAcquired());
+#endif
 }
 
 TEST(LockTest, AutoLockMaybeNull) {
@@ -278,7 +280,9 @@ TEST(LockTest, ReleasableAutoLockExplicitRelease) {
   ReleasableAutoLock auto_lock(&lock);
   lock.AssertAcquired();
   auto_lock.Release();
+#if EXPENSIVE_DCHECKS_ARE_ON()
   EXPECT_DCHECK_DEATH(lock.AssertAcquired());
+#endif
 }
 
 TEST(LockTest, ReleasableAutoLockImplicitRelease) {
@@ -287,7 +291,9 @@ TEST(LockTest, ReleasableAutoLockImplicitRelease) {
     ReleasableAutoLock auto_lock(&lock);
     lock.AssertAcquired();
   }
+#if EXPENSIVE_DCHECKS_ARE_ON()
   EXPECT_DCHECK_DEATH(lock.AssertAcquired());
+#endif
 }
 
 class TryLockTest : public testing::Test {

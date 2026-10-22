@@ -19,8 +19,11 @@
 
 #include "base/check_op.h"
 #include "base/synchronization/lock_subtle.h"
-#include "base/threading/platform_thread.h"
 #endif  // DCHECK_IS_ON()
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+#include "base/threading/platform_thread.h"
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
 namespace base {
 namespace {
@@ -70,7 +73,7 @@ const LockMetricTagList& Lock::GetBaseLockMetricTagList() {
   return g_base_lock_tag_list;
 }
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
 Lock::~Lock() {
   DCHECK(owning_thread_ref_.is_null());
 }
@@ -124,7 +127,9 @@ void Lock::CheckUnheldAndMark() {
   DCHECK(owning_thread_ref_.is_null());
   owning_thread_ref_ = PlatformThread::CurrentRef();
 }
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
+#if DCHECK_IS_ON()
 void Lock::AddToLocksHeldOnCurrentThread() {
   CHECK(!in_tracked_locks_held_by_current_thread_);
 
