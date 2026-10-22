@@ -1,4 +1,19 @@
-This directory holds code related to Chrome for iOS. See [this document] for a
-description of the structure underneath this directory.
+# Chrome on iOS (`//ios/`)
 
-[this document]: https://www.chromium.org/developers/design-documents/structure-of-layered-components-within-the-chromium-codebase/
+This directory holds code related to Chrome on iOS (`//ios/chrome/`), the iOS
+web layer (`//ios/web/`), and shared iOS components (`//ios/components/`).
+
+## Documentation
+
+- **[Chrome on iOS Architecture](architecture/README.md):** The architectural
+  principles and design patterns used in Chrome on iOS, and how features are
+  structured.
+- **[Chrome on iOS Best Practices](best_practices.md):** Tactical coding
+  guidelines, language conventions and engineering rules for `//ios/`. All new
+  code is expected to follow this guidance.
+- **[Structure of Layered Components](https://www.chromium.org/developers/design-documents/structure-of-layered-components-within-the-chromium-codebase/):**
+  Overview of how layered components are structured in the Chromium codebase.
+- **Additional iOS documentation in [`//docs/ios/`](/docs/ios/):** Other iOS
+  build, testing, and workflow documents live in `//docs/ios/`, though some are
+  outdated and in the process of being revised. Where there are contradictions,
+  the documentation here in `//ios/` takes precedence.
