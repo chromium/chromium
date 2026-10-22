@@ -2295,25 +2295,25 @@
     <message name="IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL_EXPLANATION" desc="Label for explaining the format of the URL that should be entered by the user in the add/edit search engine dialog.">
       URL with <ph name="SPECIAL_SYMBOL">%s</ph> in place of query
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_TITLE" desc="Placeholder" translateable="false">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_TITLE" desc="Title of the dialog, opened from the Search engine settings page, that lets the user pick their default search engine from a list of search engines that are popular in their region.">
       Default search engine
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE" desc="Placeholder" translateable="false">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE" desc="Subtitle of the default search engine picker dialog, shown below the dialog title, for users in countries where the list of search engines is displayed in random order (EEA). Explains that the listed search engines are popular in the user's region and are shown in random order.">
       Popular in your region (in random order)
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_NON_EEA" desc="Placeholder" translateable="false">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_NON_EEA" desc="Subtitle of the default search engine picker dialog, shown below the dialog title, for users in countries where the list of search engines is not shown in random order (outside the EEA). Explains that the listed search engines are popular in the user's region.">
       Popular in your region
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_OPTIONS" desc="Placeholder" translateable="false">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_OPTIONS" desc="Label of a button in the header of the default search engine picker dialog. Clicking it replaces the dialog with another dialog listing all the other search engines the user can pick as their default search engine.">
       More options
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_ENGINES" desc="Placeholder" translateable="false">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_ENGINES" desc="Title of the dialog, opened from the default search engine picker dialog, that lists all the search engines the user can pick as their default search engine. Also used as the accessibility label of the list of search engines in that dialog.">
       More search engines
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_PLACEHOLDER" desc="Placeholder" translateable="false">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_PLACEHOLDER" desc="Label and placeholder text of the search field in the 'More search engines' dialog, which the user can use to filter the list of search engines by name or keyword." meaning="Verb. Filter the list of search engines.">
       Search
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_SEARCH_RESULTS" desc="Placeholder" translateable="false">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_SEARCH_RESULTS" desc="Message shown in the 'More search engines' dialog in place of the list of search engines when no search engine matches the text that the user typed in the search field.">
       No results found
     </message>
     <message name="IDS_SETTINGS_SEARCH_ENGINES_MAKE_DEFAULT" desc="Text of the button that makes the selected engine the default search engine">
