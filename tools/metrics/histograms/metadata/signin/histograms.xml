@@ -2477,7 +2477,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.HistoryOptInState.{ConsentLevel}" enum="BooleanOptedIn"
-    expires_after="2026-11-30">
+    expires_after="2027-05-30">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
   <owner>treib@google.com</owner>
