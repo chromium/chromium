@@ -63,7 +63,7 @@ void LinkNodeBase::InsertAfterBase(LinkNodeBase* e) {
   e->next_ = this;
 }
 
-void LinkNodeBase::MakeSelfReferencingBase() {
+void LinkNodeBase::MakeSelfReferencing() {
   if (next_ == this) {
     CHECK_EQ(previous_, this);
     return;
