@@ -4651,6 +4651,9 @@ const FeatureEntry::FeatureVariation kEphemeralBrandedEntryPointVariations[] = {
      kEphemeralBrandedEntryPointWithCircularNextToBatterySaver, nullptr}};
 
 const FeatureEntry::FeatureParam
+    kContextualTasksEphemeralButtonAutoDismiss1MinuteForTesting[] = {
+        {"ContextualTasksEphemeralButtonAutoDismissTimeMinutes", "1"}};
+const FeatureEntry::FeatureParam
     kContextualTasksEphemeralButtonAutoDismiss1Hour[] = {
         {"ContextualTasksEphemeralButtonAutoDismissTimeMinutes", "60"}};
 const FeatureEntry::FeatureParam
@@ -4662,6 +4665,8 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureVariation
     kContextualTasksEphemeralButtonAutoDismissVariations[] = {
+        {"(1 minute for testing)",
+         kContextualTasksEphemeralButtonAutoDismiss1MinuteForTesting, nullptr},
         {"(1 hour)", kContextualTasksEphemeralButtonAutoDismiss1Hour, nullptr},
         {"(2 hours)", kContextualTasksEphemeralButtonAutoDismiss2Hours,
          nullptr},
