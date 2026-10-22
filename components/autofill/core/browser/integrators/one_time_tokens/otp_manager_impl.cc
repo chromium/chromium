@@ -427,6 +427,9 @@ void OtpManagerImpl::OnGmailOtpRetrieved(
     return;
   }
 
+  if (UserOptedIntoGmailOtpFilling()) {
+    last_retrieved_gmail_otp_ = result->token;
+  }
   OnOneTimeTokenReceived(std::move(result->token));
 }
 
@@ -455,6 +458,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
   // if the user has not opted into Gmail OTP filling or opted out after a token
   // was cached.
   if (is_gmail_otp && !UserOptedIntoGmailOtpFilling()) {
+    last_retrieved_gmail_otp_.reset();
     if (last_pending_get_suggestions_callback_) {
       is_gmail_phish_guard_pending_ = false;
       std::move(last_pending_get_suggestions_callback_).Run({});
@@ -612,7 +616,6 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
           << LoggingScope::kOneTimeTokens
           << "Delivering OTP suggestion to UI. Token length: "
           << token.value().size() << " (value omitted for privacy).";
-      last_retrieved_gmail_otp_ = token;
       last_triggered_otp_value_ = token.value();
       suggestions.push_back(std::move(token));
     }
@@ -634,8 +637,6 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
   if (token.value().empty()) {
     return;
   }
-
-  last_retrieved_gmail_otp_ = token;
 
   const AutofillField* target_field = GetTargetOtpField();
   if (!target_field || target_field->host_frame() != frame_token) {

@@ -3566,4 +3566,80 @@ TEST_F(OtpManagerImplTest,
   autofill_client().set_affiliation_service(nullptr);
 }
 
+// Tests that when `OnGmailOtpRetrieved` completes while a non-OTP field is
+// focused (so `GetTargetOtpField()` returns `nullptr` and proactive suggestions
+// are suppressed), the domain-verified Gmail OTP is still cached in
+// `last_retrieved_gmail_otp_` and is delivered (after PhishGuard verification)
+// when the user subsequently focuses the OTP field and requests suggestions.
+TEST_F(
+    OtpManagerImplTest,
+    OnGmailOtpRetrieved_CachesTokenWhenNonOtpFieldFocusedAndDeliversOnLaterOtpFieldFocus) {
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  SetUpOtpFieldDetector();
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
+  autofill_client().set_affiliation_service(&mock_affiliation_service);
+  autofill_client().set_gmail_otp_backend(
+      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
+
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  const FormStructure* form = AddForm({
+      .fields =
+          {
+              {.server_type = NAME_FIRST,
+               .label = u"First name",
+               .name = u"fn"},
+              {.server_type = ONE_TIME_CODE, .label = u"OTP", .name = u"otp"},
+          },
+  });
+  ASSERT_TRUE(form);
+  ASSERT_EQ(form->field_count(), 2u);
+  FieldGlobalId non_otp_field_id = form->field(0)->global_id();
+  FieldGlobalId otp_field_id = form->field(1)->global_id();
+
+  // While the initial `GmailOtpRetriever` started by `OnFieldTypesDetermined`
+  // is in flight, the user focuses the non-OTP field.
+  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
+                                       non_otp_field_id);
+
+  // When `OnGmailOtpRetrieved` finishes while the non-OTP field is focused,
+  // proactive suggestions must not be triggered, but the retrieved token must
+  // be cached in `last_retrieved_gmail_otp_`.
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+  EXPECT_CALL(autofill_driver(), RendererShouldTriggerSuggestions).Times(0);
+
+  test_api(otp_manager)
+      .OnGmailOtpRetrieved(one_time_tokens::GmailOtpRetriever::Result{
+          .token = one_time_tokens::OneTimeToken(
+              one_time_tokens::OneTimeTokenType::kGmail, "654321",
+              base::TimeTicks::Now(), "sender@example.com"),
+          .source = one_time_tokens::GmailOtpRetriever::Source::kReceived,
+      });
+
+  ASSERT_TRUE(test_api(otp_manager).SelectMostRecentToken().has_value());
+  EXPECT_EQ(test_api(otp_manager).SelectMostRecentToken()->value(), "654321");
+
+  // Later, the user focuses the OTP field and requests suggestions. The cached
+  // token is verified via PhishGuard and delivered without starting a new
+  // `GmailOtpRetriever`.
+  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
+                                       otp_field_id);
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(1)->host_frame(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(1), future.GetCallback());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(),
+              ElementsAre(AllOf(
+                  Property(&one_time_tokens::OneTimeToken::value, "654321"),
+                  Property(&one_time_tokens::OneTimeToken::sender_address,
+                           Optional(std::string("sender@example.com"))))));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return test_api(otp_manager).gmail_otp_retriever() == nullptr;
+  }));
+
+  autofill_client().set_affiliation_service(nullptr);
+}
+
 }  // namespace autofill
