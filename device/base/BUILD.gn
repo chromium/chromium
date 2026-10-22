@@ -10,7 +10,6 @@ rust_static_library("string_util_rs") {
 
   # Required for cxx bridge generated code.
   allow_unsafe = true
-  crate_name = "device_base_string_util"
   crate_root = "string_util.rs"
   sources = [ "string_util.rs" ]
   cxx_bindings = [ "string_util.rs" ]
