@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -955,6 +956,109 @@ TEST_F(MediaStreamTrackImplTest, StopAudioTrackAfterSinkDestroyed) {
   WebHeap::CollectAllGarbageForTesting();
 
   // The test passes if it doesn't crash.
+}
+
+TEST_F(MediaStreamTrackImplTest, StopAudioTrackWhenEndedEventTriggersGC) {
+  V8TestingScope v8_scope;
+
+  Persistent<MediaStreamComponent> component = MakeMockAudioComponent();
+  MediaStreamAudioSource* source =
+      MediaStreamAudioSource::From(component->Source());
+  MediaStreamAudioTrack* platform_track =
+      MediaStreamAudioTrack::From(component.Get());
+  ASSERT_TRUE(source);
+  ASSERT_TRUE(platform_track);
+  EXPECT_TRUE(source->ConnectToInitializedTrack(component.Get()));
+
+  MediaStreamComponent* other_component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(
+          component->Source(),
+          std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true));
+  Persistent<MediaStreamTrackImpl> other_track =
+      MakeGarbageCollected<MediaStreamTrackImpl>(v8_scope.GetExecutionContext(),
+                                                 other_component);
+
+  Persistent<testing::StrictMock<MockEventListener>> event_listener =
+      MakeGarbageCollected<testing::StrictMock<MockEventListener>>();
+  other_track->addEventListener(event_type_names::kEnded, event_listener.Get());
+
+  base::WeakPtr<MediaStreamAudioTrack> weak_platform_track =
+      platform_track->GetWeakPtr();
+  // Precise GC (WebHeap::CollectAllGarbageForTesting) does not scan the C++
+  // stack and would otherwise collect the in-flight Event, which
+  // EventDispatcher holds only on the stack.
+  Persistent<Event> keep_event_alive;
+  EXPECT_CALL(*event_listener, Invoke(_, _))
+      .WillOnce([&](ExecutionContext*, Event* event) {
+        keep_event_alive = event;
+        component.Clear();
+        WebHeap::CollectAllGarbageForTesting();
+        EXPECT_FALSE(weak_platform_track);
+      });
+
+  bool callback_called = false;
+  platform_track->StopAndNotify(
+      blink::BindOnce([](bool* called) { *called = true; },
+                      base::Unretained(&callback_called)));
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(weak_platform_track);
+}
+
+TEST_F(MediaStreamTrackImplTest, StopVideoTrackWhenEndedEventTriggersGC) {
+  V8TestingScope v8_scope;
+
+  Persistent<MediaStreamComponent> component = MakeMockVideoComponent();
+  MediaStreamVideoSource* source =
+      MediaStreamVideoSource::GetVideoSource(component->Source());
+  MediaStreamVideoTrack* platform_track =
+      MediaStreamVideoTrack::From(component.Get());
+  ASSERT_TRUE(source);
+  ASSERT_TRUE(platform_track);
+
+  // A second track on the same source, with an 'ended' listener. Its platform
+  // track is stopped right away so that |platform_track| is the source's last
+  // track and stopping it stops the source.
+  MediaStreamComponent* other_component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(
+          component->Source(),
+          std::make_unique<MediaStreamVideoTrack>(
+              source, MediaStreamVideoSource::ConstraintsOnceCallback(),
+              /*enabled=*/true));
+  MediaStreamVideoTrack::From(other_component)->Stop();
+  Persistent<MediaStreamTrackImpl> other_track =
+      MakeGarbageCollected<MediaStreamTrackImpl>(v8_scope.GetExecutionContext(),
+                                                 other_component);
+
+  Persistent<testing::StrictMock<MockEventListener>> event_listener =
+      MakeGarbageCollected<testing::StrictMock<MockEventListener>>();
+  other_track->addEventListener(event_type_names::kEnded, event_listener.Get());
+
+  base::WeakPtr<MediaStreamVideoTrack> weak_platform_track =
+      platform_track->GetWeakPtrForTesting();
+  // Precise GC (WebHeap::CollectAllGarbageForTesting) does not scan the C++
+  // stack and would otherwise collect the in-flight Event, which
+  // EventDispatcher holds only on the stack.
+  Persistent<Event> keep_event_alive;
+  EXPECT_CALL(*event_listener, Invoke(_, _))
+      .WillOnce([&](ExecutionContext*, Event* event) {
+        keep_event_alive = event;
+        component.Clear();
+        WebHeap::CollectAllGarbageForTesting();
+        EXPECT_FALSE(weak_platform_track);
+      });
+
+  bool callback_called = false;
+  platform_track->StopAndNotify(
+      blink::BindOnce([](bool* called) { *called = true; },
+                      base::Unretained(&callback_called)));
+  EXPECT_FALSE(weak_platform_track);
+  EXPECT_EQ(MediaStreamSource::kReadyStateEnded,
+            other_component->Source()->GetReadyState());
+
+  // MediaStreamVideoSource runs the callback once the source has actually
+  // stopped, which happens on a separate task.
+  test::RunPendingTasks();
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace blink

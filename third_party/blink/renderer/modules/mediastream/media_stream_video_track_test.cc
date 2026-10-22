@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,6 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -377,6 +379,77 @@ TEST_F(MediaStreamVideoTrackTest, StopLastTrack) {
   EXPECT_EQ(MediaStreamSource::kReadyStateEnded,
             stream_source()->GetReadyState());
   sink2.DisconnectFromTrack();
+}
+
+class GarbageCollectingSourceObserver final
+    : public GarbageCollected<GarbageCollectingSourceObserver>,
+      public MediaStreamSource::Observer {
+ public:
+  explicit GarbageCollectingSourceObserver(base::OnceClosure on_state_changed)
+      : on_state_changed_(std::move(on_state_changed)) {}
+
+  void SourceChangedState() override {
+    if (on_state_changed_) {
+      std::move(on_state_changed_).Run();
+    }
+  }
+  void SourceChangedCaptureConfiguration() override {}
+  void SourceChangedCaptureHandle() override {}
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void SourceChangedZoomLevel(int) override {}
+#endif
+
+  void Trace(Visitor* visitor) const override {
+    MediaStreamSource::Observer::Trace(visitor);
+  }
+
+ private:
+  base::OnceClosure on_state_changed_;
+};
+
+// Regression test for https://crbug.com/576215540: verifies that
+// MediaStreamVideoTrack::StopAndNotify() does not UAF if stopping the source
+// synchronously triggers garbage collection of the owning
+// MediaStreamComponentImpl and destroys the MediaStreamVideoTrack.
+TEST_F(MediaStreamVideoTrackTest,
+       StopAndNotifyComponentGarbageCollectedOnSourceStop) {
+  InitializeSource();
+  WebMediaStreamTrack track = CreateTrack();
+  MediaStreamVideoTrack* raw_track = MediaStreamVideoTrack::From(track);
+  ASSERT_TRUE(raw_track);
+  base::WeakPtr<MediaStreamVideoTrack> weak_track =
+      raw_track->GetWeakPtrForTesting();
+  ASSERT_TRUE(weak_track);
+  EXPECT_EQ(MediaStreamSource::kReadyStateLive,
+            stream_source()->GetReadyState());
+
+  bool observer_called = false;
+  Persistent<GarbageCollectingSourceObserver> observer =
+      MakeGarbageCollected<GarbageCollectingSourceObserver>(
+          base::BindLambdaForTesting([&]() {
+            observer_called = true;
+            // Drop the last reference to the MediaStreamComponentImpl owning
+            // |raw_track| and collect it, which destroys |raw_track| while
+            // StopAndNotify() is still on the stack.
+            track.Reset();
+            WebHeap::CollectAllGarbageForTesting();
+            EXPECT_FALSE(weak_track);
+          }));
+  stream_source()->AddObserver(observer.Get());
+
+  bool notify_callback_called = false;
+  raw_track->StopAndNotify(
+      base::BindLambdaForTesting([&]() { notify_callback_called = true; }));
+
+  EXPECT_TRUE(observer_called);
+  EXPECT_FALSE(weak_track);
+  EXPECT_EQ(MediaStreamSource::kReadyStateEnded,
+            stream_source()->GetReadyState());
+
+  // The source runs the callback once it has actually stopped, which happens
+  // on a separate task.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(notify_callback_called);
 }
 
 TEST_F(MediaStreamVideoTrackTest, CheckTrackRequestsFrame) {

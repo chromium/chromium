@@ -144,8 +144,26 @@ void MediaStreamAudioTrack::StopAndNotify(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   WebRtcLog(kTag, this, "%s()", __func__);
 
-  if (!stop_callback_.is_null())
+  // Running |stop_callback_| (MediaStreamAudioSource::StopAudioDeliveryTo)
+  // stops the source if this was its last track. That synchronously fires
+  // 'ended' on other MediaStreamTrackImpls sharing the source, which runs
+  // script, which can trigger a GC. If nothing else references the
+  // MediaStreamComponentImpl owning |this|, its pre-finalizer deletes |this|
+  // while this frame is still on the stack. In that case
+  // ~MediaStreamAudioTrack() has already run Stop() (ending the sinks and
+  // invalidating weak pointers), so the only thing left to do is run
+  // |callback|, which UserMediaClient's request queue relies on to make
+  // progress. See https://crbug.com/576215540.
+  base::WeakPtr<MediaStreamAudioTrack> weak_this = GetWeakPtr();
+  if (!stop_callback_.is_null()) {
     std::move(stop_callback_).Run();
+  }
+  if (!weak_this) {
+    if (callback) {
+      std::move(callback).Run();
+    }
+    return;
+  }
 
   Vector<WebMediaStreamAudioSink*> sinks_to_end;
   deliverer_.GetConsumerList(&sinks_to_end);
@@ -154,8 +172,9 @@ void MediaStreamAudioTrack::StopAndNotify(base::OnceClosure callback) {
     sink->OnReadyStateChanged(WebMediaStreamSource::kReadyStateEnded);
   }
 
-  if (callback)
+  if (callback) {
     std::move(callback).Run();
+  }
   weak_factory_.InvalidateWeakPtrs();
 }
 

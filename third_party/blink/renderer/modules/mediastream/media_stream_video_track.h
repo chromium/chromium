@@ -199,6 +199,10 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
     is_screencast_ = is_screencast;
   }
 
+  base::WeakPtr<MediaStreamVideoTrack> GetWeakPtrForTesting() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   MediaStreamTrackPlatform::StreamType Type() const override {
     return MediaStreamTrackPlatform::StreamType::kVideo;
   }
