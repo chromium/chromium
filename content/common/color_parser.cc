@@ -30,18 +30,19 @@ bool ParseHslColorString(std::string_view color_string, SkColor* result) {
   // and with alpha, the format is
   // hsla(<number>, <percent>, <percent>, <number>)
   // e.g.: hsl(120, 100%, 50%), hsla(120, 100%, 50%, 0.5);
+  static constexpr re2::LazyRE2 hsl_regex = {
+      "hsl\\((-?[\\d.]+),\\s*([\\d.]+)%,\\s*([\\d.]+)%\\)"};
+  static constexpr re2::LazyRE2 hsla_regex = {
+      "hsla\\((-?[\\d.]+),\\s*([\\d.]+)%,\\s*([\\d.]+)%,\\s*([\\d.]+)\\)"};
   double hue = 0.0;
   double saturation = 0.0;
   double lightness = 0.0;
   // 'hsl()' has '1' alpha value implicitly.
   double alpha = 1.0;
-  if (!re2::RE2::FullMatch(color_string,
-                           "hsl\\((-?[\\d.]+),\\s*([\\d.]+)%,\\s*([\\d.]+)%\\)",
-                           &hue, &saturation, &lightness) &&
-      !re2::RE2::FullMatch(
-          color_string,
-          "hsla\\((-?[\\d.]+),\\s*([\\d.]+)%,\\s*([\\d.]+)%,\\s*([\\d.]+)\\)",
-          &hue, &saturation, &lightness, &alpha)) {
+  if (!re2::RE2::FullMatch(color_string, *hsl_regex, &hue, &saturation,
+                           &lightness) &&
+      !re2::RE2::FullMatch(color_string, *hsla_regex, &hue, &saturation,
+                           &lightness, &alpha)) {
     return false;
   }
 
@@ -130,6 +131,10 @@ bool ParseRgbColorString(std::string_view color_string, SkColor* result) {
   // rgba(<percent>, <percent>, <percent>, <alphavalue>)
   // Whitespace is arbitrary.
   // e.g.: rgb(120, 100, 50), rgba(120, 100, 50, 0.5);
+  static constexpr re2::LazyRE2 rgb_regex = {
+      "rgb\\(([\\d]+),\\s*([\\d]+),\\s*([\\d]+)\\)"};
+  static constexpr re2::LazyRE2 rgba_regex = {
+      "rgba\\(([\\d]+),\\s*([\\d]+),\\s*([\\d]+),\\s*([\\d.]+)\\)"};
   int r = 0;
   int g = 0;
   int b = 0;
@@ -142,13 +147,8 @@ bool ParseRgbColorString(std::string_view color_string, SkColor* result) {
     return false;
   }
 
-  if (!re2::RE2::FullMatch(color_string,
-                           "rgb\\(([\\d]+),\\s*([\\d]+),\\s*([\\d]+)\\)", &r,
-                           &g, &b) &&
-      !re2::RE2::FullMatch(
-          color_string,
-          "rgba\\(([\\d]+),\\s*([\\d]+),\\s*([\\d]+),\\s*([\\d.]+)\\)", &r, &g,
-          &b, &alpha)) {
+  if (!re2::RE2::FullMatch(color_string, *rgb_regex, &r, &g, &b) &&
+      !re2::RE2::FullMatch(color_string, *rgba_regex, &r, &g, &b, &alpha)) {
     return false;
   }
 
