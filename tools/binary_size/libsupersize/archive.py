@@ -319,6 +319,7 @@ def _CreateContainerSymbols(
   container_spec,
   apk_file_manager,
   dex_async_results,
+  arsc_async_results,
   ninja_source_mapper,
   pak_id_map,
   component_overrides,
@@ -433,7 +434,7 @@ def _CreateContainerSymbols(
   if not native_spec and apk_spec:
     logging.info('Analyzing ARSC')
     arsc_section_ranges, arsc_symbols, arsc_metrics_by_file = (
-      apk.CreateArscSymbols(apk_spec)
+      arsc_async_results[container_name].get()
     )
     add_syms(arsc_section_ranges, arsc_symbols)
     metrics_by_file.update(arsc_metrics_by_file)
@@ -1261,22 +1262,28 @@ def CreateSizeInfo(
 
   container_specs.sort(key=sort_key)
 
-  dex_containers = [
-    c
-    for c in container_specs
-    if not c.native_spec and c.apk_spec and c.apk_spec.analyze_dex
+  apk_containers = [
+    c for c in container_specs if not c.native_spec and c.apk_spec
   ]
-  # Parse dex files in background processes so that other containers can be
-  # processed concurrently.
+  # Parse dex and arsc files in background processes so that other containers
+  # can be processed concurrently.
   dex_async_results = {}
-  if dex_containers:
+  arsc_async_results = {}
+  if apk_containers:
     logging.info(
-      'Kicking off dex analysis for %d .apk files', len(dex_containers)
+      'Kicking off dex and arsc analysis for %d .apk files',
+      len(apk_containers),
     )
-    for container_spec in dex_containers:
+    for container_spec in apk_containers:
       apk_spec = container_spec.apk_spec
-      dex_async_results[container_spec.container_name] = dex.AnalyzeDexAsync(
-        apk_spec.apk_path, apk_spec.mapping_path, apk_spec.track_string_literals
+      if apk_spec.analyze_dex:
+        dex_async_results[container_spec.container_name] = dex.AnalyzeDexAsync(
+          apk_spec.apk_path,
+          apk_spec.mapping_path,
+          apk_spec.track_string_literals,
+        )
+      arsc_async_results[container_spec.container_name] = parallel.ForkAndCall(
+        apk.CreateArscSymbols, (apk_spec,)
       )
 
   ninja_containers = [
@@ -1302,6 +1309,7 @@ def CreateSizeInfo(
       container_spec,
       apk_file_manager,
       dex_async_results,
+      arsc_async_results,
       ninja_source_mapper,
       pak_id_map,
       json_config.ComponentOverrides(),
