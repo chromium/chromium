@@ -33,6 +33,7 @@ source_set("top_chrome") {
       "preload_context.h",
       "profile_preload_candidate_selector.h",
       "top_chrome_webui_profile.h",
+      "top_chrome_webui_user_profile.h",
       "webui_contents_preload_manager.h",
       "webui_contents_preload_state.h",
       "webui_contents_warmup_level.h",
@@ -77,6 +78,7 @@ source_set("impl") {
       "preload_context.cc",
       "profile_preload_candidate_selector.cc",
       "top_chrome_webui_profile.cc",
+      "top_chrome_webui_user_profile.cc",
       "webui_contents_preload_manager.cc",
       "webui_contents_preload_state.cc",
       "webui_contents_warmup_level.cc",
@@ -155,6 +157,7 @@ if (!is_android) {
       "per_profile_webui_tracker_unittest.cc",
       "profile_preload_candidate_selector_unittest.cc",
       "top_chrome_webui_config_unittest.cc",
+      "top_chrome_webui_user_profile_unittest.cc",
       "webui_contents_preload_manager_unittest.cc",
       "webui_contents_wrapper_unittest.cc",
     ]

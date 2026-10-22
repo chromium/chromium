@@ -599,6 +599,7 @@
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
@@ -884,6 +885,21 @@ bool g_disable_advanced_protection_caching_for_tests = false;
 BASE_FEATURE(kPrefetchRequestIntegrityHeaders,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+// Returns the profile whose prefs are used to compute WebPreferences for
+// `web_contents`, which is its user profile, see webui::GetUserProfile(). A
+// WebContents in TopChromeWebUIProfile must have its user profile set before
+// its WebPreferences are first computed, see webui::SetUserProfile().
+Profile* GetProfileForWebPreferences(content::WebContents* web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+  // There is no TopChromeWebUIProfile on Android.
+  return Profile::FromBrowserContext(web_contents->GetBrowserContext());
+#else
+  Profile* profile = webui::GetUserProfile(web_contents);
+  CHECK(profile);
+  return profile;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
 // Cached version of the locale so we can return the locale on the I/O
 // thread.
@@ -4014,17 +4030,14 @@ bool ChromeContentBrowserClient::ShouldDenyRequestOnCertificateError(
 namespace {
 
 bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents,
+                                            const PrefService& prefs,
                                             bool in_forced_colors) {
   if (!contents || !in_forced_colors) {
     return false;
   }
 
-  PrefService* prefs =
-      Profile::FromBrowserContext(contents->GetBrowserContext())->GetPrefs();
-  CHECK(prefs);
-
   const base::ListValue& forced_colors_blocklist =
-      prefs->GetList(prefs::kPageColorsBlockList);
+      prefs.GetList(prefs::kPageColorsBlockList);
 
   if (forced_colors_blocklist.empty()) {
     return false;
@@ -4050,8 +4063,7 @@ bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents,
   return false;
 }
 
-blink::mojom::PreferredContrast GetPreferredContrast(
-    content::WebContents* web_contents) {
+blink::mojom::PreferredContrast GetPreferredContrast(const PrefService& prefs) {
   using NC = ui::NativeTheme::PreferredContrast;
   using BC = blink::mojom::PreferredContrast;
   static constexpr auto kContrastMap =
@@ -4060,23 +4072,18 @@ blink::mojom::PreferredContrast GetPreferredContrast(
                                       {NC::kLess, BC::kLess},
                                       {NC::kCustom, BC::kCustom}});
   const NC preferred_contrast =
-      PageColorsController::GetEffectivePageColors(
-          *Profile::FromBrowserContext(web_contents->GetBrowserContext())
-               ->GetPrefs())
-          .preferred_contrast;
+      PageColorsController::GetEffectivePageColors(prefs).preferred_contrast;
   return kContrastMap.at(preferred_contrast);
 }
 
-std::tuple<bool, bool> GetForcedColorsForWebContent(WebContents* web_contents) {
+std::tuple<bool, bool> GetForcedColorsForWebContent(WebContents* web_contents,
+                                                    const PrefService& prefs) {
   const auto forced_colors =
-      PageColorsController::GetEffectivePageColors(
-          *Profile::FromBrowserContext(web_contents->GetBrowserContext())
-               ->GetPrefs())
-          .forced_colors;
+      PageColorsController::GetEffectivePageColors(prefs).forced_colors;
   const bool in_forced_colors =
       forced_colors != ui::ColorProviderKey::ForcedColors::kNone;
-  const bool is_forced_colors_disabled =
-      ShouldDisableForcedColorsForWebContent(web_contents, in_forced_colors);
+  const bool is_forced_colors_disabled = ShouldDisableForcedColorsForWebContent(
+      web_contents, prefs, in_forced_colors);
   return {in_forced_colors && !is_forced_colors_disabled,
           is_forced_colors_disabled};
 }
@@ -4095,7 +4102,8 @@ std::tuple<blink::mojom::PreferredColorScheme,
            blink::mojom::PreferredColorScheme>
 GetPreferredColorScheme(const WebPreferences& web_prefs,
                         const content::SecurityPrincipal& security_principal,
-                        WebContents* web_contents) {
+                        WebContents* web_contents,
+                        const Profile& profile) {
   blink::mojom::PreferredColorScheme preferred_color_scheme;
   blink::mojom::PreferredColorScheme preferred_root_scrollbar_color_scheme;
 #if BUILDFLAG(IS_ANDROID)
@@ -4111,13 +4119,11 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
     preferred_root_scrollbar_color_scheme = preferred_color_scheme;
   }
 #else  // !BUILDFLAG(IS_ANDROID)
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (profile->IsEnterpriseIsolatedModeProfile() &&
+  if (profile.IsEnterpriseIsolatedModeProfile() &&
       !security_principal.IsWebUI()) {
     preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
   } else {
-    if (profile->IsIncognitoProfile() && !security_principal.IsWebUI()) {
+    if (profile.IsIncognitoProfile() && !security_principal.IsWebUI()) {
       // Incognito contents follow the device color mode by default.
       preferred_color_scheme = ToBlinkPreferredColorScheme(
           ui::NativeTheme::GetInstanceForWeb()->preferred_color_scheme());
@@ -4130,7 +4136,7 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
                                    : blink::mojom::PreferredColorScheme::kDark;
     }
     const auto effective_page_colors =
-        PageColorsController::GetEffectivePageColors(*profile->GetPrefs());
+        PageColorsController::GetEffectivePageColors(*profile.GetPrefs());
     if (effective_page_colors.forced_colors !=
         ui::ColorProviderKey::ForcedColors::kNone) {
       preferred_color_scheme = ToBlinkPreferredColorScheme(
@@ -4715,8 +4721,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
     WebContents* web_contents,
     content::SiteInstance& main_frame_site,
     WebPreferences* web_prefs) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  Profile* profile = GetProfileForWebPreferences(web_contents);
   PrefService* prefs = profile->GetPrefs();
 
 // Fill font preferences. These are not registered on Android unless we're built
@@ -5006,15 +5011,16 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       IsFileOrDirectoryPickerWithoutGestureAllowed(web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  web_prefs->preferred_contrast = GetPreferredContrast(web_contents);
+  web_prefs->preferred_contrast = GetPreferredContrast(*prefs);
 
   std::tie(web_prefs->in_forced_colors, web_prefs->is_forced_colors_disabled) =
-      GetForcedColorsForWebContent(web_contents);
+      GetForcedColorsForWebContent(web_contents, *prefs);
 
   std::tie(web_prefs->preferred_color_scheme,
            web_prefs->preferred_root_scrollbar_color_scheme) =
-      GetPreferredColorScheme(
-          *web_prefs, main_frame_site.GetSecurityPrincipal(), web_contents);
+      GetPreferredColorScheme(*web_prefs,
+                              main_frame_site.GetSecurityPrincipal(),
+                              web_contents, *profile);
 
   web_prefs->root_scrollbar_theme_color =
       GetRootScrollbarThemeColor(web_contents);
@@ -5084,6 +5090,7 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
     content::SiteInstance& main_frame_site,
     WebPreferences* web_prefs) {
+  Profile* profile = GetProfileForWebPreferences(web_contents);
   bool prefs_changed = false;
 
   const auto autoplay_policy = GetAutoplayPolicyForWebContents(web_contents);
@@ -5141,7 +5148,7 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   const auto old_is_forced_colors_disabled =
       web_prefs->is_forced_colors_disabled;
   std::tie(web_prefs->in_forced_colors, web_prefs->is_forced_colors_disabled) =
-      GetForcedColorsForWebContent(web_contents);
+      GetForcedColorsForWebContent(web_contents, *profile->GetPrefs());
   prefs_changed |=
       web_prefs->in_forced_colors != old_in_forced_colors ||
       web_prefs->is_forced_colors_disabled != old_is_forced_colors_disabled;
@@ -5151,8 +5158,9 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
       web_prefs->preferred_root_scrollbar_color_scheme;
   std::tie(web_prefs->preferred_color_scheme,
            web_prefs->preferred_root_scrollbar_color_scheme) =
-      GetPreferredColorScheme(
-          *web_prefs, main_frame_site.GetSecurityPrincipal(), web_contents);
+      GetPreferredColorScheme(*web_prefs,
+                              main_frame_site.GetSecurityPrincipal(),
+                              web_contents, *profile);
   prefs_changed |=
       web_prefs->preferred_color_scheme != old_preferred_color_scheme ||
       web_prefs->preferred_root_scrollbar_color_scheme !=
@@ -5188,12 +5196,14 @@ bool ChromeContentBrowserClient::
         WebContents& web_contents,
         const SiteInstance& main_frame_site) const {
   const WebPreferences& prefs = web_contents.GetOrCreateWebPreferences();
-  return GetPreferredContrast(&web_contents) != prefs.preferred_contrast ||
-         GetForcedColorsForWebContent(&web_contents) !=
+  Profile* profile = GetProfileForWebPreferences(&web_contents);
+  const PrefService& pref_service = *profile->GetPrefs();
+  return GetPreferredContrast(pref_service) != prefs.preferred_contrast ||
+         GetForcedColorsForWebContent(&web_contents, pref_service) !=
              std::tie(prefs.in_forced_colors,
                       prefs.is_forced_colors_disabled) ||
          GetPreferredColorScheme(prefs, main_frame_site.GetSecurityPrincipal(),
-                                 &web_contents) !=
+                                 &web_contents, *profile) !=
              std::tie(prefs.preferred_color_scheme,
                       prefs.preferred_root_scrollbar_color_scheme) ||
          GetRootScrollbarThemeColor(&web_contents) !=
@@ -5204,8 +5214,7 @@ ui::ColorProviderKey::ForcedColors
 ChromeContentBrowserClient::GetForcedColorsForWebContents(
     WebContents& web_contents) const {
   return PageColorsController::GetEffectivePageColors(
-             *Profile::FromBrowserContext(web_contents.GetBrowserContext())
-                  ->GetPrefs())
+             *GetProfileForWebPreferences(&web_contents)->GetPrefs())
       .forced_colors;
 }
 

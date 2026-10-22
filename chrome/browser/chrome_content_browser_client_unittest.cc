@@ -157,6 +157,7 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -168,6 +169,7 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
@@ -2311,6 +2313,27 @@ TEST_F(ChromeContentBrowserClientTest,
   browser_client.GetAdditionalFileSystemBackends(
       top_chrome_webui_profile, top_chrome_webui_profile->GetPath(), &backends);
   EXPECT_TRUE(backends.empty());
+}
+
+// Tests that WebPreferences of a WebContents in the Top Chrome WebUI profile
+// are computed from the user profile set for it.
+TEST_F(ChromeContentBrowserClientTest,
+       TopChromeWebUIProfileWebPreferencesUseUserProfile) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents =
+      web_contents_factory.CreateWebContents(top_chrome_webui_profile);
+  webui::SetUserProfile(web_contents, profile());
+  profile()->GetPrefs()->SetInteger(prefs::kWebKitDefaultFontSize, 22);
+
+  ChromeContentBrowserClient client;
+  blink::web_pref::WebPreferences web_prefs;
+  client.OverrideWebPreferences(web_contents, *web_contents->GetSiteInstance(),
+                                &web_prefs);
+  EXPECT_EQ(22, web_prefs.default_font_size);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

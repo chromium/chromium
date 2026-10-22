@@ -5109,6 +5109,7 @@ source_set("core_unit_tests") {
   } else {
     deps += [
       "//chrome/browser/child_module",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/common/child_module",
     ]
   }
