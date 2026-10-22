@@ -1,0 +1,19 @@
+Name: JetBrains Java Annotations
+Short Name: annotations
+URL: https://repo.maven.apache.org/maven2/org/jetbrains/annotations/23.0.0/annotations-23.0.0.jar
+Version: 23.0.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+A set of annotations used for code inspection support and code documentation.
+
+See also: https://github.com/JetBrains/java-annotations
+
+
+Local Modifications:
+No modifications.

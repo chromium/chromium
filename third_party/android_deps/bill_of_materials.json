@@ -437,12 +437,12 @@
     {
         "name": "datastore-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-core-android",
@@ -462,7 +462,7 @@
     {
         "name": "datastore-preferences",
         "group": "androidx.datastore",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences-android",
@@ -677,12 +677,12 @@
     {
         "name": "lifecycle-common",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-common-java8",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-common-jvm",
@@ -697,7 +697,7 @@
     {
         "name": "lifecycle-livedata-core",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-livedata-core-ktx",
@@ -712,12 +712,12 @@
     {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-runtime",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-runtime-android",
@@ -737,7 +737,7 @@
     {
         "name": "lifecycle-runtime-ktx",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-runtime-ktx-android",
@@ -752,7 +752,7 @@
     {
         "name": "lifecycle-viewmodel",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-viewmodel-android",
@@ -772,12 +772,12 @@
     {
         "name": "lifecycle-viewmodel-ktx",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-viewmodel-savedstate",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha04"
+        "version": "2.12.0-alpha05"
     },
     {
         "name": "lifecycle-viewmodel-savedstate-android",
@@ -847,7 +847,7 @@
     {
         "name": "mediarouter",
         "group": "androidx.mediarouter",
-        "version": "1.9.0-beta01"
+        "version": "1.9.0-rc01"
     },
     {
         "name": "multidex",
@@ -937,7 +937,7 @@
     {
         "name": "palette",
         "group": "androidx.palette",
-        "version": "1.1.0-rc01"
+        "version": "1.1.0"
     },
     {
         "name": "pdf-core",
@@ -1022,12 +1022,12 @@
     {
         "name": "savedstate",
         "group": "androidx.savedstate",
-        "version": "1.6.0-alpha04"
+        "version": "1.6.0-alpha05"
     },
     {
         "name": "savedstate-android",
         "group": "androidx.savedstate",
-        "version": "1.6.0-alpha04"
+        "version": "1.6.0-alpha05"
     },
     {
         "name": "savedstate-compose",
@@ -1042,7 +1042,7 @@
     {
         "name": "savedstate-ktx",
         "group": "androidx.savedstate",
-        "version": "1.6.0-alpha04"
+        "version": "1.6.0-alpha05"
     },
     {
         "name": "slidingpanelayout",
@@ -1358,21 +1358,6 @@
         "name": "extensions-xr",
         "group": "com.android.extensions.xr",
         "version": "1.5.0-alpha01"
-    },
-    {
-        "name": "layoutlib-api",
-        "group": "com.android.tools.layoutlib",
-        "version": "30.2.0-beta01"
-    },
-    {
-        "name": "common",
-        "group": "com.android.tools",
-        "version": "30.2.0-beta01"
-    },
-    {
-        "name": "sdk-common",
-        "group": "com.android.tools",
-        "version": "30.2.0-beta01"
     },
     {
         "name": "caffeine",
@@ -1985,11 +1970,6 @@
         "version": "2.2"
     },
     {
-        "name": "kotlin-android-extensions-runtime",
-        "group": "org.jetbrains.kotlin",
-        "version": "1.9.22"
-    },
-    {
         "name": "kotlin-bom",
         "group": "org.jetbrains.kotlin",
         "version": "1.8.22"
@@ -1997,12 +1977,12 @@
     {
         "name": "kotlin-parcelize-runtime",
         "group": "org.jetbrains.kotlin",
-        "version": "1.9.22"
+        "version": "2.5.0-Beta2"
     },
     {
         "name": "kotlin-stdlib",
         "group": "org.jetbrains.kotlin",
-        "version": "2.3.21"
+        "version": "2.5.0-Beta2"
     },
     {
         "name": "kotlin-stdlib-jdk7",
@@ -2072,27 +2052,27 @@
     {
         "name": "kotlinx-serialization-bom",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.12.0"
     },
     {
         "name": "kotlinx-serialization-core",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.12.0"
     },
     {
         "name": "kotlinx-serialization-core-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.12.0"
     },
     {
         "name": "kotlinx-serialization-json",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.12.0"
     },
     {
         "name": "kotlinx-serialization-json-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.12.0"
     },
     {
         "name": "annotations",

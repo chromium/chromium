@@ -1,7 +1,7 @@
 Name: Parcelize Runtime
 Short Name: kotlin-parcelize-runtime
-URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-parcelize-runtime/1.9.22/kotlin-parcelize-runtime-1.9.22.jar
-Version: 1.9.22
+URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-parcelize-runtime/2.5.0-Beta2/kotlin-parcelize-runtime-2.5.0-Beta2.jar
+Version: 2.5.0-Beta2
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

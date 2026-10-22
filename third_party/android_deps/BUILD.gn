@@ -18,43 +18,14 @@ java_prebuilt("com_android_extensions_xr_extensions_xr_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_android_tools_common_java") {
-  jar_path = "cipd/libs/com_android_tools_common/common.jar"
-  output_name = "com_android_tools_common"
+java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
+  jar_path = "cipd/libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib.jar"
+  output_name = "org_jetbrains_kotlin_kotlin_stdlib"
+  supports_android = true
   enable_bytecode_checks = false
 
-  # This target does not come with most of its dependencies and is
-  # only meant to be used by the resources shrinker. If you wish to use
-  # this for other purposes, change buildCompileNoDepsLatest in
-  # build.gradle.template.
-  visibility = [ "//build/android/unused_resources:*" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_android_tools_layoutlib_layoutlib_api_java") {
-  jar_path =
-      "cipd/libs/com_android_tools_layoutlib_layoutlib_api/layoutlib-api.jar"
-  output_name = "com_android_tools_layoutlib_layoutlib_api"
-  enable_bytecode_checks = false
-
-  # This target does not come with most of its dependencies and is
-  # only meant to be used by the resources shrinker. If you wish to use
-  # this for other purposes, change buildCompileNoDepsLatest in
-  # build.gradle.template.
-  visibility = [ "//build/android/unused_resources:*" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_android_tools_sdk_common_java") {
-  jar_path = "cipd/libs/com_android_tools_sdk_common/sdk-common.jar"
-  output_name = "com_android_tools_sdk_common"
-  enable_bytecode_checks = false
-
-  # This target does not come with most of its dependencies and is
-  # only meant to be used by the resources shrinker. If you wish to use
-  # this for other purposes, change buildCompileNoDepsLatest in
-  # build.gradle.template.
-  visibility = [ "//build/android/unused_resources:*" ]
+  # Please depend on //third_party/android_deps:kotlin_stdlib_java instead.
+  visibility = [ "//third_party/android_deps:*" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -82,6 +53,17 @@ java_prebuilt("org_ow2_asm_asm_commons_java") {
     ":org_ow2_asm_asm_java",
     ":org_ow2_asm_asm_tree_java",
   ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("org_jetbrains_annotations_java") {
+  jar_path = "cipd/libs/org_jetbrains_annotations/annotations.jar"
+  output_name = "org_jetbrains_annotations"
+  supports_android = true
+  enable_bytecode_checks = false
+
+  # Please depend on //third_party/android_deps:kotlin_stdlib_java instead.
+  visibility = [ "//third_party/android_deps:*" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -165,7 +147,7 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_base_java",
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
       ]
     }
   }
@@ -180,8 +162,8 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_base_java",
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_collection_collection_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -196,7 +178,7 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_base_java",
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
       ]
     }
   }
@@ -253,9 +235,9 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_flags_java",
         "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_core_core_java",
         "//third_party/androidx:androidx_mediarouter_mediarouter_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -275,6 +257,7 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_cast_java",
         "$google_play_services_package:google_play_services_tasks_java",
         "//third_party/android_deps:guava_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_appcompat_appcompat_java",
         "//third_party/androidx:androidx_collection_collection_java",
         "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
@@ -283,7 +266,6 @@ if (!limit_android_deps) {
         "//third_party/androidx:androidx_media_media_java",
         "//third_party/androidx:androidx_mediarouter_mediarouter_java",
         "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -299,7 +281,7 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_base_java",
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
       ]
     }
   }
@@ -332,7 +314,7 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_base_java",
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
       ]
     }
   }
@@ -380,7 +362,7 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_base_java",
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
       ]
     }
   }
@@ -447,8 +429,8 @@ if (!limit_android_deps) {
     info_path = "committed/libs/com_google_android_libraries_identity_googleid_googleid/com_google_android_libraries_identity_googleid_googleid.info"
     enable_bytecode_checks = false
     deps = [
+      "//third_party/android_deps:kotlin_stdlib_java",
       "//third_party/androidx:androidx_credentials_credentials_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -616,10 +598,10 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_firebase_firebase_components_java",
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_annotation_annotation_java",
         "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
         "//third_party/androidx:androidx_datastore_datastore_preferences_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -636,8 +618,8 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_firebase_firebase_components_java",
         "$google_play_services_package:google_firebase_firebase_installations_interop_java",
         "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_datastore_datastore_preferences_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -668,8 +650,8 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_cloud_messaging_java",
         "$google_play_services_package:google_play_services_stats_java",
         "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_annotation_annotation_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -750,7 +732,7 @@ if (!limit_android_deps) {
         ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
         ":org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
         "$google_play_services_package:google_play_services_basement_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
       ]
     }
   }
@@ -775,7 +757,7 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
         "//third_party/android_deps:guava_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
       ]
     }
   }
@@ -843,7 +825,7 @@ if (!limit_android_deps) {
       ":com_squareup_leakcanary_leakcanary_android_core_java",
       ":com_squareup_leakcanary_leakcanary_object_watcher_android_java",
       ":com_squareup_leakcanary_plumber_android_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -857,7 +839,7 @@ if (!limit_android_deps) {
       ":com_squareup_leakcanary_leakcanary_object_watcher_android_androidx_java",
       ":com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
       ":com_squareup_leakcanary_shark_android_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -873,8 +855,8 @@ if (!limit_android_deps) {
       ":com_squareup_leakcanary_leakcanary_android_test_java",
       ":com_squareup_leakcanary_leakcanary_test_core_java",
       ":com_squareup_leakcanary_shark_android_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
       "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -888,7 +870,7 @@ if (!limit_android_deps) {
     deps = [
       ":com_squareup_leakcanary_leakcanary_gc_java",
       ":com_squareup_leakcanary_shark_log_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -902,7 +884,7 @@ if (!limit_android_deps) {
       ":com_squareup_curtains_curtains_java",
       ":com_squareup_leakcanary_leakcanary_android_utils_java",
       ":com_squareup_leakcanary_leakcanary_object_watcher_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -917,7 +899,7 @@ if (!limit_android_deps) {
       ":com_squareup_leakcanary_shark_graph_java",
       ":com_squareup_okio_okio_java",
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -931,7 +913,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":com_squareup_leakcanary_shark_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -941,7 +923,7 @@ if (!limit_android_deps) {
     output_name = "com_squareup_okio_okio_jvm"
     supports_android = true
     enable_bytecode_checks = false
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1054,10 +1036,7 @@ if (!limit_android_deps) {
     supports_android = true
     requires_android = true
     enable_bytecode_checks = false
-    deps = [
-      ":org_jetbrains_kotlin_kotlin_android_extensions_runtime_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
+    deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1066,7 +1045,7 @@ if (!limit_android_deps) {
     output_name = "org_jetbrains_kotlinx_atomicfu_jvm"
     supports_android = true
     enable_bytecode_checks = false
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1078,7 +1057,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -1088,7 +1067,7 @@ if (!limit_android_deps) {
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
     supports_android = true
     enable_bytecode_checks = false
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1096,11 +1075,10 @@ if (!limit_android_deps) {
     jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava/kotlinx-coroutines-guava.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_guava"
     supports_android = true
-    requires_android = true
     enable_bytecode_checks = false
     deps = [
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -1109,9 +1087,8 @@ if (!limit_android_deps) {
     jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_serialization_core_jvm"
     supports_android = true
-    requires_android = true
     enable_bytecode_checks = false
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1298,8 +1275,8 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_android_datatransport_transport_api_java",
         "$google_play_services_package:google_firebase_firebase_encoders_java",
         "$google_play_services_package:google_firebase_firebase_encoders_proto_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_annotation_annotation_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -1501,7 +1478,7 @@ if (!limit_android_deps) {
       ]
       deps = [
         ":javax_inject_javax_inject_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
       ]
     }
   }
@@ -1545,8 +1522,8 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_android_datatransport_transport_api_java",
         "$google_play_services_package:google_android_datatransport_transport_backend_cct_java",
         "$google_play_services_package:google_android_datatransport_transport_runtime_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_annotation_annotation_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -1585,8 +1562,8 @@ if (!limit_android_deps) {
       ]
       deps = [
         "$google_play_services_package:google_firebase_firebase_encoders_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_annotation_annotation_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -1735,7 +1712,7 @@ if (!limit_android_deps) {
         ":*",
         "//third_party/androidx:*",
       ]
-      deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+      deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
     }
   }
 
@@ -1792,7 +1769,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1813,8 +1790,8 @@ if (!limit_android_deps) {
       ":com_squareup_leakcanary_leakcanary_core_java",
       ":com_squareup_leakcanary_leakcanary_test_core_java",
       ":com_squareup_leakcanary_shark_android_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
       "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1834,7 +1811,7 @@ if (!limit_android_deps) {
     deps = [
       ":com_squareup_leakcanary_leakcanary_core_java",
       ":com_squareup_leakcanary_shark_log_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -1857,7 +1834,7 @@ if (!limit_android_deps) {
       ":com_squareup_leakcanary_leakcanary_gc_java",
       ":com_squareup_leakcanary_shark_java",
       ":com_squareup_okio_okio_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -1876,7 +1853,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1894,7 +1871,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -1913,7 +1890,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -1935,8 +1912,8 @@ if (!limit_android_deps) {
     deps = [
       ":com_squareup_leakcanary_leakcanary_core_java",
       ":com_squareup_leakcanary_shark_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
       "//third_party/junit",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1955,7 +1932,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":com_squareup_leakcanary_plumber_android_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -1975,7 +1952,7 @@ if (!limit_android_deps) {
       ":com_squareup_curtains_curtains_java",
       ":com_squareup_leakcanary_leakcanary_android_utils_java",
       ":com_squareup_leakcanary_shark_log_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -1996,8 +1973,8 @@ if (!limit_android_deps) {
     deps = [
       ":com_squareup_leakcanary_shark_hprof_java",
       ":com_squareup_okio_okio_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
       "//third_party/androidx:androidx_collection_collection_ktx_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -2017,7 +1994,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":com_squareup_leakcanary_shark_log_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -2035,7 +2012,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2055,7 +2032,7 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":com_squareup_okio_okio_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -2100,7 +2077,7 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":com_squareup_okio_okio_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -2203,23 +2180,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_jetbrains_kotlin_kotlin_android_extensions_runtime_java") {
-    jar_path = "cipd/libs/org_jetbrains_kotlin_kotlin_android_extensions_runtime/kotlin-android-extensions-runtime.jar"
-    output_name = "org_jetbrains_kotlin_kotlin_android_extensions_runtime"
-    supports_android = true
-    requires_android = true
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_group("org_jetbrains_kotlinx_atomicfu_java") {
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.template
@@ -2258,7 +2218,7 @@ if (!limit_android_deps) {
     deps = [
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "$google_play_services_package:google_play_services_tasks_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -2291,7 +2251,7 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
@@ -2311,7 +2271,6 @@ if (!limit_android_deps) {
     jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_json_jvm/kotlinx-serialization-json-jvm.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_serialization_json_jvm"
     supports_android = true
-    requires_android = true
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -2322,7 +2281,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":org_jetbrains_kotlinx_kotlinx_serialization_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
 
