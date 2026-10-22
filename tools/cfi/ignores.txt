@@ -179,7 +179,9 @@ src:*third_party/dawn/src/dawn/wire/client/Buffer.cpp
 src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 src:*third_party/angle/src/libANGLE/*
 src:*third_party/angle/src/libEGL/*
+# TODO(crbug.com/502790555): Remove after rename
 src:*third_party/angle/src/third_party/libXNVCtrl/NVCtrl.c
+src:*third_party/angle/src/third_party/libxnvctrl/src/NVCtrl.c
 # third_party/angle/src/gpu_info_util/SystemInfo_libpci.cpp
 fun:*GetPCIDevicesWithLibPCI*
 # third_party/angle/src/common/event_tracer.cpp
