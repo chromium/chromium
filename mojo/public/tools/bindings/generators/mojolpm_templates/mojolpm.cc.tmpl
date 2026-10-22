@@ -120,6 +120,9 @@ bool FromProto(uint32_t input,
 
 bool ToProto(::mojo::PendingRemote<{{mojom_type}}>&& input,
              uint32_t& output) {
+  if (ResetOutputIfNullableInterface(input, output)) {
+    return true;
+  }
   ::mojo::Remote<{{mojom_type}}> remote(std::move(input));
   int next_id = NextId<{{mojom_type}}>();
   output = mojolpm::GetContext()->AddInstance(next_id, std::move(remote));
@@ -139,6 +142,10 @@ bool ToProto(::mojo::PendingReceiver<{{mojom_type}}>&& input,
   // This should only get called from callbacks into the fuzzer, ie from one of
   // the XxxImpls or from a return callback. Since that is the case, we want to
   // bind the receiver and store it.
+
+  if (ResetOutputIfNullableInterface(input, output)) {
+    return true;
+  }
 
   auto impl = std::make_unique<{{interface.name}}Impl>();
   auto receiver_ptr = std::make_unique<::mojo::Receiver<{{mojom_type}}>>(
@@ -182,6 +189,9 @@ bool FromProto(uint32_t input,
 
 bool ToProto(::mojo::PendingAssociatedRemote<{{mojom_type}}>&& input,
              uint32_t& output) {
+  if (ResetOutputIfNullableInterface(input, output)) {
+    return true;
+  }
   ::mojo::AssociatedRemote<{{mojom_type}}> remote(std::move(input));
   int next_id = NextId<{{mojom_type}}>();
   output = mojolpm::GetContext()->AddInstance(next_id, std::move(remote));
@@ -201,6 +211,10 @@ bool ToProto(::mojo::PendingAssociatedReceiver<{{mojom_type}}>&& input,
   // This should only get called from callbacks into the fuzzer, ie from one of
   // the XxxImpls or from a return callback. Since that is the case, we want to
   // bind the receiver and store it.
+
+  if (ResetOutputIfNullableInterface(input, output)) {
+    return true;
+  }
 
   auto impl = std::make_unique<{{interface.name}}Impl>();
   auto receiver_ptr = std::make_unique<::mojo::AssociatedReceiver<{{mojom_type}}>>(
