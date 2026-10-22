@@ -1016,22 +1016,6 @@ void ScrollView::Layout(PassKey) {
     // invalidation issues with overflow indicators have been resolved.
     post_layout_callback_.Run(this);
   }
-
-  if (next_successful_frame_post_layout_callback_) {
-    // Layout should only occur to Widget parented Views.
-    views::Widget* const widget = GetWidget();
-    CHECK(widget);
-    widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
-        base::BindOnce(
-            [](base::WeakPtr<ScrollView> self, base::OnceClosure callback,
-               const viz::FrameTimingDetails& frame_timing_details) {
-              if (self) {
-                std::move(callback).Run();
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr(),
-            std::move(next_successful_frame_post_layout_callback_)));
-  }
 }
 
 bool ScrollView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -1626,11 +1610,6 @@ void ScrollView::UpdateOverflowIndicatorVisibility(const gfx::PointF& offset) {
 void ScrollView::RegisterPostLayoutCallback(
     base::RepeatingCallback<void(ScrollView*)> post_layout_callback) {
   post_layout_callback_ = post_layout_callback;
-}
-
-void ScrollView::RegisterNextSuccessfulFramePostLayoutCallback(
-    base::OnceClosure callback) {
-  next_successful_frame_post_layout_callback_ = std::move(callback);
 }
 
 View* ScrollView::GetContentsViewportForTest() const {
