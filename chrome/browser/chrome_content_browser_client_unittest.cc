@@ -51,6 +51,8 @@
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/startup/google_chrome_scheme_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -92,6 +94,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/site_isolation_policy.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 #include "components/webui/chrome_urls/pref_names.h"
@@ -138,6 +141,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/test/test_network_context.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -2639,6 +2643,13 @@ class ChromeContentBrowserClientAIPrefsTest
  protected:
   void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
 
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                            base::Unretained(&test_url_loader_factory_))}};
+  }
+
   void RunOverrideWebPreferences(
       content::WebContents* web_contents,
       blink::web_pref::WebPreferences* web_preferences) {
@@ -2647,8 +2658,11 @@ class ChromeContentBrowserClientAIPrefsTest
                                    web_preferences);
   }
 
+  mutable network::TestURLLoaderFactory test_url_loader_factory_;
   ChromeContentBrowserClient client_;
   base::test::ScopedFeatureList feature_list_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

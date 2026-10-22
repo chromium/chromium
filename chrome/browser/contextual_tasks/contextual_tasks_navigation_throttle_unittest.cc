@@ -117,7 +117,8 @@ TEST_F(ContextualTasksNavigationThrottleTest,
 TEST_F(ContextualTasksNavigationThrottleTest,
        ProcessNavigation_FeatureDisabled_Proceeds) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kContextualTasks);
+  scoped_feature_list.InitWithFeatures(
+      {}, {kContextualTasks, kContextualTasksSidePanel});
   GURL ai_url(kAiPageUrl);
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));

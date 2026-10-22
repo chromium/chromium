@@ -45,6 +45,7 @@
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/download/download_stats.h"
@@ -3442,11 +3443,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
                                              base::NullCallback());
       }));
 
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+
   // Wait for the side panel to load.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->GetSidePanelWebContentsForTesting(); }));
-  EXPECT_TRUE(content::WaitForLoadStop(
-      controller->GetSidePanelWebContentsForTesting()));
+      [&]() { return panel_controller->GetActiveWebContents() != nullptr; }));
+  EXPECT_TRUE(
+      content::WaitForLoadStop(panel_controller->GetActiveWebContents()));
   ASSERT_EQ(controller->state(), LensOverlayController::State::kOff);
 }
 

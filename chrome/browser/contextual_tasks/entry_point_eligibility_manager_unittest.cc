@@ -75,6 +75,13 @@ class FakeContextualTasksEligibilityManager
     return ContextualTasksEligibilityManager::IsEligibleWithoutIdentity();
   }
 
+  bool IsSidePanelAvailable() const override {
+    if (eligibility_override_.has_value()) {
+      return eligibility_override_.value();
+    }
+    return ContextualTasksEligibilityManager::IsSidePanelAvailable();
+  }
+
  protected:
   bool CalculateEligibility() const override {
     if (eligibility_override_.has_value()) {

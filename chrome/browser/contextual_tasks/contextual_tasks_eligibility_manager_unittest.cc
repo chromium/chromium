@@ -376,7 +376,8 @@ TEST_F(ContextualTasksEligibilityManagerTest,
 TEST_F(ContextualTasksEligibilityManagerTest,
        IsSidePanelAvailable_False_UIEnabledFalse) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(kContextualTasks);
+  scoped_feature_list_.InitWithFeatures(
+      {}, {kContextualTasks, kContextualTasksSidePanel});
 
   auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
@@ -401,7 +402,8 @@ TEST_F(ContextualTasksEligibilityManagerTest,
        IsSidePanelAvailable_False_ForceEntryPointEligibility_UIDisabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {kContextualTasksForceEntryPointEligibility}, {kContextualTasks});
+      {kContextualTasksForceEntryPointEligibility},
+      {kContextualTasks, kContextualTasksSidePanel});
 
   CreateManager();
   EXPECT_FALSE(manager_->IsSidePanelAvailable());

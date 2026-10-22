@@ -38,6 +38,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
@@ -2778,6 +2779,10 @@ TEST_F(ContextualSearchboxHandlerTest, GetAimEntryPoint) {
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_NoContextualTasksService) {
+  handler_.reset();
+  web_contents()->RemoveUserData(
+      contextual_tasks::ContextualTasksWebContentsUserData::UserDataKey());
+
   // Force the ContextualTasksService to be null.
   contextual_tasks::ContextualTasksServiceFactory::GetInstance()
       ->SetTestingFactory(
@@ -2942,17 +2947,24 @@ class ContextualSearchboxHandlerTestTabsTest
 
   ~ContextualSearchboxHandlerTestTabsTest() override = default;
 
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    auto factories = ContextualSearchboxHandlerTest::GetTestingFactories();
+    factories.push_back(TestingProfile::TestingFactory{
+        ContextualSearchServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockContextualSearchServiceInstance)});
+    factories.push_back(TestingProfile::TestingFactory{
+        contextual_tasks::ContextualTasksServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<testing::NiceMock<
+              contextual_tasks::MockContextualTasksService>>();
+        })});
+    return factories;
+  }
+
   void SetUp() override {
     ContextualSearchboxHandlerTest::SetUp();
     last_active_time_ticks_ = base::TimeTicks::Now();
-    contextual_tasks::ContextualTasksServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            profile(),
-            base::BindRepeating([](content::BrowserContext* context)
-                                    -> std::unique_ptr<KeyedService> {
-              return std::make_unique<testing::NiceMock<
-                  contextual_tasks::MockContextualTasksService>>();
-            }));
     tab_list_ = std::make_unique<testing::NiceMock<MockTabListInterface>>();
     tab_list_registration_ =
         std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
@@ -3052,6 +3064,8 @@ class ContextualSearchboxHandlerTestTabsTest
   ui::UnownedUserDataHost user_data_host_;
   MockBrowserWindowInterface browser_window_interface_;
   base::HistogramTester histogram_tester_;
+  variations::test::ScopedVariationsIdsProvider get_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
@@ -4392,15 +4406,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs_UsesServerLimit) {
 }
 
 class ContextualSearchboxHandlerSignedInTestTabsTest
-    : public ContextualSearchboxHandlerTestTabsTest {
- public:
-  ContextualSearchboxHandlerSignedInTestTabsTest()
-      : get_variations_ids_provider_(
-            variations::VariationsIdsProvider::Mode::kUseSignedInState) {}
-
- private:
-  variations::test::ScopedVariationsIdsProvider get_variations_ids_provider_;
-};
+    : public ContextualSearchboxHandlerTestTabsTest {};
 
 TEST_F(ContextualSearchboxHandlerSignedInTestTabsTest,
        GetRecentTabs_SetsShowInRecentTabChip) {

@@ -3273,7 +3273,7 @@ IN_PROC_BROWSER_TEST_F(
   req_id.set_context_id(101);
   submitted_file.request_id = req_id;
   EXPECT_CALL(*mock_session_handle_, GetSubmittedContextFileInfos())
-      .WillOnce(
+      .WillRepeatedly(
           Return(std::vector<contextual_search::FileInfo>{submitted_file}));
 
   lens::SearchToClientMessage::UpdateThreadContextLibrary library;

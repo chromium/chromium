@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -231,6 +233,7 @@ class ContextualTasksUiServiceTestBase
   std::unique_ptr<content::BrowserContext> CreateBrowserContext() override;
 
  protected:
+  network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
@@ -241,6 +244,8 @@ class ContextualTasksUiServiceTestBase
   raw_ptr<MockUiServiceForUrlIntercept> service_for_nav_ = nullptr;
   std::unique_ptr<ContextualTasksUiService> real_service_;
   std::unique_ptr<MockContextualTasksService> contextual_tasks_service_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 }  // namespace contextual_tasks

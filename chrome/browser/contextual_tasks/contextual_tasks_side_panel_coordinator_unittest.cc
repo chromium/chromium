@@ -22,6 +22,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -44,6 +46,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,6 +56,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -169,7 +173,12 @@ class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
 class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
  public:
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                            &test_url_loader_factory_));
+    profile_ = builder.Build();
 #if !BUILDFLAG(IS_ANDROID)
     InitializeActionIdStringMapping();
 #endif
@@ -437,6 +446,7 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
 #endif
   omnibox::AimEligibilityResponse aim_eligibility_response_;
   std::unique_ptr<NiceMock<MockAimEligibilityService>> aim_eligibility_service_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<NiceMock<MockBrowserWindowInterface>> browser_window_;
   ui::UnownedUserDataHost unowned_user_data_host_;
@@ -447,6 +457,8 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   raw_ptr<MockContextualTasksPanelHost> mock_panel_host_ = nullptr;
   raw_ptr<MockContextualTasksService> mock_controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   std::unique_ptr<ContextualTasksSidePanelCoordinator> coordinator_;
 

@@ -11257,29 +11257,6 @@
             ]
         }
     ],
-    "LensSidePanelUnification": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "allow-signed-out": "false"
-                    },
-                    "enable_features": [
-                        "ContextualTasksSidePanel",
-                        "ContextualTasksSidePanelDefaultRight",
-                        "LensSidePanelUnification"
-                    ]
-                }
-            ]
-        }
-    ],
     "LibraryPrefetcherOnlyOrderedText": [
         {
             "platforms": [

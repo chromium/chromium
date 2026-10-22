@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
@@ -58,6 +59,16 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
 
   ~TestingAimEligibilityService() override = default;
 
+  void SetEligibility(bool is_locally_eligible,
+                      bool is_server_eligible,
+                      bool server_eligibility_enabled,
+                      bool is_csb_eligible) {
+    is_locally_eligible_ = is_locally_eligible;
+    is_server_eligible_ = is_server_eligible;
+    server_eligibility_enabled_ = server_eligibility_enabled;
+    is_csb_eligible_ = is_csb_eligible;
+  }
+
   bool IsAimLocallyEligible() const override { return is_locally_eligible_; }
   bool IsServerEligibilityEnabled() const override {
     return server_eligibility_enabled_;
@@ -92,26 +103,43 @@ class LensSearchFeatureFlagsUtilsBrowserTestBase : public InProcessBrowserTest {
     command_line->AppendSwitch("disable-field-trial-config");
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &LensSearchFeatureFlagsUtilsBrowserTestBase::
+                    OnWillCreateBrowserContextServices));
+  }
+
  protected:
+  static void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<TestingAimEligibilityService>(
+              /*is_locally_eligible=*/false, /*is_server_eligible=*/false,
+              /*server_eligibility_enabled=*/false, /*is_csb_eligible=*/false,
+              *profile->GetPrefs(),
+              TemplateURLServiceFactory::GetForProfile(profile));
+        }));
+  }
+
   void SetUpAimEligibilityService(bool is_locally_eligible,
                                   bool is_server_eligible,
                                   bool server_eligibility_enabled,
                                   bool is_csb_eligible = false) {
-    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        browser()->GetProfile(),
-        base::BindLambdaForTesting(
-            [is_locally_eligible, is_server_eligible,
-             server_eligibility_enabled,
-             is_csb_eligible](content::BrowserContext* context) {
-              Profile* profile = Profile::FromBrowserContext(context);
-              return static_cast<std::unique_ptr<KeyedService>>(
-                  std::make_unique<TestingAimEligibilityService>(
-                      is_locally_eligible, is_server_eligible,
-                      server_eligibility_enabled, is_csb_eligible,
-                      *profile->GetPrefs(),
-                      TemplateURLServiceFactory::GetForProfile(profile)));
-            }));
+    auto* service = static_cast<TestingAimEligibilityService*>(
+        AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile()));
+    ASSERT_TRUE(service);
+    service->SetEligibility(is_locally_eligible, is_server_eligible,
+                            server_eligibility_enabled, is_csb_eligible);
   }
+
+ private:
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 // Test fixture with kLensSearchAimM3 feature enabled.

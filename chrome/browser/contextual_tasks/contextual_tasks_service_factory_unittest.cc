@@ -91,7 +91,8 @@ TEST_F(ContextualTasksServiceFactoryTest, UsesRealService) {
 }
 
 TEST_F(ContextualTasksServiceFactoryTest, ReturnsNullIfFeatureDisabled) {
-  feature_list_.InitAndDisableFeature(kContextualTasks);
+  feature_list_.InitWithFeatures({},
+                                 {kContextualTasks, kContextualTasksSidePanel});
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
 
   ContextualTasksService* service =

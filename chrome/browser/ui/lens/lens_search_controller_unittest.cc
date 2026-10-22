@@ -40,7 +40,7 @@ class LensSearchControllerTest : public testing::Test {
     feature_list_.InitWithFeatures(
         {lens::features::kLensOverlayNonBlockingPrivacyNotice,
          lens::features::kLensOverlayNonBlockingPrivacyNoticeForImageSearch},
-        {});
+        {lens::features::kLensSidePanelUnification});
     profile_ = std::make_unique<TestingProfile>();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), content::SiteInstance::Create(profile_.get()));

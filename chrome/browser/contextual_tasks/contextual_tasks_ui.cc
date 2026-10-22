@@ -176,7 +176,7 @@ void AddDefaultZeroStateStrings(base::DictValue& dict) {
 }
 
 void AddZeroStateStrings(base::DictValue& dict, Profile* profile) {
-  if (!profile) {
+  if (!profile || !g_browser_process || !g_browser_process->profile_manager()) {
     AddDefaultZeroStateStrings(dict);
     return;
   }

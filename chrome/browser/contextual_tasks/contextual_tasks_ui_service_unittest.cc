@@ -3704,7 +3704,7 @@ TEST_F(
 
   webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
 
-  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+  service_for_nav_->SetSidePanelWebContentsForTesting(panel_contents.get());
 
   // Even though the active tab already has `organic_url` open and is associated
   // with the task, clicking an organic search result link without text
@@ -4164,7 +4164,7 @@ TEST_F(
 
   webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
 
-  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+  service_for_nav_->SetSidePanelWebContentsForTesting(panel_contents.get());
 
   GURL organic_url("https://example.com/organic_result");
 
@@ -4217,6 +4217,9 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
 // click.
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_ForwardButtonEnterCobrowseOnLink) {
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
@@ -4227,9 +4230,6 @@ TEST_F(ContextualTasksUiServiceTest,
   content::WebContentsTester::For(web_contents.get())
       ->CommitPendingNavigation();
   web_contents->GetController().GoForward();
-
-  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
-      .WillByDefault(Return(false));
 
   base::RunLoop run_loop;
   GURL navigated_url("https://example.com");
@@ -4254,6 +4254,9 @@ TEST_F(ContextualTasksUiServiceTest,
 // typed.
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_ForwardButtonNotEnterCobrowseOnType) {
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
@@ -4264,9 +4267,6 @@ TEST_F(ContextualTasksUiServiceTest,
   content::WebContentsTester::For(web_contents.get())
       ->CommitPendingNavigation();
   web_contents->GetController().GoForward();
-
-  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
-      .WillByDefault(Return(false));
 
   GURL navigated_url("https://example.com");
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -4285,6 +4285,9 @@ TEST_F(ContextualTasksUiServiceTest,
 // click.
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_BackButtonNotEnterCobrowseOnLink) {
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
@@ -4292,9 +4295,6 @@ TEST_F(ContextualTasksUiServiceTest,
   content::WebContentsTester::For(web_contents.get())
       ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
   web_contents->GetController().GoBack();
-
-  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
-      .WillByDefault(Return(false));
 
   GURL navigated_url("https://example.com");
   EXPECT_FALSE(service_for_nav_->HandleNavigation(

@@ -237,6 +237,7 @@ source_set("unit_tests") {
     ]
     deps += [
       "//chrome/browser/contextual_tasks",
+      "//chrome/browser/contextual_tasks:user_data",
       "//chrome/browser/feature_engagement",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/search_engines",
