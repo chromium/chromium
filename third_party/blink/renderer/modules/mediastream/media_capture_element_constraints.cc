@@ -130,7 +130,8 @@ MediaCaptureElementConstraints::MediaCaptureElementConstraints(
     : Supplement<HTMLMediaCaptureElementBase>(element) {}
 
 void MediaCaptureElementConstraints::Trace(Visitor* visitor) const {
-  visitor->Trace(constraints_);
+  visitor->Trace(video_constraints_);
+  visitor->Trace(audio_constraints_);
   Supplement<HTMLMediaCaptureElementBase>::Trace(visitor);
 }
 
@@ -145,17 +146,15 @@ void MediaCaptureElementConstraints::setConstraints(
   }
   RecordCapabilityElementSetConstraintsRepeatedCall(element.TagQName(),
                                                     RepeatedCall(false));
-  HTMLMediaStreamConstraints* sanitized_constraints =
-      HTMLMediaStreamConstraints::Create();
 
-  sanitized_constraints->setVideo(SanitizeTrackConstraints(
+  MediaTrackConstraints* video_constraints = SanitizeTrackConstraints(
       (constraints && constraints->hasVideo()) ? constraints->video()
-                                               : nullptr));
-  sanitized_constraints->setAudio(SanitizeTrackConstraints(
+                                               : nullptr);
+  MediaTrackConstraints* audio_constraints = SanitizeTrackConstraints(
       (constraints && constraints->hasAudio()) ? constraints->audio()
-                                               : nullptr));
+                                               : nullptr);
 
-  self.SetConstraints(sanitized_constraints);
+  self.SetConstraints(video_constraints, audio_constraints);
 }
 
 void MediaCaptureElementConstraints::setConstraints(
@@ -170,18 +169,16 @@ void MediaCaptureElementConstraints::setConstraints(
   RecordCapabilityElementSetConstraintsRepeatedCall(element.TagQName(),
                                                     RepeatedCall(false));
 
-  HTMLMediaStreamConstraints* sanitized_constraints =
-      HTMLMediaStreamConstraints::Create();
   MediaTrackConstraints* sanitized_track =
       SanitizeTrackConstraints(constraints);
 
   if (element.IsHTMLCameraElement()) {
-    sanitized_constraints->setVideo(sanitized_track);
+    self.SetConstraints(/*video_constraints=*/sanitized_track,
+                        /*audio_constraints=*/nullptr);
   } else if (element.IsHTMLMicrophoneElement()) {
-    sanitized_constraints->setAudio(sanitized_track);
+    self.SetConstraints(/*video_constraints=*/nullptr,
+                        /*audio_constraints=*/sanitized_track);
   }
-
-  self.SetConstraints(sanitized_constraints);
 }
 
 }  // namespace blink

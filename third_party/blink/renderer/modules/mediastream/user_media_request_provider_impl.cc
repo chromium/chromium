@@ -217,27 +217,28 @@ void UserMediaRequestProviderImpl::StartRequest(
 
   // Retrieve stored constraints for this element (populated via
   // setConstraints).
-  const HTMLMediaStreamConstraints* constraints =
-      MediaCaptureElementConstraints::From(*element).Constraints();
+  const MediaCaptureElementConstraints& element_constraints =
+      MediaCaptureElementConstraints::From(*element);
+  MediaTrackConstraints* video_constraints =
+      element_constraints.VideoConstraints();
+  MediaTrackConstraints* audio_constraints =
+      element_constraints.AudioConstraints();
 
-  if (!constraints) {
-    HTMLMediaStreamConstraints* default_constraints =
-        HTMLMediaStreamConstraints::Create();
+  if (!element_constraints.DidSetConstraints()) {
     if (element->IsHTMLCameraElement()) {
-      default_constraints->setVideo(MediaTrackConstraints::Create());
+      video_constraints = MediaTrackConstraints::Create();
     } else if (element->IsHTMLMicrophoneElement()) {
-      default_constraints->setAudio(MediaTrackConstraints::Create());
+      audio_constraints = MediaTrackConstraints::Create();
     } else {
-      default_constraints->setVideo(MediaTrackConstraints::Create());
-      default_constraints->setAudio(MediaTrackConstraints::Create());
+      video_constraints = MediaTrackConstraints::Create();
+      audio_constraints = MediaTrackConstraints::Create();
     }
-    constraints = default_constraints;
   }
 
   // Validate presence of required constraints based on requested permissions.
   if (permission_descriptors.size() == 2) {
     // Both camera and microphone requested.
-    if (!constraints->hasAudio() && !constraints->hasVideo()) {
+    if (!audio_constraints && !video_constraints) {
       RecordCapabilityElementConstraintsValidationError(
           element->TagQName(),
           CapabilityElementMediaConstraintsValidationError::kBothMissing);
@@ -257,7 +258,7 @@ void UserMediaRequestProviderImpl::StartRequest(
   } else if (permission_descriptors[0]->name ==
              mojom::blink::PermissionName::AUDIO_CAPTURE) {
     // Microphone / audio-only element.
-    if (!constraints->hasAudio()) {
+    if (!audio_constraints) {
       RecordCapabilityElementConstraintsValidationError(
           element->TagQName(),
           CapabilityElementMediaConstraintsValidationError::kAudioMissing);
@@ -278,7 +279,7 @@ void UserMediaRequestProviderImpl::StartRequest(
     // Camera / video-only element.
     CHECK_EQ(permission_descriptors[0]->name,
              mojom::blink::PermissionName::VIDEO_CAPTURE);
-    if (!constraints->hasVideo()) {
+    if (!video_constraints) {
       RecordCapabilityElementConstraintsValidationError(
           element->TagQName(),
           CapabilityElementMediaConstraintsValidationError::kVideoMissing);
@@ -303,15 +304,15 @@ void UserMediaRequestProviderImpl::StartRequest(
 
   MediaStreamConstraints* request_constraints =
       MediaStreamConstraints::Create();
-  if (constraints->hasAudio()) {
+  if (audio_constraints) {
     request_constraints->setAudio(
         MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
-            static_cast<const MediaTrackConstraints*>(constraints->audio())));
+            audio_constraints));
   }
-  if (constraints->hasVideo()) {
+  if (video_constraints) {
     request_constraints->setVideo(
         MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
-            static_cast<const MediaTrackConstraints*>(constraints->video())));
+            video_constraints));
   }
 
   ExceptionState exception_state(window->GetIsolate());

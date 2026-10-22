@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_html_media_stream_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraint_set.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanordomstringparameters_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -263,10 +265,9 @@ TEST_F(UserMediaRequestProviderImplTest,
   {
     base::HistogramTester histogram_tester;
     auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-    auto* missing_video = HTMLMediaStreamConstraints::Create();
-    missing_video->setAudio(MediaTrackConstraints::Create());
     MediaCaptureElementConstraints::From(*element).SetConstraints(
-        missing_video);
+        /*video_constraints=*/nullptr,
+        /*audio_constraints=*/MediaTrackConstraints::Create());
 
     provider->StartRequest(element, element->GetPermissionDescriptors());
 
@@ -279,10 +280,9 @@ TEST_F(UserMediaRequestProviderImplTest,
   {
     base::HistogramTester histogram_tester;
     auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-    auto* missing_audio = HTMLMediaStreamConstraints::Create();
-    missing_audio->setVideo(MediaTrackConstraints::Create());
     MediaCaptureElementConstraints::From(*element).SetConstraints(
-        missing_audio);
+        /*video_constraints=*/MediaTrackConstraints::Create(),
+        /*audio_constraints=*/nullptr);
 
     provider->StartRequest(element, element->GetPermissionDescriptors());
 
@@ -295,8 +295,8 @@ TEST_F(UserMediaRequestProviderImplTest,
   {
     base::HistogramTester histogram_tester;
     auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-    auto* missing_both = HTMLMediaStreamConstraints::Create();
-    MediaCaptureElementConstraints::From(*element).SetConstraints(missing_both);
+    MediaCaptureElementConstraints::From(*element).SetConstraints(
+        /*video_constraints=*/nullptr, /*audio_constraints=*/nullptr);
 
     provider->StartRequest(element, element->GetPermissionDescriptors());
 
@@ -333,8 +333,8 @@ TEST_F(UserMediaRequestProviderImplTest,
   {
     base::HistogramTester histogram_tester;
     auto* element = MakeGarbageCollected<HTMLCameraElement>(GetDocument());
-    auto* constraints = HTMLMediaStreamConstraints::Create();
-    MediaCaptureElementConstraints::From(*element).SetConstraints(constraints);
+    MediaCaptureElementConstraints::From(*element).SetConstraints(
+        /*video_constraints=*/nullptr, /*audio_constraints=*/nullptr);
 
     provider->StartRequest(element, element->GetPermissionDescriptors());
 
@@ -364,8 +364,8 @@ TEST_F(UserMediaRequestProviderImplTest,
   {
     base::HistogramTester histogram_tester;
     auto* element = MakeGarbageCollected<HTMLMicrophoneElement>(GetDocument());
-    auto* constraints = HTMLMediaStreamConstraints::Create();
-    MediaCaptureElementConstraints::From(*element).SetConstraints(constraints);
+    MediaCaptureElementConstraints::From(*element).SetConstraints(
+        /*video_constraints=*/nullptr, /*audio_constraints=*/nullptr);
 
     provider->StartRequest(element, element->GetPermissionDescriptors());
 
@@ -376,6 +376,52 @@ TEST_F(UserMediaRequestProviderImplTest,
         "Blink.CapabilityElement.Microphone.RequestOutcome",
         CapabilityElementMediaRequestOutcome::kConstraintsValidationError, 1);
   }
+}
+
+TEST_F(UserMediaRequestProviderImplTest, StartRequestForwardsTrackConstraints) {
+  V8TestingScope scope;
+  ScopedCameraAndMicrophoneElementsForTest scoped_feature(true);
+  auto* provider = UserMediaRequestProvider::From(*GetDocument().domWindow());
+
+  // 1. <microphone> forwards audio track constraints (not unconstrained bool)
+  auto* mic = MakeGarbageCollected<HTMLMicrophoneElement>(GetDocument());
+  auto* mic_constraints = MediaTrackConstraintSet::Create();
+  mic_constraints->setSampleSize(
+      MakeGarbageCollected<V8UnionConstrainLongRangeOrLong>(16));
+  mic_constraints->setEchoCancellation(MakeGarbageCollected<
+      V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(false));
+  MediaCaptureElementConstraints::setConstraints(*mic, mic_constraints);
+
+  provider->StartRequest(mic, mic->GetPermissionDescriptors());
+
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kMediaStreamConstraintsAudio));
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kMediaStreamConstraintsSampleSize));
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kMediaStreamConstraintsEchoCancellation));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kMediaStreamConstraintsAudioUnconstrained));
+
+  // 2. <camera> forwards video track constraints (not unconstrained bool)
+  auto* camera = MakeGarbageCollected<HTMLCameraElement>(GetDocument());
+  auto* camera_constraints = MediaTrackConstraintSet::Create();
+  camera_constraints->setWidth(
+      MakeGarbageCollected<V8UnionConstrainLongRangeOrLong>(640));
+  camera_constraints->setHeight(
+      MakeGarbageCollected<V8UnionConstrainLongRangeOrLong>(480));
+  MediaCaptureElementConstraints::setConstraints(*camera, camera_constraints);
+
+  provider->StartRequest(camera, camera->GetPermissionDescriptors());
+
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kMediaStreamConstraintsVideo));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kMediaStreamConstraintsWidth));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kMediaStreamConstraintsHeight));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kMediaStreamConstraintsVideoUnconstrained));
 }
 
 TEST_F(UserMediaRequestProviderImplTest, MetricsCallbacksOnSuccess) {

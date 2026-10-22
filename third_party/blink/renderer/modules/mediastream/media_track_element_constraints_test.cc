@@ -32,7 +32,10 @@ TEST_F(MediaTrackElementConstraintsTest, SetConstraintsStoresValue) {
 
   MediaCaptureElementConstraints::setConstraints(*camera, constraints);
 
-  EXPECT_TRUE(MediaCaptureElementConstraints::From(*camera).Constraints());
+  EXPECT_TRUE(
+      MediaCaptureElementConstraints::From(*camera).VideoConstraints());
+  EXPECT_FALSE(
+      MediaCaptureElementConstraints::From(*camera).AudioConstraints());
 }
 
 TEST_F(MediaTrackElementConstraintsTest, SetConstraintsOnlySetsOnce) {
@@ -43,8 +46,8 @@ TEST_F(MediaTrackElementConstraintsTest, SetConstraintsOnlySetsOnce) {
       MakeGarbageCollected<V8UnionConstrainLongRangeOrLong>(480));
 
   MediaCaptureElementConstraints::setConstraints(*camera, constraints1);
-  const HTMLMediaStreamConstraints* sanitized =
-      MediaCaptureElementConstraints::From(*camera).Constraints();
+  const MediaTrackConstraints* sanitized =
+      MediaCaptureElementConstraints::From(*camera).VideoConstraints();
 
   EXPECT_TRUE(sanitized);
 
@@ -53,7 +56,7 @@ TEST_F(MediaTrackElementConstraintsTest, SetConstraintsOnlySetsOnce) {
       MakeGarbageCollected<V8UnionConstrainLongRangeOrLong>(1080));
 
   MediaCaptureElementConstraints::setConstraints(*camera, constraints2);
-  EXPECT_EQ(MediaCaptureElementConstraints::From(*camera).Constraints(),
+  EXPECT_EQ(MediaCaptureElementConstraints::From(*camera).VideoConstraints(),
             sanitized);
 }
 
@@ -91,13 +94,10 @@ TEST_F(MediaTrackElementConstraintsTest, SanitizeTrackConstraints) {
 
   MediaCaptureElementConstraints::setConstraints(*camera, constraints);
 
-  const HTMLMediaStreamConstraints* stored =
-      MediaCaptureElementConstraints::From(*camera).Constraints();
-
-  ASSERT_TRUE(stored);
-  ASSERT_TRUE(stored->hasVideo());
   const MediaTrackConstraints* sanitized =
-      static_cast<const MediaTrackConstraints*>(stored->video());
+      MediaCaptureElementConstraints::From(*camera).VideoConstraints();
+
+  ASSERT_TRUE(sanitized);
 
   // Valid basic constraints preserved
   EXPECT_TRUE(sanitized->hasHeight());
@@ -126,17 +126,15 @@ TEST_F(MediaTrackElementConstraintsTest, SanitizeTrackConstraintsMutatesCopy) {
 
   MediaCaptureElementConstraints::setConstraints(*camera, constraints);
 
-  const HTMLMediaStreamConstraints* stored =
-      MediaCaptureElementConstraints::From(*camera).Constraints();
+  const MediaTrackConstraints* sanitized =
+      MediaCaptureElementConstraints::From(*camera).VideoConstraints();
 
   // Test that original constraints are unmodified
   EXPECT_TRUE(constraints->width()->IsConstrainLongRange());
 
   // Test that sanitized constraints are modified
-  ASSERT_TRUE(stored);
-  ASSERT_TRUE(stored->hasVideo());
-  EXPECT_FALSE(static_cast<const MediaTrackConstraints*>(stored->video())
-                   ->hasWidth());
+  ASSERT_TRUE(sanitized);
+  EXPECT_FALSE(sanitized->hasWidth());
 }
 
 }  // namespace blink
