@@ -46,6 +46,7 @@
 #include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/ml_number.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -2250,10 +2251,43 @@ GraphBuilderCoreml::AddOperationForConv2d(
   static constexpr char kParamGroups[] = "groups";
   static constexpr char kParamOutputShape[] = "output_shape";
 
-  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   const mojom::Operand& input_operand = GetOperand(operation.input_operand_id);
   const mojom::Operand& filter_operand =
       GetOperand(operation.filter_operand_id);
+
+  // If a filter spatial dimension is 1, dilation along that dimension has no
+  // effect ((1 - 1) * d + 1 == 1). Normalizing it to 1 avoids triggering
+  // ANECompiler's dilated convolution lowering for 1x1 filters.
+  // Both conv2d (OIHW) and convTranspose2d (IOHW) place height and width at
+  // indices 2 and 3.
+  const base::span<const uint32_t> filter_dimensions =
+      filter_operand.descriptor.shape();
+  const uint32_t filter_height = filter_dimensions[2];
+  const uint32_t filter_width = filter_dimensions[3];
+  std::array<int32_t, 2> dilations = {
+      filter_height == 1
+          ? 1
+          : base::checked_cast<int32_t>(operation.dilations->height),
+      filter_width == 1
+          ? 1
+          : base::checked_cast<int32_t>(operation.dilations->width)};
+
+  const base::span<const uint32_t> input_dimensions =
+      input_operand.descriptor.shape();
+  const uint32_t batch = input_dimensions[0];
+  const uint32_t input_channels = input_dimensions[1];
+  const uint32_t output_channels =
+      GetOperandInfo(operation.output_operand_id).dimensions[1];
+  if (operation.kind == mojom::Conv2d::Kind::kDirect &&
+      (dilations[0] > 1 || dilations[1] > 1) && batch > 1 &&
+      operation.groups > 1 &&
+      !webnn::IsDepthwiseConv2d(input_channels, output_channels,
+                                operation.groups)) {
+    return NewNotSupportedError(
+        "Unsupported dilated grouped conv2d with batch > 1.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   switch (operation.kind) {
     case mojom::Conv2d::Kind::kDirect:
       CHECK(context_properties_.data_type_limits.conv2d_input.SupportsAll(
@@ -2281,9 +2315,6 @@ GraphBuilderCoreml::AddOperationForConv2d(
       base::checked_cast<int32_t>(operation.padding->ending->height),
       base::checked_cast<int32_t>(operation.padding->beginning->width),
       base::checked_cast<int32_t>(operation.padding->ending->width)};
-  std::array<int32_t, 2> dilations = {
-      base::checked_cast<int32_t>(operation.dilations->height),
-      base::checked_cast<int32_t>(operation.dilations->width)};
 
   SetInputsWithValues(
       *op->mutable_inputs(),
