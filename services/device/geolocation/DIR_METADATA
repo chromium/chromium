@@ -4,3 +4,5 @@ monorail: {
 buganizer_public: {
   component_id: 1456435
 }
+agentic_review: {
+}
