@@ -119,6 +119,20 @@ class CORE_EXPORT MainGap {
   // (Blocked / Empty). A main gap usually spans range [1, N) in one piece, but
   // the presence of spanning items or empty cells can break it into multiple
   // state-specific sub‑ranges.
+  //
+  // Unlike grid and multicol, grid-lanes has no shared track structure along
+  // the stacking axis. Segment bounds depend on cross gaps from both adjacent
+  // lanes. Store only spanner blocking here; paint uses the generated
+  // intersections to determine segment bounds and query each lane's empty
+  // space.
+  //
+  // TODO(javiercon): Grid-lanes segment states now come from two sources:
+  // spanner blocking from these ranges, and emptiness from paint-time queries.
+  // Grid-lanes applies visibility to segments after `rule-break` forms them,
+  // while other containers apply it while forming segments. When the other
+  // containers are changed to apply visibility after segments are formed,
+  // unify visibility handling for all containers and investigate whether
+  // spanner blocking can also be determined in paint.
   std::optional<GapSegmentStateRanges> gap_segment_state_ranges_;
 
   // Set to true when any gap segment range has a `kBlocked` state. This avoids

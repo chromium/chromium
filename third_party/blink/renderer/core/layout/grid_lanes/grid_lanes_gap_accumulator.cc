@@ -29,6 +29,65 @@ bool LaneEntriesMatch(
   return before_entries[before_index] == after_entries[after_index];
 }
 
+// Maps a forward stacking-axis offset, measured from the start of placement, to
+// its final offset after fill-reverse and content alignment.
+LayoutUnit FinalStackingOffset(LayoutUnit forward_offset,
+                               const GridLanesGapGeometryState& state) {
+  return state.is_fill_reverse
+             ? state.border_scrollbar_padding_start +
+                   state.effective_stacking_size - forward_offset +
+                   state.content_alignment_translation
+             : state.border_scrollbar_padding_start + forward_offset +
+                   state.content_alignment_translation;
+}
+
+// Returns the final bounds of an opening that is empty for gap decorations.
+//
+// The first opening in a lane, which has no item above it, and the last
+// opening both reach a content edge. That side is left open
+// (`LayoutUnit::Min()` or `LayoutUnit::Max()`), so it does not depend on the
+// container's final size.
+TrackOpeningCoordinates EmptyOpeningCoordinates(
+    const GridLanesRunningPositions::TrackOpening& opening,
+    bool is_last,
+    const GridLanesGapGeometryState& state) {
+  LayoutUnit start = LayoutUnit::Min();
+  LayoutUnit end = LayoutUnit::Max();
+
+  // Fill-reverse flips the stacking axis, so the forward start becomes the
+  // final end.
+  LayoutUnit& forward_start = state.is_fill_reverse ? end : start;
+  LayoutUnit& forward_end = state.is_fill_reverse ? start : end;
+
+  // Without a candidate, this is the lane's first opening and it starts at the
+  // content edge.
+  if (opening.alignment_candidate.item) {
+    forward_start = FinalStackingOffset(
+        is_last ? opening.coordinates.start_position
+                : opening.coordinates.start_position - state.stacking_gap,
+        state);
+  }
+  if (!is_last) {
+    forward_end = FinalStackingOffset(
+        opening.coordinates.end_position - state.stacking_gap, state);
+  }
+  return {start, end};
+}
+
+// Empty openings in a lane arrive in increasing order and never overlap: the
+// space between two of them is the stacking contribution of the item between
+// them, which is never negative. Openings that touch are kept separate, since
+// there is still an item between them.
+void AppendEmptyOpening(const TrackOpeningCoordinates& opening,
+                        Vector<TrackOpeningCoordinates>& lane_openings) {
+  if (opening.end_position <= opening.start_position) {
+    return;
+  }
+  CHECK(lane_openings.empty() ||
+        opening.start_position >= lane_openings.back().end_position);
+  lane_openings.push_back(opening);
+}
+
 }  // namespace
 
 GridLanesGapAccumulator::GridLanesGapAccumulator(const ComputedStyle& style)
@@ -75,20 +134,62 @@ LayoutUnit GridLanesGapAccumulator::FinalGutterCenter(
     const GridLanesItemData& item,
     const GridLanesGapGeometryState& state) const {
   const LayoutUnit half_stacking_gap = state.stacking_gap / 2;
-  const LayoutUnit forward_center =
-      item.ForwardStackingStart() - half_stacking_gap;
-  return state.is_fill_reverse
-             ? state.border_scrollbar_padding_start +
-                   state.effective_stacking_size - forward_center +
-                   state.content_alignment_translation
-             : state.border_scrollbar_padding_start + forward_center +
-                   state.content_alignment_translation;
+  return FinalStackingOffset(item.ForwardStackingStart() - half_stacking_gap,
+                             state);
 }
 
 wtf_size_t GridLanesGapAccumulator::UncollapsedTrackCount() const {
   CHECK(collapsed_track_indexes_);
   CHECK_LE(collapsed_track_indexes_->size(), raw_track_count_);
   return raw_track_count_ - collapsed_track_indexes_->size();
+}
+
+bool GridLanesGapAccumulator::HasMainGaps() const {
+  return gap_geometry_->MainGapCount() > 0;
+}
+
+void GridLanesGapAccumulator::CaptureEmptyOpenings(
+    const GridLanesRunningPositions& running_positions,
+    const GridLanesGapGeometryState& state) {
+  CHECK(HasMainGaps());
+  CHECK_EQ(running_positions.TrackCount(), raw_track_count_);
+  CHECK(running_positions.IsTrackingAlignmentCandidates());
+
+  GridLanesEmptyOpenings empty_openings;
+  empty_openings.ReserveInitialCapacity(UncollapsedTrackCount());
+
+  wtf_size_t collapsed_track_index = 0;
+  for (wtf_size_t raw_track_index = 0; raw_track_index < raw_track_count_;
+       ++raw_track_index) {
+    if (collapsed_track_index < collapsed_track_indexes_->size() &&
+        collapsed_track_indexes_->at(collapsed_track_index) ==
+            raw_track_index) {
+      ++collapsed_track_index;
+      continue;
+    }
+
+    Vector<TrackOpeningCoordinates>& lane_empty_openings =
+        empty_openings.emplace_back();
+    // Openings are ordered along the stacking axis, ending with the last
+    // opening. Fill-reverse visits them backwards so final offsets increase.
+    const HeapVector<GridLanesRunningPositions::TrackOpening>& openings =
+        running_positions.GetTrackOpenings(raw_track_index);
+    const wtf_size_t opening_count = openings.size();
+
+    for (wtf_size_t i = 0; i < opening_count; ++i) {
+      const wtf_size_t opening_index =
+          state.is_fill_reverse ? opening_count - i - 1 : i;
+      const auto& opening = openings[opening_index];
+      CHECK(opening_index == 0 || opening.alignment_candidate.item);
+      if (opening.IsEmptyForGapDecorations()) {
+        AppendEmptyOpening(
+            EmptyOpeningCoordinates(
+                opening, /*is_last=*/opening_index == opening_count - 1, state),
+            lane_empty_openings);
+      }
+    }
+  }
+  gap_geometry_->SetGridLanesEmptyOpenings(std::move(empty_openings));
 }
 
 const GapGeometry* GridLanesGapAccumulator::FinalizeGapGeometry(
@@ -106,6 +207,14 @@ const GapGeometry* GridLanesGapAccumulator::FinalizeGapGeometry(
     gap_geometry_->SetContentInlineOffsets(stacking_content_start,
                                            stacking_content_end);
     gap_geometry_->SetInlineGapSize(state.stacking_gap);
+  }
+
+  // Placement is skipped when the container has no in-flow items, so every
+  // lane is empty.
+  if (grid_lanes.empty() && HasMainGaps()) {
+    gap_geometry_->SetGridLanesEmptyOpenings(GridLanesEmptyOpenings(
+        UncollapsedTrackCount(), {{/*start_position=*/LayoutUnit::Min(),
+                                   /*end_position=*/LayoutUnit::Max()}}));
   }
 
   BuildCrossGaps(grid_lanes, state);
@@ -190,25 +299,13 @@ void GridLanesGapAccumulator::RecordMainGapSegmentStates(
         previous_lane_occupants,
     const HeapVector<Member<const GridLanesItemPlacementData>>&
         current_lane_occupants) {
-  // A segment is empty before if the previous lane has no items, and empty
-  // after if the current lane has no items. This state applies to every
-  // segment in the gap.
-  GapSegmentState empty_state(GapSegmentState::kNone);
-  if (previous_lane_occupants.empty()) {
-    empty_state |= GapSegmentState::kEmptyBefore;
-  }
-  if (current_lane_occupants.empty()) {
-    empty_state |= GapSegmentState::kEmptyAfter;
-  }
-
   MainGap& main_gap = gap_geometry_->MainGapAt(main_gap_index);
   GridLanesMainGapSegmentWalker walker(*gap_geometry_, main_gap_index);
   wtf_size_t segment_index = 0;
   std::optional<wtf_size_t> blocked_run_start;
 
   // Walk through the gap decoration segments for this `MainGap` to mark the
-  // segments that are blocked by a spanner and count all segments for the
-  // empty-state range.
+  // segments that are blocked by a spanner.
   while (const auto segment = walker.Next()) {
     // If the entries in the lanes adjacent to this `MainGap` share placement
     // data, one item spans both lanes, so the segment is blocked.
@@ -230,11 +327,7 @@ void GridLanesGapAccumulator::RecordMainGapSegmentStates(
     ++segment_index;
   }
 
-  if (empty_state.HasEmptyStatus()) {
-    // If either adjacent lane is empty, all segments share the same empty
-    // state.
-    main_gap.AddGapSegmentStateRange({0, segment_index, empty_state});
-  } else if (blocked_run_start) {
+  if (blocked_run_start) {
     // Close a blocked run that extends through the final segment.
     main_gap.AddGapSegmentStateRange(
         {*blocked_run_start, segment_index,
@@ -248,12 +341,6 @@ void GridLanesGapAccumulator::BuildCrossGaps(
   // Placement is skipped when the container has no in-flow items. Main gaps
   // still exist, but there is no lane graph from which to build cross gaps.
   if (grid_lanes.empty()) {
-    // Mark both sides of each main gap empty so `around` and `between` do not
-    // paint rules in an empty container.
-    for (wtf_size_t i = 0; i < gap_geometry_->MainGapCount(); ++i) {
-      RecordMainGapSegmentStates(i, /*previous_lane_occupants=*/{},
-                                 /*current_lane_occupants=*/{});
-    }
     return;
   }
 

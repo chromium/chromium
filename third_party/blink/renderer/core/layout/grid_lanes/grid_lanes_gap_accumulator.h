@@ -17,6 +17,7 @@ namespace blink {
 
 class ComputedStyle;
 class GapGeometry;
+class GridLanesRunningPositions;
 class GridLayoutTrackCollection;
 
 // Placement-derived inputs used to build grid-lanes gap geometry.
@@ -48,6 +49,15 @@ class CORE_EXPORT GridLanesGapAccumulator {
   // `third_party/blink/renderer/core/layout/gap/README.md` for Blink's
   // Main/Cross model.
   void BuildMainGaps(const GridLayoutTrackCollection& grid_axis_tracks);
+
+  bool HasMainGaps() const;
+
+  // Stores the empty space of every non-collapsed lane in the gap geometry.
+  // We consider an opening empty if no item is above it, or if the item above
+  // it has no available alignment space across its whole span. Otherwise the
+  // whole opening is occupied.
+  void CaptureEmptyOpenings(const GridLanesRunningPositions& running_positions,
+                            const GridLanesGapGeometryState& state);
 
   // Builds `CrossGap` geometry from the placed-item lane graph.
   const GapGeometry* FinalizeGapGeometry(const GridLanesDataVector& grid_lanes,
@@ -81,7 +91,7 @@ class CORE_EXPORT GridLanesGapAccumulator {
       const GridLanesGapGeometryState& state,
       HeapVector<Member<const GridLanesItemPlacementData>>& lane_occupants);
 
-  // Records lane-wide emptiness and spanner-blocked ranges between two lanes.
+  // Records spanner-blocked ranges between two lanes.
   // Each occupant list holds the placement data of every entry in a lane, in
   // final stacking order. Every lane entry of a spanner shares one placement
   // data object, so equal entries in adjacent lanes identify one item that

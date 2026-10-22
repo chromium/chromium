@@ -307,12 +307,14 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
       gap_accumulator.emplace(style);
       gap_accumulator->BuildMainGaps(track_collection);
     }
+    const bool has_main_gap_decorations =
+        gap_accumulator && gap_accumulator->HasMainGaps();
 
     if (!grid_items->IsEmpty()) {
       GridLanesRunningPositions running_positions(
           track_collection, style,
           ResolveFitToleranceForGridLanes(style, grid_lanes_available_size_),
-          grid_items->HasStackingAxisAlignment());
+          grid_items->HasStackingAxisAlignment(), has_main_gap_decorations);
 
       // TODO(celestepan): We will eventually change the keywords used, but
       // using `grid-columns` and `grid-rows` for now to unblock implementation.
@@ -344,6 +346,10 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
           out_grid_lanes, out_gap_geometry_state);
 
       SetReadingFlowNodes(*grid_items, grid_lanes);
+      if (has_main_gap_decorations) {
+        gap_accumulator->CaptureEmptyOpenings(running_positions,
+                                              *gap_geometry_state);
+      }
     }
 
     // TODO(layout-dev): This isn't great but matches legacy. Ideally this
@@ -959,8 +965,13 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
                                 content_alignment_translation, is_fill_reverse);
   }
 
-  ApplyStackingAxisAlignment(running_positions, effective_stacking_axis_size,
-                             stacking_axis_gap, out_grid_lanes);
+  // Placement is complete, so finalize the track openings used by stacking-axis
+  // alignment and gap decorations.
+  if (running_positions.IsTrackingAlignmentCandidates()) {
+    running_positions.FinalizeTrackOpenings(effective_stacking_axis_size,
+                                            stacking_axis_gap);
+  }
+  ApplyStackingAxisAlignment(running_positions, out_grid_lanes);
 
   const bool is_stacking_axis_reading_flow =
       style.ReadingFlow() ==
@@ -1283,8 +1294,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
 
 void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
     GridLanesRunningPositions& running_positions,
-    LayoutUnit effective_stacking_axis_size,
-    LayoutUnit stacking_axis_gap,
     GridLanesDataVector* grid_lanes) {
   if (!running_positions.IsStackingAxisAlignmentSet()) {
     return;
@@ -1296,9 +1305,6 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
   const bool is_fill_reverse = style.IsReverseGridLanesFillDirection();
   const bool is_fragmentation_collection =
       grid_lanes && GetConstraintSpace().HasBlockFragmentation();
-
-  running_positions.FinalizeTrackOpeningsForStackingAxisAlignment(
-      effective_stacking_axis_size, stacking_axis_gap);
 
   auto alignment_candidate_iterator =
       running_positions.GetAlignmentCandidateIterator();
@@ -1849,16 +1855,11 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       auto new_running_position =
           start_offset_in_stacking_axis + fragment_stacking_axis_contribution;
 
-      // If dense packing or stacking-axis alignment tracking is enabled, we
-      // need to input the maximum running position of the tracks our items span
-      // so that we can account for any new openings that may form.
-      //
+      // Input the maximum running position of the tracks our items span, so
+      // that any new openings that may form can be tracked.
       running_positions.UpdateRunningPositionsForSpan(
           grid_lanes_item, new_running_position, stacking_size,
-          (is_dense_packing || running_positions.IsStackingAxisAlignmentSet())
-              ? std::make_optional(
-                    /*max_running_position=*/start_offset_in_stacking_axis)
-              : std::nullopt,
+          /*max_running_position_for_span=*/start_offset_in_stacking_axis,
           item_index, child_layout_subtree, out_grid_lanes);
 
       // Update auto-placement cursor after we have determined the item's final

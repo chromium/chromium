@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/gap/main_gap.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/track_opening.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -58,6 +59,14 @@ class CORE_EXPORT BlockedStatus {
 
 using MainGaps = Vector<MainGap>;
 using CrossGaps = Vector<CrossGap>;
+
+// TODO(javiercon): clean up now that we have a lot of layout algorithm-specific
+// code, potentially look into subclassing gap geometry for each container type.
+//
+// Empty openings of each non-collapsed grid-lanes lane, indexed by lane, in
+// logical stacking-axis coordinates. An empty opening has no item and no item
+// that could align into it.
+using GridLanesEmptyOpenings = Vector<Vector<TrackOpeningCoordinates>>;
 
 // Walks the gap decoration segments for a `MainGap` in a grid-lanes container.
 // Segments are formed by the intersections of the `MainGap` with the
@@ -227,6 +236,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
            block_gap_size_ == other.block_gap_size_ &&
            container_type_ == other.container_type_ &&
            main_gaps_ == other.main_gaps_ && cross_gaps_ == other.cross_gaps_ &&
+           grid_lanes_empty_openings_ == other.grid_lanes_empty_openings_ &&
            multicol_spanner_main_gap_count_ ==
                other.multicol_spanner_main_gap_count_ &&
            flex_cross_gap_sizes_ == other.flex_cross_gap_sizes_ &&
@@ -358,6 +368,14 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   wtf_size_t MainGapCount() const { return main_gaps_.size(); }
   wtf_size_t CrossGapCount() const { return cross_gaps_.size(); }
+
+  // Stores finalized empty openings grouped by non-collapsed lane.
+  void SetGridLanesEmptyOpenings(GridLanesEmptyOpenings empty_openings);
+
+  // Returns the empty openings of a lane, as offsets along the stacking axis.
+  // `lane_index` counts only non-collapsed lanes.
+  const Vector<TrackOpeningCoordinates>& EmptyOpeningsForLane(
+      wtf_size_t lane_index) const;
 
   // Returns the number of multicol main gaps eligible for painting. Spanner
   // main gaps are skipped because they do not consume decoration values.
@@ -795,6 +813,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
+
+  // Empty openings per lane, used to determine segment visibility. Note: this
+  // is only used for grid lanes containers.
+  GridLanesEmptyOpenings grid_lanes_empty_openings_;
 
   // Per-line effective gap sizes (`gap` property + content distribution space)
   // for flex containers. Column flex uses absolute flex-line indices, while row

@@ -16,6 +16,18 @@
 
 namespace blink {
 
+void GapGeometry::SetGridLanesEmptyOpenings(
+    GridLanesEmptyOpenings empty_openings) {
+  CHECK_EQ(container_type_, ContainerType::kGridLanes);
+  CHECK_EQ(empty_openings.size(), MainGapCount() + 1);
+  grid_lanes_empty_openings_ = std::move(empty_openings);
+}
+
+const Vector<TrackOpeningCoordinates>& GapGeometry::EmptyOpeningsForLane(
+    wtf_size_t lane_index) const {
+  return grid_lanes_empty_openings_[lane_index];
+}
+
 GridLanesMainGapSegmentWalker::GridLanesMainGapSegmentWalker(
     const GapGeometry& gap_geometry,
     wtf_size_t main_gap_index)

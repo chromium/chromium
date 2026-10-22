@@ -26,6 +26,58 @@ namespace blink {
 
 namespace {
 
+// TODO(javiercon): clean up now that we have a lot of layout algorithm-specific
+// code, potentially look into subclassing gap geometry for each container type.
+//
+// Returns whether a lane is empty along a whole segment, meaning the segment
+// lies inside one of the lane's empty openings. A segment that only partly
+// overlaps empty space is not empty.
+bool IsLaneEmptyForSegment(
+    base::span<const TrackOpeningCoordinates>& remaining_empty_openings,
+    LayoutUnit start,
+    LayoutUnit end) {
+  if (end <= start) {
+    return true;
+  }
+
+  // Segments are checked in increasing order. An opening that ends before
+  // this segment starts cannot contain this or any later segment, so skip it
+  // for good.
+  while (!remaining_empty_openings.empty() &&
+         remaining_empty_openings.front().end_position <= start) {
+    remaining_empty_openings = remaining_empty_openings.subspan(1u);
+  }
+
+  // A lane with no empty openings left is occupied along this segment.
+  if (remaining_empty_openings.empty()) {
+    return false;
+  }
+  const TrackOpeningCoordinates& opening = remaining_empty_openings.front();
+  return opening.start_position <= start && end <= opening.end_position;
+}
+
+// Returns whether a grid-lanes rule segment between `start` and `end` is
+// visible, based on whether each adjacent lane is empty along it.
+//
+// `before_openings` and `after_openings` are the empty openings of the
+// lanes before and after the main gap.
+bool IsGridLanesSegmentVisible(
+    LayoutUnit start,
+    LayoutUnit end,
+    RuleVisibilityItems rule_visibility,
+    base::span<const TrackOpeningCoordinates>& before_openings,
+    base::span<const TrackOpeningCoordinates>& after_openings) {
+  GapSegmentState segment_state(GapSegmentState::kNone);
+  if (IsLaneEmptyForSegment(before_openings, start, end)) {
+    segment_state |= GapSegmentState::kEmptyBefore;
+  }
+  if (IsLaneEmptyForSegment(after_openings, start, end)) {
+    segment_state |= GapSegmentState::kEmptyAfter;
+  }
+  return CSSGapDecorationUtils::IsRuleSegmentVisible(segment_state,
+                                                     rule_visibility);
+}
+
 // Returns the total number of row gaps, including gaps suppressed by
 // fragmentation. Grid and flex store the total on the first fragment. For
 // multicol, it is derived from the last one.
@@ -315,6 +367,16 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       is_main ? gap_geometry.GetMainGaps().size()
               : gap_geometry.GetCrossGaps().size();
 
+  // Grid and multicol use empty-side states derived from aligned tracks or
+  // rows. Grid-lanes segment bounds depend on cross gaps from both adjacent
+  // lanes, so query lane coverage after the generated intersections define the
+  // segment.
+  const bool must_compute_lane_visibility =
+      is_main &&
+      gap_geometry.GetContainerType() ==
+          GapGeometry::ContainerType::kGridLanes &&
+      rule_visibility != RuleVisibilityItems::kAll;
+
   const bool has_row_gap_fragmentation =
       gap_geometry.HasRowGapFragmentation(box_fragment_, is_main);
   const bool has_fragmented_flex_cross_gap_indices =
@@ -429,6 +491,13 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     gap_geometry.GenerateIntersectionListForGap(
         track_direction, gap_index, intersections, cross_gap_owner_index);
 
+    base::span<const TrackOpeningCoordinates> before_empty_openings;
+    base::span<const TrackOpeningCoordinates> after_empty_openings;
+    if (must_compute_lane_visibility) {
+      before_empty_openings = gap_geometry.EmptyOpeningsForLane(gap_index);
+      after_empty_openings = gap_geometry.EmptyOpeningsForLane(gap_index + 1);
+    }
+
     const wtf_size_t intersection_count = intersections.size();
 
     CHECK_GE(intersection_count, 2u);
@@ -442,6 +511,30 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       if (start >= end) {
         // Break because there's no gap segment to paint.
         break;
+      }
+
+      // `*_cross_width` is the width of the gap at the intersection point in
+      // the cross axis, which is used to compute the gap decoration offset from
+      // the intersection point.
+      const LayoutUnit start_cross_width =
+          gap_geometry.GetCrossWidthForIntersection(
+              track_direction, gap_index, start, is_main, intersections);
+      const LayoutUnit end_cross_width =
+          gap_geometry.GetCrossWidthForIntersection(
+              track_direction, gap_index, end, is_main, intersections);
+
+      if (must_compute_lane_visibility) {
+        // Check visibility against the segment's gutter-edge bounds.
+        const LayoutUnit segment_start =
+            intersections[start].GetOffset() + start_cross_width / 2;
+        const LayoutUnit segment_end =
+            intersections[end].GetOffset() - end_cross_width / 2;
+        if (!IsGridLanesSegmentVisible(segment_start, segment_end,
+                                       rule_visibility, before_empty_openings,
+                                       after_empty_openings)) {
+          start = end;
+          continue;
+        }
       }
 
       const bool start_is_cap_intersection = gap_geometry.IsCapIntersection(
@@ -500,13 +593,6 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
           end_has_joining_decoration, end_max_inset_width,
           end_cross_decoration_width);
 
-      // `*_cross_width` is the width of the gap at the intersection point in
-      // the cross axis, which is used to compute the gap decoration offset from
-      // the intersection point.
-      LayoutUnit start_cross_width = gap_geometry.GetCrossWidthForIntersection(
-          track_direction, gap_index, start, is_main, intersections);
-      LayoutUnit end_cross_width = gap_geometry.GetCrossWidthForIntersection(
-          track_direction, gap_index, end, is_main, intersections);
       const LayoutUnit decoration_start_offset =
           (start_cross_width / 2) + start_inset;
       const LayoutUnit decoration_end_offset =

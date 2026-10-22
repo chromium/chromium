@@ -233,16 +233,12 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       wtf_size_t builder_child_index,
       LogicalOffset item_offset);
 
-  // Finalizes track opening sizes, computes and applies stacking axis alignment
-  // offsets, and relayouts items that are stretch aligned with their stretched
-  // size. `effective_stacking_axis_size` is the size of the container's
-  // stacking axis, and `stacking_axis_gap` is the size of the gap between items
-  // in the container specified by the `gap` property. If provided, `grid_lanes`
-  // contains the persisted item placement data to update during fragmentation
-  // collection. It is also used for building gap decorations.
+  // Computes and applies stacking axis alignment offsets, and relayouts items
+  // that are stretch aligned with their stretched size. Track openings must
+  // already be finalized. If provided, `grid_lanes` contains the persisted item
+  // placement data to update during fragmentation collection. It is also used
+  // for building gap decorations.
   void ApplyStackingAxisAlignment(GridLanesRunningPositions& running_positions,
-                                  LayoutUnit effective_stacking_axis_size,
-                                  LayoutUnit stacking_axis_gap,
                                   GridLanesDataVector* grid_lanes = nullptr);
 
   // Places all out-of-flow (OOF) grid-lanes items. For each item, this method
