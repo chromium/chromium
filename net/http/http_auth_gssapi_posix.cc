@@ -4,12 +4,16 @@
 
 #include "net/http/http_auth_gssapi_posix.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <limits>
 #include <string>
 #include <string_view>
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -33,16 +37,32 @@ namespace net {
 
 using DelegationType = HttpAuth::DelegationType;
 
+namespace {
+
+// On x86 macOS, Apple's gssapi.h wraps gss_OID_desc in `#pragma pack(2)`,
+// which places `elements` at a 4-byte-aligned address. A statically
+// initialized pointer that isn't 8-byte aligned can straddle a page boundary,
+// which Mach-O chained fixups can't represent. Pad the descriptor so that
+// `gss_OID_desc::elements` is 8-byte aligned on all platforms.
+struct alignas(8) PaddedOidDesc {
+  uint32_t padding;
+  gss_OID_desc desc;
+};
+static_assert(
+    (offsetof(PaddedOidDesc, desc) + offsetof(gss_OID_desc, elements)) % 8 ==
+    0);
+
 // Exported mechanism for GSSAPI. We always use SPNEGO:
 
 // iso.org.dod.internet.security.mechanism.snego (1.3.6.1.5.5.2)
-gss_OID_desc CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL = {
-  6,
-  const_cast<char*>("\x2b\x06\x01\x05\x05\x02")
-};
+PaddedOidDesc CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL = {
+    0,
+    {6, const_cast<char*>("\x2b\x06\x01\x05\x05\x02")}};
+
+}  // namespace
 
 gss_OID CHROME_GSS_SPNEGO_MECH_OID_DESC =
-    &CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL;
+    &CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL.desc;
 
 OM_uint32 DelegationTypeToFlag(DelegationType delegation_type) {
   switch (delegation_type) {
@@ -112,13 +132,6 @@ class ScopedName {
   gss_name_t name_;
   raw_ptr<GSSAPILibrary> gssapi_lib_;
 };
-
-bool OidEquals(const gss_OID left, const gss_OID right) {
-  if (left->length != right->length)
-    return false;
-  return 0 ==
-         UNSAFE_TODO(memcmp(left->elements, right->elements, right->length));
-}
 
 base::DictValue GetGssStatusCodeValue(GSSAPILibrary* gssapi_lib,
                                       OM_uint32 status,
@@ -212,28 +225,34 @@ base::DictValue OidToValue(gss_OID oid) {
                                                                 oid->length)));
 
   // Based on RFC 2744 Appendix A. Hardcoding the OIDs in the list below to
-  // avoid having a static dependency on the library.
+  // avoid having a static dependency on the library. The OIDs are stored as
+  // bytes rather than as gss_OID_desc, see the comment on PaddedOidDesc.
   static const struct {
     const char* symbolic_name;
-    const gss_OID_desc oid_desc;
+    base::span<const char> oid;
   } kWellKnownOIDs[] = {
       {"GSS_C_NT_USER_NAME",
-       {10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")}},
+       base::span_from_cstring("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")},
       {"GSS_C_NT_MACHINE_UID_NAME",
-       {10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x02")}},
+       base::span_from_cstring("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x02")},
       {"GSS_C_NT_STRING_UID_NAME",
-       {10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x03")}},
+       base::span_from_cstring("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x03")},
       {"GSS_C_NT_HOSTBASED_SERVICE_X",
-       {6, const_cast<char*>("\x2b\x06\x01\x05\x06\x02")}},
+       base::span_from_cstring("\x2b\x06\x01\x05\x06\x02")},
       {"GSS_C_NT_HOSTBASED_SERVICE",
-       {10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")}},
-      {"GSS_C_NT_ANONYMOUS", {6, const_cast<char*>("\x2b\x06\01\x05\x06\x03")}},
+       base::span_from_cstring("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")},
+      {"GSS_C_NT_ANONYMOUS",
+       base::span_from_cstring("\x2b\x06\01\x05\x06\x03")},
       {"GSS_C_NT_EXPORT_NAME",
-       {6, const_cast<char*>("\x2b\x06\x01\x05\x06\x04")}}};
+       base::span_from_cstring("\x2b\x06\x01\x05\x06\x04")}};
 
+  // SAFETY: The GSS-API contract is that `elements` points to `length` bytes.
+  auto oid_bytes = UNSAFE_BUFFERS(
+      base::span(static_cast<const char*>(oid->elements), oid->length));
   for (auto& well_known_oid : kWellKnownOIDs) {
-    if (OidEquals(oid, const_cast<const gss_OID>(&well_known_oid.oid_desc)))
+    if (well_known_oid.oid == oid_bytes) {
       params.Set("oid", well_known_oid.symbolic_name);
+    }
   }
 
   return params;
@@ -841,7 +860,11 @@ int HttpAuthGSSAPI::GetNextSecurityToken(const std::string& spn,
   // pointers. Rather than const casting, let's just leave this as non-const.
   // Even if the OID pointer is const, the inner |elements| pointer is still
   // non-const.
-  static gss_OID_desc kGSS_C_NT_HOSTBASED_SERVICE = {
+  //
+  // This is deliberately not static: a static gss_OID_desc would be statically
+  // initialized data with a 4-byte-aligned pointer on x86 macOS (see the
+  // comment on PaddedOidDesc), while a local is built on the stack by code.
+  gss_OID_desc kGSS_C_NT_HOSTBASED_SERVICE = {
       10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")};
 
   // Create a name for the principal
