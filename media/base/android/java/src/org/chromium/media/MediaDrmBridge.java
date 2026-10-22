@@ -748,15 +748,14 @@ public class MediaDrmBridge {
 
         assert mMediaDrm != null;
 
-        if (mMediaCrypto != null) {
-            mMediaCrypto.release();
-            mMediaCrypto = null;
-        } else {
-            // MediaCrypto never notified. Notify a null one now.
-            onMediaCryptoReady(null);
-        }
+        // 1. Detach MediaDrm listeners before closing sessions/DRM (MediaDrm.close() does not clear
+        // mListenerMap).
+        mMediaDrm.clearOnEventListener();
+        mMediaDrm.clearOnExpirationUpdateListener();
+        mMediaDrm.clearOnKeyStatusChangeListener();
+        mMediaDrm.clearOnSessionLostStateListener();
 
-        // Close all open sessions.
+        // 2. Close open application sessions while native ICryptoPlugin is still valid.
         for (SessionId sessionId : mSessionManager.getAllSessionIds()) {
             Log.i(TAG, "Force closing session %s", sessionId);
 
@@ -765,12 +764,23 @@ public class MediaDrmBridge {
         }
         mSessionManager = new MediaDrmSessionManager(mStorage);
 
-        // Close mMediaCryptoSession if it's open.
+        // 3. Release MediaCrypto (calls JCrypto::mCrypto->destroyPlugin()) before closing its
+        // underlying session so the HAL session handle does not leak.
+        if (mMediaCrypto != null) {
+            mMediaCrypto.release();
+            mMediaCrypto = null;
+        } else {
+            // MediaCrypto never notified. Notify a null one now.
+            onMediaCryptoReady(null);
+        }
+
+        // 4. Close mMediaCryptoSession after MediaCrypto has dropped its reference to it.
         if (mMediaCryptoSession != null) {
             closeSessionNoException(mMediaCryptoSession);
             mMediaCryptoSession = null;
         }
 
+        // 5. Close MediaDrm last after all sessions and crypto plugins have been torn down.
         if (mMediaDrm != null) {
             try {
                 mMediaDrm.close();
