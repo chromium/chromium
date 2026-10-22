@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/logger.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
@@ -2825,14 +2826,11 @@ TEST_F(TabGroupSyncServiceImplTest, MetricsOnSignin) {
               IsEmpty());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/417950948): Remove this test once kSync is fully deprecated.
 TEST_F(TabGroupSyncServiceImplTest, MetricsOnSync) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          syncer::kReplaceSyncPromosWithSignInPromos,
-          syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+  features.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
 
   base::HistogramTester histograms;
   identity_test_environment_.MakePrimaryAccountAvailable(
@@ -2860,6 +2858,7 @@ TEST_F(TabGroupSyncServiceImplTest, MetricsOnSync) {
   EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSync."),
               ContainerEq(expected_sync_counts));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that after transitioning from a saved tab group to a shared tab group,
 // the shared tab group is the only tab group returned by GetAllGroups().
