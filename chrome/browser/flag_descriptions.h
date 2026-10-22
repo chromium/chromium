@@ -5267,8 +5267,10 @@ inline constexpr char kDecisionsAPIDescription[] =
     "Enables the Built-in AI Decisions API (DecisionModel) for on-device "
     "verification, classification, and decisions regarding unstructured data, "
     "over a developer-defined schema. See the explainer [1] for details. "
-    "The Gemma 4 option forces the CPU backend to work around GPU scoring "
-    "issues, this impacts Gemma 4 usage for all built-in AI APIs.";
+    "Uses the EmbeddingGemma V1 backend by default if the devTrialBackend "
+    "option for create() is not specified. Forces the Gemma 4 CPU backend to "
+    "work around GPU scoring issues, which impacts Gemma 4 usage for all "
+    "built-in AI APIs.";
 inline constexpr const char* kDecisionsAPILinks[1] = {
     "https://github.com/explainers-by-googlers/decisions-api"};
 

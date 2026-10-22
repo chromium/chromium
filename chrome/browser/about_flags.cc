@@ -4915,10 +4915,8 @@ const FeatureEntry::Choice kGemma4Choices[] = {
 // clones works on GPU.
 const FeatureEntry::Choice kDecisionsAPIChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"Enabled with EmbeddingGemma V1", switches::kEnableFeatures,
-     "AIDecisionModelAPI:backend/embedding_gemma_v1"},
-    {"Enabled with Gemma 4 on CPU", switches::kEnableFeatures,
-     "AIDecisionModelAPI:backend/language_model,"
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "AIDecisionModelAPI,"
      "OptimizationGuideManifestBroker,"
      "AIApiFoundationalModel:model_version/v4,"
      "OnDeviceModelForceCpuBackend"}};
