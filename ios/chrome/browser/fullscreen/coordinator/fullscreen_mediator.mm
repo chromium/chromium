@@ -89,6 +89,13 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   // Whether the current drag gesture started while scrolled to the bottom of
   // the page.
   BOOL _startedDragAtBottom;
+  // Last recorded content height to detect programmatic scroll clamping during
+  // contentSize updates.
+  CGFloat _lastContentHeight;
+  // Last recorded vertical translation of the scroll view's pan gesture.
+  CGFloat _lastPanTranslationY;
+  // Last scroll delta driven by the user's touch while tracking.
+  CGFloat _lastTrackingScrollDelta;
 }
 
 #pragma mark - Public
@@ -178,9 +185,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
         _webViewProxyObserver.get());
   }
   _webState = webState;
-  _startScrollingTime = std::nullopt;
-  _isScrollingTimeRecorded = NO;
-  _startedDragAtBottom = NO;
+  [self resetScrollTrackingState];
   if (_webState) {
     _webState->AddObserver(_webStateObserver.get());
     WebViewProxyTabHelper* tabHelper =
@@ -251,9 +256,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
   if (!navigationContext->IsSameDocument()) {
-    _startScrollingTime = std::nullopt;
-    _isScrollingTimeRecorded = NO;
-    _startedDragAtBottom = NO;
+    [self resetScrollTrackingState];
     _browserAgent->ExitFullscreen(
         PassKey(), FullscreenModeTransitionTrigger::kForcedByCode,
         /*animated=*/true);
@@ -279,11 +282,12 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 #pragma mark - CRWWebViewScrollViewProxyObserver
 
 - (void)webViewScrollViewDidScroll:(CRWWebViewScrollViewProxy*)scrollView {
+  CGFloat previousContentOffset = _lastContentOffset;
   CGFloat contentOffset = scrollView.contentOffset.y;
   CGFloat delta = contentOffset - _lastContentOffset;
   _lastContentOffset = contentOffset;
 
-  if (IsFullscreenEasedTransitionsEnabled() && _browserAgent->is_animating()) {
+  if (_handlingScroll || _updatingInsets) {
     return;
   }
 
@@ -293,21 +297,72 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
     return;
   }
 
+  CGFloat contentHeight = scrollView.contentSize.height;
+  BOOL contentHeightChanged = contentHeight != _lastContentHeight;
+  _lastContentHeight = contentHeight;
+
+  CGPoint panTranslation = [scrollView.panGestureRecognizer
+      translationInView:scrollView.panGestureRecognizer.view];
+  CGFloat panTransDelta = panTranslation.y - _lastPanTranslationY;
+  _lastPanTranslationY = panTranslation.y;
+
+  if (scrollView.isTracking && panTransDelta * delta < 0) {
+    _lastTrackingScrollDelta = delta;
+  }
+
+  CGFloat minOffset = -scrollView.contentInset.top;
+  CGFloat scrollViewHeight = CGRectGetHeight(scrollView.frame);
+  CGFloat maxOffset =
+      contentHeight - scrollViewHeight + scrollView.contentInset.bottom;
+
   // Check if content is scrolled past the top.
   CGFloat topInsetRemaining =
       _browserAgent->max_insets().top - _browserAgent->insets().top;
-  if (contentOffset + topInsetRemaining <= -scrollView.contentInset.top) {
+  if (contentOffset + topInsetRemaining <= minOffset) {
     return;
   }
   // Check if content is scrolled past the bottom.
-  CGFloat scrollViewHeight = CGRectGetHeight(scrollView.frame);
-  CGFloat contentHeight = scrollView.contentSize.height;
-  if (contentOffset + scrollViewHeight - scrollView.contentInset.bottom >
-      contentHeight) {
+  if (contentOffset > maxOffset) {
     return;
   }
 
-  if (_handlingScroll || _updatingInsets) {
+  // Ignore programmatic `contentOffset` adjustments triggered by WebKit layer
+  // tree commits (e.g., `adjustMainFrameDelegatedScrollPosition` or
+  // `contentSize` clamping) while a drag or deceleration is active. When WebKit
+  // snaps `contentOffset` against the active gesture or deceleration within the
+  // scrollable bounds, restore `previousContentOffset` so the page does not
+  // visibly jump.
+  if (contentHeightChanged) {
+    return;
+  }
+
+  BOOL canRestoreOffset =
+      previousContentOffset > minOffset && previousContentOffset < maxOffset;
+
+  if (scrollView.isTracking) {
+    if (panTransDelta * delta >= 0) {
+      if (delta != 0 && canRestoreOffset) {
+        _lastContentOffset = previousContentOffset;
+        _updatingInsets = YES;
+        scrollView.contentOffset =
+            CGPointMake(scrollView.contentOffset.x, previousContentOffset);
+        _updatingInsets = NO;
+      }
+      return;
+    }
+  } else if (scrollView.isDecelerating && _lastTrackingScrollDelta != 0 &&
+             delta * _lastTrackingScrollDelta <= 0) {
+    if (delta * _lastTrackingScrollDelta < 0 && canRestoreOffset) {
+      _lastContentOffset = previousContentOffset;
+      _updatingInsets = YES;
+      scrollView.contentOffset =
+          CGPointMake(scrollView.contentOffset.x, previousContentOffset);
+      _updatingInsets = NO;
+    }
+    return;
+  }
+
+  if (IsFullscreenEasedTransitionsEnabled() && _browserAgent->is_animating()) {
     return;
   }
   _handlingScroll = YES;
@@ -360,6 +415,12 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 - (void)webViewScrollViewWillBeginDragging:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   _lastContentOffset = webViewScrollViewProxy.contentOffset.y;
+  _lastContentHeight = webViewScrollViewProxy.contentSize.height;
+  // Reset to 0 rather than reading `translationInView:` because UIKit has
+  // already accumulated the initial pan translation when `willBeginDragging`
+  // fires, and applies that initial translation on the first `didScroll`.
+  _lastPanTranslationY = 0;
+  _lastTrackingScrollDelta = 0;
   _scrollTotal = 0;
   _startedDragAtBottom =
       [self isScrolledToBottom] &&
@@ -367,6 +428,15 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   if (!_startScrollingTime.has_value() && [self canCollapseToolbar]) {
     _startScrollingTime = base::TimeTicks::Now();
     _isScrollingTimeRecorded = NO;
+  }
+}
+
+- (void)webViewScrollViewWillEndDragging:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                            withVelocity:(CGPoint)velocity
+                     targetContentOffset:(inout CGPoint*)targetContentOffset {
+  if (velocity.y != 0) {
+    _lastTrackingScrollDelta = velocity.y;
   }
 }
 
@@ -642,6 +712,18 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   return contentOffset + scrollViewHeight -
              _scrollViewProxy.contentInset.bottom >=
          contentHeight - 1.0;
+}
+
+// Resets per-page and per-gesture scroll tracking state.
+- (void)resetScrollTrackingState {
+  _startScrollingTime = std::nullopt;
+  _isScrollingTimeRecorded = NO;
+  _startedDragAtBottom = NO;
+  _lastContentOffset = 0;
+  _lastContentHeight = 0;
+  _lastPanTranslationY = 0;
+  _lastTrackingScrollDelta = 0;
+  _scrollTotal = 0;
 }
 
 // Records the time spent scrolling to the bottom if applicable.

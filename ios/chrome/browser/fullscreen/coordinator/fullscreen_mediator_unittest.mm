@@ -29,14 +29,50 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-// Test scroll view subclass allowing isDragging to be configured.
-@interface FullscreenTestScrollView : UIScrollView
-@property(nonatomic, assign) BOOL isDraggingOverride;
+// Test pan gesture recognizer subclass that stores translation without
+// requiring an active touch sequence.
+@interface FullscreenTestPanGestureRecognizer : UIPanGestureRecognizer
 @end
 
-@implementation FullscreenTestScrollView
+@implementation FullscreenTestPanGestureRecognizer {
+  CGPoint _translationOverride;
+}
+- (CGPoint)translationInView:(UIView*)view {
+  return _translationOverride;
+}
+- (void)setTranslation:(CGPoint)translation inView:(UIView*)view {
+  _translationOverride = translation;
+}
+@end
+
+// Test scroll view subclass allowing gesture state properties to be configured.
+@interface FullscreenTestScrollView : UIScrollView
+@property(nonatomic, assign) BOOL isDraggingOverride;
+@property(nonatomic, assign) BOOL isTrackingOverride;
+@property(nonatomic, assign) BOOL isDeceleratingOverride;
+@end
+
+@implementation FullscreenTestScrollView {
+  FullscreenTestPanGestureRecognizer* _testPanGestureRecognizer;
+}
+- (instancetype)initWithFrame:(CGRect)frame {
+  if ((self = [super initWithFrame:frame])) {
+    _testPanGestureRecognizer =
+        [[FullscreenTestPanGestureRecognizer alloc] init];
+  }
+  return self;
+}
+- (UIPanGestureRecognizer*)panGestureRecognizer {
+  return _testPanGestureRecognizer;
+}
 - (BOOL)isDragging {
   return _isDraggingOverride;
+}
+- (BOOL)isTracking {
+  return _isTrackingOverride;
+}
+- (BOOL)isDecelerating {
+  return _isDeceleratingOverride;
 }
 @end
 
@@ -426,4 +462,57 @@ TEST_F(FullscreenMediatorTest, ExitsFullscreenOnSecondScrollToBottom) {
 
   EXPECT_EQ(agent_->State(), FullscreenState::kUIExpanded);
   EXPECT_EQ(agent_->top_progress(), 1.0);
+}
+
+// Tests that programmatic `contentOffset` adjustments (during `contentSize`
+// updates, active tracking, or momentum deceleration) are ignored and that
+// opposing adjustments during tracking or deceleration restore the previous
+// `contentOffset`.
+TEST_F(FullscreenMediatorTest, IgnoresAndRestoresProgrammaticScrolls) {
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+  scroll_view.isTrackingOverride = YES;
+  id<CRWWebViewScrollViewProxyObserver> observer =
+      static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
+
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+
+  // Scroll accompanied by a `contentSize.height` change is ignored.
+  [scroll_view.panGestureRecognizer setTranslation:CGPointMake(0, -10.0)
+                                            inView:scroll_view];
+  scroll_view.contentSize = CGSizeMake(scroll_view.contentSize.width, 2100.0);
+  scroll_view.contentOffset = CGPointMake(0, 110.0);
+  EXPECT_EQ(agent_->top_progress(), 1.0);
+
+  // User drags finger up (`panTranslation.y` decreases), scrolling content down
+  // (`delta` > 0).
+  constexpr CGFloat kTrackedOffsetY = 125.0;
+  [scroll_view.panGestureRecognizer setTranslation:CGPointMake(0, -25.0)
+                                            inView:scroll_view];
+  scroll_view.contentOffset = CGPointMake(0, kTrackedOffsetY);
+  CGFloat progress_after_user_scroll = agent_->top_progress();
+  EXPECT_LT(progress_after_user_scroll, 1.0);
+
+  // Programmatic scroll snapping `contentOffset` backward without pan movement
+  // is ignored and restored.
+  scroll_view.contentOffset = CGPointMake(0, 112.0);
+  EXPECT_EQ(agent_->top_progress(), progress_after_user_scroll);
+  EXPECT_EQ(scroll_view.contentOffset.y, kTrackedOffsetY);
+
+  // Finger lifts into downward deceleration; momentum scroll proceeds, while an
+  // opposing programmatic adjustment is ignored and restored.
+  CGPoint target_offset = CGPointMake(0, 300.0);
+  [observer webViewScrollViewWillEndDragging:scroll_view_proxy
+                                withVelocity:CGPointMake(0, 1.5)
+                         targetContentOffset:&target_offset];
+  scroll_view.isTrackingOverride = NO;
+  scroll_view.isDeceleratingOverride = YES;
+
+  constexpr CGFloat kDecelerationOffsetY = 135.0;
+  scroll_view.contentOffset = CGPointMake(0, kDecelerationOffsetY);
+  CGFloat progress_after_deceleration = agent_->top_progress();
+  EXPECT_LT(progress_after_deceleration, progress_after_user_scroll);
+
+  scroll_view.contentOffset = CGPointMake(0, 120.0);
+  EXPECT_EQ(agent_->top_progress(), progress_after_deceleration);
+  EXPECT_EQ(scroll_view.contentOffset.y, kDecelerationOffsetY);
 }
