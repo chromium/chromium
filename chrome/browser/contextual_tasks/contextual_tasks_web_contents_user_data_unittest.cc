@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -804,6 +805,119 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_TRUE(user_data->GetSelectedTabs().empty());
   ASSERT_EQ(inject_messages.size(), 2u);
   EXPECT_FALSE(inject_messages.back().inject_chrome_input().is_active());
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       AppendTabContextsToOnSubmitQueryResponse_RecordsZeroAttachedCount) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+
+  auto mock_handle =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+  auto* session_handle_ptr = mock_handle.get();
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents_);
+  helper->SetTaskSession(std::nullopt, std::move(mock_handle), nullptr);
+
+  lens::ClientToSearchMessage response_message;
+  user_data->AppendTabContextsToOnSubmitQueryResponseForTesting(
+      &response_message, session_handle_ptr, std::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.TabCoins.AttachedCountAtSubmission", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.TabCoins.AttachedCountAtSubmission.Explicit", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.TabCoins.AttachedCountAtSubmission.Implicit", 0, 1);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       AppendTabContextsToOnSubmitQueryResponse_RecordsAttachedCount) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+
+  auto mock_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* session_handle_ptr = mock_handle.get();
+
+  auto token1 = base::UnguessableToken::Create();
+  auto token2 = base::UnguessableToken::Create();
+  auto token3 = base::UnguessableToken::Create();
+  auto token_missing_req = base::UnguessableToken::Create();
+  session_handle_ptr->GetUploadedContextTokensForTesting().push_back(token1);
+  session_handle_ptr->GetUploadedContextTokensForTesting().push_back(token2);
+  session_handle_ptr->GetUploadedContextTokensForTesting().push_back(token3);
+  session_handle_ptr->GetUploadedContextTokensForTesting().push_back(
+      token_missing_req);
+  session_handle_ptr->AttachTabPendingUpload(
+      token1, 1, GURL("https://example.com/1"), "Tab 1");
+  session_handle_ptr->AttachTabPendingUpload(
+      token2, 2, GURL("https://example.com/2"), "Tab 2");
+  session_handle_ptr->AttachTabPendingUpload(
+      token3, 3, GURL("https://example.com/3"), "Tab 3");
+  session_handle_ptr->AttachTabPendingUpload(
+      token_missing_req, 4, GURL("https://example.com/4"), "Tab 4");
+
+  contextual_search::FileInfo file1;
+  file1.file_token = token1;
+  lens::LensOverlayRequestId req1;
+  req1.set_context_id(101);
+  file1.request_id = req1;
+  file1.input_data = std::make_unique<lens::ContextualInputData>();
+  file1.input_data->upload_type = lens::LensOverlayContextualInputUploadType::
+      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+
+  contextual_search::FileInfo file2;
+  file2.file_token = token2;
+  lens::LensOverlayRequestId req2;
+  req2.set_context_id(202);
+  file2.request_id = req2;
+
+  contextual_search::FileInfo file3_implicit;
+  file3_implicit.file_token = token3;
+  file3_implicit.is_implicit_upload = true;
+  lens::LensOverlayRequestId req3;
+  req3.set_context_id(303);
+  file3_implicit.request_id = req3;
+  file3_implicit.input_data = std::make_unique<lens::ContextualInputData>();
+  file3_implicit.input_data->is_implicit_upload = true;
+  file3_implicit.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_RECONTEXTUALIZATION;
+
+  // `file4_no_req` has no `request_id` and must not be added to the submission
+  // proto or counted in the submission histograms.
+  contextual_search::FileInfo file4_no_req;
+  file4_no_req.file_token = token_missing_req;
+
+  std::vector<contextual_search::FileInfo> uploaded_files = {
+      file1, file2, file3_implicit, file4_no_req};
+  ON_CALL(*session_handle_ptr, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents_);
+  helper->SetTaskSession(std::nullopt, std::move(mock_handle), nullptr);
+
+  lens::ClientToSearchMessage response_message;
+  user_data->AppendTabContextsToOnSubmitQueryResponseForTesting(
+      &response_message, session_handle_ptr, std::nullopt);
+
+  EXPECT_EQ(response_message.on_submit_query_response().added_contexts_size(),
+            3);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.TabCoins.AttachedCountAtSubmission", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.TabCoins.AttachedCountAtSubmission.Explicit", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.TabCoins.AttachedCountAtSubmission.Implicit", 1, 1);
 }
 
 }  // namespace contextual_tasks

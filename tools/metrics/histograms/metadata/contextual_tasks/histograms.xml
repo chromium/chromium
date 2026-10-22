@@ -844,6 +844,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="ContextualTasks.TabCoins.AttachedCountAtSubmission{UploadType}"
+    units="tabs" expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Number of {UploadType} tab contexts added to the OnSubmitQueryResponse proto
+    when a query is submitted in Contextual Tasks. Recorded once per submitted
+    query turn, including 0 when no matching tabs were added.
+  </summary>
+  <token key="UploadType">
+    <variant name="" summary="all (explicit and implicit)"/>
+    <variant name=".Explicit" summary="explicitly user-attached"/>
+    <variant name=".Implicit" summary="implicitly attached"/>
+  </token>
+</histogram>
+
 <histogram name="ContextualTasks.TabPicker.IframeRenderLatencyMs" units="ms"
     expires_after="2027-03-07">
   <owner>hujasonx@google.com</owner>

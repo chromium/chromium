@@ -1515,6 +1515,15 @@ void ContextualTasksWebContentsUserData::SetContextualTasksServiceForTesting(
       service, query_contextualizer_delegate_.get());
 }
 
+void ContextualTasksWebContentsUserData::
+    AppendTabContextsToOnSubmitQueryResponseForTesting(
+        lens::ClientToSearchMessage* response_message,
+        contextual_search::ContextualSearchSessionHandle* session_handle,
+        std::optional<base::UnguessableToken> overlay_token) {
+  AppendTabContextsToOnSubmitQueryResponse(response_message, session_handle,
+                                           overlay_token);
+}
+
 void ContextualTasksWebContentsUserData::RecordTimeToHandshakeComplete() {
 #if !BUILDFLAG(IS_ANDROID)
   content::WebContents* wc = &GetWebContents();
@@ -1550,6 +1559,8 @@ void ContextualTasksWebContentsUserData::
   }
 
   const auto selected_tabs = GetSelectedTabs();
+  size_t explicit_tab_count = 0;
+  size_t implicit_tab_count = 0;
   // Add uploaded tab contexts directly from the session handle.
   for (const auto& file_info : session_handle->GetUploadedContextFileInfos()) {
     if (!file_info.request_id.has_value()) {
@@ -1569,15 +1580,32 @@ void ContextualTasksWebContentsUserData::
     auto* added = on_submit_response->add_added_contexts();
     added->set_search_session_id(session_handle->search_session_id());
     *added->mutable_request_id() = *file_info.request_id;
-    if (file_info.input_data && file_info.input_data->upload_type.has_value()) {
-      added->set_contextual_input_upload_type(
-          *file_info.input_data->upload_type);
+    const auto upload_type =
+        (file_info.input_data && file_info.input_data->upload_type.has_value())
+            ? *file_info.input_data->upload_type
+            : lens::LensOverlayContextualInputUploadType::
+                  CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+    added->set_contextual_input_upload_type(upload_type);
+    const bool is_implicit =
+        file_info.is_implicit_upload ||
+        (file_info.input_data && file_info.input_data->is_implicit_upload) ||
+        upload_type != lens::LensOverlayContextualInputUploadType::
+                           CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+    if (is_implicit) {
+      ++implicit_tab_count;
     } else {
-      added->set_contextual_input_upload_type(
-          lens::LensOverlayContextualInputUploadType::
-              CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+      ++explicit_tab_count;
     }
   }
+  base::UmaHistogramCounts100(
+      "ContextualTasks.TabCoins.AttachedCountAtSubmission",
+      explicit_tab_count + implicit_tab_count);
+  base::UmaHistogramCounts100(
+      "ContextualTasks.TabCoins.AttachedCountAtSubmission.Explicit",
+      explicit_tab_count);
+  base::UmaHistogramCounts100(
+      "ContextualTasks.TabCoins.AttachedCountAtSubmission.Implicit",
+      implicit_tab_count);
 
   // The page owns the query text, so no query length metrics are recorded
   // here. This moves the uploaded tabs into the session's persisted tabs so

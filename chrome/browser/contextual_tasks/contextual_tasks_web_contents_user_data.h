@@ -231,6 +231,11 @@ class ContextualTasksWebContentsUserData
   std::optional<int32_t> GetTabHandleForSessionTabId(
       int32_t session_tab_id) const;
 
+  void AppendTabContextsToOnSubmitQueryResponseForTesting(
+      lens::ClientToSearchMessage* response_message,
+      contextual_search::ContextualSearchSessionHandle* session_handle,
+      std::optional<base::UnguessableToken> overlay_token);
+
  private:
   enum class ContextState {
     kNone,
