@@ -7006,6 +7006,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "media-capture-element-preview",
+    "owners": [ "ravjit@chromium.org", "tungnh@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "media-codec-block-model",
     "owners": [
       "dalecurtis@chromium.org",

@@ -3431,6 +3431,12 @@ inline constexpr char kMacAccessibilityTextOperationDescription[] =
     "Enables support for performing text editing operations through "
     "the AXTextOperation accessibility API.";
 
+inline constexpr char kMediaCaptureElementPreviewName[] =
+    "Media capture element preview";
+inline constexpr char kMediaCaptureElementPreviewDescription[] =
+    "Enables camera and microphone preview for <camera>, <microphone>, and "
+    "<usermedia> elements.";
+
 inline constexpr char kMediaRouterCastAllowAllIPsName[] =
     "Connect to Cast devices on all IP addresses";
 inline constexpr char kMediaRouterCastAllowAllIPsDescription[] =

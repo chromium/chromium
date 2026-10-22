@@ -14386,6 +14386,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kCrossFadeBoundsChangeAnimation)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    {"media-capture-element-preview",
+     flag_descriptions::kMediaCaptureElementPreviewName,
+     flag_descriptions::kMediaCaptureElementPreviewDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(blink::features::kMediaCaptureElementPreview)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -4364,6 +4364,11 @@
       base_feature: "none",
     },
     {
+      // Enables camera and microphone preview for <camera>, <microphone>, and
+      // <usermedia> elements.
+      name: "MediaCaptureElementPreview",
+    },
+    {
       name: "MediaCaptureVoiceIsolation",
       status: "experimental",
     },
