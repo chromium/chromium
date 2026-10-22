@@ -14,7 +14,6 @@
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "ui/base/ime/ime_text_span.h"
 
 namespace dictation {
@@ -57,11 +56,7 @@ Target::Target() = default;
 Target::Target(const TargetDetails& target_details)
     : target_details_(target_details) {}
 
-Target::~Target() {
-  // We may be destroyed before an in-flight operation completes (e.g. the
-  // session ended), in which case we still need to release page focus.
-  RestorePageFocus();
-}
+Target::~Target() = default;
 
 void Target::OnFocusChanged(const content::FocusedNodeDetails& details) {
   content::RenderFrameHost* rfh = GetRenderFrameHost();
@@ -116,54 +111,6 @@ void Target::CommitComposition(const std::u16string& text,
   ExecuteOperation(std::move(op));
 }
 
-void Target::AcquirePageFocus() {
-  if (holding_page_focus_ ||
-      !base::FeatureList::IsEnabled(kDictationRefocusBeforeCommit)) {
-    return;
-  }
-
-  if (HasNativeFocus()) {
-    return;
-  }
-
-  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
-  if (!rwh) {
-    return;
-  }
-
-  // Page focus only: taking native focus (`WebContents::Focus`) would steal it
-  // from whatever the user is interacting with, e.g. the Dictation UI.
-  holding_page_focus_ = true;
-  rwh->Focus();
-}
-
-void Target::RestorePageFocus() {
-  if (!holding_page_focus_) {
-    return;
-  }
-  holding_page_focus_ = false;
-
-  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
-  if (!rwh) {
-    return;
-  }
-
-  // The widget may have legitimately gained native focus while we were writing,
-  // so restore the real state rather than unconditionally blurring.
-  if (!HasNativeFocus()) {
-    rwh->Blur();
-  }
-}
-
-bool Target::HasNativeFocus() const {
-  if (has_native_focus_for_testing_.has_value()) {
-    return *has_native_focus_for_testing_;
-  }
-  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
-  content::RenderWidgetHostView* view = rwh ? rwh->GetView() : nullptr;
-  return view && view->HasFocus();
-}
-
 void Target::ExecuteSetComposition(const std::u16string& text,
                                    bool is_final,
                                    base::OnceClosure operation_complete) {
@@ -213,21 +160,23 @@ void Target::ExecuteSetComposition(const std::u16string& text,
 
 void Target::ExecuteCommitComposition(const std::u16string& text,
                                       base::OnceClosure operation_complete) {
+  if (paste_fallback_required_) {
+    PasteIntoNode(text);
+    CompleteAsync(std::move(operation_complete));
+    return;
+  }
+
   // If we've lost focus, then some of the previously composed text has already
   // been committed. Determine what has already been sent to avoid duplication.
   // TODO(b/539566748): This will be incorrect if the stream rewrites text. We
   // should instead determine the last composition range and replace the text in
   // that range.
-  // Note that when `paste_fallback_required_` is set, `last_sent_composition_`
-  // was cleared, so this leaves `text` untouched.
   std::u16string text_to_commit =
       has_lost_focus_during_composition_
           ? RemovePrefix(text, last_sent_composition_)
           : text;
 
-  if (paste_fallback_required_ ||
-      (richly_editable() &&
-       text_to_commit.find(u'\n') != std::u16string::npos)) {
+  if (richly_editable() && text_to_commit.find(u'\n') != std::u16string::npos) {
     PasteIntoNode(text_to_commit);
     CompleteAsync(std::move(operation_complete));
     return;
@@ -239,17 +188,6 @@ void Target::ExecuteCommitComposition(const std::u16string& text,
 
 void Target::ExecuteOperation(QueuedOperation op) {
   is_waiting_on_operation_completion_ = true;
-
-  // TODO(b/564968261): If the target's RenderFrameHost is gone, there's nothing
-  // to write to and we should bail out here rather than no-op'ing in each of
-  // the operations below.
-
-  // Partial compositions that we won't show never reach the renderer, so don't
-  // churn the page's focus state for them.
-  if (op.type != QueuedOperation::Type::kSetPartialComposition ||
-      kShowPartials.Get()) {
-    AcquirePageFocus();
-  }
 
   base::OnceClosure operation_complete =
       base::BindOnce(&Target::OnOperationComplete, weak_factory_.GetWeakPtr(),
@@ -279,11 +217,7 @@ void Target::OnOperationComplete(base::OnceClosure on_commit_complete) {
     QueuedOperation op = std::move(*queued_operation_);
     queued_operation_.reset();
     ExecuteOperation(std::move(op));
-    // Keep holding page focus across back-to-back operations.
-    return;
   }
-
-  RestorePageFocus();
 }
 
 void Target::SetExternallySourcedComposition(
