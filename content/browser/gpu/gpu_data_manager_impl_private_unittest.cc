@@ -455,7 +455,8 @@ INSTANTIATE_TEST_SUITE_P(GpuDataManagerImplPrivateTest,
 
 #if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGraphiteFeatureFlag) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
   ScopedGpuDataManagerImplPrivate manager;
@@ -497,7 +498,8 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
 // kGL for the hardware fallback.
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuPreferences_GraphiteModeFallbackIsGL) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
   base::test::ScopedFeatureList feature_list;
@@ -559,7 +561,8 @@ TEST_F(GpuDataManagerImplPrivateTest,
 // hardware types since no hardware modes remain.
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuPreferences_AfterGraphiteFallbackToGL) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
   base::test::ScopedFeatureList feature_list;
@@ -596,7 +599,8 @@ TEST_F(GpuDataManagerImplPrivateTest,
     GTEST_SKIP();
   }
 
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
   base::test::ScopedFeatureList feature_list;
@@ -628,7 +632,8 @@ TEST_F(GpuDataManagerImplPrivateTest,
 // All GPU features are enabled: gpu_mode_ stays HARDWARE_GRAPHITE.
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuFeatureInfo_GraphiteEnabledKeepsGraphiteMode) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
   ScopedGpuDataManagerImplPrivate manager;
   ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
@@ -646,7 +651,8 @@ TEST_F(GpuDataManagerImplPrivateTest,
 // loop falls back from HARDWARE_GRAPHITE to HARDWARE_GL.
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuFeatureInfo_GraphiteBlocklistedSwitchesToGL) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
   base::test::ScopedFeatureList feature_list;
@@ -680,7 +686,8 @@ TEST_F(GpuDataManagerImplPrivateTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuFeatureInfo_NoHardwareModeAvailable) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
   base::test::ScopedFeatureList feature_list;
@@ -742,9 +749,10 @@ TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShaderForGanesh) {
 }
 
 TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShaderForGanesh) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSkiaGraphite);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableUnsafeSwiftShader);
 
   ScopedGpuDataManagerImplPrivate manager;
@@ -761,11 +769,12 @@ TEST_F(GpuDataManagerImplPrivateTest,
        FallbackWithSwiftShaderDisabledByFlagsForGanesh) {
   // Make sure that we don't fall back to SwiftShader when it's disabled with
   // --disable-software-rasterizer even if --allow-unsafe-swiftshader is used
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSkiaGraphite);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSoftwareRasterizer);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableUnsafeSwiftShader);
   ScopedGpuDataManagerImplPrivate manager;
   if (manager->supports_gpu_mode_hardware_gl()) {
@@ -780,9 +789,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
 
 TEST_F(GpuDataManagerImplPrivateTest,
        FallbackFromGraphiteWithSwiftShaderDisabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSoftwareRasterizer);
 
   ScopedGpuDataManagerImplPrivate manager;
@@ -802,9 +812,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(GpuDataManagerImplPrivateTest,
        ExplicitFallbackToSwiftShaderForGraphite) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableUnsafeSwiftShader);
 
   ScopedGpuDataManagerImplPrivate manager;
@@ -823,11 +834,12 @@ TEST_F(GpuDataManagerImplPrivateTest,
        FallbackWithSwiftShaderDisabledByFlagsForGraphite) {
   // Make sure that we don't fall back to SwiftShader when it's disabled with
   // --disable-software-rasterizer even if --allow-unsafe-swiftshader is used
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableSkiaGraphite);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSoftwareRasterizer);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableUnsafeSwiftShader);
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
