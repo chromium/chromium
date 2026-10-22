@@ -231,6 +231,15 @@ TEST_F(AppMenuSearchControllerTest, ZoomSubmenuAndTooltips) {
                              .SetTooltipText(u"Zoom Out")
                              .Build());
 
+  // The zoom percentage is a read-only label and must not be indexed.
+  auto zoom_label = actions::ActionItem::Builder()
+                        .SetActionId(kActionZoomNormal)
+                        .SetText(u"100%")
+                        .Build();
+  zoom_label->SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                          AppMenuActionItem::DisplayType::kLabel);
+  zoom_submenu->AddChild(std::move(zoom_label));
+
   zoom_submenu->AddChild(actions::ActionItem::Builder()
                              .SetActionId(kActionZoomPlus)
                              .SetTooltipText(u"Zoom In")

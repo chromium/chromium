@@ -928,7 +928,8 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
                 kActionZoomSubmenu,
                 [](AppMenuBuilder& sub) {
                   sub.AddAction(kActionZoomMinus)
-                      .AddAction(kActionZoomNormal)
+                      .AddAction(kActionZoomNormal,
+                                 {.display_type = DisplayType::kLabel})
                       .AddAction(kActionZoomPlus)
                       .AddAction(kActionFullscreen);
                 },
@@ -1291,7 +1292,8 @@ void ActionAppMenuManager::AddWebAppActions(actions::ActionItem* root) {
                 kActionZoomSubmenu,
                 [](AppMenuBuilder& sub) {
                   sub.AddAction(kActionZoomMinus)
-                      .AddAction(kActionZoomNormal)
+                      .AddAction(kActionZoomNormal,
+                                 {.display_type = DisplayType::kLabel})
                       .AddAction(kActionZoomPlus)
                       .AddAction(kActionFullscreen);
                 },
