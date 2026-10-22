@@ -10485,21 +10485,6 @@
             ]
         }
     ],
-    "IOSTipsNotificationsAlternativeStrings": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSTipsNotificationsAlternativeStrings"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSUseDefaultAppsDestinationForPromos": [
         {
             "platforms": [

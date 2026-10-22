@@ -696,7 +696,7 @@ bool ShouldShowEditMenuItemsSynchronously() {
 }
 
 BASE_FEATURE(kIOSTipsNotificationsAlternativeStrings,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsTipsNotificationsAlternativeStringsEnabled() {
   return base::FeatureList::IsEnabled(kIOSTipsNotificationsAlternativeStrings);
 }
