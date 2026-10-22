@@ -87,14 +87,10 @@ BASE_DECLARE_FEATURE(kSeparateLocalAndAccountSearchEngines);
 // `syncer::IsReplaceSyncPromosWithSignInPromosEnabled()` instead.
 BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 
-// Feature flag to replace all sync-related UI with sign-in ones. This
-// feature has the same behavior as kReplaceSyncPromosWithSignInPromos, but only
-// enables extensions and bookmarks on new sign-ins.
-BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSigninPromosNewSignin);
-
-// Returns true if the replace sync promos with sign-in promos feature is
-// enabled. The launch may be controlled by multiple `base::Feature` flags,
-// prefer using this function over checking the feature flags directly.
+// Returns true if replacing sync promos with sign-in promos is enabled.
+// Always true on desktop platforms (Linux, Mac, Windows), and controlled by
+// `kReplaceSyncPromosWithSignInPromos` on other platforms. Prefer using this
+// function over checking the feature flag directly.
 bool IsReplaceSyncPromosWithSignInPromosEnabled();
 
 // AutofillAi is launched globally on desktop, but restricted to certain

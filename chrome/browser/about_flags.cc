@@ -3481,18 +3481,6 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosDesktopChoices[] =
       kReplaceSyncPromosWithSignInPromosDesktopFeatures},
      {"Enabled", switches::kEnableFeatures,
       kReplaceSyncPromosWithSignInPromosDesktopFeatures}};
-
-const char kReplaceSyncPromosWithSigninPromosNewSigninFeatures[] =
-    "ReplaceSyncPromosWithSigninPromosNewSignin,"
-    "IPH_SignInBenefitsNewSignin";
-
-const FeatureEntry::Choice
-    kReplaceSyncPromosWithSigninPromosNewSigninChoices[] = {
-        {"Default", "", ""},
-        {"Disabled", switches::kDisableFeatures,
-         kReplaceSyncPromosWithSigninPromosNewSigninFeatures},
-        {"Enabled", switches::kEnableFeatures,
-         kReplaceSyncPromosWithSigninPromosNewSigninFeatures}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 const FeatureEntry::FeatureParam kGroupSuggestionEnableRecentlyOpenedOnly[] = {
@@ -10521,12 +10509,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
      kOsDesktop,
      MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosDesktopChoices)},
-
-    {"replace-sync-promos-with-signin-promos-new-signin",
-     flag_descriptions::kReplaceSyncPromosWithSigninPromosNewSigninName,
-     flag_descriptions::kReplaceSyncPromosWithSigninPromosNewSigninDescription,
-     kOsDesktop,
-     MULTI_VALUE_TYPE(kReplaceSyncPromosWithSigninPromosNewSigninChoices)},
 
     {"uno-phase-2-follow-up", flag_descriptions::kUnoPhase2FollowUpName,
      flag_descriptions::kUnoPhase2FollowUpDescription, kOsDesktop,
