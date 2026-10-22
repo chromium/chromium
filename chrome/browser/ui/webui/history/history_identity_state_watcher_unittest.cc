@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -24,10 +25,8 @@ using testing::StrictMock;
 class HistorySignInStateWatcherTestBase : public testing::Test {
  public:
   explicit HistorySignInStateWatcherTestBase(bool replace_sync_with_signin) {
-    feature_list_.InitWithFeatureStates(
-        {{syncer::kReplaceSyncPromosWithSignInPromos, replace_sync_with_signin},
-         {syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-          replace_sync_with_signin}});
+    feature_list_.InitWithFeatureState(
+        syncer::kReplaceSyncPromosWithSignInPromos, replace_sync_with_signin);
     // Start with no signed-in user (this makes the TestSyncService consistent
     // with the IdentityTestEnvironment).
     sync_service_.SetSignedOut();
@@ -473,6 +472,8 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// "replace_sync_with_signin = false" is only possible on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 class HistorySignInStateWatcherWithoutSyncToSigninTest
     : public HistorySignInStateWatcherTestBase {
  public:
@@ -512,10 +513,15 @@ TEST_F(HistorySignInStateWatcherWithoutSyncToSigninTest,
       .history_sync = HistoryIdentityState::SyncState::kTurnedOn};
   EXPECT_EQ(final_expected_state, watcher.GetHistoryIdentityState());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(,
                          HistorySignInStateWatcherTest,
+#if BUILDFLAG(IS_CHROMEOS)
                          testing::Bool(),
+#else
+                         testing::Values(true),
+#endif
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "WithSyncToSignin"
                                              : "WithoutSyncToSignin";
