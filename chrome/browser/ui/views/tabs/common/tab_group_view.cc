@@ -205,6 +205,8 @@ void TabGroupView::ToggleCollapsedState(
     }
   }
 
+  auto allow_animation =
+      collection_node_->GetController()->ScopedAnimateLayout();
   collection_node_->GetController()->ToggleTabGroupCollapsedState(
       GetTabGroupFromNode(collection_node_), origin);
 
@@ -335,6 +337,9 @@ void TabGroupView::OnDataChanged() {
   const tabs::TabGroupData& tab_group_data =
       tab_group_data_observer_->tab_group_data();
   is_ephemeral_ = GetTabGroupFromNode(collection_node_)->is_ephemeral();
+  const bool has_collapse_state_changed =
+      tab_group_visual_data_.is_collapsed() !=
+      tab_group_data.visual_data.is_collapsed();
   tab_group_visual_data_ = tab_group_data.visual_data;
   if (unfocus_header_) {
     unfocus_header_->SetVisible(IsGroupFocused());
@@ -343,10 +348,17 @@ void TabGroupView::OnDataChanged() {
   }
   group_header_->OnDataChanged(tab_group_data);
 
-  // If the tab group is not collapsed update child visibility immediately. This
-  // allows tabs to be visible as they are animated in.
-  if (!tab_group_visual_data_.is_collapsed()) {
-    UpdateChildVisibilityForCollapseState(false);
+  std::optional<base::AutoReset<bool>> allow_animation;
+  if (has_collapse_state_changed) {
+    allow_animation.emplace(
+        collection_node_->GetController()->ScopedAnimateLayout());
+  }
+
+  // If the tab group is not collapsed (or if we are not animating the collapse)
+  // update child visibility immediately.
+  if (!tab_group_visual_data_.is_collapsed() || !IsAnimationAllowed()) {
+    UpdateChildVisibilityForCollapseState(
+        tab_group_visual_data_.is_collapsed());
   }
 
   group_line_->SchedulePaint();

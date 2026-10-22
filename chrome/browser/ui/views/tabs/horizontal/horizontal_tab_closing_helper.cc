@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "ui/gfx/geometry/insets.h"
@@ -156,6 +157,7 @@ void HorizontalTabClosingHelper::ExitTabClosingMode() {
   override_available_width_for_tabs_.reset();
   StopMouseWatcher();
   touch_resize_timer_.Stop();
+  auto allow_animation = root_node_->GetController()->ScopedAnimateLayout();
   InvalidateLayout();
 }
 

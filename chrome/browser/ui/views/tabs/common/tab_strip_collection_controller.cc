@@ -946,6 +946,10 @@ int TabStripCollectionController::GetStrokeThickness() const {
   return browser_view_ && browser_view_->ShouldDrawTabStrokes() ? 1 : 0;
 }
 
+base::AutoReset<bool> TabStripCollectionController::ScopedAnimateLayout() {
+  return base::AutoReset<bool>(&is_animating_layout_change_, true);
+}
+
 bool TabStripCollectionController::IsAnimationAllowed() const {
   if (StartupBrowserCreator::InSynchronousProfileLaunch()) {
     return false;
@@ -955,11 +959,5 @@ bool TabStripCollectionController::IsAnimationAllowed() const {
   if (SessionRestore::IsRestoring(profile)) {
     return false;
   }
-  if (!has_tab_strip_initialized_) {
-    return false;
-  }
-  if (user_widget_resizing_) {
-    return false;
-  }
-  return true;
+  return is_animating_layout_change_ || drag_handler_->IsDragging();
 }

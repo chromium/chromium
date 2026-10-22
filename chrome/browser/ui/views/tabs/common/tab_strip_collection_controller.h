@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -148,12 +149,8 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   bool IsLockedForOnTask() const;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  void SetTabStripInitialized() { has_tab_strip_initialized_ = true; }
+  [[nodiscard]] base::AutoReset<bool> ScopedAnimateLayout();
   bool IsAnimationAllowed() const;
-
-  void SetIsWidgetUserResizing(bool user_widget_resizing) {
-    user_widget_resizing_ = user_widget_resizing;
-  }
 
  private:
   // TabContextMenuController::Delegate:
@@ -199,9 +196,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   TabCollectionAnimatingLayoutManager::AnimationCoordinator
       animation_coordinator_;
 
-  bool has_tab_strip_initialized_ = false;
-
-  bool user_widget_resizing_ = false;
+  bool is_animating_layout_change_ = false;
 
   std::unique_ptr<HorizontalTabClosingHelper> tab_closing_helper_;
 

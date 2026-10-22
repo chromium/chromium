@@ -53,7 +53,6 @@ void RootTabCollectionNode::Init() {
   tab_strip_model_->Root()->AddObserver(this);
   tab_strip_model_->SetTabStripUI(this);
   add_node_view_to_parent_.Run(Initialize());
-  GetController()->SetTabStripInitialized();
 }
 
 void RootTabCollectionNode::Reset() {
@@ -98,6 +97,7 @@ void RootTabCollectionNode::OnChildrenAdded(
     const tabs::TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles,
     bool insert_from_detached) {
+  auto animate_layout = GetController()->ScopedAnimateLayout();
   for (auto handle : handles) {
     tabs::ConstChildPtr child = GetNodeFromHandle(handle);
     GetNodeForHandle(position.parent_handle)
@@ -115,6 +115,7 @@ void RootTabCollectionNode::OnChildrenRemoved(
     return;
   }
 
+  auto animate_layout = GetController()->ScopedAnimateLayout();
   for (auto& handle : handles) {
     TabCollectionNode* child_node = parent_node->GetNodeForHandle(handle);
     if (child_node) {
@@ -146,6 +147,8 @@ void RootTabCollectionNode::OnChildMoved(
       pinned_node->GetNodeForHandle(dst_parent_node->GetHandle()) != nullptr;
 
   bool pin_state_changed = src_pinned != dst_pinned;
+
+  auto animate_layout = GetController()->ScopedAnimateLayout();
 
   if (pin_state_changed) {
     // Pin state change is treated as a remove and add instead of an attach and
@@ -259,6 +262,7 @@ void RootTabCollectionNode::OnTabGroupFocusChanged(
     return;
   }
 
+  auto animate_layout = GetController()->ScopedAnimateLayout();
   tab_strip_controller_->TabGroupFocusChanged(new_focused_group_id,
                                               old_focused_group_id);
 

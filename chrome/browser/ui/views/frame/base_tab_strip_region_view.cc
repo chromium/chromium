@@ -499,18 +499,6 @@ void BaseTabStripRegionView::OnWidgetVisibilityChanged(views::Widget* widget,
   }
 }
 
-void BaseTabStripRegionView::OnWidgetUserResizeStarted(views::Widget* widget) {
-  if (tab_strip_controller_) {
-    tab_strip_controller_->SetIsWidgetUserResizing(true);
-  }
-}
-
-void BaseTabStripRegionView::OnWidgetUserResizeEnded(views::Widget* widget) {
-  if (tab_strip_controller_) {
-    tab_strip_controller_->SetIsWidgetUserResizing(false);
-  }
-}
-
 void BaseTabStripRegionView::OnChildrenAdded(
     const tabs::TabCollectionNodes& handles) {
   if (new_tab_button_pressed_start_time_.has_value()) {

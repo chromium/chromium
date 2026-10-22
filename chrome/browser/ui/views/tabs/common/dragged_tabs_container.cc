@@ -160,6 +160,11 @@ void DraggedTabsContainer::OnTabDragExited(const gfx::Point& point_in_screen) {
 }
 
 void DraggedTabsContainer::OnTabDragEnded() {
+  // By the time `OnTabDragEnded()` is invoked, `TabDragHandler::IsDragging()`
+  // is already false, so explicitly allow layout animations for the dragged
+  // views to animate into their final slots.
+  auto animate_layout =
+      collection_node_->GetController()->ScopedAnimateLayout();
   ResetDragState();
   auto* scroll_view = GetScrollViewForContainer();
   CHECK(scroll_view);
