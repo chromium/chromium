@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -84,6 +85,7 @@ class CONTROLLER_EXPORT OomInterventionImpl
   bool navigate_ads_enabled_ = false;
   bool purge_v8_memory_enabled_ = false;
   std::unique_ptr<ScopedPagePauser> pauser_;
+  base::WeakPtrFactory<OomInterventionImpl> weak_factory_{this};
 };
 
 }  // namespace blink
