@@ -158,7 +158,7 @@ FamilyLinkUserInternalsMessageHandler::
     ~FamilyLinkUserInternalsMessageHandler() = default;
 
 void FamilyLinkUserInternalsMessageHandler::RegisterMessages() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   web_ui()->RegisterMessageCallback(
       "registerForEvents",
@@ -382,7 +382,7 @@ void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
 
 void FamilyLinkUserInternalsMessageHandler::OnUrlChecked(
     supervised_user::WebFilteringResult filtering_result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   base::DictValue result;
   result.Set("url", filtering_result.url.possibly_invalid_spec());
   result.Set("result", FilteringResultToString(filtering_result));

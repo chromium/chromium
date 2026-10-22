@@ -23,7 +23,7 @@ std::string ChromeColorIdName(ui::ColorId color_id) {
       base::MakeFixedFlatMap<ui::ColorId, const char*>({CHROME_COLOR_IDS});
 #include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
   auto i = color_id_map.find(color_id);
-  DCHECK(i != color_id_map.cend());
+  CHECK(i != color_id_map.cend(), base::NotFatalUntil::M162);
   return {i->second};
 }
 

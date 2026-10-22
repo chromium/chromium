@@ -153,7 +153,7 @@ void LensSessionMetricsLogger::RecordEndOfSessionMetrics(
                                          search_performed_in_session_);
 
   // UMA session duration.
-  DCHECK(!invocation_time_.is_null());
+  CHECK(!invocation_time_.is_null(), base::NotFatalUntil::M162);
   base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
   lens::RecordSessionDuration(invocation_source_, session_duration);
 
@@ -182,7 +182,7 @@ void LensSessionMetricsLogger::RecordTimeToFirstInteraction(
   if (search_performed_in_session_) {
     return;
   }
-  DCHECK(!invocation_time_.is_null());
+  CHECK(!invocation_time_.is_null(), base::NotFatalUntil::M162);
   base::TimeDelta time_to_first_interaction =
       base::TimeTicks::Now() - invocation_time_;
   // UMA and UKM TimeToFirstInteraction.

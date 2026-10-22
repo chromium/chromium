@@ -165,7 +165,7 @@ void SmbHandler::HandleUpdateCredentials(const base::ListValue& args) {
   const std::string& username = args[0].GetString();
   const std::string& password = args[1].GetString();
 
-  DCHECK(update_cred_callback_);
+  CHECK(update_cred_callback_, base::NotFatalUntil::M162);
   std::move(update_cred_callback_).Run(username, password);
 }
 

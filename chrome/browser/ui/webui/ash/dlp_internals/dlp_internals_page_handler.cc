@@ -270,7 +270,7 @@ void DlpInternalsPageHandler::GetContentRestrictionsInfo(
   std::vector<dlp_internals::mojom::WebContentsInfoPtr> info_mojo_array;
 
   for (const auto& web_contents_info : info_vector) {
-    DCHECK(web_contents_info.web_contents);
+    CHECK(web_contents_info.web_contents, base::NotFatalUntil::M162);
     info_mojo_array.push_back(dlp_internals::mojom::WebContentsInfo::New(
         web_contents_info.web_contents->GetLastCommittedURL(),
         RestrictionSetToMojo(web_contents_info.restriction_set),

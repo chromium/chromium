@@ -467,7 +467,7 @@ void CustomizeChromeUI::CreatePageHandler(
     mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
     mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
         pending_page_handler) {
-  DCHECK(pending_page.is_valid());
+  CHECK(pending_page.is_valid(), base::NotFatalUntil::M162);
   customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_), web_contents_,

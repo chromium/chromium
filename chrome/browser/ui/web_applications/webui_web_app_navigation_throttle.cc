@@ -74,10 +74,10 @@ WebUIWebAppNavigationThrottle::WillStartRequest() {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
   web_app::AppBrowserController* app_controller =
       web_app::AppBrowserController::From(browser);
-  DCHECK(app_controller);
+  CHECK(app_controller, base::NotFatalUntil::M162);
   GURL start_url = app_controller->GetAppStartUrl();
 
   if (content::HasWebUIScheme(navigation_url) &&

@@ -32,7 +32,7 @@ class QueryResultManager::MediaSourceMediaSinksObserver
         cast_mode_(cast_mode),
         source_(source),
         result_manager_(result_manager) {
-    DCHECK(result_manager);
+    CHECK(result_manager, base::NotFatalUntil::M162);
   }
 
   ~MediaSourceMediaSinksObserver() override = default;
@@ -50,7 +50,7 @@ class QueryResultManager::MediaSourceMediaSinksObserver
 
   // Returns the most recent sink IDs that were passed to |OnSinksReceived()|.
   void GetLatestSinkIds(std::vector<MediaSink::Id>* sink_ids) const {
-    DCHECK(sink_ids);
+    CHECK(sink_ids, base::NotFatalUntil::M162);
     *sink_ids = latest_sink_ids_;
   }
 
@@ -80,19 +80,19 @@ class QueryResultManager::AnyMediaSinksObserver : public MediaSinksObserver {
 };
 
 QueryResultManager::QueryResultManager(MediaRouter* router) : router_(router) {
-  DCHECK(router_);
+  CHECK(router_, base::NotFatalUntil::M162);
   auto observer = std::make_unique<AnyMediaSinksObserver>(router_, this);
   observer->Init();
   sinks_observers_[std::nullopt] = std::move(observer);
 }
 
 QueryResultManager::~QueryResultManager() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 void QueryResultManager::AddObserver(MediaSinkWithCastModesObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(observer);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(observer, base::NotFatalUntil::M162);
   observers_.AddObserver(observer);
   // Make sure observer knows about any pre-existing sinks
   NotifyOnResultsUpdated();
@@ -100,8 +100,8 @@ void QueryResultManager::AddObserver(MediaSinkWithCastModesObserver* observer) {
 
 void QueryResultManager::RemoveObserver(
     MediaSinkWithCastModesObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(observer);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(observer, base::NotFatalUntil::M162);
   observers_.RemoveObserver(observer);
 }
 
@@ -109,7 +109,7 @@ void QueryResultManager::SetSourcesForCastMode(
     MediaCastMode cast_mode,
     const std::vector<MediaSource>& sources,
     const url::Origin& origin) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (sources.empty()) {
     LOG(WARNING) << "SetSourcesForCastMode called with empty sources for "
                  << cast_mode;
@@ -128,14 +128,14 @@ void QueryResultManager::SetSourcesForCastMode(
 }
 
 void QueryResultManager::RemoveSourcesForCastMode(MediaCastMode cast_mode) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   RemoveOldSourcesForCastMode(cast_mode, std::vector<MediaSource>());
   cast_mode_sources_.erase(cast_mode);
   NotifyOnResultsUpdated();
 }
 
 CastModeSet QueryResultManager::GetSupportedCastModes() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CastModeSet modes;
   for (const auto& cast_mode_pair : cast_mode_sources_) {
     modes.insert(cast_mode_pair.first);
@@ -147,7 +147,7 @@ CastModeSet QueryResultManager::GetSupportedCastModes() const {
 std::unique_ptr<MediaSource> QueryResultManager::GetSourceForCastModeAndSink(
     MediaCastMode cast_mode,
     MediaSink::Id sink_id) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   auto sink_entry = sinks_with_sources_.find(sink_id);
   if (sink_entry == sinks_with_sources_.end()) {
     return nullptr;
@@ -158,7 +158,7 @@ std::unique_ptr<MediaSource> QueryResultManager::GetSourceForCastModeAndSink(
 
 std::vector<MediaSource> QueryResultManager::GetSourcesForCastMode(
     MediaCastMode cast_mode) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const auto& cast_mode_it = cast_mode_sources_.find(cast_mode);
   return cast_mode_it == cast_mode_sources_.end() ? std::vector<MediaSource>()
                                                   : cast_mode_it->second;

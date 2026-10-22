@@ -21,6 +21,6 @@ TabDialogs* TabDialogs::From(tabs::TabInterface* tab) {
 
 // static
 TabDialogs* TabDialogs::FromWebContents(content::WebContents* contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M162);
   return From(tabs::TabInterface::MaybeGetFromContents(contents));
 }

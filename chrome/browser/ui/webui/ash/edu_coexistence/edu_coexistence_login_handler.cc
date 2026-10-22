@@ -97,7 +97,7 @@ base::Time GetSigninTime() {
   const Profile* profile = ProfileManager::GetActiveUserProfile();
   const PrefService* pref_service = profile->GetPrefs();
   base::Time signin_time = pref_service->GetTime(prefs::kOobeOnboardingTime);
-  DCHECK(!signin_time.is_min());
+  CHECK(!signin_time.is_min(), base::NotFatalUntil::M162);
   return signin_time;
 }
 
@@ -144,7 +144,7 @@ EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
       close_dialog_closure_(close_dialog_closure),
       identity_manager_(identity_manager) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile->IsChild());
+  CHECK(profile->IsChild(), base::NotFatalUntil::M162);
 
   // Start observing IdentityManager.
   identity_manager->AddObserver(this);
@@ -270,8 +270,8 @@ void EduCoexistenceLoginHandler::InitializeEduArgs(
 }
 
 void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
-  DCHECK(oauth_access_token_.has_value());
-  DCHECK(initialize_edu_args_callback_.has_value());
+  CHECK(oauth_access_token_.has_value(), base::NotFatalUntil::M162);
+  CHECK(initialize_edu_args_callback_.has_value(), base::NotFatalUntil::M162);
   base::DictValue params;
 
   params.Set("hl", application_locale_storage_->GetTag().tag_string());
@@ -318,7 +318,7 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
 
 void EduCoexistenceLoginHandler::ConsentValid(const base::ListValue& args) {
   AllowJavascript();
-  DCHECK(!in_error_state_);
+  CHECK(!in_error_state_, base::NotFatalUntil::M162);
   EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
       web_ui(), EduCoexistenceStateTracker::FlowResult::kConsentValid);
 }
@@ -328,7 +328,7 @@ void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue& args) {
     return;
   }
 
-  DCHECK(!in_error_state_);
+  CHECK(!in_error_state_, base::NotFatalUntil::M162);
 
   account_added_callback_ = args[0].GetString();
 
@@ -349,7 +349,7 @@ void EduCoexistenceLoginHandler::OnError(const base::ListValue& args) {
   }
   in_error_state_ = true;
   for (const base::Value& message : args) {
-    DCHECK(message.is_string());
+    CHECK(message.is_string(), base::NotFatalUntil::M162);
     LOG(ERROR) << message.GetString();
   }
 

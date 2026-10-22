@@ -55,8 +55,8 @@ class MediaEngagementScoreDetailsProviderImpl
       : web_ui_(web_ui),
         profile_(Profile::FromWebUI(web_ui)),
         receiver_(this, std::move(receiver)) {
-    DCHECK(web_ui_);
-    DCHECK(profile_);
+    CHECK(web_ui_, base::NotFatalUntil::M162);
+    CHECK(profile_, base::NotFatalUntil::M162);
     service_ = MediaEngagementService::Get(profile_);
   }
 

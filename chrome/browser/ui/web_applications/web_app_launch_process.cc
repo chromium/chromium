@@ -361,7 +361,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
 }
 
 const apps::ShareTarget* WebAppLaunchProcess::MaybeGetShareTarget() const {
-  DCHECK(web_app_);
+  CHECK(web_app_, base::NotFatalUntil::M162);
   bool is_share_intent = params_->intent && params_->intent->IsShareIntent();
   return is_share_intent && web_app_->share_target().has_value()
              ? &web_app_->share_target().value()
@@ -370,7 +370,7 @@ const apps::ShareTarget* WebAppLaunchProcess::MaybeGetShareTarget() const {
 
 std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
     const apps::ShareTarget* share_target) const {
-  DCHECK(web_app_);
+  CHECK(web_app_, base::NotFatalUntil::M162);
   GURL launch_url;
   bool is_file_handling = false;
   bool is_note_taking_intent =
@@ -396,7 +396,7 @@ std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
     // This is a default launch.
     launch_url = registrar_->GetAppLaunchUrl(params_->app_id);
   }
-  DCHECK(launch_url.is_valid());
+  CHECK(launch_url.is_valid(), base::NotFatalUntil::M162);
 
   return {launch_url, is_file_handling};
 }
@@ -439,7 +439,7 @@ WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
 }
 
 LaunchHandler WebAppLaunchProcess::GetLaunchHandler() const {
-  DCHECK(web_app_);
+  CHECK(web_app_, base::NotFatalUntil::M162);
   return web_app_->launch_handler().value_or(LaunchHandler());
 }
 

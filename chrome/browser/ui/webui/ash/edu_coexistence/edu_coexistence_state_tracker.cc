@@ -37,16 +37,16 @@ void EduCoexistenceStateTracker::SetEduConsentCallback(
     const content::WebUI* web_ui,
     const std::string& account_email,
     base::OnceCallback<void(bool)> consent_logged_callback) {
-  DCHECK(state_tracker_.contains(web_ui));
+  CHECK(state_tracker_.contains(web_ui), base::NotFatalUntil::M162);
   FlowState& state = state_tracker_[web_ui];
 
   if (state.received_consent) {
-    DCHECK_EQ(state.email, account_email);
+    CHECK_EQ(state.email, account_email, base::NotFatalUntil::M162);
     std::move(consent_logged_callback).Run(/* success */ true);
     return;
   }
 
-  DCHECK(state.email.empty());
+  CHECK(state.email.empty(), base::NotFatalUntil::M162);
   state.email = account_email;
   state.consent_logged_callback = std::move(consent_logged_callback);
 }
@@ -77,7 +77,7 @@ void EduCoexistenceStateTracker::OnDialogClosed(const content::WebUI* web_ui) {
 
 void EduCoexistenceStateTracker::OnDialogCreated(const content::WebUI* web_ui,
                                                  bool is_onboarding) {
-  DCHECK(!state_tracker_.contains(web_ui));
+  CHECK(!state_tracker_.contains(web_ui), base::NotFatalUntil::M162);
 
   FlowState& state = state_tracker_[web_ui];
 
@@ -89,13 +89,14 @@ void EduCoexistenceStateTracker::OnDialogCreated(const content::WebUI* web_ui,
 void EduCoexistenceStateTracker::OnConsentLogged(
     const content::WebUI* web_ui,
     const std::string& account_email) {
-  DCHECK(state_tracker_.contains(web_ui));
+  CHECK(state_tracker_.contains(web_ui), base::NotFatalUntil::M162);
 
   // Update the webui state that consent was logged.
   OnWebUiStateChanged(web_ui, FlowResult::kConsentLogged);
 
   if (state_tracker_[web_ui].consent_logged_callback) {
-    DCHECK_EQ(state_tracker_[web_ui].email, account_email);
+    CHECK_EQ(state_tracker_[web_ui].email, account_email,
+             base::NotFatalUntil::M162);
     std::move(state_tracker_[web_ui].consent_logged_callback)
         .Run(/* success */ true);
     return;
@@ -108,7 +109,7 @@ void EduCoexistenceStateTracker::OnConsentLogged(
 void EduCoexistenceStateTracker::OnWebUiStateChanged(
     const content::WebUI* web_ui,
     FlowResult result) {
-  DCHECK(state_tracker_.contains(web_ui));
+  CHECK(state_tracker_.contains(web_ui), base::NotFatalUntil::M162);
   state_tracker_[web_ui].flow_result = result;
 }
 

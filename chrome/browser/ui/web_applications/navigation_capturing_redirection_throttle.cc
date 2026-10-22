@@ -36,7 +36,7 @@ const char* NavigationCapturingRedirectionThrottle::GetNameForLogging() {
 
 ThrottleCheckResult
 NavigationCapturingRedirectionThrottle::WillProcessResponse() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   ThrottleCheckResult result = content::NavigationThrottle::PROCEED;
   NavigationCapturingProcess* process =
       NavigationCapturingProcess::GetForNavigationHandle(*navigation_handle());

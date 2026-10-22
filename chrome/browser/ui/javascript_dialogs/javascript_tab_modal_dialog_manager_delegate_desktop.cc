@@ -36,7 +36,7 @@ JavaScriptTabModalDialogManagerDelegateDesktop::
 
 JavaScriptTabModalDialogManagerDelegateDesktop::
     ~JavaScriptTabModalDialogManagerDelegateDesktop() {
-  DCHECK(!tab_strip_model_being_observed_);
+  CHECK(!tab_strip_model_being_observed_, base::NotFatalUntil::M162);
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::WillRunDialog() {
@@ -157,7 +157,7 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::OnTabStripModelChanged(
         // TODO(erikchen): Clean up TabStripModel observer API so that this
         // doesn't require re-entrancy and/or works correctly
         // https://crbug.com/40575977.
-        DCHECK(tab_strip_model_being_observed_);
+        CHECK(tab_strip_model_being_observed_, base::NotFatalUntil::M162);
         tab_strip_model_being_observed_->RemoveObserver(this);
         tab_strip_model_being_observed_ = nullptr;
         javascript_dialogs::TabModalDialogManager::FromWebContents(
@@ -179,7 +179,8 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttentionImpl(
     tab_strip_model->AddObserver(this);
     tab_strip_model_being_observed_ = tab_strip_model;
   } else {
-    DCHECK_EQ(tab_strip_model_being_observed_, tab_strip_model);
+    CHECK_EQ(tab_strip_model_being_observed_, tab_strip_model,
+             base::NotFatalUntil::M162);
     tab_strip_model_being_observed_->RemoveObserver(this);
     tab_strip_model_being_observed_ = nullptr;
   }

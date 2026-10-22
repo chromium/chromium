@@ -101,7 +101,7 @@ class BookmarksPageHandler::BookmarkContextMenu
       return;
     }
     if (source == side_panel::mojom::ActionSource::kPriceTracking) {
-      DCHECK(shopping_list_controller_);
+      CHECK(shopping_list_controller_, base::NotFatalUntil::M162);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);

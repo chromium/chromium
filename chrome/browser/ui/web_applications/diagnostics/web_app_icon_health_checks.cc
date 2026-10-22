@@ -27,7 +27,7 @@ WebAppIconHealthChecks::WebAppIconHealthChecks(Profile* profile)
 WebAppIconHealthChecks::~WebAppIconHealthChecks() = default;
 
 void WebAppIconHealthChecks::Start(base::OnceClosure done_callback) {
-  DCHECK(!done_callback_);
+  CHECK(!done_callback_, base::NotFatalUntil::M162);
   done_callback_ = std::move(done_callback);
   web_apps_published_event_.Post(
       base::BindOnce(&WebAppIconHealthChecks::RunDiagnostics, GetWeakPtr()));

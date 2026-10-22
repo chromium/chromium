@@ -95,7 +95,7 @@ BrowserWindowInterface* GetBrowserForOpeningWebUi(
       PictureInPictureWindowManager::GetInstance()->GetWebContents();
   // We should always have an opener web contents if the current browser is a
   // picture-in-picture type.
-  DCHECK(opener_web_contents);
+  CHECK(opener_web_contents, base::NotFatalUntil::M162);
   return GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
       opener_web_contents);
 }
@@ -195,7 +195,8 @@ void AppendWebUIResourceURLToCodeCachePairs(
     // Stripping the .code_cache suffix from code cache resource paths
     // yields the corresponding resource paths.
     constexpr std::string_view kCodeCacheResourceSuffix = ".code_cache";
-    DCHECK(code_cache_path.ends_with(kCodeCacheResourceSuffix));
+    CHECK(code_cache_path.ends_with(kCodeCacheResourceSuffix),
+          base::NotFatalUntil::M162);
     std::string_view resource_path = code_cache_path.substr(
         0, code_cache_path.size() - kCodeCacheResourceSuffix.size());
 

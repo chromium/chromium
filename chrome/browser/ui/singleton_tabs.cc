@@ -51,7 +51,8 @@ void ShowSingletonTabOverwritingNTP(
 }
 
 void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
-  DCHECK_EQ(params->disposition, WindowOpenDisposition::kSingletonTab);
+  CHECK_EQ(params->disposition, WindowOpenDisposition::kSingletonTab,
+           base::NotFatalUntil::M162);
   content::WebContents* contents =
       params->browser->GetTabStripModel()->GetActiveWebContents();
   if (contents) {

@@ -174,7 +174,7 @@ WebRtcLogsDOMHandler::WebRtcLogsDOMHandler(Profile* profile)
           WebRtcEventLogManager::GetRemoteBoundWebRtcEventLogsDir(profile)),
       original_browser_context_id_(webrtc_event_logging::GetBrowserContextId(
           profile->GetOriginalProfile())) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   for (const auto& log_dir : text_log_dirs_) {
     text_log_upload_lists_.push_back(new TextLogUploadList(
         webrtc_logging::TextLogList::GetWebRtcLogListFileForDirectory(
@@ -183,14 +183,14 @@ WebRtcLogsDOMHandler::WebRtcLogsDOMHandler(Profile* profile)
 }
 
 WebRtcLogsDOMHandler::~WebRtcLogsDOMHandler() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   for (auto& upload_list : text_log_upload_lists_) {
     upload_list->CancelLoadCallback();
   }
 }
 
 void WebRtcLogsDOMHandler::RegisterMessages() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   web_ui()->RegisterMessageCallback(
       "requestWebRtcLogsList",
@@ -202,7 +202,7 @@ void WebRtcLogsDOMHandler::HandleRequestWebRtcLogs(
     const base::ListValue& args) {
   std::string callback_id = args[0].GetString();
   AllowJavascript();
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   LoadAllWebRtcTextLogs(std::move(callback_id));
 }
 
@@ -211,14 +211,14 @@ void WebRtcLogsDOMHandler::OnJavascriptDisallowed() {
 }
 
 void WebRtcLogsDOMHandler::LoadAllWebRtcTextLogs(std::string callback_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK_GE(text_log_upload_lists_.size(), 1u);
   LoadWebRtcTextLog(0, std::move(callback_id));
 }
 
 void WebRtcLogsDOMHandler::LoadWebRtcTextLog(size_t index,
                                              std::string callback_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   text_log_upload_lists_[index]->Load(
       index < text_log_upload_lists_.size() - 1
           ? base::BindOnce(&WebRtcLogsDOMHandler::LoadWebRtcTextLog,
@@ -230,12 +230,12 @@ void WebRtcLogsDOMHandler::LoadWebRtcTextLog(size_t index,
 }
 
 void WebRtcLogsDOMHandler::OnAllWebRtcTextLogsLoaded(std::string callback_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   LoadWebRtcEventLogs(callback_id);  // Text logs loaded; on to the event logs.
 }
 
 void WebRtcLogsDOMHandler::LoadWebRtcEventLogs(const std::string& callback_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   WebRtcEventLogManager* manager = WebRtcEventLogManager::GetInstance();
   if (manager) {
@@ -251,7 +251,7 @@ void WebRtcLogsDOMHandler::LoadWebRtcEventLogs(const std::string& callback_id) {
 void WebRtcLogsDOMHandler::OnWebRtcEventLogsLoaded(
     const std::string& callback_id,
     const std::vector<UploadList::UploadInfo>& event_logs) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   event_logs_ = event_logs;
 
@@ -260,7 +260,7 @@ void WebRtcLogsDOMHandler::OnWebRtcEventLogsLoaded(
 }
 
 void WebRtcLogsDOMHandler::UpdateUI(const std::string& callback_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   base::DictValue result;
   result.Set("textLogs", UpdateUIWithTextLogs());
@@ -270,7 +270,7 @@ void WebRtcLogsDOMHandler::UpdateUI(const std::string& callback_id) {
 }
 
 base::ListValue WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   base::ListValue result;
   for (size_t i = 0; i < text_log_upload_lists_.size(); ++i) {
@@ -317,7 +317,7 @@ base::ListValue WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
           base::Time out_time;
           bool conversion_success =
               base::Time::FromUTCExploded(kLowerLimit, &out_time);
-          DCHECK(conversion_success);
+          CHECK(conversion_success, base::NotFatalUntil::M162);
           if (capture_time > out_time && capture_time < base::Time::Now()) {
             value_w = base::TimeFormatFriendlyDateAndTime(capture_time);
           }
@@ -338,7 +338,7 @@ base::ListValue WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
 }
 
 base::ListValue WebRtcLogsDOMHandler::UpdateUIWithEventLogs() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   base::ListValue result;
   for (const auto& log : event_logs_) {
     result.Append(EventLogUploadInfoToValue(log));
@@ -369,8 +369,9 @@ base::Value WebRtcLogsDOMHandler::EventLogUploadInfoToValue(
 
 base::Value WebRtcLogsDOMHandler::FromPendingLog(
     const UploadList::UploadInfo& info) const {
-  DCHECK_EQ(info.state, UploadList::UploadInfo::State::Pending);
-  DCHECK(info.upload_time.is_null());
+  CHECK_EQ(info.state, UploadList::UploadInfo::State::Pending,
+           base::NotFatalUntil::M162);
+  CHECK(info.upload_time.is_null(), base::NotFatalUntil::M162);
 
   if (!SanityCheckOnUploadInfo(info)) {
     return base::Value();
@@ -387,8 +388,9 @@ base::Value WebRtcLogsDOMHandler::FromPendingLog(
 
 base::Value WebRtcLogsDOMHandler::FromActivelyUploadedLog(
     const UploadList::UploadInfo& info) const {
-  DCHECK_EQ(info.state, UploadList::UploadInfo::State::Pending);
-  DCHECK(!info.upload_time.is_null());
+  CHECK_EQ(info.state, UploadList::UploadInfo::State::Pending,
+           base::NotFatalUntil::M162);
+  CHECK(!info.upload_time.is_null(), base::NotFatalUntil::M162);
 
   if (!SanityCheckOnUploadInfo(info)) {
     return base::Value();
@@ -405,8 +407,9 @@ base::Value WebRtcLogsDOMHandler::FromActivelyUploadedLog(
 
 base::Value WebRtcLogsDOMHandler::FromNotUploadedLog(
     const UploadList::UploadInfo& info) const {
-  DCHECK_EQ(info.state, UploadList::UploadInfo::State::NotUploaded);
-  DCHECK(info.upload_time.is_null());
+  CHECK_EQ(info.state, UploadList::UploadInfo::State::NotUploaded,
+           base::NotFatalUntil::M162);
+  CHECK(info.upload_time.is_null(), base::NotFatalUntil::M162);
 
   if (!SanityCheckOnUploadInfo(info)) {
     return base::Value();
@@ -426,8 +429,9 @@ base::Value WebRtcLogsDOMHandler::FromNotUploadedLog(
 
 base::Value WebRtcLogsDOMHandler::FromUploadUnsuccessfulLog(
     const UploadList::UploadInfo& info) const {
-  DCHECK_EQ(info.state, UploadList::UploadInfo::State::NotUploaded);
-  DCHECK(!info.upload_time.is_null());
+  CHECK_EQ(info.state, UploadList::UploadInfo::State::NotUploaded,
+           base::NotFatalUntil::M162);
+  CHECK(!info.upload_time.is_null(), base::NotFatalUntil::M162);
 
   if (!SanityCheckOnUploadInfo(info)) {
     return base::Value();
@@ -449,8 +453,9 @@ base::Value WebRtcLogsDOMHandler::FromUploadUnsuccessfulLog(
 
 base::Value WebRtcLogsDOMHandler::FromUploadSuccessfulLog(
     const UploadList::UploadInfo& info) const {
-  DCHECK_EQ(info.state, UploadList::UploadInfo::State::Uploaded);
-  DCHECK(!info.upload_time.is_null());
+  CHECK_EQ(info.state, UploadList::UploadInfo::State::Uploaded,
+           base::NotFatalUntil::M162);
+  CHECK(!info.upload_time.is_null(), base::NotFatalUntil::M162);
 
   if (!SanityCheckOnUploadInfo(info)) {
     return base::Value();

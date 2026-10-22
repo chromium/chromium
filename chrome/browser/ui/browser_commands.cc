@@ -1180,8 +1180,8 @@ void NavigateToIndexWithDisposition(BrowserWindowInterface* browser,
   WebContents* web_contents = tab->GetContents();
   CHECK(web_contents);
   NavigationController* controller = &web_contents->GetController();
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, controller->GetEntryCount());
+  CHECK_GE(index, 0, base::NotFatalUntil::M162);
+  CHECK_LT(index, controller->GetEntryCount(), base::NotFatalUntil::M162);
   controller->GoToIndex(index);
 }
 
@@ -1301,7 +1301,8 @@ base::WeakPtr<content::NavigationHandle> OpenCurrentURL(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = browser->GetProfile();
-  DCHECK(extensions::ExtensionSystem::Get(profile)->extension_service());
+  CHECK(extensions::ExtensionSystem::Get(profile)->extension_service(),
+        base::NotFatalUntil::M162);
   // TODO(crbug.com/40820294): Eliminate extra checks once source of
   //  bad pointer dereference is identified. See also TODO comment above.
   extensions::ExtensionRegistry* extension_registry =
@@ -2250,7 +2251,7 @@ void ShowOffersAndRewardsForPage(BrowserWindowInterface* browser) {
   autofill::OfferNotificationBubbleControllerImpl* controller =
       autofill::OfferNotificationBubbleControllerImpl::FromWebContents(
           web_contents);
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
   controller->ReshowBubble();
 }
 
@@ -2433,7 +2434,7 @@ void SavePage(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("SavePage"));
   WebContents* current_tab =
       browser->GetTabStripModel()->GetActiveWebContents();
-  DCHECK(current_tab);
+  CHECK(current_tab, base::NotFatalUntil::M162);
   if (current_tab->GetContentsMimeType() == "application/pdf") {
     base::RecordAction(UserMetricsAction("PDF.SavePage"));
 #if BUILDFLAG(ENABLE_PDF)
@@ -2528,7 +2529,7 @@ bool CanRouteMedia(BrowserWindowInterface* browser) {
 }
 
 void RouteMediaInvokedFromAppMenu(BrowserWindowInterface* browser) {
-  DCHECK(CanRouteMedia(browser));
+  CHECK(CanRouteMedia(browser), base::NotFatalUntil::M162);
 
   media_router::MediaRouterDialogController* dialog_controller =
       media_router::MediaRouterDialogController::GetOrCreateForWebContents(
@@ -2943,7 +2944,7 @@ void ToggleRequestTabletSite(BrowserWindowInterface* browser) {
 }
 
 void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
-  DCHECK(current_tab);
+  CHECK(current_tab, base::NotFatalUntil::M162);
   NavigationEntry* entry = current_tab->GetController().GetLastCommittedEntry();
   if (entry) {
     entry->SetIsOverridingUserAgent(true);
@@ -2964,7 +2965,7 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
 
 void ToggleFullscreenMode(BrowserWindowInterface* browser,
                           bool user_initiated) {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
   ExclusiveAccessManager::From(browser)
       ->fullscreen_controller()
       ->ToggleBrowserFullscreenMode(user_initiated);

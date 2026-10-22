@@ -103,7 +103,7 @@ MediaRouteStarter::MediaRouteStarter(MediaRouterUIParameters params)
 }
 
 MediaRouteStarter::~MediaRouteStarter() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (presentation_manager_) {
     presentation_manager_->RemoveObserver(this);
   }
@@ -133,15 +133,15 @@ MediaRouteStarter::~MediaRouteStarter() {
 
 void MediaRouteStarter::AddPresentationRequestSourceObserver(
     PresentationRequestSourceObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(observer);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(observer, base::NotFatalUntil::M162);
   observers_.AddObserver(observer);
 }
 
 void MediaRouteStarter::RemovePresentationRequestSourceObserver(
     PresentationRequestSourceObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(observer);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(observer, base::NotFatalUntil::M162);
   observers_.RemoveObserver(observer);
 }
 

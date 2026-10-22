@@ -224,7 +224,7 @@ void AddSupervisionUI::SetUpResources(const std::string& app_locale) {
   // Initialize supervision URL from the command-line arguments (if provided).
   supervision_url_ = GetAddSupervisionURL();
   if (!allow_non_google_url_for_tests_) {
-    DCHECK(supervision_url_.DomainIs("google.com"));
+    CHECK(supervision_url_.DomainIs("google.com"), base::NotFatalUntil::M162);
   }
 
   source->EnableReplaceI18nInJS();

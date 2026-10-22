@@ -88,7 +88,7 @@ SmbCredentialsDialog::~SmbCredentialsDialog() {
 
 void SmbCredentialsDialog::Respond(const std::string& username,
                                    const std::string& password) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M162);
   std::move(callback_).Run(false /* canceled */, username, password);
 }
 

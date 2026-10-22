@@ -13,6 +13,6 @@ MockPage::MockPage() = default;
 MockPage::~MockPage() = default;
 
 mojo::PendingRemote<downloads::mojom::Page> MockPage::BindAndGetRemote() {
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M162);
   return receiver_.BindNewPipeAndPassRemote();
 }

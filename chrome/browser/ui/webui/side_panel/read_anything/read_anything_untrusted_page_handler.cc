@@ -1873,7 +1873,7 @@ bool ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
   dom_distiller::DomDistillerService* dom_distiller_service =
       dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
           content->GetBrowserContext());
-  DCHECK(dom_distiller_service);
+  CHECK(dom_distiller_service, base::NotFatalUntil::M162);
   page_->OnReadabilityDistillationStateChanged(
       read_anything::mojom::ReadAnythingDistillationState::
           kDistillationInProgress);

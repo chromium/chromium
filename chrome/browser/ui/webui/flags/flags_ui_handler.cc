@@ -176,8 +176,8 @@ void FlagsUIHandler::SendExperimentalFeatures(bool deprecated_features_only) {
 
 void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
     const base::ListValue& args) {
-  DCHECK(flags_storage_);
-  DCHECK_EQ(2u, args.size());
+  CHECK(flags_storage_, base::NotFatalUntil::M162);
+  CHECK_EQ(2u, args.size(), base::NotFatalUntil::M162);
   if (args.size() != 2) {
     return;
   }
@@ -197,7 +197,7 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
 
 void FlagsUIHandler::HandleSetOriginListFlagMessage(
     const base::ListValue& args) {
-  DCHECK(flags_storage_);
+  CHECK(flags_storage_, base::NotFatalUntil::M162);
   std::string entry_internal_name, value_str;
   if (!ExtractKeyValue(args, entry_internal_name, value_str)) {
     NOTREACHED();
@@ -208,7 +208,7 @@ void FlagsUIHandler::HandleSetOriginListFlagMessage(
 }
 
 void FlagsUIHandler::HandleSetStringFlagMessage(const base::ListValue& args) {
-  DCHECK(flags_storage_);
+  CHECK(flags_storage_, base::NotFatalUntil::M162);
   std::string entry_internal_name, value_str;
   if (!ExtractKeyValue(args, entry_internal_name, value_str)) {
     NOTREACHED();
@@ -219,7 +219,7 @@ void FlagsUIHandler::HandleSetStringFlagMessage(const base::ListValue& args) {
 }
 
 void FlagsUIHandler::HandleRestartBrowser(const base::ListValue& args) {
-  DCHECK(flags_storage_);
+  CHECK(flags_storage_, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS be less intrusive and restart inside the user session after
   // we apply the newly selected flags.
@@ -232,12 +232,12 @@ void FlagsUIHandler::HandleRestartBrowser(const base::ListValue& args) {
 }
 
 void FlagsUIHandler::HandleResetAllFlags(const base::ListValue& args) {
-  DCHECK(flags_storage_);
+  CHECK(flags_storage_, base::NotFatalUntil::M162);
   about_flags::ResetAllFlags(flags_storage_.get());
 }
 
 void FlagsUIHandler::HandleExportFlags(const base::ListValue& args) {
-  DCHECK(flags_storage_);
+  CHECK(flags_storage_, base::NotFatalUntil::M162);
   CHECK(base::FeatureList::IsEnabled(features::kImportExportFlags));
   AllowJavascript();
   const base::Value& callback_id = args[0];
@@ -254,7 +254,7 @@ void FlagsUIHandler::HandleExportFlags(const base::ListValue& args) {
 }
 
 void FlagsUIHandler::HandleImportFlags(const base::ListValue& args) {
-  DCHECK(flags_storage_);
+  CHECK(flags_storage_, base::NotFatalUntil::M162);
   CHECK(base::FeatureList::IsEnabled(features::kImportExportFlags));
   AllowJavascript();
   CHECK_EQ(2u, args.size());

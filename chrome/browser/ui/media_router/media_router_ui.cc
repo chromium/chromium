@@ -224,7 +224,7 @@ std::unique_ptr<MediaRouteStarter> MediaRouterUI::TakeMediaRouteStarter() {
 }
 
 void MediaRouterUI::RegisterDestructor(base::OnceClosure destructor) {
-  DCHECK(!destructor_);
+  CHECK(!destructor_, base::NotFatalUntil::M162);
   destructor_ = std::move(destructor);
 }
 
@@ -352,7 +352,7 @@ void MediaRouterUI::LogMediaSinkStatus() {
 MediaRouterUI::UiIssuesObserver::UiIssuesObserver(IssueManager* issue_manager,
                                                   MediaRouterUI* ui)
     : IssuesObserver(issue_manager), ui_(ui) {
-  DCHECK(ui);
+  CHECK(ui, base::NotFatalUntil::M162);
 }
 
 MediaRouterUI::UiIssuesObserver::~UiIssuesObserver() = default;
@@ -369,7 +369,7 @@ MediaRouterUI::UIMediaRoutesObserver::UIMediaRoutesObserver(
     MediaRouter* router,
     const RoutesUpdatedCallback& callback)
     : MediaRoutesObserver(router), callback_(callback) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M162);
 }
 
 MediaRouterUI::UIMediaRoutesObserver::~UIMediaRoutesObserver() = default;

@@ -129,7 +129,8 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
     BrowserWindowInterface* target_browser,
     const webapps::AppId& app_id,
     bool insert_as_pinned_home_tab) {
-  DCHECK(target_browser->GetType() == BrowserWindowInterface::TYPE_APP);
+  CHECK(target_browser->GetType() == BrowserWindowInterface::TYPE_APP,
+        base::NotFatalUntil::M162);
   BrowserWindowInterface* source_browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
   CHECK(contents);
@@ -532,7 +533,7 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   // Incognito tabs reparent correctly, but remain incognito without any
   // indication to the user, so disallow it.
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M162);
 
   // Clear navigation history that occurred before the user most recently
   // entered the app's scope. The minimal-ui Back button will be initially
@@ -769,8 +770,8 @@ void RecordAppWindowLaunchMetric(Profile* profile,
   DisplayMode display =
       provider->registrar_unsafe().GetAppEffectiveDisplayMode(app_id);
   if (display != DisplayMode::kUndefined) {
-    DCHECK_LT(DisplayMode::kUndefined, display);
-    DCHECK_LE(display, DisplayMode::kMaxValue);
+    CHECK_LT(DisplayMode::kUndefined, display, base::NotFatalUntil::M162);
+    CHECK_LE(display, DisplayMode::kMaxValue, base::NotFatalUntil::M162);
     base::UmaHistogramEnumeration("Launch.WebAppDisplayMode", display);
     if (web_app->is_diy_app()) {
       base::UmaHistogramEnumeration("Launch.Window.DiyApp.WebAppDisplayMode",
@@ -807,8 +808,8 @@ void RecordAppTabLaunchMetric(Profile* profile,
   DisplayMode display =
       provider->registrar_unsafe().GetEffectiveDisplayModeFromManifest(app_id);
   if (display != DisplayMode::kUndefined) {
-    DCHECK_LT(DisplayMode::kUndefined, display);
-    DCHECK_LE(display, DisplayMode::kMaxValue);
+    CHECK_LT(DisplayMode::kUndefined, display, base::NotFatalUntil::M162);
+    CHECK_LE(display, DisplayMode::kMaxValue, base::NotFatalUntil::M162);
     base::UmaHistogramEnumeration("Launch.BrowserTab.WebAppDisplayMode",
                                   display);
     if (web_app->is_diy_app()) {
@@ -879,7 +880,8 @@ void LaunchWebApp(apps::AppLaunchParams params,
         lock.registrar().GetAppEffectiveDisplayMode(params.app_id));
   }
 
-  DCHECK_NE(params.container, apps::LaunchContainer::kLaunchContainerNone);
+  CHECK_NE(params.container, apps::LaunchContainer::kLaunchContainerNone,
+           base::NotFatalUntil::M162);
 
   apps::LaunchContainer container;
   BrowserWindowInterface* browser = nullptr;

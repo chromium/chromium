@@ -26,7 +26,7 @@ LockScreenCaptivePortalDialog::LockScreenCaptivePortalDialog()
 LockScreenCaptivePortalDialog::~LockScreenCaptivePortalDialog() = default;
 
 void LockScreenCaptivePortalDialog::Show(Profile& profile) {
-  DCHECK(IsLockScreenBrowserContext(&profile));
+  CHECK(IsLockScreenBrowserContext(&profile), base::NotFatalUntil::M162);
   if (!is_running_) {
     ShowSystemDialogForBrowserContext(&profile);
     is_running_ = true;
@@ -81,7 +81,7 @@ bool LockScreenCaptivePortalDialog::IsDialogClosedForTesting(
   if (!is_running_) {
     return true;
   }
-  DCHECK(!on_closed_callback_for_testing_);
+  CHECK(!on_closed_callback_for_testing_, base::NotFatalUntil::M162);
   on_closed_callback_for_testing_ = std::move(callback);
   return false;
 }
@@ -91,7 +91,7 @@ bool LockScreenCaptivePortalDialog::IsDialogShownForTesting(
   if (is_running_) {
     return true;
   }
-  DCHECK(!on_shown_callback_for_testing_);
+  CHECK(!on_shown_callback_for_testing_, base::NotFatalUntil::M162);
   on_shown_callback_for_testing_ = std::move(callback);
   return false;
 }

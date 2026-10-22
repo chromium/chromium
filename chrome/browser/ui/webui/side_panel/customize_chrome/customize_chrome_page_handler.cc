@@ -317,7 +317,7 @@ void CustomizeChromePageHandler::ChooseLocalCustomBackground(
   file_types.extensions[0].push_back(FILE_PATH_LITERAL("gif"));
   file_types.extension_description_overrides.push_back(
       l10n_util::GetStringUTF16(IDS_UPLOAD_IMAGE_FORMAT));
-  DCHECK(!choose_local_custom_background_callback_);
+  CHECK(!choose_local_custom_background_callback_, base::NotFatalUntil::M162);
   choose_local_custom_background_callback_ = std::move(callback);
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
@@ -849,7 +849,7 @@ void CustomizeChromePageHandler::OnCollectionImagesAvailable() {
   auto collection_id =
       ntp_background_service_->collection_images()[0].collection_id;
   for (const auto& info : ntp_background_service_->collection_images()) {
-    DCHECK(info.collection_id == collection_id);
+    CHECK(info.collection_id == collection_id, base::NotFatalUntil::M162);
     auto image = side_panel::mojom::CollectionImage::New();
     image->attribution_1 = !info.attribution.empty() ? info.attribution[0] : "";
     image->attribution_2 =
@@ -891,7 +891,7 @@ void CustomizeChromePageHandler::OnFooterVisibilityUpdated(bool visible) {
 
 void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                               int index) {
-  DCHECK(choose_local_custom_background_callback_);
+  CHECK(choose_local_custom_background_callback_, base::NotFatalUntil::M162);
   if (ntp_custom_background_service_) {
     // Use the default theme color if wallpaper search is disabled.
     // If wallpaper search is enabled, |ntp_custom_background_service_|
@@ -913,7 +913,7 @@ void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
 }
 
 void CustomizeChromePageHandler::FileSelectionCanceled() {
-  DCHECK(choose_local_custom_background_callback_);
+  CHECK(choose_local_custom_background_callback_, base::NotFatalUntil::M162);
   select_file_dialog_ = nullptr;
   LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL);
   std::move(choose_local_custom_background_callback_).Run(false);

@@ -33,13 +33,13 @@ void LockScreenNetworkDialog::OnDialogClosed(const std::string& json_retval) {
 }
 
 void LockScreenNetworkDialog::Show(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(IsLockScreenBrowserContext(profile));
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(IsLockScreenBrowserContext(profile), base::NotFatalUntil::M162);
   ShowSystemDialogForBrowserContext(profile);
 }
 
 void LockScreenNetworkDialog::Dismiss() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   Close();
 }
 

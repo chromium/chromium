@@ -275,7 +275,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
 
   std::string_view app_locale =
       application_locale_storage_->GetTag().tag_string();
-  DCHECK(!app_locale.empty());
+  CHECK(!app_locale.empty(), base::NotFatalUntil::M162);
   params.Set("hl", app_locale);
   params.Set("email", context.email);
   params.Set("gaiaId", context.gaia_id.ToString());
@@ -333,8 +333,8 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
     return;
   }
 
-  DCHECK(!email.empty());
-  DCHECK(!gaia_id.empty());
+  CHECK(!email.empty(), base::NotFatalUntil::M162);
+  CHECK(!gaia_id.empty(), base::NotFatalUntil::M162);
 
   // Retrieve ChallengeResponseKey from client certificates.
   std::optional<ChallengeResponseKey> challenge_response_key;
@@ -422,7 +422,7 @@ void LockScreenReauthHandler::CheckCredentials(
 
 void LockScreenReauthHandler::HandleUpdateUserPassword(
     const base::ListValue& value) {
-  DCHECK(!value.empty());
+  CHECK(!value.empty(), base::NotFatalUntil::M162);
   const std::string& old_password = value[0].GetString();
   lock_screen_reauth_manager_->UpdateUserPassword(old_password);
 }

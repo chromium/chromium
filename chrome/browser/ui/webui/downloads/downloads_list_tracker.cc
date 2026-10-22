@@ -287,7 +287,7 @@ DownloadManager* DownloadsListTracker::GetOriginalNotifierManager() const {
 
 void DownloadsListTracker::OnDownloadCreated(DownloadManager* manager,
                                              DownloadItem* download_item) {
-  DCHECK_EQ(0u, sorted_items_.count(download_item));
+  CHECK_EQ(0u, sorted_items_.count(download_item), base::NotFatalUntil::M162);
   if (should_show_.Run(*download_item)) {
     InsertItem(sorted_items_.insert(download_item).first);
   }
@@ -323,7 +323,7 @@ DownloadsListTracker::DownloadsListTracker(
     : main_notifier_(download_manager, this),
       page_(std::move(page)),
       should_show_(std::move(should_show)) {
-  DCHECK(page_);
+  CHECK(page_, base::NotFatalUntil::M162);
   Init();
 }
 
@@ -455,7 +455,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       break;
 
     case download::DownloadItem::COMPLETE:
-      DCHECK(!download_item->IsDangerous());
+      CHECK(!download_item->IsDangerous(), base::NotFatalUntil::M162);
       state = downloads::mojom::State::kComplete;
       break;
 

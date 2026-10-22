@@ -259,14 +259,14 @@ bool PwaInstallPageActionController::ShouldShowIph(
 
 void PwaInstallPageActionController::OnIphShown(
     user_education::FeaturePromoResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   iph_pending_ = false;
   iph_activity_ = page_action_controller_->AddActivity(kActionInstallPwa);
 }
 
 void PwaInstallPageActionController::OnIphClosed(
     const webapps::ManifestId manifest_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   iph_activity_.reset();
   // IPH is also closed when the install button is clicked and the action is
   // executed.

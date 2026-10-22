@@ -191,7 +191,7 @@ bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
 
 void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
     base::OnceClosure on_complete) {
-  DCHECK(AppUsesWindowControlsOverlay());
+  CHECK(AppUsesWindowControlsOverlay(), base::NotFatalUntil::M162);
 
   per_window_wco_enabled_ = !IsWindowControlsOverlayEnabled();
 
@@ -832,7 +832,7 @@ void WebAppBrowserController::OnLoadIcon(apps::IconValuePtr icon_value) {
 
 void WebAppBrowserController::OnReadIcon(IconPurpose purpose, SkBitmap bitmap) {
   // We request only IconPurpose::ANY icons.
-  DCHECK_EQ(purpose, IconPurpose::ANY);
+  CHECK_EQ(purpose, IconPurpose::ANY, base::NotFatalUntil::M162);
 
   if (bitmap.empty()) {
     DLOG(ERROR) << "Failed to read icon for web app";
@@ -869,8 +869,8 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
       apk_web_app_service->GetCertificateSha256Fingerprint(app_id());
 
   // Any web-only TWA should have an associated package name and fingerprint.
-  DCHECK(package_name.has_value());
-  DCHECK(fingerprint.has_value());
+  CHECK(package_name.has_value(), base::NotFatalUntil::M162);
+  CHECK(fingerprint.has_value(), base::NotFatalUntil::M162);
 
   CheckDigitalAssetLinkRelationshipForAndroidApp(*package_name, *fingerprint);
 #endif

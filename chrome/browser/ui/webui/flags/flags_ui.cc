@@ -226,7 +226,7 @@ FlagsUI::FlagsUI(content::WebUI* web_ui)
     : WebUIController(web_ui), weak_factory_(this) {
   Profile* profile = Profile::FromWebUI(web_ui);
   auto* handler = InitializeHandler(web_ui, profile, weak_factory_);
-  DCHECK(handler);
+  CHECK(handler, base::NotFatalUntil::M162);
 
   // Set up the about:flags source.
   content::WebUIDataSource* source = CreateAndAddFlagsUIHTMLSource(profile);

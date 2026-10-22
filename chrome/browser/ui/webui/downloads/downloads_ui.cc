@@ -297,7 +297,7 @@ void DownloadsUI::BindInterface(
 void DownloadsUI::CreatePageHandler(
     mojo::PendingRemote<downloads::mojom::Page> page,
     mojo::PendingReceiver<downloads::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M162);
   Profile* profile = Profile::FromWebUI(web_ui());
   // Make sure download history is initialized.
   DownloadCoreService* service =

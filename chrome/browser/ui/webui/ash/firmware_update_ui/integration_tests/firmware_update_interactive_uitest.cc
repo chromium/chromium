@@ -42,7 +42,7 @@ class FirmwareUpdateInteractiveUiTest : public InteractiveAshTest {
 
   auto TriggerFwupdPropertiesChange(uint32_t percentage, FwupdStatus status) {
     return Do([this, percentage, status]() {
-      DCHECK(fwupd_client());
+      CHECK(fwupd_client(), base::NotFatalUntil::M162);
       fwupd_client()->TriggerPropertiesChangeForTesting(
           percentage, static_cast<uint32_t>(status));
     });
@@ -50,14 +50,14 @@ class FirmwareUpdateInteractiveUiTest : public InteractiveAshTest {
 
   auto TriggerSuccessfulUpdate() {
     return Steps(Do([this]() {
-      DCHECK(fwupd_client());
+      CHECK(fwupd_client(), base::NotFatalUntil::M162);
       fwupd_client()->TriggerSuccessfulUpdateForTesting();
     }));
   }
 
   auto TriggerDeviceRequestToUnplugReplug() {
     return Steps(Do([this]() {
-      DCHECK(fwupd_client());
+      CHECK(fwupd_client(), base::NotFatalUntil::M162);
       // A device_request_id of 1 corresponds to FWUPD_REQUEST_ID_REMOVE_REPLUG
       // in firmware_update.mojom.
       fwupd_client()->EmitDeviceRequestForTesting(/*device_request_id=*/1);
@@ -168,7 +168,7 @@ class FirmwareUpdateInteractiveUiTestWithReboot
 
   auto SetUpdateToRequireReboot() {
     return Steps(Do([this]() {
-      DCHECK(fwupd_client());
+      CHECK(fwupd_client(), base::NotFatalUntil::M162);
       fwupd_client()->set_update_with_reboot(true);
     }));
   }

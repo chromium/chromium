@@ -258,12 +258,12 @@ HistoryClustersHandler::HistoryClustersHandler(
 }
 
 void HistoryClustersHandler::CommonInit() {
-  DCHECK(profile_);
-  DCHECK(web_contents_);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(web_contents_, base::NotFatalUntil::M162);
 
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
-  DCHECK(history_clusters_service);
+  CHECK(history_clusters_service, base::NotFatalUntil::M162);
   service_observation_.Observe(history_clusters_service);
 
   history_service_ = HistoryServiceFactory::GetForProfile(
@@ -362,7 +362,7 @@ void HistoryClustersHandler::StartQueryClusters(
 
 void HistoryClustersHandler::LoadMoreClusters(const std::string& query) {
   if (query_clusters_state_) {
-    DCHECK_EQ(query, query_clusters_state_->query());
+    CHECK_EQ(query, query_clusters_state_->query(), base::NotFatalUntil::M162);
     query_clusters_state_->LoadNextBatchOfClusters(
         base::BindOnce(&HistoryClustersHandler::SendClustersToPage,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -371,7 +371,7 @@ void HistoryClustersHandler::LoadMoreClusters(const std::string& query) {
 
 void HistoryClustersHandler::HideVisits(std::vector<mojom::URLVisitPtr> visits,
                                         HideVisitsCallback callback) {
-  DCHECK(!visits.empty());
+  CHECK(!visits.empty(), base::NotFatalUntil::M162);
 
   // If there's a pending request, fail because `HistoryClustersHandler` only
   // supports one hide request at a time.
@@ -549,7 +549,7 @@ void HistoryClustersHandler::HistoryDeleted() {
 }
 
 Profile* HistoryClustersHandler::GetProfile() {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
   return profile_;
 }
 
@@ -573,7 +573,7 @@ void HistoryClustersHandler::SendClustersToPage(
 }
 
 void HistoryClustersHandler::OnHideVisitsComplete() {
-  DCHECK(!pending_hide_visits_callback_.is_null());
+  CHECK(!pending_hide_visits_callback_.is_null(), base::NotFatalUntil::M162);
   std::move(pending_hide_visits_callback_).Run(/*success=*/true);
   // Notify the page of the successfully hidden visits to update the UI.
   page_->OnVisitsHidden(std::move(pending_hide_visits_));

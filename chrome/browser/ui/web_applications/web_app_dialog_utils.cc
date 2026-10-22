@@ -126,7 +126,7 @@ void OnWebAppInstallShowInstallDialog(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
-  DCHECK(web_app_info);
+  CHECK(web_app_info, base::NotFatalUntil::M162);
   InstallOsType os_type = InstallOsType::kOther;
 #if BUILDFLAG(IS_CHROMEOS)
   os_type = InstallOsType::kCros;
@@ -286,12 +286,12 @@ bool CanPopOutWebApp(Profile* profile) {
 
 void CreateWebAppFromCurrentWebContents(BrowserWindowInterface* browser,
                                         WebAppInstallFlow flow) {
-  DCHECK(CanCreateWebApp(browser));
+  CHECK(CanCreateWebApp(browser), base::NotFatalUntil::M162);
 
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M162);
 
   webapps::MLInstallabilityPromoter* promoter =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents);

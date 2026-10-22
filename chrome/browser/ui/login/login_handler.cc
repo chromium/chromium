@@ -70,7 +70,7 @@ LoginHandler::LoginModelData::LoginModelData(
     password_manager::HttpAuthManager* login_model,
     const password_manager::PasswordForm& observed_form)
     : model(login_model), form(observed_form) {
-  DCHECK(model);
+  CHECK(model, base::NotFatalUntil::M162);
 }
 
 LoginHandler::~LoginHandler() {
@@ -106,7 +106,7 @@ std::vector<LoginHandler*> LoginHandler::GetAllLoginHandlersForTest() {
 
 void LoginHandler::SetAuth(std::u16string_view username,
                            std::u16string_view password) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   std::unique_ptr<password_manager::BrowserSavePasswordProgressLogger> logger;
   password_manager::PasswordManagerClient* client =
@@ -196,8 +196,8 @@ void LoginHandler::NotifyAuthNeeded() {
 
 void LoginHandler::NotifyAuthSupplied(std::u16string_view username,
                                       std::u16string_view password) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(WasAuthHandled());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(WasAuthHandled(), base::NotFatalUntil::M162);
 
   // Intentionally make a copy to avoid issues with iterator invalidation.
   LoginHandlerVector vec = GetAllLoginHandlers();
@@ -210,8 +210,8 @@ void LoginHandler::NotifyAuthSupplied(std::u16string_view username,
 }
 
 void LoginHandler::NotifyAuthCancelled() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(WasAuthHandled());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(WasAuthHandled(), base::NotFatalUntil::M162);
 
   // Intentionally make a copy to avoid issues with iterator invalidation.
   LoginHandlerVector vec = GetAllLoginHandlers();
@@ -241,7 +241,7 @@ void LoginHandler::OtherHandlerFinished(bool supplied,
   }
 
   // We should never dispatch to self.
-  DCHECK(other_handler != this);
+  CHECK(other_handler != this, base::NotFatalUntil::M162);
 
   // Only handle notification for the identical auth info. When comparing
   // AuthChallengeInfos, ignore path because the same credentials can be used
@@ -376,7 +376,7 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
 }
 
 void LoginHandler::ShowLoginPrompt(const GURL& request_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   std::u16string authority;
   std::u16string explanation;

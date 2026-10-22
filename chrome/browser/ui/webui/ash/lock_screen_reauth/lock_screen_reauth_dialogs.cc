@@ -56,7 +56,7 @@ bool IsDialogLoaded(bool is_loaded,
   if (is_loaded) {
     return true;
   }
-  DCHECK(!on_loaded_callback);
+  CHECK(!on_loaded_callback, base::NotFatalUntil::M162);
   on_loaded_callback = std::move(callback);
   return false;
 }
@@ -118,7 +118,7 @@ bool LockScreenStartReauthDialog::CheckMediaAccessPermission(
 
 // static
 void LockScreenStartReauthDialog::Show() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(session_manager::SessionManager::Get()->IsScreenLocked());
   if (g_dialog) {
     g_dialog->Focus();
@@ -151,7 +151,7 @@ void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
 
 // static
 void LockScreenStartReauthDialog::Dismiss() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (g_dialog) {
     g_dialog->Close();
   }
@@ -289,7 +289,7 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
 }
 
 LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
-  DCHECK_EQ(this, g_dialog);
+  CHECK_EQ(this, g_dialog, base::NotFatalUntil::M162);
   HttpAuthDialog::RemoveObserver(this);
   DeleteLockScreenNetworkDialog();
   g_dialog = nullptr;
@@ -380,7 +380,7 @@ bool LockScreenStartReauthDialog::IsLoadedForTesting(
   if (is_dialog_loaded_for_testing_) {
     return true;
   }
-  DCHECK(!on_dialog_loaded_callback_for_testing_);
+  CHECK(!on_dialog_loaded_callback_for_testing_, base::NotFatalUntil::M162);
   on_dialog_loaded_callback_for_testing_ = std::move(callback);
   return false;
 }
@@ -390,7 +390,7 @@ bool LockScreenStartReauthDialog::IsClosedForTesting(
   if (!is_dialog_loaded_for_testing_) {
     return true;
   }
-  DCHECK(!on_dialog_closed_callback_for_testing_);
+  CHECK(!on_dialog_closed_callback_for_testing_, base::NotFatalUntil::M162);
   on_dialog_closed_callback_for_testing_ = std::move(callback);
   return false;
 }

@@ -198,7 +198,7 @@ CertNodeBuilder::CertNodeBuilder(int label_id)
     : CertNodeBuilder(l10n_util::GetStringUTF8(label_id)) {}
 
 CertNodeBuilder& CertNodeBuilder::Payload(std::string_view payload) {
-  DCHECK(!node_.FindByDottedPath("payload.val"));
+  CHECK(!node_.FindByDottedPath("payload.val"), base::NotFatalUntil::M162);
   node_.SetByDottedPath("payload.val", payload);
   return *this;
 }
@@ -217,7 +217,7 @@ CertNodeBuilder& CertNodeBuilder::ChildIfNotNullopt(
 }
 
 base::DictValue CertNodeBuilder::Build() {
-  DCHECK(!built_);
+  CHECK(!built_, base::NotFatalUntil::M162);
   if (!children_.empty()) {
     node_.Set("children", std::move(children_));
   }

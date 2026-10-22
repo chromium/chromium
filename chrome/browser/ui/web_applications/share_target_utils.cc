@@ -88,7 +88,8 @@ NavigateParams NavigateParamsForShareTarget(
 
   if (intent.mime_type.has_value() && !intent.files.empty()) {
     if (!launch_files.empty()) {
-      DCHECK_EQ(launch_files.size(), intent.files.size());
+      CHECK_EQ(launch_files.size(), intent.files.size(),
+               base::NotFatalUntil::M162);
     }
 
     // Files for Web Share intents are created by the browser in
@@ -155,7 +156,7 @@ NavigateParams NavigateParamsForShareTarget(
   std::vector<SharedField> shared_fields =
       ExtractSharedFields(share_target, intent);
   for (const auto& shared_field : shared_fields) {
-    DCHECK(!shared_field.value.empty());
+    CHECK(!shared_field.value.empty(), base::NotFatalUntil::M162);
     names.push_back(shared_field.name);
     values.push_back(shared_field.value);
     is_value_file_uris.push_back(false);

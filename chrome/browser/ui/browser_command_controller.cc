@@ -1620,8 +1620,8 @@ void BrowserCommandController::HandleCommandWithDisposition(
       Profile* profile = browser_->GetProfile();
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile);
-      DCHECK(
-          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+      CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+            base::NotFatalUntil::M162);
       NavigateToGoogleAccountPage(
           profile,
           identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -2563,7 +2563,7 @@ void NonAllowlistedCommandsAreDisabled(const CommandUpdater* command_updater) {
     if (std::ranges::contains(kAllowlistedIds, id)) {
       continue;
     }
-    DCHECK(!command_updater->IsCommandEnabled(id));
+    CHECK(!command_updater->IsCommandEnabled(id), base::NotFatalUntil::M162);
   }
 }
 #endif
@@ -2577,7 +2577,8 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
   bool is_locked_fullscreen =
       platform_util::IsBrowserLockedFullscreen(browser_);
   // Sanity check to make sure this function is called only on state change.
-  DCHECK_NE(is_locked_fullscreen, is_locked_fullscreen_);
+  CHECK_NE(is_locked_fullscreen, is_locked_fullscreen_,
+           base::NotFatalUntil::M162);
   if (is_locked_fullscreen == is_locked_fullscreen_) {
     return;
   }

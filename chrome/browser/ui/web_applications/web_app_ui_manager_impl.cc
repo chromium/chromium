@@ -334,7 +334,7 @@ WebAppUiManagerImpl::WebAppUiManagerImpl(Profile* profile)
 WebAppUiManagerImpl::~WebAppUiManagerImpl() = default;
 
 void WebAppUiManagerImpl::Start() {
-  DCHECK(!started_);
+  CHECK(!started_, base::NotFatalUntil::M162);
   started_ = true;
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
@@ -366,7 +366,7 @@ WebAppUiManagerImpl* WebAppUiManagerImpl::AsImpl() {
 }
 
 size_t WebAppUiManagerImpl::GetNumWindowsForApp(const webapps::AppId& app_id) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M162);
 
   auto it = num_windows_for_apps_map_.find(app_id);
   if (it == num_windows_for_apps_map_.end()) {
@@ -377,7 +377,7 @@ size_t WebAppUiManagerImpl::GetNumWindowsForApp(const webapps::AppId& app_id) {
 }
 
 void WebAppUiManagerImpl::CloseAppWindows(const webapps::AppId& app_id) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M162);
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&app_id](BrowserWindowInterface* browser_window_interface) {
@@ -398,7 +398,7 @@ void WebAppUiManagerImpl::CloseAppWindows(const webapps::AppId& app_id) {
 void WebAppUiManagerImpl::NotifyOnAllAppWindowsClosed(
     const webapps::AppId& app_id,
     base::OnceClosure callback) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M162);
 
   const size_t num_windows_for_app = GetNumWindowsForApp(app_id);
   if (num_windows_for_app == 0) {
@@ -425,7 +425,7 @@ bool WebAppUiManagerImpl::CanAddAppToQuickLaunchBar() const {
 }
 
 void WebAppUiManagerImpl::AddAppToQuickLaunchBar(const webapps::AppId& app_id) {
-  DCHECK(CanAddAppToQuickLaunchBar());
+  CHECK(CanAddAppToQuickLaunchBar(), base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeShelfController does not exist in unit tests.
   if (auto* controller = ChromeShelfController::instance()) {
@@ -437,7 +437,7 @@ void WebAppUiManagerImpl::AddAppToQuickLaunchBar(const webapps::AppId& app_id) {
 
 bool WebAppUiManagerImpl::IsAppInQuickLaunchBar(
     const webapps::AppId& app_id) const {
-  DCHECK(CanAddAppToQuickLaunchBar());
+  CHECK(CanAddAppToQuickLaunchBar(), base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeShelfController does not exist in unit tests.
   if (auto* controller = ChromeShelfController::instance()) {
@@ -502,7 +502,8 @@ BrowserWindowInterface* WebAppUiManagerImpl::ReparentAppTabToWindow(
     content::WebContents* contents,
     const webapps::AppId& app_id,
     bool shortcut_created) {
-  DCHECK(CanReparentAppTabToWindow(app_id, shortcut_created, contents));
+  CHECK(CanReparentAppTabToWindow(app_id, shortcut_created, contents),
+        base::NotFatalUntil::M162);
   // Reparent the tab into an app window immediately.
   return ReparentWebContentsIntoAppBrowser(contents, app_id);
 }
@@ -967,7 +968,7 @@ void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
 }
 
 void WebAppUiManagerImpl::OnBrowserCreated(BrowserWindowInterface* browser) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M162);
   if (!IsBrowserForInstalledApp(browser)) {
     return;
   }
@@ -985,7 +986,7 @@ void WebAppUiManagerImpl::OnBrowserCreated(BrowserWindowInterface* browser) {
 }
 
 void WebAppUiManagerImpl::OnBrowserClosed(BrowserWindowInterface* browser) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M162);
   if (!IsBrowserForInstalledApp(browser)) {
     return;
   }
@@ -993,7 +994,7 @@ void WebAppUiManagerImpl::OnBrowserClosed(BrowserWindowInterface* browser) {
   const auto& app_id = GetAppIdForBrowser(browser);
 
   size_t& num_windows_for_app = num_windows_for_apps_map_[app_id];
-  DCHECK_GT(num_windows_for_app, 0u);
+  CHECK_GT(num_windows_for_app, 0u, base::NotFatalUntil::M162);
   --num_windows_for_app;
 
   if (num_windows_for_app > 0) {
@@ -1313,7 +1314,7 @@ void WebAppUiManagerImpl::OnTabChangedDuringIph(
 void WebAppUiManagerImpl::OnBrowserCloseCancelled(
     BrowserWindowInterface* browser,
     BrowserWindowInterface::ClosingStatus closing_status) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M162);
   if (!IsBrowserForInstalledApp(browser) ||
       closing_status !=
           BrowserWindowInterface::ClosingStatus::kDeniedByPolicy) {

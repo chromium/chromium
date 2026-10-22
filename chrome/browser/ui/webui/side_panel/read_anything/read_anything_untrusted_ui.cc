@@ -335,7 +335,7 @@ void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
     mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
     mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
         receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M162);
   read_anything_untrusted_page_handler_ =
       std::make_unique<ReadAnythingUntrustedPageHandler>(
           std::move(page), std::move(receiver), web_ui(),

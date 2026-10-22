@@ -40,17 +40,17 @@ PresentationReceiverWindowController::CreateFromOriginalProfile(
     const gfx::Rect& bounds,
     base::OnceClosure termination_callback,
     TitleChangeCallback title_change_callback) {
-  DCHECK(profile);
-  DCHECK(!profile->IsOffTheRecord());
-  DCHECK(termination_callback);
+  CHECK(profile, base::NotFatalUntil::M162);
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M162);
+  CHECK(termination_callback, base::NotFatalUntil::M162);
   return base::WrapUnique(new PresentationReceiverWindowController(
       profile, bounds, std::move(termination_callback),
       std::move(title_change_callback)));
 }
 
 PresentationReceiverWindowController::~PresentationReceiverWindowController() {
-  DCHECK(!web_contents_);
-  DCHECK(!window_);
+  CHECK(!web_contents_, base::NotFatalUntil::M162);
+  CHECK(!window_, base::NotFatalUntil::M162);
 
   if (otr_profile_) {
     otr_profile_observation_.Reset();
@@ -61,8 +61,8 @@ PresentationReceiverWindowController::~PresentationReceiverWindowController() {
 void PresentationReceiverWindowController::Start(
     const std::string& presentation_id,
     const GURL& start_url) {
-  DCHECK(window_);
-  DCHECK(web_contents_);
+  CHECK(window_, base::NotFatalUntil::M162);
+  CHECK(web_contents_, base::NotFatalUntil::M162);
 
   media_router::ReceiverPresentationServiceDelegateImpl::CreateForWebContents(
       web_contents_.get(), presentation_id);
@@ -121,8 +121,8 @@ PresentationReceiverWindowController::PresentationReceiverWindowController(
       window_(PresentationReceiverWindow::Create(this, bounds)),
       termination_callback_(std::move(termination_callback)),
       title_change_callback_(std::move(title_change_callback)) {
-  DCHECK(otr_profile_);
-  DCHECK(otr_profile_->IsOffTheRecord());
+  CHECK(otr_profile_, base::NotFatalUntil::M162);
+  CHECK(otr_profile_->IsOffTheRecord(), base::NotFatalUntil::M162);
   otr_profile_observation_.Observe(otr_profile_.get());
   content::WebContentsObserver::Observe(web_contents_.get());
   web_contents_->SetDelegate(this);
@@ -135,7 +135,7 @@ void PresentationReceiverWindowController::WindowClosed() {
 
 void PresentationReceiverWindowController::OnProfileWillBeDestroyed(
     Profile* profile) {
-  DCHECK(profile == otr_profile_);
+  CHECK(profile == otr_profile_, base::NotFatalUntil::M162);
   web_contents_.reset();
   otr_profile_observation_.Reset();
   otr_profile_ = nullptr;
@@ -181,7 +181,7 @@ void PresentationReceiverWindowController::CloseContents(
 
 bool PresentationReceiverWindowController::ShouldSuppressDialogs(
     content::WebContents* source) {
-  DCHECK_EQ(web_contents_.get(), source);
+  CHECK_EQ(web_contents_.get(), source, base::NotFatalUntil::M162);
   // Suppress all because there is no possible direct user interaction with
   // dialogs.
   // TODO(crbug.com/40526231): This does not suppress window.print().
@@ -190,7 +190,7 @@ bool PresentationReceiverWindowController::ShouldSuppressDialogs(
 
 bool PresentationReceiverWindowController::ShouldFocusLocationBarByDefault(
     content::WebContents* source) {
-  DCHECK_EQ(web_contents_.get(), source);
+  CHECK_EQ(web_contents_.get(), source, base::NotFatalUntil::M162);
   // Indicate the location bar should be focused instead of the page, even
   // though there is no location bar in fullscreen (the presentation's default
   // state).  This will prevent the page from automatically receiving input

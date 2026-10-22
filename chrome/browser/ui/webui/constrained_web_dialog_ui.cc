@@ -108,7 +108,7 @@ void ConstrainedWebDialogUI::OnDialogCloseMessage(const base::ListValue& args) {
     }
   }
 
-  DCHECK(delegate->GetWebDialogDelegate());
+  CHECK(delegate->GetWebDialogDelegate(), base::NotFatalUntil::M162);
   delegate->GetWebDialogDelegate()->OnDialogClosed(json_retval);
   delegate->OnDialogCloseFromWebUI();
 }

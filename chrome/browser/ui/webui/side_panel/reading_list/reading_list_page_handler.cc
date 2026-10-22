@@ -168,7 +168,7 @@ ReadingListPageHandler::ReadingListPageHandler(
       web_ui_(web_ui),
       clock_(base::DefaultClock::GetInstance()) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   reading_list_model_ = ReadingListModelFactory::GetForBrowserContext(profile);
   reading_list_model_scoped_observation_.Observe(reading_list_model_.get());
@@ -319,7 +319,7 @@ void ReadingListPageHandler::WebContentsDestroyed() {
 void ReadingListPageHandler::ReadingListModelCompletedBatchUpdates(
     const ReadingListModel* model) {
   CHECK(web_contents());
-  DCHECK(model == reading_list_model_);
+  CHECK(model == reading_list_model_, base::NotFatalUntil::M162);
 
   if (web_contents()->GetVisibility() == content::Visibility::HIDDEN) {
     return;
@@ -332,9 +332,10 @@ void ReadingListPageHandler::ReadingListModelCompletedBatchUpdates(
 
 void ReadingListPageHandler::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
-  DCHECK(model == reading_list_model_);
-  DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
-      reading_list_model_.get()));
+  CHECK(model == reading_list_model_, base::NotFatalUntil::M162);
+  CHECK(reading_list_model_scoped_observation_.IsObservingSource(
+            reading_list_model_.get()),
+        base::NotFatalUntil::M162);
   reading_list_model_scoped_observation_.Reset();
   reading_list_model_ = nullptr;
 }
@@ -342,7 +343,7 @@ void ReadingListPageHandler::ReadingListModelBeingDeleted(
 void ReadingListPageHandler::ReadingListDidApplyChanges(
     ReadingListModel* model) {
   CHECK(web_contents());
-  DCHECK(model == reading_list_model_);
+  CHECK(model == reading_list_model_, base::NotFatalUntil::M162);
 
   if (web_contents()->GetVisibility() == content::Visibility::HIDDEN ||
       reading_list_model_->IsPerformingBatchUpdates()) {
@@ -403,7 +404,7 @@ ReadingListPageHandler::CreateReadLaterEntriesByStatusData() {
   for (const auto& url : reading_list_model_->GetKeys()) {
     scoped_refptr<const ReadingListEntry> entry =
         reading_list_model_->GetEntryByURL(url);
-    DCHECK(entry);
+    CHECK(entry, base::NotFatalUntil::M162);
     if (entry->IsRead()) {
       entries->read_entries.push_back(GetEntryData(entry.get()));
     } else {

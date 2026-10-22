@@ -465,7 +465,8 @@ std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
 
 #if DCHECK_IS_ON()
   for (auto action_id : types_enabled) {
-    DCHECK(std::ranges::contains(page_actions::kActionIds, action_id));
+    CHECK(std::ranges::contains(page_actions::kActionIds, action_id),
+          base::NotFatalUntil::M162);
   }
 #endif
 
@@ -779,7 +780,8 @@ void AppBrowserController::OnTabStripModelChanged(
       OnTabRemoved(contents.contents);
     }
     // WebContents should be null when the last tab is closed.
-    DCHECK_EQ(web_contents() == nullptr, tab_strip_model->empty());
+    CHECK_EQ(web_contents() == nullptr, tab_strip_model->empty(),
+             base::NotFatalUntil::M162);
   }
 
   // Do not update the UI during window shutdown.
@@ -1069,7 +1071,7 @@ void AppBrowserController::UpdateThemeSupplier() {
 }
 
 void AppBrowserController::SetInitialURL(const GURL& initial_url) {
-  DCHECK(initial_url_.is_empty());
+  CHECK(initial_url_.is_empty(), base::NotFatalUntil::M162);
   initial_url_ = initial_url;
 
   OnReceivedInitialURL();

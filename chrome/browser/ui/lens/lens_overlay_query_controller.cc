@@ -1064,8 +1064,9 @@ void LensOverlayQueryController::
         int sequence_id,
         scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
         lens::ImageData image_data) {
-  DCHECK_EQ(query_controller_state_,
-            QueryControllerState::kAwaitingFullImageResponse);
+  CHECK_EQ(query_controller_state_,
+           QueryControllerState::kAwaitingFullImageResponse,
+           base::NotFatalUntil::M162);
   PrepareImageDataForFullImageRequest(ref_counted_logs, image_data);
 
   // Create the request.
@@ -1075,7 +1076,8 @@ void LensOverlayQueryController::
 
   // The request ID is guaranteed to exist since it is set in the constructor
   // of latest_full_image_request_data_.
-  DCHECK(latest_full_image_request_data_->request_id_);
+  CHECK(latest_full_image_request_data_->request_id_,
+        base::NotFatalUntil::M162);
   request_context.mutable_request_id()->CopyFrom(
       *latest_full_image_request_data_->request_id_);
 
@@ -1095,8 +1097,9 @@ void LensOverlayQueryController::
 
 void LensOverlayQueryController::CreateOAuthHeadersAndTryPerformFullPageRequest(
     int sequence_id) {
-  DCHECK_EQ(query_controller_state_,
-            QueryControllerState::kAwaitingFullImageResponse);
+  CHECK_EQ(query_controller_state_,
+           QueryControllerState::kAwaitingFullImageResponse,
+           base::NotFatalUntil::M162);
 
   // If there is already a pending access token fetcher, we purposefully
   // override it since we no longer care about the previous request.
@@ -1171,8 +1174,9 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
     return;
   }
 
-  DCHECK_EQ(query_controller_state_,
-            QueryControllerState::kAwaitingFullImageResponse);
+  CHECK_EQ(query_controller_state_,
+           QueryControllerState::kAwaitingFullImageResponse,
+           base::NotFatalUntil::M162);
 
   CHECK(full_image_endpoint_fetcher_);
   full_image_endpoint_fetcher_.reset();
@@ -2265,7 +2269,8 @@ LensOverlayQueryController::CreateInteractionRequest(
   server_request.mutable_client_logs()->CopyFrom(client_logs);
   // The request ID is guaranteed to exist since it is set in the constructor
   // of latest_interaction_request_data_.
-  DCHECK(latest_interaction_request_data_->request_id_);
+  CHECK(latest_interaction_request_data_->request_id_,
+        base::NotFatalUntil::M162);
 
   lens::LensOverlayRequestContext request_context;
   request_context.mutable_request_id()->CopyFrom(

@@ -17,7 +17,7 @@ namespace media_router {
 // static
 MediaRouterUIService* MediaRouterUIServiceFactory::GetForBrowserContext(
     BrowserContext* context) {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M162);
   return static_cast<MediaRouterUIService*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
