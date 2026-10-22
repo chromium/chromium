@@ -20,11 +20,56 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
+
+namespace {
+
+// Returns the `FieldTypeGroup` for `field`. If `pw_form` is a login form and
+// `field` is its username or password element, returns the corresponding
+// credential group instead of `field`'s Autofill classification (e.g., an
+// `<input type="email">` username field). Otherwise, returns `kNoGroup` if
+// suggestions and filling are suppressed for `field` by default (e.g., due to
+// an unrecognized autocomplete attribute), matching
+// `FormStructure::GetFormTypes()`.
+FieldTypeGroup ComputeFieldTypeGroup(
+    const AutofillField& field,
+    const password_manager::PasswordForm* pw_form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  if (pw_form && pw_form->IsLikelyLoginForm()) {
+    if (field.renderer_id() == pw_form->username_element_renderer_id) {
+      return FieldTypeGroup::kUsernameField;
+    }
+    if (field.renderer_id() == pw_form->password_element_renderer_id) {
+      return FieldTypeGroup::kPasswordField;
+    }
+  }
+  if (field.ShouldSuppressSuggestionsAndFillingByDefault(
+          ac_unrecognized_behavior)) {
+    return FieldTypeGroup::kNoGroup;
+  }
+  return GroupTypeOfFieldType(GetMostRelevantFieldType(field.Type()));
+}
+
+DenseSet<FormType> GetFormTypesForLogging(
+    const FormStructure& form_structure,
+    const password_manager::PasswordForm* pw_form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  DenseSet<FormType> form_types(
+      form_structure.fields(),
+      [&](const std::unique_ptr<AutofillField>& field) {
+        return FieldTypeGroupToFormType(
+            ComputeFieldTypeGroup(*field, pw_form, ac_unrecognized_behavior));
+      });
+  form_types.erase(FormType::kUnknownFormType);
+  return form_types;
+}
+
+}  // namespace
 
 using base::TimeTicks;
 
@@ -56,8 +101,10 @@ void AndroidAutofillManager::OnFormSubmittedImpl(
   if (!submitted_form) {
     return;
   }
-  for (FormType form_type :
-       submitted_form->GetFormTypes(GetAcUnrecognizedBehavior(client()))) {
+  const password_manager::PasswordForm* pw_form =
+      FindCachedPasswordForm(*submitted_form);
+  for (FormType form_type : GetFormTypesForLogging(
+           *submitted_form, pw_form, GetAcUnrecognizedBehavior(client()))) {
     if (auto* logger = GetEventFormLogger(form_type)) {
       logger->OnWillSubmitForm();
     }
@@ -165,9 +212,10 @@ void AndroidAutofillManager::OnHidePopupImpl() {
 
 void AndroidAutofillManager::OnFormProcessed(
     const FormStructure& form_structure) {
-  DenseSet<FormType> form_types =
-      form_structure.GetFormTypes(GetAcUnrecognizedBehavior(client()));
-  for (FormType form_type : form_types) {
+  const password_manager::PasswordForm* pw_form =
+      FindCachedPasswordForm(form_structure);
+  for (FormType form_type : GetFormTypesForLogging(
+           form_structure, pw_form, GetAcUnrecognizedBehavior(client()))) {
     if (auto* logger = GetEventFormLogger(form_type)) {
       logger->OnDidParseForm();
     }
@@ -188,6 +236,7 @@ void AndroidAutofillManager::Reset() {
   }
   AutofillManager::Reset();
   forms_with_server_predictions_.clear();
+  password_forms_.clear();
   StartNewLoggingSession();
 }
 
@@ -197,6 +246,9 @@ void AndroidAutofillManager::OnFieldTypesDetermined(
     FieldTypeSource source,
     bool small_forms_were_parsed) {
   CHECK_EQ(&manager, this);
+  // The cached `PasswordForm` may be outdated now. `FindCachedPasswordForm()`
+  // parses it again when it's needed.
+  password_forms_.erase(form);
   switch (source) {
     case FieldTypeSource::kAutofillAiModel:
     case FieldTypeSource::kAutofillServer:
@@ -301,11 +353,12 @@ AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id) {
   auto [form, field] = FindFormAndField(form_id, field_id);
-  if (!field) {
+  if (!form || !field) {
     return nullptr;
   }
   return GetEventFormLogger(FieldTypeGroupToFormType(
-      GroupTypeOfFieldType(GetMostRelevantFieldType(field->Type()))));
+      ComputeFieldTypeGroup(*field, FindCachedPasswordForm(*form),
+                            GetAcUnrecognizedBehavior(client()))));
 }
 
 AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
@@ -326,6 +379,16 @@ AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
       return nullptr;
   }
   NOTREACHED();
+}
+
+const password_manager::PasswordForm*
+AndroidAutofillManager::FindCachedPasswordForm(
+    const FormStructure& form_structure) {
+  auto [it, inserted] = password_forms_.try_emplace(form_structure.global_id());
+  if (inserted) {
+    it->second = ParseToPasswordForm(form_structure);
+  }
+  return it->second.get();
 }
 
 }  // namespace autofill

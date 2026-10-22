@@ -150,6 +150,7 @@ static_library("browser") {
   public_deps = [ "//components/autofill/core/browser" ]
   deps = [
     "//components/autofill/content/browser",
+    "//components/password_manager/core/browser/form_parsing",
     "//content/public/browser",
   ]
 }

@@ -17,6 +17,11 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 namespace autofill {
 
@@ -159,8 +164,17 @@ class AndroidAutofillManager : public AutofillManager,
   // Returns logger associated with the passed-in `form_type`.
   AndroidFormEventLogger* GetEventFormLogger(FormType form_type);
 
+  const password_manager::PasswordForm* FindCachedPasswordForm(
+      const FormStructure& form_structure);
+
   // The forms that have received server predictions.
   base::flat_set<FormGlobalId> forms_with_server_predictions_;
+
+  // Cached `PasswordForm`s, parsed on demand by `FindCachedPasswordForm()`. An
+  // entry is dropped whenever its form's field types are determined.
+  absl::flat_hash_map<FormGlobalId,
+                      std::unique_ptr<password_manager::PasswordForm>>
+      password_forms_;
   std::unique_ptr<AndroidFormEventLogger> address_logger_;
   std::unique_ptr<AndroidFormEventLogger> loyalty_card_logger_;
   std::unique_ptr<AndroidFormEventLogger> payments_logger_;

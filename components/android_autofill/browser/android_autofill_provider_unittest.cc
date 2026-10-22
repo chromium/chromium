@@ -738,6 +738,97 @@ TEST_F(AndroidAutofillProviderTest,
       "Autofill.WebView.KeyMetrics.FillingAssistance.CreditCard", 0);
 }
 
+// Tests that on a login form whose username field is `<input type="email">`,
+// interaction, filling, and submission are attributed to the Password logger
+// rather than polluting the Address logger.
+TEST_F(AndroidAutofillProviderTest,
+       LoginFormEmailUsernameRoutesToPasswordLoggerOnly) {
+  base::HistogramTester histogram_tester;
+
+  FormData login_form;
+  login_form.set_renderer_id(test::MakeFormRendererId());
+  login_form.set_name(u"login_form");
+  login_form.set_url(GURL("https://foo.com/form.html"));
+  login_form.set_action(GURL("https://foo.com/submit.html"));
+  login_form.set_main_frame_origin(url::Origin::Create(login_form.url()));
+  login_form.set_fields(
+      {CreateTestFormField(/*label=*/"Email", /*name=*/"email",
+                           /*value=*/"", FormControlType::kInputEmail),
+       CreateTestFormField(/*label=*/"Password", /*name=*/"password",
+                           /*value=*/"", FormControlType::kInputPassword)});
+  login_form = CreateFormDataForFrame(login_form, main_frame_token());
+
+  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // User interacts with the email field only and accepts a credential fill
+  // that populates both the email and password fields.
+  android_autofill_manager().OnAskForValuesToFillTest(
+      login_form, login_form.fields()[0].global_id());
+
+  FormData filled_form = login_form;
+  test_api(filled_form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(filled_form).field(0).set_value(u"user@example.com");
+  test_api(filled_form).field(1).set_is_autofilled_according_to_renderer(true);
+  test_api(filled_form).field(1).set_value(u"secret");
+  android_autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                               filled_form,
+                                               login_form.main_frame_origin());
+
+  android_autofill_manager().OnFormSubmitted(
+      login_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.Password", true, 1);
+}
+
+// Tests that fields whose suggestions and filling are suppressed by default
+// (here because of an unrecognized autocomplete attribute) don't make a form
+// count as a form of their type.
+TEST_F(AndroidAutofillProviderTest,
+       UnrecognizedAutocompleteFieldsDoNotCountTowardsFormTypes) {
+  base::HistogramTester histogram_tester;
+
+  FormData form;
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_name(u"form");
+  form.set_url(GURL("https://foo.com/form.html"));
+  form.set_action(GURL("https://foo.com/submit.html"));
+  form.set_main_frame_origin(url::Origin::Create(form.url()));
+  form.set_fields(
+      {CreateTestFormField(/*label=*/"First Name", /*name=*/"firstname",
+                           /*value=*/"", FormControlType::kInputText,
+                           /*autocomplete=*/"garbage"),
+       CreateTestFormField(/*label=*/"Middle Name", /*name=*/"middlename",
+                           /*value=*/"", FormControlType::kInputText,
+                           /*autocomplete=*/"garbage"),
+       CreateTestFormField(/*label=*/"Last Name", /*name=*/"lastname",
+                           /*value=*/"", FormControlType::kInputText,
+                           /*autocomplete=*/"garbage"),
+       CreateTestFormField(/*label=*/"Email", /*name=*/"email",
+                           /*value=*/"", FormControlType::kInputEmail,
+                           /*autocomplete=*/"garbage")});
+  form = CreateFormDataForFrame(form, main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.Funnel.ParsedAsType.Address", false, 1);
+
+  // Without the autocomplete attribute, the same fields form an address form.
+  FormData control_form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({control_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.WebView.Funnel.ParsedAsType.Address", true, 1);
+}
+
 // Tests that FillOrPreviewForm attributes the fill to all FieldTypeGroups
 // present in the filled fields when a single form spans multiple groups.
 TEST_F(AndroidAutofillProviderTest,
