@@ -6,6 +6,7 @@ webui_sources = set(
   [
     'bundle_js.py',
     'generate_grd.py',
+    'generate_zip.py',
     'minify_js.py',
     'rollup_plugin.mjs',
     'stylelint.py',
@@ -23,6 +24,7 @@ webui_tests = set(
   [
     'bundle_js_test.py',
     'generate_grd_test.py',
+    'generate_zip_test.py',
     'lit_template_formatter_test.py',
     'minify_js_test.py',
     'stylelint_test.py',

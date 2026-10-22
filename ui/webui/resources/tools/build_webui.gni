@@ -18,6 +18,7 @@ import("//ui/webui/resources/tools/bundle_js_excludes.gni")
 import("//ui/webui/resources/tools/eslint_ts.gni")
 import("//ui/webui/resources/tools/generate_code_cache.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/generate_zip.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/resources/tools/stylelint.gni")
 import("//ui/webui/webui_features.gni")
@@ -98,6 +99,12 @@ template("build_webui") {
   generate_code_cache = false
   if (defined(invoker.generate_code_cache)) {
     generate_code_cache = invoker.generate_code_cache
+  }
+
+  generate_zip = false
+  if (defined(invoker.generate_zip)) {
+    assert(!generate_grdp, "generate_zip cannot be used with generate_grdp")
+    generate_zip = invoker.generate_zip
   }
 
   ### Compute the lists of files that are used across multiple targets.
@@ -202,11 +209,13 @@ template("build_webui") {
   #   8) minify_js() (only if invoker.optimize && !defined(invoker.optimize_webui_in_files))
   #   9) generate_grd()
   #  10) grit()
+  #  11) generate_zip() (only if `invoker.generate_zip=true`)
 
   if (defined(invoker.static_files)) {
     preprocess_if_expr("preprocess_static_files") {
       visibility = [
         ":$generate_grd_target_name",
+        ":build_zip",
         ":lint_css",
       ]
 
@@ -458,6 +467,7 @@ template("build_webui") {
         ":$generate_grd_target_name",
         ":build_bundle",
         ":build_min_js",
+        ":build_zip",
         ":lint_ts",
       ]
 
@@ -712,6 +722,7 @@ template("build_webui") {
       visibility = [
         ":$generate_grd_target_name",
         ":build_code_cache",
+        ":build_zip",
       ]
       in_folder = ts_out_dir
       in_target = ":build_ts"
@@ -807,7 +818,10 @@ template("build_webui") {
 
   generate_grd(generate_grd_target_name) {
     if (!generate_grdp) {
-      visibility = [ ":resources_grit" ]
+      visibility = [
+        ":build_zip",
+        ":resources_grit",
+      ]
     }
 
     grd_prefix = grd_prefix
@@ -902,6 +916,50 @@ template("build_webui") {
       ]
 
       output_dir = grit_output_dir
+    }
+  }
+
+  if (generate_zip) {
+    generate_zip("build_zip") {
+      in_grd = "$target_gen_dir/resources.grd"
+      out_zip = "$target_gen_dir/resources.zip"
+
+      # Unlike `grit("resources")` (whose `grit.py` script is on the Siso remote
+      # execution denylist and always runs locally), `generate_zip("build_zip")`
+      # runs remotely on RBE. Explicitly list intermediate dependencies and
+      # outputs in `deps` and `inputs` so Siso uploads all files referenced by
+      # `resources.grd` to the remote worker.
+      deps = [ ":$generate_grd_target_name" ]
+      inputs = []
+
+      if (defined(invoker.static_files)) {
+        deps += [ ":preprocess_static_files" ]
+        inputs += static_non_preprocessed_files +
+                  get_target_outputs(":preprocess_static_files")
+      }
+
+      if (optimize) {
+        deps += [ ":build_min_js" ]
+        inputs += get_target_outputs(":build_min_js")
+      } else if (enable_source_maps) {
+        deps += [ ":merge_source_maps" ]
+        inputs += get_target_outputs(":merge_source_maps")
+      } else {
+        deps += [ ":build_ts" ]
+        inputs += get_target_outputs(":build_ts")
+      }
+
+      # Files referenced by extra `.grdp` files should be declared as
+      # `public_inputs` of `extra_grdp_deps`; `build_zip` inherits those
+      # `public_inputs` via `deps += invoker.extra_grdp_deps`.
+      if (defined(invoker.extra_grdp_deps)) {
+        deps += invoker.extra_grdp_deps
+        inputs += invoker.extra_grdp_files
+      }
+
+      if (defined(invoker.grd_resource_path_prefix)) {
+        grd_resource_path_prefix = invoker.grd_resource_path_prefix
+      }
     }
   }
 }

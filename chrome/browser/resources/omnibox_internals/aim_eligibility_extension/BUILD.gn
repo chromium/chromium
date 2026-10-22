@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import(
-    "//chrome/browser/resources/omnibox_internals/aim_eligibility_extension/unpack_component_extension.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
-import("//ui/webui/resources/tools/optimize_webui.gni")
 
 action("rewrite_mojo_binding_imports") {
   visibility = [ ":*" ]
@@ -24,6 +21,7 @@ generate_grd("build_manifest_grdp") {
   grd_prefix = "aim_eligibility_extension"
   out_grd = "$target_gen_dir/manifest.grdp"
   input_files = [ "manifest.json" ]
+  public_inputs = input_files
   input_files_base_dir = rebase_path(".", "//")
   resource_path_prefix = "aim_eligibility_extension"
 }
@@ -60,16 +58,11 @@ build_webui("build") {
 
   webui_context_type = "trusted_only"
 
+  generate_zip = true
+
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "chrome-extension://kabpfonokkamggpgbldambnmkliehlbh"
     optimize_webui_in_files = [ "app.js" ]
   }
-}
-
-unpack_component_extension("unpack_extension") {
-  in_grd = "$target_gen_dir/resources.grd"
-  out_folder = "$root_out_dir/aim_eligibility_extension"
-  grd_resource_path_prefix = "aim_eligibility_extension"
-  deps = [ ":resources" ]
 }

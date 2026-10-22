@@ -4,28 +4,29 @@ Instructions to locally test the AIM Eligibility component extension via the Com
 
 Enable `chrome://flags/#aim-eligibility-component-extension`.
 
-> **Important:** The flag must be enabled before deploying files; otherwise, startup cleanup task will remove unrecognized component directories on launch.
+> **Important:** The flag must be enabled before deploying files; otherwise, the startup cleanup task will remove unrecognized component directories on launch.
 
 ## 2. Make Frontend Changes & Build
 
 Make frontend code changes in `chrome/browser/resources/omnibox_internals/aim_eligibility/`.
 
-> **Note:** Any files included in `build_webui("build")` will automatically be included in `resources.grd` and unpacked into the output folder.
+> **Note:** Any files included in `build_webui("build")` will automatically be included in `resources.grd` and packaged into `resources.zip`.
 
-Build and unpack the extension resources to `out/Default/aim_eligibility_extension/`:
+Build the extension resources zip archive (`out/Default/gen/chrome/browser/resources/omnibox_internals/aim_eligibility_extension/resources.zip`):
 ```bash
-autoninja -C out/Default chrome/browser/resources/omnibox_internals/aim_eligibility_extension:unpack_extension
+autoninja -C out/Default chrome/browser/resources/omnibox_internals/aim_eligibility_extension:build_zip
 ```
 
 ## 3. Deploy to User Data Directory
 
-Copy the unpacked extension into the component directory, rename the extension manifest to `extension_manifest.json` (to avoid conflicting with Omaha's component manifest), and create the component `manifest.json`:
+Unpack `resources.zip` into the component directory, rename the extension manifest to `extension_manifest.json` (to avoid conflicting with Omaha's component manifest), and create the component `manifest.json`:
 
 **Chromium:**
 
 ```bash
 mkdir -p ~/Library/Application\ Support/Chromium/aim_eligibility_extension/1.0
-cp -r out/Default/aim_eligibility_extension/. ~/Library/Application\ Support/Chromium/aim_eligibility_extension/1.0/
+unzip -o out/Default/gen/chrome/browser/resources/omnibox_internals/aim_eligibility_extension/resources.zip \
+   -d ~/Library/Application\ Support/Chromium/aim_eligibility_extension/1.0/
 mv ~/Library/Application\ Support/Chromium/aim_eligibility_extension/1.0/manifest.json \
    ~/Library/Application\ Support/Chromium/aim_eligibility_extension/1.0/extension_manifest.json
 cat << 'EOF' > ~/Library/Application\ Support/Chromium/aim_eligibility_extension/1.0/manifest.json
@@ -41,7 +42,8 @@ EOF
 
 ```bash
 mkdir -p ~/Library/Application\ Support/Google/Chrome/aim_eligibility_extension/1.0
-cp -r out/Default/aim_eligibility_extension/. ~/Library/Application\ Support/Google/Chrome/aim_eligibility_extension/1.0/
+unzip -o out/Default/gen/chrome/browser/resources/omnibox_internals/aim_eligibility_extension/resources.zip \
+   -d ~/Library/Application\ Support/Google/Chrome/aim_eligibility_extension/1.0/
 mv ~/Library/Application\ Support/Google/Chrome/aim_eligibility_extension/1.0/manifest.json \
    ~/Library/Application\ Support/Google/Chrome/aim_eligibility_extension/1.0/extension_manifest.json
 cat << 'EOF' > ~/Library/Application\ Support/Google/Chrome/aim_eligibility_extension/1.0/manifest.json
@@ -74,7 +76,7 @@ EOF
 
 To cleanly uninstall the component and reset preferences to load the bundled extension:
 
-1. Launch Chrome with the `--enable-component-uninstall`.
+1. Launch Chrome with `--enable-component-uninstall`.
 2. Navigate to:
    ```text
    chrome://components/

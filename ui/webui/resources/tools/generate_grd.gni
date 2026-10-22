@@ -10,6 +10,7 @@ template("generate_grd") {
                            [
                              "deps",
                              "public_deps",
+                             "public_inputs",
                              "testonly",
                              "visibility",
                            ])

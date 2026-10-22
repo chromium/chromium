@@ -585,6 +585,39 @@ grit("resources") {
 }
 ```
 
+### **generate_zip**
+
+This rule packages all files referenced by a `.grd` file (including any nested
+`.grdp` files) into a deterministic `.zip` archive while preserving their
+relative resource paths. This is typically used via `generate_zip = true` in
+`build_webui()`.
+
+#### **Arguments**
+```
+in_grd: The input .grd file listing the resources to package.
+out_zip: The destination .zip file to write.
+deps: Targets generating |in_grd| and all files referenced by it.
+inputs: Input files referenced by |in_grd| (and any .grdp files) so they are
+        staged for remote execution.
+grd_resource_path_prefix: Optional resource path prefix to strip from destination
+                          paths in the zip archive.
+```
+
+#### **Example**
+```python
+import("//ui/webui/resources/tools/generate_zip.gni")
+
+generate_zip("build_zip") {
+  in_grd = "$target_gen_dir/resources.grd"
+  out_zip = "$target_gen_dir/resources.zip"
+  deps = [
+    ":build_grd",
+    ":build_ts",
+  ]
+  inputs = [ "$target_gen_dir/tsc/my_webui.js" ]
+}
+```
+
 ### **build_webui**
 
 <!-- TODO(crbug.com/40230335): Elevate build_webui() to the top of this document
@@ -626,12 +659,13 @@ Under the cover, build_webui() defines the following targets
 16. `generate_grd("build_grd")`
 17. `generate_grd("build_grdp")`
 18. `grit("resources")`
+19. `generate_zip("build_zip")`
 
 Some targets are only conditionally defined based on `build_webui()` input
 parameters.
 
-Only `:build_ts`, `:resources` and `:build_grdp` targets are public and can be
-referred to from other parts of the build.
+Only `:build_ts`, `:resources`, `:build_grdp` and `:build_zip` targets are
+public and can be referred to from other parts of the build.
 
 #### **Arguments**
 ```
@@ -732,8 +766,14 @@ in_folder: Optional parameter. Specifies the input folder where TS, HTML, CSS,
            allowlist of targets inside `build_webui.gni` to prevent misuse.
 generate_grdp: Whether to generate grdp file instead of a grd file. Defaults to
                false.
+generate_zip: Whether to define a `:build_zip` target that packages the files
+              referenced by the generated .grd file into
+              `$target_gen_dir/resources.zip` while preserving their relative
+              resource paths. Defaults to false. Incompatible with
+              |generate_grdp=true|.
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
-grd_resource_path_prefix: See |resource_path_prefix| in generate_grd(). Optional
+grd_resource_path_prefix: See |resource_path_prefix| in generate_grd() and
+                          |grd_resource_path_prefix| in generate_zip(). Optional
                           parameter.
 html_to_wrapper_template: See |template| in html_to_wrapper().
 html_to_wrapper_scheme: See |scheme| in html_to_wrapper().

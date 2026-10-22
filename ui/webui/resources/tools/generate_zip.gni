@@ -1,0 +1,44 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+template("generate_zip") {
+  action(target_name) {
+    script = "//ui/webui/resources/tools/generate_zip.py"
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "inputs",
+                             "testonly",
+                             "visibility",
+                           ])
+
+    assert(defined(inputs) && inputs != [], "inputs must be non-empty")
+    inputs += [ invoker.in_grd ]
+
+    outputs = [ invoker.out_zip ]
+
+    args = [
+      "--in-grd",
+      rebase_path(invoker.in_grd, root_build_dir),
+      "--out-zip",
+      rebase_path(invoker.out_zip, root_build_dir),
+      "--root-gen-dir",
+      rebase_path(root_gen_dir, root_build_dir),
+      "--root-src-dir",
+      rebase_path("//", root_build_dir),
+    ]
+
+    # Stripping `grd_resource_path_prefix` ensures files are archived at the
+    # root of the zip (e.g. `manifest.json` instead of
+    # `<prefix>/manifest.json`), which is required when unpacking component
+    # extension bundles.
+    if (defined(invoker.grd_resource_path_prefix)) {
+      args += [
+        "--grd-resource-path-prefix",
+        invoker.grd_resource_path_prefix,
+      ]
+    }
+  }
+}
