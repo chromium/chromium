@@ -596,29 +596,59 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertTrue(!!omnibox.shadowRoot.querySelector('#lensSearchButton'));
       });
 
-  test('balanced layout and element clearances', () => {
+  test('balanced layout and element clearances', async () => {
     const inputWrapper = omnibox.$.inputWrapper;
-    const wrapperStyle = window.getComputedStyle(inputWrapper);
-    assertEquals('16px', wrapperStyle.borderRadius);
-    assertEquals('6px', wrapperStyle.paddingTop);
-
     const bottomControls =
         omnibox.shadowRoot.querySelector<HTMLElement>('#bottomControls');
     assertTrue(!!bottomControls);
+    const composeButton =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton');
+    assertTrue(!!composeButton);
+
+    // When dropdown is closed, omnibox renders as a 1-line pill with inline
+    // voice/lens controls and no compose/plus buttons.
+    const collapsedWrapperStyle = window.getComputedStyle(inputWrapper);
+    assertEquals('24px', collapsedWrapperStyle.borderRadius);
+    assertEquals('48px', collapsedWrapperStyle.height);
+    assertEquals('6px', collapsedWrapperStyle.marginTop);
+    assertEquals('0px', collapsedWrapperStyle.paddingTop);
+    assertEquals('none', window.getComputedStyle(composeButton).display);
+    assertEquals('10px', window.getComputedStyle(bottomControls).top);
+
+    // When dropdown is visible, bottomControls and composeButton are shown.
+    omnibox.dropdownIsVisible = true;
+    await microtasksFinished();
+
+    const wrapperStyle = window.getComputedStyle(inputWrapper);
+    assertEquals('16px', wrapperStyle.borderRadius);
+    assertEquals('0px', wrapperStyle.marginTop);
+    assertEquals('6px', wrapperStyle.paddingTop);
+
     const bottomControlsStyle = window.getComputedStyle(bottomControls);
     assertEquals('4px', bottomControlsStyle.paddingTop);
     assertEquals('12px', bottomControlsStyle.paddingBottom);
     assertEquals('12px', bottomControlsStyle.paddingInlineStart);
     assertEquals('16px', bottomControlsStyle.paddingInlineEnd);
 
-    const composeButton =
-        omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton');
-    assertTrue(!!composeButton);
     assertEquals(
         '36px', window.getComputedStyle(composeButton).marginInlineEnd);
 
     const profileIcon = omnibox.$.profileIcon;
     assertEquals('16px', window.getComputedStyle(profileIcon).top);
+
+    // When dropdown is hidden while user input is present (e.g. in multiline
+    // mode), the expanded layout and plus menu remain visible.
+    const contextualEntrypoint = omnibox.shadowRoot.querySelector<HTMLElement>(
+        '.contextualEntrypointContainer');
+    assertTrue(!!contextualEntrypoint);
+    omnibox.setInputText('multiline query');
+    omnibox.dropdownIsVisible = false;
+    await microtasksFinished();
+
+    assertEquals('16px', window.getComputedStyle(inputWrapper).borderRadius);
+    assertNotEquals('none', window.getComputedStyle(composeButton).display);
+    assertNotEquals(
+        'none', window.getComputedStyle(contextualEntrypoint).display);
   });
 
   test(

@@ -201,7 +201,6 @@ cr-searchbox-input::part(searchbox-input):focus::placeholder {
 }
 
 :host([is-fusebox-enabled]) {
-  --cr-searchbox-border-radius: 16px;
   --cr-searchbox-dropdown-padding-bottom: 10px;
   --cr-searchbox-dropdown-padding-top: 10px;
   --cr-searchbox-height: 48px;
@@ -222,7 +221,6 @@ cr-searchbox-input::part(searchbox-input):focus::placeholder {
 }
 
 :host-context([energy-effect-enabled_]):host([is-fusebox-enabled]) {
-  --cr-searchbox-border-radius: 16px;
   --cr-searchbox-border: 1px solid var(--color-searchbox-border);
 }
 
@@ -368,6 +366,11 @@ cr-composebox-contextual-entrypoint-button,
   -webkit-app-region: no-drag;
 }
 
+cr-searchbox-input,
+cr-searchbox-input::part(searchbox-input) {
+  cursor: text;
+}
+
 cr-searchbox-input::part(icon),
 #composeButton {
   -webkit-app-region: drag;
@@ -379,3 +382,56 @@ cr-searchbox-input::part(icon),
   height: var(--cr-searchbox-height, 48px);
 }
 
+/* Overrides the 16px default on :host when collapsed to a single-line pill. */
+:host(:not([dropdown-is-visible]):not([has-user-input])) {
+  --cr-searchbox-border-radius: calc(var(--cr-searchbox-height, 48px) / 2);
+  --enterprise-profile-clearance: 24px;
+  --omnibox-everywhere-top-actions-top: 10px;
+}
+
+:host(:not([dropdown-is-visible]):not([has-user-input])) #inputWrapper {
+  margin-top: 6px;
+  padding-top: 0;
+}
+
+:host(:not([dropdown-is-visible]):not([has-user-input])) cr-searchbox-input {
+  padding-inline-end: 116px;
+}
+
+:host(:not([dropdown-is-visible]):not([has-user-input]))
+    #inputWrapper:has(#profileIcon[is-enterprise-profile]) cr-searchbox-input {
+  padding-inline-end: calc(116px + var(--enterprise-profile-clearance));
+}
+
+:host(:not([dropdown-is-visible]):not([has-user-input]))
+    cr-searchbox-input::part(searchbox-input) {
+  height: var(--cr-searchbox-height, 48px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host(:not([dropdown-is-visible]):not([has-user-input])) #composeButton,
+:host(:not([dropdown-is-visible]):not([has-user-input]))
+    .contextualEntrypointContainer {
+  display: none;
+}
+
+:host(:not([dropdown-is-visible]):not([has-user-input])) #bottomControls {
+  inset-inline-end: 48px;
+  padding: 0;
+  position: absolute;
+  top: var(--omnibox-everywhere-top-actions-top, 10px);
+  width: auto;
+}
+
+:host(:not([dropdown-is-visible]):not([has-user-input]))
+    #inputWrapper:has(#profileIcon[is-enterprise-profile]) #bottomControls {
+  inset-inline-end: calc(48px + var(--enterprise-profile-clearance));
+}
+
+:host(:not([dropdown-is-visible]):not([has-user-input]))
+    #bottomControls .searchbox-icon-button-container {
+  height: 28px;
+  width: 28px;
+}
