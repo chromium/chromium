@@ -1,4 +1,1 @@
-team_email: "chrome-webauthn@google.com"
-buganizer_public: {
-  component_id: 1456855
-}
+mixins: "//components/webauthn/COMMON_METADATA"
