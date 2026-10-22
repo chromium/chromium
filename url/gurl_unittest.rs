@@ -55,3 +55,18 @@ fn test_scheme_and_scheme_is() {
     expect_false!(filesystem_url.scheme_is_blob());
     expect_false!(filesystem_url.scheme_is_file());
 }
+
+#[gtest(GURLRustTest, IsAboutBlankAndSrcdoc)]
+fn test_is_about_blank_and_srcdoc() {
+    let about_blank = create_gurl_from_str("about:blank?query#ref");
+    expect_true!(about_blank.is_about_blank());
+    expect_false!(about_blank.is_about_srcdoc());
+
+    let about_srcdoc = create_gurl_from_str("about:srcdoc#ref");
+    expect_true!(about_srcdoc.is_about_srcdoc());
+    expect_false!(about_srcdoc.is_about_blank());
+
+    let about_version = create_gurl_from_str("about:version");
+    expect_false!(about_version.is_about_blank());
+    expect_false!(about_version.is_about_srcdoc());
+}

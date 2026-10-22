@@ -17,6 +17,10 @@ pub mod ffi {
         pub type GURL;
 
         fn is_valid(self: &GURL) -> bool;
+        #[rust_name = "is_about_blank"]
+        fn IsAboutBlank(self: &GURL) -> bool;
+        #[rust_name = "is_about_srcdoc"]
+        fn IsAboutSrcdoc(self: &GURL) -> bool;
         #[rust_name = "scheme_is_blob"]
         fn SchemeIsBlob(self: &GURL) -> bool;
         #[rust_name = "scheme_is_file"]
