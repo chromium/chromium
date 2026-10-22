@@ -22,9 +22,11 @@ namespace chrome_pdf {
 
 namespace {
 
-// Tolerance in points when comparing page dimensions, to account for minor
-// rounding differences during float-to-text PDF serialization and parsing.
-constexpr float kDimensionTolerance = 0.001f;
+// Tolerance in points when comparing page dimensions. Skia's SkPDFDocument
+// backend rounds page dimensions to the nearest integer device pixel at 72 DPI
+// (introducing up to a 0.5pt difference). Use a 1.0pt tolerance to accommodate
+// this rounding while still catching wrong-sized or misoriented pages.
+constexpr float kDimensionTolerance = 1.0f;
 
 ScopedUnsupportedFeature CreateScopedUnsupportedFeature() {
   // Avoid loading V8 if the PDF contains embedded JavaScript.

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
@@ -215,6 +216,55 @@ TEST_F(PrintWatermarkTest, OnOverlayPdfSuccess) {
           .AppendASCII(kFileName);
   EXPECT_TRUE(
       cc::MatchesPNGFile(output_bitmap, path, cc::ExactPixelComparator()));
+}
+
+TEST_F(PrintWatermarkTest, OnOverlayPdfFractionalPageDimensionsSuccess) {
+  base::HistogramTester histogram_tester;
+  auto watermark =
+      PrintWatermark::Create(enterprise_watermark::MakeTestWatermarkBlock(
+          kWatermarkText, kWatermarkSize));
+  ASSERT_TRUE(watermark);
+
+  // ISO A4 is 210mm x 297mm (~595.28 x 841.89 points).
+  base::FilePath pdf_path =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("enterprise")
+          .AppendASCII("a4_page.pdf");
+  std::optional<std::vector<uint8_t>> pdf_bytes =
+      base::ReadFileToBytes(pdf_path);
+  ASSERT_TRUE(pdf_bytes.has_value());
+
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(pdf_bytes->size());
+  ASSERT_TRUE(mapped_region.IsValid());
+  mapped_region.mapping.GetMemoryAsSpan<uint8_t>().copy_from(*pdf_bytes);
+
+  base::ReadOnlySharedMemoryRegion output_region =
+      watermark->OnOverlayPdf(std::move(mapped_region.region));
+  ASSERT_TRUE(output_region.IsValid());
+  histogram_tester.ExpectUniqueSample("Enterprise.Watermark.PdfOverlaySuccess",
+                                      true, 1);
+
+  base::ReadOnlySharedMemoryMapping mapping = output_region.Map();
+  ASSERT_TRUE(mapping.IsValid());
+
+  int page_count = 0;
+  ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(
+      mapping.GetMemoryAsSpan<const uint8_t>(), &page_count, nullptr));
+  EXPECT_EQ(page_count, 1);
+
+  // The base PDF's exact fractional dimensions are preserved in the output.
+  // Use EXPECT_FLOAT_EQ on each dimension to avoid brittle bitwise equality
+  // checks on floating-point values across platforms and compilers.
+  const std::optional<gfx::SizeF> actual_size =
+      chrome_pdf::GetPDFPageSizeByIndex(
+          mapping.GetMemoryAsSpan<const uint8_t>(), 0);
+  ASSERT_TRUE(actual_size.has_value());
+  EXPECT_FLOAT_EQ(actual_size->width(), 595.28f);
+  EXPECT_FLOAT_EQ(actual_size->height(), 841.89f);
 }
 
 TEST_F(PrintWatermarkTest, CreateSuccess) {
