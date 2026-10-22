@@ -545,9 +545,16 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
                                  ? metadata.response().timing_allow_passed()
                                  : true;
 
-  // While we block most partial responses from being stored, we can have
-  // partial responses for bgfetch or opaque responses.
-  bool has_range_requested = headers.contains(net::HttpRequestHeaders::kRange);
+  // The stored `has_range_requested` bit is supplied by the renderer via
+  // `cache.put()`, and entries written before the proto field was added do not
+  // have it set. Treat opaque 206 and 416 responses as range-requested so
+  // they cannot be replayed to non-range requests.
+  bool has_range_requested =
+      metadata.response().has_range_requested() ||
+      (response_type == network::mojom::FetchResponseType::kOpaque &&
+       (metadata.response().status_code() == net::HTTP_PARTIAL_CONTENT ||
+        metadata.response().status_code() ==
+            net::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE));
 
   return blink::mojom::FetchAPIResponse::New(
       url_list, metadata.response().status_code(),
@@ -2043,6 +2050,8 @@ void CacheStorageCache::PutDidCreateEntry(
       put_context->response->request_include_credentials);
   response_metadata->set_timing_allow_passed(
       put_context->response->timing_allow_passed);
+  response_metadata->set_has_range_requested(
+      put_context->response->has_range_requested);
 
   // Get a temporary copy of the entry pointer before passing it in base::Bind.
   disk_cache::Entry* temp_entry_ptr = put_context->cache_entry.get();

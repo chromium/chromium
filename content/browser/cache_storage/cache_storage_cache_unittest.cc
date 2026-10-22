@@ -64,6 +64,7 @@
 #include "net/base/url_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_connection_info.h"
+#include "net/http/http_status_code.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/blob_test_utils.h"
@@ -3376,6 +3377,46 @@ TEST_P(CacheStorageCacheTestP, TimingAllowPassed) {
   EXPECT_TRUE(Match(body_request_));
   ASSERT_TRUE(callback_response_);
   EXPECT_TRUE(callback_response_->timing_allow_passed);
+}
+
+TEST_P(CacheStorageCacheTestP, HasRangeRequested) {
+  EXPECT_TRUE(Keys());
+
+  // Put a response with `has_range_requested = false`.
+  blink::mojom::FetchAPIResponsePtr response = CreateNoBodyResponse();
+  response->has_range_requested = false;
+  EXPECT_TRUE(Put(no_body_request_, std::move(response)));
+
+  // Match the response and verify `has_range_requested` is preserved as
+  // `false`.
+  EXPECT_TRUE(Match(no_body_request_));
+  ASSERT_TRUE(callback_response_);
+  EXPECT_FALSE(callback_response_->has_range_requested);
+
+  // Put a response with `has_range_requested = true`.
+  blink::mojom::FetchAPIResponsePtr response2 = CreateBlobBodyResponse();
+  response2->has_range_requested = true;
+  EXPECT_TRUE(Put(body_request_, std::move(response2)));
+
+  // Match the response and verify `has_range_requested` is preserved as `true`.
+  EXPECT_TRUE(Match(body_request_));
+  ASSERT_TRUE(callback_response_);
+  EXPECT_TRUE(callback_response_->has_range_requested);
+
+  // Opaque 206 and 416 responses force `has_range_requested = true` even if
+  // stored with `has_range_requested = false`.
+  for (int status_code :
+       {net::HTTP_PARTIAL_CONTENT, net::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE}) {
+    blink::mojom::FetchAPIResponsePtr opaque_partial = CreateBlobBodyResponse();
+    opaque_partial->response_type = network::mojom::FetchResponseType::kOpaque;
+    opaque_partial->status_code = status_code;
+    opaque_partial->has_range_requested = false;
+    EXPECT_TRUE(Put(body_request_, std::move(opaque_partial)));
+
+    EXPECT_TRUE(Match(body_request_));
+    ASSERT_TRUE(callback_response_);
+    EXPECT_TRUE(callback_response_->has_range_requested);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(CacheStorageCacheTest,
