@@ -2,16 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+chromium::import! {
+    "//base:file_path";
+    "//content/browser:browser_id_types";
+    "//storage/common:storage_common_rust";
+    "//url:url_rust";
+}
+
 use cxx::UniquePtr;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, MutexGuard};
 
-use base_file_path::ffi::FilePath;
-use content_browser_id_types::BrowsingInstanceId;
-use storage_common::FileSystemType;
+use browser_id_types::BrowsingInstanceId;
+use file_path::ffi::FilePath;
+use storage_common_rust::FileSystemType;
 use unguessable_token::UnguessableToken;
-use url::Origin;
+use url_rust::Origin;
 
 use crate::process_state::ProcessStateMaps;
 
@@ -33,7 +40,7 @@ mod ffi {
         include!("content/browser/security/cpsp/child_process_security_policy_shim.h");
 
         #[namespace = "base"]
-        type FilePath = base_file_path::ffi::FilePath;
+        type FilePath = super::file_path::ffi::FilePath;
 
         #[namespace = "base"]
         type UnguessableToken = unguessable_token::UnguessableToken;
@@ -41,9 +48,9 @@ mod ffi {
         // Gives us access to C++ url::Origin and all methods exposed in the
         // origin bridge file without having to redefine them here.
         #[namespace = "url"]
-        type Origin = url::origin::ffi::Origin;
+        type Origin = super::url_rust::origin::ffi::Origin;
         #[namespace = ""]
-        type GURL = url::gurl::ffi::GURL;
+        type GURL = super::url_rust::gurl::ffi::GURL;
 
         #[namespace = "content"]
         type IsolatedOriginUtil;
@@ -88,10 +95,10 @@ mod ffi {
         fn create_origin_with_default_port_if_necessary(origin: &Origin) -> UniquePtr<Origin>;
 
         #[namespace = "storage"]
-        type FileSystemType = storage_common::FileSystemType;
+        type FileSystemType = super::storage_common_rust::FileSystemType;
 
         #[namespace = "content"]
-        type BrowsingInstanceId = content_browser_id_types::BrowsingInstanceId;
+        type BrowsingInstanceId = super::browser_id_types::BrowsingInstanceId;
     }
 
     extern "Rust" {
@@ -722,7 +729,7 @@ fn get_matching_process_isolated_origin_from_legacy_origin_list(
     }
 
     match best_match {
-        Some(entry) => url::origin::ffi::clone_origin(&entry.origin),
+        Some(entry) => url_rust::origin::ffi::clone_origin(&entry.origin),
         None => cxx::UniquePtr::null(),
     }
 }
@@ -778,7 +785,7 @@ fn is_isolated_site_from_source(
         return false;
     };
 
-    let site_origin = url::origin::ffi::create_origin_from_gurl(&site_url);
+    let site_origin = url_rust::origin::ffi::create_origin_from_gurl(&site_url);
     entries.iter().any(|entry| entry.source == source && *entry.origin == *site_origin)
 }
 

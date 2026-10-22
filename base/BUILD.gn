@@ -2690,7 +2690,6 @@ source_set("file_path_shim") {
 }
 
 rust_static_library("file_path") {
-  crate_name = "base_file_path"
   crate_root = "files/file_path.rs"
   sources = [ "files/file_path.rs" ]
   allow_unsafe = true

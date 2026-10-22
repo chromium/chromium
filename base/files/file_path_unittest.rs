@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+chromium::import! {
+    "//base:file_path";
+}
+
 use rust_gtest_interop::prelude::*;
 use std::path::Path;
 
 #[gtest(FilePathRustTest, BasicConversions)]
 fn test_basic_conversions() {
     let test_path = Path::new("/foo/bar/baz.txt");
-    let file_path = base_file_path::ffi::FilePath::from_path(test_path);
+    let file_path = file_path::ffi::FilePath::from_path(test_path);
 
     let roundtrip_path = file_path.to_path_buf();
     expect_eq!(test_path, roundtrip_path);
@@ -24,7 +28,7 @@ fn test_non_utf8_unix() {
     let os_str = std::ffi::OsStr::from_bytes(non_utf8_bytes);
     let test_path = Path::new(os_str);
 
-    let file_path = base_file_path::ffi::FilePath::from_path(test_path);
+    let file_path = file_path::ffi::FilePath::from_path(test_path);
     let roundtrip_path = file_path.to_path_buf();
 
     expect_eq!(test_path, roundtrip_path);
@@ -40,7 +44,7 @@ fn test_zero_copy_unix() {
     let os_str = std::ffi::OsStr::from_bytes(non_utf8_bytes);
     let test_path = Path::new(os_str);
 
-    let file_path = base_file_path::ffi::FilePath::from_path(test_path);
+    let file_path = file_path::ffi::FilePath::from_path(test_path);
 
     // Verify zero-copy path borrows match
     expect_eq!(file_path.as_os_str(), os_str);
@@ -58,7 +62,7 @@ fn test_wide_windows() {
     // Create a Windows path with non-ASCII (wide) characters
     let test_path = Path::new(r"C:\foo\bar\测试_emoji_🚀.txt");
 
-    let file_path = base_file_path::ffi::FilePath::from_path(test_path);
+    let file_path = file_path::ffi::FilePath::from_path(test_path);
     let roundtrip_path = file_path.to_path_buf();
 
     expect_eq!(test_path, roundtrip_path);

@@ -57,7 +57,6 @@ source_set("unittests") {
 }
 
 rust_static_library("storage_common_rust") {
-  crate_name = "storage_common"
   crate_root = "file_system/file_system_types.rs"
   sources = [ "file_system/file_system_types.rs" ]
   cxx_bindings = [ "file_system/file_system_types.rs" ]

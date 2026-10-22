@@ -4,12 +4,14 @@
 
 chromium::import! {
     "//base:feature";
+    "//content/common:common_id_types";
+    "//url:url_rust";
 }
 
 use std::collections::hash_map::Entry;
 use std::collections::{BTreeSet, HashMap};
 
-use content_common_id_types::ChildProcessId;
+use common_id_types::ChildProcessId;
 use cxx::UniquePtr;
 
 use crate::process_lock::{AssignableProcessLock, StatefulProcessLock};
@@ -26,13 +28,13 @@ pub(crate) mod ffi {
         include!("url/origin.rs.h");
 
         #[namespace = "content"]
-        type ChildProcessId = content_common_id_types::ChildProcessId;
+        type ChildProcessId = super::common_id_types::ChildProcessId;
 
         #[namespace = ""]
-        type GURL = url::gurl::ffi::GURL;
+        type GURL = super::url_rust::gurl::ffi::GURL;
 
         #[namespace = "url"]
-        type Origin = url::origin::ffi::Origin;
+        type Origin = super::url_rust::origin::ffi::Origin;
 
         #[namespace = "content"]
         #[rust_name = "CppProcessLock"]

@@ -53,7 +53,6 @@ if (is_android) {
 }
 
 rust_static_library("browser_id_types") {
-  crate_name = "content_browser_id_types"
   crate_root = "browsing_instance_id.rs"
   sources = [ crate_root ]
   allow_unsafe = true
