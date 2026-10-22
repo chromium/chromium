@@ -363,7 +363,10 @@ source_set("impl") {
       "force_signin_verifier.cc",
       "signin_ui_delegate.cc",
     ]
-    deps += [ "//chrome/browser/ui/webui/signin:signin_impl" ]
+    deps += [
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:signin_impl",
+    ]
   }
 
   if (is_chromeos) {

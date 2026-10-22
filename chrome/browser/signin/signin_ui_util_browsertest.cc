@@ -83,21 +83,11 @@ namespace {
 class MockSigninUiDelegate : public SigninUiDelegateImplDice {
  public:
   MOCK_METHOD(void,
-              ShowTurnSyncOnUI,
-              (Profile * profile,
-               signin_metrics::AccessPoint access_point,
-               signin_metrics::PromoAction promo_action,
-               const CoreAccountId& account_id,
-               TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-               bool is_sync_promo,
-               bool user_already_signed_in),
-              ());
-  MOCK_METHOD(void,
               ShowHistorySyncOptinUI,
               (Profile * profile,
                const CoreAccountId& account_id,
                signin_metrics::AccessPoint access_point),
-              ());
+              (override));
   MOCK_METHOD(void,
               ShowReauthUI,
               (Profile * profile,
@@ -105,7 +95,7 @@ class MockSigninUiDelegate : public SigninUiDelegateImplDice {
                bool enable_sync,
                signin_metrics::AccessPoint access_point,
                signin_metrics::PromoAction promo_action),
-              ());
+              (override));
 };
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
@@ -114,9 +104,9 @@ std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
 
 }  // namespace
 
-class SigninUiUtilTestBase : public SigninBrowserTestBase {
+class SigninUiUtilTest : public SigninBrowserTestBase {
  public:
-  SigninUiUtilTestBase()
+  SigninUiUtilTest()
       : delegate_auto_reset_(SetSigninUiDelegateForTesting(&mock_delegate_)) {
     ON_CALL(mock_delegate_, ShowReauthUI)
         .WillByDefault([this](Profile* profile, const std::string& email,
@@ -144,14 +134,6 @@ class SigninUiUtilTestBase : public SigninBrowserTestBase {
     SignInFromSingleAccountPromo(browser()->GetProfile(), account_info,
                                  access_point_);
   }
-
-  virtual void ExpectTurnSyncOn(
-      signin_metrics::AccessPoint access_point,
-      signin_metrics::PromoAction promo_action,
-      const CoreAccountId& account_id,
-      TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-      bool is_sync_promo,
-      bool user_already_signed_in) = 0;
 
   void ExpectNoSigninStartedHistograms(
       const base::HistogramTester& histogram_tester) {
@@ -239,74 +221,7 @@ class SigninUiUtilTestBase : public SigninBrowserTestBase {
   base::AutoReset<SigninUiDelegate*> delegate_auto_reset_;
 };
 
-class SigninUiUtilTest : public SigninUiUtilTestBase {
- public:
-  SigninUiUtilTest() = default;
-
-  void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
-                        signin_metrics::PromoAction promo_action,
-                        const CoreAccountId& account_id,
-                        TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-                        bool is_sync_promo,
-                        bool user_already_signed_in) override {
-    EXPECT_CALL(mock_delegate_,
-                ShowTurnSyncOnUI(browser()->GetProfile(), access_point,
-                                 promo_action, account_id, signin_aborted_mode,
-                                 is_sync_promo, user_already_signed_in));
-  }
-};
-
-class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
-    : public SigninUiUtilTestBase {
- public:
-  SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos() = default;
-
-  void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
-                        signin_metrics::PromoAction promo_action,
-                        const CoreAccountId& account_id,
-                        TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-                        bool is_sync_promo,
-                        bool user_already_signed_in) override {
-    EXPECT_CALL(mock_delegate_,
-                ShowTurnSyncOnUI(browser()->GetProfile(), access_point,
-                                 promo_action, account_id, signin_aborted_mode,
-                                 is_sync_promo, user_already_signed_in))
-        .Times(0);
-    EXPECT_CALL(mock_delegate_,
-                ShowHistorySyncOptinUI(browser()->GetProfile(), account_id,
-                                       access_point))
-        .Times(1);
-  }
-
- protected:
-  void TestEnableSyncPromoWithExistingWebOnlyAccount() {
-    CoreAccountId account_id =
-        GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-            GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
-            signin_metrics::AccessPoint::kStartPage,
-            signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-
-    // Verify that the primary account is not set before.
-    ASSERT_FALSE(
-        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-    ExpectTurnSyncOn(
-        access_point_, signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-        account_id, TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-        /*is_sync_promo=*/true, /*user_already_signed_in=*/false);
-    EnableSync(GetIdentityManager()
-                   ->FindExtendedAccountInfoByAccountId(account_id)
-                   .GetCoreAccountInfo(),
-               /*is_default_promo_account=*/true);
-
-    // Verify that the primary account has been set.
-    EXPECT_TRUE(
-        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-                       EnableSyncWithExistingAccount) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -323,14 +238,10 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
     EXPECT_EQ(0, user_action_tester.GetActionCount(
                      "Signin_Signin_FromBookmarkBubble"));
 
-    signin_metrics::PromoAction expected_promo_action =
-        is_default_promo_account
-            ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
-            : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
-    ExpectTurnSyncOn(signin_metrics::AccessPoint::kBookmarkBubble,
-                     expected_promo_action, account_id,
-                     TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                     /*is_sync_promo=*/false, /*user_already_signed_in=*/true);
+    EXPECT_CALL(
+        mock_delegate_,
+        ShowHistorySyncOptinUI(browser()->GetProfile(), account_id,
+                               signin_metrics::AccessPoint::kBookmarkBubble));
     EnableSync(GetIdentityManager()
                    ->FindExtendedAccountInfoByAccountId(account_id)
                    .GetCoreAccountInfo(),
@@ -342,8 +253,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-                       EnableSyncWithAccountThatNeedsReauth) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
       WindowOpenDisposition::kNewForegroundTab,
@@ -398,8 +308,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-                       EnableSyncForNewAccountWithNoTab) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
@@ -424,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
             active_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest,
                        EnableSyncForNewAccountWithNoTabWithExisting) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -447,8 +356,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 }
 
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-                       EnableSyncForNewAccountWithOneTab) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   ui_test_utils::NavigateToURLWithDisposition(
@@ -672,8 +580,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
             accounts[2].GetGaiaId());
 }
 
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-                       MergeDiceSigninTab) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
   base::UserActionTester user_action_tester;
   EnableSync(CoreAccountInfo(), false);
   EXPECT_EQ(
@@ -790,53 +697,36 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
             sign_in_tab->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-                       EnableSyncWithExistingWebOnlyAccount) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
           signin_metrics::AccessPoint::kStartPage,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+  ASSERT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  const bool is_default_promo_account = true;
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
   EXPECT_EQ(
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
-  signin_metrics::PromoAction expected_promo_action =
-      is_default_promo_account
-          ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
-          : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
-  ExpectTurnSyncOn(
-      signin_metrics::AccessPoint::kBookmarkBubble, expected_promo_action,
-      account_id, TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY,
-      /*is_sync_promo=*/false, /*user_already_signed_in=*/false);
+  EXPECT_CALL(
+      mock_delegate_,
+      ShowHistorySyncOptinUI(browser()->GetProfile(), account_id,
+                             signin_metrics::AccessPoint::kBookmarkBubble));
   EnableSync(GetIdentityManager()
                  ->FindExtendedAccountInfoByAccountId(account_id)
                  .GetCoreAccountInfo(),
-             is_default_promo_account);
+             /*is_default_promo_account=*/true);
 
+  EXPECT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Started", signin_metrics::AccessPoint::kBookmarkBubble, 1);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
-}
-
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-                       EnableSyncPromoWithExistingWebOnlyAccountAvatarBubble) {
-  access_point_ = signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
-
-  TestEnableSyncPromoWithExistingWebOnlyAccount();
-}
-
-// Checks that sync is treated as a promo for kSettings.
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-                       EnableSyncPromoWithExistingWebOnlyAccountSettings) {
-  access_point_ = signin_metrics::AccessPoint::kSettings;
-
-  TestEnableSyncPromoWithExistingWebOnlyAccount();
 }
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
@@ -874,11 +764,11 @@ IN_PROC_BROWSER_TEST_F(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-class SigninUiUtilTest_HistorySyncOptinTest : public SigninUiUtilTestBase {
+class SigninUiUtilTest_HistorySyncOptinTest : public SigninUiUtilTest {
  public:
   // This setup happens before SetUpOnMainThread() as an initial startup.
   void SetUpInProcessBrowserTestFixture() override {
-    SigninUiUtilTestBase::SetUpInProcessBrowserTestFixture();
+    SigninUiUtilTest::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
@@ -890,12 +780,6 @@ class SigninUiUtilTest_HistorySyncOptinTest : public SigninUiUtilTestBase {
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
   }
-  void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
-                        signin_metrics::PromoAction promo_action,
-                        const CoreAccountId& account_id,
-                        TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-                        bool is_sync_promo,
-                        bool user_already_signed_in) override {}
 
  protected:
   syncer::TestSyncService* sync_service() {

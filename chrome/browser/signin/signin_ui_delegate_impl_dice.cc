@@ -9,8 +9,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 namespace signin_ui_util {

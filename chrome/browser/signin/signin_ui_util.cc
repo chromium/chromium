@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
@@ -53,7 +52,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/page_transition_types.h"
@@ -351,58 +349,15 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
 
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-      signin_metrics::LogSignInStarted(
-          access_point, *ProfileMetricsServiceFactory::GetForProfile(profile));
-      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account.account_id, signin::ConsentLevel::kSignin, access_point);
-    }
-
-    GetSigninUiDelegate()->ShowHistorySyncOptinUI(profile, account.account_id,
-                                                  access_point);
-    return;
-  }
-
-  // In the UNO model, if the account was in the web-only signed in state,
-  // turning on sync will sign the account in the profile and show the sync
-  // confirmation dialog.
-  // Cancelling the sync confirmation should revert to the initial state,
-  // signing out the account from the profile and keeping it on the web only,
-  // unless the source is the Profile menu or the settings, for which we would
-  // still want the user to be signed in, having sync as optional.
-  // Aborting the sync confirmation for a secondary account reverts the original
-  // primary account as primary, and keeps the secondary account.
-  bool is_sync_promo =
-      access_point == signin_metrics::AccessPoint::kProfileMenuPrimaryButton ||
-      access_point == signin_metrics::AccessPoint::kSettings ||
-      access_point == signin_metrics::AccessPoint::kSettingsYourSavedInfo;
-  TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
-      account.account_id !=
-                  identity_manager
-                      ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                      .account_id &&
-              !is_sync_promo
-          ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY
-          : TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT;
-  bool user_already_signed_in =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
-      account.account_id;
-
-  // The Turn On Sync flow might fail before setting an account as primary. If
-  // enabling Sync is optional, do not rely on its result to sign the web-only
-  // account in the profile.
-  if (is_sync_promo &&
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     signin_metrics::LogSignInStarted(
         access_point, *ProfileMetricsServiceFactory::GetForProfile(profile));
     identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
         account.account_id, signin::ConsentLevel::kSignin, access_point);
   }
 
-  GetSigninUiDelegate()->ShowTurnSyncOnUI(
-      profile, access_point, existing_account_promo_action, account.account_id,
-      signin_aborted_mode, is_sync_promo, user_already_signed_in);
+  GetSigninUiDelegate()->ShowHistorySyncOptinUI(profile, account.account_id,
+                                                access_point);
 #else
   DUMP_WILL_BE_NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

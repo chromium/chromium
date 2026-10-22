@@ -108,12 +108,6 @@ source_set("signin") {
     "//chrome/app:generated_resources",
   ]
 
-  allow_circular_includes_from = [
-    # signin headers include turn_sync_on_helper.h for SigninAbortedMode, and
-    # dice_tab_helper.cc includes history_sync_optin_helper.h.
-    "//chrome/browser/signin",
-  ]
-
   if (enable_dice_support) {
     sources += [
       "cross_device_signin_qr_bubble_ui.h",

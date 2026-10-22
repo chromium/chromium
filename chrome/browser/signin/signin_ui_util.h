@@ -83,29 +83,26 @@ void SignInFromSingleAccountPromo(Profile* profile,
                                   const CoreAccountInfo& account,
                                   signin_metrics::AccessPoint access_point);
 
-// This function is used to enable sync or the history sync for a given account:
-// Which screen is shown depends on the feature
-// `kReplaceSyncPromosWithSignInPromos`.
-// * This function does nothing if the user is already signed in to Chrome.
-// * If |account| is empty, then it presents the Chrome sign-in page.
-// * If token service has an invalid refresh token for account |account|,
-//   then it presents the Chrome sign-in page with |account.email| prefilled.
-// * If token service has a valid refresh token for |account|, then it
-//   shows to the user the sync consent screen is
-//   `kReplaceSyncPromosWithSignInPromos` is disabled or the history sync optin
-//   screen if `kReplaceSyncPromosWithSignInPromos` is enabled.
+// This function is used to sign in and enable history sync for a given account:
+// * This function does nothing if the user is already syncing in Chrome.
+// * If `account` is empty, then it presents the Chrome sign-in page.
+// * If token service has an invalid refresh token for account `account`,
+//   then it presents the Chrome sign-in page with `account.email` prefilled.
+// * If token service has a valid refresh token for `account`, then it
+//   signs in `account` if not already signed in and shows the history sync
+//   opt-in screen.
 // TODO(crbug.com/457398017): Consider renaming this method.
 void EnableSyncFromSingleAccountPromo(Profile* profile,
                                       const CoreAccountInfo& account,
                                       signin_metrics::AccessPoint access_point);
 
-// This function is used to enable sync for a given account. It has the same
-// behavior as |EnableSyncFromSingleAccountPromo()| except that it also logs
-// some additional information if the action is started from a promo that
-// supports selecting the account that may be used for sync.
+// This function is used to sign in and enable history sync for a given account.
+// It has the same behavior as `EnableSyncFromSingleAccountPromo()` except that
+// it also logs some additional information if the action is started from a
+// promo that supports selecting the account.
 //
-// |is_default_promo_account| is true if |account| corresponds to the default
-// account in the promo. It is ignored if |account| is empty.
+// `is_default_promo_account` is true if `account` corresponds to the default
+// account in the promo. It is ignored if `account` is empty.
 // TODO(crbug.com/457398017): Consider renaming this method.
 void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      const CoreAccountInfo& account,

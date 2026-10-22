@@ -14,24 +14,6 @@
 
 namespace signin_ui_util {
 
-void SigninUiDelegate::ShowTurnSyncOnUI(
-    Profile* profile,
-    signin_metrics::AccessPoint access_point,
-    signin_metrics::PromoAction promo_action,
-    const CoreAccountId& account_id,
-    TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-    bool is_sync_promo,
-    bool user_already_signed_in) {
-  // TODO(crbug.com/417950948): Delete this function when removing the Sync
-  // feature.
-  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-  // TurnSyncOnHelper is suicidal (it will delete itself once it finishes
-  // enabling sync).
-  new TurnSyncOnHelper(profile, EnsureBrowser(profile), access_point,
-                       promo_action, account_id, signin_aborted_mode,
-                       is_sync_promo, user_already_signed_in);
-}
-
 void SigninUiDelegate::ShowHistorySyncOptinUI(
     Profile* profile,
     const CoreAccountId& account_id,

@@ -46,16 +46,6 @@ class MockSigninUiDelegate : public SigninUiDelegate {
               (override));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   MOCK_METHOD(void,
-              ShowTurnSyncOnUI,
-              (Profile*,
-               signin_metrics::AccessPoint,
-               signin_metrics::PromoAction,
-               const CoreAccountId&,
-               TurnSyncOnHelper::SigninAbortedMode,
-               bool,
-               bool),
-              (override));
-  MOCK_METHOD(void,
               ShowHistorySyncOptinUI,
               (Profile*, const CoreAccountId&, signin_metrics::AccessPoint),
               (override));

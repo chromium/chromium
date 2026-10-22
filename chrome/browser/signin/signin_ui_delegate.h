@@ -14,10 +14,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
-#endif
-
 class BrowserWindowInterface;
 class Profile;
 struct CoreAccountId;
@@ -53,18 +49,6 @@ class SigninUiDelegate {
                             signin_metrics::PromoAction promo_action) = 0;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Displays a sync confirmation dialog to the user for an account with
-  // identified by `account_id`. Account must be a valid (have no auth error)
-  // account added to `profile`.
-  virtual void ShowTurnSyncOnUI(
-      Profile* profile,
-      signin_metrics::AccessPoint access_point,
-      signin_metrics::PromoAction promo_action,
-      const CoreAccountId& account_id,
-      TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-      bool is_sync_promo,
-      bool user_already_signed_in);
-
   // Displays a history sync opt-in dialog to the user for an account
   // identified by `account_id`. Account must be a valid (have no auth error).
   // Virtual for testing purpose.
