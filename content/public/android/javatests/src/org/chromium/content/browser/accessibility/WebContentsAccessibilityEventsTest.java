@@ -770,6 +770,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/576400944")
     public void test_ariaTextboxEditabilityChanges() {
         performTest(
                 "aria-textbox-editability-changes.html",
