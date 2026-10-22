@@ -212,15 +212,14 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
     if (extension_sync_service_.value()) {
       // TODO(crbug.com/425381293): Add an ExtensionLocalDataBatchUploader once
       // its implementation is complete.
-      controllers.push_back(
-          std::make_unique<browser_sync::ExtensionDataTypeController>(
-              syncer::EXTENSIONS, data_type_store_factory,
-              extension_sync_service_.value()->AsWeakPtr(), dump_stack,
-              browser_sync::ExtensionDataTypeController::DelegateMode::
-                  kTransportModeWithSingleModel,
-              extension_system_profile_.value(),
-              std::make_unique<extensions::ExtensionLocalDataBatchUploader>(
-                  extension_system_profile_.value())));
+      controllers.push_back(std::make_unique<ExtensionDataTypeController>(
+          syncer::EXTENSIONS, data_type_store_factory,
+          extension_sync_service_.value()->AsWeakPtr(), dump_stack,
+          ExtensionDataTypeController::DelegateMode::
+              kTransportModeWithSingleModel,
+          extension_system_profile_.value(),
+          std::make_unique<extensions::ExtensionLocalDataBatchUploader>(
+              extension_system_profile_.value())));
 
       controllers.push_back(
           std::make_unique<browser_sync::ExtensionSettingDataTypeController>(
@@ -244,22 +243,20 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
         !base::FeatureList::IsEnabled(syncer::kSyncDoNotSyncAppsAndAppSettings);
 #endif  // BUILDFLAG(IS_CHROMEOS)
     if (sync_apps) {
-      controllers.push_back(
-          std::make_unique<browser_sync::ExtensionDataTypeController>(
-              syncer::APPS, data_type_store_factory,
-              extension_sync_service_.value()->AsWeakPtr(), dump_stack,
+      controllers.push_back(std::make_unique<ExtensionDataTypeController>(
+          syncer::APPS, data_type_store_factory,
+          extension_sync_service_.value()->AsWeakPtr(), dump_stack,
 #if BUILDFLAG(IS_CHROMEOS)
-              base::FeatureList::IsEnabled(
-                  syncer::kReplaceSyncPromosWithSignInPromos)
-                  ? browser_sync::ExtensionDataTypeController::DelegateMode::
-                        kTransportModeWithSingleModel
-                  : browser_sync::ExtensionDataTypeController::DelegateMode::
-                        kLegacyFullSyncModeOnly,
+          base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)
+              ? ExtensionDataTypeController::DelegateMode::
+                    kTransportModeWithSingleModel
+              : ExtensionDataTypeController::DelegateMode::
+                    kLegacyFullSyncModeOnly,
 #else
-              browser_sync::ExtensionDataTypeController::DelegateMode::
-                  kLegacyFullSyncModeOnly,
+          ExtensionDataTypeController::DelegateMode::kLegacyFullSyncModeOnly,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-              extension_system_profile_.value()));
+          extension_system_profile_.value()));
 
       controllers.push_back(
           std::make_unique<browser_sync::ExtensionSettingDataTypeController>(
@@ -282,22 +279,20 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
     }
 
     if (theme_service_.value()) {
-      controllers.push_back(
-          std::make_unique<browser_sync::ExtensionDataTypeController>(
-              syncer::THEMES, data_type_store_factory,
-              theme_service_.value()->GetThemeSyncableService()->AsWeakPtr(),
-              dump_stack,
-              base::FeatureList::IsEnabled(
-                  syncer::kSeparateLocalAndAccountThemes)
-                  ? browser_sync::ExtensionDataTypeController::DelegateMode::
-                        kTransportModeWithSingleModel
-                  : browser_sync::ExtensionDataTypeController::DelegateMode::
-                        kLegacyFullSyncModeOnly,
-              extension_system_profile_.value(),
-              // SyncService depends on ThemeService. So the
-              // ThemeSyncableService instance should outlive the controller.
-              std::make_unique<ThemeLocalDataBatchUploader>(
-                  theme_service_.value()->GetThemeSyncableService())));
+      controllers.push_back(std::make_unique<ExtensionDataTypeController>(
+          syncer::THEMES, data_type_store_factory,
+          theme_service_.value()->GetThemeSyncableService()->AsWeakPtr(),
+          dump_stack,
+          base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)
+              ? ExtensionDataTypeController::DelegateMode::
+                    kTransportModeWithSingleModel
+              : ExtensionDataTypeController::DelegateMode::
+                    kLegacyFullSyncModeOnly,
+          extension_system_profile_.value(),
+          // SyncService depends on ThemeService. So the
+          // ThemeSyncableService instance should outlive the controller.
+          std::make_unique<ThemeLocalDataBatchUploader>(
+              theme_service_.value()->GetThemeSyncableService())));
     }
 
     if (web_app_provider_.value()) {

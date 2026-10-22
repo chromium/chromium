@@ -9,8 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_system.h"
 
-namespace browser_sync {
-
 ExtensionDataTypeController::ExtensionDataTypeController(
     syncer::DataType type,
     syncer::OnceDataTypeStoreFactory store_factory,
@@ -40,5 +38,3 @@ void ExtensionDataTypeController::LoadModels(
       /*extensions_enabled=*/true);
   DataTypeController::LoadModels(configure_context, model_load_callback);
 }
-
-}  // namespace browser_sync

@@ -14,8 +14,6 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
-namespace browser_sync {
-
 // Controller with custom logic to start the extensions machinery when sync is
 // starting.
 class ExtensionDataTypeController
@@ -44,7 +42,5 @@ class ExtensionDataTypeController
  private:
   const raw_ptr<Profile> profile_;
 };
-
-}  // namespace browser_sync
 
 #endif  // CHROME_BROWSER_SYNC_GLUE_EXTENSION_DATA_TYPE_CONTROLLER_H_
