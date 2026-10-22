@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 
+#include <optional>
 #include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
@@ -41,19 +42,21 @@ constexpr std::string_view kWmClassPrefix = "wmclass.";
 // TODO(b/267377562): Borealis windows have a hardcoded "borealis" token.
 constexpr std::string_view kBorealisToken = "borealis";
 
-const std::string* GetAppNameForWMClass(std::string_view wmclass) {
+std::optional<std::string_view> GetAppNameForWMClass(std::string_view wmclass) {
   // A hard-coded mapping from WMClass to app names.
   // This is used to deal with the Linux apps that don't specify the correct
   // WMClass in their desktop files so that their aura windows can be identified
   // with their respective app IDs.
-  static const base::NoDestructor<std::map<std::string, std::string>>
-      kWMClassToNname({{"Octave-gui", "GNU Octave"},
-                       {"MuseScore2", "MuseScore 2"},
-                       {"XnViewMP", "XnView Multi Platform"}});
-  const auto it = kWMClassToNname->find(std::string(wmclass));
-  if (it == kWMClassToNname->end())
-    return nullptr;
-  return &it->second;
+  static constexpr auto kWMClassToNname =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>(
+          {{"Octave-gui", "GNU Octave"},
+           {"MuseScore2", "MuseScore 2"},
+           {"XnViewMP", "XnView Multi Platform"}});
+  const auto it = kWMClassToNname.find(wmclass);
+  if (it == kWMClassToNname.end()) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 bool MatchingString(const std::string& search_string,
@@ -275,7 +278,7 @@ std::string GetGuestOsShelfAppId(Profile* profile,
     return app_id;
   }
 
-  const std::string* app_name = GetAppNameForWMClass(*key);
+  std::optional<std::string_view> app_name = GetAppNameForWMClass(*key);
   if (app_name &&
       FindAppId(apps, guest_os::prefs::kAppNameKey, *app_name, guest_id,
                 &app_id, false /* require_startup_notification */,
