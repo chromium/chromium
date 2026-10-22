@@ -299,6 +299,7 @@ void OnscreenContentProviderAndroid::AttachToWebContents(
 void OnscreenContentProviderAndroid::DetachFromWebContents() {
   if (auto* provider = onscreen_content_provider_.get())
     provider->RemoveConsumer(*this);
+  onscreen_content_provider_.reset();
 }
 
 void OnscreenContentProviderAndroid::Destroy(JNIEnv* env) {
