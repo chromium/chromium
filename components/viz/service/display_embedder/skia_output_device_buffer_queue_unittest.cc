@@ -33,6 +33,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/presenter.h"
 
@@ -220,10 +221,10 @@ class MockPresenter : public gl::Presenter {
     return true;
   }
 
-  void SwapComplete() {
+  void SwapComplete(gfx::SwapResult swap_result) {
     DCHECK(!swap_completion_callbacks_.empty());
     std::move(swap_completion_callbacks_.front())
-        .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK));
+        .Run(gfx::SwapCompletionResult(swap_result));
     swap_completion_callbacks_.pop_front();
 
     DCHECK(!presentation_callbacks_.empty());
@@ -317,8 +318,20 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
     return output_device_->pending_overlay_mailboxes_;
   }
 
-  std::vector<gpu::Mailbox> committed_overlay_mailboxes() {
-    return output_device_->committed_overlay_mailboxes_;
+  // Mailboxes of the most recently submitted swap which hasn't completed yet.
+  std::vector<gpu::Mailbox> submitted_overlay_mailboxes() {
+    if (output_device_->submitted_overlay_mailboxes_.empty()) {
+      return {};
+    }
+    return output_device_->submitted_overlay_mailboxes_.back();
+  }
+
+  std::vector<gpu::Mailbox> presented_overlay_mailboxes() {
+    return output_device_->presented_overlay_mailboxes_;
+  }
+
+  bool HasOverlay(const gpu::Mailbox& mailbox) {
+    return output_device_->HasOverlayForTesting(mailbox);
   }
 
   virtual void Present() {
@@ -328,7 +341,10 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
                             OutputSurfaceFrame());
   }
 
-  void PageFlipComplete() { presenter_->SwapComplete(); }
+  void PageFlipComplete(
+      gfx::SwapResult swap_result = gfx::SwapResult::SWAP_ACK) {
+    presenter_->SwapComplete(swap_result);
+  }
 
   SkImageInfo CreateSkImageInfo(const gfx::Size size = kScreenSize) {
     return SkImageInfo::Make(size.width(), size.height(), kDefaultColorType,
@@ -417,10 +433,71 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ScheduleOverlaysNoPrimaryPlane) {
     Present();
 
     EXPECT_THAT(pending_overlay_mailboxes(), testing::IsEmpty());
-    EXPECT_THAT(committed_overlay_mailboxes(), testing::ElementsAre(mailbox));
+    EXPECT_THAT(submitted_overlay_mailboxes(), testing::ElementsAre(mailbox));
 
     PageFlipComplete();
+    EXPECT_THAT(presented_overlay_mailboxes(), testing::ElementsAre(mailbox));
   }
+}
+
+// A failed swap doesn't replace what is on screen, so the overlays of the
+// previously presented frame must be kept, and the ones of the failed swap
+// released instead.
+TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ScheduleOverlaysSwapFailed) {
+  FirstReshape();
+
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_1 = MakeOverlay();
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_2 = MakeOverlay();
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_3 = MakeOverlay();
+
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_1->mailbox()}));
+  Present();
+  PageFlipComplete();
+  EXPECT_THAT(presented_overlay_mailboxes(),
+              testing::ElementsAre(overlay_1->mailbox()));
+  EXPECT_TRUE(HasOverlay(overlay_1->mailbox()));
+
+  // The swap fails, so `overlay_1` is still presented and must be kept, while
+  // `overlay_2` never made it to the screen and can be released.
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_2->mailbox()}));
+  Present();
+  PageFlipComplete(gfx::SwapResult::SWAP_FAILED);
+  EXPECT_THAT(presented_overlay_mailboxes(),
+              testing::ElementsAre(overlay_1->mailbox()));
+  EXPECT_TRUE(HasOverlay(overlay_1->mailbox()));
+  EXPECT_FALSE(HasOverlay(overlay_2->mailbox()));
+
+  // The next successful swap replaces `overlay_1` on screen, releasing it.
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_3->mailbox()}));
+  Present();
+  PageFlipComplete();
+  EXPECT_THAT(presented_overlay_mailboxes(),
+              testing::ElementsAre(overlay_3->mailbox()));
+  EXPECT_FALSE(HasOverlay(overlay_1->mailbox()));
+  EXPECT_TRUE(HasOverlay(overlay_3->mailbox()));
+}
+
+// SWAP_NAK_RECREATE_BUFFERS is treated like SWAP_ACK, so the overlays of the
+// previously presented frame are released.
+TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ScheduleOverlaysSwapNak) {
+  FirstReshape();
+
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_1 = MakeOverlay();
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_2 = MakeOverlay();
+
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_1->mailbox()}));
+  Present();
+  PageFlipComplete();
+  EXPECT_THAT(presented_overlay_mailboxes(),
+              testing::ElementsAre(overlay_1->mailbox()));
+
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_2->mailbox()}));
+  Present();
+  PageFlipComplete(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS);
+  EXPECT_THAT(presented_overlay_mailboxes(),
+              testing::ElementsAre(overlay_2->mailbox()));
+  EXPECT_FALSE(HasOverlay(overlay_1->mailbox()));
+  EXPECT_TRUE(HasOverlay(overlay_2->mailbox()));
 }
 
 #if BUILDFLAG(IS_APPLE)
@@ -437,10 +514,12 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ScheduleOverlaysStillInUse) {
 
   Present();
   EXPECT_THAT(pending_overlay_mailboxes(), testing::IsEmpty());
-  EXPECT_THAT(committed_overlay_mailboxes(),
+  EXPECT_THAT(submitted_overlay_mailboxes(),
               testing::ElementsAre(overlay_1->mailbox()));
 
   PageFlipComplete();
+  EXPECT_THAT(presented_overlay_mailboxes(),
+              testing::ElementsAre(overlay_1->mailbox()));
   EXPECT_EQ(1u, params_.size());
   EXPECT_EQ(0u, params_[0].released_overlays.size());
 
@@ -486,10 +565,12 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, InUseOverlaysAreCollected) {
 
   Present();
   EXPECT_THAT(pending_overlay_mailboxes(), testing::IsEmpty());
-  EXPECT_THAT(committed_overlay_mailboxes(),
+  EXPECT_THAT(submitted_overlay_mailboxes(),
               testing::ElementsAre(overlay_1->mailbox()));
 
   PageFlipComplete();
+  EXPECT_THAT(presented_overlay_mailboxes(),
+              testing::ElementsAre(overlay_1->mailbox()));
   EXPECT_EQ(1u, params_.size());
   EXPECT_EQ(0u, params_[0].released_overlays.size());
 

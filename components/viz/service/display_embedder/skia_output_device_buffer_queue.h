@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -68,6 +69,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   void SetSwapTimeClockForTesting(base::TickClock* clock) {
     swap_time_clock_ = clock;
   }
+  // Out of line because `OverlayData` is only forward declared here.
+  bool HasOverlayForTesting(const gpu::Mailbox& mailbox) const;
 
  private:
   friend class SkiaOutputDeviceBufferQueueTest;
@@ -76,7 +79,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // operation
   void DoFinishSwapBuffers(const gfx::Size& size,
                            OutputSurfaceFrame frame,
-                           std::vector<gpu::Mailbox> overlay_mailboxes,
                            gfx::SwapCompletionResult result);
   void PostReleaseOverlays();
   void ReleaseOverlays();
@@ -101,8 +103,14 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   // Mailboxes of scheduled overlays for the next SwapBuffers call.
   std::vector<gpu::Mailbox> pending_overlay_mailboxes_;
-  // Mailboxes of committed overlays for the last SwapBuffers call.
-  std::vector<gpu::Mailbox> committed_overlay_mailboxes_;
+  // Overlay mailboxes of each submitted swap which hasn't completed yet, in
+  // submission order, mirroring `SkiaOutputDevice::pending_swaps_`. Whether
+  // they end up presented is only known once the swap completes, so they are
+  // owned here rather than bound to the completion callback.
+  base::queue<std::vector<gpu::Mailbox>> submitted_overlay_mailboxes_;
+  // Overlay mailboxes of the last swap which didn't fail, i.e. the ones
+  // currently on screen.
+  std::vector<gpu::Mailbox> presented_overlay_mailboxes_;
 
   struct OverlayDataHash {
     using is_transparent = void;

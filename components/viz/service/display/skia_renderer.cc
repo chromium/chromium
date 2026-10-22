@@ -1322,11 +1322,13 @@ void SkiaRenderer::SwapBuffersComplete(
     overlay_processor_->OnSwapBuffersComplete(params.swap_response.result);
   }
 
-  // SWAP_SKIPPED is the only case where presentation is skipped. Even if
-  // presentation wasn't successful for some other results the GPU thread
-  // still ran presentation logic.
+  // A skipped or failed swap doesn't replace what is on screen. This must
+  // match what SkiaOutputDeviceBufferQueue releases for the swap.
+  // SWAP_NAK_RECREATE_BUFFERS is treated as presented since its meaning
+  // differs between platforms.
   bool did_present =
-      params.swap_response.result != gfx::SwapResult::SWAP_SKIPPED;
+      params.swap_response.result != gfx::SwapResult::SWAP_SKIPPED &&
+      params.swap_response.result != gfx::SwapResult::SWAP_FAILED;
   if (root_buffer_queue_) {
     if (params.swap_response.result ==
         gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
