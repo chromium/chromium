@@ -30,6 +30,9 @@ std::unique_ptr<Origin> CloneOrigin(const Origin& origin);
 // See the warnings on `url::Origin::Create()` before using.
 std::unique_ptr<Origin> CreateOriginFromGURL(const GURL& url);
 
+// Shim for FFI to call Origin::Serialize() and get a Rust `String`.
+rust::String OriginSerialize(const Origin& origin);
+
 }  // namespace url
 
 #endif  // URL_ORIGIN_SHIM_H_

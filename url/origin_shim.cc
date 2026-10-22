@@ -33,4 +33,8 @@ std::unique_ptr<Origin> CreateOriginFromGURL(const GURL& url) {
   return std::make_unique<Origin>(Origin::Create(url));
 }
 
+rust::String OriginSerialize(const Origin& origin) {
+  return rust::String(origin.Serialize());
+}
+
 }  // namespace url

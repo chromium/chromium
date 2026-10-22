@@ -8,6 +8,7 @@ chromium::import! {
 
 use rust_gtest_interop::prelude::*;
 use url_rust::gurl::ffi::create_gurl_from_str;
+use url_rust::origin::ffi::create_origin_from_gurl;
 
 #[gtest(GURLRustTest, CreationAndValidity)]
 fn test_creation_and_validity() {
@@ -85,4 +86,16 @@ fn test_content() {
 
     let invalid_url = create_gurl_from_str("not a url");
     expect_eq!(invalid_url.content(), "");
+}
+
+#[gtest(OriginRustTest, Serialize)]
+fn test_origin_serialize() {
+    let https_origin = create_origin_from_gurl(&create_gurl_from_str("https://example.com:8443/a"));
+    expect_eq!(https_origin.serialize(), "https://example.com:8443");
+
+    let file_origin = create_origin_from_gurl(&create_gurl_from_str("file:///tmp/test.txt"));
+    expect_eq!(file_origin.serialize(), "file://");
+
+    let opaque_origin = create_origin_from_gurl(&create_gurl_from_str("data:text/plain,hello"));
+    expect_eq!(opaque_origin.serialize(), "null");
 }
