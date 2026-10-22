@@ -139,6 +139,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.hub.HubContainerView;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -157,8 +158,11 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.Journeys;
+import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherTabCardFacility;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
@@ -197,6 +201,7 @@ import java.util.concurrent.TimeoutException;
 public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
     private static final String CUSTOMIZED_TITLE2 = "wfh funs";
+    private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
     private static final String PAGE_WITH_HTTPS_CANONICAL_URL =
             "/chrome/test/data/android/share/link_share_https_canonical.html";
     private static final String PAGE_WITH_HTTP_CANONICAL_URL =
@@ -1942,43 +1947,68 @@ public class TabGridDialogTest {
         mRenderTestRule.render(dialogView, "3_tabs_portrait_2_row_toolbar_image_tiles");
     }
 
+    /**
+     * Regression test for crbug.com/354745444, which crashed on an assert the second time an
+     * incognito tab group was opened in the dialog.
+     *
+     * <p>Closing the last incognito tab makes the incognito tab switcher go away while the dialog
+     * is still animating out. The dialog's binding token wasn't reset in that case, so opening the
+     * dialog for the next incognito group failed. Animations are enabled so the hide animation is
+     * still running when the tab switcher goes away.
+     */
     @Test
     @MediumTest
     @EnableAnimations
     @DisabledTest(message = "crbug.com/412364951")
     public void testCreateIncognitoGroupAndCloseAllTabsInDialogTwice_Bug354745444() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        boolean incognito = true;
-        int tabCount = 2;
-        TabModel incognitoTabModel = cta.getTabModelSelectorSupplier().get().getModel(incognito);
-        createTabs(cta, incognito, tabCount);
-        enterTabSwitcher(cta);
-        List<Tab> tabGroup =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                List.of(
-                                        incognitoTabModel.getTabAt(0),
-                                        incognitoTabModel.getTabAt(1)));
-        createTabGroup(cta, incognito, tabGroup);
-        openDialogFromTabSwitcherAndVerify(cta, tabCount, /* customizedTitle= */ null);
-        closeFirstTabInDialog();
-        closeFirstTabInDialog();
-        waitForDialogHidingAnimation(cta);
+        // The first round leaves the dialog torn down mid-animation.
+        CtaPageStation page = createIncognitoGroupAndCloseAllTabsInDialog(mPage);
+        // The second round opens the dialog again; it crashed here before the fix.
+        createIncognitoGroupAndCloseAllTabsInDialog(page);
+    }
 
-        leaveTabSwitcher(cta);
-        createTabs(cta, incognito, tabCount);
-        enterTabSwitcher(cta);
-        tabGroup =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                List.of(
-                                        incognitoTabModel.getTabAt(0),
-                                        incognitoTabModel.getTabAt(1)));
-        createTabGroup(cta, incognito, tabGroup);
-        openDialogFromTabSwitcherAndVerify(cta, tabCount, /* customizedTitle= */ null);
+    /**
+     * Opens two incognito tabs, groups them, and closes both from the tab group dialog.
+     *
+     * @param regularPage The regular tab page to open the incognito tabs from.
+     * @return The regular tab page that is showing afterwards.
+     */
+    private CtaPageStation createIncognitoGroupAndCloseAllTabsInDialog(CtaPageStation regularPage) {
+        // On large screens, incognito tabs open in a new incognito window instead of in the
+        // current window. This decides what happens after the last incognito tab is closed.
+        boolean incognitoInNewWindow = IncognitoUtils.shouldOpenIncognitoAsWindow();
+
+        // Open two incognito tabs (in the incognito window, if there is one) and group them from
+        // the incognito tab switcher.
+        String url = mActivityTestRule.getTestServer().getURL(TEST_PAGE);
+        WebPageStation incognitoPage =
+                Journeys.createIncognitoTabsWithWebPages(regularPage, List.of(url, url));
+        IncognitoTabSwitcherStation tabSwitcher = incognitoPage.openIncognitoTabSwitcher();
+
+        // Click the group card to open the tab group dialog.
+        Journeys.mergeAllTabsToNewGroup(tabSwitcher).clickCard();
+
+        // Close the first tab. One incognito tab is left, so the dialog stays open.
         closeFirstTabInDialog();
-        closeFirstTabInDialog();
-        waitForDialogHidingAnimation(cta);
+
+        // Close the last incognito tab from the dialog.
+        if (incognitoInNewWindow) {
+            // Closing the last tab of the incognito window closes the window, which destroys the
+            // dialog with it. The regular window and its page are left as they were.
+            tabSwitcher.getActivityElement().expectActivityDestroyed();
+            tabSwitcher.runTo(TabUiTestHelper::closeFirstTabInDialog).reachLastStop();
+            return regularPage;
+        } else {
+            // Closing the last incognito tab makes the tab switcher switch itself to the regular
+            // tabs while the dialog is animating out, as in the original bug. Then press back to
+            // return to the regular page for the next round.
+            return tabSwitcher
+                    .runTo(TabUiTestHelper::closeFirstTabInDialog)
+                    .arriveAt(
+                            new RegularTabSwitcherStation(
+                                    /* regularTabsExist= */ true, /* incognitoTabsExist= */ false))
+                    .leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+        }
     }
 
     private void openDialogFromTabSwitcherAndVerify(
