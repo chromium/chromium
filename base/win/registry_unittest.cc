@@ -9,6 +9,7 @@
 #include <shlobj.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cstring>
 #include <iterator>
 #include <string_view>
@@ -20,7 +21,10 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/strcat.h"
+#include "base/strings/strcat_win.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
@@ -326,6 +330,174 @@ TEST_F(RegistryTest, InvalidRelativeKeyOpen) {
   ASSERT_EQ(key.OpenKey(L"SomeSubKey", KEY_WOW64_32KEY | KEY_READ),
             ERROR_INVALID_HANDLE);
 }
+
+class ReadRegistryExtendedStringValueTest : public RegistryTest {
+ protected:
+  static constexpr wchar_t kValueName[] = L"ValueName";
+  static constexpr DWORD kInternalBufferLength = 1024;
+  static constexpr char kTestVarName[] = "MY_TEST_VAR";
+
+  static std::wstring ConvertEnvVariableNameToValue(const char* var_name) {
+    return base::StrCat({L"%", base::ASCIIToWide(var_name), L"%"});
+  }
+
+  void SetUp() override {
+    RegistryTest::SetUp();
+
+    ASSERT_EQ(ERROR_SUCCESS, key_.Open(HKEY_CURRENT_USER, root_key().c_str(),
+                                       KEY_READ | KEY_SET_VALUE));
+  }
+
+  RegKey key_;
+};
+
+TEST_F(ReadRegistryExtendedStringValueTest,
+       ReadStringValueWithEnvVariableTest) {
+  constexpr char kVarValue[] = "TEST_VALUE";
+  base::ScopedEnvironmentVariableOverride env_override(kTestVarName, kVarValue);
+
+  const auto value = ConvertEnvVariableNameToValue(kTestVarName);
+  const auto value_size = value.size() * sizeof(wchar_t);
+  ASSERT_EQ(ERROR_SUCCESS, key_.WriteValue(kValueName, value.data(), value_size,
+                                           REG_EXPAND_SZ));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_SUCCESS, key_.ReadValue(kValueName, &string_value));
+  ASSERT_EQ(string_value, base::ASCIIToWide(kVarValue));
+}
+
+TEST_F(ReadRegistryExtendedStringValueTest,
+       ReadStringValueWithEnvVariableBiggerThanBufferTest) {
+  constexpr DWORD kBiggerLengthThanBuffer = kInternalBufferLength + 1;
+  std::string var_value(kBiggerLengthThanBuffer, 'A');
+
+  base::ScopedEnvironmentVariableOverride env_override(kTestVarName, var_value);
+
+  const auto value = ConvertEnvVariableNameToValue(kTestVarName);
+  const auto value_size = base::as_byte_span(value).size();
+  ASSERT_EQ(ERROR_SUCCESS, key_.WriteValue(kValueName, value.data(), value_size,
+                                           REG_EXPAND_SZ));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_MORE_DATA, key_.ReadValue(kValueName, &string_value));
+  ASSERT_TRUE(string_value.empty());
+}
+
+class ReadRegistryStringValueTest
+    : public ReadRegistryExtendedStringValueTest,
+      public ::testing::WithParamInterface<DWORD> {
+ protected:
+  DWORD GetValueType() const { return GetParam(); }
+};
+
+TEST_P(ReadRegistryStringValueTest, ZeroLengthValueTest) {
+  constexpr wchar_t* kValue = nullptr;
+  constexpr DWORD kValueSize = 0;
+
+  ASSERT_EQ(ERROR_SUCCESS,
+            key_.WriteValue(kValueName, kValue, kValueSize, GetValueType()));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_SUCCESS, key_.ReadValue(kValueName, &string_value));
+  ASSERT_TRUE(string_value.empty());
+}
+
+TEST_P(ReadRegistryStringValueTest, EmptyStringValue) {
+  constexpr std::array<wchar_t, 1> kValue = {L'\0'};
+  const auto value_size = base::as_byte_span(kValue).size();
+
+  ASSERT_EQ(ERROR_SUCCESS, key_.WriteValue(kValueName, kValue.data(),
+                                           value_size, GetValueType()));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_SUCCESS, key_.ReadValue(kValueName, &string_value));
+  ASSERT_TRUE(string_value.empty());
+}
+
+TEST_P(ReadRegistryStringValueTest, NoWideStringValueTest) {
+  constexpr std::array<char, 3> kNoWideStringValue = {'a', 'b', 'c'};
+  const auto value_size = base::as_byte_span(kNoWideStringValue).size();
+
+  ASSERT_EQ(ERROR_SUCCESS,
+            key_.WriteValue(kValueName, kNoWideStringValue.data(), value_size,
+                            GetValueType()));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_INVALID_DATA, key_.ReadValue(kValueName, &string_value));
+  ASSERT_TRUE(string_value.empty());
+}
+
+TEST_P(ReadRegistryStringValueTest, StringValueWithoutTerminatorTest) {
+  std::wstring value(kInternalBufferLength - 1, L'A');
+  const auto value_size = base::as_byte_span(value).size();
+
+  ASSERT_EQ(ERROR_SUCCESS, key_.WriteValue(kValueName, value.data(), value_size,
+                                           GetValueType()));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_SUCCESS, key_.ReadValue(kValueName, &string_value));
+  ASSERT_EQ(string_value, value);
+}
+
+TEST_P(ReadRegistryStringValueTest,
+       BufferLengthStringValueWithoutTerminatorTest) {
+  std::wstring value(kInternalBufferLength, L'A');
+  const auto value_size = base::as_byte_span(value).size();
+
+  ASSERT_EQ(ERROR_SUCCESS, key_.WriteValue(kValueName, value.data(), value_size,
+                                           GetValueType()));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_MORE_DATA, key_.ReadValue(kValueName, &string_value));
+  ASSERT_TRUE(string_value.empty());
+}
+
+TEST_P(ReadRegistryStringValueTest, BufferLengthStringValueWithTerminatorTest) {
+  std::array<wchar_t, kInternalBufferLength> value;
+  std::ranges::fill(value, L'A');
+  value.back() = L'\0';
+  const auto value_size = base::as_byte_span(value).size();
+
+  ASSERT_EQ(ERROR_SUCCESS, key_.WriteValue(kValueName, value.data(), value_size,
+                                           GetValueType()));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_SUCCESS, key_.ReadValue(kValueName, &string_value));
+  ASSERT_EQ(string_value, value.data());
+}
+
+TEST_P(ReadRegistryStringValueTest, StringValueBiggerThanBufferTest) {
+  std::array<wchar_t, kInternalBufferLength + 1> value;
+  std::ranges::fill(value, L'A');
+  const auto value_size = base::as_byte_span(value).size();
+
+  ASSERT_EQ(ERROR_SUCCESS, key_.WriteValue(kValueName, value.data(), value_size,
+                                           GetValueType()));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_MORE_DATA, key_.ReadValue(kValueName, &string_value));
+  ASSERT_TRUE(string_value.empty());
+}
+
+TEST_P(ReadRegistryStringValueTest, InvalidDataTypeTest) {
+  constexpr DWORD kIntegerValue = 12;
+
+  ASSERT_EQ(ERROR_SUCCESS, key_.WriteValue(kValueName, kIntegerValue));
+
+  std::wstring string_value;
+  ASSERT_EQ(ERROR_INVALID_DATA, key_.ReadValue(kValueName, &string_value));
+  ASSERT_TRUE(string_value.empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(,  // Empty to simplify gtest output
+                         ReadRegistryStringValueTest,
+                         ::testing::Values(REG_SZ, REG_EXPAND_SZ),
+                         [](const auto& info) {
+                           if (info.param == REG_SZ) {
+                             return "REG_SZ";
+                           }
+                           return "REG_EXPAND_SZ";
+                         });
 
 namespace {
 

@@ -4,6 +4,8 @@
 
 #include "base/win/registry.h"
 
+#include <windows.h>
+
 #include <ntstatus.h>
 #include <stddef.h>
 
@@ -17,6 +19,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -364,32 +367,55 @@ LONG RegKey::ReadInt64(const wchar_t* name, int64_t* out_value) const {
 
 LONG RegKey::ReadValue(const wchar_t* name, std::wstring* out_value) const {
   DCHECK(out_value);
-  const size_t kMaxStringLength = 1024;  // This is after expansion.
+  constexpr size_t kMaxStringLength = 1024;
   // Use the one of the other forms of ReadValue if 1024 is too small for you.
-  wchar_t raw_value[kMaxStringLength];
-  DWORD type = REG_SZ, size = sizeof(raw_value);
-  LONG result = ReadValue(name, raw_value, &size, &type);
-  if (result == ERROR_SUCCESS) {
-    if (type == REG_SZ) {
-      *out_value = raw_value;
-    } else if (type == REG_EXPAND_SZ) {
-      wchar_t expanded[kMaxStringLength];
-      size = ExpandEnvironmentStrings(raw_value, expanded, kMaxStringLength);
-      // Success: returns the number of wchar_t's copied
-      // Fail: buffer too small, returns the size required
-      // Fail: other, returns 0
-      if (size == 0 || size > kMaxStringLength) {
-        result = ERROR_MORE_DATA;
-      } else {
-        *out_value = expanded;
-      }
-    } else {
-      // Not a string. Oops.
-      result = ERROR_CANTREAD;
+  std::array<wchar_t, kMaxStringLength> raw_value;
+  DWORD type = REG_SZ;
+  DWORD size = base::as_byte_span(raw_value).size();
+
+  const LONG result = ReadValue(name, raw_value.data(), &size, &type);
+  if (result != ERROR_SUCCESS) {
+    return result;
+  }
+  if (type != REG_EXPAND_SZ && type != REG_SZ) {
+    return ERROR_INVALID_DATA;
+  }
+  if (size % sizeof(wchar_t) != 0) {
+    // Read bytes are not valid wide characters
+    return ERROR_INVALID_DATA;
+  }
+  const auto length = size / sizeof(wchar_t);
+  if (length == 0) {
+    out_value->clear();
+    return ERROR_SUCCESS;
+  }
+  size_t length_without_terminator = 0;
+  if (raw_value[length - 1] != L'\0') {
+    if (length >= kMaxStringLength) {
+      return ERROR_MORE_DATA;
     }
+    raw_value[length] = L'\0';
+    length_without_terminator = length;
+  } else {
+    length_without_terminator = length - 1;
   }
 
-  return result;
+  if (type == REG_SZ) {
+    out_value->assign(raw_value.data(), length_without_terminator);
+    return ERROR_SUCCESS;
+  }
+  std::array<wchar_t, kMaxStringLength> expanded;
+  const auto expanded_length = ExpandEnvironmentStrings(
+      raw_value.data(), expanded.data(), expanded.size());
+  if (expanded_length == 0) {
+    return static_cast<LONG>(::GetLastError());
+  }
+  if (expanded_length > kMaxStringLength) {
+    return ERROR_MORE_DATA;
+  }
+  length_without_terminator = expanded_length - 1;
+  out_value->assign(expanded.data(), length_without_terminator);
+  return ERROR_SUCCESS;
 }
 
 LONG RegKey::ReadValue(const wchar_t* name,

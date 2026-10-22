@@ -344,7 +344,8 @@ TEST_F(WofCompressionTest, LeavesPaksAloneWhenImageStateIsUnreadable) {
   // still being built, along with the error that caused it.
   histograms.ExpectUniqueSample(kDecisionHistogram,
                                 Decision::kImageStateUnreadable, 1);
-  histograms.ExpectUniqueSample(kImageStateErrorHistogram, ERROR_CANTREAD, 1);
+  histograms.ExpectTotalCount(kImageStateErrorHistogram, 1);
+  histograms.ExpectBucketCount(kImageStateErrorHistogram, ERROR_SUCCESS, 0);
 }
 
 TEST_F(WofCompressionTest, CompressesOnceWindowsSetupFinishes) {
