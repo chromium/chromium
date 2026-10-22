@@ -83,6 +83,7 @@ XrBrowserTestBase::XrBrowserTestBase() : env_(base::Environment::Create()) {
   enable_features_.push_back(device::features::kWebXrVisibleBlurred);
 #if BUILDFLAG(IS_ANDROID)
   enable_features_.push_back(device::features::kWebXRLayers);
+  enable_features_.push_back(device::features::kWebXRWebGPUBinding);
   enable_features_.push_back(blink::features::kWebXRMediaBinding);
 #endif
 #endif
