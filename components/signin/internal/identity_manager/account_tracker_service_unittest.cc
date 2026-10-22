@@ -50,6 +50,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -60,6 +61,8 @@
 #endif
 
 using signin::constants::kNoHostedDomainFound;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 namespace {
 
@@ -196,6 +199,21 @@ std::string Str(const std::vector<TrackingEvent>& events) {
   return str;
 }
 
+bool HasAccountInPrefs(const PrefService& prefs,
+                       const CoreAccountId& account_id) {
+  for (const base::Value& value : prefs.GetList(prefs::kAccountInfo)) {
+    const base::DictValue* dict = value.GetIfDict();
+    if (!dict) {
+      continue;
+    }
+    const std::string* account_key = dict->FindString(signin::kAccountIdKey);
+    if (account_key && *account_key == account_id.ToString()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 class AccountTrackerServiceTest : public testing::Test {
@@ -298,10 +316,43 @@ class AccountTrackerServiceTest : public testing::Test {
 
   void ClearAccountTrackerEvents() { account_tracker_events_.clear(); }
 
+  void SeedAccountWithAvatarImage(AccountKey account_key) {
+    account_tracker()->SeedAccountInfo(
+        AccountInfo::Builder(AccountKeyToGaiaId(account_key),
+                             AccountKeyToEmail(account_key))
+            .SetAccountId(AccountKeyToAccountId(account_key))
+            .SetAvatarImage(gfx::test::CreateImage(/*size=*/24))
+            .Build());
+  }
+
+  void TestRemoveAccountDuringUpdate(AccountKey account_key,
+                                     base::OnceClosure update_account) {
+    const CoreAccountId account_id = AccountKeyToAccountId(account_key);
+    ClearAccountTrackerEvents();
+    on_account_updated_action_ =
+        base::BindRepeating(&AccountTrackerServiceTest::VerifyAndRemoveAccount,
+                            base::Unretained(this), account_id);
+
+    std::move(update_account).Run();
+    on_account_updated_action_.Reset();
+
+    EXPECT_THAT(account_tracker()->GetAccounts(), IsEmpty());
+    EXPECT_THAT(prefs()->GetList(prefs::kAccountInfo), IsEmpty());
+    EXPECT_TRUE(CheckAccountTrackerEvents({
+        TrackingEvent(UPDATED, account_id, AccountKeyToGaiaId(account_key),
+                      AccountKeyToEmail(account_key)),
+        TrackingEvent(REMOVED, account_id, AccountKeyToGaiaId(account_key),
+                      AccountKeyToEmail(account_key)),
+    }));
+  }
+
   void OnAccountUpdated(const AccountInfo& ids) {
     account_tracker_events_.emplace_back(UPDATED, ids.GetAccountId(),
                                          ids.GetGaiaId(),
                                          std::string(ids.GetEmail()));
+    if (on_account_updated_action_) {
+      on_account_updated_action_.Run(ids);
+    }
   }
 
   void OnAccountRemoved(const AccountInfo& ids) {
@@ -425,6 +476,21 @@ class AccountTrackerServiceTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void VerifyAndRemoveAccount(const CoreAccountId& expected_account_id,
+                              const AccountInfo& info) {
+    EXPECT_EQ(info.GetAccountId(), expected_account_id);
+    // Updated account state must be persisted to prefs before observers are
+    // notified.
+    EXPECT_TRUE(HasAccountInPrefs(*prefs(), expected_account_id));
+
+    account_tracker()->RemoveAccount(info.GetAccountId());
+
+    // `info` must remain valid after `RemoveAccount()` erases the entry from
+    // `AccountTrackerService`.
+    EXPECT_EQ(info.GetAccountId(), expected_account_id);
+    EXPECT_FALSE(info.GetGaiaId().empty());
+  }
+
   TestingPrefServiceSimple pref_service_;
   TestSigninClient signin_client_;
   FakeProfileOAuth2TokenService fake_oauth2_token_service_;
@@ -432,6 +498,7 @@ class AccountTrackerServiceTest : public testing::Test {
   std::unique_ptr<AccountTrackerService> account_tracker_;
   raw_ptr<FakeAccountFetcherFactory> fake_account_fetcher_factory_;
   std::vector<TrackingEvent> account_tracker_events_;
+  base::RepeatingCallback<void(const AccountInfo&)> on_account_updated_action_;
 };
 
 void AccountTrackerServiceTest::ReturnFetchResults(
@@ -1834,7 +1901,7 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_NoAccount) {
 
   EXPECT_THAT(
       tester.GetAllSamples("Signin.AccountTracker.CountOfLoadedAccounts"),
-      testing::ElementsAre(base::Bucket(0, 1)));
+      ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
@@ -1865,7 +1932,7 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
 
   EXPECT_THAT(
       tester.GetAllSamples("Signin.AccountTracker.CountOfLoadedAccounts"),
-      testing::ElementsAre(base::Bucket(2, 1)));
+      ElementsAre(base::Bucket(2, 1)));
 }
 
 TEST_F(AccountTrackerServiceTest, SaveToPrefs_CapabilityOverridesOverwritten) {
@@ -1952,7 +2019,7 @@ TEST_F(AccountTrackerServiceTest, Migrate_CountOfLoadedAccounts_TwoAccounts) {
 
   EXPECT_THAT(
       tester.GetAllSamples("Signin.AccountTracker.CountOfLoadedAccounts"),
-      testing::ElementsAre(base::Bucket(2, 1)));
+      ElementsAre(base::Bucket(2, 1)));
 }
 
 TEST_F(AccountTrackerServiceTest,
@@ -1981,6 +2048,62 @@ TEST_F(AccountTrackerServiceTest,
 
   EXPECT_THAT(
       tester.GetAllSamples("Signin.AccountTracker.CountOfLoadedAccounts"),
-      testing::ElementsAre(base::Bucket(1, 1)));
+      ElementsAre(base::Bucket(1, 1)));
 }
 #endif
+
+// Tests that synchronously removing the account inside `OnAccountUpdated()`
+// across all `AccountTrackerService` update paths does not resurrect the
+// removed account in prefs.
+TEST_F(AccountTrackerServiceTest, RemoveAccountDuringAccountUpdates) {
+  const CoreAccountId account_id = AccountKeyToAccountId(kAccountKeyAlpha);
+
+  // Removal during `SetAccountInfoFromUserInfo()`.
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  TestRemoveAccountDuringUpdate(
+      kAccountKeyAlpha,
+      base::BindOnce(&AccountTrackerServiceTest::ReturnAccountInfoFetchSuccess,
+                     base::Unretained(this), kAccountKeyAlpha));
+
+  // Removal during `SetAccountCapabilities()`.
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  TestRemoveAccountDuringUpdate(
+      kAccountKeyAlpha,
+      base::BindOnce(
+          &AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchSuccess,
+          base::Unretained(this), kAccountKeyAlpha));
+
+  // Removal during `SetCapabilityOverride()`.
+  account_tracker()->SeedAccountInfo(AccountKeyToGaiaId(kAccountKeyAlpha),
+                                     AccountKeyToEmail(kAccountKeyAlpha));
+  TestRemoveAccountDuringUpdate(
+      kAccountKeyAlpha,
+      base::BindOnce(
+          &AccountTrackerService::SetCapabilityOverride,
+          base::Unretained(account_tracker()), account_id,
+          kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
+          signin::Tribool::kTrue));
+
+  // Removal during `SetIsChildAccount()`.
+  account_tracker()->SeedAccountInfo(AccountKeyToGaiaId(kAccountKeyAlpha),
+                                     AccountKeyToEmail(kAccountKeyAlpha));
+  TestRemoveAccountDuringUpdate(
+      kAccountKeyAlpha,
+      base::BindOnce(&AccountTrackerService::SetIsChildAccount,
+                     base::Unretained(account_tracker()), account_id, true));
+
+  // Removal during `SetIsAdvancedProtectionAccount()`.
+  account_tracker()->SeedAccountInfo(AccountKeyToGaiaId(kAccountKeyAlpha),
+                                     AccountKeyToEmail(kAccountKeyAlpha));
+  TestRemoveAccountDuringUpdate(
+      kAccountKeyAlpha,
+      base::BindOnce(&AccountTrackerService::SetIsAdvancedProtectionAccount,
+                     base::Unretained(account_tracker()), account_id, true));
+
+  // Removal during `SeedAccountInfo()` with a non-empty avatar image.
+  TestRemoveAccountDuringUpdate(
+      kAccountKeyAlpha,
+      base::BindOnce(&AccountTrackerServiceTest::SeedAccountWithAvatarImage,
+                     base::Unretained(this), kAccountKeyAlpha));
+}

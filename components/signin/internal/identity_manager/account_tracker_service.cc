@@ -209,7 +209,7 @@ void AccountTrackerService::SetMigrationDone() {
 #endif
 
 void AccountTrackerService::MaybeNotifyAccountUpdated(
-    const AccountInfo& account_info) {
+    AccountInfo account_info) {
   DCHECK(!account_info.GetGaiaId().empty());
   if (account_info.GetEmail().empty() &&
       base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
@@ -329,10 +329,7 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
                 << "}";
   }
 
-  if (!account_info.GetGaiaId().empty()) {
-    MaybeNotifyAccountUpdated(account_info);
-  }
-  SaveToPrefs(account_info);
+  SaveToPrefsAndMaybeNotifyAccountUpdated(account_info);
 }
 
 void AccountTrackerService::SetAccountImage(
@@ -382,10 +379,7 @@ void AccountTrackerService::SetAccountCapabilities(
     return;
   }
 
-  if (!account_info.GetGaiaId().empty()) {
-    MaybeNotifyAccountUpdated(account_info);
-  }
-  SaveToPrefs(account_info);
+  SaveToPrefsAndMaybeNotifyAccountUpdated(account_info);
 }
 
 void AccountTrackerService::SetCapabilityOverride(
@@ -404,10 +398,7 @@ void AccountTrackerService::SetCapabilityOverride(
                      .SetAccountCapabilities(capabilities)
                      .Build();
 
-  if (!account_info.GetGaiaId().empty()) {
-    MaybeNotifyAccountUpdated(account_info);
-  }
-  SaveToPrefs(account_info);
+  SaveToPrefsAndMaybeNotifyAccountUpdated(account_info);
 }
 
 void AccountTrackerService::SetIsChildAccount(const CoreAccountId& account_id,
@@ -418,10 +409,7 @@ void AccountTrackerService::SetIsChildAccount(const CoreAccountId& account_id,
   if (!modified) {
     return;
   }
-  if (!account_info.GetGaiaId().empty()) {
-    MaybeNotifyAccountUpdated(account_info);
-  }
-  SaveToPrefs(account_info);
+  SaveToPrefsAndMaybeNotifyAccountUpdated(account_info);
 }
 
 void AccountTrackerService::SetIsAdvancedProtectionAccount(
@@ -436,10 +424,7 @@ void AccountTrackerService::SetIsAdvancedProtectionAccount(
   account_info = AccountInfo::Builder(account_info)
                      .SetIsUnderAdvancedProtection(is_under_advanced_protection)
                      .Build();
-  if (!account_info.GetGaiaId().empty()) {
-    MaybeNotifyAccountUpdated(account_info);
-  }
-  SaveToPrefs(account_info);
+  SaveToPrefsAndMaybeNotifyAccountUpdated(account_info);
 }
 
 void AccountTrackerService::SetOnAccountUpdatedCallback(
@@ -819,6 +804,14 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   dict->Merge(signin::SerializeAccountInfo(account_info));
 }
 
+void AccountTrackerService::SaveToPrefsAndMaybeNotifyAccountUpdated(
+    const AccountInfo& account_info) {
+  SaveToPrefs(account_info);
+  if (!account_info.GetGaiaId().empty()) {
+    MaybeNotifyAccountUpdated(account_info);
+  }
+}
+
 void AccountTrackerService::RemoveFromPrefs(
     const GaiaIdMightBeEmail& account_id) {
   if (!pref_service_) {
@@ -907,11 +900,7 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
 
   // Update the missing fields in |account_info| with |info|.
   if (account_info.UpdateWith(info)) {
-    if (!account_info.GetGaiaId().empty()) {
-      MaybeNotifyAccountUpdated(account_info);
-    }
-
-    SaveToPrefs(account_info);
+    SaveToPrefsAndMaybeNotifyAccountUpdated(account_info);
   }
 
   if (!already_exists && info.GetAvatarImage().has_value()) {
@@ -919,9 +908,8 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
     // MaybeNotifyAccountUpdated() again for the same account. These
     // notification should be deduplicated.
     SetAccountImage(
-        account_info.GetAccountId(),
-        std::string(
-            account_info.GetLastDownloadedAvatarUrlWithSize().value_or("")),
+        info.GetAccountId(),
+        std::string(info.GetLastDownloadedAvatarUrlWithSize().value_or("")),
         *info.GetAvatarImage());
   }
 
