@@ -11,7 +11,7 @@ export function getHtml(this: OrganizerPanelAppElement) {
   return html`<!--_html_template_start_-->
 <cr-toolbar-search-field autofocus="true" id="searchField"
     label="$i18n{searchTabs}" clear-label="$i18n{clearSearch}"
-    @search-changed="${this.onSearchChanged_}"
+    search-delay="100" @search-changed="${this.onSearchChanged_}"
     @search-icon-clicked="${this.onSearchIconClicked_}">
   <div id="shortcut" slot="suffixElement" @click="${this.onShortcutClick_}">
     ${this.shortcut_}

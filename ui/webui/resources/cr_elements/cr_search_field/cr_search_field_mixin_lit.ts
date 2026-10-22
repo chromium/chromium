@@ -34,12 +34,19 @@ export const CrSearchFieldMixinLit =
               type: Boolean,
               reflect: true,
             },
+
+            // When set, overrides the default search delay (in ms) before
+            // dispatching the 'search' event.
+            searchDelay: {
+              type: Number,
+            },
           };
         }
 
         accessor label: string = '';
         accessor clearLabel: string = '';
         accessor hasSearchText: boolean = false;
+        accessor searchDelay: number|undefined = undefined;
         private effectiveValue_: string = '';
         private searchDelayTimer_: number = -1;
 
@@ -84,7 +91,7 @@ export const CrSearchFieldMixinLit =
           if (this.searchDelayTimer_ >= 0) {
             clearTimeout(this.searchDelayTimer_);
           }
-          // Dispatch 'search' event after:
+          // If searchDelay is not specified, dispatch 'search' event after:
           //    0ms if the value is empty
           //  500ms if the value length is 1
           //  400ms if the value length is 2
@@ -92,8 +99,11 @@ export const CrSearchFieldMixinLit =
           //  200ms if the value length is 4 or greater.
           // The logic here was copied from WebKit's native 'search' event.
           const length = this.getValue().length;
-          const timeoutMs =
-              length > 0 ? (500 - 100 * (Math.min(length, 4) - 1)) : 0;
+          let timeoutMs = 0;
+          if (length > 0) {
+            timeoutMs =
+                this.searchDelay ?? (500 - 100 * (Math.min(length, 4) - 1));
+          }
           this.searchDelayTimer_ = setTimeout(() => {
             this.getSearchInput().dispatchEvent(new CustomEvent(
                 'search', {composed: true, detail: this.getValue()}));
@@ -152,6 +162,7 @@ export interface CrSearchFieldMixinLitInterface {
   label: string;
   clearLabel: string;
   hasSearchText: boolean;
+  searchDelay?: number;
   getSearchInput(): HTMLInputElement|CrInputElement;
   getValue(): string;
   setValue(value: string, noEvent?: boolean): void;

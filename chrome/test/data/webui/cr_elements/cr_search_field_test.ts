@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 
 import type {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -145,5 +146,67 @@ suite('cr-search-field', function() {
     assertFalse(field.hasSearchText);
     await microtasksFinished();
     assertEquals(searchInput, field.shadowRoot.activeElement);
+  });
+
+  suite('searchDelay', () => {
+    let mockTimer: MockTimer;
+
+    setup(() => {
+      mockTimer = new MockTimer();
+      mockTimer.install();
+    });
+
+    teardown(() => {
+      mockTimer.uninstall();
+    });
+
+    test('custom searchDelay overrides default debounce', () => {
+      field.searchDelay = 100;
+      field.$.searchInput.value = 'a';
+      field.onSearchTermInput();
+      assertEquals(0, searches!.length);
+
+      mockTimer.tick(50);
+      assertEquals(0, searches!.length);
+
+      mockTimer.tick(50);
+      assertDeepEquals(['a'], searches);
+    });
+
+    test('searchDelay of 0 fires on next tick', () => {
+      field.searchDelay = 0;
+      field.$.searchInput.value = 'a';
+      field.onSearchTermInput();
+      assertEquals(0, searches!.length);
+
+      mockTimer.tick(0);
+      assertDeepEquals(['a'], searches);
+    });
+
+    test('empty query fires immediately regardless of searchDelay', () => {
+      field.searchDelay = 500;
+      field.setValue('test');
+      assertDeepEquals(['test'], searches);
+
+      field.$.searchInput.value = '';
+      field.onSearchTermInput();
+      assertEquals(1, searches!.length);
+
+      mockTimer.tick(0);
+      assertDeepEquals(['test', ''], searches);
+    });
+
+    test('default debounce behavior when searchDelay is not specified', () => {
+      field.$.searchInput.value = 'a';
+      field.onSearchTermInput();
+      assertEquals(0, searches!.length);
+
+      // Value length 1 has a 500ms delay.
+      mockTimer.tick(499);
+      assertEquals(0, searches!.length);
+
+      mockTimer.tick(1);
+      assertDeepEquals(['a'], searches);
+    });
   });
 });
