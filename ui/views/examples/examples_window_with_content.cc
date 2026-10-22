@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/views/examples/create_examples.h"
 #include "ui/views/examples/example_base.h"

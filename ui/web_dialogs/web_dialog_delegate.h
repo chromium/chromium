@@ -138,7 +138,7 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // Returns true if the dialog should allow accelerators to be processed
   // by the FocusManager.
   bool allow_accelerators() const { return allow_accelerators_; }
-  void set_allow_accelerators(bool allow_accelerators) {
+  void set_allow_accelerators_deprecated(bool allow_accelerators) {
     allow_accelerators_ = allow_accelerators;
   }
 

@@ -155,7 +155,7 @@ class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
     // Disable early accelerator processing to give the webcontent the first
     // chance to handle keyboard events (e.g. Ctrl+F). Unhandled events will be
     // forwarded back to the widget.
-    set_allow_accelerators(false);
+    set_allow_accelerators_deprecated(false);
   }
   SystemFilesAppDialogDelegate(const SystemFilesAppDialogDelegate&) = delete;
   SystemFilesAppDialogDelegate& operator=(const SystemFilesAppDialogDelegate&) =

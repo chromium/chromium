@@ -984,6 +984,9 @@ class CONTENT_EXPORT WebContentsDelegate {
  protected:
   virtual ~WebContentsDelegate();
 
+  virtual void OnAttached(WebContents* source);
+  virtual void OnDetaching(WebContents* source);
+
  private:
   friend class WebContentsImpl;
 

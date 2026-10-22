@@ -139,7 +139,7 @@ ChromeWebUIDialog::ChromeWebUIDialog(
   // would never reach the point of calling ShowUI().
   contents_wrapper_->web_contents()->WasShown();
   // Let the dialog handle accelerators the page declines, notably ESC.
-  web_view_->set_allow_accelerators(true);
+  web_view_->set_allow_accelerators_deprecated(true);
   if (spec_.element_identifier) {
     web_view_->SetProperty(views::kElementIdentifierKey,
                            spec_.element_identifier);

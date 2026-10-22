@@ -71,7 +71,7 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
                              std::unique_ptr<WebContentsHandler> handler,
                              content::WebContents* web_contents)
     : ClientView(nullptr, nullptr),
-      WebDialogWebContentsDelegate(context, std::move(handler)),
+      WebContentsDelegateViews(context, std::move(handler)),
       delegate_(delegate),
       web_view_(new ObservableWebView(context, delegate)) {
   CHECK(delegate);
@@ -79,7 +79,13 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
   SetCanMinimize(delegate_->can_minimize());
   SetCanResize(delegate_->can_resize());
   SetModalType(delegate_->GetDialogModalType());
-  web_view_->set_allow_accelerators(delegate_->allow_accelerators());
+  // TODO(https://crbug.com/576327952): The name `allow_accelerators()` is
+  // inconsistent with how the class has always applied it; the logic below is
+  // consistent with what it was doing previously.
+  SetAcceleratorHandling(
+      delegate_->allow_accelerators()
+          ? WebContentsAcceleratorHandling::kProcessBeforeRenderer
+          : WebContentsAcceleratorHandling::kEnabled);
   AddChildViewRaw(web_view_.get());
   set_contents_view(web_view_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -322,16 +328,6 @@ void WebDialogView::SetContentsBounds(WebContents* source,
   // The contained web page wishes to resize itself. We let it do this because
   // if it's a dialog we know about, we trust it not to be mean to the user.
   GetWidget()->SetBounds(bounds);
-}
-
-// A simplified version of BrowserView::HandleKeyboardEvent().
-// We don't handle global keyboard shortcuts here, but that's fine since
-// they're all browser-specific. (This may change in the future.)
-bool WebDialogView::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
 }
 
 void WebDialogView::CloseContents(WebContents* source) {

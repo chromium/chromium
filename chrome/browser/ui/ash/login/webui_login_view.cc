@@ -156,7 +156,7 @@ void WebUILoginView::Init() {
   WebContents* web_contents = web_view->GetWebContents();
 
   InitializeWebView(web_view.get());
-  web_view->set_allow_accelerators(true);
+  web_view->set_allow_accelerators_deprecated(true);
 
   web_view_ = AddChildView(std::move(web_view));
 

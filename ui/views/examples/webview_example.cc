@@ -25,18 +25,10 @@ WebViewExample::~WebViewExample() = default;
 void WebViewExample::CreateExampleView(View* container) {
   webview_ =
       container->AddChildView(std::make_unique<WebView>(browser_context_));
-  webview_->GetWebContents()->SetDelegate(this);
+  webview_->SetAcceleratorHandling(WebContentsAcceleratorHandling::kEnabled);
   container->SetLayoutManager(std::make_unique<FillLayout>());
-
   webview_->LoadInitialURL(GURL("http://www.google.com/"));
   webview_->GetWebContents()->Focus();
-}
-
-bool WebViewExample::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, webview_->GetFocusManager());
 }
 
 }  // namespace views::examples

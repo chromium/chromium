@@ -192,7 +192,7 @@ void PresentationReceiverWindowView::Init() {
 
   web_view_ = AddChildView(std::make_unique<views::WebView>(profile));
   web_view_->SetWebContents(web_contents);
-  web_view_->set_allow_accelerators(true);
+  web_view_->set_allow_accelerators_deprecated(true);
   box->SetFlexForView(web_view_, 1);
 
   location_bar_view_->Init();

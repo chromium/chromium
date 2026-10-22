@@ -563,7 +563,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   web_view->set_context_menu_controller(this);
   // Allow the WebContents host to route unhandled accelerator keys through
   // the Views focus/accelerator system.
-  web_view->set_allow_accelerators(true);
+  web_view->set_allow_accelerators_deprecated(true);
   web_view->SetWebContents(web_contents());
   widget_delegate_->SetContentsView(std::move(web_view));
 

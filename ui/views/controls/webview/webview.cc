@@ -346,7 +346,10 @@ void WebView::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {
 }
 
 bool WebView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
-  if (allow_accelerators_) {
+  if (allow_accelerators_deprecated_ ||
+      (web_contents() &&
+       GetAcceleratorHandlingFor(*web_contents()) ==
+           WebContentsAcceleratorHandling::kProcessBeforeRenderer)) {
     return FocusManager::IsTabTraversalKeyEvent(event);
   }
 

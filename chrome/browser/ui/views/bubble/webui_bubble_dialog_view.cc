@@ -55,7 +55,7 @@ class WebUIBubbleView : public views::WebView {
   explicit WebUIBubbleView(content::WebContents* web_contents) {
     SetWebContents(web_contents);
     // Allow the embedder to handle accelerators not handled by the WebContents.
-    set_allow_accelerators(true);
+    set_allow_accelerators_deprecated(true);
     SetPreferredSize(web_contents->GetSize());
   }
   ~WebUIBubbleView() override = default;

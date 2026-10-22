@@ -16,7 +16,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/controls/webview/webview_export.h"
 #include "ui/views/window/client_view.h"
@@ -73,9 +72,11 @@ class ObservableWebView : public WebView {
 // TODO(akalin): Make WebDialogView contain an WebDialogWebContentsDelegate
 // instead of inheriting from it to avoid violating the "no multiple
 // inheritance" rule.
-class WEBVIEW_EXPORT WebDialogView : public ClientView,
-                                     public ui::WebDialogWebContentsDelegate,
-                                     public DialogDelegate {
+class WEBVIEW_EXPORT WebDialogView
+    : public ClientView,
+      public views::WebContentsDelegateViews<WebDialogView,
+                                             ui::WebDialogWebContentsDelegate>,
+      public DialogDelegate {
   METADATA_HEADER(WebDialogView, ClientView)
 
  public:
@@ -125,8 +126,6 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
                    base::OnceCallback<void(bool)> callback) override;
   void SetContentsBounds(content::WebContents* source,
                          const gfx::Rect& bounds) override;
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
   void CloseContents(content::WebContents* source) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
@@ -166,9 +165,15 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   FrameKind GetWebDialogFrameKind() const;
   void SetWebViewCornersRadii(const gfx::RoundedCornersF& radii);
 
+  // Required for testing.
+  using WebContentsDelegateViews::HandleKeyboardEvent;
+
  private:
   friend class WebDialogViewUnitTest;
   FRIEND_TEST_ALL_PREFIXES(WebDialogBrowserTest, WebContentRendered);
+  FRIEND_TEST_ALL_PREFIXES(WebDialogViewUnitTest,
+                           PreHandleAcceleratorsByDefault);
+  FRIEND_TEST_ALL_PREFIXES(WebDialogViewUnitTest, DisablePreHandleAccelerators);
 
   // Initializes the contents of the dialog.
   void InitDialog();
@@ -203,9 +208,6 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
 
   // Whether CloseContents() has been called.
   bool close_contents_called_ = false;
-
-  // Handler for unhandled key events from renderer.
-  UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   bool disable_url_load_for_test_ = false;
 

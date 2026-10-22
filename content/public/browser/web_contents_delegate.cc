@@ -351,13 +351,18 @@ WebContentsDelegate::~WebContentsDelegate() {
   DCHECK(attached_contents_.empty());
 }
 
+void WebContentsDelegate::OnAttached(WebContents* contents) {}
+void WebContentsDelegate::OnDetaching(WebContents* contents) {}
+
 void WebContentsDelegate::Attach(WebContents* web_contents) {
   DCHECK(!attached_contents_.contains(web_contents));
   attached_contents_.insert(web_contents);
+  OnAttached(web_contents);
 }
 
 void WebContentsDelegate::Detach(WebContents* web_contents) {
   DCHECK(attached_contents_.contains(web_contents));
+  OnDetaching(web_contents);
   attached_contents_.erase(web_contents);
 }
 

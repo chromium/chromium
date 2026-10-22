@@ -6,8 +6,6 @@
 #define UI_VIEWS_EXAMPLES_WEBVIEW_EXAMPLE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/web_contents_delegate.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/examples/example_base.h"
 
 namespace content {
@@ -19,7 +17,7 @@ class WebView;
 
 namespace examples {
 
-class WebViewExample : public ExampleBase, public content::WebContentsDelegate {
+class WebViewExample : public ExampleBase {
  public:
   explicit WebViewExample(content::BrowserContext* browser_context);
 
@@ -31,14 +29,9 @@ class WebViewExample : public ExampleBase, public content::WebContentsDelegate {
   // ExampleBase:
   void CreateExampleView(View* container) override;
 
-  // content::WebContentsDelegate:
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
-
  private:
   raw_ptr<WebView> webview_;
   raw_ptr<content::BrowserContext> browser_context_;
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 }  // namespace examples

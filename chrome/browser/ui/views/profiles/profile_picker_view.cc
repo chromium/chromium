@@ -903,7 +903,7 @@ void ProfilePickerView::BuildLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<views::WebView>();
-  web_view->set_allow_accelerators(true);
+  web_view->set_allow_accelerators_deprecated(true);
   web_view_ = AddChildView(std::move(web_view));
 
   web_contents_attached_subscription_ =

@@ -288,7 +288,7 @@ raw_ptr<views::View> OverlayBaseController::CreateViewForOverlay() {
 
   // Set the web contents delegate to this controller so we can handle keyboard
   // events. Allow accelerators (e.g. hotkeys) to work on this web view.
-  web_view->set_allow_accelerators(true);
+  web_view->set_allow_accelerators_deprecated(true);
   web_view->GetWebContents()->SetDelegate(this);
 
   // Load the untrusted WebUI into the web view.

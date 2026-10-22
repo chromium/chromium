@@ -18,13 +18,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/tree/widget_ax_manager_observer.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/controls/webview/webview_export.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -57,7 +57,7 @@ class WidgetAXManager;
 // the aspect ratio of the capture video resolution, and scaling will be avoided
 // whenever possible.
 class WEBVIEW_EXPORT WebView : public View,
-                               public content::WebContentsDelegate,
+                               public WebContentsDelegateViews<WebView>,
                                public content::WebContentsObserver,
                                public ui::AXModeObserver,
                                public WidgetAXManagerObserver {
@@ -210,10 +210,15 @@ class WEBVIEW_EXPORT WebView : public View,
 
   // When used to host UI, we need to explicitly allow accelerators to be
   // processed. Default is false.
-  void set_allow_accelerators(bool allow_accelerators) {
-    allow_accelerators_ = allow_accelerators;
+  //
+  // TODO(https://crbug.com/576327952): This should be migrated to/merged with
+  // `SetAcceleratorHandling()`.
+  void set_allow_accelerators_deprecated(bool allow_accelerators) {
+    allow_accelerators_deprecated_ = allow_accelerators;
   }
-  bool allow_accelerators() const { return allow_accelerators_; }
+  bool allow_accelerators_deprecated() const {
+    return allow_accelerators_deprecated_;
+  }
 
   // When `lock = true` changes in web contents will not reset the override.
   // Default is false.
@@ -345,7 +350,7 @@ class WEBVIEW_EXPORT WebView : public View,
   // view, to preserve its aspect ratio).
   bool is_letterboxing_ = false;
   raw_ptr<content::BrowserContext> browser_context_;
-  bool allow_accelerators_ = false;
+  bool allow_accelerators_deprecated_ = false;
   ViewTracker crashed_overlay_view_;
   bool is_primary_web_contents_for_window_ = false;
 
@@ -379,7 +384,7 @@ VIEW_BUILDER_METHOD(EnableSizingFromWebContents,
                     const gfx::Size&,
                     const gfx::Size&)
 VIEW_BUILDER_METHOD(set_is_primary_web_contents_for_window, bool)
-VIEW_BUILDER_METHOD(set_allow_accelerators, bool)
+VIEW_BUILDER_METHOD(SetAcceleratorHandling, WebContentsAcceleratorHandling)
 END_VIEW_BUILDER
 
 }  // namespace views

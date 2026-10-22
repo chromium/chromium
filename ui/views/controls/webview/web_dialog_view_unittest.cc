@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24,6 +25,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -274,17 +276,45 @@ TEST_F(WebDialogViewUnitTest, CanDownload) {
   EXPECT_TRUE(allowed_null_delegate.Get());
 }
 
-TEST_F(WebDialogViewUnitTest, AllowAccelerators) {
+TEST_F(WebDialogViewUnitTest, PreHandleAcceleratorsByDefault) {
   // By default, allow_accelerators should be true.
-  EXPECT_TRUE(web_view()->allow_accelerators());
-
-  // Test with allow_aceelerators set to false.
   auto delegate = std::make_unique<TestWebDialogViewWebDialogDelegate>();
-  delegate->set_allow_accelerators(false);
-  auto web_dialog_view = std::make_unique<WebDialogView>(
-      browser_context(), delegate.get(),
-      std::make_unique<ui::test::TestWebContentsHandler>());
-  EXPECT_FALSE(GetWebViewFor(web_dialog_view.get())->allow_accelerators());
+  auto* const web_dialog_view =
+      new WebDialogView(browser_context(), delegate.get(),
+                        std::make_unique<ui::test::TestWebContentsHandler>());
+
+  web_dialog_view->disable_url_load_for_test_ = true;
+  auto* const widget = views::DialogDelegate::CreateDialogWidget(
+      web_dialog_view, GetContext(), gfx::NativeView());
+  widget->Show();
+
+  auto* const contents = web_dialog_view->web_contents();
+  CHECK(contents);
+  EXPECT_EQ(WebContentsAcceleratorHandling::kProcessBeforeRenderer,
+            WebDialogView::GetAcceleratorHandlingFor(*contents));
+
+  widget->CloseNow();
+}
+
+TEST_F(WebDialogViewUnitTest, DisablePreHandleAccelerators) {
+  // Test with allow_accelerators set to false.
+  auto delegate = std::make_unique<TestWebDialogViewWebDialogDelegate>();
+  delegate->set_allow_accelerators_deprecated(false);
+  auto* const web_dialog_view =
+      new WebDialogView(browser_context(), delegate.get(),
+                        std::make_unique<ui::test::TestWebContentsHandler>());
+
+  web_dialog_view->disable_url_load_for_test_ = true;
+  auto* const widget = views::DialogDelegate::CreateDialogWidget(
+      web_dialog_view, GetContext(), gfx::NativeView());
+  widget->Show();
+
+  auto* const contents = web_dialog_view->web_contents();
+  CHECK(contents);
+  EXPECT_EQ(WebContentsAcceleratorHandling::kEnabled,
+            WebDialogView::GetAcceleratorHandlingFor(*contents));
+
+  widget->CloseNow();
 }
 
 TEST_F(WebDialogViewUnitTest, WebDialogViewClosedFromWebUI) {
