@@ -227,7 +227,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
         // Collapsed must be re-set after the merge.
-        InOrder inOrder = inOrder(mTabModel, mTabModel, mTabGroupSyncService, mTabRemover);
+        InOrder inOrder = inOrder(mTabModel, mTabGroupSyncService, mTabRemover);
         verify(mTabCreationDelegate, times(2))
                 .createBackgroundTab(any(), anyString(), any(), anyInt());
         inOrder.verify(mTabModel, times(2))
