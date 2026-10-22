@@ -76,6 +76,11 @@ class V8UnitTest : public testing::Test {
   // Initializes paths and libraries.
   void InitPathsAndLibraries();
 
+  // Finds the file that is indicated by `library_path`, updates `library_path`
+  // to be an absolute path to that file, and returns true.
+  // If no file is found, returns false.
+  bool FindLibraryFile(base::FilePath* library_path) const;
+
   base::test::TaskEnvironment task_environment_;
 
   // Handle scope that is used throughout the life of this class.
@@ -83,6 +88,15 @@ class V8UnitTest : public testing::Test {
 
   // Context for the JavaScript in the test.
   v8::Persistent<v8::Context> context_;
+
+  // Location of src root.
+  base::FilePath src_root_;
+
+  // Location of test data (currently test/data/webui).
+  base::FilePath test_data_directory_;
+
+  // Location of generated test data (<(PROGRAM_DIR)/test_data).
+  base::FilePath gen_test_data_directory_;
 
   // User added libraries.
   std::vector<base::FilePath> user_libraries_;

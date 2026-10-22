@@ -1502,7 +1502,6 @@ if (is_chromeos) {
       "ash/v8_unit_test.cc",
       "ash/v8_unit_test.h",
     ]
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     public_deps = [
       "//base",
       "//base/test:test_support",

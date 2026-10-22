@@ -42,41 +42,6 @@ bool g_had_errors = false;
 // testDone results.
 bool g_test_result_ok = false;
 
-// Location of src root.
-base::FilePath g_src_root;
-
-// Location of test data (currently test/data/webui).
-base::FilePath g_test_data_directory;
-
-// Location of generated test data (<(PROGRAM_DIR)/test_data).
-base::FilePath g_gen_test_data_directory;
-
-// Finds the file that is indicated by |library_path|, updates |library_path|
-// to be an absolute path to that file, and returns true.
-// If no file is found, returns false.
-bool FindLibraryFile(base::FilePath* library_path) {
-  if (library_path->IsAbsolute()) {
-    // Absolute file. Only one place to look.
-    return base::PathExists(*library_path);
-  }
-
-  // Look for relative file.
-  base::FilePath possible_path = g_src_root.Append(*library_path);
-  if (!base::PathExists(possible_path)) {
-    possible_path = g_gen_test_data_directory.Append(*library_path);
-    if (!base::PathExists(possible_path)) {
-      possible_path = g_test_data_directory.Append(*library_path);
-      if (!base::PathExists(possible_path)) {
-        return false;  // Couldn't find relative file anywhere.
-      }
-    }
-  }
-
-  *library_path = base::MakeAbsoluteFilePath(possible_path);
-  return true;
-}
-
-
 }  // namespace
 
 V8UnitTest::V8UnitTest()
@@ -181,14 +146,35 @@ bool V8UnitTest::RunJavascriptTestF(const std::string& test_fixture,
 
 void V8UnitTest::InitPathsAndLibraries() {
   JsTestApiConfig config;
-  g_test_data_directory = config.search_path;
+  test_data_directory_ = config.search_path;
   user_libraries_ = config.default_libraries;
 
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_GEN_TEST_DATA,
-                                     &g_gen_test_data_directory));
+                                     &gen_test_data_directory_));
 
-  ASSERT_TRUE(
-      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &g_src_root));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_));
+}
+
+bool V8UnitTest::FindLibraryFile(base::FilePath* library_path) const {
+  if (library_path->IsAbsolute()) {
+    // Absolute file. Only one place to look.
+    return base::PathExists(*library_path);
+  }
+
+  // Look for relative file.
+  base::FilePath possible_path = src_root_.Append(*library_path);
+  if (!base::PathExists(possible_path)) {
+    possible_path = gen_test_data_directory_.Append(*library_path);
+    if (!base::PathExists(possible_path)) {
+      possible_path = test_data_directory_.Append(*library_path);
+      if (!base::PathExists(possible_path)) {
+        return false;  // Couldn't find relative file anywhere.
+      }
+    }
+  }
+
+  *library_path = base::MakeAbsoluteFilePath(possible_path);
+  return true;
 }
 
 void V8UnitTest::SetUp() {

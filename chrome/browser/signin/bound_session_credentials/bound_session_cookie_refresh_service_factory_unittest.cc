@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -52,73 +54,75 @@ struct BoundSessionCookieRefreshServiceFactoryTestParams {
   ~BoundSessionCookieRefreshServiceFactoryTestParams() = default;
 };
 
-const BoundSessionCookieRefreshServiceFactoryTestParams kTestCases[] = {
-    {
-        "Enabled",
-        {switches::kEnableBoundSessionCredentials},
-        {},
-        std::nullopt,
-        true,
-    },
-    {
-        "Default",
-        {},
-        {},
-        std::nullopt,
-        BUILDFLAG(IS_WIN),
-    },
-    {
-        "Disabled",
-        {},
-        {switches::kEnableBoundSessionCredentials},
-        std::nullopt,
-        BUILDFLAG(IS_WIN),
-    },
-    {
-        "DisabledByPolicy",
-        {switches::kEnableBoundSessionCredentials},
-        {},
-        false,
-        BUILDFLAG(IS_WIN),
-    },
-    {
-        "EnabledByPolicy",
-        {},
-        {switches::kEnableBoundSessionCredentials},
-        true,
-        true,
-    },
-    {
-        "DisabledWithContinuityEnabled",
-        {kEnableBoundSessionCredentialsContinuity},
-        {switches::kEnableBoundSessionCredentials},
-        false,
-        true,
-    },
-    {
-        "DisabledWithExtrasDisabled",
-        {},
-        {switches::kEnableBoundSessionCredentials,
-         kEnableBoundSessionCredentialsContinuity},
-        std::nullopt,
-        false,
-    },
-    {
-        "EnabledWithExtrasDisabled",
-        {switches::kEnableBoundSessionCredentials},
-        {kEnableBoundSessionCredentialsContinuity},
-        std::nullopt,
-        true,
-    },
-    {
-        "DisabledByKillSwitch",
-        {switches::kBoundSessionCredentialsKillSwitch,
-         switches::kEnableBoundSessionCredentials},
-        {},
-        true,
-        false,
-    },
-};
+std::vector<BoundSessionCookieRefreshServiceFactoryTestParams> GetTestCases() {
+  return {
+      {
+          "Enabled",
+          {switches::kEnableBoundSessionCredentials},
+          {},
+          std::nullopt,
+          true,
+      },
+      {
+          "Default",
+          {},
+          {},
+          std::nullopt,
+          BUILDFLAG(IS_WIN),
+      },
+      {
+          "Disabled",
+          {},
+          {switches::kEnableBoundSessionCredentials},
+          std::nullopt,
+          BUILDFLAG(IS_WIN),
+      },
+      {
+          "DisabledByPolicy",
+          {switches::kEnableBoundSessionCredentials},
+          {},
+          false,
+          BUILDFLAG(IS_WIN),
+      },
+      {
+          "EnabledByPolicy",
+          {},
+          {switches::kEnableBoundSessionCredentials},
+          true,
+          true,
+      },
+      {
+          "DisabledWithContinuityEnabled",
+          {kEnableBoundSessionCredentialsContinuity},
+          {switches::kEnableBoundSessionCredentials},
+          false,
+          true,
+      },
+      {
+          "DisabledWithExtrasDisabled",
+          {},
+          {switches::kEnableBoundSessionCredentials,
+           kEnableBoundSessionCredentialsContinuity},
+          std::nullopt,
+          false,
+      },
+      {
+          "EnabledWithExtrasDisabled",
+          {switches::kEnableBoundSessionCredentials},
+          {kEnableBoundSessionCredentialsContinuity},
+          std::nullopt,
+          true,
+      },
+      {
+          "DisabledByKillSwitch",
+          {switches::kBoundSessionCredentialsKillSwitch,
+           switches::kEnableBoundSessionCredentials},
+          {},
+          true,
+          false,
+      },
+  };
+}
 
 }  // namespace
 
@@ -247,8 +251,7 @@ TEST(BoundSessionCookieRefreshServiceFactoryTestNullUnexportableKeyService,
 INSTANTIATE_TEST_SUITE_P(
     ,
     BoundSessionCookieRefreshServiceFactoryTest,
-    ::testing::ValuesIn<BoundSessionCookieRefreshServiceFactoryTestParams>(
-        kTestCases),
+    ::testing::ValuesIn(GetTestCases()),
     [](const testing::TestParamInfo<
         BoundSessionCookieRefreshServiceFactoryTest::ParamType>& info) {
       return info.param.test_name;

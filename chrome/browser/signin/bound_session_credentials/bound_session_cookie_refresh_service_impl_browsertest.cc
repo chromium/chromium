@@ -183,7 +183,7 @@ struct CookieRotationResponseParams {
       const std::string& cookie_name2,
       bool block_server_response = false,
       base::TimeDelta expiry_offset = base::Minutes(10)) {
-    static const std::string kSetCookieHeaderKey = "Set-Cookie";
+    static constexpr std::string_view kSetCookieHeaderKey = "Set-Cookie";
     HeaderVector headers;
     for (const std::string& cookie_attribute_line :
          GetTwoCookiesAttributesLines(url, cookie_name1, cookie_name2,
@@ -197,7 +197,7 @@ struct CookieRotationResponseParams {
   static CookieRotationResponseParams CreateChallengeRequired(
       const std::string& session_id,
       bool block_server_response = false) {
-    static const std::string kChallengeHeaderKey =
+    static constexpr std::string_view kChallengeHeaderKey =
         "Sec-Session-Google-Challenge";
     HeaderVector headers;
     headers.emplace_back(

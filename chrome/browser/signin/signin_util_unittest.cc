@@ -44,8 +44,6 @@ const char kLegacyPolicyPrimaryAccountStrictKeepExistingData[] =
 const char kLegacyPolicyPrimaryAccountKeepExistingData[] =
     "primary_account_keep_existing_data";
 
-const GaiaId kSignedInGaiaId("signed_in_gaia_id");
-
 }  // namespace
 
 class SigninUtilTest : public testing::Test {
@@ -395,7 +393,7 @@ class SigninUtilHistorySyncOptinTest : public SigninUtilTest {
         identity_manager,
         signin::AccountAvailabilityOptionsBuilder()
             .AsPrimary(signin::ConsentLevel::kSignin)
-            .WithGaiaId(kSignedInGaiaId)
+            .WithGaiaId(GaiaId("signed_in_gaia_id"))
             .Build(managed_account ? "test@managed.com" : "test@gmail.com"));
 
     account_info =

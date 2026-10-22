@@ -591,10 +591,6 @@ source_set("identity_test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  # signin_util_unittest.cc has a file-scope static with a non-trivial
-  # destructor, which -Wexit-time-destructors rejects.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   sources = [
     "account_consistency_mode_manager_unittest.cc",
     "account_id_from_account_info_unittest.cc",
@@ -914,10 +910,6 @@ if (!is_android) {
         "//components/user_manager",
       ]
     }
-
-    # bound_session_cookie_refresh_service_impl_browsertest.cc:198 has a
-    # file-scope static with a non-trivial destructor.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
