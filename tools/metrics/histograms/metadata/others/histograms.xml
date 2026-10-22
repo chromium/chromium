@@ -4643,6 +4643,28 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="Shutdown.NetworkService.TimedOut" enum="BooleanTimedOut"
+    expires_after="2027-04-20">
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Whether waiting for the network service utility process to exit during
+    browser shutdown timed out (1 second on ChromeOS, 10 seconds on other
+    platforms). Recorded in BrowserProcessIOThread::ProcessHostCleanUp().
+  </summary>
+</histogram>
+
+<histogram name="Shutdown.NetworkService.WaitTime" units="ms"
+    expires_after="2027-04-20">
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Wall-clock time spent waiting on the main thread for the network service
+    utility process to exit during browser shutdown. Recorded in
+    BrowserProcessIOThread::ProcessHostCleanUp().
+  </summary>
+</histogram>
+
 <histogram name="Shutdown.NotValid.Time2" units="ms" expires_after="2023-09-03">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
