@@ -83,6 +83,20 @@ void PlatformThreadBase::SetName(const std::string& name) {
   pthread_setname_np(shortened_name.c_str());
 }
 
+namespace {
+
+constexpr bool kOptimizedRealtimeThreadingMacDefaultEnabled =
+#if BUILDFLAG(IS_MAC)
+    true;
+#else
+    false;
+#endif
+constexpr bool kOptimizedRealtimeThreadingMacDefaultPreemptible = true;
+constexpr double kOptimizedRealtimeThreadingMacDefaultBusy = 0.5;
+constexpr double kOptimizedRealtimeThreadingMacDefaultBusyLimit = 1.0;
+
+}  // namespace
+
 // Whether optimized real-time thread config should be used for audio.
 BASE_FEATURE(kOptimizedRealtimeThreadingMac,
 #if BUILDFLAG(IS_MAC)
@@ -124,9 +138,9 @@ BASE_FEATURE_PARAM(double,
 namespace {
 
 struct TimeConstraints {
-  bool preemptible{kOptimizedRealtimeThreadingMacPreemptible.default_value};
-  double busy{kOptimizedRealtimeThreadingMacBusy.default_value};
-  double busy_limit{kOptimizedRealtimeThreadingMacBusyLimit.default_value};
+  bool preemptible{kOptimizedRealtimeThreadingMacDefaultPreemptible};
+  double busy{kOptimizedRealtimeThreadingMacDefaultBusy};
+  double busy_limit{kOptimizedRealtimeThreadingMacDefaultBusyLimit};
 
   static TimeConstraints ReadFromFeatureParams() {
     double busy_limit = kOptimizedRealtimeThreadingMacBusyLimit.Get();
@@ -140,14 +154,23 @@ struct TimeConstraints {
 // Use atomics to access FeatureList values when setting up a thread, since
 // there are cases when FeatureList initialization is not synchronized with
 // PlatformThread creation.
-std::atomic<bool> g_use_optimized_realtime_threading(
-    kOptimizedRealtimeThreadingMac.default_state == FEATURE_ENABLED_BY_DEFAULT);
-std::atomic<TimeConstraints> g_time_constraints;
+constinit std::atomic<bool> g_use_optimized_realtime_threading(
+    kOptimizedRealtimeThreadingMacDefaultEnabled);
+constinit std::atomic<TimeConstraints> g_time_constraints;
 
 }  // namespace
 
 // static
 void PlatformThreadApple::InitializeFeatures() {
+  CHECK((kOptimizedRealtimeThreadingMac.default_state ==
+         FEATURE_ENABLED_BY_DEFAULT) ==
+        kOptimizedRealtimeThreadingMacDefaultEnabled);
+  CHECK(kOptimizedRealtimeThreadingMacPreemptible.default_value ==
+        kOptimizedRealtimeThreadingMacDefaultPreemptible);
+  CHECK(kOptimizedRealtimeThreadingMacBusy.default_value ==
+        kOptimizedRealtimeThreadingMacDefaultBusy);
+  CHECK(kOptimizedRealtimeThreadingMacBusyLimit.default_value ==
+        kOptimizedRealtimeThreadingMacDefaultBusyLimit);
   g_time_constraints.store(TimeConstraints::ReadFromFeatureParams());
   g_use_optimized_realtime_threading.store(
       IsOptimizedRealtimeThreadingMacEnabled());

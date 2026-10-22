@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "97b436da4c33663581d394f4ee0a5977fc38c2f4",
+    libcxx_revision == "9ba7713d3a0f1e179904c984bb626748b15e57d6",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -235,6 +235,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__atomic/atomic_sync_timed.h",
   "//third_party/libc++/src/include/__atomic/atomic_waitable_traits.h",
   "//third_party/libc++/src/include/__atomic/check_memory_order.h",
+  "//third_party/libc++/src/include/__atomic/clear_padding.h",
   "//third_party/libc++/src/include/__atomic/contention_t.h",
   "//third_party/libc++/src/include/__atomic/fence.h",
   "//third_party/libc++/src/include/__atomic/floating_point_helper.h",
@@ -455,6 +456,9 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__functional/compose.h",
   "//third_party/libc++/src/include/__functional/default_searcher.h",
   "//third_party/libc++/src/include/__functional/function.h",
+  "//third_party/libc++/src/include/__functional/function_ref.h",
+  "//third_party/libc++/src/include/__functional/function_ref_common.h",
+  "//third_party/libc++/src/include/__functional/function_ref_impl.h",
   "//third_party/libc++/src/include/__functional/hash.h",
   "//third_party/libc++/src/include/__functional/identity.h",
   "//third_party/libc++/src/include/__functional/invoke.h",
@@ -485,6 +489,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__fwd/mdspan.h",
   "//third_party/libc++/src/include/__fwd/memory.h",
   "//third_party/libc++/src/include/__fwd/memory_resource.h",
+  "//third_party/libc++/src/include/__fwd/optional.h",
   "//third_party/libc++/src/include/__fwd/ostream.h",
   "//third_party/libc++/src/include/__fwd/pair.h",
   "//third_party/libc++/src/include/__fwd/queue.h",
@@ -679,6 +684,14 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__numeric/transform_exclusive_scan.h",
   "//third_party/libc++/src/include/__numeric/transform_inclusive_scan.h",
   "//third_party/libc++/src/include/__numeric/transform_reduce.h",
+  "//third_party/libc++/src/include/__optional/common.h",
+  "//third_party/libc++/src/include/__optional/comparison.h",
+  "//third_party/libc++/src/include/__optional/hash.h",
+  "//third_party/libc++/src/include/__optional/make_optional.h",
+  "//third_party/libc++/src/include/__optional/nullopt_t.h",
+  "//third_party/libc++/src/include/__optional/optional.h",
+  "//third_party/libc++/src/include/__optional/optional_ref.h",
+  "//third_party/libc++/src/include/__optional/swap.h",
   "//third_party/libc++/src/include/__ostream/basic_ostream.h",
   "//third_party/libc++/src/include/__ostream/print.h",
   "//third_party/libc++/src/include/__ostream/put_character_sequence.h",
@@ -694,6 +707,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__pstl/cpu_algos/find_if.h",
   "//third_party/libc++/src/include/__pstl/cpu_algos/for_each.h",
   "//third_party/libc++/src/include/__pstl/cpu_algos/merge.h",
+  "//third_party/libc++/src/include/__pstl/cpu_algos/mismatch.h",
   "//third_party/libc++/src/include/__pstl/cpu_algos/stable_sort.h",
   "//third_party/libc++/src/include/__pstl/cpu_algos/transform.h",
   "//third_party/libc++/src/include/__pstl/cpu_algos/transform_reduce.h",
@@ -928,6 +942,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__type_traits/rank.h",
   "//third_party/libc++/src/include/__type_traits/reference_constructs_from_temporary.h",
   "//third_party/libc++/src/include/__type_traits/reference_converts_from_temporary.h",
+  "//third_party/libc++/src/include/__type_traits/register_passable.h",
   "//third_party/libc++/src/include/__type_traits/remove_all_extents.h",
   "//third_party/libc++/src/include/__type_traits/remove_const.h",
   "//third_party/libc++/src/include/__type_traits/remove_const_ref.h",

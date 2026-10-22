@@ -306,7 +306,6 @@ EXPORTS
     ??0uint128@absl@@QEAA@O@Z
     ??1?$deque@UPrefixCrc@CrcCordState@crc_internal@absl@@V?$allocator@UPrefixCrc@CrcCordState@crc_internal@absl@@@__Cr@std@@@__Cr@std@@QEAA@XZ
     ??1?$unique_ptr@ULogMessageData@LogMessage@log_internal@absl@@U?$default_delete@ULogMessageData@LogMessage@log_internal@absl@@@__Cr@std@@@__Cr@std@@QEAA@XZ
-    ??1?$unique_ptr@URep@StatusBuilder@absl@@U?$default_delete@URep@StatusBuilder@absl@@@__Cr@std@@@__Cr@std@@QEAA@XZ
     ??1CRC@crc_internal@absl@@UEAA@XZ
     ??1Clock@absl@@UEAA@XZ
     ??1Cord@absl@@QEAA@XZ
@@ -376,7 +375,6 @@ EXPORTS
     ??ACord@absl@@QEBAD_K@Z
     ??BCord@absl@@QEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ??BStatusBuilder@absl@@QEGBA?AVStatus@1@XZ
-    ??BStatusBuilder@absl@@QEHAA?AVStatus@1@XZ
     ??Bint128@absl@@QEBANXZ
     ??EChunkIterator@Cord@absl@@QEAAAEAV012@XZ
     ??Eiterator@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@$$V@container_internal@absl@@QEAAAEAV0123@XZ
