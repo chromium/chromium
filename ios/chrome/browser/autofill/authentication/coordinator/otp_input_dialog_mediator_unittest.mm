@@ -99,8 +99,8 @@ TEST_P(OtpInputDialogMediatorTest, SetConsumer) {
   EXPECT_OCMOCK_VERIFY((id)consumer_);
 }
 
-// TODO(crbug.com/422436003): re-enable.
-TEST_P(OtpInputDialogMediatorTest, DISABLED_DidTapConfirmButton) {
+TEST_P(OtpInputDialogMediatorTest, DidTapConfirmButton) {
+  mediator_->SetConsumer(consumer_);
   NSString* otp = @"123456";
   OCMExpect([consumer_ showPendingState]);
   EXPECT_CALL(unmask_delegate_,
@@ -117,8 +117,8 @@ TEST_P(OtpInputDialogMediatorTest, DidTapCancelButton) {
   [mediator_->AsMutator() didTapCancelButton];
 }
 
-// TODO(crbug.com/422435813): re-enable
-TEST_P(OtpInputDialogMediatorTest, DISABLED_OnOtpInputChanges) {
+TEST_P(OtpInputDialogMediatorTest, OnOtpInputChanges) {
+  mediator_->SetConsumer(consumer_);
   OCMExpect([consumer_ setConfirmButtonEnabled:NO]);
 
   [mediator_->AsMutator() onOtpInputChanges:@"12345"];
