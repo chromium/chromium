@@ -2559,7 +2559,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     // This item may have expanded due to fragmentation. Record how large the
-    // shift was (if any). Only do this if the item has completed layout.
+    // shift was (if any). Only do this if the item has reached its block end.
     if (is_column_) {
       LayoutUnit cloned_block_decorations;
       if (!is_at_block_end &&
@@ -2577,7 +2577,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       flex_item->total_remaining_block_size -=
           fragment.BlockSize() - cloned_block_decorations;
       if (flex_item->total_remaining_block_size < LayoutUnit() &&
-          !physical_fragment.GetBreakToken()) {
+          is_at_block_end &&
+          !(item_break_token && item_break_token->IsAtBlockEnd())) {
         LayoutUnit expansion = -flex_item->total_remaining_block_size;
         flex_line.item_offset_adjustment += expansion;
       }
