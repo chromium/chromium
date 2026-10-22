@@ -578,6 +578,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/search_engine_choice",
       "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
       "//chrome/browser/ui/webui/settings",
+      "//chrome/browser/ui/webui/settings/search/mojom",
       "//chrome/browser/ui/webui/side_panel/bookmarks",
       "//chrome/browser/ui/webui/side_panel/comments",
       "//chrome/browser/ui/webui/side_panel/comments:mojo_bindings",

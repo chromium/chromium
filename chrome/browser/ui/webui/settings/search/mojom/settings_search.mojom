@@ -1,0 +1,50 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module settings_search.mojom;
+
+import "chrome/browser/ui/webui/settings/search/mojom/setting_id.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "ui/gfx/range/mojom/range.mojom";
+
+// Used by the chrome://settings WebUI to create a SettingsSearchHandler.
+interface SettingsSearchHandlerFactory {
+  // Binds `handler` to a new SettingsSearchHandler.
+  CreateSettingsSearchHandler(pending_receiver<SettingsSearchHandler> handler);
+};
+
+// Browser-side handler for search requests from the chrome://settings WebUI.
+interface SettingsSearchHandler {
+  // Returns up to `max_results` settings matching `query`, ordered by
+  // descending score. Whitespace is trimmed from `query`, and long queries
+  // are truncated.
+  Search(mojo_base.mojom.String16 query, uint32 max_results)
+      => (array<SearchResult> results);
+};
+
+// One settings search match.
+struct SearchResult {
+  // Identifies the matched setting.
+  SettingId id;
+
+  // Path of the settings route that renders the setting, e.g. "/appearance".
+  // See chrome/browser/resources/settings/route.ts.
+  string route;
+
+  // Localized title of the setting.
+  mojo_base.mojom.String16 title;
+
+  // Localized titles of the pages and subpages that contain the setting,
+  // outermost first, e.g. ["Privacy and security", "Security"]. The WebUI
+  // joins them for display; no separator is added here.
+  array<mojo_base.mojom.String16> breadcrumbs;
+
+  // Match confidence in [0.0, 1.0]; higher is better.
+  double score;
+
+  // Character ranges within `title` that matched the query for highlighting.
+  // Empty if the match came from a breadcrumb or a synonym rather than the
+  // title.
+  array<gfx.mojom.Range> title_match_ranges;
+};

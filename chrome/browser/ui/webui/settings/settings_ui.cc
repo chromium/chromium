@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/saved_info_handler.h"
+#include "chrome/browser/ui/webui/settings/search/settings_search_handler.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 #include "chrome/browser/ui/webui/settings/security_settings_provider.h"
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
@@ -916,6 +917,36 @@ void SettingsUI::BindInterface(
   }
   customize_color_scheme_mode_handler_factory_receiver_.Bind(
       std::move(pending_receiver));
+}
+
+void SettingsUI::BindInterface(
+    mojo::PendingReceiver<settings_search::mojom::SettingsSearchHandlerFactory>
+        pending_receiver) {
+  if (!features::IsSettingsSearch2026Enabled()) {
+    return;
+  }
+  settings_search_handler_.reset();
+  settings_search_handler_factory_receiver_.reset();
+  settings_search_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void SettingsUI::CreateSettingsSearchHandler(
+    mojo::PendingReceiver<settings_search::mojom::SettingsSearchHandler>
+        handler) {
+  if (!features::IsSettingsSearch2026Enabled()) {
+    return;
+  }
+  if (settings_search_handler_) {
+    settings_search_handler_factory_receiver_.ReportBadMessage(
+        "CreateSettingsSearchHandler called more than once.");
+    return;
+  }
+  // TODO(b/571663356): Populate from the SettingsSearchRegistry once it
+  // exists. Until then the handler is bound but has nothing to search.
+  settings_search_handler_ =
+      std::make_unique<settings_search::SettingsSearchHandler>(
+          std::move(handler),
+          std::vector<std::unique_ptr<settings_search::SettingsSearchItem>>());
 }
 
 void SettingsUI::UpdateShowGlicState() {

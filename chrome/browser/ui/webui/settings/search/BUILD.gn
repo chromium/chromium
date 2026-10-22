@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+# Native search backend for desktop chrome://settings.
+source_set("search") {
+  sources = [
+    "settings_search_handler.cc",
+    "settings_search_handler.h",
+    "settings_search_item.cc",
+    "settings_search_item.h",
+  ]
+
+  deps = [ "//chrome/browser/ui:ui_features" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/fuzzy_search",
+    "//chrome/browser/ui/webui/settings/search/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "settings_search_handler_unittest.cc" ]
+
+  deps = [
+    ":search",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx/range",
+  ]
+}

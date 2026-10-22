@@ -1,0 +1,32 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module settings_search.mojom;
+
+// Identifies a searchable element on a desktop chrome://settings page. The
+// WebUI matches it against data-setting-id attributes so a search result can
+// be scrolled to and highlighted.
+//
+// Each settings page owns a 100-wide block (Appearance 100-199, People
+// 200-299, ...); add new settings within their page's block.
+enum SettingId {
+  // Appearance section (100-199).
+  kAppearance = 100,
+  kThemes = 101,
+  kCustomizeToolbar = 102,
+  kColorSchemeMode = 103,
+  kShowHomeButton = 104,
+  kShowBookmarksBar = 105,
+  kTabStripPosition = 106,
+  kShowTabSearchButton = 107,
+  kShowSavedTabGroups = 108,
+  kAutoPinNewTabGroups = 109,
+  kSidePanelPosition = 110,
+  kTabHoverCard = 111,
+  kShowWindowDecorations = 112,
+  kFontSize = 113,
+  kCustomizeFonts = 114,
+  kPageZoom = 115,
+  kSplitViewDragAndDrop = 116,
+};

@@ -62,6 +62,7 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/reset_password:mojo_bindings",
   "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
   "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings",
+  "//chrome/browser/ui/webui/settings/search/mojom:mojom",
   "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
   "//chrome/browser/ui/webui/side_panel/comments:mojo_bindings",
   "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
