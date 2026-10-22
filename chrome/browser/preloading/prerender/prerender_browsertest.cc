@@ -318,6 +318,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest, UseCounter) {
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderTriggeredByEmbedderAndActivate) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/576393693): Prerender activation fails with
+  // kActivationNavigationParameterMismatch on Android tablets.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    GTEST_SKIP() << "Prerender activation fails on Android tablets.";
+  }
+#endif
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
