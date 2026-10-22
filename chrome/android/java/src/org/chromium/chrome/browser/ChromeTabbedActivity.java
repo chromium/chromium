@@ -211,7 +211,6 @@ import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.notifications.scheduler.TipsAgent;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.RecentlyClosedGroup;
@@ -4246,7 +4245,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                     ::onDailyRefreshThemeCollectionApplied);
         }
 
-        TipsAgent.performNotificationSchedulerSteps(getProfileProviderSupplier(), windowAndroid);
+        TipsUtils.scheduleOrCancelTipsNotification(getProfileProviderSupplier(), windowAndroid);
 
         if (ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
             if (FindsFeatures.sChromeFinds.isEnabled()) {

@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,16 +28,22 @@ import org.robolectric.Robolectric;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TipsUtils}. */
@@ -48,11 +55,21 @@ public class TipsUtilsUnitTest {
     @Mock private SharedPreferencesManager mSharedPreferences;
     @Mock private Callback<TipsOptInCoordinator> mOnShowCallback;
 
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+
     private Activity mActivity;
+    private WindowAndroid mWindowAndroid;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mWindowAndroid = new WindowAndroid(mActivity, /* occlusionTrackingAllowed= */ false);
+    }
+
+    @After
+    public void tearDown() {
+        mWindowAndroid.destroy();
+        TipsPromoHandlerFactory.resetForTesting();
     }
 
     @Test
@@ -499,5 +516,43 @@ public class TipsUtilsUnitTest {
         DeviceInfo.setIsDesktopForTesting(true);
         assertFalse(TipsUtils.isSupportedDeviceType());
         DeviceInfo.setIsDesktopForTesting(false);
+    }
+
+    @Test
+    public void testCollectCustomSignals_SeedsBottomOmniboxStatus() {
+        attachControlsPosition(ControlsPosition.BOTTOM);
+
+        assertEquals(
+                Map.of(TipsSignalKeys.BOTTOM_OMNIBOX_STATUS, 1.0f),
+                TipsUtils.collectCustomSignals(mWindowAndroid));
+    }
+
+    @Test
+    public void testCollectCustomSignals_NoControlsProvider_DefaultsToTop() {
+        assertEquals(
+                Map.of(TipsSignalKeys.BOTTOM_OMNIBOX_STATUS, 0.0f),
+                TipsUtils.collectCustomSignals(mWindowAndroid));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TIPS_SELF_SERVICE)
+    public void testCollectCustomSignals_HandlerSignalsOverrideSeed() {
+        attachControlsPosition(ControlsPosition.TOP);
+        TipsPromoHandler handler = mock(TipsPromoHandler.class);
+        when(handler.getCustomSignals(mWindowAndroid))
+                .thenReturn(Map.of(TipsSignalKeys.BOTTOM_OMNIBOX_STATUS, 1.0f, "other", 2.0f));
+        TipsPromoHandlerFactory.register(
+                TipsNotificationsFeatureType.BOTTOM_OMNIBOX, () -> handler);
+
+        assertEquals(
+                Map.of(TipsSignalKeys.BOTTOM_OMNIBOX_STATUS, 1.0f, "other", 2.0f),
+                TipsUtils.collectCustomSignals(mWindowAndroid));
+    }
+
+    private void attachControlsPosition(@ControlsPosition int position) {
+        when(mBrowserControlsStateProvider.getControlsPosition()).thenReturn(position);
+        BrowserControlsStateProviderSupplier.attach(
+                mWindowAndroid.getUnownedUserDataHost(),
+                ObservableSuppliers.createMonotonic(mBrowserControlsStateProvider));
     }
 }

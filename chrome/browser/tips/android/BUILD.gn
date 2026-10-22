@@ -3,9 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  srcjar_deps = [ ":jni_enums" ]
+  srcjar_deps = [
+    ":jni_enums",
+    ":jni_headers",
+  ]
   public_deps = [ ":public_java" ]
   sources = [
     "java/src/org/chromium/chrome/browser/tips/LegacyTipsPromoHandler.java",
@@ -14,6 +18,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tips/TipsPromoHandlerFactory.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoView.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsSchedulerBridge.java",
     "java/src/org/chromium/chrome/browser/tips/TipsUtils.java",
   ]
 
@@ -26,7 +31,9 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:supplier_java",
     "//build/android:build_java",
+    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/lens:java",
@@ -56,6 +63,7 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/android_deps:com_airbnb_android_lottie_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 
@@ -83,6 +91,11 @@ android_library("public_java") {
 java_cpp_strings("signal_keys_srcjar") {
   sources = [ "//chrome/browser/tips/core/tips_signal_keys.h" ]
   class_name = "org.chromium.chrome.browser.tips.TipsSignalKeys"
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/tips/TipsSchedulerBridge.java" ]
 }
 
 java_cpp_enum("jni_enums") {
@@ -140,6 +153,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/lens:java",

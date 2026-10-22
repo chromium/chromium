@@ -37,6 +37,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TipsAgent_jni.h"
+#include "chrome/browser/tips/android/jni_headers/TipsSchedulerBridge_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -335,7 +336,7 @@ void TipsAgentAndroid::ShowTipsPromo(
   Java_TipsAgent_showTipsPromo(env, static_cast<int32_t>(feature_type));
 }
 
-static void JNI_TipsAgent_MaybeScheduleNotification(
+static void JNI_TipsSchedulerBridge_MaybeScheduleNotification(
     JNIEnv* env,
     Profile* profile,
     std::map<std::string, float> custom_signals) {
@@ -359,8 +360,9 @@ static void JNI_TipsAgent_MaybeScheduleNotification(
           profile, std::move(custom_signals), base::Unretained(service)));
 }
 
-static void JNI_TipsAgent_RemovePendingNotifications(JNIEnv* env,
-                                                     Profile* profile) {
+static void JNI_TipsSchedulerBridge_RemovePendingNotifications(
+    JNIEnv* env,
+    Profile* profile) {
   if (!profile) {
     return;
   }
@@ -371,3 +373,4 @@ static void JNI_TipsAgent_RemovePendingNotifications(JNIEnv* env,
 }
 
 DEFINE_JNI(TipsAgent)
+DEFINE_JNI(TipsSchedulerBridge)

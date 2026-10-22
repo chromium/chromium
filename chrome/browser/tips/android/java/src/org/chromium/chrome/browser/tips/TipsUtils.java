@@ -24,13 +24,20 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -46,9 +53,13 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /** Static utilities for Tips Notifications. */
@@ -258,6 +269,122 @@ public class TipsUtils {
                 mainPageLogoViewRes,
                 context.getString(detailPageTitleRes),
                 detailPageSteps);
+    }
+
+    /**
+     * Entry point for tips notifications. Call once per tabbed browser window during deferred
+     * startup.
+     *
+     * <p>Tips notifications are posted by the native notification scheduler a few hours after they
+     * are scheduled. Once the profile is available, this keeps the pending notification in sync
+     * with the current state:
+     *
+     * <ul>
+     *   <li>If tips notifications are enabled and supported on this device, schedules (or
+     *       reschedules) a notification for the best eligible tip, then repeats every hour while
+     *       the window is alive, so the notification keeps being pushed back while the user is
+     *       still active in Chrome.
+     *   <li>Otherwise, cancels any pending tips notification, e.g. after the feature was disabled.
+     * </ul>
+     *
+     * <p>Each call starts its own hourly rescheduling loop for the given window, so avoid calling
+     * it more than once per window.
+     *
+     * @param profileProviderSupplier The supplier for the current {@link ProfileProvider}.
+     * @param windowAndroid The window whose lifetime bounds the hourly rescheduling, and from which
+     *     Java-only eligibility signals are read.
+     */
+    public static void scheduleOrCancelTipsNotification(
+            OneshotSupplier<ProfileProvider> profileProviderSupplier, WindowAndroid windowAndroid) {
+        profileProviderSupplier.onAvailable(
+                (provider) -> {
+                    Profile profile = provider.getOriginalProfile();
+                    if (profile.shutdownStarted()) return;
+
+                    if (!isTipsNotificationsFeatureAvailable()) {
+                        TipsSchedulerBridge.removePendingNotifications(profile);
+                        return;
+                    }
+
+                    if (ChromeFeatureList.sTipsSelfServiceResetFeatureTipShown.getValue()) {
+                        clearFeatureTipShownPrefs(profile);
+                    }
+                    maybeScheduleTipsNotification(profile, windowAndroid);
+                });
+    }
+
+    /** Returns whether tips notifications are enabled and supported on this device. */
+    private static boolean isTipsNotificationsFeatureAvailable() {
+        return ChromeFeatureList.sAndroidTipsNotifications.isEnabled() && isSupportedDeviceType();
+    }
+
+    private static void maybeScheduleTipsNotification(
+            Profile profile, WindowAndroid windowAndroid) {
+        // This may run from the delayed reschedule task below, by which point the profile may
+        // have started shutting down. Avoid passing it across JNI in that case.
+        if (profile.shutdownStarted() || windowAndroid.isDestroyed()) return;
+
+        Map<String, Float> customSignals = collectCustomSignals(windowAndroid);
+
+        areTipsNotificationsEnabled(
+                (enabled) -> {
+                    // Only (re)schedule if the notification channel is enabled. The check above is
+                    // asynchronous, so the profile or window may have gone away in the meantime.
+                    if (!enabled || profile.shutdownStarted() || windowAndroid.isDestroyed()) {
+                        return;
+                    }
+
+                    // This function includes rescheduling a notification if one is pending.
+                    TipsSchedulerBridge.maybeScheduleNotification(profile, customSignals);
+                    // Run this current function again in 1 hour since the scheduler will schedule
+                    // a notification 4 hours out, so if the user is still active on Chrome then
+                    // reschedule it. The remove call earlier in this function will remove all
+                    // pending notifications and the new scheduling call acts as a reschedule. If
+                    // the app is closed (user offline) with a post delayed task it will be torn
+                    // down. Note that it is possible that when the notification is rescheduled,
+                    // the usage criteria may have changed such that the user is no longer
+                    // eligible to receive a notification.
+                    WeakReference<WindowAndroid> windowAndroidRef =
+                            new WeakReference<>(windowAndroid);
+                    PostTask.postDelayedTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                WindowAndroid window = windowAndroidRef.get();
+                                if (window != null && !window.isDestroyed()) {
+                                    maybeScheduleTipsNotification(profile, window);
+                                }
+                            },
+                            TimeUnit.HOURS.toMillis(1));
+                });
+    }
+
+    /**
+     * Gathers the Java-only runtime signals to pass across JNI. Self-service handlers contribute
+     * their own signals via {@link TipsPromoHandler#getCustomSignals(WindowAndroid)}.
+     */
+    @VisibleForTesting
+    static Map<String, Float> collectCustomSignals(WindowAndroid windowAndroid) {
+        Map<String, Float> customSignals = new HashMap<>();
+        // TODO(crbug.com/568415688): This seed exists only because the legacy (non self-service)
+        // ranker path still requires the bottom omnibox status. With self-service enabled, the
+        // bottom omnibox tip supplies this signal from BottomOmniboxTipsPromoHandler, and
+        // handler-provided values below take precedence over this seed. Remove this seed and
+        // isBottomOmniboxActive() once the legacy path is removed.
+        customSignals.put(
+                TipsSignalKeys.BOTTOM_OMNIBOX_STATUS,
+                isBottomOmniboxActive(windowAndroid) ? 1.0f : 0.0f);
+        customSignals.putAll(TipsPromoHandlerFactory.collectCustomSignals(windowAndroid));
+        return customSignals;
+    }
+
+    /**
+     * Returns whether the browser controls are bottom-anchored, defaulting to false (top) when no
+     * {@link BrowserControlsStateProvider} is available.
+     */
+    private static boolean isBottomOmniboxActive(WindowAndroid windowAndroid) {
+        BrowserControlsStateProvider provider =
+                BrowserControlsStateProviderSupplier.getValueOrNullFrom(windowAndroid);
+        return provider != null && provider.getControlsPosition() == ControlsPosition.BOTTOM;
     }
 
     /**
@@ -475,8 +602,7 @@ public class TipsUtils {
             SharedPreferencesManager sharedPreferences,
             long timeSinceLastBackgroundedMs,
             Callback<TipsOptInCoordinator> onShowCallback) {
-        if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()
-                && TipsUtils.isSupportedDeviceType()) {
+        if (isTipsNotificationsFeatureAvailable()) {
             TipsUtils.areTipsNotificationsEnabled(
                     (enabled) -> {
                         if (shouldShowTipsOptInPromo(
