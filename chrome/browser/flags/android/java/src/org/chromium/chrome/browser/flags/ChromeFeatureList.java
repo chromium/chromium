@@ -612,6 +612,7 @@ public abstract class ChromeFeatureList {
     public static final String FEED_NULL_ITEM_ANIMATOR_ON_SCROLL_RESTORE =
             "FeedNullItemAnimatorOnScrollRestore";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
+    public static final String FIX_TOOLBAR_HAIRLINE_REGRESSION = "FixToolbarHairlineRegression";
     public static final String FLUID_RESIZE = "FluidResize";
     public static final String FLYOUT_IN_BOOKMARKS_BAR = "FlyoutInBookmarksBar";
     public static final String FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE =
@@ -1238,6 +1239,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
     public static final CachedFlag sEnforceIncognitoIsolation =
             newCachedFlag(ENFORCE_INCOGNITO_ISOLATION, /* defaultValue= */ false);
+    public static final CachedFlag sFixToolbarHairlineRegression =
+            newCachedFlag(FIX_TOOLBAR_HAIRLINE_REGRESSION, /* defaultValue= */ true);
     public static final CachedFlag sFluidResize =
             newCachedFlag(FLUID_RESIZE, /* defaultValue= */ true, /* defaultValueInTests= */ true);
     public static final CachedFlag sForceTranslucentNotificationTrampoline =
@@ -1595,6 +1598,7 @@ public abstract class ChromeFeatureList {
                     sEnableFullscreenToAnyScreenAndroid,
                     sEnableXAxisActivityTransition,
                     sEnforceIncognitoIsolation,
+                    sFixToolbarHairlineRegression,
                     sFluidResize,
                     sForceTranslucentNotificationTrampoline,
                     sFullscreenInsetsApiMigration,

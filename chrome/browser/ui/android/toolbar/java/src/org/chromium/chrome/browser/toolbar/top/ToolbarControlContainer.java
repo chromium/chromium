@@ -438,9 +438,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         int toolbarViewTopMargin =
                 ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled() ? 0 : tabStripHeight;
         mutateToolbarLayoutParams().topMargin = toolbarViewTopMargin;
-        mutateHairlineLayoutParams().topMargin = toolbarViewTopMargin + mToolbarLayoutHeight;
 
         int toolbarAndTabStripHeight = tabStripHeight + getToolbarHeight();
+        mutateHairlineLayoutParams().topMargin =
+                ChromeFeatureList.sFixToolbarHairlineRegression.isEnabled()
+                        ? toolbarViewTopMargin + mToolbarLayoutHeight
+                        : toolbarAndTabStripHeight;
         if (!applyScrimOverlay) {
             setMinimumHeight(toolbarAndTabStripHeight + getToolbarHairlineHeight());
         }
