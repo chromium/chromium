@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -157,12 +158,18 @@ class AndroidAutofillManager : public AutofillManager,
   // Records metrics for loggers and creates new logging session.
   void StartNewLoggingSession();
 
-  // Returns logger associated with the passed-in `form_id` and `field_id`.
-  AndroidFormEventLogger* GetEventFormLogger(const FormGlobalId& form_id,
-                                             const FieldGlobalId& field_id);
+  // Returns the loggers for the form types of `form_structure`.
+  std::vector<AndroidFormEventLogger*> GetEventFormLoggers(
+      const FormStructure& form_structure);
 
-  // Returns logger associated with the passed-in `form_type`.
-  AndroidFormEventLogger* GetEventFormLogger(FormType form_type);
+  // Returns the loggers for the form type of the field `field_id` in the form
+  // `form_id`.
+  std::vector<AndroidFormEventLogger*> GetEventFormLoggers(
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id);
+
+  // Returns the logger for `form_type`, or nullptr if there is none.
+  AndroidFormEventLogger* GetEventFormLogger(FormTypeNameForLogging form_type);
 
   const password_manager::PasswordForm* FindCachedPasswordForm(
       const FormStructure& form_structure);
@@ -176,6 +183,8 @@ class AndroidAutofillManager : public AutofillManager,
                       std::unique_ptr<password_manager::PasswordForm>>
       password_forms_;
   std::unique_ptr<AndroidFormEventLogger> address_logger_;
+  std::unique_ptr<AndroidFormEventLogger> postal_address_logger_;
+  std::unique_ptr<AndroidFormEventLogger> email_only_logger_;
   std::unique_ptr<AndroidFormEventLogger> loyalty_card_logger_;
   std::unique_ptr<AndroidFormEventLogger> payments_logger_;
   std::unique_ptr<AndroidFormEventLogger> password_logger_;

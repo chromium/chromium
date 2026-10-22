@@ -4,6 +4,7 @@
 
 #include "components/android_autofill/browser/android_autofill_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "components/android_autofill/browser/autofill_type_util.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -71,6 +73,39 @@ DenseSet<FormType> GetFormTypesForLogging(
   return form_types;
 }
 
+// Returns the `FormTypeNameForLogging`s that `form_type` is logged as for
+// `form_structure`. Like `autofill_metrics::GetFormTypesForLogging()`, address
+// forms are also logged as email-only or postal address forms.
+DenseSet<FormTypeNameForLogging> GetFormTypeNamesForLogging(
+    const FormStructure& form_structure,
+    FormType form_type) {
+  switch (form_type) {
+    case FormType::kAddressForm:
+      if (autofill_metrics::internal::IsEmailOnlyForm(form_structure)) {
+        return {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kEmailOnlyForm};
+      }
+      if (autofill_metrics::internal::IsPostalAddressForm(form_structure)) {
+        return {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm};
+      }
+      return {FormTypeNameForLogging::kAddressForm};
+    case FormType::kCreditCardForm:
+      return {FormTypeNameForLogging::kCreditCardForm};
+    case FormType::kStandaloneCvcForm:
+      return {FormTypeNameForLogging::kStandaloneCvcForm};
+    case FormType::kLoyaltyCardForm:
+      return {FormTypeNameForLogging::kLoyaltyCardForm};
+    case FormType::kPasswordForm:
+      return {FormTypeNameForLogging::kPasswordForm};
+    case FormType::kOneTimePasswordForm:
+      return {FormTypeNameForLogging::kOneTimePasswordForm};
+    case FormType::kUnknownFormType:
+      return {};
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 using base::TimeTicks;
@@ -115,11 +150,8 @@ void AndroidAutofillManager::OnFormSubmittedImpl(
   if (!submitted_form) {
     return;
   }
-  for (FormType form_type : GetFormTypesForLogging(
-           *submitted_form, pw_form, GetAcUnrecognizedBehavior(client()))) {
-    if (auto* logger = GetEventFormLogger(form_type)) {
-      logger->OnWillSubmitForm();
-    }
+  for (AndroidFormEventLogger* logger : GetEventFormLoggers(*submitted_form)) {
+    logger->OnWillSubmitForm();
   }
 }
 
@@ -142,7 +174,8 @@ void AndroidAutofillManager::OnTextFieldValueChangedImpl(
 
   provider->OnTextFieldValueChanged(this, form, *field, timestamp);
 
-  if (auto* logger = GetEventFormLogger(form.global_id(), field_id)) {
+  for (AndroidFormEventLogger* logger :
+       GetEventFormLoggers(form.global_id(), field_id)) {
     if (cached_is_autofilled) {
       logger->OnEditedAutofilledField();
     } else {
@@ -178,7 +211,8 @@ void AndroidAutofillManager::OnAskForValuesToFillImpl(
 
   provider->OnAskForValuesToFill(this, form, *field, trigger_source);
 
-  if (auto* logger = GetEventFormLogger(form.global_id(), field_id)) {
+  for (AndroidFormEventLogger* logger :
+       GetEventFormLoggers(form.global_id(), field_id)) {
     logger->OnDidInteractWithAutofillableForm();
   }
 }
@@ -224,13 +258,8 @@ void AndroidAutofillManager::OnHidePopupImpl() {
 
 void AndroidAutofillManager::OnFormProcessed(
     const FormStructure& form_structure) {
-  const password_manager::PasswordForm* pw_form =
-      FindCachedPasswordForm(form_structure);
-  for (FormType form_type : GetFormTypesForLogging(
-           form_structure, pw_form, GetAcUnrecognizedBehavior(client()))) {
-    if (auto* logger = GetEventFormLogger(form_type)) {
-      logger->OnDidParseForm();
-    }
+  for (AndroidFormEventLogger* logger : GetEventFormLoggers(form_structure)) {
+    logger->OnDidParseForm();
   }
 }
 
@@ -332,9 +361,7 @@ void AndroidAutofillManager::FillOrPreviewForm(
   // was misclassified or has multiple possible types.
   base::flat_set<AndroidFormEventLogger*> loggers;
   for (const FormFieldData& field : fields) {
-    if (auto* logger = GetEventFormLogger(form_id, field.global_id())) {
-      loggers.insert(logger);
-    }
+    loggers.insert_range(GetEventFormLoggers(form_id, field.global_id()));
   }
   for (AndroidFormEventLogger* logger : loggers) {
     logger->OnDidInteractWithAutofillableForm();
@@ -355,39 +382,78 @@ void AndroidAutofillManager::FillOrPreviewField(
 
 void AndroidAutofillManager::StartNewLoggingSession() {
   address_logger_ = std::make_unique<AndroidFormEventLogger>("Address");
+  postal_address_logger_ =
+      std::make_unique<AndroidFormEventLogger>("PostalAddress");
+  email_only_logger_ = std::make_unique<AndroidFormEventLogger>("EmailOnly");
   loyalty_card_logger_ =
       std::make_unique<AndroidFormEventLogger>("LoyaltyCard");
   payments_logger_ = std::make_unique<AndroidFormEventLogger>("CreditCard");
   password_logger_ = std::make_unique<AndroidFormEventLogger>("Password");
 }
 
-AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id) {
+std::vector<AndroidFormEventLogger*>
+AndroidAutofillManager::GetEventFormLoggers(
+    const FormStructure& form_structure) {
+  DenseSet<FormTypeNameForLogging> form_type_names;
+  for (FormType form_type : GetFormTypesForLogging(
+           form_structure, FindCachedPasswordForm(form_structure),
+           GetAcUnrecognizedBehavior(client()))) {
+    form_type_names.insert_all(
+        GetFormTypeNamesForLogging(form_structure, form_type));
+  }
+  std::vector<AndroidFormEventLogger*> loggers;
+  loggers.reserve(form_type_names.size());
+  for (FormTypeNameForLogging form_type_name : form_type_names) {
+    AndroidFormEventLogger* logger = GetEventFormLogger(form_type_name);
+    if (logger) {
+      loggers.push_back(logger);
+    }
+  }
+  std::ranges::sort(loggers);
+  auto [first_dup, last] = std::ranges::unique(loggers);
+  loggers.erase(first_dup, last);
+  return loggers;
+}
+
+std::vector<AndroidFormEventLogger*>
+AndroidAutofillManager::GetEventFormLoggers(const FormGlobalId& form_id,
+                                            const FieldGlobalId& field_id) {
   auto [form, field] = FindFormAndField(form_id, field_id);
   if (!form || !field) {
-    return nullptr;
+    return {};
   }
-  return GetEventFormLogger(FieldTypeGroupToFormType(
+  const FormType form_type = FieldTypeGroupToFormType(
       ComputeFieldTypeGroup(*field, FindCachedPasswordForm(*form),
-                            GetAcUnrecognizedBehavior(client()))));
+                            GetAcUnrecognizedBehavior(client())));
+  std::vector<AndroidFormEventLogger*> loggers;
+  for (FormTypeNameForLogging form_type_name :
+       GetFormTypeNamesForLogging(*form, form_type)) {
+    if (AndroidFormEventLogger* logger = GetEventFormLogger(form_type_name)) {
+      loggers.push_back(logger);
+    }
+  }
+  return loggers;
 }
 
 AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
-    FormType form_type) {
+    FormTypeNameForLogging form_type) {
   switch (form_type) {
-    case FormType::kAddressForm:
+    case FormTypeNameForLogging::kAddressForm:
       return address_logger_.get();
-    case FormType::kLoyaltyCardForm:
+    case FormTypeNameForLogging::kEmailOnlyForm:
+      return email_only_logger_.get();
+    case FormTypeNameForLogging::kPostalAddressForm:
+      return postal_address_logger_.get();
+    case FormTypeNameForLogging::kLoyaltyCardForm:
       return loyalty_card_logger_.get();
-    case FormType::kCreditCardForm:
-    case FormType::kStandaloneCvcForm:
+    case FormTypeNameForLogging::kCreditCardForm:
+    case FormTypeNameForLogging::kStandaloneCvcForm:
       return payments_logger_.get();
-    case FormType::kPasswordForm:
+    case FormTypeNameForLogging::kPasswordForm:
       return password_logger_.get();
     // TODO(crbug.com/443693025): Add event logger for OTP fields
-    case FormType::kOneTimePasswordForm:
-    case FormType::kUnknownFormType:
+    case FormTypeNameForLogging::kOneTimePasswordForm:
+    case FormTypeNameForLogging::kUnknownFormType:
       return nullptr;
   }
   NOTREACHED();
