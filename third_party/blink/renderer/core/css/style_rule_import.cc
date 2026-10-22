@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -108,12 +107,8 @@ void StyleRuleImport::NotifyFinished(Resource* resource) {
     }
   }
 
-  const bool integrity_failed =
-      RuntimeEnabledFeatures::CSSResourceIntegrityEnforcementEnabled() &&
-      !resource->GetIntegrityMetadata().empty() &&
-      !resource->PassedIntegrityChecks();
-
-  if (integrity_failed) {
+  if (!resource->PassedIntegrityChecks() &&
+      !resource->GetIntegrityMetadata().empty()) {
     if (!resource->ErrorOccurred()) {
       resource->SetStatus(ResourceStatus::kLoadError);
     }

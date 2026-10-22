@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
 namespace blink {
@@ -88,20 +87,15 @@ void SVGDocumentResource::NotifyStartLoad() {
 
 void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
                                  base::SingleThreadTaskRunner* task_runner) {
-  const bool enforce_integrity =
-      RuntimeEnabledFeatures::CSSResourceIntegrityEnforcementEnabled();
-
-  if (enforce_integrity) {
-    // TextResource::Finish() runs CheckResourceIntegrity() before notifying
-    // observers, so we can act on the result afterwards.
-    TextResource::Finish(load_finish_time, task_runner);
-  }
+  // TextResource::Finish() runs CheckResourceIntegrity() before notifying
+  // observers, so we can act on the result afterwards.
+  TextResource::Finish(load_finish_time, task_runner);
 
   bool notify_observers = true;
   if (HasSuccessfulRevalidation()) {
     content_->UpdateStatus(GetStatus());
     notify_observers = content_->IsLoaded();
-  } else if (!enforce_integrity || PassedIntegrityChecks()) {
+  } else if (PassedIntegrityChecks()) {
     notify_observers = UpdateContent();
   } else {
     // TODO(crbug.com/435625756): Surface the integrity failure to the
@@ -111,10 +105,6 @@ void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
     }
     ClearData();
     content_->UpdateStatus(GetStatus());
-  }
-
-  if (!enforce_integrity) {
-    TextResource::Finish(load_finish_time, task_runner);
   }
 
   if (notify_observers) {

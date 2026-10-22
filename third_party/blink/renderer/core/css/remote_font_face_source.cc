@@ -205,10 +205,8 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   // SRI applies to fonts loaded via preload (ForceIntegrityChecks) and via
   // CSS URL modifiers (e.g. integrity() in @font-face src). In either case
   // we check here and simulate a network error on failure.
-  const bool check_integrity =
-      resource->ForceIntegrityChecks() ||
-      (RuntimeEnabledFeatures::CSSResourceIntegrityEnforcementEnabled() &&
-       !resource->GetIntegrityMetadata().empty());
+  const bool check_integrity = resource->ForceIntegrityChecks() ||
+                               !resource->GetIntegrityMetadata().empty();
   if (check_integrity) {
     resource->IntegrityReport().SendReports(execution_context);
   }
