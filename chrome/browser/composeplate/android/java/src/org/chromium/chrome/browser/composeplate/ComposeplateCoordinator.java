@@ -225,6 +225,8 @@ public class ComposeplateCoordinator {
      * @param isOptionalButtonVisible Whether the optional button is visible.
      */
     private void updateButtonSpacing(boolean isOptionalButtonVisible) {
+        if (NewTabPageUtils.isBesideMvtModuleEnabled()) return;
+
         // Always read the dimensions from the current resources instead of caching them, since
         // the activity isn't recreated on configuration changes and wide windows (w600dp) have
         // different values. This ensures fresh values are applied after the screen rotates or

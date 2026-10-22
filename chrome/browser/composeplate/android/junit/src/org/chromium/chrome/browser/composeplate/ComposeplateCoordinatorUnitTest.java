@@ -355,6 +355,19 @@ public class ComposeplateCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/1"
+    })
+    public void testSetOptionalButtonVisibility_besideMvtEnabled_skipsButtonSpacingUpdate() {
+        mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
+
+        assertTrue(mPropertyModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE));
+        assertEquals(0, mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_LATERAL_PADDING));
+        assertEquals(0, mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_MARGIN_END));
+    }
+
+    @Test
     public void testSetOptionalButtonText() {
         String text = "Create image";
         mCoordinator.setOptionalButtonText(text);

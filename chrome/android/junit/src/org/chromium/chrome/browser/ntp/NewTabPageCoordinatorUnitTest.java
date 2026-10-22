@@ -1204,6 +1204,16 @@ public class NewTabPageCoordinatorUnitTest {
 
         View composeplateView = mNewTabPageLayout.findViewById(R.id.composeplate_view);
         assertEquals(View.VISIBLE, composeplateView.getVisibility());
+        int expectedMarginEnd =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.composeplate_view_beside_mvt_margin_end);
+        assertEquals(
+                expectedMarginEnd,
+                ((ViewGroup.MarginLayoutParams) composeplateView.getLayoutParams()).getMarginEnd());
+        View aiModeButton = composeplateView.findViewById(R.id.composeplate_button);
+        assertEquals(
+                0, ((ViewGroup.MarginLayoutParams) aiModeButton.getLayoutParams()).getMarginEnd());
     }
 
     @Test
