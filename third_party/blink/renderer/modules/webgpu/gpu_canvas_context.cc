@@ -1071,25 +1071,14 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
     return nullptr;
   }
 
-  // TODO(crbug.com/40767377): Pass in info as is for all cases.
-  // Overriding the info to use RGBA instead of N32 is needed because code
-  // elsewhere assumes RGBA. OTOH the software path seems to be assuming N32
-  // somewhere in the later pipeline but for offscreen canvas only.
   viz::SharedImageFormat format = GetSharedImageFormat();
-  bool should_force_bgra8_to_rgba =
-      !shared_image_usages.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                  gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-
 #if BUILDFLAG(IS_LINUX)
   // WebGpu preferred canvas on linux is RGBA and interop (vk on gl) is
   // dependent on canvas copies being RGBA (not BGRA).
-  should_force_bgra8_to_rgba = true;
-#endif
-
-  if (format != viz::SinglePlaneFormat::kRGBA_F16 &&
-      should_force_bgra8_to_rgba) {
+  if (format != viz::SinglePlaneFormat::kRGBA_F16) {
     format = viz::SinglePlaneFormat::kRGBA_8888;
   }
+#endif
 
   if (shared_image_usages.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
     const bool is_scanout_supported =
