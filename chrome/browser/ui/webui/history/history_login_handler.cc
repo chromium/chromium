@@ -104,7 +104,7 @@ void HistoryLoginHandler::HandleTurnOnSyncFlow(
                        .GetCoreAccountInfo();
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-  signin_ui_util::EnableSyncFromSingleAccountPromo(
+  signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
       profile, account_info, signin_metrics::AccessPoint::kRecentTabs);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

@@ -295,18 +295,19 @@ void SignInFromSingleAccountPromo(Profile* profile,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
-void EnableSyncFromSingleAccountPromo(
+void EnableHistorySyncFromSingleAccountPromo(
     Profile* profile,
     const CoreAccountInfo& account,
     signin_metrics::AccessPoint access_point) {
-  EnableSyncFromMultiAccountPromo(profile, account, access_point,
-                                  /*is_default_promo_account=*/true);
+  EnableHistorySyncFromMultiAccountPromo(profile, account, access_point,
+                                         /*is_default_promo_account=*/true);
 }
 
-void EnableSyncFromMultiAccountPromo(Profile* profile,
-                                     const CoreAccountInfo& account,
-                                     signin_metrics::AccessPoint access_point,
-                                     bool is_default_promo_account) {
+void EnableHistorySyncFromMultiAccountPromo(
+    Profile* profile,
+    const CoreAccountInfo& account,
+    signin_metrics::AccessPoint access_point,
+    bool is_default_promo_account) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M162);
 

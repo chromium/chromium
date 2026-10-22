@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       InstrumentTab(kTabId, 0, browser()),
       // Opens a sign-in tab as the method is called with an empty account.
       Do([&]() {
-        signin_ui_util::EnableSyncFromSingleAccountPromo(
+        signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
             browser()->GetProfile(), CoreAccountInfo(),
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
             *identity_test_env(), account_info, IsUnrestricted());
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
-        signin_ui_util::EnableSyncFromSingleAccountPromo(
+        signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
             browser()->GetProfile(),
             /*account=*/account_info.GetCoreAccountInfo(),
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(
             kMainEmail, signin::ConsentLevel::kSignin);
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
-        signin_ui_util::EnableSyncFromSingleAccountPromo(
+        signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
             browser()->GetProfile(),
             /*account=*/account_info.GetCoreAccountInfo(),
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
             *identity_test_env(), account_info, IsUnrestricted());
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
-        signin_ui_util::EnableSyncFromSingleAccountPromo(
+        signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
             browser()->GetProfile(),
             /*account=*/account_info.GetCoreAccountInfo(),
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
             *identity_test_env(), account_info, IsUnrestricted());
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
-        signin_ui_util::EnableSyncFromSingleAccountPromo(
+        signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
             browser()->GetProfile(),
             /*account=*/account_info.GetCoreAccountInfo(),
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                       "Signin_HistorySync_AlreadyOptedIn");
                 }),
       Do([&]() {
-        signin_ui_util::EnableSyncFromSingleAccountPromo(
+        signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
             browser()->GetProfile(),
             /*account=*/account_info.GetCoreAccountInfo(),
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);

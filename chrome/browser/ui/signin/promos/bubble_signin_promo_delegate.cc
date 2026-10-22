@@ -67,7 +67,7 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   CHECK(profile);
 
   if (!signin::IsSignInPromo(access_point_)) {
-    signin_ui_util::EnableSyncFromSingleAccountPromo(
+    signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
         profile, account.GetCoreAccountInfo(), access_point_);
     return;
   }

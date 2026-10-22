@@ -4173,7 +4173,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                   account = identity_manager->GetPrimaryAccountInfo(
                       signin::ConsentLevel::kSignin);
                 }
-                signin_ui_util::EnableSyncFromSingleAccountPromo(
+                signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
                     profile, account, signin_metrics::AccessPoint::kMenu);
               },
               bwi))

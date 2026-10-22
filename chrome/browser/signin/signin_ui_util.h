@@ -91,23 +91,23 @@ void SignInFromSingleAccountPromo(Profile* profile,
 // * If token service has a valid refresh token for `account`, then it
 //   signs in `account` if not already signed in and shows the history sync
 //   opt-in screen.
-// TODO(crbug.com/457398017): Consider renaming this method.
-void EnableSyncFromSingleAccountPromo(Profile* profile,
-                                      const CoreAccountInfo& account,
-                                      signin_metrics::AccessPoint access_point);
+void EnableHistorySyncFromSingleAccountPromo(
+    Profile* profile,
+    const CoreAccountInfo& account,
+    signin_metrics::AccessPoint access_point);
 
 // This function is used to sign in and enable history sync for a given account.
-// It has the same behavior as `EnableSyncFromSingleAccountPromo()` except that
-// it also logs some additional information if the action is started from a
-// promo that supports selecting the account.
+// It has the same behavior as `EnableHistorySyncFromSingleAccountPromo()`
+// except that it also logs some additional information if the action is started
+// from a promo that supports selecting the account.
 //
 // `is_default_promo_account` is true if `account` corresponds to the default
 // account in the promo. It is ignored if `account` is empty.
-// TODO(crbug.com/457398017): Consider renaming this method.
-void EnableSyncFromMultiAccountPromo(Profile* profile,
-                                     const CoreAccountInfo& account,
-                                     signin_metrics::AccessPoint access_point,
-                                     bool is_default_promo_account);
+void EnableHistorySyncFromMultiAccountPromo(
+    Profile* profile,
+    const CoreAccountInfo& account,
+    signin_metrics::AccessPoint access_point,
+    bool is_default_promo_account);
 
 // Returns the list of all accounts that have a token. If the user is signed
 // in to Chrome, the primary account is always returned first. Otherwise, the

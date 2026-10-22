@@ -522,8 +522,8 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
 
   DCHECK(IsChangePrimaryAccountAllowed(profile_, /*email=*/std::string()))
       << "Primary account already set and change is not allowed";
-  signin_ui_util::EnableSyncFromSingleAccountPromo(profile_, CoreAccountInfo(),
-                                                   access_point);
+  signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
+      profile_, CoreAccountInfo(), access_point);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -705,7 +705,7 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue& args) {
   AccountInfo maybe_account =
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email.GetString());
-  signin_ui_util::EnableSyncFromMultiAccountPromo(
+  signin_ui_util::EnableHistorySyncFromMultiAccountPromo(
       profile_, maybe_account.GetCoreAccountInfo(),
       signin_metrics::AccessPoint::kSettings,
       is_default_promo_account.GetBool());

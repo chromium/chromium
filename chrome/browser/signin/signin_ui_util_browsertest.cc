@@ -126,8 +126,9 @@ class SigninUiUtilTest : public SigninBrowserTestBase {
 
   void EnableSync(const CoreAccountInfo& account_info,
                   bool is_default_promo_account) {
-    EnableSyncFromMultiAccountPromo(browser()->GetProfile(), account_info,
-                                    access_point_, is_default_promo_account);
+    EnableHistorySyncFromMultiAccountPromo(browser()->GetProfile(),
+                                           account_info, access_point_,
+                                           is_default_promo_account);
   }
 
   void SignIn(const CoreAccountInfo& account_info) {

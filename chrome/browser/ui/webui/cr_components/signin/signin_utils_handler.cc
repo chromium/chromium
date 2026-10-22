@@ -101,8 +101,8 @@ void SigninUtilsHandler::StartSignin(
 
   CHECK(IsChangePrimaryAccountAllowed(profile_, /*email=*/std::string()))
       << "Primary account already set and change is not allowed";
-  signin_ui_util::EnableSyncFromSingleAccountPromo(profile_, CoreAccountInfo(),
-                                                   signin_access_point);
+  signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
+      profile_, CoreAccountInfo(), signin_access_point);
 }
 
 void SigninUtilsHandler::SigninWithAccount(
@@ -121,7 +121,7 @@ void SigninUtilsHandler::SigninWithAccount(
 
   const AccountInfo maybe_account =
       identity_manager->FindExtendedAccountInfoByEmailAddress(email);
-  signin_ui_util::EnableSyncFromMultiAccountPromo(
+  signin_ui_util::EnableHistorySyncFromMultiAccountPromo(
       profile_, maybe_account.GetCoreAccountInfo(), signin_access_point,
       is_default_promo_account);
 }

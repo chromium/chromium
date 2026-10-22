@@ -331,7 +331,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
           signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       // Re-enable sync with the same primary account.
-      signin_ui_util::EnableSyncFromSingleAccountPromo(
+      signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
           &profile(),
           identity_manager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin),
@@ -399,8 +399,8 @@ void ProfileMenuView::OnSigninButtonClicked(
                                          access_point);
     return;
   }
-  signin_ui_util::EnableSyncFromSingleAccountPromo(&profile(), account,
-                                                   access_point);
+  signin_ui_util::EnableHistorySyncFromSingleAccountPromo(&profile(), account,
+                                                          access_point);
 }
 
 void ProfileMenuView::OnSignoutButtonClicked() {
