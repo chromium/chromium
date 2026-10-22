@@ -623,6 +623,8 @@ void ClientTagBasedDataTypeProcessor::Delete(
   // Writes are only supported for data types with incremental updates. See
   // crbug.com/40668179 for details.
   CHECK(bridge_->SupportsIncrementalUpdates());
+  CHECK(!storage_key.empty(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
 
   if (!entity_tracker_) {
     // Ignore changes before the initial sync is done.
@@ -667,6 +669,8 @@ void ClientTagBasedDataTypeProcessor::UpdateStorageKey(
 
 void ClientTagBasedDataTypeProcessor::UntrackEntityForStorageKey(
     const std::string& storage_key) {
+  CHECK(!storage_key.empty(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
   if (!entity_tracker_) {
     // Ignore changes before the initial sync is done.
     return;
@@ -694,6 +698,8 @@ ClientTagBasedDataTypeProcessor::GetAllTrackedStorageKeys() const {
 
 bool ClientTagBasedDataTypeProcessor::IsEntityUnsynced(
     const std::string& storage_key) const {
+  CHECK(!storage_key.empty(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
   if (!entity_tracker_) {
     return false;
   }
@@ -709,6 +715,8 @@ bool ClientTagBasedDataTypeProcessor::IsEntityUnsynced(
 
 base::Time ClientTagBasedDataTypeProcessor::GetEntityCreationTime(
     const std::string& storage_key) const {
+  CHECK(!storage_key.empty(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
   if (!entity_tracker_) {
     return base::Time();
   }
@@ -723,6 +731,8 @@ base::Time ClientTagBasedDataTypeProcessor::GetEntityCreationTime(
 
 base::Time ClientTagBasedDataTypeProcessor::GetEntityModificationTime(
     const std::string& storage_key) const {
+  CHECK(!storage_key.empty(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
   if (!entity_tracker_) {
     return base::Time();
   }
