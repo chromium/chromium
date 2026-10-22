@@ -767,7 +767,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class ::ChromeNSSCryptoModuleDelegate;
   friend class ::PartnerBookmarksReader;
   friend class ::tracing::FuchsiaPerfettoProducerConnector;
-  friend class android_webview::JsSandboxIsolate;
   friend class base::SimpleThread;
   friend class base::internal::GetAppOutputScopedAllowBaseSyncPrimitives;
   friend class blink::SourceStream;
@@ -859,6 +858,7 @@ class BASE_EXPORT
   friend class ::NativeDesktopMediaList;
   friend class android::JavaHandlerThread;
   friend class android_webview::CookieManager;
+  friend class android_webview::JsSandboxIsolate;
   friend class android_webview::VizCompositorThreadRunnerWebView;
   friend class audio::OutputDevice;
   friend class base::FileDescriptorWatcher;

@@ -137,15 +137,15 @@ class JsSandboxIsolate {
   v8::Local<v8::ObjectTemplate> CreateAndroidNamespaceTemplate(
       v8::Isolate* isolate);
 
-  // Must only be used from isolate thread
+  // Must be called only from the isolate thread or a V8 worker thread.
   [[noreturn]] static void OOMErrorCallback(const char* location,
                                             const v8::OOMDetails& details,
                                             void* data);
   v8::MaybeLocal<v8::ArrayBuffer> tryAllocateArrayBuffer(size_t length);
 
-  // Must only be used from isolate thread
+  // Must be called only from the isolate thread or a V8 worker thread.
   [[noreturn]] void MemoryLimitExceeded();
-  // Must only be used from isolate thread
+  // Must be called only from the isolate thread or a V8 worker thread.
   void ReportOutOfMemory();
   [[noreturn]] void FreezeThread();
 
@@ -157,13 +157,10 @@ class JsSandboxIsolate {
       std::string name,
       const base::android::ScopedJavaGlobalRef<jobject> j_message_port);
 
-  // Remove a callback from the ongoing_evaluation_callbacks_ set.
-  //
-  // Returns the passed reference to allow chaining. (The caller must make sure
-  // the reference continues to be valid if it is used.)
+  // Remove a callback from the ongoing_evaluation_callbacks_ set and return it.
   //
   // Must only be used from isolate thread.
-  const scoped_refptr<JsSandboxIsolateCallback>& UseCallback(
+  scoped_refptr<JsSandboxIsolateCallback> UseCallback(
       const scoped_refptr<JsSandboxIsolateCallback>& callback);
 
   // Java-side JsSandboxIsolate object corresponding to this isolate.
@@ -218,6 +215,8 @@ class JsSandboxIsolate {
   // which may result in further execution, such as WASM compilation promises.
   //
   // Used for signaling errors from V8 callbacks.
+  //
+  // Should be used from isolate_task_runner_.
   std::set<scoped_refptr<JsSandboxIsolateCallback>>
       ongoing_evaluation_callbacks_;
 

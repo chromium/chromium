@@ -866,7 +866,7 @@ void JsSandboxIsolate::GetNamedPort(gin::Arguments* args) {
   }
 }
 
-// Called from isolate thread.
+// Called from the isolate thread or a V8 worker thread.
 [[noreturn]] void JsSandboxIsolate::OOMErrorCallback(
     const char* location,
     const v8::OOMDetails& details,
@@ -891,20 +891,18 @@ void JsSandboxIsolate::ExternalMemoryLimitExceeded() {
   isolate_holder_->isolate()->TerminateExecution();
 }
 
-// Called from isolate thread.
+// Called from the isolate thread or a V8 worker thread.
 [[noreturn]] void JsSandboxIsolate::MemoryLimitExceeded() {
   ReportOutOfMemory();
   FreezeThread();
 }
 
-// Called from isolate thread
+// Called from the isolate thread or a V8 worker thread.
 void JsSandboxIsolate::ReportOutOfMemory() {
   LOG(ERROR) << "Isolate has OOMed";
 
+  const bool on_isolate_thread = isolate_task_runner_->BelongsToCurrentThread();
   const uint64_t memory_limit = uint64_t{isolate_max_heap_size_bytes_};
-  v8::HeapStatistics heap_statistics;
-  isolate_holder_->isolate()->GetHeapStatistics(&heap_statistics);
-  const uint64_t v8_heap_usage = heap_statistics.used_heap_size();
   // Note that we use our own memory accounting, and not V8's external memory
   // accounting, for non-heap usage. These numbers can differ, particularly as
   // our own memory accounting considers whole pages rather than just bytes.
@@ -917,9 +915,17 @@ void JsSandboxIsolate::ReportOutOfMemory() {
   } else {
     details << "Memory limit not explicitly configured\n";
   }
-  details << "V8 heap usage: " << v8_heap_usage << " bytes\n";
+  if (on_isolate_thread) {
+    v8::HeapStatistics heap_statistics;
+    isolate_holder_->isolate()->GetHeapStatistics(&heap_statistics);
+    const uint64_t v8_heap_usage = heap_statistics.used_heap_size();
+    details << "V8 heap usage: " << v8_heap_usage << " bytes\n";
+  } else {
+    details << "Limit exceeded from a non-isolate thread\n";
+  }
   details << "Non-V8 heap usage: " << non_v8_heap_usage << " bytes\n";
   const std::string details_str = details.str();
+  LOG(ERROR) << details_str;
 
   JNIEnv* const env = base::android::AttachCurrentThread();
 
@@ -933,27 +939,31 @@ void JsSandboxIsolate::ReportOutOfMemory() {
     return;
   }
 
-  bool client_notified_via_evaluation = false;
-  if (ongoing_evaluation_callbacks_.size() > 0) {
-    // It is safe to erase items from a std::set while iterating through it.
-    auto callback_it = ongoing_evaluation_callbacks_.begin();
-    while (callback_it != ongoing_evaluation_callbacks_.end()) {
-      UseCallback(*callback_it)
-          ->ReportError(
-              JsSandboxIsolateCallback::ErrorType::kMemoryLimitExceeded,
-              details_str);
-      callback_it++;
-    }
-    client_notified_via_evaluation = true;
+  // Some pre-stable clients do not support termination notifications and only
+  // support signaling OOMs via evaluation callbacks. Ensure the client was or
+  // can be notified through at least one mechanism, or crash the sandbox.
+  if (!on_isolate_thread) {
+    // The current thread is not allowed to touch ongoing_evaluation_callbacks_.
+    LOG(ERROR) << "Isolate ran out of memory on a non-isolate thread and the "
+               << "client does not support termination notifications.";
+    base::ImmediateCrash();
   }
 
-  // Some pre-stable clients do not support termination notifications and only
-  // support signaling OOMs via evaluation callbacks. Ensure the client has been
-  // notified through at least one mechanism.
-  CHECK(client_notified_via_evaluation)
-      << "Isolate ran out of memory but the client does not support "
-      << "termination notifications and there are no ongoing evaluations "
-      << "through which to signal an error.";
+  if (ongoing_evaluation_callbacks_.size() == 0) {
+    LOG(ERROR) << "Isolate ran out of memory but the client does not support "
+               << "termination notifications and there are no ongoing "
+               << "evaluations through which to signal an error.";
+    base::ImmediateCrash();
+  }
+
+  // It is safe to erase items from a std::set while iterating through it,
+  // provided the iterator is advanced before erasing the element.
+  auto callback_it = ongoing_evaluation_callbacks_.begin();
+  while (callback_it != ongoing_evaluation_callbacks_.end()) {
+    UseCallback(*(callback_it++))
+        ->ReportError(JsSandboxIsolateCallback::ErrorType::kMemoryLimitExceeded,
+                      details_str);
+  }
 }
 
 // Halt thread until process dies.
@@ -967,7 +977,8 @@ void JsSandboxIsolate::ReportOutOfMemory() {
   // has accumulated up to this point. C++20's <stop_token> (not permitted in
   // Chromium at time of writing) may contribute to such a future solution.
 
-  base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
+      allow_base_sync_primitives;
   base::WaitableEvent().Wait();
   // Unreachable. Make sure the compiler understands that.
   base::ImmediateCrash();
@@ -1065,11 +1076,11 @@ void JsSandboxIsolate::SetConsoleEnabledOnIsolateThread(const bool enable) {
   EnableOrDisableInspectorAsNeeded();
 }
 
-const scoped_refptr<JsSandboxIsolateCallback>& JsSandboxIsolate::UseCallback(
+scoped_refptr<JsSandboxIsolateCallback> JsSandboxIsolate::UseCallback(
     const scoped_refptr<JsSandboxIsolateCallback>& callback) {
-  const size_t removed = ongoing_evaluation_callbacks_.erase(callback);
-  CHECK_EQ(removed, size_t{1});
-  return callback;
+  auto node = ongoing_evaluation_callbacks_.extract(callback);
+  CHECK(!node.empty());
+  return std::move(node.value());
 }
 
 // Called from isolate thread.
