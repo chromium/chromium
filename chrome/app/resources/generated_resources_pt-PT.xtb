@@ -163,7 +163,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1109482864356262001">As funcionalidades que precisam de sensores de movimento ou de luz não funcionam</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1110965959145884739">Escolha que idiomas quer instalar neste dispositivo. Os ficheiros de idioma são partilhados entre utilizadores para poupar espaço em disco. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="111168944932507021">Focar no grupo de separadores</translation>
 <translation id="1112227834592480032">Selecione o botão do Google Lens e, em seguida, clique e arraste sobre um problema</translation>
 <translation id="1112420131909513020">O separador em segundo plano está a utilizar o Bluetooth.</translation>
 <translation id="1112998165730922436">A transmissão está pausada</translation>
@@ -829,6 +828,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1621984899599015181">As opções para partilhar são geridas pela sua entidade. Alguns itens podem estar ocultos.</translation>
 <translation id="1622054403950683339">Esquecer rede Wi-Fi</translation>
 <translation id="1623723619460186680">Redução da luz azul</translation>
+<translation id="1623799258803152950">Esta página e o texto realçado são partilhados com a Google</translation>
 <translation id="1626581272720526544">Pode transferir apps e jogos Android através da Play Store. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Descritores de ficheiros</translation>
 <translation id="1627408615528139100">Já transferido</translation>
@@ -1594,7 +1594,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Origem multimédia sem nome</translation>
-<translation id="2223747115628460234">Voltar aos separadores abertos</translation>
 <translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2224444042887712269">Esta definição pertence a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar nome da pasta</translation>
@@ -1720,7 +1719,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2318143611928805047">Tamanho do papel</translation>
 <translation id="2319459402137712349">Selecione um campo de texto para abrir o teclado. Também pode selecionar o ícone de teclado na parte inferior do ecrã.</translation>
 <translation id="2319993584768066746">Fotos do ecrã de início de sessão</translation>
-<translation id="2322015964223112232">Voltar aos separadores abertos</translation>
 <translation id="2322193970951063277">Cabeçalhos e rodapés</translation>
 <translation id="2322622365472107569">Hora de fim: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Redes Wi-Fi guardadas</translation>
@@ -2834,6 +2832,7 @@ Quer pará-lo?</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
 <translation id="3143754809889689516">Reproduzir desde o início</translation>
 <translation id="3144647712221361880">Abrir link como</translation>
+<translation id="3146436581677566946">Modelo no dispositivo</translation>
 <translation id="3147878021189006333">Caixa geral</translation>
 <translation id="3149510190863420837">Apps do Chrome</translation>
 <translation id="3150927491400159470">Atualização Pesada</translation>
@@ -3199,6 +3198,7 @@ Quer pará-lo?</translation>
 <translation id="3424969259347320884">Descreva o que estava a fazer quando o separador falhou</translation>
 <translation id="3426562492084153055">Procure competências</translation>
 <translation id="3427092606871434483">Permitir (predefinição)</translation>
+<translation id="3427822597374329810">Pequeno modelo especializado</translation>
 <translation id="3429086384982427336">As apps listadas abaixo nunca processam links de protocolo.</translation>
 <translation id="3429174588714165399">Crie um atalho para esta página</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo Web</translation>
@@ -3579,6 +3579,7 @@ Quer pará-lo?</translation>
 <translation id="3701167022068948696">Corrigir agora</translation>
 <translation id="3701515417135397388">Enviar-lhe um aviso se uma palavra-passe tiver sido comprometida numa violação de dados</translation>
 <translation id="3701778844313851487">Aceder a Extensões</translation>
+<translation id="3701846426433416920">Eliminar modelo</translation>
 <translation id="3703166520839776970">Se este problema continuar a acontecer, escolha "Mais detalhes" abaixo para ver mais informações de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3703699162703116302">Permissão atualizada</translation>
 <translation id="370415077757856453">JavaScript bloqueado</translation>
@@ -4374,6 +4375,7 @@ Quer pará-lo?</translation>
 <translation id="429312253194641664">Um site está a reproduzir multimédia.</translation>
 <translation id="4293154608148215505">o seu telemóvel</translation>
 <translation id="4293219510510666933">Use linguagem corrente para pesquisar o seu histórico de navegação e encontrar os sites que visitou. Também pode fazer perguntas e receber respostas com base no seu histórico de navegação. Esta definição está ativada.</translation>
+<translation id="429344752071832554">Retirar foco do grupo</translation>
 <translation id="4294392694389031609">Eliminou o ficheiro <ph name="FILE_NAME" /> do histórico de transferências, mas este ainda está no seu dispositivo</translation>
 <translation id="429530814437327574">Mostrar em pilha</translation>
 <translation id="4295979599050707005">Inicie sessão novamente para confirmar que a sua conta <ph name="USER_EMAIL" /> pode ser utilizada com Websites, aplicações e extensões no Chrome e no Google Play. Também pode remover esta conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -4458,6 +4460,7 @@ Quer pará-lo?</translation>
 <translation id="4360738659108163902">Clicar com o botão direito do rato</translation>
 <translation id="4361745360460842907">Abrir como separador</translation>
 <translation id="4362459470237309049">Use "." para soltar um botão do rato</translation>
+<translation id="4362871358537270439">Mostrar separadores de outros dispositivos no painel lateral</translation>
 <translation id="4363262124589131906">Os novos ficheiros em O meu disco vão deixar de ser sincronizados automaticamente com este Chromebook</translation>
 <translation id="4364129298304269786">Os sites podem usar um serviço de proteção de conteúdo para reproduzir conteúdo protegido por direitos de autor</translation>
 <translation id="4364327530094270451">Melão</translation>
@@ -6601,7 +6604,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6022659036123304283">Personalize o Google Chrome</translation>
 <translation id="6024317249717725918">Pe&amp;squisar frame do vídeo com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Rastreio de pilha</translation>
-<translation id="6026436621921471553">Retirar foco do grupo de separadores</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – dispositivo USB ligado</translation>
 <translation id="6027143200498653403">Quando faz perguntas sobre o seu histórico, pode receber respostas sobre informações específicas de uma página que visitou</translation>
 <translation id="6027945736510816438">Será que quis dizer <ph name="WEBSITE" />?</translation>
@@ -7067,7 +7069,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6399675241776343019">Recusado</translation>
 <translation id="6399774419735315745">Espiã</translation>
 <translation id="6400360390396538896">Sempre em <ph name="ORIGIN" /></translation>
-<translation id="6400714103322134861">Retirar foco do grupo de separadores</translation>
 <translation id="6401118106417399952">O EID do dispositivo é <ph name="EID_NUMBER" /> e o número de série do dispositivo é <ph name="SERIAL_NUMBER" />. Estes números podem ser usados para ajudar a ativar o serviço.</translation>
 <translation id="6402042774506839496">Para saber o motivo, contacte o programador da app</translation>
 <translation id="6402921224457714577">Os sites podem pedir para controlar e reprogramar os seus dispositivos MIDI</translation>
@@ -8109,6 +8110,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7188508872042490670">Dados de sites no dispositivo</translation>
 <translation id="7188755083797868960">Abra o modo de leitura mais rapidamente com um atalho. Prima Alt + Shift + R para ativar/desativar o modo de leitura.</translation>
 <translation id="7189234443051076392">Certifique-se de que existe espaço suficiente no seu dispositivo.</translation>
+<translation id="7189558282078169397">Separadores de outros dispositivos</translation>
 <translation id="7189965711416741966">Impressão digital adicionada.</translation>
 <translation id="7190921792980745354">Quer bloquear <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Alguns links suportados continuarão a ser abertos nas apps <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e mais <ph name="NUMBER_OF_OTHER_APPS" /> apps.</translation>
@@ -10037,7 +10039,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8652400352452647993">Erro de extensão do pacote</translation>
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o seu computador processar. Lamentamos.</translation>
 <translation id="8655295600908251630">Canal</translation>
-<translation id="8656101380279383244">Focar no grupo de separadores</translation>
 <translation id="8656888282555543604">Ativar o registo de braille</translation>
 <translation id="8657393004602556571">Quer rejeitar o feedback?</translation>
 <translation id="8657542881463614516">Use um gesto de deslizar para navegar entre páginas</translation>

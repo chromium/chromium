@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Buka setelan <ph name="BEGIN_BOLD" />Aplikasi Default<ph name="END_BOLD" /> di iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link diterima}other{{count} link diterima}}</translation>
 <translation id="1941314575388338491">Ketuk dua kali untuk menyalin.</translation>
+<translation id="1942483019269000450">Untuk melanjutkan tugas, Gemini dapat meminta Google Wallet mengisi info kartu kredit Anda</translation>
 <translation id="1943478190258551035">Menu → Setelan</translation>
 <translation id="1944477975050820119">Dapatkan saran real-time yang dapat membantu Anda menemukan cara baru untuk menjelajah dengan AI. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Login dengan akun terkelola</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">item baru</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> akun menggunakan sandi yang sama</translation>
 <translation id="205013082884273671">Telusuri apa pun di layar Anda</translation>
+<translation id="2053311407685904414">Pilih alamat</translation>
 <translation id="2054044186557130763">Login sebagai <ph name="NAME" /> <ph name="EMAIL" />, dikelola oleh organisasi Anda.</translation>
 <translation id="2059166748188874810">Kotamadya</translation>
 <translation id="2060638295449304809">Alamat ini hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan alamat di Akun Google Anda, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Terjemahkan</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2360196772093551345">Minta Situs Seluler</translation>
+<translation id="2360272811987888433">Login manual</translation>
 <translation id="2362083820973145409">Login sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Membuka setelan.</translation>
 <translation id="2367025302166767427">Terjadi masalah saat mengisi info Anda</translation>
 <translation id="2371084566192454134">Tab dan grup tab</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Simpan di Google Foto</translation>
 <translation id="3406506285180498376">Bagikan halaman…</translation>
 <translation id="340669334496430859">Terakhir Diubah</translation>
+<translation id="3407832712016477396">Gemini dapat menggunakan Pengelola Sandi Google untuk membantu Anda login</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oktober 2023</translation>
 <translation id="3419787211763835342">Bantu tingkatkan kualitas isi otomatis yang ditingkatkan</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Jangan pernah izinkan</translation>
 <translation id="4293154608148215505">ponsel Anda</translation>
 <translation id="4294506173142861371">Login sebagai <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Masukkan secara manual</translation>
+<translation id="4297418774230471285">Pilih info pribadi</translation>
 <translation id="4302061870579014542">Tetapkan posisi</translation>
 <translation id="4304713468139749426">Pengelola Sandi</translation>
 <translation id="4309403553630140242">Ketuk dua kali untuk mengetahui informasi selengkapnya</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini adalah AI dan dapat membuat kesalahan. <ph name="BEGIN_LINK" />Selengkapnya tentang data relevan yang dikirim ke Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Tidak ada yang diimpor</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> dari <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Login ke <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318298563956633672">Anda sudah memantau produk ini.</translation>
 <translation id="5327248766486351172">Nama</translation>
@@ -2206,6 +2213,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7839994177130598711">Anggota keluarga Anda kini dapat menggunakan nama pengguna dan sandi Anda saat mereka menggunakan Pengelola Sandi Google untuk login ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Telusuri teks yang disalin</translation>
 <translation id="7841418003178675048">Pilih kartu yang akan Anda lihat di halaman tab baru.</translation>
+<translation id="7842369010458597654">Mengisi info pembayaran</translation>
 <translation id="7845466610722898">Tampilkan Daftar Bacaan</translation>
 <translation id="7846161022626028328">Terjadi error. Coba lagi.</translation>
 <translation id="784623644169604270">Tidak ada aktivitas terbaru</translation>

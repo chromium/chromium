@@ -1598,7 +1598,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3693516565203081475">Wybierz formę płatności</translation>
 <translation id="3698353241727597930">Administrator skonfigurował zapisywanie <ph name="FILES" /> w pamięci zarządzanej przez firmę <ph name="CLOUD_STORAGE" />. Te pliki mogą być monitorowane, kontrolowane i przechowywane po ich usunięciu.</translation>
 <translation id="3698629142018988477">Przycisk Utwórz witrynę; aktywuj, aby szybko utworzyć nową witrynę w Witrynach Google</translation>
-<translation id="3698708128812719147">Naciśnij dwukrotnie Ctrl w dowolnym miejscu w sieci, aby znaleźć i wypełnić więcej informacji</translation>
 <translation id="3700094625653511150">Aby ukryć opcje płatności odroczonej, otwórz <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Używasz odcisku palca do wypełniania haseł</translation>
 <translation id="3701427423622901115">Zresetowanie zostało potwierdzone.</translation>
@@ -1657,7 +1656,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3769584711865378220"><ph name="URL" /> chce mieć dostęp do dokładnej lokalizacji zamiast przybliżonej</translation>
 <translation id="3772211998634047851">Papier (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nową notatkę w Google Keep</translation>
-<translation id="3778045607993018262">Konto Pix zostanie połączone z adresem <ph name="ACCOUNT_EMAIL" />. Aby wyłączyć wykrywanie kodu Pix, otwórz <ph name="BEGIN_LINK1" />Ustawienia Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Pojemnik wyjściowy</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Lista urządzeń</translation>
@@ -1903,7 +1901,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4185037616931963178">Bezpiecznie zaktualizuj numer Redress</translation>
 <translation id="4186035307311647330">Wyłącz śledzenie ceny</translation>
 <translation id="4191334393248735295">Długość</translation>
-<translation id="4192770747482479191">Naciśnij dwukrotnie ⌘ w dowolnym miejscu w sieci, aby znaleźć i wypełnić więcej informacji</translation>
 <translation id="4195459680867822611">Przycisk Zobacz wskazówki na temat Chrome; aktywuj, aby dowiedzieć się więcej o funkcjach Chrome</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4196861286325780578">&amp;Ponów przeniesienie</translation>
@@ -2472,6 +2469,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5115232566827194440">Zastąpienie zarządzanej sesji gościa z ograniczonym dostępem</translation>
 <translation id="5115563688576182185">(64-bitowa)</translation>
 <translation id="5116015291385561204">Potwierdzaj tożsamość w celu autouzupełniania informacji poufnych</translation>
+<translation id="5121592697493894155">Wyszukiwarka Google w panelu bocznym</translation>
 <translation id="5122786942953798871">Koperta (bawełna)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Ekran błędu opcji „Kup teraz, zapłać później” otwarty do połowy wysokości.</translation>

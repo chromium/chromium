@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">在 iOS 中打开<ph name="BEGIN_BOLD" />默认 App<ph name="END_BOLD" /> 设置</translation>
 <translation id="1938871630297275912">{count,plural, =1{已收到链接}other{已收到 {count} 个链接}}</translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
+<translation id="1942483019269000450">Gemini 可以请求 Google 钱包填写信用卡信息，帮你继续处理任务</translation>
 <translation id="1943478190258551035">菜单 → 设置</translation>
 <translation id="1944477975050820119">获取实时建议，探索 AI 助力的浏览新方式。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">登录受管理的账号</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">新项</translation>
 <translation id="2049727122989709386">有 <ph name="COUNT" /> 个账号在使用同一密码</translation>
 <translation id="205013082884273671">屏幕内容，一搜即得</translation>
+<translation id="2053311407685904414">选择地址</translation>
 <translation id="2054044186557130763">以<ph name="NAME" /> (<ph name="EMAIL" />) 的身份登录，该账号由组织管理。</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2060638295449304809">此地址仅保存在本设备上。如需在其他设备上使用，请将其保存到您的 Google 账号：<ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">翻译</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2360196772093551345">请求切换到移动版网站</translation>
+<translation id="2360272811987888433">手动登录</translation>
 <translation id="2362083820973145409">您已使用<ph name="USER_NAME" />的身份登录。<ph name="USER_EMAIL" />。打开设置。</translation>
 <translation id="2367025302166767427">填写信息时遇到问题</translation>
 <translation id="2371084566192454134">标签页和标签页分组</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">保存到 Google 相册</translation>
 <translation id="3406506285180498376">分享页面…</translation>
 <translation id="340669334496430859">上次修改时间</translation>
+<translation id="3407832712016477396">Gemini 可以使用 Google 密码管理工具为您登录账号</translation>
 <translation id="3409785640040772790">地图</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3419787211763835342">帮助改进增强型自动填充功能</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">一律不允许</translation>
 <translation id="4293154608148215505">您的手机</translation>
 <translation id="4294506173142861371">要以 <ph name="FIRST_NAME" /> 的身份登录吗？</translation>
+<translation id="4297031046690565608">手动输入</translation>
+<translation id="4297418774230471285">选择个人信息</translation>
 <translation id="4302061870579014542">设置位置</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4309403553630140242">点按两次可了解详情</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini 是一款 AI 工具，可能会出错。<ph name="BEGIN_LINK" />详细了解发送给 Google 的相关数据<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">没有可导入的对象</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">登录“<ph name="SITE_DOMAIN" />”</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">您已在跟踪此产品。</translation>
 <translation id="5327248766486351172">名称</translation>
@@ -2206,6 +2213,7 @@
 <translation id="7839994177130598711">现在，您的家庭成员可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。</translation>
 <translation id="7841180087127694526">搜索复制的文字</translation>
 <translation id="7841418003178675048">选择要在新标签页上显示的卡片。</translation>
+<translation id="7842369010458597654">填写付款信息</translation>
 <translation id="7845466610722898">显示阅读清单</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="784623644169604270">近期无活动</translation>

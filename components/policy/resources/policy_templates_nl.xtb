@@ -3494,6 +3494,8 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="3146711617256415776">Stemmen voor verbeterde tekst-naar-spraak via netwerk niet toestaan bij gebruik van Selecteer om voor te lezen</translation>
 <translation id="315013437951136266">Zet de functie <ph name="IP_PROTECTION_NAME" /> aan.</translation>
 <translation id="3150351525324499342">Het icoon voor <ph name="PRODUCT_NAME" /> niet standaard tonen in de werkbalk, maar gebruikers laten kiezen</translation>
+<translation id="3151501327418961907">Als je dit beleid instelt op 0 of niet instelt, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> en <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> alleen toegepast op gebruikersniveau voor aangesloten gebruikers in een beheerde browser.
+Als je dit beleid instelt op 1, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> en <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> toegepast op gebruikersniveau, ook als die gebruiker niet is aangesloten.</translation>
 <translation id="3152135410085709340">Lokale bestandstoegang tot file://-URL's op deze sites toestaan in de pdf-viewer</translation>
 <translation id="3152425128389603870">Maak Samengestelde desktop beschikbaar en zet deze standaard aan</translation>
 <translation id="3159375329008977062">Gebruiker kan Crostini-containers exporteren/importeren via de gebruikersinterface</translation>
@@ -4300,6 +4302,21 @@ Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de a
 <translation id="370314752761795411"><ph name="PRODUCT_NAME" /> starten met <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3712861436661566358">Profielscheiding afdwingen</translation>
+<translation id="3715589988915487768">Hiermee wordt een lijst met Provisioning Domains (PvD's) ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om proxyconfiguraties dynamisch op te halen.
+
+Met dit beleid kun je een lijst met domeinnamen of resource-URI's instellen die inrichtingsdomeinen vertegenwoordigen, zoals gedefinieerd in RFC 8801 ('Discovering Provisioning Domain Names and Data'). Voor elke PvD lost de browser de bijbehorende json-configuratie op door een HTTPS-verzoek te doen naar het bekende eindpuntpad: https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd.
+
+Elk item in de lijst geeft het volgende aan:
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: De ID van het inrichtingsdomein (een domeinnaam).
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: De optionele verificatieconfiguratie. Als je dit beleid niet instelt of instelt op none, wordt er geen verificatie uitgevoerd. Als het is ingesteld op profile_bearer_token, haalt de browser een OAuth2-toegangstoken op met het ingevoerde bereik voor het ingelogde primaire account en voegt deze toe aan de kop Autorisatie als een Bearer-token.
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: Een optionele lijst met aangepaste HTTP-headers die moeten worden opgenomen bij het uitvoeren van query's voor het PvD-eindpunt. Er kunnen dynamische waarden worden ingevoegd, zoals profile_id (een stabiele, unieke ID van het browserprofiel op het apparaat, waarmee targeting per profiel mogelijk is) of accept_language (de voorkeurstalen van de browser).
+
+De opgehaalde configuraties worden geparseerd volgens het RFC 8801-schema. Alleen routeringsregels en proxy's die zijn gerelateerd aan de proxyconfiguratie uit de JSON-payload van de PvD worden toegepast. Als je dit beleid niet instelt, worden er geen inrichtingsdomeinen opgevraagd of gebruikt om proxyconfiguraties op te halen.
+
+Dit beleid kan alleen op gebruikersniveau worden ingesteld als de gebruiker is aangesloten bij de browser, als de browser niet wordt beheerd of als het beleid <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> is ingesteld op 1.</translation>
 <translation id="3719826155360621982">Homepage</translation>
 <translation id="3724039569609354541">Standaardgedrag gebruiken om te bepalen of websites verzoeken naar netwerkeindpunten kunnen sturen</translation>
 <translation id="3726715125055227414">Met dit beleid stel je <ph name="PRODUCT_OS_NAME" /> in om de voorkeursalgoritmen voor sleutelovereenkomst (ondersteunde groepen) in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime, als je netwerkverzoeken doet vanaf het inlogscherm.
@@ -11606,6 +11623,7 @@ Deze functie is alleen beschikbaar op het Canary-kanaal.
 
 Als je dit beleid toepast of niet instelt, is de pagina toegankelijk.
 Als je het beleid niet toepast, wordt de pagina geblokkeerd.</translation>
+<translation id="8266506455952754231">Hiermee wordt bepaald welke beheerde gebruikers de beleidsregels <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> en <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> kunnen instellen.</translation>
 <translation id="8266778278542911985">Als je het beleid instelt op 3, kunnen websites toegang vragen tot seriële poorten. Als je het beleid instelt op 2, wordt de toegang tot seriële poorten geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>

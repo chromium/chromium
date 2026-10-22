@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์ Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">เพิ่มบัตรประชาชนลงใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="1398743098754840707">ระบบจะไม่นำเว็บไซต์ที่คุณเพิ่มไว้ที่นี่มาอ้างอิงสำหรับคำตอบ แม้ว่าแท็บจะเปิดอยู่ก็ตาม หากเว็บไซต์ที่คุณเพิ่มมีการใช้งานอยู่ในชุดข้อความ ระบบอาจใช้เวลาสูงสุด 30 นาทีในการหยุดอ้างอิงเว็บไซต์ดังกล่าวในชุดข้อความ</translation>
+<translation id="1403359480263156644">อัปเดตชื่อผู้ถือบัตรแล้ว</translation>
 <translation id="1405567553485452995">เขียวอ่อน</translation>
 <translation id="1406370515365284486">ระบบจะยังคงบันทึกวิธีการชำระเงินของคุณไว้</translation>
 <translation id="1406500794671479665">กำลังยืนยันความถูกต้อง...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">สแกนบัตรใหม่</translation>
 <translation id="2501270939904835585">ป้าย (ซาติน)</translation>
 <translation id="2501278716633472235">ย้อนกลับ</translation>
+<translation id="250307989715832083">เพิ่มลายเซ็น</translation>
 <translation id="250346157641628208">กระดาษ (อิงค์เจ็ท)</translation>
 <translation id="2505063700931618106">บันทึกข้อมูลบัตรแล้ว</translation>
 <translation id="2505268675989099013">ปกป้องบัญชี</translation>
@@ -1595,7 +1597,6 @@
 <translation id="3693516565203081475">เลือกวิธีการชำระเงิน</translation>
 <translation id="3698353241727597930">ผู้ดูแลระบบของคุณกำหนดค่าให้บันทึก <ph name="FILES" /> ในพื้นที่เก็บข้อมูล <ph name="CLOUD_STORAGE" /> ที่จัดการโดยองค์กร ไฟล์เหล่านี้อาจได้รับการดูแล ตรวจสอบ และเก็บรักษาไว้เมื่อคุณลบ</translation>
 <translation id="3698629142018988477">ปุ่มสร้างเว็บไซต์ เปิดใช้งานเพื่อสร้างเว็บไซต์ใหม่ใน Google Sites อย่างรวดเร็ว</translation>
-<translation id="3698708128812719147">กด Ctrl 2 ครั้งที่ใดก็ได้บนเว็บเพื่อค้นหาและป้อนข้อมูลเพิ่มเติม</translation>
 <translation id="3700094625653511150">หากต้องการซ่อนตัวเลือกการชำระเงินภายหลัง ให้ไปที่ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">คุณกำลังใช้ลายนิ้วมือเพื่อป้อนรหัสผ่าน</translation>
 <translation id="3701427423622901115">รับทราบการรีเซ็ตแล้ว</translation>
@@ -1654,7 +1655,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> ต้องการเปลี่ยนการเข้าถึงตำแหน่งจากตำแหน่งโดยประมาณเป็นตำแหน่งที่แน่นอน</translation>
 <translation id="3772211998634047851">กระดาษ (ผนึก)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างโน้ตใหม่ใน Google Keep อย่างรวดเร็ว</translation>
-<translation id="3778045607993018262">ระบบจะลิงก์บัญชี Pix กับ <ph name="ACCOUNT_EMAIL" /> หากต้องการปิดการตรวจหาโค้ด Pix ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่า Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">ถาดกระดาษออก</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">อุปกรณ์บลูทูธ</translation>
@@ -1900,7 +1900,6 @@
 <translation id="4185037616931963178">อัปเดตหมายเลข Redress อย่างปลอดภัย</translation>
 <translation id="4186035307311647330">ยกเลิกการติดตามราคา</translation>
 <translation id="4191334393248735295">ความยาว</translation>
-<translation id="4192770747482479191">กด ⌘ 2 ครั้งที่ใดก็ได้บนเว็บเพื่อค้นหาและป้อนข้อมูลเพิ่มเติม</translation>
 <translation id="4195459680867822611">ปุ่มดูเคล็ดลับในการใช้ Chrome เปิดใช้งานเพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
 <translation id="4196861286325780578">&amp;ทำซ้ำการย้าย</translation>
@@ -1918,6 +1917,7 @@
 <translation id="4218327733815631046">ใช้ตำแหน่งโดยประมาณต่อ</translation>
 <translation id="4219596572397833317">ดูประวัติราคาและอื่นๆ เพื่อช่วยให้คุณเลือกซื้อได้ฉลาดยิ่งขึ้น</translation>
 <translation id="4220128509585149162">การขัดข้อง</translation>
+<translation id="4220745762102459826">และอื่นๆ</translation>
 <translation id="4221630205957821124">&lt;h4&gt;ขั้นตอนที่ 1: ลงชื่อเข้าใช้พอร์ทัล&lt;/h4&gt;
     &lt;p&gt;เครือข่าย Wi-Fi ในสถานที่หลายแห่งอย่างร้านกาแฟหรือสนามบินจำเป็นต้องให้คุณลงชื่อเข้าใช้ หากต้องการดูหน้าลงชื่อเข้าใช้ โปรดไปที่หน้าเว็บที่ใช้ &lt;code&gt;http://&lt;/code&gt;&lt;/p&gt;
     &lt;ol&gt;
@@ -2293,6 +2293,7 @@
 <translation id="483241715238664915">เปิดคำเตือน</translation>
 <translation id="4833567658337394628">ไม่แนะนำให้วาง</translation>
 <translation id="4840250757394056958">ดูประวัติการเข้าชมใน Chrome</translation>
+<translation id="4842085418602350953">ชำระเงินด้วย Pix โดยไม่ต้องเปลี่ยนแอปในครั้งถัดไป</translation>
 <translation id="4842365697443353018">ล้างแบบฟอร์มเพื่อใช้ตัวเลือกชำระทีหลัง</translation>
 <translation id="484462545196658690">อัตโนมัติ</translation>
 <translation id="4844937814014739139">เลื่อนและซูมแท็บที่แชร์</translation>
@@ -2467,6 +2468,7 @@
 <translation id="5115232566827194440">ลบล้างเซสชันผู้เยี่ยมชมที่มีการจัดการและถูกจำกัด</translation>
 <translation id="5115563688576182185">(64 บิต)</translation>
 <translation id="5116015291385561204">ยืนยันว่าเป็นคุณเพื่อป้อนข้อมูลที่ละเอียดอ่อนโดยอัตโนมัติ</translation>
+<translation id="5121592697493894155">Google Search ในแผงด้านข้าง</translation>
 <translation id="5122786942953798871">ซอง (กระดาษใยฝ้าย)</translation>
 <translation id="5123063207673082822">วันสุดสัปดาห์</translation>
 <translation id="5124797626438336458">หน้าจอข้อผิดพลาดของ "ซื้อก่อน จ่ายทีหลัง" เปิดอยู่ครึ่งหน้าจอ</translation>
@@ -2879,6 +2881,7 @@
 <translation id="5794065675298686371">เปิดการแจ้งเตือนการติดตามราคา</translation>
 <translation id="5794093550048860249">หมายเลขติดตามพัสดุ</translation>
 <translation id="5796050750059455142">เปิด "<ph name="BEGIN_LINK" />ฟีเจอร์อัจฉริยะในผลิตภัณฑ์อื่นๆ ของ Google<ph name="LINK_END" />"</translation>
+<translation id="5797916798049571144">ระบบจะบันทึกชื่อพร้อมกับข้อมูลบัตร เพื่อให้ระบบป้อนข้อมูลโดยอัตโนมัติเมื่อชำระเงิน</translation>
 <translation id="5797984091151707075">ถูกบล็อกโดยนโยบายผู้ดูแลระบบ</translation>
 <translation id="5804241973901381774">สิทธิ์</translation>
 <translation id="5806871454498484178">การเลื่อนและซูมถูกบล็อก</translation>
@@ -4298,6 +4301,7 @@
 <translation id="8208629719488976364">ระบบจะส่งเนื้อหาของหน้าที่คุณพิมพ์และข้อมูลเกี่ยวกับเครื่องพิมพ์ไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนหาข้อมูลที่ละเอียดอ่อน และอาจจัดเก็บตามนโยบายบริษัทและผู้ดูแลระบบมองเห็นได้</translation>
 <translation id="8210490490377416373">เลือกชื่อนโยบาย</translation>
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{และแหล่งข้อมูลอื่นๆ อีก 1 แหล่ง}other{และแหล่งข้อมูลอื่นๆ อีก # แหล่ง}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 นิ้ว</translation>
 <translation id="8218327578424803826">ตำแหน่งที่มอบหมาย:</translation>

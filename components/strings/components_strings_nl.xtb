@@ -1593,7 +1593,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3693516565203081475">Een betaalmethode kiezen</translation>
 <translation id="3698353241727597930">Je beheerder heeft ingesteld dat <ph name="FILES" /> worden opgeslagen in je door het bedrijf beheerde <ph name="CLOUD_STORAGE" />-opslag. Deze bestanden kunnen worden gemonitord, gecontroleerd en bewaard als je ze verwijdert.</translation>
 <translation id="3698629142018988477">Knop Site maken. Activeer deze om snel een nieuwe site in Google Sites te maken.</translation>
-<translation id="3698708128812719147">Druk 2 keer op Ctrl ergens op het web om meer informatie te vinden en in te vullen</translation>
 <translation id="3700094625653511150">Ga naar <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om opties voor achteraf betalen te verbergen</translation>
 <translation id="3700966190175650601">Je gebruikt je vingerafdruk om wachtwoorden in te vullen</translation>
 <translation id="3701427423622901115">Reset bevestigd.</translation>
@@ -1652,7 +1651,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3769584711865378220"><ph name="URL" /> wil de locatietoegang wijzigen van geschat in exact</translation>
 <translation id="3772211998634047851">Papier (gebonden)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe notitie in Google Keep te maken</translation>
-<translation id="3778045607993018262">Het Pix-account wordt gekoppeld aan <ph name="ACCOUNT_EMAIL" />. Als je detectie van Pix-codes wilt uitzetten, ga je naar de <ph name="BEGIN_LINK1" />Chrome-instellingen<ph name="END_LINK1" />.</translation>
 <translation id="3780694243617746492">Uitvoerbak</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-apparaten</translation>
@@ -1897,7 +1895,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4185037616931963178">Redress number beveiligd updaten</translation>
 <translation id="4186035307311647330">Prijs volgen</translation>
 <translation id="4191334393248735295">Lengte</translation>
-<translation id="4192770747482479191">Druk 2 keer op ⌘ ergens op het web om meer informatie te vinden en in te vullen</translation>
 <translation id="4195459680867822611">Knop Chrome-tips bekijken. Activeer deze voor meer informatie over Chrome-functies.</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
 <translation id="4196861286325780578">&amp;Opnieuw verplaatsen</translation>
@@ -2291,6 +2288,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="483241715238664915">Waarschuwingen aanzetten</translation>
 <translation id="4833567658337394628">Plakken niet aanbevolen</translation>
 <translation id="4840250757394056958">Je Chrome-geschiedenis bekijken</translation>
+<translation id="4842085418602350953">Betaal de volgende keer met Pix zonder van app te wisselen</translation>
 <translation id="4842365697443353018">Formulier wissen om later betalen te gebruiken</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Scrollen en zoomen op gedeelde tabbladen</translation>
@@ -2465,6 +2463,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5115232566827194440">Beperkte beheerde gastsessie overschrijven</translation>
 <translation id="5115563688576182185">(64-bits)</translation>
 <translation id="5116015291385561204">Laten verifiëren dat jij het bent om gevoelige informatie automatisch in te vullen</translation>
+<translation id="5121592697493894155">Google Zoeken in zijvenster</translation>
 <translation id="5122786942953798871">Envelop (katoen)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Voortgangsscherm voor Koop nu, betaal later is op halve hoogte geopend.</translation>
@@ -4296,6 +4295,7 @@ Aanvullende informatie:
 <translation id="8208629719488976364">De content van pagina's die je afdrukt en informatie over je printer worden naar Google Cloud of derden gestuurd voor analyse. Deze kan bijvoorbeeld worden gescand op gevoelige gegevens en worden opgeslagen op basis van het bedrijfsbeleid en zichtbaar zijn voor je beheerder.</translation>
 <translation id="8210490490377416373">Beleidsnaam selecteren</translation>
 <translation id="8211406090763984747">Verbinding is beveiligd</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 andere bron}other{+ # andere bronnen}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 inch</translation>
 <translation id="8218327578424803826">Toegewezen locatie:</translation>

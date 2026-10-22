@@ -239,6 +239,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1393071644879491291">Attackers on the site that you tried visiting might trick you into installing software or revealing things like your passwords, phone or credit card numbers. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Add ID card securely to Google Wallet</translation>
 <translation id="1398743098754840707">Sites that you add here won't be referenced for responses, even if the tab is open. If a site that you add is currently being used in a thread, it can take up to 30 minutes for the thread to stop referencing it.</translation>
+<translation id="1403359480263156644">Cardholder name updated</translation>
 <translation id="1405567553485452995">Light green</translation>
 <translation id="1406370515365284486">Your payment methods will still be saved</translation>
 <translation id="1406500794671479665">Verifying...</translation>
@@ -907,6 +908,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2498091847651709837">Scan new card</translation>
 <translation id="2501270939904835585">Labels (satin)</translation>
 <translation id="2501278716633472235">Go back</translation>
+<translation id="250307989715832083">Add signature</translation>
 <translation id="250346157641628208">Paper (inkjet)</translation>
 <translation id="2505063700931618106">Card info saved</translation>
 <translation id="2505268675989099013">Protect Account</translation>
@@ -1596,7 +1598,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3693516565203081475">Choose a payment method</translation>
 <translation id="3698353241727597930">Your administrator has configured to save <ph name="FILES" /> in your enterprise-managed <ph name="CLOUD_STORAGE" /> storage. These files may be monitored, audited and retained when you delete them.</translation>
 <translation id="3698629142018988477">Create site button, activate to quickly create a new site in Google Sites</translation>
-<translation id="3698708128812719147">Press Ctrl twice anywhere on the web to find and fill more info</translation>
 <translation id="3700094625653511150">To hide pay later options, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">You're using your fingerprint for filling passwords</translation>
 <translation id="3701427423622901115">Reset acknowledged.</translation>
@@ -1655,7 +1656,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3769584711865378220"><ph name="URL" /> wants to change location access from approximate to precise</translation>
 <translation id="3772211998634047851">Paper (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new note in Google Keep quickly</translation>
-<translation id="3778045607993018262">Pix account will be linked to <ph name="ACCOUNT_EMAIL" />. To turn off Pix code detection, go to <ph name="BEGIN_LINK1" />Chrome settings<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Output bin</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth devices</translation>
@@ -1901,7 +1901,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4185037616931963178">Update redress number securely</translation>
 <translation id="4186035307311647330">Untrack price</translation>
 <translation id="4191334393248735295">Length</translation>
-<translation id="4192770747482479191">Press ⌘ twice anywhere on the web to find and fill more info</translation>
 <translation id="4195459680867822611">See Chrome tips button, activate to learn about Chrome features</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4196861286325780578">&amp;Redo move</translation>
@@ -1919,6 +1918,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4218327733815631046">Keep approximate location</translation>
 <translation id="4219596572397833317">See price history and more to help you shop smarter.</translation>
 <translation id="4220128509585149162">Crashes</translation>
+<translation id="4220745762102459826">and more</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Step 1: Sign in to the portal&lt;/h4&gt;
     &lt;p&gt;Wi-Fi networks at places such as cafés or airports need you to sign in. To see the sign-in page, visit a page that uses &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="483241715238664915">Turn on warnings</translation>
 <translation id="4833567658337394628">Pasting not recommended</translation>
 <translation id="4840250757394056958">View your Chrome history</translation>
+<translation id="4842085418602350953">Pay with Pix without switching apps next time</translation>
 <translation id="4842365697443353018">Clear form to use pay later</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Scrolling and zooming shared tabs</translation>
@@ -2468,6 +2469,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5115232566827194440">Restricted managed Guest session override</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Verify that it's you to autofill sensitive info</translation>
+<translation id="5121592697493894155">Google Search in side panel</translation>
 <translation id="5122786942953798871">Envelope (cotton)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Buy now, pay later error screen opened at half height.</translation>
@@ -2880,6 +2882,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5794065675298686371">Turn on price tracking notifications</translation>
 <translation id="5794093550048860249">Tracking number</translation>
 <translation id="5796050750059455142">Turn on “<ph name="BEGIN_LINK" />Smart features in other Google products<ph name="LINK_END" />”</translation>
+<translation id="5797916798049571144">It's saved with your card info so it will be automatically filled at checkout</translation>
 <translation id="5797984091151707075">Blocked by admin policy</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5806871454498484178">Scroll and zoom blocked</translation>
@@ -4299,6 +4302,7 @@ Additional details:
 <translation id="8208629719488976364">The content of pages you print and information about your printer is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.</translation>
 <translation id="8210490490377416373">Select policy name</translation>
 <translation id="8211406090763984747">Connection is secure</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 other source}other{+ # other sources}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 in x 18 in</translation>
 <translation id="8218327578424803826">Assigned Location:</translation>

@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Отворете ги поставките за <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> во iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Примен е линк}one{Примени се {count} линк}other{Примени се {count} линка}}</translation>
 <translation id="1941314575388338491">Допрете двапати за да копирате.</translation>
+<translation id="1942483019269000450">За да ја продолжите задачата, Gemini може да побара од Google Wallet да ги пополни податоците за вашата кредитна картичка</translation>
 <translation id="1943478190258551035">Мени → Поставки</translation>
 <translation id="1944477975050820119">Добивајте предлози во реално време што може да ви помогнат да најдете нови начини на прелистување со AI. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Најави се со управувана сметка</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">нова ставка</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> сметки ја користат истата лозинка</translation>
 <translation id="205013082884273671">Пребарувајте што и да гледате на екранот</translation>
+<translation id="2053311407685904414">Изберете адреса</translation>
 <translation id="2054044186557130763">Најавени сте како <ph name="NAME" /> <ph name="EMAIL" />, управувана од вашата организација.</translation>
 <translation id="2059166748188874810">Општина</translation>
 <translation id="2060638295449304809">Адресава е зачувана само на овој уред. За да ја користите на другите ваши уреди, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Преведи</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2360196772093551345">Побарај мобилна верзија на сајтот</translation>
+<translation id="2360272811987888433">Најавете се рачно</translation>
 <translation id="2362083820973145409">Најавени сте како: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ги отвора поставките.</translation>
 <translation id="2367025302166767427">Проблем при пополнувањето на вашите податоци</translation>
 <translation id="2371084566192454134">Картички и групи картички</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Зачувај во „Фотографии на Google“</translation>
 <translation id="3406506285180498376">Споделете ја страницата…</translation>
 <translation id="340669334496430859">Последно изменување</translation>
+<translation id="3407832712016477396">Gemini може да ја користи Google Password Manager за да се најавува наместо вас</translation>
 <translation id="3409785640040772790">Карти</translation>
 <translation id="3416023309465857378">25 окт. 2023 г.</translation>
 <translation id="3419787211763835342">Помогнете да се подобри „Подобрено автоматско пополнување“</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Никогаш не дозволувај</translation>
 <translation id="4293154608148215505">вашиот телефон</translation>
 <translation id="4294506173142861371">Ќе се најавите како <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Внесете рачно</translation>
+<translation id="4297418774230471285">Изберете лични податоци</translation>
 <translation id="4302061870579014542">Поставете положба</translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="4309403553630140242">Допрете двапати за повеќе информации</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini е AI и може да прави грешки. <ph name="BEGIN_LINK" />Повеќе за релевантните податоци што се испраќаат до Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Нема ништо за увезување</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> од <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Најавете се на <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5318298563956633672">Веќе го следите производов.</translation>
 <translation id="5327248766486351172">Име</translation>
@@ -2206,6 +2213,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7839994177130598711">Членовите на вашето семејство сега може да ги користат вашите корисничко име и лозинка при користење Google Password Manager за најавување на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Пребарајте го копираниот текст</translation>
 <translation id="7841418003178675048">Изберете кои картички да се гледаат на вашата страница во нова картичка.</translation>
+<translation id="7842369010458597654">Пополнување на податоците за плаќање</translation>
 <translation id="7845466610722898">Прикажете го списокот за читање</translation>
 <translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
 <translation id="784623644169604270">Нема неодамнешна активност</translation>

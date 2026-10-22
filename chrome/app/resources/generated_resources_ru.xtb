@@ -163,7 +163,6 @@
 <translation id="1109482864356262001">Функции, которым требуются датчики движения или освещенности, работать не будут</translation>
 <translation id="1110155001042129815">Подождать</translation>
 <translation id="1110965959145884739">Выберите языки, которые нужно установить на это устройство. Чтобы сэкономить место на диске, языковые пакеты доступны всем пользователям. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="111168944932507021">Перейти к группе вкладок</translation>
 <translation id="1112227834592480032">Нажмите кнопку Google Объектива и обведите нужную задачу.</translation>
 <translation id="1112420131909513020">На фоновой вкладке используется Bluetooth.</translation>
 <translation id="1112998165730922436">Трансляция приостановлена</translation>
@@ -829,6 +828,7 @@
 <translation id="1621984899599015181">Настройками доступа управляет ваша организация. Некоторые объекты могут быть скрыты.</translation>
 <translation id="1622054403950683339">Удалить сеть Wi-Fi</translation>
 <translation id="1623723619460186680">Уменьшение синего света</translation>
+<translation id="1623799258803152950">Эта страница и выделенный текст передаются в Google.</translation>
 <translation id="1626581272720526544">Вы можете скачивать приложения и игры для Android в Google Play. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Дескрипторы файлов</translation>
 <translation id="1627408615528139100">Файл уже скачан</translation>
@@ -1105,6 +1105,7 @@
 <translation id="1842681835432895345">Не использовать этот экран для дублирования</translation>
 <translation id="184273675144259287">Заменить приложения и файлы Linux предыдущей резервной копией</translation>
 <translation id="1843048149176045210">Скопировать ссылку для скачивания</translation>
+<translation id="1845498360590376126">В качестве главной страницы установлена страница новой вкладки</translation>
 <translation id="1845727111305721124">Разрешить сайтам воспроизводить звук</translation>
 <translation id="1846100293138248204">Сохранить в памяти</translation>
 <translation id="1846308012215045257">Чтобы запустить плагин "<ph name="PLUGIN_NAME" />", нажмите кнопку мыши, удерживая Ctrl.</translation>
@@ -1593,7 +1594,6 @@
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> и <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Источник медиа без названия</translation>
-<translation id="2223747115628460234">Вернуться к открытым вкладкам</translation>
 <translation id="2224337661447660594">Нет подключения к интернету</translation>
 <translation id="2224444042887712269">Этот параметр установлен пользователем <ph name="OWNER_EMAIL" /></translation>
 <translation id="2224551243087462610">Изменить имя папки</translation>
@@ -1719,7 +1719,6 @@
 <translation id="2318143611928805047">Размер бумаги</translation>
 <translation id="2319459402137712349">Открывать клавиатуру нажатием на текстовое поле или значок клавиатуры внизу экрана</translation>
 <translation id="2319993584768066746">Фото на экране входа</translation>
-<translation id="2322015964223112232">Вернуться к открытым вкладкам</translation>
 <translation id="2322193970951063277">Верхние и нижние колонтитулы</translation>
 <translation id="2322622365472107569">Время окончания: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Сохраненные сети Wi-Fi</translation>
@@ -2832,6 +2831,7 @@
 <translation id="3143515551205905069">Отмена</translation>
 <translation id="3143754809889689516">Воспроизвести с начала</translation>
 <translation id="3144647712221361880">Открыть ссылку как</translation>
+<translation id="3146436581677566946">Локальная модель</translation>
 <translation id="3147878021189006333">Омнибокс</translation>
 <translation id="3149510190863420837">Приложения Chrome</translation>
 <translation id="3150927491400159470">Жесткая перезагрузка</translation>
@@ -3197,6 +3197,7 @@
 <translation id="3424969259347320884">Опишите, что вы делали, когда произошел сбой</translation>
 <translation id="3426562492084153055">Просмотр специализированных действий</translation>
 <translation id="3427092606871434483">Разрешить (по умолчанию)</translation>
+<translation id="3427822597374329810">Небольшая специализированная модель</translation>
 <translation id="3429086384982427336">Указанные ниже приложения не будут обрабатывать ссылки на протоколы.</translation>
 <translation id="3429174588714165399">Создать ярлык для этой страницы</translation>
 <translation id="3429271624041785769">Языки веб-контента</translation>
@@ -3371,6 +3372,7 @@
 <translation id="3553442438687311630">Аутентификация Microsoft</translation>
 <translation id="3554493885489666172">Ваше устройство находится под управлением домена <ph name="PROFILE_NAME" />. Администраторы имеют доступ к данным всех профилей на этом устройстве.</translation>
 <translation id="3555812735919707620">Удалить расширение</translation>
+<translation id="3556409966119759596">Показать нижний колонтитул на странице новой вкладки</translation>
 <translation id="3557101512409028104">С помощью Family Link вы можете ограничивать доступ к сайтам и время использования устройства.</translation>
 <translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> – Gemini выполняет вашу задачу…</translation>
 <translation id="3559079791149580653">Остановить трансляцию экрана на устройство "<ph name="DEVICE_NAME" />"</translation>
@@ -3576,6 +3578,7 @@
 <translation id="3701167022068948696">Исправить</translation>
 <translation id="3701515417135397388">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="3701778844313851487">Перейти к расширениям</translation>
+<translation id="3701846426433416920">Удалить модель</translation>
 <translation id="3703166520839776970">Если проблема не решится, нажмите кнопку "Подробнее" ниже, чтобы получить дополнительную информацию от сервиса "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="3703699162703116302">Билет обновлен</translation>
 <translation id="370415077757856453">Контент JavaScript заблокирован</translation>
@@ -4371,6 +4374,7 @@
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="4293154608148215505">вашего телефона</translation>
 <translation id="4293219510510666933">Находите посещенные сайты в истории браузера, формулируя запросы простыми словами. Вы также можете задавать вопросы и получать ответы, основанные на этой истории. Параметр включен.</translation>
+<translation id="429344752071832554">Отменить выбор группы</translation>
 <translation id="4294392694389031609">Файл "<ph name="FILE_NAME" />" удален из истории скачиваний, но он по-прежнему доступен на вашем устройстве.</translation>
 <translation id="429530814437327574">Расположить вертикально</translation>
 <translation id="4295979599050707005">Если вы разрешаете сайтам, приложениям и расширениям в Chrome и Google Play использовать данные аккаунта <ph name="USER_EMAIL" />, войдите ещё раз. Вы также можете удалить этот аккаунт. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -4455,6 +4459,7 @@
 <translation id="4360738659108163902">Нажать правой кнопкой мыши</translation>
 <translation id="4361745360460842907">Открыть во вкладке</translation>
 <translation id="4362459470237309049">Чтобы отпустить кнопку мыши, используйте точку.</translation>
+<translation id="4362871358537270439">Показывать вкладки с других устройств на боковой панели</translation>
 <translation id="4363262124589131906">Новые файлы в разделе "Мой диск" перестанут автоматически синхронизироваться с этим устройством Chromebook.</translation>
 <translation id="4364129298304269786">Сайты могут использовать сервисы защиты контента, чтобы воспроизводить материалы, защищенные авторским правом.</translation>
 <translation id="4364327530094270451">Дыня</translation>
@@ -5073,6 +5078,7 @@
 <translation id="4841475798258477260">Это устройство может подключиться только к определенной мобильной сети. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Страница пытается загрузить скрипты из непроверенных источников.</translation>
 <translation id="484462545196658690">Авто</translation>
+<translation id="4844967571080002061">Подробнее о фоне страницы новой вкладки…</translation>
 <translation id="4846273627924459555">Задать вопрос по теме "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="4846628405149428620">Укажите, где этот сайт может сохранять изменения</translation>
 <translation id="4846680374085650406">Параметр настроен в соответствии с рекомендациями администратора.</translation>
@@ -5883,6 +5889,7 @@
 <translation id="5463856536939868464">Меню со скрытыми закладками</translation>
 <translation id="5466374726908360271">Вст&amp;авить и найти "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">Группы вкладок хранятся на панели закладок и в меню приложения и обновляются на всех устройствах, на которых выполнен вход в аккаунт, если синхронизация включена.</translation>
+<translation id="5466743034850405734">Открывать страницу новой вкладки</translation>
 <translation id="5467207440419968613">Отключены разрешения: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Поиск общих папок…</translation>
 <translation id="5468330507528805311">Статус режима модема</translation>
@@ -6540,6 +6547,7 @@
 <translation id="5979421442488174909">&amp;Перевести на <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Чтобы добавить страницу в закладки, нажмите на значок звездочки в адресной строке</translation>
 <translation id="5982578203375898585">Показывать, когда скачивание файлов завершено</translation>
+<translation id="5982657619592274533">Скрыть нижний колонтитул на странице новой вкладки</translation>
 <translation id="5983716913605894570">Изображения генерируются…</translation>
 <translation id="5984222099446776634">Недавно посещенные страницы</translation>
 <translation id="598426658342593742">Переместите вкладки вбок</translation>
@@ -6593,7 +6601,6 @@
 <translation id="6022659036123304283">Настройте Chrome для себя</translation>
 <translation id="6024317249717725918">&amp;Найти кадр видео (<ph name="VISUAL_SEARCH_PROVIDER" />)</translation>
 <translation id="6025215716629925253">Трассировка стека</translation>
-<translation id="6026436621921471553">Отменить фокус на группе вкладок</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: подключено USB-устройство</translation>
 <translation id="6027143200498653403">При ответе на вопрос об истории посещений функция может использовать информацию со страниц, на которых вы были.</translation>
 <translation id="6027945736510816438">Вам нужен сайт <ph name="WEBSITE" />?</translation>
@@ -7059,7 +7066,6 @@
 <translation id="6399675241776343019">Запрещено</translation>
 <translation id="6399774419735315745">Шпион</translation>
 <translation id="6400360390396538896">Всегда включено для <ph name="ORIGIN" /></translation>
-<translation id="6400714103322134861">Отменить фокус на группе вкладок</translation>
 <translation id="6401118106417399952">Идентификаторы вашего устройства: EID-код – <ph name="EID_NUMBER" />, серийный номер – <ph name="SERIAL_NUMBER" />. Их можно использовать для активации сервиса.</translation>
 <translation id="6402042774506839496">Чтобы узнать причину, свяжитесь с разработчиком приложения.</translation>
 <translation id="6402921224457714577">Позволить сайтам запрашивать разрешение на управление вашими MIDI-устройствами и их перепрограммирование</translation>
@@ -8107,6 +8113,7 @@
 <translation id="7188508872042490670">Данные сайтов, сохраненные на устройстве</translation>
 <translation id="7188755083797868960">Вы можете быстро открывать режим чтения с помощью сочетания клавиш. Чтобы включить или отключить этот режим, нажмите Alt + Shift + R.</translation>
 <translation id="7189234443051076392">Убедитесь, что на вашем устройстве достаточно свободного места.</translation>
+<translation id="7189558282078169397">Вкладки с других устройств</translation>
 <translation id="7189965711416741966">Отпечаток добавлен.</translation>
 <translation id="7190921792980745354">Заблокировать пользователя <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />", "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />" и ещё в нескольких сервисах (<ph name="NUMBER_OF_OTHER_APPS" />).</translation>
@@ -10034,7 +10041,6 @@
 <translation id="8652400352452647993">Ошибка в упакованном расширении</translation>
 <translation id="8654151524613148204">Недостаточно места для обработки файла.</translation>
 <translation id="8655295600908251630">Канал</translation>
-<translation id="8656101380279383244">Перейти к группе вкладок</translation>
 <translation id="8656888282555543604">Включить ведение журнала для шрифта Брайля</translation>
 <translation id="8657393004602556571">Не отправлять отзыв?</translation>
 <translation id="8657542881463614516">Перемещаться между страницами пролистыванием</translation>

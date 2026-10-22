@@ -163,7 +163,6 @@
 <translation id="1109482864356262001">Хөдөлгөөн, гэрэл мэдрэгчид шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="1110155001042129815">Хүлээх</translation>
 <translation id="1110965959145884739">Энэ төхөөрөмж дээр ямар хэл суулгахыг сонгоно уу. Хэлний файлуудыг дискийн зай хэмнэхийн тулд хэрэглэгчдийн дунд хуваалцдаг. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="111168944932507021">Табын бүлгийг сонгох</translation>
 <translation id="1112227834592480032">Google Lens-н товчийг сонгоод, асуудал товшсоныхоо дараа чирч авчирна уу</translation>
 <translation id="1112420131909513020">Дэвсгэр таб bluetooth-г ашиглаж байна</translation>
 <translation id="1112998165730922436">Дамжуулахыг түр зогсоосон</translation>
@@ -830,6 +829,7 @@
 <translation id="1621984899599015181">Хуваалцах сонголтыг танай байгууллагаас удирддаг. Зарим зүйлийг нуусан байж болзошгүй.</translation>
 <translation id="1622054403950683339">Wi-Fi сүлжээг мартах</translation>
 <translation id="1623723619460186680">Цэнхэр гэрлийн бууралт</translation>
+<translation id="1623799258803152950">Энэ хуудас, тодруулсан текстийг Google-тэй хуваалцсан</translation>
 <translation id="1626581272720526544">Та Play Store-р дамжуулан Android апп болон тоглоомуудыг татах боломжтой. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Файл тодорхойлогч</translation>
 <translation id="1627408615528139100">Аль хэдийн татсан</translation>
@@ -1603,7 +1603,6 @@
 <translation id="2220572644011485463">ПИН, эсвэл нууц үг</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Нэргүй медиа эх сурвалж</translation>
-<translation id="2223747115628460234">Нээлттэй табууд руу буцах</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2224444042887712269">Энэ тохиргоо нь <ph name="OWNER_EMAIL" />-д хамаатай.</translation>
 <translation id="2224551243087462610">Хавтасны нэрийг засах</translation>
@@ -1732,7 +1731,6 @@
 <translation id="2318143611928805047">Цаасны хэмжээ</translation>
 <translation id="2319459402137712349">Гарыг нээхийн тулд текстийн талбарыг сонгоно уу. Та мөн дэлгэцийнхээ доор байх Гарын дүрс тэмдгийг сонгох боломжтой.</translation>
 <translation id="2319993584768066746">Нэвтрэх дэлгэцийн зургууд</translation>
-<translation id="2322015964223112232">Нээлттэй табууд руу буцах</translation>
 <translation id="2322193970951063277">Толгой болон хөлийн хэсэг</translation>
 <translation id="2322622365472107569">Дуусах цаг <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Хадгалсан Wi-Fi сүлжээнүүд</translation>
@@ -2845,6 +2843,7 @@
 <translation id="3143515551205905069">Синкийг цуцлах</translation>
 <translation id="3143754809889689516">Эхнээс нь тоглуулах</translation>
 <translation id="3144647712221361880">Холбоосыг нээх</translation>
+<translation id="3146436581677566946">Төхөөрөмж дээрх загвар</translation>
 <translation id="3147878021189006333">Omnibox</translation>
 <translation id="3149510190863420837">Chrome Аппликейшнууд</translation>
 <translation id="3150927491400159470">Хатуу дискийг дахин ачаалах</translation>
@@ -3210,6 +3209,7 @@
 <translation id="3424969259347320884">Чихтэй Хуудас Гэмтсэн Үед Хийж Байсан Зүйлээ Тайлбарлана уу</translation>
 <translation id="3426562492084153055">Ур чадваруудыг үзэх</translation>
 <translation id="3427092606871434483">Зөвшөөрөх (өгөгдмөл)</translation>
+<translation id="3427822597374329810">Жижиг мэргэжлийн загвар</translation>
 <translation id="3429086384982427336">Доор жагсаасан аппууд протоколын холбооснуудыг хэзээ ч зохицуулахгүй.</translation>
 <translation id="3429174588714165399">Энэ хуудас руу шилжих товчлол үүсгэх</translation>
 <translation id="3429271624041785769">Веб контентын хэлнүүд</translation>
@@ -3590,6 +3590,7 @@
 <translation id="3701167022068948696">Одоо засах</translation>
 <translation id="3701515417135397388">Нууц үг өгөгдлийн зөрчилд алдагдсан тохиолдолд танд сануулах</translation>
 <translation id="3701778844313851487">Өргөтгөл рүү очих</translation>
+<translation id="3701846426433416920">Загварыг устгах</translation>
 <translation id="3703166520839776970">Хэрэв энэ асуудал тохиолдсоор байвал <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-с нэмэлт мэдээлэл авахын тулд доорх "Дэлгэрэнгүй мэдээлэл"-ийг сонгоно уу.</translation>
 <translation id="3703699162703116302">Тасалбарыг сэргээсэн</translation>
 <translation id="370415077757856453">JavaScript-г блоклосон</translation>
@@ -4384,6 +4385,7 @@
 <translation id="429312253194641664">Сайт медиа тоглуулж байна</translation>
 <translation id="4293154608148215505">таны утас</translation>
 <translation id="4293219510510666933">Хөтчийн түүхээсээ хайх, зочилсон сайтуудаа олоход өдөр тутмын хэрэглээний хэл ашиглаарай. Та мөн асуулт асууж, хөтчийн түүхдээ тулгуурласан хариулт авах боломжтой. Энэ тохиргоо асаалттай байна.</translation>
+<translation id="429344752071832554">Бүлгийн сонголтыг болиулах</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" />-г таталтын түүхээс устгасан хэдий ч энэ нь таны төхөөрөмжид байсаар байна</translation>
 <translation id="429530814437327574">Өрсөн байдлаар харуулах</translation>
 <translation id="4295979599050707005">Chrome болон Google Play-н вебсайт, апп болон өргөтгөл дээр таны <ph name="USER_EMAIL" /> бүртгэлийг ашиглах боломжтой болохыг баталгаажуулахын тулд дахин нэвтэрнэ үү. Мөн та энэ бүртгэлийг устгаж болно. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -4468,6 +4470,7 @@
 <translation id="4360738659108163902">Хулганын баруун талыг товших</translation>
 <translation id="4361745360460842907">Таб хэлбэрээр нээх</translation>
 <translation id="4362459470237309049">Хулганын товчийг суллахын тулд “.”-г ашиглана уу</translation>
+<translation id="4362871358537270439">Хажуугийн самбарт бусад төхөөрөмжийн табыг харуулах</translation>
 <translation id="4363262124589131906">Миний драйвын шинэ файлууд энэ Chromebook-д автоматаар синк хийхээ болино</translation>
 <translation id="4364129298304269786">Сайтууд зохиогчийн эрхээр хамгаалагдсан контентыг тоглуулахын тулд контент хамгаалах үйлчилгээг ашиглаж болно</translation>
 <translation id="4364327530094270451">Амтат гуа</translation>
@@ -6610,7 +6613,6 @@
 <translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" />-р видеоны фреймийг хайх</translation>
 <translation id="6025215716629925253">Stack Trace</translation>
-<translation id="6026436621921471553">Табын бүлгийн сонголтыг болиулах</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB төхөөрөмжийг холбосон</translation>
 <translation id="6027143200498653403">Та түүхийнхээ талаар асуулт асуухдаа зочилсон хуудаснаасаа тодорхой мэдээллийн талаарх хариултыг авах боломжтой</translation>
 <translation id="6027945736510816438">Та <ph name="WEBSITE" />-г хэлж байна уу?</translation>
@@ -7076,7 +7078,6 @@
 <translation id="6399675241776343019">Татгалзсан</translation>
 <translation id="6399774419735315745">Тагнуулч</translation>
 <translation id="6400360390396538896">Үргэлж <ph name="ORIGIN" /> дээр</translation>
-<translation id="6400714103322134861">Табын бүлгийн сонголтыг болиулах</translation>
 <translation id="6401118106417399952">Таны төхөөрөмжийн EID нь <ph name="EID_NUMBER" /> бөгөөд төхөөрөмжийн серийн дугаар нь <ph name="SERIAL_NUMBER" /> юм. Эдгээр дугаарыг үйлчилгээг идэвхжүүлэхэд туслахад ашиглаж болно.</translation>
 <translation id="6402042774506839496">Шалтгааныг мэдэж авахын тулд апп хөгжүүлэгчтэй холбогдоно уу</translation>
 <translation id="6402921224457714577">Сайтууд таны MIDI төхөөрөмжүүдийг хянах болон дахин программчлахыг хүсэх боломжтой</translation>
@@ -8117,6 +8118,7 @@
 <translation id="7188508872042490670">Төхөөрөмж дээрх сайтын өгөгдөл</translation>
 <translation id="7188755083797868960">Товчлолоор унших горимыг илүү хурдан нээгээрэй. Унших горимыг асаах/унтраахын тулд Alt + Shift + R дээр дарна уу.</translation>
 <translation id="7189234443051076392">Tөхөөрөмждөө хангалттай зай гаргана уу</translation>
+<translation id="7189558282078169397">Бусад төхөөрөмжийн таб</translation>
 <translation id="7189965711416741966">Хурууны хээг нэмсэн</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />-г блоклох уу?</translation>
 <translation id="7191063546666816478">Зарим дэмжигдсэн холбоосыг <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> болон өөр <ph name="NUMBER_OF_OTHER_APPS" /> аппад нээх боломжтой хэвээр байна.</translation>
@@ -10044,7 +10046,6 @@
 <translation id="8652400352452647993">Өргөтгөл багцлахад алдаа гарлаа</translation>
 <translation id="8654151524613148204">Энэ файлыг таны компьютерт боловсруулахад хэтэрхий том байна. Уучлаарай.</translation>
 <translation id="8655295600908251630">Суваг</translation>
-<translation id="8656101380279383244">Табын бүлгийг сонгох</translation>
 <translation id="8656888282555543604">Брайл нэвтрэлтийг идэвхжүүлэх</translation>
 <translation id="8657393004602556571">Та санал хүсэлтээ болихыг хүсэж байна уу?</translation>
 <translation id="8657542881463614516">Хуудаснуудын хооронд шилжихийн тулд шудрах зангааг ашиглана уу</translation>

@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">iOS で [<ph name="BEGIN_BOLD" />デフォルトのアプリ<ph name="END_BOLD" />] の設定を開く</translation>
 <translation id="1938871630297275912">{count,plural, =1{リンクを受信しました}other{{count} 件のリンクを受信しました}}</translation>
 <translation id="1941314575388338491">ダブルタップしてコピー。</translation>
+<translation id="1942483019269000450">タスクを続行するため、Gemini は Google ウォレットにクレジットカード情報の入力をリクエストできます</translation>
 <translation id="1943478190258551035">メニュー → 設定</translation>
 <translation id="1944477975050820119">AI を活用した新しいブラウジング方法を見つけるのに役立つリアルタイムの提案が表示されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">管理対象アカウントでログインする</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">新しいアイテム</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> 個のアカウントで同じパスワードを使用しています</translation>
 <translation id="205013082884273671">画面に表示されているものを検索</translation>
+<translation id="2053311407685904414">住所を選択してください</translation>
 <translation id="2054044186557130763"><ph name="NAME" />（<ph name="EMAIL" />）としてログインします、組織によって管理されています。</translation>
 <translation id="2059166748188874810">市区町村</translation>
 <translation id="2060638295449304809">この住所は、このデバイスにのみ保存されます。他のデバイスで使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">翻訳</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2360196772093551345">モバイルサイトをリクエスト</translation>
+<translation id="2360272811987888433">手動でログイン</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）としてログインしています。設定を開きます。</translation>
 <translation id="2367025302166767427">情報を入力できません</translation>
 <translation id="2371084566192454134">タブとタブグループ</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Google フォトに保存</translation>
 <translation id="3406506285180498376">ページを共有…</translation>
 <translation id="340669334496430859">最終更新日</translation>
+<translation id="3407832712016477396">Gemini は Google パスワード マネージャーを使用して、ユーザーの代わりにログインできます</translation>
 <translation id="3409785640040772790">マップ</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3419787211763835342">高精度の自動入力の改善にご協力ください</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">許可しない</translation>
 <translation id="4293154608148215505">スマートフォン</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> としてログインしますか？</translation>
+<translation id="4297031046690565608">手動で入力</translation>
+<translation id="4297418774230471285">個人情報を選択してください</translation>
 <translation id="4302061870579014542">位置を設定</translation>
 <translation id="4304713468139749426">パスワード マネージャー</translation>
 <translation id="4309403553630140242">詳細を確認するにはダブルタップします</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini は AI であり、不正確な情報を表示することがあります。<ph name="BEGIN_LINK" />Google に送信される関連データの詳細<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">インポートするアイテムはありません</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> にログインしてください</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">この商品はすでにトラッキングしています。</translation>
 <translation id="5327248766486351172">名前</translation>
@@ -2206,6 +2213,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7839994177130598711">ファミリー メンバーが Google パスワード マネージャーを使用して <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> にログインする際に、あなたのユーザー名とパスワードを使用できるようになりました。</translation>
 <translation id="7841180087127694526">コピーしたテキストを検索</translation>
 <translation id="7841418003178675048">新しいタブページに表示するカードを選択してください。</translation>
+<translation id="7842369010458597654">お支払い情報を入力してください</translation>
 <translation id="7845466610722898">リーディング リストを表示</translation>
 <translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="784623644169604270">最近のアクティビティはありません</translation>

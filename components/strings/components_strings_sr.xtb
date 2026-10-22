@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">Нападачи на сајту који сте пробали да посетите могу да вас преваре да инсталирате софтвер или откријете ствари попут лозинки, телефона или бројева кредитних картица. Chrome топло препоручује да се вратите на безбедно место. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Безбедно додајте личну карту у Google новчаник</translation>
 <translation id="1398743098754840707">Сајтови које додате овде неће се користити за одговоре, чак и ако је картица отворена. Ако се сајт који додате тренутно користи у конверзацији, може да прође до 30 минута док конверзација не престане да га наводи.</translation>
+<translation id="1403359480263156644">Име и презиме власника картице је ажурирано</translation>
 <translation id="1405567553485452995">Светлозелена</translation>
 <translation id="1406370515365284486">Начини плаћања ће и даље бити сачувани</translation>
 <translation id="1406500794671479665">Верификовање...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">Скенирајте нову картицу</translation>
 <translation id="2501270939904835585">Налепнице (сатен)</translation>
 <translation id="2501278716633472235">Назад</translation>
+<translation id="250307989715832083">Додај потпис</translation>
 <translation id="250346157641628208">Папир (инкџет)</translation>
 <translation id="2505063700931618106">Информације о картици су сачуване</translation>
 <translation id="2505268675989099013">Заштити налог</translation>
@@ -1596,7 +1598,6 @@
 <translation id="3693516565203081475">Изаберите начин плаћања</translation>
 <translation id="3698353241727597930">Администратор је конфигурисао да чува <ph name="FILES" /> у меморијском простору од <ph name="CLOUD_STORAGE" /> којим се управља на нивоу предузећа. Ове фајлове можемо да надгледамо, проверавамо и задржавамо када их избришете.</translation>
 <translation id="3698629142018988477">Дугме Направи сајт, активирајте га да бисте брзо направили нов сајт у Google сајтовима</translation>
-<translation id="3698708128812719147">Притисните Ctrl двапут било где на вебу да бисте пронашли и попунили још информација</translation>
 <translation id="3700094625653511150">Да бисте сакрили опције за плаћање касније, идите на <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Користите отисак прста за попуњавање лозинки</translation>
 <translation id="3701427423622901115">Ресетовање је потврђено.</translation>
@@ -1655,7 +1656,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> жели да промени приступ локацији са приближне на прецизну</translation>
 <translation id="3772211998634047851">Папир (издржљив)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нову белешку у Google Keep-у</translation>
-<translation id="3778045607993018262">Pix налог ће се повезати са налогом <ph name="ACCOUNT_EMAIL" />. Да бисте онемогућили препознавање Pix кода, идите у <ph name="BEGIN_LINK1" />Подешавања Chrome-а<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Излазна преграда</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth уређаји</translation>
@@ -1901,7 +1901,6 @@
 <translation id="4185037616931963178">Безбедно ажурирајте број обештећења</translation>
 <translation id="4186035307311647330">Опозови праћење цене</translation>
 <translation id="4191334393248735295">Дужина</translation>
-<translation id="4192770747482479191">Притисните ⌘ двапут било где на вебу да бисте пронашли и попунили још информација</translation>
 <translation id="4195459680867822611">Дугме Прикажи Chrome савете, активирајте га да бисте сазнали више о Chrome функцијама</translation>
 <translation id="4195643157523330669">Отвори на новој картици</translation>
 <translation id="4196861286325780578">&amp;Понови премештање</translation>
@@ -1919,6 +1918,7 @@
 <translation id="4218327733815631046">Задржи приближну локацију</translation>
 <translation id="4219596572397833317">Погледајте историју цена и друго да бисте лакше куповали на паметнији начин.</translation>
 <translation id="4220128509585149162">Отказивања</translation>
+<translation id="4220745762102459826">и друго</translation>
 <translation id="4221630205957821124">&lt;h4&gt;1. корак: Пријавите се на портал&lt;/h4&gt;
     &lt;p&gt;На местима попут кафића или аеродрома морате да се пријавите на WiFi мреже. Да бисте видели страницу за пријављивање, посетите страницу која користи &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@
 <translation id="483241715238664915">Укључи упозорења</translation>
 <translation id="4833567658337394628">Налепљивање се не препоручује</translation>
 <translation id="4840250757394056958">Прегледајте историју Chrome-а</translation>
+<translation id="4842085418602350953">Следећи пут платите помоћу Pix-а без мењања апликације</translation>
 <translation id="4842365697443353018">Обришите образац да бисте користили опцију плаћања касније</translation>
 <translation id="484462545196658690">Аутоматски</translation>
 <translation id="4844937814014739139">Скроловање и зумирање дељених картица</translation>
@@ -2468,6 +2469,7 @@
 <translation id="5115232566827194440">Замена ограничене управљане сесије госта</translation>
 <translation id="5115563688576182185">(64-битни)</translation>
 <translation id="5116015291385561204">Потврдите идентитет да бисте аутоматски попунили осетљиве информације</translation>
+<translation id="5121592697493894155">Google претрага у бочној табли</translation>
 <translation id="5122786942953798871">Коверта (памук)</translation>
 <translation id="5123063207673082822">Викенд</translation>
 <translation id="5124797626438336458">Екран са грешком за опцију Купите одмах, платите касније отворен је до половине екрана.</translation>
@@ -2880,6 +2882,7 @@
 <translation id="5794065675298686371">Укључите обавештења о праћењу цена</translation>
 <translation id="5794093550048860249">Број за праћење</translation>
 <translation id="5796050750059455142">Укључите <ph name="BEGIN_LINK" />Паметне функције у другим Google производима<ph name="LINK_END" /></translation>
+<translation id="5797916798049571144">Сачувано је са информацијама о картици и аутоматски се попуњава при плаћању</translation>
 <translation id="5797984091151707075">Блокирају смернице администратора</translation>
 <translation id="5804241973901381774">Дозволе</translation>
 <translation id="5806871454498484178">Скроловање и зумирање је блокирано</translation>
@@ -4298,6 +4301,7 @@
 <translation id="8208629719488976364">Садржај страница које штампате и информације о штампачу се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениран у потрази за осетљивим подацима и може да се чува на основу смерница предузећа и може да буде видљив администратору.</translation>
 <translation id="8210490490377416373">Изаберите назив смерница</translation>
 <translation id="8211406090763984747">Веза је безбедна</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{и још 1 извор}one{и још # извор}few{и још # извора}other{и још # извора}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14×18 in</translation>
 <translation id="8218327578424803826">Додељена локација:</translation>

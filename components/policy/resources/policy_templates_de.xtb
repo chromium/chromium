@@ -3495,6 +3495,8 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte 
 <translation id="3146711617256415776">Stimmen für Text-zu-Sprache bei Enhanced Network nicht zulassen, wenn die Funktion „Vorlesen“ verwendet wird</translation>
 <translation id="315013437951136266">Funktion „<ph name="IP_PROTECTION_NAME" />“ aktivieren.</translation>
 <translation id="3150351525324499342"><ph name="PRODUCT_NAME" />-Symbol nicht standardmäßig in der Symbolleiste anzeigen, sondern Nutzer auswählen lassen</translation>
+<translation id="3151501327418961907">Wenn diese Richtlinie auf „0“ festgelegt oder nicht konfiguriert ist, werden die Richtlinien „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ und „<ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" />“ nur auf Nutzerebene für mit einer Organisation verknüpfte Nutzer in einem verwalteten Browser angewendet.
+Wenn diese Richtlinie auf „1“ festgelegt ist, werden die Richtlinien „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ und „<ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" />“ auf Nutzerebene angewendet, auch wenn der Nutzer nicht mit einer Organisation verknüpft ist.</translation>
 <translation id="3152135410085709340">Lokalen Dateizugriff auf „file://“-URLs auf diesen Websites im PDF-Viewer zulassen</translation>
 <translation id="3152425128389603870">Unified Desktop verfügbar machen und standardmäßig aktivieren</translation>
 <translation id="3159375329008977062">Nutzer darf Crostini-Container über die Benutzeroberfläche exportieren/importieren</translation>
@@ -4305,6 +4307,21 @@ Die Datenübertragung mit Datenexport muss ebenfalls aktiviert sein, damit die A
 <translation id="370314752761795411"><ph name="PRODUCT_NAME" /> mit <ph name="MS_WIN_NAME" /> starten</translation>
 <translation id="3711895659073496551">Suspend-Modus</translation>
 <translation id="3712861436661566358">Profiltrennung erzwingen</translation>
+<translation id="3715589988915487768">Konfiguriert eine Liste von Bereitstellungsdomains (Provisioning Domains, PvDs), die <ph name="PRODUCT_NAME" /> zum dynamischen Abrufen von Proxykonfigurationen verwendet.
+
+Mit dieser Richtlinie kann eine Liste von Domainnamen oder Ressourcen-URIs angegeben werden, die Bereitstellungsdomains gemäß RFC 8801 („Discovering Provisioning Domain Names and Data“) darstellen. Für jede PvD löst der Browser die entsprechende JSON-Konfiguration auf, indem er eine HTTPS-Anfrage an den bekannten Endpunktpfad „https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd“ sendet.
+
+Jeder Eintrag in der Liste gibt Folgendes an:
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: Die Kennung der Bereitstellungsdomain (ein Domainname).
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: Die optionale Authentifizierungskonfiguration. Wenn sie nicht konfiguriert oder auf „none“ gesetzt ist, wird keine Authentifizierung durchgeführt. Wenn die Einstellung „profile_bearer_token“ lautet, weist sie den Browser an, ein OAuth2-Zugriffstoken mit dem angegebenen Bereich für das angemeldete primäre Konto abzurufen und es im „Authorization“-Header als „Bearer“-Token anzuhängen.
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: Eine optionale Liste benutzerdefinierter HTTP-Header, die beim Abfragen des PvD-Endpunkts enthalten sein sollen. Dynamische Werte können eingefügt werden, z. B. „profile_id“ (steht für eine stabile, eindeutige Kennung des Browserprofils auf dem Gerät, die Targeting nach Profilkonfiguration ermöglicht) oder „accept_language“ (steht für die bevorzugten Sprachen des Browsers).
+
+Die abgerufenen Konfigurationen werden gemäß dem RFC 8801-Schema geparst. Es werden nur Routingregeln und Proxys aus der JSON-Nutzlast der PvD angewendet, die sich auf die Proxykonfiguration beziehen. Wenn diese Richtlinie nicht konfiguriert ist, werden keine Bereitstellungsdomains abgefragt oder zum Abrufen von Proxykonfigurationen verwendet.
+
+Diese Richtlinie kann nur dann auf Nutzerebene festgelegt werden, wenn der Nutzer mit dem Browser verknüpft ist, der Browser nicht verwaltet wird oder die Richtlinie „<ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" />“ auf „1“ festgelegt ist.</translation>
 <translation id="3719826155360621982">Startseite</translation>
 <translation id="3724039569609354541">Standardverhalten anwenden, wenn festgelegt wird, ob Websites Anfragen an Netzwerkendpunkte senden können</translation>
 <translation id="3726715125055227414">Diese Richtlinie konfiguriert <ph name="PRODUCT_OS_NAME" /> so, dass bei Netzwerkanfragen vom Anmeldebildschirm aus die bevorzugten Algorithmen für Schlüsselvereinbarungen (unterstützte Gruppen) für TLS 1.3 so angeordnet werden, dass Algorithmen Vorrang erhalten, die von einer bestimmten Compliance-Regelung zugelassen sind.
@@ -11627,6 +11644,7 @@ Die Funktion ist nur in Canary-Versionen verfügbar.
 
 Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann auf die Seite zugegriffen werden.
 Ist die Richtlinie deaktiviert, wird die Seite blockiert.</translation>
+<translation id="8266506455952754231">Bestimmt, welche verwalteten Nutzer die Richtlinien „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ und „<ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" />“ festlegen können.</translation>
 <translation id="8266778278542911985">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Zugriff auf serielle Ports bitten. Ist die Richtlinie auf "2" gesetzt, wird der Zugriff auf serielle Ports blockiert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>

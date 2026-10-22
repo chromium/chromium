@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରିଥିବା ସାଇଟରେ ଆକ୍ରମଣକାରୀମାନେ ଆପଣଙ୍କୁ ସଫ୍ଟୱେର ଇନଷ୍ଟଲ କରିବାକୁ କିମ୍ବା ଆପଣଙ୍କ ପାସୱାର୍ଡ, ଫୋନ ବା କ୍ରେଡିଟ କାର୍ଡ ନମ୍ବରଗୁଡ଼ିକ ପରି ଜିନିଷଗୁଡ଼ିକୁ ପ୍ରକାଶ କରିବାକୁ ପ୍ରତାରଣା କରିପାରନ୍ତି। ସୁରକ୍ଷାକୁ ଫେରିବା ପାଇଁ Chrome ଦୃଢ଼ ଭାବେ ସୁପାରିଶ କରେ। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Google Walletରେ ID କାର୍ଡକୁ ସିକ୍ୟୁର ଭାବେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1398743098754840707">ଟାବ ଖୋଲା ଥିଲେ ମଧ୍ୟ ଆପଣ ଏଠାରେ ଯୋଗ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ ଉତ୍ତରଗୁଡ଼ିକ ପାଇଁ ରେଫରେନ୍ସ କରାଯିବ ନାହିଁ। ଯଦି ଆପଣ ଯୋଗ କରିଥିବା ଏକ ସାଇଟକୁ ବର୍ତ୍ତମାନ ଏକ ଥ୍ରେଡରେ ବ୍ୟବହାର କରାଯାଉଛି, ତେବେ ଥ୍ରେଡ ଏହାକୁ ରେଫରେନ୍ସ କରିବା ବନ୍ଦ କରିବାକୁ 30 ମିନିଟ ପର୍ଯ୍ୟନ୍ତ ସମୟ ଲାଗିପାରେ।</translation>
+<translation id="1403359480263156644">କାର୍ଡହୋଲ୍ଡରଙ୍କ ନାମ ଅପଡେଟ କରାଯାଇଛି</translation>
 <translation id="1405567553485452995">ହାଲୁକା ସବୁଜ</translation>
 <translation id="1406370515365284486">ଆପଣଙ୍କ ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ଏବେ ବି ସେଭ କରାଯିବ</translation>
 <translation id="1406500794671479665">ଯାଞ୍ଚ ହେଉଛି...</translation>
@@ -664,7 +665,7 @@
 <translation id="2126374524350484896">PDF ପ୍ରଯୋଜକ:</translation>
 <translation id="2127090458081644412">ଏହି ଡିଭାଇସରେ ପାସୱାର୍ଡ ସେଭ କରାଯାଇଛି</translation>
 <translation id="2127747486437921899">ଇଟାଲିକ୍</translation>
-<translation id="2129163794581571479">Gemini ସହ ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ। ଉନ୍ନତ ଅଟୋଫିଲକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ଅନୁରୋଧ, ପୃଷ୍ଠା ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକୁ ରିଭ୍ୟୁ କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ସେଟିଂସ ପରିଚାଳନା କରନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="2129163794581571479">ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ସହ Gemini ଦ୍ୱାରା ସଞ୍ଚାଳିତ। ଉନ୍ନତ ଅଟୋଫିଲକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ଅନୁରୋଧ, ପୃଷ୍ଠା ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକୁ ରିଭ୍ୟୁ କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ସେଟିଂସ ପରିଚାଳନା କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ନୀତି ସେଟ୍ କରାଯାଇନଥିବା ଯୋଗୁଁ, ଆପଣଙ୍କ ଦ୍ୱାରା ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ଟେମ୍ପଲେଟ୍‍ଗୁଡ଼ିକ ଲାଗୁ ହୋଇନପାରେ।</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">ପେମେଣ୍ଟ ଅଟୋଫିଲକୁ ସକ୍ଷମ କରନ୍ତୁ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି।</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">ନୂଆ କାର୍ଡ ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2501270939904835585">ଲେବଲ (ସାଟିନ)</translation>
 <translation id="2501278716633472235">ଫେରନ୍ତୁ</translation>
+<translation id="250307989715832083">ଦସ୍ତଖତ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="250346157641628208">କାଗଜ (ଇଙ୍କଜେଟ)</translation>
 <translation id="2505063700931618106">କାର୍ଡ ସୂଚନା ସେଭ କରାଯାଇଛି</translation>
 <translation id="2505268675989099013">ଆକାଉଣ୍ଟର ସୁରକ୍ଷା କରନ୍ତୁ</translation>
@@ -1572,7 +1574,7 @@
 <translation id="3655670868607891010">ଯଦି ଆପଣ ଏହାକୁ ବାରମ୍ବାର ଦେଖୁଛନ୍ତି, ତେବେ ଏହି <ph name="HELP_LINK" />କୁ ଦେଖିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3658742229777143148">ପୁନରାବୃତ୍ତି</translation>
 <translation id="3659521826520353662">କେଉଁ ଆଡମିନିଷ୍ଟ୍ରେଟର-ପରିଭାଷିତ ୱେବସାଇଟଗୁଡ଼ିକୁ ଭିଜିଟ କରାଯାଇଛି ଏବଂ କେତେବେଳେ ସେଗୁଡ଼ିକୁ ଭିଜିଟ କରାଯାଇଛି: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">Gemini ସହ ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ। <ph name="BEGIN_LINK" />ସେଟିଂସ ପରିଚାଳନା କରନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="3663760610864720538">ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ସହ Gemini ଦ୍ୱାରା ସଞ୍ଚାଳିତ। <ph name="BEGIN_LINK" />ସେଟିଂସ ପରିଚାଳନା କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">ଏହି ପ୍ରଡକ୍ଟ ବିକ୍ରି କରୁଥିବା ଅନ୍ୟ ଷ୍ଟୋରଗୁଡ଼ିକରୁ ଅଧିକ କ୍ରୟ ବିକଳ୍ପ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="3664782872746246217">କୀୱାର୍ଡଗୁଡ଼ିକ:</translation>
 <translation id="3670030362669914947">ନମ୍ବର</translation>
@@ -1593,7 +1595,6 @@
 <translation id="3693516565203081475">ପେମେଣ୍ଟ ପଦ୍ଧତି ବାଛନ୍ତୁ</translation>
 <translation id="3698353241727597930">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="FILES" /> ଆପଣଙ୍କର ଏଣ୍ଟରପ୍ରାଇଜ-ଦ୍ୱାରା ପରିଚାଳିତ <ph name="CLOUD_STORAGE" /> ଷ୍ଟୋରେଜରେ ସେଭ କରିବା ପାଇଁ କନଫିଗର କରିଛି। ଆପଣ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଡିଲିଟ କଲେ, ସେଗୁଡ଼ିକୁ ମନିଟର, ଅଡିଟ କରାଯାଇପାରେ କିମ୍ବା ରଖାଯାଇପାରେ।</translation>
 <translation id="3698629142018988477">'ସାଇଟ ତିଆରି କରନ୍ତୁ' ବଟନ, Google Sitesରେ ଶୀଘ୍ର ଏକ ନୂଆ ସାଇଟ ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
-<translation id="3698708128812719147">ଅଧିକ ସୂଚନା ଖୋଜିବା ଏବଂ ପୂରଣ କରିବା ପାଇଁ ୱେବରେ ଯେ କୌଣସି ସ୍ଥାନରେ ଦୁଇଥର Ctrl ଦବାନ୍ତୁ</translation>
 <translation id="3700094625653511150">'ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ' ବିକଳ୍ପଗୁଡ଼ିକୁ ଲୁଚାଇବା ପାଇଁ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3700966190175650601">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ ଆପଣ ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
 <translation id="3701427423622901115">ରିସେଟ୍ ସ୍ୱୀକାର କରାଯାଇଛି।</translation>
@@ -1652,7 +1653,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> ଲୋକେସନ ଆକ୍ସେସକୁ ଆନୁମାନିକରୁ ସଠିକକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="3772211998634047851">କାଗଜ (ବଣ୍ଡ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepରେ ଶୀଘ୍ର ଏକ ନୂଆ ନୋଟ୍ ତିଆରି କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
-<translation id="3778045607993018262">Pix ଆକାଉଣ୍ଟକୁ <ph name="ACCOUNT_EMAIL" /> ସହ ଲିଙ୍କ କରାଯିବ। Pix କୋଡ ଡିଟେକ୍ସନକୁ ବନ୍ଦ କରିବା ପାଇଁ <ph name="BEGIN_LINK1" />Chrome ସେଟିଂସ<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3780694243617746492">ଆଉଟପୁଟ୍ ବିନ୍</translation>
 <translation id="3783418713923659662">MasterCard</translation>
 <translation id="3784372983762739446">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ</translation>
@@ -1898,7 +1898,6 @@
 <translation id="4185037616931963178">ରିଡ୍ରେସ ନମ୍ବରକୁ ସୁରକ୍ଷିତ ଭାବେ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="4186035307311647330">ମୂଲ୍ୟ ଅନଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="4191334393248735295">ଲମ୍ବ</translation>
-<translation id="4192770747482479191">ଅଧିକ ସୂଚନା ଖୋଜିବା ଏବଂ ପୂରଣ କରିବା ପାଇଁ ୱେବରେ ଯେ କୌଣସି ସ୍ଥାନରେ ଦୁଇଥର ⌘ ଦବାନ୍ତୁ</translation>
 <translation id="4195459680867822611">'Chrome ଟିପ୍ସ ଦେଖନ୍ତୁ' ବଟନ, Chromeର ଫିଚରଗୁଡ଼ିକ ବିଷୟରେ ଜାଣିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4195643157523330669">ନୂତନ ଟ୍ୟାବରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4196861286325780578">&amp;ଘୁଞ୍ଚାଇବା କାର୍ଯ୍ୟଟି ପୁଣିଥରେ କରନ୍ତୁ</translation>
@@ -1916,6 +1915,7 @@
 <translation id="4218327733815631046">ଆନୁମାନିକ ଲୋକେସନ ରଖନ୍ତୁ</translation>
 <translation id="4219596572397833317">ଅଧିକ ସ୍ମାର୍ଟ ଭାବେ ସପିଂ କରିବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ ମୂଲ୍ୟ ଇତିହାସ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଦେଖନ୍ତୁ।</translation>
 <translation id="4220128509585149162">କ୍ରାସ୍</translation>
+<translation id="4220745762102459826">ଏବଂ ଅଧିକ</translation>
 <translation id="4221630205957821124">&lt;h4&gt;ଷ୍ଟେପ୍‌ 1: ପୋର୍ଟଲ୍‌ରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ&lt;/h4&gt;
     &lt;p&gt;କେଫେ କିମ୍ୱା ଏୟାର୍‌ପୋର୍ଟ ଭଳି ସ୍ଥାନଗୁଡ଼ିକରେ ଥିବା ୱାଇ-ଫାଇ ନେଟ୍‌ୱର୍କରେ ଆପଣଙ୍କୁ ସାଇନ୍ ଇନ୍ କରିବା ଆବଶ୍ୟକ। ସାଇନ୍ ଇନ୍ ପୃଷ୍ଠା ଦେଖିବା ପାଇଁ &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt; ବ୍ୟବହାର କରୁଥିବା ଗୋଟିଏ ପୃଷ୍ଠାକୁ ଯାଆନ୍ତୁ।
     &lt;ol&gt;
@@ -2291,6 +2291,7 @@
 <translation id="483241715238664915">ଚେତାବନୀ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4833567658337394628">ପେଷ୍ଟ କରିବାକୁ ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
 <translation id="4840250757394056958">ଆପଣଙ୍କ Chrome ଇତିହାସ ଦେଖନ୍ତୁ</translation>
+<translation id="4842085418602350953">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପ୍ସକୁ ସ୍ୱିଚ ନକରି Pix ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4842365697443353018">ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ ବ୍ୟବହାର କରିବାକୁ ଫର୍ମ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="484462545196658690">ସ୍ୱତଃ</translation>
 <translation id="4844937814014739139">ସେୟାର କରାଯାଇଥିବା ଟାବଗୁଡ଼ିକୁ ସ୍କ୍ରୋଲ ଏବଂ ଜୁମ କରିବା</translation>
@@ -2465,6 +2466,7 @@
 <translation id="5115232566827194440">ପ୍ରତିବନ୍ଧିତ 'ପରିଚାଳିତ ଅତିଥି ସେସନ' ଓଭରରାଇଡ୍</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">ସମ୍ବେଦନଶୀଳ ସୂଚନାକୁ ଅଟୋଫିଲ କରିବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="5121592697493894155">ସାଇଡ ପେନେଲରେ Google Search</translation>
 <translation id="5122786942953798871">ଏନଭେଲପ (କଟନ)</translation>
 <translation id="5123063207673082822">ସପ୍ତାହର ଶେଷ ଦିନ</translation>
 <translation id="5124797626438336458">'ବର୍ତ୍ତମାନ-କ୍ରୟ କରନ୍ତୁ-ପରେ-ପେମେଣ୍ଟ କରନ୍ତୁ' ତ୍ରୁଟି ସ୍କ୍ରିନକୁ ଅଧା ଖୋଲାଯାଇଛି।</translation>
@@ -2877,6 +2879,7 @@
 <translation id="5794065675298686371">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5794093550048860249">ଟ୍ରାକିଂ ନମ୍ୱର</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />ଅନ୍ୟ Google ପ୍ରଡକ୍ଟରେ ସ୍ମାର୍ଟ ଫିଚର<ph name="LINK_END" />”କୁ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="5797916798049571144">ଏହା ଆପଣଙ୍କ କାର୍ଡ ସୂଚନା ସହିତ ସେଭ ହୋଇଛି, ତେଣୁ ଏହା ଚେକଆଉଟ ସମୟରେ ସ୍ୱତଃ ପୂରଣ ହେବ</translation>
 <translation id="5797984091151707075">ଆଡମିନ ନୀତି ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="5804241973901381774">ଅନୁମତିଗୁଡ଼ିକ</translation>
 <translation id="5806871454498484178">ସ୍କ୍ରୋଲ କରି ଜୁମ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
@@ -4294,6 +4297,7 @@
 <translation id="8208629719488976364">ଆପଣ ପ୍ରିଣ୍ଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର ବିଷୟବସ୍ତୁ ଏବଂ ଆପଣଙ୍କ ପ୍ରିଣ୍ଟର ବିଷୟରେ ସୂଚନା ବିଶ୍ଳେଷଣ ପାଇଁ Google Cloud କିମ୍ବା ତୃତୀୟ ପକ୍ଷଗୁଡ଼ିକୁ ପଠାଯାଏ। ଉଦାହରଣ ସ୍ଵରୂପ, ସେଗୁଡ଼ିକୁ ସମ୍ବେଦନଶୀଳ ଡାଟା ପାଇଁ ସ୍କାନ କରାଯାଇପାରେ ଏବଂ କମ୍ପାନୀ ନୀତିଗୁଡ଼ିକ ଆଧାରରେ ଷ୍ଟୋର କରାଯାଇପାରେ ଏବଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ଦେଖାଯାଇପାରେ।</translation>
 <translation id="8210490490377416373">ନୀତି ନାମ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8211406090763984747">ସଂଯୋଗ ସୁରକ୍ଷିତ ଅଛି</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 ଅନ୍ୟ ସୋର୍ସ}other{+ # ଅନ୍ୟ ସୋର୍ସ}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 ଇଞ୍ଚ</translation>
 <translation id="8218327578424803826">ହସ୍ତାନ୍ତରିତ ଲୋକେସନ୍:</translation>

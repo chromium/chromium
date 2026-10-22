@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">iOS-ൽ <ph name="BEGIN_BOLD" />ഡിഫോൾട്ട് ആപ്പ്<ph name="END_BOLD" /> ക്രമീകരണം തുറക്കുക</translation>
 <translation id="1938871630297275912">{count,plural, =1{ലിങ്ക് ലഭിച്ചു}other{{count} ലിങ്കുകൾ ലഭിച്ചു}}</translation>
 <translation id="1941314575388338491">പകർത്താൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="1942483019269000450">ടാസ്ക്ക് തുടരാൻ, നിങ്ങളുടെ ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങൾ പൂരിപ്പിക്കുന്നതിന് Google Wallet-നോട് Gemini-ക്ക് ആവശ്യപ്പെടാനാകും</translation>
 <translation id="1943478190258551035">മെനു → ക്രമീകരണം</translation>
 <translation id="1944477975050820119">AI ഉപയോഗിച്ച് ബ്രൗസ് ചെയ്യാനുള്ള പുതിയ മാർഗ്ഗങ്ങൾ കണ്ടെത്താൻ നിങ്ങളെ സഹായിക്കുന്ന തത്സമയ നിർദ്ദേശങ്ങൾ നേടുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">മാനേജ് ചെയ്‌ത അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">പുതിയ ഇനം</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> അക്കൗണ്ടുകൾ ഒരേ പാസ്‌വേഡ് ഉപയോഗിക്കുന്നു</translation>
 <translation id="205013082884273671">നിങ്ങളുടെ സ്ക്രീനിൽ കാണുന്നതെന്തും തിരയൂ</translation>
+<translation id="2053311407685904414">വിലാസം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2054044186557130763">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്ന, <ph name="NAME" /> <ph name="EMAIL" /> ആയി സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="2059166748188874810">മുൻസിപ്പാലിറ്റി</translation>
 <translation id="2060638295449304809">ഈ വിലാസം ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അത് നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2360196772093551345">മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
+<translation id="2360272811987888433">നേരിട്ടുള്ള സൈൻ ഇൻ</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. <ph name="USER_EMAIL" />. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="2367025302166767427">നിങ്ങളുടെ വിവരങ്ങൾ പൂരിപ്പിക്കുന്നതിൽ പ്രശ്‌നമുണ്ട്</translation>
 <translation id="2371084566192454134">ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Google Photos-ൽ സംരക്ഷിക്കുക</translation>
 <translation id="3406506285180498376">പേജ് പങ്കിടുക…</translation>
 <translation id="340669334496430859">അവസാനം പരിഷ്‌കരിച്ചത്</translation>
+<translation id="3407832712016477396">നിങ്ങൾക്ക് വേണ്ടി സൈൻ ഇൻ ചെയ്യാൻ Gemini-ക്ക് Google Password Manager ഉപയോഗിക്കാനാകും</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">2023 ഒക്‌ടോബർ 25</translation>
 <translation id="3419787211763835342">'മെച്ചപ്പെടുത്തിയ സ്വയമേവ പൂരിപ്പിക്കൽ' മെച്ചപ്പെടുത്താൻ സഹായിക്കൂ</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">ഒരിക്കലും അനുവദിക്കരുത്</translation>
 <translation id="4293154608148215505">നിങ്ങളുടെ ഫോൺ</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്യണോ?</translation>
+<translation id="4297031046690565608">നേരിട്ട് നൽകുക</translation>
+<translation id="4297418774230471285">വ്യക്തിപരമായ വിവരങ്ങൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4302061870579014542">സ്ഥാനം സജ്ജീകരിക്കുക</translation>
 <translation id="4304713468139749426">പാസ്‌വേഡ് മാനേജർ</translation>
 <translation id="4309403553630140242">കൂടുതൽ വിവരങ്ങൾക്ക് ഡബിൾ ടാപ്പ് ചെയ്യുക</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini AI ആണ്, അതിന് തെറ്റുകൾ സംഭവിക്കാം. <ph name="BEGIN_LINK" />Google-ലേക്ക് അയച്ച പ്രസക്തമായ ഡാറ്റയെക്കുറിച്ച് കൂടുതൽ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ഇമ്പോർട്ട് ചെയ്യാനൊന്നുമില്ല</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />-ൽ <ph name="INDEX" /> എണ്ണം</translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5318298563956633672">നിങ്ങൾ ഇതിനകം ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നു.</translation>
 <translation id="5327248766486351172">പേര്</translation>
@@ -2206,6 +2213,7 @@
 <translation id="7839994177130598711">നിങ്ങളുടെ കുടുംബാംഗങ്ങൾക്ക് ഇപ്പോൾ, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും.</translation>
 <translation id="7841180087127694526">പകർത്തിയ ടെക്‌സ്‌റ്റ് തിരയുക</translation>
 <translation id="7841418003178675048">ഏതെല്ലാം കാർഡുകളാണ് നിങ്ങൾക്ക് പുതിയ ടാബ് പേജിൽ കാണേണ്ടതെന്ന് തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="7842369010458597654">പേയ്മെന്റ് വിവരങ്ങൾ പൂരിപ്പിക്കുന്നു</translation>
 <translation id="7845466610722898">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ് കാണിക്കുക</translation>
 <translation id="7846161022626028328">ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="784623644169604270">സമീപകാല ആക്റ്റിവിറ്റിയില്ല</translation>

@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">‏مهاجمان ممکن است در سایتی که می‌خواستید بازدید کنید شما را فریب دهند تا نرم‌افزاری نصب کنید یا مواردی مثل گذرواژه، شماره تلفن، یا شماره کارت اعتباری‌تان را افشا کنید. ‫Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">‏افزودن امن کارت شناسایی به «کیف پول Google»</translation>
 <translation id="1398743098754840707">سایت‌هایی که در اینجا اضافه می‌کنید برای پاسخ‌ها ارجاع داده نخواهند شد، حتی اگر زبانه باز باشد. اگر سایتی که اضافه می‌کنید درحال‌حاضر در رشته‌ای استفاده می‌شود، ممکن است تا ۳۰ دقیقه طول بکشد تا ارجاع رشته به آن متوقف شود.</translation>
+<translation id="1403359480263156644">نام دارنده کارت به‌روز شد</translation>
 <translation id="1405567553485452995">سبز روشن</translation>
 <translation id="1406370515365284486">روش‌های پرداختتان همچنان ذخیره خواهند ماند</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
@@ -908,6 +909,7 @@
 <translation id="2498091847651709837">اسکن کارت جدید</translation>
 <translation id="2501270939904835585">برچسب (ساتن)</translation>
 <translation id="2501278716633472235">برگشتن</translation>
+<translation id="250307989715832083">افزودن امضا</translation>
 <translation id="250346157641628208">کاغذ (جوهرافشان)</translation>
 <translation id="2505063700931618106">اطلاعات کارت ذخیره شد</translation>
 <translation id="2505268675989099013">محافظت از حساب</translation>
@@ -1597,7 +1599,6 @@
 <translation id="3693516565203081475">انتخاب روش پرداخت</translation>
 <translation id="3698353241727597930">سرپرست شما پیکربندی را به‌گونه‌ای انجام داده است که <ph name="FILES" /> در فضای ذخیره‌سازی <ph name="CLOUD_STORAGE" /> تحت‌مدیریت سازمان ذخیره شوند. این فایل‌ها ممکن است پایش و بررسی شوند و وقتی آن‌ها را حذف می‌کنید نگه داشته شوند.</translation>
 <translation id="3698629142018988477">‏دکمه ایجاد سایت؛ برای ایجاد سریع سایت جدید در Google Sites، آن را فعال کنید</translation>
-<translation id="3698708128812719147">‏برای پیدا کردن و تکمیل اطلاعات بیشتر، در هر جایی از وب دوبار Ctrl را فشار دهید</translation>
 <translation id="3700094625653511150">برای پنهان کردن گزینه‌های «پرداخت بعداً»، به <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> بروید</translation>
 <translation id="3700966190175650601">از اثر انگشت برای تکمیل گذرواژه‌ها استفاده می‌کنید</translation>
 <translation id="3701427423622901115">بازنشانی تأیید شد.</translation>
@@ -1656,7 +1657,6 @@
 <translation id="3769584711865378220">‫<ph name="URL" /> می‌خواهد اجازه دسترسی مکان را از تقریبی به دقیق تغییر دهد</translation>
 <translation id="3772211998634047851">کاغذ (باند)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع یادداشت جدید در Google Keep، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
-<translation id="3778045607993018262">‏حساب Pix به <ph name="ACCOUNT_EMAIL" /> پیوند داده خواهد شد. برای خاموش کردن شناسایی کد Pix، به <ph name="BEGIN_LINK1" />تنظیمات Chrome<ph name="END_LINK1" /> بروید</translation>
 <translation id="3780694243617746492">مخزن خروجی</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">دستگاه‌های بلوتوث</translation>
@@ -1902,7 +1902,6 @@
 <translation id="4185037616931963178">به‌روز کردن شناسه جبران خطای تطبیق به‌طور امن</translation>
 <translation id="4186035307311647330">لغو پیگیری قیمت</translation>
 <translation id="4191334393248735295">طول</translation>
-<translation id="4192770747482479191">برای پیدا کردن و پر کردن اطلاعات بیشتر، در هرجایی از وب دوبار کلید ⌘ را فشار دهید</translation>
 <translation id="4195459680867822611">‏دکمه نکته‌های Chrome؛ برای اطلاع از ویژگی‌های جدید Chrome، آن را فعال کنید</translation>
 <translation id="4195643157523330669">باز کردن در زبانه جدید</translation>
 <translation id="4196861286325780578">&amp;انجام مجدد انتقال</translation>
@@ -1920,6 +1919,7 @@
 <translation id="4218327733815631046">حفظ مکان تقریبی</translation>
 <translation id="4219596572397833317">با دیدن سابقه قیمت و اطلاعات بیشتر، هوشمندانه‌تر خرید کنید.</translation>
 <translation id="4220128509585149162">خرابی‌ها</translation>
+<translation id="4220745762102459826">و غیره</translation>
 <translation id="4221630205957821124">‏&lt;h4&gt;مرحله ۱: به سیستم پورتال وارد شوید&lt;/h4&gt;
     &lt;p&gt;شبکه‌های Wi-Fi در مکان‌هایی مانند کافه‌ها یا فرودگاه‌ها از شما می‌خواهند به سیستم وارد شوید. برای دیدن صفحه ورود به سیستم، به صفحه‌ای بروید که از &lt;code&gt;http://&lt;/code&gt;استفاده می‌کند.&lt;/p&gt;
     &lt;ol&gt;
@@ -2295,6 +2295,7 @@
 <translation id="483241715238664915">روشن کردن هشدارها</translation>
 <translation id="4833567658337394628">جای‌گذاری توصیه نمی‌شود</translation>
 <translation id="4840250757394056958">‏مشاهده سابقه Chrome</translation>
+<translation id="4842085418602350953">‏دفعه بعد، بدون عوض کردن برنامه‌ها با Pix پرداخت کنید</translation>
 <translation id="4842365697443353018">برای استفاده کردن از «بعداً پرداخت شود»، فرم را پاک کنید</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4844937814014739139">پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده</translation>
@@ -2469,6 +2470,7 @@
 <translation id="5115232566827194440">ملغی کردن جلسه مهمان مدیریت‌شده محدود</translation>
 <translation id="5115563688576182185">(۶۴ بیت)</translation>
 <translation id="5116015291385561204">برای تکمیل خودکار اطلاعات حساس، هویتتان را درستی‌سنجی کنید</translation>
+<translation id="5121592697493894155">‏«جستجوی Google» در پانل کناری</translation>
 <translation id="5122786942953798871">پاکت (پنبه‌ای)</translation>
 <translation id="5123063207673082822">آخر هفته</translation>
 <translation id="5124797626438336458">صفحه خطای «الآن خریدن، پراخت بعداً» به‌صورت نیمه باز شده است.</translation>
@@ -2881,6 +2883,7 @@
 <translation id="5794065675298686371">روشن کردن اعلان‌های پیگیری قیمت</translation>
 <translation id="5794093550048860249">شماره ردگیری</translation>
 <translation id="5796050750059455142">‏روشن کردن «<ph name="BEGIN_LINK" />ویژگی‌های هوشمند در سایر محصولات Google<ph name="LINK_END" />»</translation>
+<translation id="5797916798049571144">این نام با اطلاعات کارتتان ذخیره می‌شود تا هنگام تسویه‌حساب به‌طور خودکار پر شود</translation>
 <translation id="5797984091151707075">توسط خط‌مشی سرپرست مسدود شده است</translation>
 <translation id="5804241973901381774">اجازه‌ها</translation>
 <translation id="5806871454498484178">پیمایش و بزرگ‌نمایی مسدود شده است</translation>
@@ -4300,6 +4303,7 @@
 <translation id="8208629719488976364">‏محتوای صفحه‌هایی که چاپ می‌کنید و اطلاعاتی درباره چاپگرتان برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شوند. مثلاً ممکن است ازنظر وجود داده‌های حساس اسکن شود و ممکن است براساس خط‌مشی‌های شرکت ذخیره شود و برای سرپرست شما قابل‌مشاهده باشد.</translation>
 <translation id="8210490490377416373">انتخاب نام خط‌مشی</translation>
 <translation id="8211406090763984747">اتصال ایمن است</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{‫+ ۱ منبع دیگر}one{‫+ # منبع دیگر}other{‫+ # منبع دیگر}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">۱۸ × ۱۴ اینچ</translation>
 <translation id="8218327578424803826">مکان اختصاص یافته:</translation>

@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">iOS에서 <ph name="BEGIN_BOLD" />기본 앱<ph name="END_BOLD" /> 설정 열기</translation>
 <translation id="1938871630297275912">{count,plural, =1{링크 수신됨}other{링크 {count}개 수신됨}}</translation>
 <translation id="1941314575388338491">복사하려면 두 번 탭하세요.</translation>
+<translation id="1942483019269000450">작업을 계속 진행하기 위해 Gemini가 Google 월렛에 신용카드 정보를 입력해 달라고 요청할 수 있습니다</translation>
 <translation id="1943478190258551035">메뉴 → 설정</translation>
 <translation id="1944477975050820119">AI로 새로운 탐색 방법을 찾을 수 있는 실시간 추천을 받습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">관리 계정으로 로그인</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">새 항목</translation>
 <translation id="2049727122989709386">계정 <ph name="COUNT" />개에서 동일한 비밀번호 사용 중</translation>
 <translation id="205013082884273671">화면의 내용을 검색하세요</translation>
+<translation id="2053311407685904414">주소 선택</translation>
 <translation id="2054044186557130763">조직에서 관리하는 <ph name="NAME" /> <ph name="EMAIL" /> 계정으로 로그인하세요.</translation>
 <translation id="2059166748188874810">지방 자치제</translation>
 <translation id="2060638295449304809">이 주소는 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">번역</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2360196772093551345">모바일 버전으로 보기</translation>
+<translation id="2360272811987888433">수동 로그인</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. <ph name="USER_EMAIL" />입니다. 설정을 엽니다.</translation>
 <translation id="2367025302166767427">정보를 입력하는 중에 문제 발생</translation>
 <translation id="2371084566192454134">탭 및 탭 그룹</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Google 포토에 저장</translation>
 <translation id="3406506285180498376">페이지 공유…</translation>
 <translation id="340669334496430859">마지막으로 수정한 날짜</translation>
+<translation id="3407832712016477396">Gemini가 Google 비밀번호 관리자를 사용하여 나를 대신해 로그인할 수 있습니다</translation>
 <translation id="3409785640040772790">지도</translation>
 <translation id="3416023309465857378">2023년 10월 25일</translation>
 <translation id="3419787211763835342">향상된 자동 완성 개선에 참여하기</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">허용 안함</translation>
 <translation id="4293154608148215505">내 휴대전화</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" />(으)로 로그인하시겠습니까?</translation>
+<translation id="4297031046690565608">직접 입력</translation>
+<translation id="4297418774230471285">개인 정보 선택</translation>
 <translation id="4302061870579014542">위치 설정</translation>
 <translation id="4304713468139749426">비밀번호 관리자</translation>
 <translation id="4309403553630140242">자세한 정보를 보려면 두 번 탭하세요</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini는 AI이며 실수를 할 수 있습니다. <ph name="BEGIN_LINK" />Google로 전송되는 관련 데이터에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">가져올 항목이 없습니다.</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" />에 로그인</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318298563956633672">이미 추적 중인 제품입니다.</translation>
 <translation id="5327248766486351172">이름</translation>
@@ -2206,6 +2213,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7839994177130598711">이제 가족 구성원이 Google 비밀번호 관리자를 사용하여 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />에 로그인할 때 내 사용자 이름과 비밀번호를 사용할 수 있습니다</translation>
 <translation id="7841180087127694526">복사한 텍스트 검색</translation>
 <translation id="7841418003178675048">새 탭 페이지에 표시할 카드를 선택하세요</translation>
+<translation id="7842369010458597654">결제 정보 입력</translation>
 <translation id="7845466610722898">읽기 목록 표시</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="784623644169604270">최근 활동 없음</translation>

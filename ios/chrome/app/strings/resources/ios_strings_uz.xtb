@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">iOS qurilmada <ph name="BEGIN_BOLD" />Birlamchi ilovalar<ph name="END_BOLD" /> sozlamalarini oching</translation>
 <translation id="1938871630297275912">{count,plural, =1{Havola qabul qilindi}other{{count} ta havola qabul qilindi}}</translation>
 <translation id="1941314575388338491">Nusxalash uchun ikki marta bosing.</translation>
+<translation id="1942483019269000450">Vazifani davom ettirish uchun Gemini Google Walletdan kredit kartangiz maʼlumotlarini kiritishni soʻrashi mumkin</translation>
 <translation id="1943478190258551035">Menyu → Sozlamalar</translation>
 <translation id="1944477975050820119">AI yordamida internetni yangicha kezish usullarini kashf etishga yordam beradigan real vaqtda takliflar oling. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Boshqariladigan hisobga kirish</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">yangi element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> ta hisob bir xil parolga ega</translation>
 <translation id="205013082884273671">Ekrandagi istalgan narsani qidiring</translation>
+<translation id="2053311407685904414">Manzilni tanlang</translation>
 <translation id="2054044186557130763">Tashkilot boshqaruvidagi <ph name="NAME" /> <ph name="EMAIL" /> hisobidan kiring.</translation>
 <translation id="2059166748188874810">Munitsipalitet</translation>
 <translation id="2060638295449304809">Bu manzil faqat mazkur qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda (<ph name="USER_EMAIL" />) saqlang</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Tarjima qilish</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2360196772093551345">Mobil versiya</translation>
+<translation id="2360272811987888433">Mustaqil kirish</translation>
 <translation id="2362083820973145409">Siz <ph name="USER_NAME" /> nomidan kirdingiz. <ph name="USER_EMAIL" />. Sozlamalarni ochadi.</translation>
 <translation id="2367025302166767427">Axborot kiritilmadi</translation>
 <translation id="2371084566192454134">Varaq va varaqlar guruhi</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Google Photos xizmatiga saqlash</translation>
 <translation id="3406506285180498376">Sahifani ulashish…</translation>
 <translation id="340669334496430859">Oxirgi oʻzgarish</translation>
+<translation id="3407832712016477396">Gemini nomingizdan Google Parollar menejeridan foydalanishi mumkin</translation>
 <translation id="3409785640040772790">Xaritalar</translation>
 <translation id="3416023309465857378">2023-yil 25-oktabr</translation>
 <translation id="3419787211763835342">Yaxshilangan avtomatik kiritishni yaxshilashga yordam bering</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Ruxsat berilmasin</translation>
 <translation id="4293154608148215505">Telefon</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> hisobidan kirilsinmi?</translation>
+<translation id="4297031046690565608">Mustaqil kiritish</translation>
+<translation id="4297418774230471285">Shaxsiy axborotni tanlang</translation>
 <translation id="4302061870579014542">Joylashuvni tanlash</translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
 <translation id="4309403553630140242">Batafsil axborot olish uchun ikki marta bosing.</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini bu – AI va u xato qilishi mumkin. <ph name="BEGIN_LINK" />Googlega yuboriladigan tegishli maʼlumotlar haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Import qilinadigan kontaktlar yoʻq</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> hisobiga kirish</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318298563956633672">Siz bu mahsulotni kuzatyapsiz.</translation>
 <translation id="5327248766486351172">Nomi</translation>
@@ -2206,6 +2213,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="7839994177130598711">Endi oilangiz aʼzolari <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> saytiga kirishda Google Parollar menejeri orqali login va parolingizdan foydalanishi mumkin.</translation>
 <translation id="7841180087127694526">Nusxalangan matnni qidirish</translation>
 <translation id="7841418003178675048">Yangi varaq sahifasida chiqadigan bildirgilarni tanlang.</translation>
+<translation id="7842369010458597654">Toʻlov axboroti kiritilmoqda</translation>
 <translation id="7845466610722898">Saqlangan sahifalarni chiqarish</translation>
 <translation id="7846161022626028328">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="784623644169604270">Hech qanday harakat yoʻq</translation>

@@ -163,7 +163,6 @@
 <translation id="1109482864356262001">មុខងារដែលត្រូវការសេនស័រចាប់ចលនា ឬពន្លឺនឹងមិនដំណើរការទេ</translation>
 <translation id="1110155001042129815">រង់ចាំ</translation>
 <translation id="1110965959145884739">ជ្រើសរើសភាសា​ដែលត្រូវដំឡើង​នៅលើឧបករណ៍នេះ។ ឯកសារភាសា​ត្រូវបានចែករំលែក​ក្នុងចំណោម​អ្នកប្រើប្រាស់ ដើម្បីសន្សំសំចៃ​ទំហំថាស។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="111168944932507021">ផ្ដោតលើ​ក្រុមផ្ទាំង</translation>
 <translation id="1112227834592480032">ជ្រើសរើស​ប៊ូតុង Google Lens បន្ទាប់មក​ចុច​ហើយអូស​ពីលើ​ចំណោទ</translation>
 <translation id="1112420131909513020">ផ្ទាំងផ្ទៃ​ខាងក្រោយ​កំពុងប្រើ​ប៊្លូធូស</translation>
 <translation id="1112998165730922436">ការបញ្ជូន​ត្រូវបាន​ផ្អាក</translation>
@@ -1605,7 +1604,6 @@
 <translation id="2220572644011485463">កូដ PIN ឬពាក្យសម្ងាត់</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">ប្រភពមេឌៀគ្មានឈ្មោះ</translation>
-<translation id="2223747115628460234">ត្រឡប់​ទៅ​ផ្ទាំងដែល​បើកវិញ</translation>
 <translation id="2224337661447660594">គ្មាន​អ៊ីនធឺណិតទេ</translation>
 <translation id="2224444042887712269">ការកំណត់នេះជាកម្មសិទ្ធិ <ph name="OWNER_EMAIL" />។</translation>
 <translation id="2224551243087462610">កែប្រែឈ្មោះថតឯកសារ</translation>
@@ -1734,7 +1732,6 @@
 <translation id="2318143611928805047">ទំហំក្រដាស</translation>
 <translation id="2319459402137712349">ជ្រើសរើស​កន្លែង​បញ្ចូល​អក្សរ ដើម្បីបើក​ក្ដារចុច។ អ្នកក៏អាច​ជ្រើសរើស​រូប​ក្ដារចុច​នៅផ្នែក​ខាងក្រោម​នៃ​អេក្រង់របស់អ្នក​បាន​ផងដែរ។</translation>
 <translation id="2319993584768066746">រូបថត​នៅលើ​អេក្រង់ចូលគណនី</translation>
-<translation id="2322015964223112232">ត្រឡប់​ទៅ​ផ្ទាំងដែល​បើកវិញ</translation>
 <translation id="2322193970951063277">ផ្នែកក្បាល និងផ្នែកក្រោម</translation>
 <translation id="2322622365472107569">ពេល​បញ្ចប់ម៉ោង <ph name="TIME" /></translation>
 <translation id="2323018538045954000">បណ្ដាញ Wi-Fi ដែលបាន​រក្សាទុក</translation>
@@ -4388,6 +4385,7 @@
 <translation id="429312253194641664">គេហទំព័រ​កំពុង​ចាក់មេឌៀ</translation>
 <translation id="4293154608148215505">ទូរសព្ទរបស់អ្នក</translation>
 <translation id="4293219510510666933">ប្រើភាសាប្រចាំថ្ងៃ ដើម្បីស្វែងរកក្នុងប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិតរបស់អ្នក និងស្វែងរកគេហទំព័រដែលអ្នកបានចូលមើល។ អ្នកក៏អាច​សួរសំណួរ និង​ទទួលបាន​ចម្លើយ​ដោយផ្អែកលើ​ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ផងដែរ។ ការកំណត់​នេះ​ត្រូវ​បានបើក។</translation>
+<translation id="429344752071832554">ឈប់ផ្ដោតលើ​ក្រុម</translation>
 <translation id="4294392694389031609">បានលុប <ph name="FILE_NAME" /> ពីប្រវត្តិទាញយក ប៉ុន្តែវានៅតែមានៅលើឧបករណ៍របស់អ្នក</translation>
 <translation id="429530814437327574">បង្ហាញ​ជាគំនរ</translation>
 <translation id="4295979599050707005">សូមចូលគណនី​ម្ដងទៀត ដើម្បីបញ្ជាក់ថា​គណនីរបស់អ្នក <ph name="USER_EMAIL" /> អាចប្រើ​ជាមួយគេហទំព័រ កម្មវិធី និងកម្មវិធីបន្ថែម​នៅក្នុង Chrome និង Google Play បាន។ អ្នកក៏អាច​លុបគណនីនេះបាន​ផងដែរ។ <ph name="LINK_BEGIN" />ស្វែងយល់​បន្ថែម<ph name="LINK_END" /></translation>
@@ -4472,6 +4470,7 @@
 <translation id="4360738659108163902">ចុចម៉ៅស៍ខាងស្ដាំ</translation>
 <translation id="4361745360460842907">បើកជាផ្ទាំង</translation>
 <translation id="4362459470237309049">ប្រើ “.” ដើម្បីលែងប៊ូតុងម៉ៅស៍</translation>
+<translation id="4362871358537270439">បង្ហាញ​ផ្ទាំងពី​ឧបករណ៍​ផ្សេងទៀត​នៅក្នុង​ផ្ទាំង​ចំហៀង</translation>
 <translation id="4363262124589131906">ឯកសារថ្មីៗ​នៅក្នុង​ថាសខ្ញុំ​នឹងឈប់​ធ្វើ​សមកាលកម្ម​ដោយស្វ័យប្រវត្តិ​ទៅ Chromebook នេះ</translation>
 <translation id="4364129298304269786">គេហទំព័រអាចប្រើសេវាកម្មការពារខ្លឹមសារ ដើម្បីចាក់ខ្លឹមសារដែលត្រូវបានការពារដោយសិទ្ធិអ្នកនិពន្ធ</translation>
 <translation id="4364327530094270451">ត្រសក់​ផ្អែម</translation>
@@ -6613,7 +6612,6 @@
 <translation id="6022659036123304283">ធ្វើឱ្យ Chrome ក្លាយជា​របស់អ្នក</translation>
 <translation id="6024317249717725918">&amp;ស្វែងរក​ហ្វ្រេមវីដេអូ​តាមរយៈ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stack Trace</translation>
-<translation id="6026436621921471553">ឈប់ផ្ដោតលើ​ក្រុមផ្ទាំង</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - បាន​ភ្ជាប់​ឧបករណ៍​ USB</translation>
 <translation id="6027143200498653403">នៅពេល​អ្នកសួរ​សំណួរ​អំពី​ប្រវត្តិ​របស់អ្នក នោះអ្នកអាច​ទទួលបាន​ចម្លើយ​អំពី​ព័ត៌មាន​ជាក់លាក់ពី​ទំព័រ​ដែលអ្នក​បានចូលមើល</translation>
 <translation id="6027945736510816438">តើ​អ្នក​ចង់​មានន័យ​ថា <ph name="WEBSITE" /> មែនទេ?</translation>
@@ -7079,7 +7077,6 @@
 <translation id="6399675241776343019">បាន​បដិសេធ</translation>
 <translation id="6399774419735315745">អ្នកស៊ើបការ</translation>
 <translation id="6400360390396538896">នៅ​លើ <ph name="ORIGIN" /> ជានិច្ច</translation>
-<translation id="6400714103322134861">ឈប់ផ្ដោតលើ​ក្រុមផ្ទាំង</translation>
 <translation id="6401118106417399952">EID ឧបករណ៍​របស់អ្នក​គឺ <ph name="EID_NUMBER" /> ហើយលេខស៊េរី​ឧបករណ៍គឺ <ph name="SERIAL_NUMBER" />។ លេខ​ទាំង​នេះ​អាច​ត្រូវ​បាន​ប្រើប្រាស់​ដើម្បី​ជួយ​បើក​ដំណើរការ​សេវាកម្ម។</translation>
 <translation id="6402042774506839496">ដើម្បី​ស្វែងយល់​អំពី​មូលហេតុ សូម​ទាក់ទងទៅ​អ្នក​អភិវឌ្ឍន៍​កម្មវិធី</translation>
 <translation id="6402921224457714577">គេហទំព័រ​អាចស្នើសុំ​គ្រប់គ្រង និង​សរសេរកម្មវិធី​ឧបករណ៍ MIDI របស់អ្នក​ឡើងវិញ</translation>
@@ -8120,6 +8117,7 @@
 <translation id="7188508872042490670">ទិន្នន័យគេហទំព័រនៅលើ​ឧបករណ៍</translation>
 <translation id="7188755083797868960">បើក​មុខងារអាន​កាន់តែលឿន​ដោយប្រើ​ផ្លូវកាត់។ ចុច Alt + Shift + R ដើម្បី​បិទ/បើក​មុខងារអាន។</translation>
 <translation id="7189234443051076392">សូម​ប្រាកដ​ថា​មាន​ទំហំ​ផ្ទុក​គ្រប់គ្រាន់​នៅលើ​ឧបករណ៍​របស់អ្នក</translation>
+<translation id="7189558282078169397">ផ្ទាំងពី​ឧបករណ៍​ផ្សេងទៀត</translation>
 <translation id="7189965711416741966">បាន​បញ្ចូល​ស្នាម​ម្រាមដៃ​រួច​ហើយ។</translation>
 <translation id="7190921792980745354">ទប់ស្កាត់ <ph name="MEMBER_FULL_NAME" /> ឬ?</translation>
 <translation id="7191063546666816478">តំណដែលអាចប្រើបាន​មួយចំនួននឹងនៅ​តែបើកនៅក្នុង <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> និងកម្មវិធី <ph name="NUMBER_OF_OTHER_APPS" /> ទៀតដដែល។</translation>
@@ -10049,7 +10047,6 @@
 <translation id="8652400352452647993">បញ្ហា​ក្នុងការខ្ចប់​កម្មវិធី​បន្ថែម</translation>
 <translation id="8654151524613148204">ឯកសារនេះធំពេកសម្រាប់កុំព្យូទ័ររបស់ដើម្បីដំណើរការ។ សូមទោស។</translation>
 <translation id="8655295600908251630">បណ្តាញ</translation>
-<translation id="8656101380279383244">ផ្ដោតលើ​ក្រុមផ្ទាំង</translation>
 <translation id="8656888282555543604">បើក​ការធ្វើកំណត់ហេតុ​អក្សរស្ទាប</translation>
 <translation id="8657393004602556571">តើអ្នកចង់លុបចោលមតិកែលម្អនេះដែរទេ?</translation>
 <translation id="8657542881463614516">ប្រើចលនាអូស ដើម្បីរុករករវាងទំព័រនានា</translation>

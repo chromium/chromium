@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Abre los ajustes de <ph name="BEGIN_BOLD" />aplicaciones predeterminadas<ph name="END_BOLD" /> en iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Enlace recibido}other{{count} enlaces recibidos}}</translation>
 <translation id="1941314575388338491">Toca dos veces para copiar.</translation>
+<translation id="1942483019269000450">Para continuar con la tarea, Gemini puede pedirle a Google Wallet que rellene la información de tu tarjeta de crédito</translation>
 <translation id="1943478190258551035">Menú → Configuración</translation>
 <translation id="1944477975050820119">Recibe sugerencias en tiempo real que pueden ayudarte a descubrir nuevas formas de navegar con IA. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Inicia sesión con una cuenta gestionada</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">nuevo elemento</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> cuentas usan la misma contraseña</translation>
 <translation id="205013082884273671">Busca cualquier elemento de tu pantalla</translation>
+<translation id="2053311407685904414">Seleccionar dirección</translation>
 <translation id="2054044186557130763">Inicia sesión como <ph name="NAME" /> (<ph name="EMAIL" />), gestionado por tu organización.</translation>
 <translation id="2059166748188874810">Municipio</translation>
 <translation id="2060638295449304809">Esta dirección solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google (<ph name="USER_EMAIL" />).</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Traducir</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Solicitar sitio web móvil</translation>
+<translation id="2360272811987888433">Iniciar sesión manualmente</translation>
 <translation id="2362083820973145409">Has iniciado sesión como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre la configuración.</translation>
 <translation id="2367025302166767427">No se ha podido rellenar tu información</translation>
 <translation id="2371084566192454134">Pestañas y grupos de pestañas</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Guardar en Google Fotos</translation>
 <translation id="3406506285180498376">Compartir página…</translation>
 <translation id="340669334496430859">Última modificación</translation>
+<translation id="3407832712016477396">Gemini puede usar el Gestor de contraseñas de Google para iniciar sesión por ti</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 oct 2023</translation>
 <translation id="3419787211763835342">Ayuda a optimizar Autocompletar mejorado</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">No permitir nunca</translation>
 <translation id="4293154608148215505">tu teléfono</translation>
 <translation id="4294506173142861371">¿Iniciar sesión como <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Introducir manualmente</translation>
+<translation id="4297418774230471285">Seleccionar información personal</translation>
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4309403553630140242">Toca dos veces para consultar más información</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini es una IA y puede cometer errores. <ph name="BEGIN_LINK" />Más información sobre los datos relevantes que se envían a Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">No hay nada que importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Iniciar sesión en <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Ya estás siguiendo este producto.</translation>
 <translation id="5327248766486351172">Nombre</translation>
@@ -2206,6 +2213,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7839994177130598711">Ahora, los miembros de tu familia podrán usar tu nombre de usuario y contraseña cuando utilicen el Gestor de contraseñas de Google para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Buscar el texto copiado</translation>
 <translation id="7841418003178675048">Elige qué tarjetas se muestran en tu página Nueva pestaña.</translation>
+<translation id="7842369010458597654">Rellenar datos para pagos</translation>
 <translation id="7845466610722898">Mostrar lista de lectura</translation>
 <translation id="7846161022626028328">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="784623644169604270">No hay actividad reciente</translation>

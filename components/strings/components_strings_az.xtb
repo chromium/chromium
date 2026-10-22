@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">Daxil olmağa cəhd etdiyiniz saytda hücumçular sizi proqram təminatı quraşdırmağa, yaxud parollar, telefon və ya kredit kartı nömrələri kimi məlumatları açıqlamağa təşviq edə bilər. Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">ID kartını Google Pulqabına təhlükəsiz şəkildə əlavə edin</translation>
 <translation id="1398743098754840707">Tab açıq olsa belə, cavablar üçün burada əlavə etdiyiniz saytlara istinad edilməyəcək. Əlavə etdiyiniz sayt hazırda mövzuda istifadə olunursa, mövzunun ona istinad etməyi dayandırması 30 dəqiqəyə qədər çəkə bilər.</translation>
+<translation id="1403359480263156644">Kart sahibinin adı yeniləndi</translation>
 <translation id="1405567553485452995">Açıq-yaşıl</translation>
 <translation id="1406370515365284486">Ödəniş metodlarınız yenə də yadda saxlanılacaq</translation>
 <translation id="1406500794671479665">Təsdiqlənir...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">Yeni kartı skan edin</translation>
 <translation id="2501270939904835585">Etiket (hamar)</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
+<translation id="250307989715832083">İmza əlavə edin</translation>
 <translation id="250346157641628208">Kağız (mürəkkəbli)</translation>
 <translation id="2505063700931618106">Kart məlumatı yadda saxlanıldı</translation>
 <translation id="2505268675989099013">Hesabınızı Qoruyun</translation>
@@ -1592,7 +1594,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3693516565203081475">Ödəniş metodu seçin</translation>
 <translation id="3698353241727597930">Administrator <ph name="FILES" /> müəssisə tərəfindən idarə edilən <ph name="CLOUD_STORAGE" /> yaddaşında saxlamağı konfiqurasiya edib. Bu fayllar izlənilə, yoxlanıla və onları sildiyiniz zaman saxlanıla bilər.</translation>
 <translation id="3698629142018988477">"Sayt yaradın" düyməsi, aktivləşdirərək Google Saytda cəld yeni sayt yaradın</translation>
-<translation id="3698708128812719147">Daha çox məlumat tapmaq və doldurmaq üçün vebdə istənilən yerdə Ctrl düyməsinə iki dəfə basın</translation>
 <translation id="3700094625653511150">Sonra ödəmə seçimlərini gizlətmək üçün bura keçin: <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Parolları doldurmaq üçün barmaq izindən istifadə edirsiniz</translation>
 <translation id="3701427423622901115">Sıfırlanma doğrulandı.</translation>
@@ -1651,7 +1652,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3769584711865378220"><ph name="URL" /> təxmini məkan icazəsini dəqiq məkan icazəsinə dəyişmək istəyir</translation>
 <translation id="3772211998634047851">Kağız (yüksəkkeyfiyyətli)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Keep'də cəld yeni qeyd yaradın</translation>
-<translation id="3778045607993018262">Pix hesabı <ph name="ACCOUNT_EMAIL" /> ilə əlaqələndiriləcək. Pix kod aşkarlamasını söndürmək üçün <ph name="BEGIN_LINK1" />Chrome ayarlarına<ph name="END_LINK1" /> keçin</translation>
 <translation id="3780694243617746492">Çıxış qabı</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth cihazları</translation>
@@ -1897,7 +1897,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4185037616931963178">Kompensasiya nömrəsini təhlükəsiz şəkildə güncəlləyin</translation>
 <translation id="4186035307311647330">Qiyməti izləməyin</translation>
 <translation id="4191334393248735295">Məsafə</translation>
-<translation id="4192770747482479191">Daha çox məlumat tapmaq və doldurmaq üçün vebdə istənilən yerə iki dəfə ⌘ yazın</translation>
 <translation id="4195459680867822611">"Chrome ipucularına baxın" düyməsi, aktivləşdirərək Chrome funksiyaları haqqında ətraflı məlumat əldə edin</translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4196861286325780578">Hərəkəti təkrarlayın</translation>
@@ -1915,6 +1914,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4218327733815631046">Təxmini məkanı saxlayın</translation>
 <translation id="4219596572397833317">Daha ağıllı alış-veriş etmək üçün qiymət tarixçəsinə və daha çoxuna baxın.</translation>
 <translation id="4220128509585149162">Qəzalar</translation>
+<translation id="4220745762102459826">və s.</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Mərhələ 1: Portala daxil olun&lt;/h4&gt;
     &lt;p&gt;Kafe, hava limanı kimi yerlərdə olan Wi-Fi şəbəkələri giriş tələb edir. Giriş səhifəsinə baxmaq üçün &lt;code&gt;http://&lt;/code&gt; istifadə edən səhifəyə daxil olun.&lt;/p&gt;
     &lt;ol&gt;
@@ -2465,6 +2465,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5115232566827194440">Məhdud idarə olunan qonaq sessiyasının əvəzlənməsi</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Həssas məlumatların avtomatik doldurulması üçün kimliyinizi doğrulayın</translation>
+<translation id="5121592697493894155">Yan paneldə Google Axtarış</translation>
 <translation id="5122786942953798871">Zərf (pambıq)</translation>
 <translation id="5123063207673082822">Həftəsonu</translation>
 <translation id="5124797626438336458">"İndi al, sonra ödə" xəta ekranı yarım hündürlükdə açılıb.</translation>
@@ -2877,6 +2878,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5794065675298686371">Qiymət izləmə bildirişlərini yandırın</translation>
 <translation id="5794093550048860249">İzləmə nömrəsi</translation>
 <translation id="5796050750059455142">"<ph name="BEGIN_LINK" />Digər Google məhsullarında Smart funksiyalar<ph name="LINK_END" />" ayarını aktiv edin</translation>
+<translation id="5797916798049571144">Kart məlumatı ilə birlikdə yadda saxlanır, beləliklə, kassada avtomatik doldurulacaq</translation>
 <translation id="5797984091151707075">Admin siyasəti tərəfindən bloklanıb</translation>
 <translation id="5804241973901381774">İcazələr</translation>
 <translation id="5806871454498484178">Sürüşdürüb zumlama bloklandı</translation>

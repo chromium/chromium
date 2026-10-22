@@ -3521,6 +3521,8 @@ Si se inhabilita esta política o no se define, el menú de accesibilidad flotan
 <translation id="3146711617256415776">No permitir las voces de conversión de texto a voz de red mejorada al usar Enunciar selección</translation>
 <translation id="315013437951136266">Habilita la función <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="3150351525324499342">No mostrar de forma predeterminada el icono de <ph name="PRODUCT_NAME" /> en la barra de herramientas, pero dejar que los usuarios elijan</translation>
+<translation id="3151501327418961907">Si se le asigna el valor 0 a esta política o no se define, las políticas <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> y <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> solo se aplicarán al permiso de usuario para los usuarios afiliados en un navegador gestionado.
+Si se le asigna el valor 1 a esta política, las políticas <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> y <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> se aplicarán al permiso de usuario, aunque ese usuario no esté afiliado.</translation>
 <translation id="3152135410085709340">Permitir que estos sitios accedan a archivos locales mediante URLs file:// en el lector de PDFs</translation>
 <translation id="3152425128389603870">Habilitar el escritorio unificado y activarlo de forma predeterminada</translation>
 <translation id="3159375329008977062">El usuario tiene permiso para exportar e importar contenedores Crostini a través de la UI</translation>
@@ -4336,6 +4338,21 @@ La transferencia de datos con Takeout también debe habilitarse para que la apli
 <translation id="370314752761795411">Iniciar <ph name="PRODUCT_NAME" /> con <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712861436661566358">Implementar obligatoriamente la separación de perfiles</translation>
+<translation id="3715589988915487768">Configura una lista de dominios de aprovisionamiento (PvDs) que <ph name="PRODUCT_NAME" /> usará para obtener configuraciones de proxy de forma dinámica.
+
+Esta política permite especificar una lista de nombres de dominio o URIs de recursos que representan dominios de aprovisionamiento tal como se define en el RFC 8801 ("Discovering Provisioning Domain Names and Data"). Por cada PvD, el navegador resuelve la configuración JSON correspondiente haciendo una solicitud HTTPS a la ruta de endpoint conocida "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd".
+
+Cada entrada de la lista especifica lo siguiente:
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: el identificador del dominio de aprovisionamiento (un nombre de dominio).
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: la configuración de autenticación opcional. Si no se configura o se le asigna el valor "none", no se realiza ninguna autenticación. Si se le asigna el valor "profile_bearer_token", el navegador obtiene un token de acceso OAuth2 con el permiso proporcionado para la cuenta principal con la que se ha iniciado sesión y lo adjunta al encabezado "Authorization" como token de "portador".
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: lista opcional de encabezados HTTP personalizados que se incluirán al consultar al endpoint de PvD. Se pueden inyectar valores dinámicos, como "profile_id" (que representa un identificador único y estable del perfil de navegador en el dispositivo, lo que permite la segmentación de la configuración por perfil) o "accept_language" (que representa los idiomas preferidos del navegador).
+
+Las configuraciones obtenidas se analizan de acuerdo con el esquema RFC 8801. Solo se aplican las reglas de enrutamiento y los proxies relacionados con la configuración de proxy de la carga útil JSON del PvD. Si no se define esta política, no se consultará ni se usará ningún dominio de aprovisionamiento para obtener configuraciones de proxy.
+
+Esta política se puede definir a nivel de usuario solo si el usuario está afiliado al navegador, si el navegador no está gestionado o si se le asigna el valor 1 a la política <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" />.</translation>
 <translation id="3719826155360621982">Página principal</translation>
 <translation id="3724039569609354541">Usar el comportamiento predeterminado para definir si los sitios web pueden enviar solicitudes a los puntos finales de red</translation>
 <translation id="3726715125055227414">Esta política configura <ph name="PRODUCT_OS_NAME" /> para que ordene sus algoritmos de acuerdo de claves preferidos (grupos admitidos) en TLS 1.3 de forma que se refleje una preferencia por los algoritmos que hayan sido aprobados por un régimen de cumplimiento específico al hacer solicitudes de red desde la pantalla de inicio de sesión.
@@ -11749,6 +11766,7 @@ Esta función solo estará disponible en el canal Canary.
 
 Si se habilita esta política o no se define, se podrá acceder a la página.
 Si se inhabilita esta política, la página se bloqueará.</translation>
+<translation id="8266506455952754231">Controla qué usuarios gestionados pueden definir las políticas <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> y <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" />.</translation>
 <translation id="8266778278542911985">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los puertos serie. Si se le asigna el valor 2, se denegará el acceso a los puertos serie.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>

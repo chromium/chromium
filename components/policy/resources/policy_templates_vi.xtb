@@ -3531,6 +3531,8 @@ Nếu bạn không đặt hoặc đặt chính sách này thành tắt, thì tr�
 <translation id="3146711617256415776">Không cho phép dùng các giọng nói của tính năng chuyển văn bản sang lời nói trên mạng nâng cao khi dùng tính năng Chọn để nói</translation>
 <translation id="315013437951136266">Bật tính năng <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="3150351525324499342">Không hiển thị biểu tượng <ph name="PRODUCT_NAME" /> trên thanh công cụ theo mặc định mà để người dùng chọn</translation>
+<translation id="3151501327418961907">Khi bạn không đặt chính sách này hoặc đặt thành 0, chính sách <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> và chính sách <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> sẽ chỉ được áp dụng ở phạm vi người dùng đối với người dùng liên kết trên trình duyệt được quản lý.
+Khi bạn đặt chính sách này thành 1, chính sách <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> và chính sách <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> sẽ được áp dụng ở phạm vi người dùng, ngay cả khi người dùng đó chưa được liên kết.</translation>
 <translation id="3152135410085709340">Cho phép truy cập tệp cục bộ vào URL file:// trên các trang web này trong Trình xem PDF</translation>
 <translation id="3152425128389603870">Cho phép Màn hình hợp nhất và chính sách này bật theo mặc định.</translation>
 <translation id="3159375329008977062">Người dùng được phép xuất/nhập các vùng chứa Crostini qua giao diện người dùng</translation>
@@ -4363,6 +4365,21 @@ Bạn cũng cần bật tuỳ chọn chuyển dữ liệu bằng Takeout để �
 <translation id="370314752761795411">Khởi động <ph name="PRODUCT_NAME" /> bằng <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Tạm ngừng</translation>
 <translation id="3712861436661566358">Buộc phân tách hồ sơ</translation>
+<translation id="3715589988915487768">Định cấu hình danh sách các Miền cấp phép (PvD) mà <ph name="PRODUCT_NAME" /> sẽ sử dụng để tìm nạp cấu hình proxy một cách linh động.
+
+Chính sách này cho phép chỉ định danh sách tên miền hoặc URI tài nguyên đại diện cho các Miền cấp phép theo định nghĩa trong RFC 8801 ("Khám phá tên miền và dữ liệu cấp phép"). Đối với mỗi PvD, trình duyệt sẽ phân giải cấu hình JSON tương ứng bằng cách gửi một yêu cầu HTTPS đến đường dẫn điểm cuối phổ biến: "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd".
+
+Mỗi mục trong danh sách chỉ định:
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: Giá trị nhận dạng của Miền cấp phép (một tên miền).
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: Cấu hình xác thực không bắt buộc. Nếu bạn không định cấu hình hoặc đặt thành "none" (không có), thì hệ thống sẽ không thực hiện quy trình xác thực. Khi được đặt thành "profile_bearer_token", trình duyệt sẽ truy xuất một mã truy cập OAuth2 có phạm vi được cung cấp cho tài khoản chính đã đăng nhập và đính kèm mã đó vào tiêu đề "Authorization" dưới dạng mã thông báo "Bearer".
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: Một danh sách không bắt buộc gồm các tiêu đề HTTP tuỳ chỉnh cần đưa vào khi truy vấn điểm cuối PvD. Có thể chèn các giá trị động, chẳng hạn như "profile_id" (đại diện cho một giá trị nhận dạng riêng biệt và ổn định của hồ sơ trình duyệt trên thiết bị, cho phép nhắm mục tiêu cấu hình theo từng hồ sơ) hoặc "accept_language" (đại diện cho các ngôn ngữ ưu tiên của trình duyệt).
+
+Các cấu hình đã tìm nạp được phân giải theo lược đồ RFC 8801. Chỉ các quy tắc định tuyến liên quan đến cấu hình proxy và các proxy từ tải trọng JSON của PvD mới được áp dụng. Nếu bạn không đặt chính sách này, thì hệ thống sẽ không truy vấn hoặc sử dụng Miền cấp phép nào để tìm nạp cấu hình proxy.
+
+Bạn chỉ có thể đặt chính sách này ở cấp người dùng khi người dùng đó liên kết với trình duyệt, nếu trình duyệt đó không được quản lý hoặc nếu chính sách <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> được đặt thành 1.</translation>
 <translation id="3719826155360621982">Trang chủ</translation>
 <translation id="3724039569609354541">Sử dụng hành vi mặc định khi xác định xem các trang web có thể gửi yêu cầu đến thiết bị đầu cuối trên mạng hay không</translation>
 <translation id="3726715125055227414">Chính sách này định cấu hình <ph name="PRODUCT_OS_NAME" /> để sắp xếp thứ tự các thuật toán thoả thuận về khoá được ưu tiên (nhóm được hỗ trợ) trong giao thức TLS 1.3 nhằm thể hiện mức độ ưu tiên đối với các thuật toán đã được một cơ chế tuân thủ cụ thể phê duyệt khi gửi yêu cầu mạng từ màn hình đăng nhập.
@@ -11883,6 +11900,7 @@ Tính năng này sẽ chỉ có trên kênh Canary.
 
 Nếu bạn bật hoặc không đặt chính sách, thì người dùng có thể truy cập vào trang.
 Nếu bạn tắt chính sách, thì trang sẽ bị chặn.</translation>
+<translation id="8266506455952754231">Kiểm soát danh sách những người dùng được quản lý có thể đặt chính sách <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> và chính sách <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" />.</translation>
 <translation id="8266778278542911985">Nếu bạn đặt chính sách này thành 3, thì các trang web có thể yêu cầu quyền truy cập vào cổng nối tiếp. Nếu bạn đặt chính sách này thành 2, quyền truy cập vào cổng nối tiếp sẽ bị từ chối.
 
       Nếu bạn không đặt chính sách này, thì các trang web có thể yêu cầu quyền truy cập nhưng người dùng được quyền thay đổi tùy chọn cài đặt này.</translation>

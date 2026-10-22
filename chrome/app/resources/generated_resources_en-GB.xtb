@@ -163,7 +163,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1109482864356262001">Features that need motion or light sensors won't work</translation>
 <translation id="1110155001042129815">Wait</translation>
 <translation id="1110965959145884739">Choose which languages to install on this device. Language files are shared among users to save disk space. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="111168944932507021">Focus on tab group</translation>
 <translation id="1112227834592480032">Select the Google Lens button, then click and drag over a problem</translation>
 <translation id="1112420131909513020">Background tab is using Bluetooth</translation>
 <translation id="1112998165730922436">Casting is paused</translation>
@@ -830,6 +829,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1621984899599015181">Options for sharing are managed by your organisation. Some items may be hidden.</translation>
 <translation id="1622054403950683339">Forget Wi-Fi network</translation>
 <translation id="1623723619460186680">Blue light reduction</translation>
+<translation id="1623799258803152950">This page and highlighted text are shared with Google</translation>
 <translation id="1626581272720526544">You can download Android apps and games through the Play Store. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">File descriptors</translation>
 <translation id="1627408615528139100">Already downloaded</translation>
@@ -1114,6 +1114,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1842681835432895345">Exclude this display in mirror mode</translation>
 <translation id="184273675144259287">Replace your Linux apps and files with a previous backup</translation>
 <translation id="1843048149176045210">Copy download link</translation>
+<translation id="1845498360590376126">Homepage is the new tab page</translation>
 <translation id="1845727111305721124">Allowed to play sound</translation>
 <translation id="1846100293138248204">Save to Memory</translation>
 <translation id="1846308012215045257">Control-click to run <ph name="PLUGIN_NAME" /></translation>
@@ -1603,7 +1604,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Unnamed media source</translation>
-<translation id="2223747115628460234">Go back to open tabs</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2224444042887712269">This setting belongs to <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Edit folder name</translation>
@@ -1732,7 +1732,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2318143611928805047">Paper size</translation>
 <translation id="2319459402137712349">Select a text field to open the keyboard. You can also select the keyboard icon at the bottom of your screen.</translation>
 <translation id="2319993584768066746">Sign-in screen photos</translation>
-<translation id="2322015964223112232">Go back to open tabs</translation>
 <translation id="2322193970951063277">Headers and footers</translation>
 <translation id="2322622365472107569">End time <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Saved Wi-Fi networks</translation>
@@ -2845,6 +2844,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3143515551205905069">Cancel sync</translation>
 <translation id="3143754809889689516">Play from the beginning</translation>
 <translation id="3144647712221361880">Open link as</translation>
+<translation id="3146436581677566946">On-device model</translation>
 <translation id="3147878021189006333">Omnibox</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3150927491400159470">Hard Reload</translation>
@@ -3210,6 +3210,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3424969259347320884">Describe What you Were Doing When the Tab Crashed</translation>
 <translation id="3426562492084153055">Browse skills</translation>
 <translation id="3427092606871434483">Allow (default)</translation>
+<translation id="3427822597374329810">Small expert model</translation>
 <translation id="3429086384982427336">Apps listed below will never handle protocol links.</translation>
 <translation id="3429174588714165399">Create a shortcut to this page</translation>
 <translation id="3429271624041785769">Web content languages</translation>
@@ -3384,6 +3385,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3553442438687311630">Microsoft authentication</translation>
 <translation id="3554493885489666172">Your device is managed by <ph name="PROFILE_NAME" />. Administrators can access the data in any profile on this device.</translation>
 <translation id="3555812735919707620">Remove extension</translation>
+<translation id="3556409966119759596">Show footer on the new tab page</translation>
 <translation id="3557101512409028104">Set website restrictions and screen time limits with Family Link</translation>
 <translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> – Gemini is working on your task…</translation>
 <translation id="3559079791149580653">Stop casting screen to <ph name="DEVICE_NAME" /></translation>
@@ -3589,6 +3591,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3701167022068948696">Fix now</translation>
 <translation id="3701515417135397388">Warn you if a password was compromised in a data breach</translation>
 <translation id="3701778844313851487">Go to Extensions</translation>
+<translation id="3701846426433416920">Delete model</translation>
 <translation id="3703166520839776970">If this issue keeps happening, choose 'More details' below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3703699162703116302">Ticket refreshed</translation>
 <translation id="370415077757856453">JavaScript blocked</translation>
@@ -4384,6 +4387,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="4293154608148215505">your phone</translation>
 <translation id="4293219510510666933">Use everyday language to search your browsing history and find sites that you visited. You can also ask questions and get answers based on your browsing history. This setting is on.</translation>
+<translation id="429344752071832554">Unfocus group</translation>
 <translation id="4294392694389031609">Deleted <ph name="FILE_NAME" /> from download history, but it's still on your device</translation>
 <translation id="429530814437327574">Show stacked</translation>
 <translation id="4295979599050707005">Please sign in again to confirm that your account <ph name="USER_EMAIL" /> can be used with websites, apps and extensions in Chrome and Google Play. You may also remove this account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -4468,6 +4472,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4360738659108163902">Right-click the mouse</translation>
 <translation id="4361745360460842907">Open as tab</translation>
 <translation id="4362459470237309049">Use '.' to release a mouse button</translation>
+<translation id="4362871358537270439">Show tabs from other devices in side panel</translation>
 <translation id="4363262124589131906">New files in My Drive will stop syncing automatically to this Chromebook</translation>
 <translation id="4364129298304269786">Sites may use a content protection service to play content that is protected by copyright</translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -5087,6 +5092,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4841475798258477260">This device can only connect to a specific mobile network. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">This page is trying to load scripts from unauthenticated sources.</translation>
 <translation id="484462545196658690">Auto</translation>
+<translation id="4844967571080002061">Learn more about your new tab page background</translation>
 <translation id="4846273627924459555">Ask about “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="4846628405149428620">Select where this site can save changes</translation>
 <translation id="4846680374085650406">You are following the administrator's recommendation for this setting.</translation>
@@ -5897,6 +5903,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5463856536939868464">Menu containing hidden bookmarks</translation>
 <translation id="5466374726908360271">Paste and search for '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="5466721587278161554">Your tab groups are saved in the bookmarks bar, app menu and get updated across all your signed-in devices if sync is turned on</translation>
+<translation id="5466743034850405734">Open the new tab page</translation>
 <translation id="5467207440419968613">Blocked <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Looking for file shares</translation>
 <translation id="5468330507528805311">Tethering status:</translation>
@@ -6554,6 +6561,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5979421442488174909">&amp;Translate to <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">To bookmark pages, click the star in the address bar</translation>
 <translation id="5982578203375898585">Show downloads when they're complete</translation>
+<translation id="5982657619592274533">Hide footer on the new tab page</translation>
 <translation id="5983716913605894570">Generating…</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="598426658342593742">Move your tabs to the side</translation>
@@ -6607,7 +6615,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6024317249717725918">Search video frame with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stack Trace</translation>
-<translation id="6026436621921471553">Unfocus tab group</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB device connected</translation>
 <translation id="6027143200498653403">When you ask questions about your history, you can get answers about specific information from a page that you visited</translation>
 <translation id="6027945736510816438">Did you mean <ph name="WEBSITE" />?</translation>
@@ -7073,7 +7080,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6399675241776343019">Denied</translation>
 <translation id="6399774419735315745">Spy</translation>
 <translation id="6400360390396538896">Always on <ph name="ORIGIN" /></translation>
-<translation id="6400714103322134861">Unfocus tab group</translation>
 <translation id="6401118106417399952">Your device EID is <ph name="EID_NUMBER" /> and device serial number is <ph name="SERIAL_NUMBER" />. These numbers can be used to help activate service.</translation>
 <translation id="6402042774506839496">To learn why, contact the app developer</translation>
 <translation id="6402921224457714577">Sites can ask to control and reprogramme your MIDI devices</translation>
@@ -8115,6 +8121,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7188508872042490670">On-device site data</translation>
 <translation id="7188755083797868960">Open reading mode faster with a shortcut. Press Alt + Shift + R to toggle reading mode.</translation>
 <translation id="7189234443051076392">Make sure that there is enough space on your device</translation>
+<translation id="7189558282078169397">Tabs from other devices</translation>
 <translation id="7189965711416741966">Fingerprint added.</translation>
 <translation id="7190921792980745354">Block <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and <ph name="NUMBER_OF_OTHER_APPS" /> other apps.</translation>
@@ -10043,7 +10050,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8652400352452647993">Pack extension error</translation>
 <translation id="8654151524613148204">The file is too large for your computer to handle. Sorry.</translation>
 <translation id="8655295600908251630">Channel</translation>
-<translation id="8656101380279383244">Focus on tab group</translation>
 <translation id="8656888282555543604">Enable braille logging</translation>
 <translation id="8657393004602556571">Do you want to discard the feedback?</translation>
 <translation id="8657542881463614516">Use a swipe gesture to navigate between pages</translation>

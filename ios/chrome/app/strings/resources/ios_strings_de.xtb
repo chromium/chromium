@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Öffne unter iOS die Einstellungen für <ph name="BEGIN_BOLD" />Standard-Apps<ph name="END_BOLD" /></translation>
 <translation id="1938871630297275912">{count,plural, =1{Link empfangen}other{{count} Links empfangen}}</translation>
 <translation id="1941314575388338491">Tippe zum Kopieren hier doppelt.</translation>
+<translation id="1942483019269000450">Um die Aufgabe fortzusetzen, kann Gemini Google Wallet bitten, deine Kreditkartendaten einzutragen</translation>
 <translation id="1943478190258551035">Menü → Einstellungen</translation>
 <translation id="1944477975050820119">Du erhältst Echtzeitvorschläge, die dir helfen können, neue Möglichkeiten zum Surfen mit KI zu finden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Mit verwaltetem Konto anmelden</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">neues Element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> Konten mit demselben Passwort</translation>
 <translation id="205013082884273671">Suchen, was du auf dem Bildschirm siehst</translation>
+<translation id="2053311407685904414">Adresse auswählen</translation>
 <translation id="2054044186557130763">Mit dem Konto „<ph name="NAME" />, <ph name="EMAIL" />, von deiner Organisation verwaltet“ anmelden.</translation>
 <translation id="2059166748188874810">Gemeinde</translation>
 <translation id="2060638295449304809">Diese Adresse wird nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="USER_EMAIL" />.</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Übersetzen</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2360196772093551345">Mobile Version anfordern</translation>
+<translation id="2360272811987888433">Manuelle Anmeldung</translation>
 <translation id="2362083820973145409">Angemeldet als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
 <translation id="2367025302166767427">Deine Informationen können nicht eingegeben werden</translation>
 <translation id="2371084566192454134">Tabs und Tabgruppen</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">In Google Fotos speichern</translation>
 <translation id="3406506285180498376">Seite teilen…</translation>
 <translation id="340669334496430859">Zuletzt geändert</translation>
+<translation id="3407832712016477396">Gemini kann den Google Passwortmanager verwenden, um dich anzumelden</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25. Okt. 2023</translation>
 <translation id="3419787211763835342">Mithelfen, das erweiterte Autofill zu verbessern</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Nie erlauben</translation>
 <translation id="4293154608148215505">deinem Smartphone</translation>
 <translation id="4294506173142861371">Als <ph name="FIRST_NAME" /> anmelden?</translation>
+<translation id="4297031046690565608">Manuell eingeben</translation>
+<translation id="4297418774230471285">Personenbezogene Daten auswählen</translation>
 <translation id="4302061870579014542">Positionieren</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
 <translation id="4309403553630140242">Für weitere Informationen doppeltippen</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini ist eine KI und kann Fehler machen. <ph name="BEGIN_LINK" />Weitere Informationen zu den relevanten Daten, die an Google gesendet werden<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Keine Daten zum Importieren vorhanden</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> von <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">In <ph name="SITE_DOMAIN" /> anmelden</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318298563956633672">Du beobachtest dieses Produkt bereits.</translation>
 <translation id="5327248766486351172">Name</translation>
@@ -2206,6 +2213,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7839994177130598711">Deine Familienmitglieder können jetzt über den Google Passwortmanager deinen Nutzernamen und dein Passwort verwenden, um sich auf <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> anzumelden.</translation>
 <translation id="7841180087127694526">Nach kopiertem Text suchen</translation>
 <translation id="7841418003178675048">Hier kannst du auswählen, welche Karten auf der Seite „Neuer Tab“ angezeigt werden sollen.</translation>
+<translation id="7842369010458597654">Zahlungsinformationen werden eingetragen</translation>
 <translation id="7845466610722898">Leseliste anzeigen</translation>
 <translation id="7846161022626028328">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="784623644169604270">Keine neuen Aktivitäten</translation>

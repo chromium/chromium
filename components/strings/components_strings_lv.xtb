@@ -239,6 +239,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1393071644879491291">Vietnē, kuru mēģinājāt apmeklēt, uzbrucēji var jūs maldināt, lai pamudinātu instalēt programmatūru vai atklāt kādu informāciju, piemēram, jūsu paroles, tālruņa numuru vai kredītkaršu numurus. Chrome stingri iesaka doties atpakaļ. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk par šo brīdinājumu.<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">ID kartes droša pievienošana lietotnei Google maks</translation>
 <translation id="1398743098754840707">Šeit pievienotās vietnes netiks izmantotas atbilžu sniegšanai, pat ja cilne būs atvērta. Ja pavedienā pašlaik tiek izmantota jūsu pievienotā vietne, var paiet līdz 30 minūtēm, līdz pavedienā vairs netiks izmantota atsauce uz šo vietni.</translation>
+<translation id="1403359480263156644">Kartes īpašnieka vārds ir atjaunināts</translation>
 <translation id="1405567553485452995">Gaiši zaļa</translation>
 <translation id="1406370515365284486">Jūsu maksājuma veidi joprojām tiks saglabāti</translation>
 <translation id="1406500794671479665">Notiek verificēšana...</translation>
@@ -907,6 +908,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2498091847651709837">Skenēt jaunu karti</translation>
 <translation id="2501270939904835585">Etiķešu papīrs (satinēts)</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
+<translation id="250307989715832083">Pievienot parakstu</translation>
 <translation id="250346157641628208">Papīrs (tintes strūklai)</translation>
 <translation id="2505063700931618106">Kartes informācija ir saglabāta</translation>
 <translation id="2505268675989099013">Aizsargāt kontu</translation>
@@ -1595,7 +1597,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3693516565203081475">Izvēlieties maksājuma veidu</translation>
 <translation id="3698353241727597930">Administrators ir konfigurējis, ka <ph name="FILES" /> jāsaglabā jūsu uzņēmuma pārvaldītajā <ph name="CLOUD_STORAGE" /> krātuvē. Šie faili var tikt pārraudzīti, auditēti un saglabāti pēc tam, kad tos izdzēšat.</translation>
 <translation id="3698629142018988477">Poga “Izveidot vietni”. Aktivizējiet, lai ātri izveidotu jaunu vietni pakalpojumā Google vietnes.</translation>
-<translation id="3698708128812719147">Jebkurā vietā tīmeklī divreiz nospiediet taustiņu Ctrl, lai atrastu un aizpildītu papildu informāciju</translation>
 <translation id="3700094625653511150">Lai paslēptu iespējas maksāšanai vēlāk, pārejiet uz <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="3700966190175650601">Paroļu aizpildei izmantojat pirksta nospiedumu</translation>
 <translation id="3701427423622901115">Atiestatīšana apstiprināta.</translation>
@@ -1654,7 +1655,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3769584711865378220"><ph name="URL" /> vēlas mainīt piekļuvi atrašanās vietai no aptuvenas uz precīzu.</translation>
 <translation id="3772211998634047851">Papīrs (biroja)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu piezīmi lietotnē Google Keep, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
-<translation id="3778045607993018262">Pix konts tiks sasaistīts ar e-pasta adresi <ph name="ACCOUNT_EMAIL" />. Lai izslēgtu Pix kodu noteikšanu, pārejiet uz <ph name="BEGIN_LINK1" />Chrome iestatījumiem<ph name="END_LINK1" />.</translation>
 <translation id="3780694243617746492">Izvades nodalījums</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth ierīces</translation>
@@ -1899,7 +1899,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4185037616931963178">Kompensācijas numura droša atjaunināšana</translation>
 <translation id="4186035307311647330">Atcelt cenas izsekošanu</translation>
 <translation id="4191334393248735295">Garums</translation>
-<translation id="4192770747482479191">Jebkurā vietā tīmeklī divreiz nospiediet taustiņu ⌘, lai atrastu un aizpildītu papildu informāciju</translation>
 <translation id="4195459680867822611">Poga “Skatīt Chrome padomus”. Aktivizējiet, lai uzzinātu par Chrome funkcijām.</translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4196861286325780578">&amp;Atcelt pārvietošanas atsaukšanu</translation>
@@ -1917,6 +1916,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4218327733815631046">Turpināt izmantot aptuveno atrašanās vietu</translation>
 <translation id="4219596572397833317">Skatiet cenu vēsturi un citu informāciju, lai iepirktos gudrāk.</translation>
 <translation id="4220128509585149162">Avārijas</translation>
+<translation id="4220745762102459826">un vēl</translation>
 <translation id="4221630205957821124">&lt;h4&gt;1. darbība. Pierakstīšanās portālā&lt;/h4&gt;
     &lt;p&gt;Wi-Fi tīklos tādās vietās kā kafejnīcas un lidostas ir jāveic pierakstīšanās. Lai atvērtu pierakstīšanās lapu, apmeklējiet lapu, kurā tiek izmantots &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2292,6 +2292,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="483241715238664915">Ieslēgt brīdinājumus</translation>
 <translation id="4833567658337394628">Nav ieteicams ielīmēt</translation>
 <translation id="4840250757394056958">Skatīt Chrome vēsturi</translation>
+<translation id="4842085418602350953">Nākamreiz maksājiet ar Pix, nepārslēdzot lietotnes</translation>
 <translation id="4842365697443353018">Notīriet veidlapu, lai maksātu vēlāk</translation>
 <translation id="484462545196658690">Autom.</translation>
 <translation id="4844937814014739139">Ritināšana un tālummaiņa kopīgotajās cilnēs</translation>
@@ -2466,6 +2467,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5115232566827194440">Ierobežotas, pārvaldītas viesa sesijas ignorēšana</translation>
 <translation id="5115563688576182185">(64 bitu)</translation>
 <translation id="5116015291385561204">Verificēt identitāti, lai automātiski aizpildītu sensitīvu informāciju</translation>
+<translation id="5121592697493894155">Google meklēšana sānu panelī</translation>
 <translation id="5122786942953798871">Aploksne (kokvilna)</translation>
 <translation id="5123063207673082822">Nedēļas nogale</translation>
 <translation id="5124797626438336458">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” kļūdas ekrāns ir atvērts pusekrāna augstumā.</translation>
@@ -2878,6 +2880,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5794065675298686371">Ieslēdziet cenu izsekošanas paziņojumus</translation>
 <translation id="5794093550048860249">Izsekošanas numurs</translation>
 <translation id="5796050750059455142">Ieslēdziet iestatījumu “<ph name="BEGIN_LINK" />Viedās funkcijas citos Google produktos<ph name="LINK_END" />”.</translation>
+<translation id="5797916798049571144">Tas ir saglabāts kopā ar jūsu kartes informāciju, lai norēķināšanās laikā tas tiktu automātiski aizpildīts</translation>
 <translation id="5797984091151707075">Bloķēts saskaņā ar administratora politiku</translation>
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="5806871454498484178">Ritināšana un tālummaiņa bloķēta</translation>
@@ -4297,6 +4300,7 @@ Papildu informācija:
 <translation id="8208629719488976364">Jūsu izdrukāto lapu saturs un informācija par printeri tiek nosūtīta uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šis saturs un informācija var tikt pārmeklēta, lai konstatētu, vai tajā ir sensitīvi dati, un uzglabāta saskaņā ar uzņēmuma politikām, turklāt tā var būt redzama jūsu administratoram.</translation>
 <translation id="8210490490377416373">Atlasīt politikas nosaukumu</translation>
 <translation id="8211406090763984747">Savienojums ir drošs</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{un vēl 1 avots}zero{un vēl # avotu}one{un vēl # avots}other{un vēl # avoti}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 collas</translation>
 <translation id="8218327578424803826">Piešķirtā atrašanās vieta:</translation>

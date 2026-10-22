@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">방문하려고 한 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Google 월렛에 안전하게 신분증 추가</translation>
 <translation id="1398743098754840707">여기에 추가한 사이트는 탭이 열려 있어도 대답의 참조로 사용되지 않습니다. 추가한 사이트가 현재 대화목록에서 사용 중인 경우 대화목록에서 해당 사이트를 참조하지 않게 되는 데 최대 30분이 걸릴 수 있습니다.</translation>
+<translation id="1403359480263156644">카드 소지자 이름 업데이트됨</translation>
 <translation id="1405567553485452995">연한 녹색</translation>
 <translation id="1406370515365284486">결제 수단은 그대로 저장됩니다.</translation>
 <translation id="1406500794671479665">확인 중...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">새 카드 스캔</translation>
 <translation id="2501270939904835585">라벨(새틴)</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
+<translation id="250307989715832083">서명 추가</translation>
 <translation id="250346157641628208">용지(잉크젯)</translation>
 <translation id="2505063700931618106">카드 정보 저장됨</translation>
 <translation id="2505268675989099013">계정 보호</translation>
@@ -1596,7 +1598,6 @@
 <translation id="3693516565203081475">결제 수단 선택</translation>
 <translation id="3698353241727597930">관리자가 엔터프라이즈 관리 <ph name="CLOUD_STORAGE" /> 스토리지에 <ph name="FILES" />을(를) 저장하도록 구성했습니다. 이러한 파일은 삭제 시 모니터링, 감사, 보관될 수 있습니다.</translation>
 <translation id="3698629142018988477">사이트 만들기 버튼, Google Sites에서 빠르게 새 사이트를 만들려면 활성화하세요.</translation>
-<translation id="3698708128812719147">더 많은 정보를 찾아서 입력하려면 웹 어디서나 Ctrl 키를 두 번 누르세요</translation>
 <translation id="3700094625653511150">후불 결제 옵션을 숨기려면 <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> 페이지로 이동하세요.</translation>
 <translation id="3700966190175650601">비밀번호 입력 시 지문 사용 중</translation>
 <translation id="3701427423622901115">재설정이 확인되었습니다.</translation>
@@ -1655,7 +1656,6 @@
 <translation id="3769584711865378220"><ph name="URL" />에서 위치 액세스 권한을 대략적인 위치에서 정확한 위치로 변경하려고 합니다.</translation>
 <translation id="3772211998634047851">용지(본드)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Keep에서 빠르게 새 메모 만들기</translation>
-<translation id="3778045607993018262">Pix 계정이 <ph name="ACCOUNT_EMAIL" />에 연결됩니다. Pix 코드 감지를 사용 중지하려면 <ph name="BEGIN_LINK1" />Chrome 설정<ph name="END_LINK1" />으로 이동하세요.</translation>
 <translation id="3780694243617746492">출력함</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">블루투스 장치</translation>
@@ -1901,7 +1901,6 @@
 <translation id="4185037616931963178">안전하게 리드레스 번호 업데이트하기</translation>
 <translation id="4186035307311647330">가격 추적 취소</translation>
 <translation id="4191334393248735295">길이</translation>
-<translation id="4192770747482479191">더 많은 정보를 찾아서 입력하려면 웹 어디서나 ⌘를 두 번 누르세요</translation>
 <translation id="4195459680867822611">Chrome 도움말 보기 버튼, Chrome 기능에 관해 자세히 알아보려면 활성화하세요.</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4196861286325780578">이동 다시 실행(&amp;R)</translation>
@@ -1919,6 +1918,7 @@
 <translation id="4218327733815631046">대략적인 위치 계속 사용</translation>
 <translation id="4219596572397833317">가격 변동 내역 등을 확인하여 더 현명하게 쇼핑하세요.</translation>
 <translation id="4220128509585149162">비정상 종료</translation>
+<translation id="4220745762102459826">더보기</translation>
 <translation id="4221630205957821124">&lt;h4&gt;1단계: 포털에 로그인하기&lt;/h4&gt;
     &lt;p&gt;카페, 공항 등의 장소에서 Wi-Fi 네트워크에 연결하려면 로그인해야 합니다. 로그인 페이지를 보려면 &lt;code&gt;http://&lt;/code&gt;를 사용하는 페이지로 이동하세요.&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@
 <translation id="483241715238664915">경고 켜기</translation>
 <translation id="4833567658337394628">붙여넣기는 권장되지 않습니다.</translation>
 <translation id="4840250757394056958">Chrome 방문 기록 보기</translation>
+<translation id="4842085418602350953">다음번에는 앱을 전환하지 않고 Pix로 결제하세요</translation>
 <translation id="4842365697443353018">후불 결제 옵션을 사용하려면 양식을 지우세요</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="4844937814014739139">공유 탭 스크롤 및 확대/축소</translation>
@@ -2468,6 +2469,7 @@
 <translation id="5115232566827194440">제한된 관리 게스트 세션 재정의</translation>
 <translation id="5115563688576182185">(64비트)</translation>
 <translation id="5116015291385561204">본인 인증을 완료하여 민감한 정보 자동 완성</translation>
+<translation id="5121592697493894155">측면 패널의 Google 검색</translation>
 <translation id="5122786942953798871">봉투(면)</translation>
 <translation id="5123063207673082822">주말</translation>
 <translation id="5124797626438336458">선구매 후지불 오류 화면이 절반 높이로 열렸습니다.</translation>
@@ -2880,6 +2882,7 @@
 <translation id="5794065675298686371">가격 추적 알림 사용 설정</translation>
 <translation id="5794093550048860249">운송장 번호</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />다른 Google 제품의 스마트 기능<ph name="LINK_END" />”을 사용 설정합니다.</translation>
+<translation id="5797916798049571144">카드 정보와 함께 저장되므로 결제 시 자동으로 입력됩니다.</translation>
 <translation id="5797984091151707075">관리자 정책에 따라 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5806871454498484178">스크롤 및 확대/축소 차단됨</translation>
@@ -4298,6 +4301,7 @@
 <translation id="8208629719488976364">인쇄하는 페이지의 콘텐츠와 프린터 정보가 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어, 민감한 정보를 찾기 위해 내용을 스캔할 수 있으며 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
 <translation id="8210490490377416373">정책 이름 선택</translation>
 <translation id="8211406090763984747">이 연결은 안전합니다.</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{외 소스 1개}other{외 소스 #개}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14x18인치</translation>
 <translation id="8218327578424803826">지정된 위치:</translation>

@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Nyissa meg az <ph name="BEGIN_BOLD" />Alapértelmezett alkalmazások<ph name="END_BOLD" /> beállításait iOS-eszközén.</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link érkezett}other{{count} link érkezett}}</translation>
 <translation id="1941314575388338491">A másoláshoz koppintson duplán.</translation>
+<translation id="1942483019269000450">A feladat folytatásához a Gemini megkérheti a Google Walletet, hogy töltse ki az Ön hitelkártyaadatait</translation>
 <translation id="1943478190258551035">Menü → Beállítások</translation>
 <translation id="1944477975050820119">Valós idejű javaslatokat kaphat, amelyek segítségével új módokon böngészhet az AI használatával. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1952728750904661634">Bejelentkezés felügyelt fiókkal</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">új elem</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> fiók használja ugyanazt a jelszót</translation>
 <translation id="205013082884273671">Bármire rákereshet a képernyőn</translation>
+<translation id="2053311407685904414">Cím kiválasztása</translation>
 <translation id="2054044186557130763">Jelentkezzen be a következővel: <ph name="NAME" />, <ph name="EMAIL" /> (az Ön szervezete kezeli).</translation>
 <translation id="2059166748188874810">Törvényhatósági terület</translation>
 <translation id="2060638295449304809">Ezt a címet csak erre az eszközre menti a rendszer. Ha szeretné más eszközökön is használni, mentse a Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Fordítás</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2360196772093551345">Mobilwebhely kérése</translation>
+<translation id="2360272811987888433">Manuális bejelentkezés</translation>
 <translation id="2362083820973145409">Bejelentkezve a következőként: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Megnyitja a beállításokat.</translation>
 <translation id="2367025302166767427">Probléma adódott az adatok kitöltésekor</translation>
 <translation id="2371084566192454134">Lapok és lapcsoportok</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Mentés a Google Fotókba</translation>
 <translation id="3406506285180498376">Oldal megosztása…</translation>
 <translation id="340669334496430859">Utolsó módosítás</translation>
+<translation id="3407832712016477396">A Gemini használhatja a Google Jelszókezelőt az Ön nevében történő bejelentkezéshez.</translation>
 <translation id="3409785640040772790">Térkép</translation>
 <translation id="3416023309465857378">2023. október 25.</translation>
 <translation id="3419787211763835342">Segítsen a továbbfejlesztett automatikus kitöltés javításában</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Soha nem engedélyezem</translation>
 <translation id="4293154608148215505">telefonjáról</translation>
 <translation id="4294506173142861371">Bejelentkezés mint <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Manuális megadás</translation>
+<translation id="4297418774230471285">Személyes adatok kiválasztása</translation>
 <translation id="4302061870579014542">Pozíció beállítása</translation>
 <translation id="4304713468139749426">Jelszókezelő</translation>
 <translation id="4309403553630140242">További információért koppintson duplán.</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">A Gemini egy mesterséges intelligencia, amely hibázhat. <ph name="BEGIN_LINK" />További információ a Google-nak küldött releváns adatokról<ph name="END_LINK" />.</translation>
 <translation id="5315870524563628285">Nincs importálható elem</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />/<ph name="INDEX" />.</translation>
+<translation id="5316823130598991834">Bejelentkezés ide: <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5318298563956633672">Ön már nyomon követi ezt a terméket.</translation>
 <translation id="5327248766486351172">Név</translation>
@@ -2206,6 +2213,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="7839994177130598711">A családtagok mostantól használhatják az Ön felhasználónevét és jelszavát, amikor a Google Jelszókezelővel jelentkeznek be a(z) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> oldalon.</translation>
 <translation id="7841180087127694526">Másolt szöveg keresése</translation>
 <translation id="7841418003178675048">Válassza ki, hogy milyen kártyákat szeretne látni az Új lap oldalon.</translation>
+<translation id="7842369010458597654">Fizetési adatok kitöltése…</translation>
 <translation id="7845466610722898">Olvasólista megjelenítése</translation>
 <translation id="7846161022626028328">Valami hiba történt. Próbálja újra.</translation>
 <translation id="784623644169604270">Nincs tevékenység a közelmúltból</translation>

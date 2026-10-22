@@ -3494,6 +3494,8 @@ Si elle est désactivée ou n'est pas définie, le menu d'accessibilité flottan
 <translation id="3146711617256415776">Ne pas autoriser la synthèse vocale améliorée via le réseau pour Sélectionner pour écouter</translation>
 <translation id="315013437951136266">Activer la fonctionnalité <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="3150351525324499342">Ne pas afficher par défaut l'icône <ph name="PRODUCT_NAME" /> dans la barre d'outils, mais laisser les utilisateurs choisir</translation>
+<translation id="3151501327418961907">Si cette règle est définie sur 0 ou n'est pas configurée, les règles <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> et <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> ne s'appliquent qu'au niveau de l'utilisateur à condition que celui-ci soit affilié et qu'il utilise un navigateur géré.
+Si cette règle est définie sur 1, les règles <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> et <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> s'appliquent au niveau de l'utilisateur, même si celui-ci n'est pas affilié.</translation>
 <translation id="3152135410085709340">Autoriser l'accès aux fichiers locaux aux URL file:// sur ces sites dans le lecteur PDF</translation>
 <translation id="3152425128389603870">Rendre le mode bureau unifié disponible et l'activer par défaut</translation>
 <translation id="3159375329008977062">L'utilisateur est autorisé à exporter/importer des conteneurs Crostini via l'UI</translation>
@@ -4300,6 +4302,21 @@ Le transfert de données avec Takeout doit aussi être activé pour que l'appli 
 <translation id="370314752761795411">Démarrer <ph name="PRODUCT_NAME" /> avec <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Arrêter</translation>
 <translation id="3712861436661566358">Activer la séparation des profils</translation>
+<translation id="3715589988915487768">Configure une liste de domaines de provisionnement (PvD) que <ph name="PRODUCT_NAME" /> utilisera pour récupérer dynamiquement les configurations de proxy.
+
+Cette règle permet de spécifier une liste de noms de domaine ou d'URI de ressources représentant des domaines de provisionnement, comme défini dans le document RFC 8801 ("Discovering Provisioning Domain Names and Data"). Pour chaque PvD, le navigateur résout la configuration JSON correspondante en envoyant une requête HTTPS au chemin d'accès du point de terminaison connu : "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd".
+
+Chaque entrée de la liste spécifie :
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" /> : l'identifiant du domaine de provisionnement (un nom de domaine).
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" /> : la configuration d'authentification facultative. Si elle n'est pas configurée ou est définie sur "none", aucune authentification n'est effectuée. Lorsque cette valeur est définie sur "profile_bearer_token", le navigateur récupère un jeton d'accès OAuth2 avec le niveau d'accès fourni pour le compte principal connecté et l'ajoute à l'en-tête "Authorization" en tant que jeton "Bearer".
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" /> : une liste facultative d'en-têtes HTTP personnalisés à inclure lors de l'interrogation du point de terminaison PvD. Des valeurs dynamiques peuvent être injectées, comme "profile_id" (qui représente un identifiant unique et stable du profil du navigateur sur l'appareil, permettant un ciblage par configuration de profil) ou "accept_language" (qui représente les langues préférées du navigateur).
+
+Les configurations récupérées sont analysées conformément au schéma du document RFC 8801. Seuls les règles de routage liées à la configuration du proxy et les proxys issus de la charge utile JSON du PvD sont appliqués. Si cette règle n'est pas configurée, aucun domaine de provisionnement ne sera interrogé ni utilisé pour récupérer les configurations de proxy.
+
+Cette règle ne peut être définie au niveau de l'utilisateur que si celui-ci est affilié au navigateur, si le navigateur n'est pas géré ou si la règle <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> est définie sur 1.</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
 <translation id="3724039569609354541">Utiliser le comportement par défaut pour déterminer si des sites Web peuvent envoyer des requêtes aux points de terminaison du réseau</translation>
 <translation id="3726715125055227414">Cette règle configure <ph name="PRODUCT_OS_NAME" /> afin que, lors de l'envoi de requêtes réseau depuis l'écran de connexion, ses algorithmes d'accord de clé préférés (groupes compatibles) soient ordonnés dans TLS 1.3 selon une préférence pour ceux qui ont été approuvés par un régime de conformité spécifique.
@@ -11648,6 +11665,7 @@ Cette fonctionnalité n'est disponible que dans la version Canary.
 
 Si elle est activée ou si elle n'est pas configurée, la page est accessible.
 Si elle est désactivée, la page est bloquée.</translation>
+<translation id="8266506455952754231">Contrôle les utilisateurs gérés autorisés à définir les règles <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> et <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" />.</translation>
 <translation id="8266778278542911985">Si cette règle est définie sur "3", les sites Web peuvent demander à accéder aux ports série. Si elle est définie sur "2", l'accès aux ports série est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>

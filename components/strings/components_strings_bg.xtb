@@ -1598,7 +1598,6 @@
 <translation id="3693516565203081475">Избор на начин на плащане</translation>
 <translation id="3698353241727597930">Администраторът ви е конфигурирал <ph name="FILES" /> да се запазват в корпоративно управляваното ви хранилище в <ph name="CLOUD_STORAGE" />. Тези файлове може да бъдат наблюдавани, одитирани и запазени, след като ги изтриете.</translation>
 <translation id="3698629142018988477">Бутон за създаване на сайт. Активирайте, за да създадете бързо сайт в Google Сайтове</translation>
-<translation id="3698708128812719147">Натиснете Ctrl два пъти където и да е в мрежата, за да намерите и попълните още информация</translation>
 <translation id="3700094625653511150">За да скриете опциите за плащане по-късно, отворете <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Използвате отпечатъка си при попълване на пароли</translation>
 <translation id="3701427423622901115">Нулирането е потвърдено.</translation>
@@ -1657,7 +1656,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> иска да промени достъпа до местоположението от приблизително на точно</translation>
 <translation id="3772211998634047851">Хартия (облигационна)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо бележка в Google Keep</translation>
-<translation id="3778045607993018262">Профилът в Pix ще бъде свързан с(ъс) <ph name="ACCOUNT_EMAIL" />. За да изключите разпознаването на кода за Pix, отворете <ph name="BEGIN_LINK1" />настройките на Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Изходен контейнер</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth устройства</translation>
@@ -1903,7 +1901,6 @@
 <translation id="4185037616931963178">Актуализиране на номера за коригирани данни по сигурен начин</translation>
 <translation id="4186035307311647330">Спиране на проследяването на цената</translation>
 <translation id="4191334393248735295">Продължителност</translation>
-<translation id="4192770747482479191">Натиснете ⌘ два пъти където и да е в мрежата, за да намерите и попълните още информация</translation>
 <translation id="4195459680867822611">Бутон за преглед на съветите за Chrome. Активирайте, за да научите повече за функциите на браузъра</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4196861286325780578">&amp;Възстановяване на преместването</translation>
@@ -2472,6 +2469,7 @@
 <translation id="5115232566827194440">Отмяна на ограничената управлявана сесия като гост</translation>
 <translation id="5115563688576182185">(64 бита)</translation>
 <translation id="5116015291385561204">Потвърдете, че това сте вие, за да се попълва автоматично поверителната информация</translation>
+<translation id="5121592697493894155">Google Търсене в страничния панел</translation>
 <translation id="5122786942953798871">Плик (памучен)</translation>
 <translation id="5123063207673082822">Уикенда</translation>
 <translation id="5124797626438336458">Екранът за грешка на „Купете сега, платете по-късно“ е отворен на половината височина.</translation>

@@ -3369,6 +3369,8 @@ false に設定した場合、教師はこの機能にアクセスできませ�
 <translation id="3146711617256415776">「選択して読み上げ」の使用時に Enhanced Network のテキスト読み上げ音声を許可しない</translation>
 <translation id="315013437951136266"><ph name="IP_PROTECTION_NAME" /> 機能を有効にする。</translation>
 <translation id="3150351525324499342">デフォルトで <ph name="PRODUCT_NAME" /> アイコンをツールバーに表示しないが、ユーザーが選択できるようにする</translation>
+<translation id="3151501327418961907">このポリシーを 0 に設定するか未設定のままにした場合、<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ポリシーと <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> ポリシーは、管理対象ブラウザの関連付けられたユーザーのユーザー スコープでのみ適用されます。
+このポリシーを 1 に設定した場合、関連付けられていないユーザーであっても、<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ポリシーと <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> ポリシーが該当のユーザー スコープで適用されます。</translation>
 <translation id="3152135410085709340">PDF ビューアで file:// URL へのローカル ファイル アクセスを許可するサイトを指定する</translation>
 <translation id="3152425128389603870">統合デスクトップを使用可能にし、デフォルトで有効にする</translation>
 <translation id="3159375329008977062">ユーザーは UI から Crostini コンテナを書き出しおよび読み込みできます</translation>
@@ -4176,6 +4178,21 @@ HTTPS 用の RSA 証明書に両方を含める必要があります。</transla
 <translation id="370314752761795411"><ph name="MS_WIN_NAME" /> へのログイン時に <ph name="PRODUCT_NAME" /> を起動する</translation>
 <translation id="3711895659073496551">停止する</translation>
 <translation id="3712861436661566358">プロファイル分離を強制適用する</translation>
+<translation id="3715589988915487768"><ph name="PRODUCT_NAME" /> がプロキシ構成を動的に取得するために使用するプロビジョニング ドメイン（PvD）のリストを設定します。
+
+このポリシーでは、RFC 8801（「プロビジョニング ドメイン名とデータの検出」）で定義されているプロビジョニング ドメインを表すドメイン名またはリソース URI のリストを指定できます。ブラウザは、各 PvD について、既知のエンドポイント パス「https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd」に HTTPS リクエストを送信して、対応する JSON 構成を解決します。
+
+リストの各エントリでは、以下を指定します。
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: プロビジョニング ドメインの識別子（ドメイン名）。
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: オプションの認証構成。未構成または「なし」に設定した場合、認証は行われません。「profile_bearer_token」に設定した場合、ブラウザはログインしているメイン アカウントの指定されたスコープで OAuth2 アクセス トークンを取得し、「Authorization」ヘッダーに「Bearer」トークンとして付加します。
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: PvD エンドポイントをクエリする際に含めるカスタム HTTP ヘッダーのオプションのリスト。「profile_id」（デバイス上のブラウザ プロファイルの安定した一意の ID を表し、プロファイルごとの構成のターゲティングを可能にする）や「accept_language」（ブラウザの優先言語を表す）などの動的な値を挿入できます。
+
+取得した構成は、RFC 8801 スキーマに従って解析されます。PvD の JSON ペイロードのプロキシ構成関連のルーティング ルールとプロキシのみが適用されます。このポリシーを未設定のままにした場合、プロビジョニング ドメインはクエリされず、プロキシ構成の取得にも使用されません。
+
+このポリシーをユーザーレベルで設定できるのは、ユーザーがブラウザに関連付けられている場合、ブラウザが管理対象外の場合、または <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> ポリシーが 1 に設定されている場合のみです。</translation>
 <translation id="3719826155360621982">ホームページ</translation>
 <translation id="3724039569609354541">ウェブサイトがネットワーク エンドポイントにリクエストできるかどうかを指定する場合にデフォルトの動作を使用する</translation>
 <translation id="3726715125055227414">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> で優先する TLS 1.3 の鍵交換アルゴリズム（サポートされているグループ）の順序を指定し、ログイン画面からネットワーク リクエストを行う際に、特定のコンプライアンス体制で承認されたアルゴリズムの優先順序を反映するように設定します。
@@ -11203,6 +11220,7 @@ false に設定した場合、管理対象のネットワークに接続され�
 
 ポリシーを有効に設定するか未設定のままにした場合は、このページにアクセスできます。
 ポリシーを無効に設定した場合、このページはブロックされます。</translation>
+<translation id="8266506455952754231"><ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ポリシーと <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> ポリシーを設定できる管理対象ユーザーを制御する。</translation>
 <translation id="8266778278542911985">このポリシーを 3 に設定した場合、ウェブサイトによるシリアルポートへのアクセス要求が許可されます。このポリシーを 2 に設定した場合、シリアルポートへのアクセスは拒否されます。
 
       このポリシーを未設定のままにした場合、ウェブサイトによるアクセス要求は許可されますが、ユーザーはこの設定を変更できます。</translation>

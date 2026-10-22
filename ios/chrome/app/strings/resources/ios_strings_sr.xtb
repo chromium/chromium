@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Отворите подешавања <ph name="BEGIN_BOLD" />подразумеваних апликација<ph name="END_BOLD" /> у iOS-у</translation>
 <translation id="1938871630297275912">{count,plural, =1{Линк је примљен}one{{count} линк је примљен}few{{count} линка су примљена}other{{count} линкова је примљено}}</translation>
 <translation id="1941314575388338491">Додирните двапут да бисте копирали.</translation>
+<translation id="1942483019269000450">Да би наставио са задатком, Gemini од Google новчаника може да затражи да попуни информације о вашој кредитној картици</translation>
 <translation id="1943478190258551035">Мени → Подешавања</translation>
 <translation id="1944477975050820119">Добијајте предлоге у реалном времену који могу да вам помогну да откријете нове начине за прегледање помоћу вештачке интелигенције. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Пријавите се помоћу налога којим се управља</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">нова ставка</translation>
 <translation id="2049727122989709386">Налози (<ph name="COUNT" />) користе исту лозинку</translation>
 <translation id="205013082884273671">Претражите било шта на екрану</translation>
+<translation id="2053311407685904414">Изаберите адресу</translation>
 <translation id="2054044186557130763">Пријавите се преко налога <ph name="NAME" /> <ph name="EMAIL" />, којим управља организација.</translation>
 <translation id="2059166748188874810">Општина</translation>
 <translation id="2060638295449304809">Ова адреса се чува само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Преведи</translation>
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2360196772093551345">Захтевај мобилни сајт</translation>
+<translation id="2360272811987888433">Ручно пријављивање</translation>
 <translation id="2362083820973145409">Пријављени сте као <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отвара подешавања.</translation>
 <translation id="2367025302166767427">Проблем при попуњавању информација</translation>
 <translation id="2371084566192454134">Картице и групе картица</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Сачувај у Google сликама</translation>
 <translation id="3406506285180498376">Дели страницу…</translation>
 <translation id="340669334496430859">Последња измена</translation>
+<translation id="3407832712016477396">Gemini може да користи Google менаџер лозинки да би вас пријавио</translation>
 <translation id="3409785640040772790">Мапе</translation>
 <translation id="3416023309465857378">25. октобар 2023.</translation>
 <translation id="3419787211763835342">Помозите нам да унапредимо побољшано аутоматско попуњавање</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Никада не дозволи</translation>
 <translation id="4293154608148215505">телефона</translation>
 <translation id="4294506173142861371">Желите да се пријавите као <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Унеси ручно</translation>
+<translation id="4297418774230471285">Изаберите личне податке</translation>
 <translation id="4302061870579014542">Подеси позицију</translation>
 <translation id="4304713468139749426">Менаџер лозинки</translation>
 <translation id="4309403553630140242">Двапут додирните за више информација</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini је вештачка интелигенција и може да погреши. <ph name="BEGIN_LINK" />Више о релевантним подацима који се шаљу Google-у<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Нема ничега за увоз</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Пријавите се на <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318298563956633672">Већ пратите овај производ.</translation>
 <translation id="5327248766486351172">Назив</translation>
@@ -2206,6 +2213,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7839994177130598711">Чланови породице сада могу да користе ваше корисничко име и лозинку када користе Google менаџер лозинки за пријављивање на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Потражите текст који сте копирали</translation>
 <translation id="7841418003178675048">Одаберите које картице ће се приказивати на страници нове картице.</translation>
+<translation id="7842369010458597654">Попуњавају се информације о плаћању</translation>
 <translation id="7845466610722898">Приказује листу за читање</translation>
 <translation id="7846161022626028328">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="784623644169604270">Нема недавних активности</translation>

@@ -3584,6 +3584,8 @@ Bu politika devre dışı olarak ayarlanırsa veya ayarlanmadan bırakılırsa k
 <translation id="3146711617256415776">Seç ve Dinle özelliğini kullanırken gelişmiş ağ metin okuma seslerine izin verme</translation>
 <translation id="315013437951136266"><ph name="IP_PROTECTION_NAME" /> özelliğini etkinleştirin.</translation>
 <translation id="3150351525324499342">Araç çubuğunda <ph name="PRODUCT_NAME" /> simgesini varsayılan olarak gösterme, kullanıcıların seçmesine izin ver</translation>
+<translation id="3151501327418961907">Bu politika 0 değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ve <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> politikaları yalnızca yönetilen bir tarayıcıdaki ilişkili kullanıcılar için kullanıcı kapsamına uygulanır.
+Bu politika 1 değerine ayarlanırsa <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ve <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> politikaları, ilişkili olmayan kullanıcılar için bile kullanıcı kapsamına uygulanır.</translation>
 <translation id="3152135410085709340">Yerel dosyaların, PDF görüntüleyicide bu sitelerdeki file:// URL'lerine erişmesine izin ver</translation>
 <translation id="3152425128389603870">Birleşik Masaüstü'nü kullanılabilir hale getir ve varsayılan olarak aç.</translation>
 <translation id="3159375329008977062">Kullanıcının, kullanıcı arayüzü üzerinden Crostini kapsayıcıları dışa/içe aktarmasına izin verilir</translation>
@@ -4425,6 +4427,21 @@ Hem <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> hem de <ph
 <translation id="370314752761795411"><ph name="PRODUCT_NAME" /> uygulamasını <ph name="MS_WIN_NAME" /> ile başlat</translation>
 <translation id="3711895659073496551">Askıya al</translation>
 <translation id="3712861436661566358">Profil ayırmayı zorunlu kıl</translation>
+<translation id="3715589988915487768"><ph name="PRODUCT_NAME" /> tarafından proxy yapılandırmalarını dinamik olarak getirmek için kullanılacak olan temel hazırlık alanlarının (PvD'ler) listesini yapılandırır.
+
+Bu politika, RFC 8801'de ("Discovering Provisioning Domain Names and Data") tanımlandığı şekliyle temel hazırlık alanlarını temsil eden alan adlarının veya kaynak URI'lerinin bir listesinin belirtilmesine olanak tanır. Tarayıcı, her PvD için "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd" şeklindeki iyi bilinen uç nokta yoluna bir HTTPS isteği göndererek ilgili JSON yapılandırmasını çözümler.
+
+Listedeki her giriş şunları belirtir:
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: Temel hazırlık alanının tanımlayıcısı (alan adı).
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: İsteğe bağlı kimlik doğrulama yapılandırması. Yapılandırılmazsa veya "none" değerine ayarlanırsa kimlik doğrulama yapılmaz. "profile_bearer_token" olarak ayarlandığında tarayıcı, oturum açılmış ana hesap için belirtilen kapsamda bir OAuth2 erişim jetonu alır ve bunu "Authorization" başlığına "Bearer" jetonu olarak ekler.
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: PvD uç noktası sorgulanırken dahil edilecek isteğe bağlı özel HTTP başlıkları listesi. Cihazdaki tarayıcı profilinin sabit ve benzersiz bir tanımlayıcısını temsil ederek profil bazında yapılandırma hedeflemeyi sağlayan "profile_id" veya tarayıcının tercih edilen dillerini temsil eden "accept_language" gibi dinamik değerler yerleştirilebilir.
+
+Getirilen yapılandırmalar, RFC 8801 şemasına göre ayrıştırılır. PvD'nin JSON yükünden yalnızca proxy yapılandırmasıyla ilgili yönlendirme kuralları ve proxy'ler uygulanır. Bu politika ayarlanmazsa hiçbir temel hazırlık alanı sorgulanmaz veya proxy yapılandırmalarını getirmek için kullanılmaz.
+
+Bu politika, yalnızca kullanıcı tarayıcıyla ilişkiliyse, tarayıcı yönetilmiyorsa veya <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> politikası 1 değerine ayarlanmışsa kullanıcı düzeyinde ayarlanabilir.</translation>
 <translation id="3719826155360621982">Ana sayfa</translation>
 <translation id="3724039569609354541">Web sitelerinin ağ uç noktalarına istekte bulunup bulunamayacağını belirlerken varsayılan çalışma biçimini kullanın</translation>
 <translation id="3726715125055227414">Bu politika, oturum açma ekranından ağ isteklerinde bulunurken TLS 1.3'te tercih edilen anahtar anlaşması algoritmalarını (desteklenen gruplar) belirli bir uyumluluk rejimi tarafından onaylanmış algoritmalara öncelik verecek şekilde sıralamak için <ph name="PRODUCT_OS_NAME" /> ürününü yapılandırır.
@@ -11884,6 +11901,7 @@ Bu özellik yalnızca Canary kanalında kullanılabilir.
 
 Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa sayfaya erişilebilir.
 Politika, Devre Dışı değerine ayarlanırsa sayfa engellenir.</translation>
+<translation id="8266506455952754231"><ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ve <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> politikalarının hangi yönetilen kullanıcı hesapları tarafından ayarlayabileceğini kontrol eder.</translation>
 <translation id="8266778278542911985">Politikayı 3 değerine ayarlarsanız web siteleri seri bağlantı noktalarına erişim izni isteyebilir. Politikayı 2 değerine ayarlarsanız seri bağlantı noktalarına erişim izni verilmez.
 
       Politikayı ayarlanmadan bırakırsanız web siteleri erişim izni isteyebilir. Kullanıcılar bu ayarı değiştirebilir.</translation>

@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">እርስዎ ለመጎብኘት በሞከሩት ጣቢያ ላይ ያሉ አጥቂዎች ሶፍትዌር እንዲጭኑ ወይም እንደ የእርስዎ የይለፍ ቃሎች፣ ስልክ ወይም የክሬዲት ካርድ ቁጥሮች ያሉ ነገሮችን እንዲገልፁ ሊያታልሉዎት ይችላሉ። Chrome ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">የመታወቂያ ካርድን ደኅንነቱ በተጠበቀ ሁኔታ ወደ Google Wallet ያክሉ</translation>
 <translation id="1398743098754840707">እዚህ የሚያክሏቸው ጣቢያዎች ትሩ ክፍት ቢሆንም እንኳን ለምላሾች ዋቢ አይደረጉም። የሚያክሉት ጣቢያ በአሁኑ ጊዜ ተከታታይ ውስጥ ጥቅም ላይ እየዋለ ከሆነ ተከታታዩ ዋቢ ማድረጉን ለማቆም እስከ 30 ደቂቃዎች ሊወስድ ይችላል።</translation>
+<translation id="1403359480263156644">የካርድ ያዢው ስም ተዘምኗል</translation>
 <translation id="1405567553485452995">ፈካ ያለ አረንጓዴ</translation>
 <translation id="1406370515365284486">የመክፈያ ዘዴዎችዎ አሁንም ይቀመጣሉ</translation>
 <translation id="1406500794671479665">በማረጋገጥ ላይ...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">አዲስ ካርድ ቃኝ</translation>
 <translation id="2501270939904835585">መሰየሚያዎች (ሳትን)</translation>
 <translation id="2501278716633472235">ወደ ኋላ ተመለስ</translation>
+<translation id="250307989715832083">ፊርማ አክል</translation>
 <translation id="250346157641628208">ወረቀት (ኢንክጄት)</translation>
 <translation id="2505063700931618106">የካርድ መረጃ ተቀምጧል</translation>
 <translation id="2505268675989099013">መለያን ጠብቅ</translation>
@@ -1595,7 +1597,6 @@
 <translation id="3693516565203081475">የመክፈያ ዘዴ ይምረጡ</translation>
 <translation id="3698353241727597930">አስተዳዳሪዎ በድርጅት በሚተዳደረው የ<ph name="CLOUD_STORAGE" /> ማከማቻዎ ውስጥ <ph name="FILES" /> ለማስቀመጥ አዋቅረዋል። እነዚህ ፋይሎች ሲሰርዟቸው ክትትል ሊደረግባቸው፣ ሊመረመሩ እና ሊቆዩ ይችላሉ።</translation>
 <translation id="3698629142018988477">የጣቢያ አዝራርን ይፍጠሩ፣ በGoogle ድረ ገፆች ውስጥ በፍጥነት አዲስ ጣቢያ ለመፍጠር ያግብሩ</translation>
-<translation id="3698708128812719147">ተጨማሪ መረጃ ለማግኘት እና ለመሙላት በድር ላይ በማንኛውም ቦታ Ctrlን ሁለቴ ይጫኑ</translation>
 <translation id="3700094625653511150">የበኋላ ላይ መክፈል አማራጮችን ለመደበቅ ወደ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> ይሂዱ</translation>
 <translation id="3700966190175650601">የይለፍ ቃላትን ለመሙላት የጣት አሻራዎን እየተጠቀሙ ነው</translation>
 <translation id="3701427423622901115">ዳግም ማስጀመር እውቅና ተሰጥቶታል።</translation>
@@ -1654,7 +1655,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> የአካባቢ መዳረሻን ከግምታዊ ወደ ትክክለኛ መለወጥ ይፈልጋል</translation>
 <translation id="3772211998634047851">ወረቀት (ቦንድ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle Keep ውስጥ በፍጥነት አዲስ ማስታወሻ ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
-<translation id="3778045607993018262">የPix መለያ ከ<ph name="ACCOUNT_EMAIL" /> ጋር ይገናኛል። የPix ኮድ ማወቂያን ለማጥፋት ወደ <ph name="BEGIN_LINK1" />Chrome ቅንብሮች<ph name="END_LINK1" /> ይሂዱ</translation>
 <translation id="3780694243617746492">የውጽዓት መጣያ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">የብሉቱዝ መሣሪያዎች</translation>
@@ -1900,7 +1900,6 @@
 <translation id="4185037616931963178">የማስተካከያ ቁጥርን ደኅንነቱ በተጠበቀ ሁኔታ ያዘምኑ</translation>
 <translation id="4186035307311647330">ዋጋ ላይ ክትትል ማድረግ አቁም</translation>
 <translation id="4191334393248735295">ርዝመት</translation>
-<translation id="4192770747482479191">ተጨማሪ መረጃ ለማግኘት እና ለመሙላት በድር ላይ በማንኛውም ቦታ ⌘ ሁለቴ ይጫኑ</translation>
 <translation id="4195459680867822611">የChrome ጠቃሚ ምክሮች አዝራርን ይመልከቱ ስለ Chrome ባህሪያት ለማወቅ ያግብሩ</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4196861286325780578">&amp;ውሰድን ድገም</translation>
@@ -1918,6 +1917,7 @@
 <translation id="4218327733815631046">ግምታዊ አካባቢን አቆይ</translation>
 <translation id="4219596572397833317">ይበልጥ ዘመናዊ በሆነ መልኩ ለመሸመት እንዲያግዝዎ ሙሉ የዋጋ ታሪክ ይመልከቱ።</translation>
 <translation id="4220128509585149162">ብልሽቶች</translation>
+<translation id="4220745762102459826">እና ተጨማሪ</translation>
 <translation id="4221630205957821124">&lt;h4&gt;ደረጃ 1፦ ወደ መግቢያው ይግቡ&lt;/h4&gt;
     &lt;p&gt;እንደ ካፌዎች ወይም የአየር ማረፊያዎች ያሉ የWi-Fi አውታረ መረቦች እንዲገቡ ይፈልጋሉ። የመግቢያ ገጹን ለመመልከት &lt;code&gt;http://&lt;/code&gt;ን የሚጠቀም ገፅ ይጠቀሙ።&lt;/p&gt;
     &lt;ol&gt;
@@ -2293,6 +2293,7 @@
 <translation id="483241715238664915">ማስጠንቀቂያዎችን አብራ</translation>
 <translation id="4833567658337394628">መለጠፍ አይመከርም</translation>
 <translation id="4840250757394056958">የChrome ታሪክዎን ይመልከቱ</translation>
+<translation id="4842085418602350953">ቀጣይ ጊዜ መተግበሪያዎችን ሳይቀይሩ በPix ይክፈሉ</translation>
 <translation id="4842365697443353018">በኋላ የመክፈል አማራጭን ለመጠቀም ቅጹን ያጽዱ</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
 <translation id="4844937814014739139">የተጋሩ ትሮችን መሸብለል እና ማጉላት</translation>
@@ -2467,6 +2468,7 @@
 <translation id="5115232566827194440">የተገደበ የሚተዳደር የእንግዳ ክፍለ ጊዜ መሻር</translation>
 <translation id="5115563688576182185">(64-ቢት)</translation>
 <translation id="5116015291385561204">ልዩ ጥንቃቄ የሚያስፈልገው መረጃን በራስ-ሰር ለመሙላት እርስዎ መሆንዎን ያረጋግጡ</translation>
+<translation id="5121592697493894155">የጎን ፓነል ውስጥ ያለ Google ፍለጋ</translation>
 <translation id="5122786942953798871">ፖስታ (ጥጥ)</translation>
 <translation id="5123063207673082822">የሳምንት እረፍት ቀን</translation>
 <translation id="5124797626438336458">የአሁን ይግዙ፣ በኋላ ይክፈሉ ስሕተት ማያ ገጽ በግማሽ ቁመት ተከፍቷል።</translation>
@@ -2879,6 +2881,7 @@
 <translation id="5794065675298686371">የዋጋ ክትትል ማሳወቂያዎችን ያብሩ</translation>
 <translation id="5794093550048860249">የመከታተያ ቁጥር</translation>
 <translation id="5796050750059455142">«<ph name="BEGIN_LINK" />በሌሎች የGoogle ምርቶች ውስጥ ዘመናዊ ባህሪያት<ph name="LINK_END" />» የሚለውን ያብሩ</translation>
+<translation id="5797916798049571144">ክፍያ ማጠናቀቅ ላይ በራስ-ሰር እንዲሞላ ከካርድ መረጃዎ ጋር ተቀምጧል</translation>
 <translation id="5797984091151707075">በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5806871454498484178">ማሸብለል እና ማጉላት ታግዷል</translation>
@@ -4298,6 +4301,7 @@
 <translation id="8208629719488976364">እርስዎ የሚያትሟቸው ገፆች ይዘት እና ስለአታሚዎ መረጃ ለትንተና ወደ Google ደመና ወይም ሦስተኛ ወገኖች ይላካል። ለምሳሌ፣ አደጋ ሊያስከትል ለሚችል ውሂብ ሊቃኝ እና በኩባንያ መመሪያዎች መሠረት ሊከማች እና ለአስተዳዳሪዎ የሚታይ ሊሆን ይችላል።</translation>
 <translation id="8210490490377416373">የመመሪያ ስም ይምረጡ</translation>
 <translation id="8211406090763984747">ግንኙነት ደኅንነቱ የተጠበቀ ነው</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 ሌላ ምንጭ}one{+ # ሌላ ምንጭ}other{+ # ሌሎች ምንጮች}}</translation>
 <translation id="8213853114485953510">ጄአይኤስ Exec</translation>
 <translation id="8216640997712497593">14 x 18 ኢንች</translation>
 <translation id="8218327578424803826">የተመደበ መገኛ አካባቢ፦</translation>

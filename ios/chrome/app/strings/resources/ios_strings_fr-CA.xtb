@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Ouvrez les réglages des <ph name="BEGIN_BOLD" />applis par défaut<ph name="END_BOLD" /> dans iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Lien reçu}one{{count} lien reçu}other{{count} liens reçus}}</translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
+<translation id="1942483019269000450">Pour poursuivre la tâche, Gemini peut demander à Google Portefeuille de saisir les infos de votre carte de crédit</translation>
 <translation id="1943478190258551035">Menu → Paramètres</translation>
 <translation id="1944477975050820119">Obtenez des suggestions en temps réel qui peuvent vous aider à trouver de nouvelles façons de naviguer avec l'IA. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Se connecter avec un compte géré</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">nouvel élément</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisant le même mot de passe</translation>
 <translation id="205013082884273671">Recherchez n'importe quel contenu sur votre écran</translation>
+<translation id="2053311407685904414">Sélectionnez une adresse</translation>
 <translation id="2054044186557130763">Se connecter en tant que <ph name="NAME" /> <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2060638295449304809">Ce mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Traduire</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2360196772093551345">Voir la version pour appareil mobile</translation>
+<translation id="2360272811987888433">Se connecter manuellement</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
 <translation id="2367025302166767427">Problème lors de la saisie de vos informations</translation>
 <translation id="2371084566192454134">Onglets et groupes d'onglets</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Enregistrer dans Google Photos</translation>
 <translation id="3406506285180498376">Partager la page…</translation>
 <translation id="340669334496430859">Dernière modification</translation>
+<translation id="3407832712016477396">Gemini peut utiliser le gestionnaire de mots de passe Google pour se connecter à votre place</translation>
 <translation id="3409785640040772790">Google Maps</translation>
 <translation id="3416023309465857378">25 octobre 2023</translation>
 <translation id="3419787211763835342">Nous aider à améliorer le remplissage automatique amélioré</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Ne jamais autoriser</translation>
 <translation id="4293154608148215505">votre téléphone</translation>
 <translation id="4294506173142861371">Se connecter en tant que <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Entrer manuellement</translation>
+<translation id="4297418774230471285">Sélectionnez les renseignements personnels</translation>
 <translation id="4302061870579014542">Définir la position</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4309403553630140242">Touchez l'écran deux fois pour en savoir plus.</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini est une IA et peut se tromper. <ph name="BEGIN_LINK" />En savoir plus sur les données pertinentes envoyées à Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Rien à importer</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Connectez-vous à <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
 <translation id="5327248766486351172">Nom</translation>
@@ -2206,6 +2213,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="7839994177130598711">Les membres de votre famille peuvent désormais utiliser votre nom d'utilisateur et votre mot de passe lorsqu'ils utilisent le gestionnaire de mots de passe Google pour se connecter à <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Rechercher le texte copié</translation>
 <translation id="7841418003178675048">Choisissez quelles cartes s'affichent sur la page de votre nouvel onglet.</translation>
+<translation id="7842369010458597654">Saisie des infos de paiement en cours…</translation>
 <translation id="7845466610722898">Afficher la liste de lecture</translation>
 <translation id="7846161022626028328">Une erreur est survenue. Réessayez.</translation>
 <translation id="784623644169604270">Aucune activité récente</translation>

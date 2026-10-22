@@ -3415,6 +3415,8 @@ PAC 樣式的字串：
 <translation id="3146711617256415776">禁止在使用隨選朗讀時使用加強型網路文字轉語音功能</translation>
 <translation id="315013437951136266">啟用 <ph name="IP_PROTECTION_NAME" />功能。</translation>
 <translation id="3150351525324499342">預設不在工具列顯示 <ph name="PRODUCT_NAME" /> 圖示，但允許使用者選擇</translation>
+<translation id="3151501327418961907">如果將這項政策設為 0 或未設定，系統只會在受管理瀏覽器的使用者範圍，將 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 和 <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> 政策套用到關聯使用者。
+如果設為 1，即便該使用者未關聯，系統仍會在使用者範圍套用 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 和 <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> 政策。</translation>
 <translation id="3152135410085709340">允許這些網站在 PDF 檢視器中存取本機的 file:// 網址</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
@@ -4197,6 +4199,21 @@ SwiftShader 曾在沒有 GPU 加速功能的系統 (例如無頭系統或虛擬�
 <translation id="370314752761795411">在 <ph name="MS_WIN_NAME" /> 啟動時一併開啟 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3711895659073496551">暫停</translation>
 <translation id="3712861436661566358">強制區隔設定檔</translation>
+<translation id="3715589988915487768">設定 <ph name="PRODUCT_NAME" /> 將用來動態擷取 Proxy 設定的佈建網域 (PvD) 清單。
+
+你可以透過這項政策指定網域名稱或資源 URI 清單，代表 RFC 8801 (「Discovering Provisioning Domain Names and Data」) 中定義的佈建網域。瀏覽器會向下列已知端點路徑發出 HTTPS 要求，解析每個 PvD 對應的 JSON 設定：「https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd」。
+
+清單中的每個項目都會指定：
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />：佈建網域的 ID (網域名稱)。
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />：選用的驗證設定。如果未設定或設為「none」，系統就不會執行驗證。如果設為「profile_bearer_token」，瀏覽器會根據提供的範圍，擷取已登入主要帳戶的 OAuth2 存取權杖，並以「Bearer」(不記名) 權杖的形式附加到「Authorization」標頭。
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />：查詢 PvD 端點時要加入的自訂 HTTP 標頭清單 (選用)。你可以插入動態值，例如「profile_id」(表裝置上瀏覽器設定檔的穩定專屬 ID，方便將設定套用到個別設定檔) 或「accept_language」(代表瀏覽器的偏好語言)。
+
+系統會依據 RFC 8801 結構定義剖析擷取的設定，並只會套用 PvD JSON 酬載中的 Proxy 設定相關轉送規則和 Proxy。如果未設定這項政策，系統不會查詢或使用任何佈建網域，以擷取 Proxy 設定。
+
+只有在使用者與瀏覽器相關聯、瀏覽器不受管理，或 <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> 政策設為 1 時，才能在使用者層級設定這項政策。</translation>
 <translation id="3719826155360621982">首頁</translation>
 <translation id="3724039569609354541">決定網站能否向網路端點發出要求時使用預設行為</translation>
 <translation id="3726715125055227414">這項政策會設定 <ph name="PRODUCT_OS_NAME" /> 在 TLS 1.3 中偏好的金鑰協議演算法 (支援的群組) 順序，從登入畫面發出網路要求時，優先採用特定法規遵循標準核准的演算法。
@@ -11367,6 +11384,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="826163650738550159">這項政策會提供政策測試頁面的存取權，在此頁面測試政策時，系統會忽略所有其他政策。
 這項功能只能在 Canary 版中使用。啟用或不設定這項政策時，可以存取這個頁面。
 如果停用這項政策，這個頁面會遭到封鎖。</translation>
+<translation id="8266506455952754231">控管哪些受管理使用者可以設定 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 和 <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> 政策。</translation>
 <translation id="8266778278542911985">如果將這項政策設為 3，網站將可要求存取序列埠。如果將這項政策設為 2，網站將無法存取序列埠。
 
       如果不設定，網站可要求存取序列埠，但使用者可以變更這項設定。</translation>

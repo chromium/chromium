@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">Сіз кіргелі жатқан сайттағы шабуылдаушылар бағдарламалық құралды алдап орнатқызуы мүмкін немесе құпия сөздер, телефон не несиелік карта нөмірлері сияқты ақпаратты алдап алуы мүмкін. Chrome міндетті түрде қауіпсіздікке оралуды ұсынады. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Жеке куәлікті Google Wallet-ке қауіпсіз түрде қосу</translation>
 <translation id="1398743098754840707">Қойынды ашық болса да, мұнда қосылған сайттар жауаптар үшін сілтеме ретінде пайдаланылмайды. Сіз қосқан сайт қазіргі уақытта тізбекте пайдаланылып жатса, тізбектің оған сілтеме жасауын тоқтатуға 30 минутқа дейін уақыт кетуі мүмкін.</translation>
+<translation id="1403359480263156644">Карта иесінің аты-жөні жаңартылды</translation>
 <translation id="1405567553485452995">Ашық жасыл</translation>
 <translation id="1406370515365284486">Төлеу әдістеріңіз сақтала береді.</translation>
 <translation id="1406500794671479665">Расталуда…</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">Жаңа картаны сканерлеу</translation>
 <translation id="2501270939904835585">Белгілер (сәтен)</translation>
 <translation id="2501278716633472235">Артқа қайту</translation>
+<translation id="250307989715832083">Қолтаңба қосу</translation>
 <translation id="250346157641628208">Қағаз (бүріккіш)</translation>
 <translation id="2505063700931618106">Карта туралы ақпарат сақталды.</translation>
 <translation id="2505268675989099013">Аккаунтты қорғау</translation>
@@ -1595,7 +1597,6 @@
 <translation id="3693516565203081475">Төлеу әдісін таңдау</translation>
 <translation id="3698353241727597930">Әкімші <ph name="FILES" /> кәсіпорын басқаратын <ph name="CLOUD_STORAGE" /> жадында сақталатындай етіп конфигурациялады. Бұл файлдарды жойсаңыз, олар бақылануы, талдануы және сақталуы мүмкін.</translation>
 <translation id="3698629142018988477">"Сайт жасау" түймесі, Google Sites-та жылдам жаңа сайт жасау үшін белсендіріңіз</translation>
-<translation id="3698708128812719147">Қосымша ақпаратты тауып, толтыру үшін интернеттің кез келген жерінде Ctrl пернесін екі рет басыңыз</translation>
 <translation id="3700094625653511150">Кейін төлеу нұсқаларын жасыру үшін <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> бөліміне өтіңіз.</translation>
 <translation id="3700966190175650601">Құпия сөздерді саусақ ізімен толтырып жатырсыз</translation>
 <translation id="3701427423622901115">Бастапқы күйге қайтару расталды.</translation>
@@ -1654,7 +1655,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> қолданбасы локацияны пайдалану рұқсатын болжалдыдан нақтыға өзгерткісі келеді.</translation>
 <translation id="3772211998634047851">Қағаз (бонд)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-те жылдам жаңа ескертпе жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
-<translation id="3778045607993018262">Pix аккаунты <ph name="ACCOUNT_EMAIL" /> поштасымен байланыстырылады. Pix кодын анықтау функциясын өшіру үшін <ph name="BEGIN_LINK1" />Chrome параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="3780694243617746492">Шығу деректері</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth құрылғылары</translation>
@@ -1900,7 +1900,6 @@
 <translation id="4185037616931963178">Redress Control Number нөмірін қауіпсіз жаңартыңыз</translation>
 <translation id="4186035307311647330">Баға бақылауды тоқтату</translation>
 <translation id="4191334393248735295">Ұзындық</translation>
-<translation id="4192770747482479191">Қосымша ақпаратты тауып, толтыру үшін интернеттің кез келген жерінде ⌘ пернесін екі рет басыңыз</translation>
 <translation id="4195459680867822611">"Chrome кеңестерін көру" түймесі, Chrome функциялары туралы білу үшін белсендіріңіз</translation>
 <translation id="4195643157523330669">Жаңа қойындыда ашу</translation>
 <translation id="4196861286325780578">Тасымалдауды &amp;қайта орындау</translation>
@@ -1918,6 +1917,7 @@
 <translation id="4218327733815631046">Болжалды локацияны қалдыру</translation>
 <translation id="4219596572397833317">Тиімді сауда жасау үшін баға тарихын және т.б. ақпаратты көріңіз.</translation>
 <translation id="4220128509585149162">Жаңылыстар</translation>
+<translation id="4220745762102459826">және т.б.</translation>
 <translation id="4221630205957821124">&lt;h4&gt;1-қадам. Порталға кіріңіз&lt;/h4&gt;
     &lt;p&gt;Кафе немесе әуежай сияқты орындардағы Wi-Fi желілеріне қосылу үшін аккаунтқа кіру қажет. Кіру беті шығуы үшін, &lt;code&gt;http://&lt;/code&gt; пайдаланылатын бетке кіріңіз.&lt;/p&gt;
     &lt;ol&gt;
@@ -2293,6 +2293,7 @@
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4833567658337394628">Қою ұсынылмайды</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
+<translation id="4842085418602350953">Келесі жолы қолданбалар арасында ауыспай-ақ Pix арқылы төлеңіз</translation>
 <translation id="4842365697443353018">Кейін төлеу үшін үлгіні тазалаңыз</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4844937814014739139">Ортақ қойындыларды айналдыру және масштабтау</translation>
@@ -2467,6 +2468,7 @@
 <translation id="5115232566827194440">Шектелген басқарылатын қонақ сеансын қайта анықтау</translation>
 <translation id="5115563688576182185">(64 биттік)</translation>
 <translation id="5116015291385561204">Құпия ақпаратты автоматты түрде толтыру үшін жеке басыңызды растаңыз</translation>
+<translation id="5121592697493894155">Бүйірлік панельдегі Google Search</translation>
 <translation id="5122786942953798871">Хатқалта (мақта)</translation>
 <translation id="5123063207673082822">Демалыс күндері</translation>
 <translation id="5124797626438336458">Бөліп төлеу қатесінің экраны жартылай ашылды.</translation>
@@ -2879,6 +2881,7 @@
 <translation id="5794065675298686371">Баға бақылау хабарландыруларын қосу</translation>
 <translation id="5794093550048860249">Бақылау нөмірі</translation>
 <translation id="5796050750059455142">"<ph name="BEGIN_LINK" />Басқа Google өнімдеріндегі смарт функциялар<ph name="LINK_END" />" параметрін қосыңыз.</translation>
+<translation id="5797916798049571144">Ол картаңыз туралы ақпаратпен бірге сақталады, сондықтан төлеу кезінде автоматты түрде толтырылады.</translation>
 <translation id="5797984091151707075">Әкімші саясатымен блокталған</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
 <translation id="5806871454498484178">Айналдыру мен масштабтауға тыйым салынды</translation>
@@ -4297,6 +4300,7 @@
 <translation id="8208629719488976364">Сіз басып шығаратын беттердің мазмұны және принтеріңіз туралы ақпарат Google Cloud қызметіне немесе үшінші тараптарға талдау үшін жіберіледі. Мысалы, ол құпия деректерді немесе зиянды бағдарламаны анықтау үшін сканерленуі, компания саясаттарына сәйкес сақталуы және әкімшіге көрінуі мүмкін.</translation>
 <translation id="8210490490377416373">Саясат атын таңдау</translation>
 <translation id="8211406090763984747">Қауіпсіз байланыс</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 дереккөз}other{+ # дереккөз}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 дюйм</translation>
 <translation id="8218327578424803826">Тағайындалған орын:</translation>

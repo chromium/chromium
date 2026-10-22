@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Ireki <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (aplikazio lehenetsiak) ataleko ezarpenak iOS-en.</translation>
 <translation id="1938871630297275912">{count,plural, =1{Jaso da esteka}other{{count} esteka jaso dira}}</translation>
 <translation id="1941314575388338491">Kopiatzeko, sakatu birritan.</translation>
+<translation id="1942483019269000450">Zereginari berrekiteko, zure kreditu-txartelari buruzko informazioa betetzeko eska diezaioke Gemini-k Google Wallet-i</translation>
 <translation id="1943478190258551035">Menua → Ezarpenak</translation>
 <translation id="1944477975050820119">Jaso denbora errealeko iradokizunak, AA bidez arakatzeko modu berriak aurkitzen lagun zaitzaketenak. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Hasi saioa kontu kudeatuarekin</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">elementu berria</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontuk pasahitz bera darabilte</translation>
 <translation id="205013082884273671">Bilatu pantailako edozer</translation>
+<translation id="2053311407685904414">Hautatu helbidea</translation>
 <translation id="2054044186557130763">Hasi saioa <ph name="NAME" /> (<ph name="EMAIL" />) gisa. Erakundeak kudeatzen du.</translation>
 <translation id="2059166748188874810">Udalerria</translation>
 <translation id="2060638295449304809">Helbidea gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="USER_EMAIL" />).</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Itzuli</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2360196772093551345">Eskatu mugikorretarako webgunea</translation>
+<translation id="2360272811987888433">Hasi saioa eskuz</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> gisa hasi duzu saioa. <ph name="USER_EMAIL" />. Ezarpenak irekitzen ditu.</translation>
 <translation id="2367025302166767427">Arazoak ditugu zure informazioa betetzeko</translation>
 <translation id="2371084566192454134">Fitxak eta fitxa taldeak</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Gorde Google Argazkiak zerbitzuan</translation>
 <translation id="3406506285180498376">Partekatu orria…</translation>
 <translation id="340669334496430859">Azken aldatze-data</translation>
+<translation id="3407832712016477396">Gemini-k Google-ren Pasahitz-kudeatzailea erabil dezake zure izenean saioa hasteko</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">2023ko urriaren 25a</translation>
 <translation id="3419787211763835342">Lagundu betetze automatiko hobetua hobetzen</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Ukatu beti</translation>
 <translation id="4293154608148215505">zure telefonoa</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> gisa hasi nahi duzu saioa?</translation>
+<translation id="4297031046690565608">Idatzi eskuz</translation>
+<translation id="4297418774230471285">Hautatu informazio pertsonala</translation>
 <translation id="4302061870579014542">Ezarri posizioa</translation>
 <translation id="4304713468139749426">Pasahitz-kudeatzailea</translation>
 <translation id="4309403553630140242">Informazio gehiago lortzeko, sakatu birritan</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini AA da, eta baliteke akatsak egitea. <ph name="BEGIN_LINK" />Google-ri bidaltzen zaizkion datu garrantzitsuei buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Ez dago ezer inportatzeko</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> posiziotatik <ph name="INDEX" />garrena</translation>
+<translation id="5316823130598991834">Hasi saioa <ph name="SITE_DOMAIN" /> domeinuan</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5318298563956633672">Produktuaren jarraipena egiten ari zara jada.</translation>
 <translation id="5327248766486351172">Izena</translation>
@@ -2206,6 +2213,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="7839994177130598711">Orain, zure familiako kideek zure erabiltzaile-izena eta pasahitza erabil ditzakete <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> webgunean saioa hasteko Google-ren Pasahitz-kudeatzailea darabiltenean.</translation>
 <translation id="7841180087127694526">Bilatu kopiatu duzun testua</translation>
 <translation id="7841418003178675048">Aukeratu zer txartel ikusten dituzun fitxa berriaren orrian.</translation>
+<translation id="7842369010458597654">Ordainketa-informazioa betetzea</translation>
 <translation id="7845466610722898">Erakutsi irakurketa-zerrenda</translation>
 <translation id="7846161022626028328">Errore bat gertatu da. Saiatu berriro.</translation>
 <translation id="784623644169604270">Ez dago jarduerarik azken aldian</translation>

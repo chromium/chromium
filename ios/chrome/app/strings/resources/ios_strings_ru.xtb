@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Откройте <ph name="BEGIN_BOLD" />Приложения по умолчанию<ph name="END_BOLD" /> в настройках iOS.</translation>
 <translation id="1938871630297275912">{count,plural, =1{Получена ссылка}one{Получена {count} ссылка}few{Получено {count} ссылки}many{Получено {count} ссылок}other{Получено {count} ссылки}}</translation>
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
+<translation id="1942483019269000450">Gemini может попросить Google Кошелек ввести данные вашей кредитной карты.</translation>
 <translation id="1943478190258551035">Меню → Настройки</translation>
 <translation id="1944477975050820119">Получайте мгновенные подсказки о новых способах работы в браузере с помощью ИИ. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Вход в управляемый аккаунт</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">новый продукт</translation>
 <translation id="2049727122989709386">В нескольких аккаунтах (<ph name="COUNT" />) используется один и тот же пароль.</translation>
 <translation id="205013082884273671">Ищите что угодно, что видите на экране</translation>
+<translation id="2053311407685904414">Выберите адрес</translation>
 <translation id="2054044186557130763">Войти как <ph name="NAME" />, <ph name="EMAIL" />. Аккаунтом управляет ваша организация.</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="2060638295449304809">Адрес сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, добавьте его в аккаунт Google (<ph name="USER_EMAIL" />).</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Перевести</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2360196772093551345">Мобильная версия</translation>
+<translation id="2360272811987888433">Войти вручную</translation>
 <translation id="2362083820973145409">Вы вошли как <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Открывает настройки.</translation>
 <translation id="2367025302166767427">Не удалось заполнить информацию</translation>
 <translation id="2371084566192454134">Вкладки и группы вкладок</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Сохранить в Google Фото</translation>
 <translation id="3406506285180498376">Поделиться страницей</translation>
 <translation id="340669334496430859">Последнее изменение</translation>
+<translation id="3407832712016477396">Gemini может использовать Google Менеджер паролей, чтобы входить в аккаунт за вас.</translation>
 <translation id="3409785640040772790">Карты</translation>
 <translation id="3416023309465857378">25 октября 2023 г.</translation>
 <translation id="3419787211763835342">Помогайте развивать функцию улучшенного автозаполнения</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Запретить</translation>
 <translation id="4293154608148215505">вашего телефона</translation>
 <translation id="4294506173142861371">Войти как <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Ввести вручную</translation>
+<translation id="4297418774230471285">Выберите личную информацию</translation>
 <translation id="4302061870579014542">Выбрать</translation>
 <translation id="4304713468139749426">Менеджер паролей</translation>
 <translation id="4309403553630140242">Чтобы узнать больше, нажмите дважды</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini — это ИИ. Он может ошибаться. Подробнее <ph name="BEGIN_LINK" />о данных, которые передаются в Google<ph name="END_LINK" />…</translation>
 <translation id="5315870524563628285">Нет данных для импорта</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> из <ph name="INDEX" /></translation>
+<translation id="5316823130598991834">Войдите на сайт <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318298563956633672">Вы уже отслеживаете этот товар.</translation>
 <translation id="5327248766486351172">Имя</translation>
@@ -2206,6 +2213,7 @@
 <translation id="7839994177130598711">Теперь участники вашей семейной группы могут использовать ваши имя пользователя и пароль при входе в аккаунт на сайте <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> с помощью Google Менеджера паролей.</translation>
 <translation id="7841180087127694526">Поиск скопированного текста</translation>
 <translation id="7841418003178675048">Выберите карточки для страницы быстрого доступа.</translation>
+<translation id="7842369010458597654">Заполните платежные данные</translation>
 <translation id="7845466610722898">Показать список для чтения</translation>
 <translation id="7846161022626028328">Произошла ошибка. Повторите попытку.</translation>
 <translation id="784623644169604270">Нет недавних действий.</translation>

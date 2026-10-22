@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Abra as definições de <ph name="BEGIN_BOLD" />Apps predefinidas<ph name="END_BOLD" /> no iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link recebido}other{{count} links recebidos}}</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
+<translation id="1942483019269000450">Para continuar a tarefa, o Gemini pode pedir à Carteira do Google para preencher as informações do seu cartão de crédito</translation>
 <translation id="1943478190258551035">Menu → Definições</translation>
 <translation id="1944477975050820119">Receba sugestões em tempo real que podem ajudar a encontrar novas formas de navegar com a IA. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Iniciar sessão com uma conta gerida</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">novo item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> contas estão a usar a mesma palavra-passe</translation>
 <translation id="205013082884273671">Pesquise qualquer conteúdo no ecrã</translation>
+<translation id="2053311407685904414">Selecione a morada</translation>
 <translation id="2054044186557130763">Inicie sessão como <ph name="NAME" /> <ph name="EMAIL" />, gerida pela sua organização.</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="2060638295449304809">Esta morada está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Traduzir</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Pedir site para dispositivos móveis</translation>
+<translation id="2360272811987888433">Início de sessão manual</translation>
 <translation id="2362083820973145409">Com sessão iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre as definições.</translation>
 <translation id="2367025302166767427">Ocorreu um problema ao preencher as informações</translation>
 <translation id="2371084566192454134">Separadores e grupos de separadores</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Guardar no Google Fotos</translation>
 <translation id="3406506285180498376">Partilhar página…</translation>
 <translation id="340669334496430859">Última modificação</translation>
+<translation id="3407832712016477396">O Gemini pode usar o Gestor de Palavras-passe da Google para iniciar sessão por si</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 de outubro de 2023</translation>
 <translation id="3419787211763835342">Ajude a melhorar o preenchimento automático melhorado</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Nunca permitir</translation>
 <translation id="4293154608148215505">o seu telemóvel</translation>
 <translation id="4294506173142861371">Iniciar sessão como <ph name="FIRST_NAME" /></translation>
+<translation id="4297031046690565608">Introduzir manualmente</translation>
+<translation id="4297418774230471285">Selecione as informações pessoais</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4309403553630140242">Toque duas vezes para obter mais informações.</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">O Gemini é IA e pode cometer erros. <ph name="BEGIN_LINK" />Mais sobre os dados relevantes enviados para a Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nada para importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Inicie sessão em <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Já está a acompanhar este produto.</translation>
 <translation id="5327248766486351172">Nome</translation>
@@ -2206,6 +2213,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7839994177130598711">Os membros da família já podem usar o seu nome de utilizador e palavra-passe quando usarem o Gestor de Palavras-passe da Google para iniciarem sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Pesquisar texto copiado</translation>
 <translation id="7841418003178675048">Escolha os cartões que vê na página Novo separador.</translation>
+<translation id="7842369010458597654">A preencher as informações de pagamento</translation>
 <translation id="7845466610722898">Mostrar Lista de leitura</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente novamente.</translation>
 <translation id="784623644169604270">Sem atividade recente</translation>

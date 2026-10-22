@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Ανοίξτε τις ρυθμίσεις για <ph name="BEGIN_BOLD" />Προεπιλεγμένες εφαρμογές<ph name="END_BOLD" /> στο iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Λήφθηκε σύνδεσμος}other{Λήφθηκαν {count} σύνδεσμοι}}</translation>
 <translation id="1941314575388338491">Πατήστε δύο φορές για αντιγραφή.</translation>
+<translation id="1942483019269000450">Για να συνεχίσει την εργασία, το Gemini μπορεί να ζητήσει από το Πορτοφόλι Google να συμπληρώσει τα στοιχεία της πιστωτικής κάρτας σας</translation>
 <translation id="1943478190258551035">Μενού → Ρυθμίσεις</translation>
 <translation id="1944477975050820119">Λάβετε προτάσεις σε πραγματικό χρόνο που μπορούν να σας βοηθήσουν να βρείτε νέους τρόπους περιήγησης με AI. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Σύνδεση με διαχειριζόμενο λογαριασμό</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">νέο στοιχείο</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> λογαριασμοί χρησιμοποιούν τον ίδιο κωδικό πρόσβασης</translation>
 <translation id="205013082884273671">Αναζητήστε οτιδήποτε στην οθόνη σας</translation>
+<translation id="2053311407685904414">Επιλογή διεύθυνσης</translation>
 <translation id="2054044186557130763">Συνδεθείτε ως <ph name="NAME" /> <ph name="EMAIL" />, υπό τη διαχείριση του οργανισμού σας.</translation>
 <translation id="2059166748188874810">Δήμος</translation>
 <translation id="2060638295449304809">Αυτή η διεύθυνση αποθηκεύεται μόνο σε αυτή τη συσκευή. Για να τη χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τη στον Λογαριασμό σας Google, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Μετάφραση</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2360196772093551345">Αίτημα ιστοτόπου για κινητά</translation>
+<translation id="2360272811987888433">Μη αυτόματη σύνδεση</translation>
 <translation id="2362083820973145409">Συνδεθήκατε ως <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ανοίγει τις ρυθμίσεις.</translation>
 <translation id="2367025302166767427">Πρόβλημα κατά τη συμπλήρωση των πληροφοριών σας</translation>
 <translation id="2371084566192454134">Καρτέλες και ομάδες καρτελών</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Αποθήκευση στις Φωτογραφίες Google</translation>
 <translation id="3406506285180498376">Κοινοποίηση σελίδας…</translation>
 <translation id="340669334496430859">Τελευταία τροποποίηση</translation>
+<translation id="3407832712016477396">Το Gemini μπορεί να χρησιμοποιήσει τη Διαχείριση κωδικών πρόσβασης Google για να πραγματοποιήσει τη σύνδεση για εσάς</translation>
 <translation id="3409785640040772790">Χάρτες</translation>
 <translation id="3416023309465857378">25 Οκτωβρίου 2023</translation>
 <translation id="3419787211763835342">Συμβάλετε στη βελτίωση της βελτιωμένης αυτόματης συμπλήρωσης</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Να μην επιτρέπεται ποτέ</translation>
 <translation id="4293154608148215505">το τηλέφωνό σας</translation>
 <translation id="4294506173142861371">Σύνδεση ως <ph name="FIRST_NAME" />;</translation>
+<translation id="4297031046690565608">Μη αυτόματη καταχώριση</translation>
+<translation id="4297418774230471285">Επιλογή προσωπικών στοιχείων</translation>
 <translation id="4302061870579014542">Ορισμός θέσης</translation>
 <translation id="4304713468139749426">Διαχείριση κωδικών πρόσβασης</translation>
 <translation id="4309403553630140242">Πατήστε δύο φορές για περισσότερες πληροφορίες.</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Το Gemini είναι AI και μπορεί να κάνει λάθη. <ph name="BEGIN_LINK" />Περισσότερα για τα σχετικά δεδομένα που αποστέλλονται στην Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Δεν υπάρχει τίποτα προς εισαγωγή</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> από <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Συνδεθείτε στο <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318298563956633672">Παρακολουθείτε ήδη αυτό το προϊόν.</translation>
 <translation id="5327248766486351172">Όνομα</translation>
@@ -2207,6 +2214,7 @@
 <translation id="7839994177130598711">Τα μέλη της οικογένειάς σας μπορούν πλέον να χρησιμοποιήσουν το όνομα χρήστη και τον κωδικό πρόσβασής σας όταν χρησιμοποιούν τη Διαχείριση κωδικών πρόσβασης για σύνδεση στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Αναζήτηση για αντιγραμμένο κείμενο</translation>
 <translation id="7841418003178675048">Επιλέξτε ποιες κάρτες θα βλέπετε στη σελίδα νέας καρτέλας.</translation>
+<translation id="7842369010458597654">Συμπλήρωση στοιχείων πληρωμής</translation>
 <translation id="7845466610722898">Εμφάνιση λίστας ανάγνωσης</translation>
 <translation id="7846161022626028328">Παρουσιάστηκε σφάλμα. Δοκιμάστε ξανά.</translation>
 <translation id="784623644169604270">Δεν υπάρχει πρόσφατη δραστηριότητα</translation>

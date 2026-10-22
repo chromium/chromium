@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Open de instellingen voor <ph name="BEGIN_BOLD" />standaard-apps<ph name="END_BOLD" /> in iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link ontvangen}other{{count} links ontvangen}}</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
+<translation id="1942483019269000450">Gemini Google Wallet kan vragen je creditcardgegevens in te vullen om de taak voort te zetten</translation>
 <translation id="1943478190258551035">Menu → Instellingen</translation>
 <translation id="1944477975050820119">Krijg realtime suggesties waarmee je nieuwe manieren kunt vinden om te browsen met AI. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Inloggen met een beheerd account</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">nieuw item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> accounts gebruiken hetzelfde wachtwoord</translation>
 <translation id="205013082884273671">Zoeken naar alles op je scherm</translation>
+<translation id="2053311407685904414">Adres selecteren</translation>
 <translation id="2054044186557130763">Log in als <ph name="NAME" />, <ph name="EMAIL" />, beheerd door je organisatie.</translation>
 <translation id="2059166748188874810">Gemeente</translation>
 <translation id="2060638295449304809">Dit adres wordt alleen opgeslagen op dit apparaat. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account, <ph name="USER_EMAIL" />.</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Vertalen</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2360196772093551345">Mobiele site opvragen</translation>
+<translation id="2360272811987888433">Handmatig inloggen</translation>
 <translation id="2362083820973145409">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hiermee worden de instellingen geopend.</translation>
 <translation id="2367025302166767427">Er is een probleem bij het invullen van je gegevens</translation>
 <translation id="2371084566192454134">Tabbladen en tabbladgroepen</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Opslaan in Google Foto's</translation>
 <translation id="3406506285180498376">Pagina delen…</translation>
 <translation id="340669334496430859">Laatst gewijzigd</translation>
+<translation id="3407832712016477396">Gemini kan Google Wachtwoordmanager gebruiken om voor je in te loggen</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 okt 2023</translation>
 <translation id="3419787211763835342">Help ons verbeterd automatisch invullen te verbeteren</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Nooit toestaan</translation>
 <translation id="4293154608148215505">je telefoon</translation>
 <translation id="4294506173142861371">Inloggen als <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Handmatig invoeren</translation>
+<translation id="4297418774230471285">Persoonlijke informatie selecteren</translation>
 <translation id="4302061870579014542">Positie instellen</translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
 <translation id="4309403553630140242">Dubbeltik voor meer informatie</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini is AI en kan fouten maken. <ph name="BEGIN_LINK" />Meer informatie over relevante gegevens die naar Google worden gestuurd<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Niets te importeren</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Inloggen bij <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5318298563956633672">Je volgt dit product al.</translation>
 <translation id="5327248766486351172">Naam</translation>
@@ -2206,6 +2213,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7839994177130598711">Je gezinsleden kunnen nu je gebruikersnaam en wachtwoord gebruiken als ze Google Wachtwoordmanager gebruiken om in te loggen bij <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Zoeken naar gekopieerde tekst</translation>
 <translation id="7841418003178675048">Kies welke kaarten op de pagina Nieuw tabblad staan.</translation>
+<translation id="7842369010458597654">Betalingsgegevens invullen</translation>
 <translation id="7845466610722898">Leeslijst tonen</translation>
 <translation id="7846161022626028328">Er is iets fout gegaan. Probeer het opnieuw.</translation>
 <translation id="784623644169604270">Geen recente activiteit</translation>

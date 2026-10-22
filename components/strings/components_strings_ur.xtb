@@ -1599,7 +1599,6 @@
 <translation id="3693516565203081475">ادائیگی کا طریقہ منتخب کریں</translation>
 <translation id="3698353241727597930">آپ کے منتظم نے <ph name="FILES" /> کو آپ کے انٹرپرائز کے زیر انتظام <ph name="CLOUD_STORAGE" /> اسٹوریج میں محفوظ کرنے کیلئے کنفیگر کیا ہے۔ آپ کی جانب سے ان فائلز کو حذف کرنے پر، ان کی نگرانی کی جا سکتی ہے، انہیں آڈٹ کیا جا سکتا اور برقرار رکھا جا سکتا ہے۔</translation>
 <translation id="3698629142018988477">‏سائٹ تخلیق کریں بٹن، Google Sites میں تیزی سے نئی سائٹ تخلیق کرنے کے لیے فعال کریں</translation>
-<translation id="3698708128812719147">‏مزید معلومات تلاش کرنے اور پُر کرنے کے لیے ویب پر کہیں بھی دو بار Ctrl دبائیں</translation>
 <translation id="3700094625653511150">بعد میں ادائیگی کے اختیارات کو چھپانے کے لیے، <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> پر جائیں</translation>
 <translation id="3700966190175650601">آپ پاس ورڈز پُر کرنے کے لیے اپنے فنگر پرنٹ کا استعمال کر رہے ہیں</translation>
 <translation id="3701427423622901115">ری سیٹ کی کاروائی تسلیم کر لی گئی۔</translation>
@@ -1658,7 +1657,6 @@
 <translation id="3769584711865378220">‫<ph name="URL" /> مقام تک رسائی کو تخمینی سے قطعی میں تبدیل کرنا چاہتا ہے</translation>
 <translation id="3772211998634047851">کاغذ (بانڈ)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google Keep میں تیزی سے نیا نوٹ تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
-<translation id="3778045607993018262">‏‫Pix اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> سے لنک ہو جائے گا۔ ‫Pix کوڈ کا پتا لگانا کو آف کرنے کے لیے <ph name="BEGIN_LINK1" />Chrome کی ترتیبات<ph name="END_LINK1" /> پر جائیں۔</translation>
 <translation id="3780694243617746492">آؤٹ پٹ کوڑے دان</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">بلوٹوتھ آلات</translation>
@@ -1904,7 +1902,6 @@
 <translation id="4185037616931963178">ریڈریس نمبر کو محفوظ طریقے سے اپ ڈیٹ کریں</translation>
 <translation id="4186035307311647330">قیمت کے ٹریک کو کالعدم کریں</translation>
 <translation id="4191334393248735295">لمبائی</translation>
-<translation id="4192770747482479191">مزید معلومات تلاش کرنے اور پُر کرنے کے لیے ویب پر کہیں بھی دو بار ⌘ دبائیں</translation>
 <translation id="4195459680867822611">‏Chrome کی تجاویز دیکھیں بٹن، Chrome کی خصوصیات کے بارے میں فعال کریں</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4196861286325780578">منتقلی &amp;واپس لائیں</translation>
@@ -2473,6 +2470,7 @@
 <translation id="5115232566827194440">نظم کردہ ممنوع مہمان کا سیشن اوور رائیڈ کریں</translation>
 <translation id="5115563688576182185">(64 بٹ)</translation>
 <translation id="5116015291385561204">توثیق کریں کہ حساس معلومات کو آٹو فل کرنے والے آپ ہی ہیں</translation>
+<translation id="5121592697493894155">‏سائڈ پینل میں Google تلاش</translation>
 <translation id="5122786942953798871">لفافہ (کاٹن)</translation>
 <translation id="5123063207673082822">ویک اینڈ</translation>
 <translation id="5124797626438336458">ابھی خریدیں، ادائیگی بعد میں کریں کی خرابی کی اسکرین آدھی کھلی ہے۔</translation>

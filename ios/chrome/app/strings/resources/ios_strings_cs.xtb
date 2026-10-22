@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Otevřete v systému iOS nastavení <ph name="BEGIN_BOLD" />Výchozí aplikace<ph name="END_BOLD" /></translation>
 <translation id="1938871630297275912">{count,plural, =1{Byl přijat odkaz}few{Byly přijaty {count} odkazy}many{Bylo přijato {count} odkazu}other{Bylo přijato {count} odkazů}}</translation>
 <translation id="1941314575388338491">Zkopírujete dvojitým klepnutím.</translation>
+<translation id="1942483019269000450">K pokračování v úkolu může Gemini požádat Peněženku Google o vyplnění údajů o vaší platební kartě</translation>
 <translation id="1943478190258551035">Nabídka → Nastavení</translation>
 <translation id="1944477975050820119">Získejte návrhy v reálném čase, které vám pomůžou najít nové způsoby procházení s AI. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Přihlášení pomocí spravovaného účtu</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">nová položka</translation>
 <translation id="2049727122989709386">V následujícím počtu účtů používáte stejné heslo <ph name="COUNT" /></translation>
 <translation id="205013082884273671">Vyhledejte cokoli na obrazovce</translation>
+<translation id="2053311407685904414">Vyberte adresu</translation>
 <translation id="2054044186557130763">Přihlásit se jako <ph name="NAME" /> <ph name="EMAIL" />, spravováno vaší organizací.</translation>
 <translation id="2059166748188874810">Samosprávná oblast</translation>
 <translation id="2060638295449304809">Tahle adresa je uložená jen na tomhle zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte ji do svého účtu Google <ph name="USER_EMAIL" />.</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Přeložit</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2360196772093551345">Vyžádat web pro mobily</translation>
+<translation id="2360272811987888433">Ruční přihlášení</translation>
 <translation id="2362083820973145409">Jste přihlášeni jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" /> Otevře nastavení.</translation>
 <translation id="2367025302166767427">Při vyplňování údajů došlo k potížím</translation>
 <translation id="2371084566192454134">Karty a skupiny karet</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Uložit do Fotek Google</translation>
 <translation id="3406506285180498376">Sdílet stránku…</translation>
 <translation id="340669334496430859">Naposledy upraveno</translation>
+<translation id="3407832712016477396">Gemini se může pomocí Správce hesel Google přihlásit za vás</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25. října 2023</translation>
 <translation id="3419787211763835342">Pomozte vylepšené automatické vyplňování zlepšovat</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Nikdy nepovolovat</translation>
 <translation id="4293154608148215505">váš telefon</translation>
 <translation id="4294506173142861371">Přihlásit se jako <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Zadat ručně</translation>
+<translation id="4297418774230471285">Vyberte osobní údaje</translation>
 <translation id="4302061870579014542">Nastavit pozici</translation>
 <translation id="4304713468139749426">Správce hesel</translation>
 <translation id="4309403553630140242">Další informace zobrazíte dvojitým klepnutím</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini je umělá inteligence a může se mýlit. <ph name="BEGIN_LINK" />Další informace o relevantních datech odesílaných do Googlu<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nic k importování</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Přihlaste se na web <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5318298563956633672">Tento produkt již měříte.</translation>
 <translation id="5327248766486351172">Jméno</translation>
@@ -2206,6 +2213,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="7839994177130598711">Členové vaší rodiny teď při přihlašování k webu <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> pomocí Správce hesel Google mohou používat vaše uživatelské jméno a heslo.</translation>
 <translation id="7841180087127694526">Vyhledat zkopírovaný text</translation>
 <translation id="7841418003178675048">Vyberte, které karty chcete zobrazovat na stránce Nová karta.</translation>
+<translation id="7842369010458597654">Vyplňování platebních údajů</translation>
 <translation id="7845466610722898">Zobrazit seznam četby</translation>
 <translation id="7846161022626028328">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="784623644169604270">Žádná nedávná aktivita</translation>

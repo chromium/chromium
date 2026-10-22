@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Fungua mipangilio ya <ph name="BEGIN_BOLD" />Programu Chaguomsingi<ph name="END_BOLD" /> katika iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Umepokea kiungo}other{Umepokea viungo {count}}}</translation>
 <translation id="1941314575388338491">Gusa mara mbili ili unakili.</translation>
+<translation id="1942483019269000450">Ili uendelee na jukumu, Gemini inaweza kuomba Pochi ya Google iandike maelezo ya kadi yako ya mikopo</translation>
 <translation id="1943478190258551035">Menyu → Mipangilio</translation>
 <translation id="1944477975050820119">Pata mapendekezo katika muda halisi yanayoweza kukusaidia kupata njia mpya za kuvinjari ukitumia AI. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Ingia ukitumia akaunti inayodhibitiwa</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">kipengee kipya</translation>
 <translation id="2049727122989709386">Akaunti <ph name="COUNT" /> zinatumia nenosiri moja</translation>
 <translation id="205013082884273671">Tafuta chochote kwenye skrini yako</translation>
+<translation id="2053311407685904414">Chagua anwani</translation>
 <translation id="2054044186557130763">Ingia katika akaunti ukitumia <ph name="NAME" /> <ph name="EMAIL" />, inayodhibitiwa na shirika lako.</translation>
 <translation id="2059166748188874810">Manispaa</translation>
 <translation id="2060638295449304809">Anwani hii imehifadhiwa kwenye kifaa hiki pekee. Ili uitumie kwenye vifaa vyako vingine, ihifadhi kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Tafsiri</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2360196772093551345">Omba Tovuti ya Kifaa cha Mkononi</translation>
+<translation id="2360272811987888433">Ingia katika akaunti mwenyewe</translation>
 <translation id="2362083820973145409">Umeingia katika akaunti ukitumia <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hufungua mipangilio.</translation>
 <translation id="2367025302166767427">Hitilafu imetokea wakati wa kujaza taarifa zako</translation>
 <translation id="2371084566192454134">Vichupo na vikundi vya vichupo</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Hifadhi katika Picha kwenye Google</translation>
 <translation id="3406506285180498376">Tuma ukurasa…</translation>
 <translation id="340669334496430859">Ilibadilishwa Mara ya Mwisho</translation>
+<translation id="3407832712016477396">Gemini inaweza kutumia Kidhibiti cha Manenosiri cha Google kukuwezesha kuingia katika akaunti</translation>
 <translation id="3409785640040772790">Ramani</translation>
 <translation id="3416023309465857378">Tarehe 25 Oktoba, 2023</translation>
 <translation id="3419787211763835342">Saidia kuboresha kipengele cha kujaza kiotomatiki kulikoboreshwa</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Usiruhusu kamwe</translation>
 <translation id="4293154608148215505">simu yako</translation>
 <translation id="4294506173142861371">Ungependa kuingia katika akaunti kama <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Weka mwenyewe</translation>
+<translation id="4297418774230471285">Chagua taarifa binafsi</translation>
 <translation id="4302061870579014542">Weka nafasi</translation>
 <translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
 <translation id="4309403553630140242">Gusa mara mbili ili upate maelezo zaidi</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini ni AI na inaweza kukosea. <ph name="BEGIN_LINK" />Maelezo zaidi kuhusu data husika inayotumwa kwa Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Hakuna kipengee cha kupakia</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> kati ya <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Ingia katika akaunti ya <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5318298563956633672">Tayari unafuatilia bidhaa hii.</translation>
 <translation id="5327248766486351172">Jina</translation>
@@ -2206,6 +2213,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="7839994177130598711">Sasa wanafamilia wako wanaweza kutumia jina la mtumiaji na nenosiri lako wanapotumia Kidhibiti cha Manenosiri cha Google kuingia katika akaunti kwenye <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Tafuta maandishi uliyonakili</translation>
 <translation id="7841418003178675048">Chagua kadi unazoona kwenye ukurasa wako wa kichupo kipya.</translation>
+<translation id="7842369010458597654">Inaweka maelezo ya malipo</translation>
 <translation id="7845466610722898">Onyesha Orodha ya Kusoma</translation>
 <translation id="7846161022626028328">Hitilafu fulani imetokea. Jaribu tena.</translation>
 <translation id="784623644169604270">Hakuna shughuli za hivi majuzi</translation>

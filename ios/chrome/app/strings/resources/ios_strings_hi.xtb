@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">iOS में, <ph name="BEGIN_BOLD" />डिफ़ॉल्ट ऐप्लिकेशन<ph name="END_BOLD" /> की सेटिंग खोलें</translation>
 <translation id="1938871630297275912">{count,plural, =1{लिंक मिला}one{{count} लिंक मिला}other{{count} लिंक मिले}}</translation>
 <translation id="1941314575388338491">कॉपी करने के लिए दो बार टैप करें.</translation>
+<translation id="1942483019269000450">टास्क जारी रखने के लिए Gemini, Google Wallet से आपके क्रेडिट कार्ड की जानकारी भरने के लिए कह सकता है</translation>
 <translation id="1943478190258551035">मेन्यू → सेटिंग</translation>
 <translation id="1944477975050820119">रीयल-टाइम में ऐसे सुझाव पाएं जो आपको एआई से ब्राउज़ करने के नए तरीके खोजने में मदद कर सकते हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">प्रबंधित खाते से साइन इन करें</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">नया आइटम</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> खातों में ऐसे पासवर्ड का इस्तेमाल हो रहा है जो किसी दूसरे खाते के पासवर्ड से मेल खाता है</translation>
 <translation id="205013082884273671">स्क्रीन पर दिख रही किसी भी चीज़ के बारे में जानकारी खोजें</translation>
+<translation id="2053311407685904414">पता चुनें</translation>
 <translation id="2054044186557130763"><ph name="NAME" /> <ph name="EMAIL" /> के तौर पर साइन इन करें. इसे आपका संगठन मैनेज करता है.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2060638295449304809">यह पता सिर्फ़ इस डिवाइस में सेव किया गया है. अपने दूसरे डिवाइसों पर इसका इस्तेमाल करने के लिए, इसे अपने Google खाते <ph name="USER_EMAIL" /> में सेव करें</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">अनुवाद करें</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2360196772093551345">मोबाइल साइट का अनुरोध करें</translation>
+<translation id="2360272811987888433">मैन्युअल तरीके से साइन इन करें</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. <ph name="USER_EMAIL" />. इस बटन से सेटिंग खुलती है.</translation>
 <translation id="2367025302166767427">जानकारी भरने में समस्या आ रही है</translation>
 <translation id="2371084566192454134">टैब और टैब ग्रुप</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Google Photos में सेव करें</translation>
 <translation id="3406506285180498376">पेज शेयर करें…</translation>
 <translation id="340669334496430859">आइटम में पिछली बार कब बदलाव किया गया</translation>
+<translation id="3407832712016477396">Gemini, Google Password Manager का इस्तेमाल करके आपके लिए साइन इन कर सकता है</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 अक्टूबर, 2023</translation>
 <translation id="3419787211763835342">बेहतर ऑटोफ़िल की सुविधा को सुधारने में मदद करें</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">कभी भी अनुमति न दें</translation>
 <translation id="4293154608148215505">फ़ोन</translation>
 <translation id="4294506173142861371">क्या आपको <ph name="FIRST_NAME" /> के तौर पर साइन इन करना है?</translation>
+<translation id="4297031046690565608">मैन्युअल तरीके से डालें</translation>
+<translation id="4297418774230471285">निजी जानकारी चुनें</translation>
 <translation id="4302061870579014542">जगह सेट करें</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4309403553630140242">ज़्यादा जानकारी के लिए दो बार टैप करें</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini एक एआई है और इससे गलतियां हो सकती हैं. <ph name="BEGIN_LINK" />Google को भेजे गए ज़रूरी डेटा के बारे में ज़्यादा जानकारी<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">इंपोर्ट करने के लिए कोई आइटम नहीं है</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> में से <ph name="INDEX" /></translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> में साइन इन करें</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5318298563956633672">इस प्रॉडक्ट को पहले से ही ट्रैक किया जा रहा है.</translation>
 <translation id="5327248766486351172">नाम</translation>
@@ -2206,6 +2213,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7839994177130598711">आपके परिवार के सदस्यों के पास अब Google Password Manager की मदद से, आपके उपयोगकर्ता नाम और पासवर्ड का इस्तेमाल करके <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> में साइन इन करने की सुविधा है.</translation>
 <translation id="7841180087127694526">कॉपी किया गया टेक्स्ट खोजें</translation>
 <translation id="7841418003178675048">चुनें कि टैब के नए पेज पर आपको कौनसे कार्ड देखने हैं.</translation>
+<translation id="7842369010458597654">क्रेडिट/डेबिट कार्ड की जानकारी भरी जा रही है</translation>
 <translation id="7845466610722898">रीडिंग लिस्ट दिखाएं</translation>
 <translation id="7846161022626028328">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="784623644169604270">हाल ही में कोई गतिविधि नहीं हुई</translation>

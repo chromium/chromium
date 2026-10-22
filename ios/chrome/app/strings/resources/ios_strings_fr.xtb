@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Ouvrez les paramètres <ph name="BEGIN_BOLD" />Apps par défaut<ph name="END_BOLD" /> dans iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Lien reçu}one{{count} lien reçu}other{{count} liens reçus}}</translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
+<translation id="1942483019269000450">Pour poursuivre la tâche, Gemini peut demander à Google Wallet de remplir les informations de votre carte de crédit</translation>
 <translation id="1943478190258551035">Menu → Paramètres</translation>
 <translation id="1944477975050820119">Profitez de suggestions en temps réel pour découvrir de nouvelles façons de naviguer grâce à l'IA. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Se connecter avec un compte géré</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">nouvel élément</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisent le même mot de passe</translation>
 <translation id="205013082884273671">Cherchez ce que vous voulez sur votre écran</translation>
+<translation id="2053311407685904414">Sélectionnez une adresse</translation>
 <translation id="2054044186557130763">Se connecter en tant que <ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2060638295449304809">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-la dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Traduire</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2360196772093551345">Voir le site mobile</translation>
+<translation id="2360272811987888433">Connexion manuelle</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
 <translation id="2367025302166767427">Erreur lors de la saisie de vos informations</translation>
 <translation id="2371084566192454134">Onglets et groupes d'onglets</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Enregistrer dans Google Photos</translation>
 <translation id="3406506285180498376">Partager la page…</translation>
 <translation id="340669334496430859">Dernière modification</translation>
+<translation id="3407832712016477396">Gemini peut utiliser le Gestionnaire de mots de passe de Google pour vous connecter</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 oct. 2023</translation>
 <translation id="3419787211763835342">Aidez-nous à améliorer la saisie automatique améliorée</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Ne jamais autoriser</translation>
 <translation id="4293154608148215505">votre téléphone</translation>
 <translation id="4294506173142861371">Se connecter en tant que <ph name="FIRST_NAME" /> ?</translation>
+<translation id="4297031046690565608">Saisir manuellement</translation>
+<translation id="4297418774230471285">Sélectionnez des informations personnelles</translation>
 <translation id="4302061870579014542">Définir la position</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4309403553630140242">Appuyez deux fois pour obtenir plus d'informations</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini est une IA et peut se tromper. <ph name="BEGIN_LINK" />En savoir plus sur les données pertinentes envoyées à Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Rien à importer</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> sur <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Connectez-vous à <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
 <translation id="5327248766486351172">Nom</translation>
@@ -1932,7 +1939,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="6938212956536472404">Impossible de partager cet onglet</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6946722113367118030">Penser</translation>
-<translation id="6947751977892029882">Un problème est survenu avec ce paramètre. Mettez à jour et redémarrez Chrome et iPadOS, puis réessayez. Si cette erreur persiste, il est possible que votre iPhone ne soit pas compatible avec ce paramètre.</translation>
+<translation id="6947751977892029882">Un problème est survenu avec ce paramètre. Mettez à jour et redémarrez Chrome et iOS, puis réessayez. Si cette erreur persiste, il est possible que votre iPhone ne soit pas compatible avec ce paramètre.</translation>
 <translation id="6950522403736391608">Masqué</translation>
 <translation id="695965663642079255">Enregistrez et gérez vos infos de paiement pour payer plus vite</translation>
 <translation id="6962809930976936328">Obtenez des informations avec Gemini</translation>
@@ -2161,7 +2168,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7696316012653762532">Options de traduction de la page</translation>
 <translation id="7700527812567437847">Rechercher sur l'écran avec Google Lens</translation>
 <translation id="7701040980221191251">Désactivé</translation>
-<translation id="7702428539671224160">Saisie automatique des infos de paiement sur <ph name="URL" /></translation>
+<translation id="7702428539671224160">Compléter automatiquement les infos de paiement sur <ph name="URL" /></translation>
 <translation id="7708994397325774423">Obtenez tous vos mots de passe</translation>
 <translation id="7710096647785049958">Gagnez du temps sur chaque lien</translation>
 <translation id="7711440461521638739">Tous vos mots de passe sont uniques</translation>
@@ -2206,6 +2213,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7839994177130598711">Les membres de votre famille peuvent désormais se connecter à <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> avec votre nom d'utilisateur et votre mot de passe en utilisant le Gestionnaire de mots de passe de Google.</translation>
 <translation id="7841180087127694526">Rechercher le texte copié</translation>
 <translation id="7841418003178675048">Choisissez les cartes à afficher sur la page "Nouvel onglet".</translation>
+<translation id="7842369010458597654">Saisissez les infos de paiement</translation>
 <translation id="7845466610722898">Afficher la liste de lecture</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="784623644169604270">Aucune activité récente</translation>

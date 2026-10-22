@@ -239,6 +239,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1393071644879491291">Hackere på det website, du har forsøgt at besøge, kan narre dig til at installere software eller afsløre data som f.eks. dine adgangskoder, dit telefonnummer eller dine kreditkortnumre. Chrome anbefaler på det kraftigste, at du går tilbage til Sikkerhed. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Føj et id-kort til Google Wallet på sikker vis</translation>
 <translation id="1398743098754840707">Der henvises ikke til websites, du tilføjer her, i svar, selvom fanen er åben. Hvis et website, du tilføjer, i øjeblikket bruges i en tråd, kan det tage op til 30 minutter, før tråden stopper med at henvise til det.</translation>
+<translation id="1403359480263156644">Kortindehaverens navn er opdateret</translation>
 <translation id="1405567553485452995">Lysegrøn</translation>
 <translation id="1406370515365284486">Dine betalingsmetoder gemmes stadig</translation>
 <translation id="1406500794671479665">Verificerer...</translation>
@@ -907,6 +908,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2498091847651709837">Scan et nyt kort</translation>
 <translation id="2501270939904835585">Etiketter (satin)</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
+<translation id="250307989715832083">Tilføj underskrift</translation>
 <translation id="250346157641628208">Papir (blæk)</translation>
 <translation id="2505063700931618106">Kortoplysningerne er gemt</translation>
 <translation id="2505268675989099013">Beskyt konto</translation>
@@ -1596,7 +1598,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3693516565203081475">Vælg betalingsmetode</translation>
 <translation id="3698353241727597930">Din administrator har konfigureret at gemme <ph name="FILES" /> i din virksomhedsadministrerede <ph name="CLOUD_STORAGE" />-lagerplads. Disse filer kan overvåges, kontrolleres og opbevares, når du sletter dem.</translation>
 <translation id="3698629142018988477">Knappen Opret website, aktivér for hurtigt at oprette et nyt website i Google Sites</translation>
-<translation id="3698708128812719147">Tryk to gange på Ctrl hvor som helst på nettet for at finde og udfylde flere oplysninger</translation>
 <translation id="3700094625653511150">Gå til <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> for at skjule valgmuligheder for Betal senere</translation>
 <translation id="3700966190175650601">Du bruger dit fingeraftryk til at udfylde adgangskoder</translation>
 <translation id="3701427423622901115">Nulstillingen blev anerkendt.</translation>
@@ -1655,7 +1656,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3769584711865378220"><ph name="URL" /> vil gerne ændre lokationsadgangen fra omtrentlig til præcis</translation>
 <translation id="3772211998634047851">Papir (bankpost)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny note i Google Keep</translation>
-<translation id="3778045607993018262">Pix-kontoen knyttes til <ph name="ACCOUNT_EMAIL" />. Gå til <ph name="BEGIN_LINK1" />Chrome-indstillingerne<ph name="END_LINK1" /> for at deaktivere registrering af Pix-kode</translation>
 <translation id="3780694243617746492">Outputbakke</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-enheder</translation>
@@ -1901,7 +1901,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4185037616931963178">Opdater redress-nummeret på en sikker måde</translation>
 <translation id="4186035307311647330">Hold ikke længere øje med prisen</translation>
 <translation id="4191334393248735295">Længde</translation>
-<translation id="4192770747482479191">Tryk to gange på ⌘ hvor som helst på nettet for at finde og udfylde flere oplysninger</translation>
 <translation id="4195459680867822611">Knappen Se tips til Chrome, aktivér for at få flere oplysninger om Chrome-funktioner</translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4196861286325780578">&amp;Annuller fortryd flytning</translation>
@@ -1919,6 +1918,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4218327733815631046">Behold omtrentlig lokation</translation>
 <translation id="4219596572397833317">Se prishistorik m.m., så du kan shoppe på en smartere måde.</translation>
 <translation id="4220128509585149162">Nedbrud</translation>
+<translation id="4220745762102459826">m.m.</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Trin 1: Log ind på portalen&lt;/h4&gt;
     &lt;p&gt;Wi-Fi-netværk på steder som f.eks. caféer eller lufthavne kræver, at du logger ind. Du kan se loginsiden ved at gå til en side, der anvender &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2469,6 +2469,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5115232566827194440">Tilsidesættelse af begrænset administreret gæstesession</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Verificer din identitet for at bruge autofyld i forbindelse med følsomme oplysninger</translation>
+<translation id="5121592697493894155">Google Søgning i sidepanelet</translation>
 <translation id="5122786942953798871">Kuvert (bomuld)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Skærmen med fejlmeddelelse for Køb nu, betal senere er åbnet i halv højde.</translation>
@@ -2881,6 +2882,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5794065675298686371">Aktivér prissporingsnotifikationer</translation>
 <translation id="5794093550048860249">Sporingsnummer</translation>
 <translation id="5796050750059455142">Aktivér "<ph name="BEGIN_LINK" />Smartfunktioner i andre Google-produkter<ph name="LINK_END" />"</translation>
+<translation id="5797916798049571144">Det gemmes sammen med dine kortoplysninger, så det udfyldes automatisk ved betaling</translation>
 <translation id="5797984091151707075">Blokeret af administratorpolitikken</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5806871454498484178">Rulning og zoom er blokeret</translation>

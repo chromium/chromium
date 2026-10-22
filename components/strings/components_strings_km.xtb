@@ -1601,7 +1601,6 @@
 <translation id="3693516565203081475">ជ្រើសរើស​វិធី​បង់​ប្រាក់</translation>
 <translation id="3698353241727597930">អ្នកគ្រប់គ្រងរបស់អ្នកបានកំណត់រចនាសម្ព័ន្ធ ដើម្បីរក្សាទុក<ph name="FILES" />នៅក្នុងទំហំ​ផ្ទុក <ph name="CLOUD_STORAGE" /> ដែលគ្រប់គ្រងដោយសហគ្រាសរបស់អ្នក។ ឯកសារទាំងនេះអាចត្រូវបានត្រួតពិនិត្យ ធ្វើសវនកម្ម និងរក្សាទុកនៅពេលអ្នកលុបឯកសារទាំងនោះ។</translation>
 <translation id="3698629142018988477">ប៊ូតុង "បង្កើតគេហទំព័រ", បើកដំណើរការដើម្បីបង្កើត​គេហទំព័រថ្មី​នៅក្នុង Google Sites បានរហ័ស</translation>
-<translation id="3698708128812719147">ចុច Ctrl ពីរដង​នៅកន្លែង​ណាក៏បាន​នៅលើ​បណ្ដាញ ដើម្បី​ស្វែងរក និង​បំពេញ​ព័ត៌មាន​បន្ថែម</translation>
 <translation id="3700094625653511150">ដើម្បីលាក់​ជម្រើស​ទូទាត់​ពេលក្រោយ សូម​ចូលទៅកាន់<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">អ្នកកំពុងប្រើស្នាម​ម្រាមដៃរបស់អ្នកសម្រាប់ការបំពេញពាក្យ​សម្ងាត់</translation>
 <translation id="3701427423622901115">បានទទួលស្គាល់​ការកំណត់​ឡើងវិញ។</translation>
@@ -1660,7 +1659,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> ចង់ប្ដូរ​ការចូលប្រើ​ទីតាំង​ពីទីតាំងប្រហាក់ប្រហែល​ទៅ​ទីតាំងជាក់លាក់</translation>
 <translation id="3772211998634047851">ក្រដាស (ក្រាស់រឹង)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បីបង្កើត​កំណត់ចំណាំថ្មី​នៅក្នុង Google Keep បានរហ័ស</translation>
-<translation id="3778045607993018262">គណនី Pix នឹងត្រូវបានភ្ជាប់ជាមួយ <ph name="ACCOUNT_EMAIL" />។ ដើម្បីបិទការចាប់ដឹងកូដ Pix សូមចូលទៅកាន់ <ph name="BEGIN_LINK1" />"ការកំណត់ Chrome"<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">ទម្រ​ធាតុបញ្ចេញ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ឧបករណ៍​ប៊្លូធូស</translation>
@@ -1906,7 +1904,6 @@
 <translation id="4185037616931963178">ធ្វើបច្ចុប្បន្នភាពលេខប៉ះប៉ូវកំហុសដោយសុវត្ថិភាព</translation>
 <translation id="4186035307311647330">ឈប់​តាមដាន​តម្លៃ</translation>
 <translation id="4191334393248735295">ប្រវែង</translation>
-<translation id="4192770747482479191">ចុច ⌘ ពីរដង​នៅកន្លែង​ណាក៏បាន​នៅលើ​បណ្ដាញ ដើម្បី​ស្វែងរក និង​បំពេញ​ព័ត៌មាន​បន្ថែម</translation>
 <translation id="4195459680867822611">ប៊ូតុង "មើលគន្លឹះ Chrome", បើកដំណើរការ ដើម្បី​ស្វែងយល់អំពី​មុខងារ Chrome</translation>
 <translation id="4195643157523330669">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="4196861286325780578">ធ្វើការផ្លាស់ទីឡើងវិញ</translation>
@@ -2476,6 +2473,7 @@
 <translation id="5115232566827194440">ការលុបពីលើ​វគ្គភ្ញៀវ​ដែលស្ថិតក្រោម​ការគ្រប់គ្រង ដែលត្រូវបាន​រឹតបន្តឹង</translation>
 <translation id="5115563688576182185">(64-ប៊ីត)</translation>
 <translation id="5116015291385561204">ផ្ទៀងផ្ទាត់​ថាជាអ្នក ដើម្បី​បំពេញ​ព័ត៌មានរសើប​ដោយ​ស្វ័យប្រវត្តិ</translation>
+<translation id="5121592697493894155">ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google នៅក្នុង​ផ្ទាំង​ចំហៀង</translation>
 <translation id="5122786942953798871">ស្រោមសំបុត្រ (កប្បាស)</translation>
 <translation id="5123063207673082822">ចុង​សប្ដាហ៍</translation>
 <translation id="5124797626438336458">បានបើក​អេក្រង់​បញ្ហា "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ" ពាក់កណ្ដាល​អេក្រង់។</translation>

@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">Atacatorii de pe site-ul pe care ai încercat să-l accesezi te pot păcăli să instalezi software sau să dezvălui informații cum ar fi parolele, numărul de telefon sau numerele de carduri de credit. Chrome recomandă insistent să închizi pagina. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Adaugă în siguranță cartea de identitate în Portofelul Google</translation>
 <translation id="1398743098754840707">Site-urile pe care le adaugi aici nu vor fi folosite ca referință pentru răspunsuri, chiar dacă fila este deschisă. Dacă un site pe care îl adaugi este folosit într-un fir, poate dura până la 30 de minute pentru ca firul să nu mai facă referire la acesta.</translation>
+<translation id="1403359480263156644">Numele titularului de card a fost actualizat</translation>
 <translation id="1405567553485452995">Verde deschis</translation>
 <translation id="1406370515365284486">Metodele tale de plată se vor salva în continuare</translation>
 <translation id="1406500794671479665">Se verifică...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">Scanează un card nou</translation>
 <translation id="2501270939904835585">Etichete (satin)</translation>
 <translation id="2501278716633472235">Înapoi</translation>
+<translation id="250307989715832083">Adaugă o semnătură</translation>
 <translation id="250346157641628208">Hârtie (inkjet)</translation>
 <translation id="2505063700931618106">Informațiile cardului au fost salvate</translation>
 <translation id="2505268675989099013">Protejează contul</translation>
@@ -1596,7 +1598,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3693516565203081475">Alege metoda de plată</translation>
 <translation id="3698353241727597930">Administratorul a configurat salvarea <ph name="FILES" /> în spațiul de stocare <ph name="CLOUD_STORAGE" /> gestionat de companie. Aceste fișiere pot fi monitorizate, verificate și păstrate atunci când le ștergi.</translation>
 <translation id="3698629142018988477">Butonul Creează un site, activează pentru a crea rapid un site în Site-uri Google</translation>
-<translation id="3698708128812719147">Apasă de două ori pe Ctrl oriunde pe web pentru a găsi și a completa mai multe informații</translation>
 <translation id="3700094625653511150">Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Folosești amprenta pentru a completa parolele</translation>
 <translation id="3701427423622901115">Resetare confirmată.</translation>
@@ -1655,7 +1656,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3769584711865378220"><ph name="URL" /> dorește să schimbe accesul la locație de la aproximativă la exactă</translation>
 <translation id="3772211998634047851">Hârtie (cretată)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid o notă în Google Keep</translation>
-<translation id="3778045607993018262">Contul Pix va fi conectat la <ph name="ACCOUNT_EMAIL" />. Pentru a dezactiva detectarea codului Pix, accesează <ph name="BEGIN_LINK1" />setările Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Tavă de ieșire</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispozitive Bluetooth</translation>
@@ -1901,7 +1901,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4185037616931963178">Actualizează în siguranță numărul de remediere</translation>
 <translation id="4186035307311647330">Anulează urmărirea prețului</translation>
 <translation id="4191334393248735295">Lungime</translation>
-<translation id="4192770747482479191">Apasă de două ori pe ⌘ oriunde pe web pentru a găsi și a completa mai multe informații</translation>
 <translation id="4195459680867822611">Butonul Vezi sfaturile privind Chrome, activează pentru a afla despre funcțiile Chrome</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4196861286325780578">&amp;Repetați mutarea</translation>
@@ -1919,6 +1918,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4218327733815631046">Păstrează locația aproximativă</translation>
 <translation id="4219596572397833317">Vezi istoricul prețurilor și multe altele pentru a face mai inteligent cumpărături.</translation>
 <translation id="4220128509585149162">Blocări</translation>
+<translation id="4220745762102459826">și altele</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Pasul 1: conectează-te la portal&lt;/h4&gt;
     &lt;p&gt;Pentru rețelele Wi-Fi din locuri precum cafenele sau aeroporturi este necesar să te conectezi. Pentru a vedea pagina de conectare, accesează o pagină care folosește &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="483241715238664915">Activează avertizările</translation>
 <translation id="4833567658337394628">Nu se recomandă inserarea</translation>
 <translation id="4840250757394056958">Vezi istoricul Chrome</translation>
+<translation id="4842085418602350953">Data viitoare, plătește cu Pix fără a comuta între aplicații</translation>
 <translation id="4842365697443353018">Golește formularul ca să folosești opțiunea Plătește mai târziu</translation>
 <translation id="484462545196658690">Automat</translation>
 <translation id="4844937814014739139">Derularea și zoomul în filele comune</translation>
@@ -2468,6 +2469,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5115232566827194440">Modificarea sesiunii gestionate și restricționate pentru invitați</translation>
 <translation id="5115563688576182185">(64 de biți)</translation>
 <translation id="5116015291385561204">Confirmă-ți identitatea pentru a completa automat informații sensibile</translation>
+<translation id="5121592697493894155">Căutarea Google în panoul lateral</translation>
 <translation id="5122786942953798871">Plic (bumbac)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Ecranul de eroare Cumpără acum, plătește mai târziu deschis la jumătate din înălțime.</translation>
@@ -2880,6 +2882,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5794065675298686371">Activează notificările de urmărire a prețurilor</translation>
 <translation id="5794093550048860249">Număr de urmărire</translation>
 <translation id="5796050750059455142">Activează <ph name="BEGIN_LINK" />Funcții inteligente în alte produse Google<ph name="LINK_END" /></translation>
+<translation id="5797916798049571144">S-a salvat împreună cu informațiile cardului, astfel încât să fie completat automat la finalizarea achiziției</translation>
 <translation id="5797984091151707075">Blocat de politica administratorului</translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5806871454498484178">Derularea și zoomul sunt blocate</translation>
@@ -4299,6 +4302,7 @@ Detalii suplimentare:
 <translation id="8208629719488976364">Conținutul paginilor pe care le printezi și informațiile despre imprimantă sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile și poate să fie stocat conform politicilor companiei și să fie vizibil pentru administrator.</translation>
 <translation id="8210490490377416373">Selectează numele politicii</translation>
 <translation id="8211406090763984747">Conexiunea este securizată</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ încă o sursă}few{+ încă # surse}other{+ încă # de surse}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 in</translation>
 <translation id="8218327578424803826">Locație atribuită:</translation>

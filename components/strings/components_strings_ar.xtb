@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">‏يتضمّن هذا الموقع الإلكتروني مهاجمِين قد يتمكّنون من خداعك لتثبيت برامج معيَّنة أو الكشف عن بيانات، مثل كلمات المرور أو رقم الهاتف أو أرقام بطاقات الائتمان. وينصح Chrome بشدّة بالرجوع إلى وضع الأمان. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">‏إضافة بطاقة التعريف بأمان إلى "محفظة Google"</translation>
 <translation id="1398743098754840707">إنّ المواقع الإلكترونية المُضافة هنا لن تتم الإشارة إليها في الردود، حتى إذا كانت علامة التبويب مفتوحة. وإذا كان الموقع الإلكتروني المضاف مستخدَمًا حاليًا في سلسلة محادثات، قد يستغرق الأمر ما يصل إلى 30 دقيقة حتى تتوقف سلسلة المحادثات عن الإشارة إليه.</translation>
+<translation id="1403359480263156644">تم تعديل اسم حامل البطاقة</translation>
 <translation id="1405567553485452995">أخضر فاتح</translation>
 <translation id="1406370515365284486">ستظل طرق الدفع محفوظة</translation>
 <translation id="1406500794671479665">جارٍ التحقق...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">مسح بطاقة جديدة ضوئيًا</translation>
 <translation id="2501270939904835585">تصنيفات (برّاقة)</translation>
 <translation id="2501278716633472235">الرجوع</translation>
+<translation id="250307989715832083">إضافة توقيع</translation>
 <translation id="250346157641628208">ورق (نفث الحبر)</translation>
 <translation id="2505063700931618106">تم حفظ معلومات البطاقة</translation>
 <translation id="2505268675989099013">حماية الحساب</translation>
@@ -1596,7 +1598,6 @@
 <translation id="3693516565203081475">اختيار طريقة الدفع</translation>
 <translation id="3698353241727597930">ضبَطَ المشرف الإعدادات لحفظ <ph name="FILES" /> في مساحة التخزين التي تديرها المؤسسة على <ph name="CLOUD_STORAGE" />. قد تتم مراقبة هذه الملفات ويتم فحصها والاحتفاظ بها عند حذفها.</translation>
 <translation id="3698629142018988477">‏زر إنشاء موقع إلكتروني: انقر على هذا الزر لإنشاء موقع إلكتروني جديد بسرعة على "مواقع Google".</translation>
-<translation id="3698708128812719147">‏للعثور على المزيد من المعلومات وإدخالها، يمكنك الضغط على مفتاح Ctrl مرتين في أي مكان على الويب</translation>
 <translation id="3700094625653511150">لإخفاء خيارات "الدفع الآجل"، يُرجى الانتقال إلى "<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />"</translation>
 <translation id="3700966190175650601">أنت تستخدم حاليًا بصمة إصبعك لملء كلمات المرور</translation>
 <translation id="3701427423622901115">تمت الموافقة على إعادة الضبط.</translation>
@@ -1655,7 +1656,6 @@
 <translation id="3769584711865378220">يريد <ph name="URL" /> تغيير إذن الوصول إلى الموقع الجغرافي من "تقريبي" إلى "دقيق"</translation>
 <translation id="3772211998634047851">ورق (سندات)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء ملاحظة جديدة في Google Keep بسرعة.</translation>
-<translation id="3778045607993018262">‏سيتم ربط حساب Pix بحساب <ph name="ACCOUNT_EMAIL" />. لإيقاف ميزة "رصد رمز Pix"، يُرجى الانتقال إلى <ph name="BEGIN_LINK1" />إعدادات Chrome<ph name="END_LINK1" />.</translation>
 <translation id="3780694243617746492">سلّة الإخراج</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">أجهزة بلوتوث</translation>
@@ -1901,7 +1901,6 @@
 <translation id="4185037616931963178">‏تعديل رقم الإنصاف (Redress number) بأمان</translation>
 <translation id="4186035307311647330">إيقاف تتبُّع السعر</translation>
 <translation id="4191334393248735295">الطول</translation>
-<translation id="4192770747482479191">للعثور على المزيد من المعلومات وإدخالها، يمكنك الضغط على مفتاح ⌘ مرتين في أي مكان على الويب</translation>
 <translation id="4195459680867822611">‏زر الاطّلاع على معلومات بشأن استخدام متصفّح Chrome: انقر على هذا الزر للتعرّف على ميزات Chrome.</translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
 <translation id="4196861286325780578">إ&amp;عادة النقل</translation>
@@ -1919,6 +1918,7 @@
 <translation id="4218327733815631046">الإبقاء على الموقع الجغرافي التقريبي</translation>
 <translation id="4219596572397833317">يمكنك الاطّلاع على سجلّ الأسعار والمزيد من المعلومات لمساعدتك في التسوّق بذكاء أكبر.</translation>
 <translation id="4220128509585149162">الأعطال</translation>
+<translation id="4220745762102459826">والمزيد</translation>
 <translation id="4221630205957821124">‏&lt;h4&gt;الخطوة 1: تسجيل الدخول إلى البوابة&lt;/h4&gt;
     &lt;p&gt;تتطلّب شبكات Wi-Fi تسجيل الدخول في أماكن مثل المقاهي أو المطارات. للاطّلاع على صفحة تسجيل الدخول، انتقِل إلى صفحةٍ تستخدم رمز &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@
 <translation id="483241715238664915">تفعيل التحذيرات</translation>
 <translation id="4833567658337394628">لا يُنصح بلصق المحتوى</translation>
 <translation id="4840250757394056958">‏عرض سجلّ Chrome</translation>
+<translation id="4842085418602350953">‏الدفع عبر Pix متاح بدون تبديل التطبيقات في المرة القادمة</translation>
 <translation id="4842365697443353018">يجب محو بيانات النموذج لاستخدام خيار "الدفع لاحقًا"</translation>
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="4844937814014739139">الانتقال للأعلى أو للأسفل في محتوى علامات التبويب المشترَكة وتكبيره أو تصغيره</translation>
@@ -2468,6 +2469,7 @@
 <translation id="5115232566827194440">تجاوز جلسة الضيف المُدارة المحظورة</translation>
 <translation id="5115563688576182185">(64 بت)</translation>
 <translation id="5116015291385561204">إثبات هويتك قبل الملء التلقائي للمعلومات الحساسة</translation>
+<translation id="5121592697493894155">‏فتح "بحث Google" في اللوحة الجانبية</translation>
 <translation id="5122786942953798871">ظرف (قطني)</translation>
 <translation id="5123063207673082822">نهاية الأسبوع</translation>
 <translation id="5124797626438336458">‏تم فتح شاشة خطأ عملية "الدفع الآجل" (BNPL) في نصف الشاشة.</translation>
@@ -2880,6 +2882,7 @@
 <translation id="5794065675298686371">تفعيل الإشعارات الخاصة بتتبُّع الأسعار</translation>
 <translation id="5794093550048860249">رقم التتبّع</translation>
 <translation id="5796050750059455142">‏فعِّل <ph name="BEGIN_LINK" />"الميزات الذكية" في منتجات Google الأخرى<ph name="LINK_END" /></translation>
+<translation id="5797916798049571144">تم حفظ الاسم مع معلومات بطاقتك، لذا سيتم ملؤه تلقائيًا عند الدفع</translation>
 <translation id="5797984091151707075">تم حظر المحتوى بسبب سياسة المشرف</translation>
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5806871454498484178">تم حظر الانتقال للأعلى أو للأسفل في المحتوى وتكبيره أو تصغيره</translation>
@@ -4300,6 +4303,7 @@
 <translation id="8210490490377416373">اختيار اسم السياسة</translation>
 <translation id="8211406090763984747">الاتصال بهذا الموقع الإلكتروني آمن
 </translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{‫+ مصدر واحد آخر}zero{‫+ # مصدر آخر}two{‫+ مصدران آخران}few{‫+ # مصادر أخرى}many{‫+ # مصدرًا آخر}other{‫+ # مصدر آخر}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 × 18 بوصة</translation>
 <translation id="8218327578424803826">الموقع الذي تم تعيينه:</translation>

@@ -1598,7 +1598,6 @@
 <translation id="3693516565203081475">בחירת אמצעי תשלום</translation>
 <translation id="3698353241727597930">האדמינים הגדירו שהמערכת תשמור <ph name="FILES" /> באחסון שלך ב-<ph name="CLOUD_STORAGE" /> שמנוהל על ידי הארגון. אם הקבצים האלה ימחקו, יכול להיות שיתבצע מעקב אחריהם, בדיקה ושמירה שלהם.</translation>
 <translation id="3698629142018988477">‏הכפתור ליצירת אתר, מפעילים אותו כדי ליצור במהירות אתר חדש ב-Google Sites</translation>
-<translation id="3698708128812719147">‏כדי למצוא ולמלא עוד פרטים, עליך ללחוץ פעמיים על Ctrl בכל מקום באינטרנט</translation>
 <translation id="3700094625653511150">כדי להסתיר את האפשרויות לתשלום אחר כך, צריך לעבור אל <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">בחרת להשתמש בטביעת האצבע למילוי סיסמאות</translation>
 <translation id="3701427423622901115">האיפוס אושר.</translation>
@@ -1657,7 +1656,6 @@
 <translation id="3769584711865378220">‫<ph name="URL" /> רוצה לשנות את הרשאת הגישה למיקום מ"משוער" ל"מדויק"</translation>
 <translation id="3772211998634047851">Paper (Bond)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור הערה חדשה במהירות ב-Google Keep</translation>
-<translation id="3778045607993018262">‏החשבון ב-Pix יקושר אל <ph name="ACCOUNT_EMAIL" />. כדי להשבית את הזיהוי של קוד Pix, צריך לעבור<ph name="BEGIN_LINK1" />להגדרות של Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">סל פלט</translation>
 <translation id="3783418713923659662">מאסטרקארד</translation>
 <translation id="3784372983762739446">‏מכשירי Bluetooth</translation>
@@ -1903,7 +1901,6 @@
 <translation id="4185037616931963178">‏עדכון מספר ה-Redress באופן מאובטח</translation>
 <translation id="4186035307311647330">ביטול המעקב אחר המחירים</translation>
 <translation id="4191334393248735295">אורך</translation>
-<translation id="4192770747482479191">כדי למצוא ולמלא עוד פרטים, עליך ללחוץ פעמיים על הסמל ⌘ בכל מקום באינטרנט</translation>
 <translation id="4195459680867822611">‏הכפתור להצגת טיפים ל-Chrome, מפעילים אותו כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4196861286325780578">&amp;ביצוע מחדש של העברה</translation>
@@ -2301,6 +2298,7 @@ Del</translation>
 <translation id="483241715238664915">הפעלת האזהרות</translation>
 <translation id="4833567658337394628">לא מומלץ להדביק את התוכן</translation>
 <translation id="4840250757394056958">‏הצגת ההיסטוריה ב-Chrome</translation>
+<translation id="4842085418602350953">‏רוצה לשלם דרך Pix בפעם הבאה בלי לעבור בין אפליקציות?</translation>
 <translation id="4842365697443353018">כדי לשלם אחר כך, צריך למחוק את הנתונים בטופס</translation>
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4844937814014739139">גלילה ושינוי מרחק התצוגה של הכרטיסיות המשותפות</translation>
@@ -2475,6 +2473,7 @@ Del</translation>
 <translation id="5115232566827194440">ביטול הגלישה המנוהלת והמוגבלת כאורח</translation>
 <translation id="5115563688576182185">(64 סיביות)</translation>
 <translation id="5116015291385561204">כדי למלא אוטומטית מידע רגיש, צריך לאמת את הזהות שלך</translation>
+<translation id="5121592697493894155">‏חיפוש Google בחלונית הצדדית</translation>
 <translation id="5122786942953798871">Envelope (Cotton)</translation>
 <translation id="5123063207673082822">סוף השבוע</translation>
 <translation id="5124797626438336458">‏מסך השגיאה של "קונים עכשיו, משלמים אחר כך (BNPL)" נפתח בחצי מגובה המסך.</translation>
@@ -4308,6 +4307,7 @@ Del</translation>
 <translation id="8208629719488976364">‏התוכן של הדפים המודפסים ומידע על המדפסת יישלחו אל Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהנתונים האלה יעברו סריקה כדי לאתר מידע אישי רגיש, וייתכן שהם יאוחסנו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="8210490490377416373">בחירת שם למדיניות</translation>
 <translation id="8211406090763984747">החיבור מאובטח</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{ועוד מקור אחד}one{ועוד # מקורות}two{ועוד # מקורות}other{ועוד # מקורות}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">‏14x18 אינץ'</translation>
 <translation id="8218327578424803826">מיקום מוקצה:</translation>

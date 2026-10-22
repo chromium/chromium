@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">გახსენით <ph name="BEGIN_BOLD" />ნაგულისხმევი აპების<ph name="END_BOLD" /> პარამეტრები iOS-ში</translation>
 <translation id="1938871630297275912">{count,plural, =1{მიღებულია ბმული}other{მიღებულია {count} ბმული}}</translation>
 <translation id="1941314575388338491">კოპირებისთვის, შეეხეთ ორმაგად.</translation>
+<translation id="1942483019269000450">ამ ამოცანის გასაგრძელებლად Gemini-მ შესაძლოა თხოვოს Google საფულეს თქვენი საკრედიტო ბარათის ინფორმაციის შევსება</translation>
 <translation id="1943478190258551035">მენიუ → პარამეტრები</translation>
 <translation id="1944477975050820119">რეალურ დროში მიიღეთ შემოთავაზებები, რომლებიც დაგეხმარებათ ხელოვნური ინტელექტით დათვალიერების ახალი გზების პოვნაში. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">სისტემაში მართული ანგარიშით შესვლა</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">ახალი ერთეული</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> ანგარიში ერთსა და იმავე პაროლს იყენებს</translation>
 <translation id="205013082884273671">მოიძიეთ ნებისმიერი რამ, რასაც ეკრანზე ხედავთ</translation>
+<translation id="2053311407685904414">აირჩიეთ მისამართი</translation>
 <translation id="2054044186557130763">შედით, როგორც <ph name="NAME" /> <ph name="EMAIL" />, მართავს თქვენი ორგანიზაცია.</translation>
 <translation id="2059166748188874810">მუნიციპალიტეტი</translation>
 <translation id="2060638295449304809">ეს მისამართი შენახულია მხოლოდ ამ მოწყობილობაში. თქვენს სხვა მოწყობილობებში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />)</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">თარგმნა</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2360196772093551345">მობილური საიტის მოთხოვნა</translation>
+<translation id="2360272811987888433">ხელით შესვლა</translation>
 <translation id="2362083820973145409">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. გახსნის პარამეტრებს.</translation>
 <translation id="2367025302166767427">თქვენი ინფორმაციის შევსებისას წარმოიქმნა პრობლემა</translation>
 <translation id="2371084566192454134">ჩანართები და ჩანართების ჯგუფები</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Google Photos-ში შენახვა</translation>
 <translation id="3406506285180498376">გვერდის გაზიარება…</translation>
 <translation id="340669334496430859">ბოლო ცვლილება</translation>
+<translation id="3407832712016477396">Gemini-ს შეუძლია გამოიყენოს Google პაროლების მმართველი შესასვლელად</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ოქტ, 2023</translation>
 <translation id="3419787211763835342">დაგვეხმარეთ გაუმჯობესებული ავტომატური შევსების დახვეწაში</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">არასოდეს დაშვება</translation>
 <translation id="4293154608148215505">თქვენი ტელეფონიდან</translation>
 <translation id="4294506173142861371">შეხვალთ, როგორც <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">ხელით შეყვანა</translation>
+<translation id="4297418774230471285">პერსონალური ინფორმაციის არჩევა</translation>
 <translation id="4302061870579014542">მდებარეობის დაყენება</translation>
 <translation id="4304713468139749426">პაროლების მმართველი</translation>
 <translation id="4309403553630140242">დამატებითი ინფორმაციისთვის შეეხეთ ორმაგად</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini ხელოვნური ინტელექტია და შეიძლება შეცდეს. <ph name="BEGIN_LINK" />ვრცლად Google-ისთვის გაგზავნილი შესაბამისი მონაცემების შესახებ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">იმპორტისთვის არაფერია</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" />-დან</translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" />-ში შესვლა</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5318298563956633672">ამ პროდუქტს თვალს უკვე ადევნებთ.</translation>
 <translation id="5327248766486351172">სახელი</translation>
@@ -2206,6 +2213,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7839994177130598711">თქვენს ოჯახის წევრებს ახლა შეუძლიათ თქვენი მომხმარებლის სახლისა და პაროლის გამოყენება, როცა <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-ში შესასვლელად ისინი ისარგებლებენ Google პაროლების მმართველით.</translation>
 <translation id="7841180087127694526">კოპირებული ტექსტის ძიება</translation>
 <translation id="7841418003178675048">აირჩიეთ, რომელი ბარათები ნახოთ ახალი ჩანართის გვერდზე.</translation>
+<translation id="7842369010458597654">გადახდის ინფორმაციის შევსება</translation>
 <translation id="7845466610722898">საკითხავი სიის ჩვენება</translation>
 <translation id="7846161022626028328">შეცდომა მოხდა. ცადეთ ხელახლა.</translation>
 <translation id="784623644169604270">უახლესი აქტივობები არ არის</translation>

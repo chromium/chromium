@@ -239,6 +239,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1393071644879491291">Útočníci na webu, který jste se pokusili navštívit, by vás mohli přimět k instalaci softwaru nebo prozrazení věcí, jako jsou vaše hesla, telefon nebo čísla kreditních karet. Chrome důrazně doporučuje vrátit se do bezpečí. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Bezpečné přidání průkazu totožnosti do Peněženky Google</translation>
 <translation id="1398743098754840707">Weby přidané sem se nebudou používat pro referenci při generování odpovědí, ani když budou otevřené na kartách. Pokud se web, který přidáte, právě používá ve vlákně, může trvat až 30 minut, než na něj vlákno přestane odkazovat.</translation>
+<translation id="1403359480263156644">Jméno držitele karty bylo aktualizováno</translation>
 <translation id="1405567553485452995">Světle zelená</translation>
 <translation id="1406370515365284486">Vaše platební metody zůstanou uložené</translation>
 <translation id="1406500794671479665">Ověřování...</translation>
@@ -907,6 +908,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2498091847651709837">Naskenovat novou kartu</translation>
 <translation id="2501270939904835585">Štítky (saténové)</translation>
 <translation id="2501278716633472235">Zpět</translation>
+<translation id="250307989715832083">Přidat podpis</translation>
 <translation id="250346157641628208">Papír (pro inkoustové tiskárny)</translation>
 <translation id="2505063700931618106">Informace o kartě byly uloženy</translation>
 <translation id="2505268675989099013">Ochránit účet</translation>
@@ -1592,7 +1594,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3693516565203081475">Vyberte platební metodu</translation>
 <translation id="3698353241727597930">Váš administrátor nakonfiguroval, aby se <ph name="FILES" /> ukládaly do úložiště <ph name="CLOUD_STORAGE" /> spravovaného vaší organizací. Tyto soubory mohou být monitorovány a auditovány a můžou zůstat uchovány, když je odstraníte.</translation>
 <translation id="3698629142018988477">Tlačítko Vytvořit web, aktivací rychle vytvoříte nový web ve Webech Google</translation>
-<translation id="3698708128812719147">Dvojitým stisknutím klávesy Ctrl kdekoli na webu můžete najít a vyplnit další informace</translation>
 <translation id="3700094625653511150">Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">K vyplňování hesel používáte otisk prstu</translation>
 <translation id="3701427423622901115">Resetování bylo potvrzeno.</translation>
@@ -1651,7 +1652,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3769584711865378220">Aplikace <ph name="URL" /> chce změnit přístup k poloze z přibližné na přesnou</translation>
 <translation id="3772211998634047851">Papír (dluhopisový)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte novou poznámku v aplikaci Google Keep</translation>
-<translation id="3778045607993018262">Účet Pix bude propojen s účtem <ph name="ACCOUNT_EMAIL" />. Pokud chcete vypnout detekci kódů Pix, přejděte do <ph name="BEGIN_LINK1" />nastavení Chromu<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Výstupní přihrádka</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Zařízení Bluetooth</translation>
@@ -1897,7 +1897,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4185037616931963178">Bezpečně si nápravné číslo aktualizujte</translation>
 <translation id="4186035307311647330">Zrušit sledování ceny</translation>
 <translation id="4191334393248735295">Délka</translation>
-<translation id="4192770747482479191">Dvojitým stisknutím klávesy ⌘ kdekoli na webu můžete najít a vyplnit další informace</translation>
 <translation id="4195459680867822611">Tlačítko Zobrazit tipy k Chromu, aktivací zobrazíte další informace o funkcích Chromu</translation>
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
 <translation id="4196861286325780578">&amp;Opakovat přesunutí</translation>
@@ -1915,6 +1914,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4218327733815631046">Ponechat přibližnou polohu</translation>
 <translation id="4219596572397833317">Prohlédněte si historii cen a další informace, které vám pomůžou nakupovat chytřeji.</translation>
 <translation id="4220128509585149162">Selhání</translation>
+<translation id="4220745762102459826">a další</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Krok 1: Přihlaste se do portálu&lt;/h4&gt;
     &lt;p&gt;Wi-Fi sítě v místech, jako jsou kavárny nebo letiště, vyžadují přihlášení. Chcete-li zobrazit přihlašovací stránku, přejděte na stránku, která používá schéma &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2290,6 +2290,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="483241715238664915">Zapnout upozornění</translation>
 <translation id="4833567658337394628">Vkládání se nedoporučuje</translation>
 <translation id="4840250757394056958">Zobrazit historii Chromu</translation>
+<translation id="4842085418602350953">Příště plaťte pomocí služby Pix bez přepínání aplikací</translation>
 <translation id="4842365697443353018">Pokud chcete použít možnost Zaplatit později, vymažte formulář</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4844937814014739139">Posouvání a přibližování sdílených karet</translation>
@@ -2464,6 +2465,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5115232566827194440">Přepsání omezené spravované relace hosta</translation>
 <translation id="5115563688576182185">(64bitový)</translation>
 <translation id="5116015291385561204">Před automatickým vyplněním citlivých údajů požadovat ověření totožnosti</translation>
+<translation id="5121592697493894155">Vyhledávání Google na bočním panelu</translation>
 <translation id="5122786942953798871">Obálka (bavlněná)</translation>
 <translation id="5123063207673082822">Víkend</translation>
 <translation id="5124797626438336458">Spodní panel chyby procesu „Koupit teď, zaplatit později“ otevřený na polovinu výšky.</translation>
@@ -2876,6 +2878,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5794065675298686371">Zapněte oznámení o sledování cen</translation>
 <translation id="5794093550048860249">Číslo zásilky</translation>
 <translation id="5796050750059455142">Zapněte možnost <ph name="BEGIN_LINK" />Chytré funkce v jiných službách Google<ph name="LINK_END" /></translation>
+<translation id="5797916798049571144">Je uloženo s údaji o vaší kartě, takže se při placení automaticky vyplní</translation>
 <translation id="5797984091151707075">Blokováno zásadami administrátora</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
 <translation id="5806871454498484178">Posouvání a přibližování je blokováno</translation>
@@ -4293,6 +4296,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8208629719488976364">Obsah tisknutých stránek a informace o vaší tiskárně se odesílají do služby Google Cloud nebo třetím stranám k analýze. Může se u něj například kontrolovat přítomnost citlivých údajů může být uchováván v souladu se zásadami společnosti a může k němu mít přístup váš administrátor.</translation>
 <translation id="8210490490377416373">Vyberte název zásady</translation>
 <translation id="8211406090763984747">Připojení je zabezpečené</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 další zdroj}few{+ # další zdroje}many{+ # dalšího zdroje}other{+ # dalších zdrojů}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 × 18″</translation>
 <translation id="8218327578424803826">Přiřazené místo:</translation>

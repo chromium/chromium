@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">iOS-тегі <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (Әдепкі қолданбалар) параметрлерін ашыңыз.</translation>
 <translation id="1938871630297275912">{count,plural, =1{Сілтеме алынды}other{{count} сілтеме алынды}}</translation>
 <translation id="1941314575388338491">Көшіру үшін екі рет түртіңіз.</translation>
+<translation id="1942483019269000450">Gemini тапсырманы әрі қарай орындау үшін Google Wallet-тен несиелік картаңыз туралы ақпаратты толтыруды сұрай алады.</translation>
 <translation id="1943478190258551035">Мәзір → Параметрлер</translation>
 <translation id="1944477975050820119">Жасанды интеллект көмегімен шолудың жаңа жолдарын табуға көмектесетін нақты уақыттағы ұсыныстарды алыңыз. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Басқарылатын аккаунтпен кіру</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">жаңа элемент</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> аккаунт бірдей құпия сөз пайдаланып жүр</translation>
 <translation id="205013082884273671">Экрандағы кез келген нәрсені іздеңіз</translation>
+<translation id="2053311407685904414">Мекенжай таңдаңыз</translation>
 <translation id="2054044186557130763"><ph name="NAME" /> <ph name="EMAIL" /> ретінде кіру, ұйымыңыз басқарады.</translation>
 <translation id="2059166748188874810">Қала әкімшілігі</translation>
 <translation id="2060638295449304809">Бұл мекенжай тек осы құрылғыға сақталады. Оны басқа құрылғыларыңызда пайдалану үшін Google аккаунтына (<ph name="USER_EMAIL" />) сақтаңыз.</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Аудару</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2360196772093551345">Сайттың мобильдік нұсқасын сұрау</translation>
+<translation id="2360272811987888433">Аккаунтқа қолмен кіру</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> аккаунтымен кірдіңіз. <ph name="USER_EMAIL" />. Параметрлерді ашады.</translation>
 <translation id="2367025302166767427">Ақпаратыңызды толтыру кезінде қате шықты</translation>
 <translation id="2371084566192454134">Қойындылар мен қойындылар топтары</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Google Photos-ға сақтау</translation>
 <translation id="3406506285180498376">Бетті бөлісу…</translation>
 <translation id="340669334496430859">Соңғы өзгертілген</translation>
+<translation id="3407832712016477396">Gemini сіздің атыңыздан кіру үшін Google Password Manager-ді пайдалана алады.</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 қазан, 2023</translation>
 <translation id="3419787211763835342">Дұрысталған автотолтыру функциясын жақсартуға көмектесіңіз</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Ешқашан рұқсат бермеу</translation>
 <translation id="4293154608148215505">телефоныңыздан</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> ретінде кіру қажет пе?</translation>
+<translation id="4297031046690565608">Қолмен енгізу</translation>
+<translation id="4297418774230471285">Жеке ақпаратты таңдаңыз</translation>
 <translation id="4302061870579014542">Орынды орнату</translation>
 <translation id="4304713468139749426">Құпия сөздер реттегіші</translation>
 <translation id="4309403553630140242">Толығырақ ақпарат алу үшін екі рет түртіңіз.</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini — жасанды интеллект және ол қателесуі мүмкін. <ph name="BEGIN_LINK" />Google-ға жіберілетін тиісті деректер туралы қосымша ақпарат алыңыз.<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Импортталатын ешнәрсе жоқ</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> аккаунтына кіру</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5318298563956633672">Бұл өнімді бұрыннан бақылап жатырсыз.</translation>
 <translation id="5327248766486351172">Аты</translation>
@@ -2206,6 +2213,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="7839994177130598711">Отбасыңыздың мүшелері <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> веб-сайтына кіру үшін Google Password Manager қызметін қолданған кезде, енді пайдаланушы атыңыз бен құпия сөзіңізді де пайдалана алады.</translation>
 <translation id="7841180087127694526">Көшірілген мәтінді іздеу</translation>
 <translation id="7841418003178675048">Жаңа қойынды бетінде қандай карталар көрсетілуі керек екенін таңдаңыз.</translation>
+<translation id="7842369010458597654">Төлем туралы ақпаратты толтырыңыз</translation>
 <translation id="7845466610722898">Оқу тізімін көрсету</translation>
 <translation id="7846161022626028328">Қате пайда болды. Қайталап көріңіз.</translation>
 <translation id="784623644169604270">Соңғы іс-әрекеттер жоқ.</translation>

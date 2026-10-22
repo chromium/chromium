@@ -239,6 +239,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1393071644879491291">Előfordulhat, hogy az Ön által felkeresni próbált webhelyen a támadók ráveszik Önt valamilyen szoftver telepítésére, illetve olyan adatok megadására, mint a jelszavai, a telefonszámai vagy a bankkártyaszámai. A Chrome kifejezetten javasolja, hogy térjen vissza biztonságos webhelyre. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1397342126322860141">Személyazonosító igazolvány biztonságos hozzáadása a Google Wallethez</translation>
 <translation id="1398743098754840707">Az itt hozzáadott webhelyekre nem hivatkozik majd a rendszer a válaszokban, még akkor sem, ha a lap meg van nyitva. Ha egy hozzáadott webhely jelenleg használatban van egy üzenetszálban, akár 30 perc is eltelhet, mire az üzenetszál befejezi a rá való hivatkozást.</translation>
+<translation id="1403359480263156644">Kártyabirtokos neve frissítve</translation>
 <translation id="1405567553485452995">Világoszöld</translation>
 <translation id="1406370515365284486">A fizetési módjai továbbra is mentve lesznek</translation>
 <translation id="1406500794671479665">Ellenőrzés...</translation>
@@ -907,6 +908,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2498091847651709837">Új kártya beolvasása</translation>
 <translation id="2501270939904835585">Címkék (szatén)</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
+<translation id="250307989715832083">Aláírás hozzáadása</translation>
 <translation id="250346157641628208">Papír (tintasugaras)</translation>
 <translation id="2505063700931618106">Kártyaadatok mentve</translation>
 <translation id="2505268675989099013">Fiók védelme</translation>
@@ -1594,7 +1596,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3693516565203081475">Válasszon fizetési módot</translation>
 <translation id="3698353241727597930">A rendszergazda úgy konfigurálta a <ph name="FILES" /> mentését, hogy a vállalati kezelésű <ph name="CLOUD_STORAGE" />-tárhelyre kerüljenek. Ezek a fájlok figyelhetők, auditálhatók és megőrizhetők, amikor törli őket.</translation>
 <translation id="3698629142018988477">Webhely létrehozása gomb. A gombot megnyomva gyorsan létrehozhat új webhelyet a Google Webhelyek szolgáltatásban.</translation>
-<translation id="3698708128812719147">Nyomja le kétszer a Ctrl billentyűt bárhol az interneten további adatok kereséséhez és kitöltéséhez</translation>
 <translation id="3700094625653511150">A későbbi fizetési lehetőségek elrejtéséhez lépjen a következő oldalra: <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Ujjlenyomatot használ jelszavak kitöltéséhez</translation>
 <translation id="3701427423622901115">Visszaállítás elfogadva.</translation>
@@ -1653,7 +1654,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3769584711865378220">A(z) <ph name="URL" /> meg szeretné változtatni a helyhozzáférést hozzávetőlegesről pontosra</translation>
 <translation id="3772211998634047851">Papír (bankpostai)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új jegyzet gyors létrehozásához a Google Keep szolgáltatással</translation>
-<translation id="3778045607993018262">A Pix-fiók össze lesz kapcsolva a következővel: <ph name="ACCOUNT_EMAIL" />. A Pix-kód észlelésének kikapcsolásához nyissa meg a <ph name="BEGIN_LINK1" />Chrome-beállításokat<ph name="END_LINK1" />.</translation>
 <translation id="3780694243617746492">Kimeneti tálca</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-eszközök</translation>
@@ -1898,7 +1898,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4185037616931963178">Panaszkezelési azonosító biztonságos frissítése</translation>
 <translation id="4186035307311647330">Árkövetés kikapcsolása</translation>
 <translation id="4191334393248735295">Hossz</translation>
-<translation id="4192770747482479191">Nyomja le kétszer a ⌘ billentyűt bárhol az interneten további adatok kereséséhez és kitöltéséhez</translation>
 <translation id="4195459680867822611">Chrome-tippek megjelenítése gomb, nyomja meg a Chrome funkcióival kapcsolatos további információkért.</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4196861286325780578">&amp;Áthelyezés újra</translation>
@@ -1916,6 +1915,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4218327733815631046">Hozzávetőleges hely megtartása</translation>
 <translation id="4219596572397833317">Tekintse meg az árelőzményeket és egyebeket az okosabb vásárlás érdekében.</translation>
 <translation id="4220128509585149162">Összeomlások</translation>
+<translation id="4220745762102459826">stb.</translation>
 <translation id="4221630205957821124">&lt;h4&gt;1. lépés: Jelentkezzen be a portálra&lt;/h4&gt;
     &lt;p&gt;Az olyan nyilvános helyek Wi-Fi-hálózatai esetében, mint a kávézók és a repterek, bejelentkezés szükséges. A bejelentkezési oldal megtekintéséhez keresse fel valamelyik olyan oldalt, amely a &lt;code&gt;http://&lt;/code&gt; előtaggal kezdődik.&lt;/p&gt;
     &lt;ol&gt;
@@ -2291,6 +2291,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="483241715238664915">Figyelmeztetések bekapcsolása</translation>
 <translation id="4833567658337394628">A beillesztés nem javasolt</translation>
 <translation id="4840250757394056958">Chrome-előzmények megtekintése</translation>
+<translation id="4842085418602350953">Fizetés a Pix szolgáltatással legközelebb alkalmazásváltás nélkül</translation>
 <translation id="4842365697443353018">A későbbi fizetés használatához törölje ki az űrlapot</translation>
 <translation id="484462545196658690">Automatikus</translation>
 <translation id="4844937814014739139">Megosztott lapok görgetése és nagyítása</translation>
@@ -2465,6 +2466,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5115232566827194440">Korlátozott felügyelt vendégmunkamenet felülírása</translation>
 <translation id="5115563688576182185">(64 bites)</translation>
 <translation id="5116015291385561204">Személyazonosság igazolása bizalmas információk automatikus kitöltéséhez</translation>
+<translation id="5121592697493894155">Google Kereső az oldalsó panelen</translation>
 <translation id="5122786942953798871">Boríték (karton)</translation>
 <translation id="5123063207673082822">Hétvége</translation>
 <translation id="5124797626438336458">A Késleltetett fizetés hibajelző képernyője félmagasságban van megnyitva.</translation>
@@ -2877,6 +2879,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5794065675298686371">Az árfigyelési értesítések bekapcsolása</translation>
 <translation id="5794093550048860249">Azonosító szám</translation>
 <translation id="5796050750059455142">Kapcsolja be az „<ph name="BEGIN_LINK" />Okos funkciók más Google-termékekben<ph name="LINK_END" />” beállítást</translation>
+<translation id="5797916798049571144">A kártyaadatokkal együtt mentésre került, így a rendszer automatikusan kitölti a fizetéskor</translation>
 <translation id="5797984091151707075">Rendszergazdai házirend által letiltva</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5806871454498484178">Görgetés és nagyítás letiltva</translation>
@@ -4296,6 +4299,7 @@ További részletek:
 <translation id="8208629719488976364">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja az Ön által kinyomtatott oldalak tartalmát és a nyomtatójával kapcsolatos adatokat. Például előfordulhat, hogy bizalmas adatokat keresnek, a vállalati irányelvek alapján tárolják majd őket, illetve láthatók lesznek a rendszergazda számára.</translation>
 <translation id="8210490490377416373">Házirend nevének kiválasztása</translation>
 <translation id="8211406090763984747">A kapcsolat biztonságos</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 további forrás}other{+ # további forrás}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 × 18 hüvelyk</translation>
 <translation id="8218327578424803826">Hozzárendelt helyszín:</translation>

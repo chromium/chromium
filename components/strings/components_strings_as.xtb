@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">আপুনি চাবলৈ চেষ্টা কৰি থকা ছাইটটোত থকা আক্ৰমণকাৰীসকলে আপোনাক কোনো ছফ্টৱেৰ ইনষ্টল কৰিবলৈ বা আপোনাৰ পাছৱৰ্ড, ফট’ বা ক্ৰেডিট কাৰ্ডৰ নম্বৰৰ দৰে তথ্য ফাদিল কৰিবলৈ ছলনা কৰিব পাৰে। Chromeএ পুনৰ সুৰক্ষা ব্যৱস্থা গ্ৰহণ কৰিবলৈ দৃঢ়ভাৱে চুপাৰিছ কৰে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Google Walletত সুৰক্ষিতভাৱে আইডি কাৰ্ড যোগ দিয়ক</translation>
 <translation id="1398743098754840707">আপুনি ইয়াত যোগ দিয়া ছাইটসমূহ সঁহাৰিৰ বাবে উল্লেখ কৰা নহ’ব, আনকি টেবটো খোলা থাকিলেও। যদি আপুনি যোগ দিয়া কোনো ছাইট বৰ্তমান এটা থ্ৰেডত ব্যৱহাৰ কৰি থকা হৈছে, থ্ৰেডটোৱে সেইটো উল্লেখ কৰাটো বন্ধ কৰিবলৈ ৩০ মিনিট পৰ্যন্ত সময় লাগিব পাৰে।</translation>
+<translation id="1403359480263156644">কাৰ্ডহ’ল্ডাৰৰ নাম আপডে’ট কৰা হৈছে</translation>
 <translation id="1405567553485452995">পাতল সেউজীয়া</translation>
 <translation id="1406370515365284486">আপোনাৰ পৰিশোধ পদ্ধতি তথাপি ছেভ কৰা হ’ব</translation>
 <translation id="1406500794671479665">সত্যাপন কৰি থকা হৈছে…</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">নতুন কাৰ্ড স্কেন কৰক</translation>
 <translation id="2501270939904835585">লেবেল (ৰেচমী)</translation>
 <translation id="2501278716633472235">উভতি যাওক</translation>
+<translation id="250307989715832083">স্বাক্ষৰ যোগ দিয়ক</translation>
 <translation id="250346157641628208">কাগজ (ইংকজেট)</translation>
 <translation id="2505063700931618106">কাৰ্ডৰ তথ্য ছেভ কৰা হৈছে</translation>
 <translation id="2505268675989099013">একাউণ্ট সুৰক্ষিত কৰক</translation>
@@ -1593,7 +1595,6 @@
 <translation id="3693516565203081475">পৰিশোধ পদ্ধতি বাছনি কৰক</translation>
 <translation id="3698353241727597930">আপোনাৰ প্ৰশাসকে আপোনাৰ এণ্টাৰপ্ৰাইজে পৰিচালনা কৰা <ph name="CLOUD_STORAGE" />ৰ ষ্ট’ৰেজত <ph name="FILES" /> ছেভ কৰিবলৈ কনফিগাৰ কৰিছে। এই ফাইলসমূহ নিৰীক্ষণ, অডিট কৰা আৰু আপুনি সেইসমূহ মচিলে ৰাখি থোৱা হ’ব পাৰে।</translation>
 <translation id="3698629142018988477">ছাইট সৃষ্টি কৰাৰ বুটাম, Google Sitesত ক্ষিপ্ৰতাৰে এটা নতুন ছাইট সৃষ্টি কৰিবলৈ সক্ৰিয় কৰক</translation>
-<translation id="3698708128812719147">অধিক তথ্য বিচাৰিবলৈ আৰু পূৰ কৰিবলৈ ৱেবৰ যিকোনো ঠাইত দুবাৰ Ctrl টিপক</translation>
 <translation id="3700094625653511150">পাছত পৰিশোধ কৰাৰ বিকল্পসমূহ লুকুৱাবলৈ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />লৈ যাওক</translation>
 <translation id="3700966190175650601">আপুনি পাছৱৰ্ড পূৰ কৰিবলৈ ফিংগাৰপ্ৰিণ্ট ব্যৱহাৰ কৰিছে</translation>
 <translation id="3701427423622901115">ৰিছেট কাৰ্যটো স্বীকাৰ কৰা হ’ল৷</translation>
@@ -1652,7 +1653,6 @@
 <translation id="3769584711865378220"><ph name="URL" />এ অৱস্থানৰ এক্সেছ আনুমানিকৰ পৰা সঠিকলৈ সলনি কৰিব বিচাৰিছে</translation>
 <translation id="3772211998634047851">কাগজ (বণ্ড)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepত ক্ষিপ্ৰভাৱে এটা নতুন টোকা সৃষ্টি কৰিবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
-<translation id="3778045607993018262">Pix একাউণ্টটো <ph name="ACCOUNT_EMAIL" />ৰ সৈতে লিংক কৰা হ’ব। Pixৰ ক’ড চিনাক্তকৰণ অফ কৰিবলৈ, <ph name="BEGIN_LINK1" />Chromeৰ ছেটিঙ<ph name="END_LINK1" />লৈ যাওক</translation>
 <translation id="3780694243617746492">আউটপুট বিন</translation>
 <translation id="3783418713923659662">MasterCard গ্ৰহণ কৰে</translation>
 <translation id="3784372983762739446">ব্লুটুথ ডিভাইচসমূহ</translation>
@@ -1898,7 +1898,6 @@
 <translation id="4185037616931963178">ৰিড্ৰেছ নম্বৰ সুৰক্ষিতভাৱে আপডে’ট কৰক</translation>
 <translation id="4186035307311647330">মূল্য ট্ৰেক কৰা বন্ধ কৰক</translation>
 <translation id="4191334393248735295">দৈৰ্ঘ্য</translation>
-<translation id="4192770747482479191">অধিক তথ্য বিচাৰিবলৈ আৰু সেয়া পূৰ কৰিবলৈ ৱেবৰ যিকোনো ঠাইতে ⌘ দুবাৰ টিপক</translation>
 <translation id="4195459680867822611">Chromeৰ পৰামৰ্শ চোৱাৰ বুটাম, Chromeৰ সুবিধাসমূহৰ বিষয়ে জানিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="4195643157523330669">নতুন টেবত খোলক</translation>
 <translation id="4196861286325780578">স্থানান্তৰ &amp;কৰাটো ৰিডু কৰক</translation>
@@ -1916,6 +1915,7 @@
 <translation id="4218327733815631046">আনুমানিক অৱস্থান হিচাপে ৰাখক</translation>
 <translation id="4219596572397833317">আপুনি স্মাৰ্টভাৱে বজাৰ কৰাত সহায় পাবলৈ মূল্যৰ ইতিহাস আৰু আন বহুতো চাওক।</translation>
 <translation id="4220128509585149162">ক্রেশ্ব</translation>
+<translation id="4220745762102459826">আৰু অধিক</translation>
 <translation id="4221630205957821124">&lt;h4&gt;পদক্ষেপ ১: পর্টেলটোত ছাইন ইন কৰক&lt;/h4&gt;
     &lt;p&gt;কেফে বা বিমান বন্দৰৰ দৰে ঠাইসমূহৰ ৱাই-ফাই নেটৱর্ক ব্যৱহাৰ কৰিবলৈ আপুনি ছাইন ইন কৰিব লাগিব। ছাইন ইন কৰা পৃষ্ঠাটো চাবলৈ &lt;code&gt;http://&lt;/code&gt; ব্যৱহাৰ কৰা পৃষ্ঠা এটা চাওক।&lt;/p&gt;
     &lt;ol&gt;
@@ -2290,6 +2290,7 @@
 <translation id="483241715238664915">সকীয়নি অন কৰক</translation>
 <translation id="4833567658337394628">পে’ষ্ট কৰাটো চুপাৰিছ কৰা নহয়</translation>
 <translation id="4840250757394056958">আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
+<translation id="4842085418602350953">পৰৱৰ্তী সময়ত এপ্‌ সলনি নকৰাকৈ Pixৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="4842365697443353018">পাছত পৰিশোধ কৰাৰ সুবিধাটো ব্যৱহাৰ কৰিবলৈ ফৰ্মখন মচক</translation>
 <translation id="484462545196658690">স্বয়ংক্ৰিয়</translation>
 <translation id="4844937814014739139">শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰ’ল কৰা আৰু জুম কৰা</translation>
@@ -2464,6 +2465,7 @@
 <translation id="5115232566827194440">সীমাবদ্ধ পৰিচালিত অতিথিৰ ছেশ্বন অ’ভাৰৰাইড</translation>
 <translation id="5115563688576182185">(৬৪ বিট)</translation>
 <translation id="5116015291385561204">সংবেদনশীল তথ্য স্বয়ংক্ৰিয়ভাৱে পূৰ হ’বলৈ এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
+<translation id="5121592697493894155">Google Searchৰ ফলাফল ছাইডৰ পেনেলত উপলব্ধ</translation>
 <translation id="5122786942953798871">এনভেল’প (কপাহী)</translation>
 <translation id="5123063207673082822">সপ্তাহৰ অন্ত</translation>
 <translation id="5124797626438336458">এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰকৰ আসোঁৱাহ দেখুওৱা স্ক্ৰীন অৰ্ধ উচ্চতাত খোলা হৈছে।</translation>
@@ -2876,6 +2878,7 @@
 <translation id="5794065675298686371">মূল্য ট্ৰেকিঙৰ জাননী অন কৰক</translation>
 <translation id="5794093550048860249">ট্ৰেকিং নম্বৰ</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />Googleৰ অন্য প্ৰ’ডাক্টসমূহত স্মাৰ্ট সুবিধা<ph name="LINK_END" />” অন কৰক</translation>
+<translation id="5797916798049571144">এইটো আপোনাৰ কাৰ্ডৰ তথ্যৰ সৈতে ছেভ কৰা হৈছে যাতে চেকআউটত এইটো স্বয়ংক্ৰিয়ভাৱে পূৰ কৰা হয়</translation>
 <translation id="5797984091151707075">প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="5804241973901381774">অনুমতি</translation>
 <translation id="5806871454498484178">স্ক্ৰ’ল কৰা আৰু জুম কৰাটো অৱৰোধ কৰা হৈছে</translation>
@@ -4293,6 +4296,7 @@
 <translation id="8208629719488976364">আপুনি প্ৰিণ্ট কৰা পৃষ্ঠাখনৰ সমল আৰু আপোনাৰ প্ৰিণ্টাৰটোৰ বিষয়ে তথ্য বিশ্লেষণ কৰাৰ বাবে Google Cloud বা তৃতীয় পক্ষসমূহলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, এইটো সংবেদনশীল ডেটাৰ বাবে স্কেন কৰা হ’ব পাৰে আৰু কোম্পানীৰ নীতিৰ ওপৰত ভিত্তি কৰি ষ্ট’ৰ কৰা হ’ব পাৰে আৰু প্ৰশাসকৰ বাবে দৃশ্যমান হ’ব পাৰে।</translation>
 <translation id="8210490490377416373">নীতিৰ নাম বাছনি কৰক</translation>
 <translation id="8211406090763984747">সংযোগটো নিৰাপদ</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ অন্য ১ টা উৎস}one{+ # টা অন্য উৎস}other{+ # টা অন্য উৎস}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">১৪ x ১৮ ইঞ্চি</translation>
 <translation id="8218327578424803826">অভিযোজন কৰা অৱস্থান:</translation>

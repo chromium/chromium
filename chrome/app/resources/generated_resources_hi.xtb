@@ -163,7 +163,6 @@
 <translation id="1109482864356262001">जिन सुविधाओं के लिए मोशन या लाइट सेंसर की ज़रूरत होती है वे काम नहीं करेंगी</translation>
 <translation id="1110155001042129815">इंतज़ार करें</translation>
 <translation id="1110965959145884739">चुनें कि इस डिवाइस पर कौनसी भाषाएं इंस्टॉल करनी है. डिस्क में बचा स्टोरेज सेव करने के लिए, भाषा फ़ाइलों को उपयोगकर्ताओं में शेयर किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="111168944932507021">टैब ग्रुप पर फ़ोकस करें</translation>
 <translation id="1112227834592480032">Google Lens बटन को चुनें. इसके बाद, किसी सवाल पर क्लिक करें और उसे खींचें</translation>
 <translation id="1112420131909513020">बैकग्राउंड टैब ब्लूटूथ का इस्तेमाल कर रहा है</translation>
 <translation id="1112998165730922436">कास्ट करने की प्रोसेस रोकी गई</translation>
@@ -830,6 +829,7 @@
 <translation id="1621984899599015181">आपका संगठन, शेयर करने के विकल्प मैनेज करता है. कुछ आइटम छिपे हो सकते हैं.</translation>
 <translation id="1622054403950683339">सेव किए गए वाई-फ़ाई नेटवर्क को भूल जाएं</translation>
 <translation id="1623723619460186680">नीली रोशनी का कम होना</translation>
+<translation id="1623799258803152950">इस पेज और हाइलाइट किए गए टेक्स्ट, दोनों को Google के साथ शेयर किया गया है</translation>
 <translation id="1626581272720526544">Play Store पर जाकर, Android ऐप्लिकेशन और गेम डाउनलोड किए जा सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">फ़ाइल वर्णनकर्ता</translation>
 <translation id="1627408615528139100">पहले से डाउनलोड की हुई है</translation>
@@ -1604,7 +1604,6 @@
 <translation id="2220572644011485463">पिन या पासवर्ड</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> और <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">बिना लेबल वाला मीडिया सोर्स</translation>
-<translation id="2223747115628460234">खुले हुए टैब पर वापस जाएं</translation>
 <translation id="2224337661447660594">इंटरनेट कनेक्शन नहीं है</translation>
 <translation id="2224444042887712269">यह सेटिंग <ph name="OWNER_EMAIL" /> से संबंधित है.</translation>
 <translation id="2224551243087462610">फ़ोल्डर के नाम में बदलाव करें</translation>
@@ -1733,7 +1732,6 @@
 <translation id="2318143611928805047">कागज़ का आकार</translation>
 <translation id="2319459402137712349">कीबोर्ड खोलने के लिए कोई टेक्स्ट फ़ील्ड चुनें. आपके पास स्क्रीन पर सबसे नीचे कीबोर्ड आइकॉन को चुनने का विकल्प भी मौजूद होता है.</translation>
 <translation id="2319993584768066746">साइन-इन स्क्रीन पर दी गई फ़ोटो</translation>
-<translation id="2322015964223112232">खुले हुए टैब पर वापस जाएं</translation>
 <translation id="2322193970951063277">हेडर और फ़ुटर</translation>
 <translation id="2322622365472107569">खत्म होने का समय <ph name="TIME" /></translation>
 <translation id="2323018538045954000">सेव किए गए वाई-फ़ाई नेटवर्क</translation>
@@ -2846,6 +2844,7 @@
 <translation id="3143515551205905069">लिंक करना रोक दें</translation>
 <translation id="3143754809889689516">शुरू से चलाएं</translation>
 <translation id="3144647712221361880">लिंक को इस रूप में खोलें</translation>
+<translation id="3146436581677566946">उपयोगकर्ता के डिवाइस पर मौजूद मॉडल</translation>
 <translation id="3147878021189006333">खोज बार</translation>
 <translation id="3149510190863420837">Chrome ऐप्स</translation>
 <translation id="3150927491400159470">फिर से लोड करना मुश्किल</translation>
@@ -3211,6 +3210,7 @@
 <translation id="3424969259347320884">बताएं कि जब टैब क्रैश हुआ तब आप क्या कर रहे थे</translation>
 <translation id="3426562492084153055">स्किल ब्राउज़ करें</translation>
 <translation id="3427092606871434483">अनुमति दें (डिफ़ॉल्ट)</translation>
+<translation id="3427822597374329810">छोटा एक्सपर्ट मॉडल</translation>
 <translation id="3429086384982427336">नीचे की सूची में दिए गए ऐप्लिकेशन, प्रोटोकॉल वाले लिंक कभी हैंडल नहीं करेंगे.</translation>
 <translation id="3429174588714165399">इस पेज का शॉर्टकट बनाएं</translation>
 <translation id="3429271624041785769">वेब कॉन्टेंट की भाषाएं</translation>
@@ -3591,6 +3591,7 @@
 <translation id="3701167022068948696">अभी ठीक करें</translation>
 <translation id="3701515417135397388">डेटा के गलत इस्तेमाल की वजह से पासवर्ड हैक होने पर सूचना देना</translation>
 <translation id="3701778844313851487">एक्सटेंशन पर जाएं</translation>
+<translation id="3701846426433416920">मॉडल मिटाएं</translation>
 <translation id="3703166520839776970">अगर यह समस्या बार-बार आती है, तो <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से ज़्यादा जानकारी पाने के लिए, नीचे मौजूद "ज़्यादा जानकारी" चुनें.</translation>
 <translation id="3703699162703116302">टिकट रीफ़्रेश की गई</translation>
 <translation id="370415077757856453">JavaScript को ब्लॉक किया गया</translation>
@@ -4385,6 +4386,7 @@
 <translation id="429312253194641664">किसी साइट पर मीडिया चल रहा है</translation>
 <translation id="4293154608148215505">फ़ोन</translation>
 <translation id="4293219510510666933">अपना ब्राउज़िंग इतिहास खोजने और विज़िट की गई साइटों को ढूंढने के लिए, आम बोलचाल वाली भाषा का इस्तेमाल करें. आपके पास अपने ब्राउज़िंग इतिहास के आधार पर, सवालों के जवाब पाने का विकल्प भी है. यह सेटिंग चालू है.</translation>
+<translation id="429344752071832554">ग्रुप से फ़ोकस हटाएं</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> को डाउनलोड के इतिहास से मिटा दिया गया है. हालांकि, यह अब भी आपके डिवाइस में मौजूद है</translation>
 <translation id="429530814437327574">स्टैक करके दिखाएं</translation>
 <translation id="4295979599050707005">कृपया साइन इन करके यह पुष्टि करें कि आपका खाता <ph name="USER_EMAIL" /> वेबसाइट, ऐप्लिकेशन और Chrome या Google Play के एक्सटेंशन के लिए इस्तेमाल किया जा सकता है. आप यह खाता हटा भी सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -4469,6 +4471,7 @@
 <translation id="4360738659108163902">माउस पर राइट क्लिक करें</translation>
 <translation id="4361745360460842907">टैब के रूप में खोलें</translation>
 <translation id="4362459470237309049">माउस बटन को छोड़ने के लिए, “.” का इस्तेमाल करें</translation>
+<translation id="4362871358537270439">साइड पैनल में अन्य डिवाइसों के टैब दिखाएं</translation>
 <translation id="4363262124589131906">'मेरी ड्राइव' में मौजूद नई फ़ाइलें, इस Chromebook में अपने-आप सिंक होना बंद हो जाएंगी</translation>
 <translation id="4364129298304269786">कॉपीराइट से सुरक्षित कॉन्टेंट दिखाने के लिए साइटें, कॉन्टेंट की सुरक्षा करने वाली सेवा का इस्तेमाल कर सकती हैं</translation>
 <translation id="4364327530094270451">खरबूजा</translation>
@@ -6609,7 +6612,6 @@
 <translation id="6022659036123304283">Chrome को अपने मुताबिक बनाएं</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से वीडियो फ़्रेम खोजें</translation>
 <translation id="6025215716629925253">स्टैक ट्रेस</translation>
-<translation id="6026436621921471553">टैब ग्रुप से फ़ोकस हटाएं</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB डिवाइस कनेक्ट है</translation>
 <translation id="6027143200498653403">अपने ब्राउज़िंग इतिहास के बारे में सवाल पूछने पर, आपको उस पेज पर मौजूद खास जानकारी के बारे में जवाब मिल सकते हैं जिस पर आपने विज़िट किया था</translation>
 <translation id="6027945736510816438">क्या आपका मतलब <ph name="WEBSITE" /> से है?</translation>
@@ -7075,7 +7077,6 @@
 <translation id="6399675241776343019">मंज़ूरी नहीं दी गई</translation>
 <translation id="6399774419735315745">जासूस</translation>
 <translation id="6400360390396538896">हमेशा <ph name="ORIGIN" /> पर</translation>
-<translation id="6400714103322134861">टैब ग्रुप से फ़ोकस हटाएं</translation>
 <translation id="6401118106417399952">आपके डिवाइस का ईआईडी <ph name="EID_NUMBER" /> है और डिवाइस का सीरियल नंबर <ph name="SERIAL_NUMBER" /> है. सेवा चालू करने के लिए, इन नंबरों का इस्तेमाल किया जा सकता है.</translation>
 <translation id="6402042774506839496">इसकी वजह जानने के लिए, ऐप्लिकेशन डेवलपर से संपर्क करें</translation>
 <translation id="6402921224457714577">साइटें, आपके एमआईडीआई डिवाइसों को कंट्रोल और फिर से प्रोग्राम करने की अनुमति मांग सकती हैं</translation>
@@ -8119,6 +8120,7 @@
 <translation id="7188508872042490670">उपयोगकर्ता के डिवाइस पर साइट डेटा</translation>
 <translation id="7188755083797868960">शॉर्टकट का इस्तेमाल करके, रीडिंग मोड को फटाफट खोलें. रीडिंग मोड को टॉगल करने के लिए, Alt + Shift + R दबाएं.</translation>
 <translation id="7189234443051076392">पक्का करें कि आपके डिवाइस पर ज़रूरी जगह मौजूद हो</translation>
+<translation id="7189558282078169397">अन्य डिवाइसों के टैब</translation>
 <translation id="7189965711416741966">फ़िंगरप्रिंट जोड़ा गया.</translation>
 <translation id="7190921792980745354">क्या आपको <ph name="MEMBER_FULL_NAME" /> को ब्लॉक करना है?</translation>
 <translation id="7191063546666816478">कुछ सहायता लिंक <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, और <ph name="NUMBER_OF_OTHER_APPS" /> अन्य ऐप्लिकेशन में अब भी खुलेंगे.</translation>
@@ -10046,7 +10048,6 @@
 <translation id="8652400352452647993">पैक एक्‍सटेंशन गड़बड़ी</translation>
 <translation id="8654151524613148204">फ़ाइल आपके कंप्‍यूटर द्वारा संभाले जाने के लिए बहुत बड़ी है. क्षमा करें.</translation>
 <translation id="8655295600908251630">चैनल</translation>
-<translation id="8656101380279383244">टैब ग्रुप पर फ़ोकस करें</translation>
 <translation id="8656888282555543604">ब्रेल में लॉग इन करना चालू करें</translation>
 <translation id="8657393004602556571">क्या आप फ़ीडबैक (सुझाव, शिकायत या राय) को खारिज करना चाहते हैं?</translation>
 <translation id="8657542881463614516">हाथ के जेस्चर की मदद से, एक पेज से दूसरे पेज पर जाएं</translation>

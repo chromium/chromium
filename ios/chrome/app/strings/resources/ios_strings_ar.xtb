@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">‏يُرجى فتح إعدادات <ph name="BEGIN_BOLD" />التطبيقات التلقائية<ph name="END_BOLD" /> في نظام التشغيل iOS، ثم</translation>
 <translation id="1938871630297275912">{count,plural, =1{تم استلام رابط واحد}zero{تم استلام {count} رابط}two{تم استلام رابطَين ({count})}few{تم استلام {count} روابط}many{تم استلام {count} رابطًا}other{تم استلام {count} رابط}}</translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
+<translation id="1942483019269000450">‏لمواصلة تنفيذ المهمّة، يمكن أن يطلب Gemini من "محفظة Google" ملء معلومات بطاقة الائتمان</translation>
 <translation id="1943478190258551035">القائمة ← الإعدادات</translation>
 <translation id="1944477975050820119">يمكنك الحصول على اقتراحات في الوقت الفعلي تساعدك في العثور على طُرق جديدة للتصفّح باستخدام الذكاء الاصطناعي. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">تسجيل الدخول باستخدام حساب مُدار</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">عنصر جديد</translation>
 <translation id="2049727122989709386">‫<ph name="COUNT" /> حساب يستخدم كلمة المرور نفسها</translation>
 <translation id="205013082884273671">ابحث في أي محتوى يظهر على شاشتك</translation>
+<translation id="2053311407685904414">يجب اختيار عنوان</translation>
 <translation id="2054044186557130763">تسجيل الدخول باستخدام حساب "<ph name="NAME" />" (<ph name="EMAIL" />) الذي تديره مؤسستك</translation>
 <translation id="2059166748188874810">بلدية</translation>
 <translation id="2060638295449304809">‏يتم حفظ هذا العنوان على هذا الجهاز فقط. ولاستخدامه على أجهزتك الأخرى، يمكنك حفظه في حسابك على Google (<ph name="USER_EMAIL" />)</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">الترجمة</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2360196772093551345">طلب موقع إلكتروني متوافق مع الأجهزة الجوَّالة</translation>
+<translation id="2360272811987888433">تسجيل الدخول يدويًا</translation>
 <translation id="2362083820973145409">تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني للمستخدم هو <ph name="USER_EMAIL" />. يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="2367025302166767427">حدثت مشكلة أثناء ملء معلوماتك</translation>
 <translation id="2371084566192454134">علامات التبويب ومجموعات علامات التبويب</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">‏الحفظ في "صور Google"</translation>
 <translation id="3406506285180498376">مشاركة الصفحة…</translation>
 <translation id="340669334496430859">وقت التعديل آخر مرّة</translation>
+<translation id="3407832712016477396">‏بإمكان Gemini استخدام "مدير كلمات المرور في Google" لتسجيل الدخول نيابةً عنك</translation>
 <translation id="3409785640040772790">‏خرائط Google</translation>
 <translation id="3416023309465857378">‫25 تشرين الأول (أكتوبر) 2023</translation>
 <translation id="3419787211763835342">بانتظار مساهمتك في تحسين "الملء التلقائي المحسّن"</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">عدم السماح مطلقًا</translation>
 <translation id="4293154608148215505">هاتفك</translation>
 <translation id="4294506173142861371">تسجيل الدخول بحساب "<ph name="FIRST_NAME" />"؟</translation>
+<translation id="4297031046690565608">الإدخال يدويًا</translation>
+<translation id="4297418774230471285">يجب اختيار المعلومات الشخصية</translation>
 <translation id="4302061870579014542">ضبط الموضع</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="4309403553630140242">يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">‏‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. <ph name="BEGIN_LINK" />مزيد من المعلومات حول البيانات ذات الصلة التي يتم إرسالها إلى Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ما مِن عناصر متاحة للاستيراد</translation>
 <translation id="5316356981864168850">‫<ph name="INDEX" /> من إجمالي <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">يجب تسجيل الدخول إلى <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5318298563956633672">يتم تتبُّع هذا المنتج حاليًا.</translation>
 <translation id="5327248766486351172">الاسم</translation>
@@ -2204,6 +2211,7 @@
 <translation id="7839994177130598711">‏يمكن لأفراد عائلتك حاليًا استخدام اسم المستخدم وكلمة المرور عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">البحث عن النص الذي نسخته</translation>
 <translation id="7841418003178675048">يمكنك اختيار البطاقات التي تظهر لك في صفحة "علامة تبويب جديدة".</translation>
+<translation id="7842369010458597654">ملء معلومات الدفع</translation>
 <translation id="7845466610722898">عرض "قائمة القراءة"</translation>
 <translation id="7846161022626028328">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="784623644169604270">ما من أنشطة حديثة</translation>

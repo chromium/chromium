@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Atidarykite <ph name="BEGIN_BOLD" />numatytųjų programų<ph name="END_BOLD" /> nustatymus sistemoje „iOS“</translation>
 <translation id="1938871630297275912">{count,plural, =1{Nuoroda gauta}one{Gauta {count} nuoroda}few{Gautos {count} nuorodos}many{Gauta {count} nuorodos}other{Gauta {count} nuorodų}}</translation>
 <translation id="1941314575388338491">Dukart palieskite, kad nukopijuotumėte.</translation>
+<translation id="1942483019269000450">Kad galėtų tęsti užduotį, „Gemini“ gali paprašyti „Google Wallet“ užpildyti kredito kortelės informaciją</translation>
 <translation id="1943478190258551035">Meniu → „Nustatymai“</translation>
 <translation id="1944477975050820119">Gaukite pasiūlymų realiuoju laiku, kurie gali padėti rasti naujų būdų naršyti naudojant DI. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Prisijunkite naudodami valdomą paskyrą</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">naujas elementas</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> pask. naudojamas toks pat slaptažodis</translation>
 <translation id="205013082884273671">Ieškokite bet ko, kas rodoma ekrane</translation>
+<translation id="2053311407685904414">Pasirinkite adresą</translation>
 <translation id="2054044186557130763">Prisijunkite kaip <ph name="NAME" /> <ph name="EMAIL" />, kurį valdo jūsų organizacija.</translation>
 <translation id="2059166748188874810">Savivaldybė</translation>
 <translation id="2060638295449304809">Šis adresas išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Versti</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2360196772093551345">Pateikti užklausą dėl svetainės mobiliesiems</translation>
+<translation id="2360272811987888433">Neautomatinis prisijungimas</translation>
 <translation id="2362083820973145409">Prisijungta kaip <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Atidaromi nustatymai.</translation>
 <translation id="2367025302166767427">Kilo problemų pildant informaciją</translation>
 <translation id="2371084566192454134">Skirtukai ir skirtukų grupės</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Išsaugoti „Google“ nuotraukose</translation>
 <translation id="3406506285180498376">Bendrinti puslapį…</translation>
 <translation id="340669334496430859">Paskutinį kartą pakeista</translation>
+<translation id="3407832712016477396">„Gemini“ gali naudoti „Google“ slaptažodžių tvarkyklę, kad prisijungtų už jus</translation>
 <translation id="3409785640040772790">Žemėlapiai</translation>
 <translation id="3416023309465857378">2023 m. spalio 25 d.</translation>
 <translation id="3419787211763835342">Padėkite tobulinti išmanųjį automatinį pildymą</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Niekada neleisti</translation>
 <translation id="4293154608148215505">jūsų telefonas</translation>
 <translation id="4294506173142861371">Prisijungti kaip <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Įvesti neautomatiškai</translation>
+<translation id="4297418774230471285">Pasirinkite asmens informaciją</translation>
 <translation id="4302061870579014542">Nustatyti poziciją</translation>
 <translation id="4304713468139749426">Slaptažodžių tvarkytuvė</translation>
 <translation id="4309403553630140242">Norėdami gauti daugiau informacijos, dukart palieskite.</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">„Gemini“ yra DI ir gali klysti. <ph name="BEGIN_LINK" />Daugiau apie atitinkamus duomenis, siunčiamus „Google“<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nėra nieko, ką būtų galima importuoti</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> iš <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Prisijungimas prie „<ph name="SITE_DOMAIN" />“</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5318298563956633672">Jau stebite šį produktą.</translation>
 <translation id="5327248766486351172">Pavadinimas</translation>
@@ -2206,6 +2213,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7839994177130598711">Šeimos grupės nariai dabar gali naudoti jūsų naudotojo vardą ir slaptažodį, kai naudoja „Google“ slaptažodžių tvarkyklę, kad prisijungtų prie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Ieškoti nukopijuoto teksto</translation>
 <translation id="7841418003178675048">Pasirinkite, kokias korteles norite matyti naujo skirtuko puslapyje.</translation>
+<translation id="7842369010458597654">Pildoma mokėjimo informacija</translation>
 <translation id="7845466610722898">Rodyti skaitymo sąrašą</translation>
 <translation id="7846161022626028328">Įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="784623644169604270">Nėra naujausios veiklos</translation>

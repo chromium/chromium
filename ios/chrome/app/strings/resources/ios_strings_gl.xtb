@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Abre a opción de configuración <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (Aplicacións predeterminadas) en iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Recibiuse a ligazón}other{Recibíronse {count} ligazóns}}</translation>
 <translation id="1941314575388338491">Toca dúas veces para copiar.</translation>
+<translation id="1942483019269000450">Para seguir coa tarefa, Gemini pode pedirlle a Google Wallet que complete a información da túa tarxeta de crédito</translation>
 <translation id="1943478190258551035">Menú → Configuración</translation>
 <translation id="1944477975050820119">Recibe suxestións en tempo real que che poden axudar a atopar novas formas de navegar coa IA. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Iniciar sesión cunha conta xestionada</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">novo elemento</translation>
 <translation id="2049727122989709386">Hai <ph name="COUNT" /> contas nas que se usa o mesmo contrasinal</translation>
 <translation id="205013082884273671">Busca calquera cousa da pantalla</translation>
+<translation id="2053311407685904414">Selecciona un enderezo</translation>
 <translation id="2054044186557130763">Iniciar sesión como <ph name="NAME" /> (<ph name="EMAIL" />), perfil xestionado pola túa organización.</translation>
 <translation id="2059166748188874810">Concello</translation>
 <translation id="2060638295449304809">Este enderezo está gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google (<ph name="USER_EMAIL" />)</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Traducir</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Solicitar sitio para móbiles</translation>
+<translation id="2360272811987888433">Iniciar sesión manualmente</translation>
 <translation id="2362083820973145409">Iniciaches sesión como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre a configuración.</translation>
 <translation id="2367025302166767427">Produciuse un problema ao completar a túa información</translation>
 <translation id="2371084566192454134">Pestanas e grupos de pestanas</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Gardar en Google Fotos</translation>
 <translation id="3406506285180498376">Compartir páxina…</translation>
 <translation id="340669334496430859">Última modificación</translation>
+<translation id="3407832712016477396">Gemini pode usar o xestor de contrasinais de Google para iniciar sesión por ti</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 de outubro de 2023</translation>
 <translation id="3419787211763835342">Axuda a mellorar a función de autocompletar mellorada</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Non permitir nunca</translation>
 <translation id="4293154608148215505">o teu teléfono</translation>
 <translation id="4294506173142861371">Queres iniciar sesión como <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Poñer manualmente</translation>
+<translation id="4297418774230471285">Selecciona a información persoal</translation>
 <translation id="4302061870579014542">Definir posición</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="4309403553630140242">Toca dúas veces para obter máis información</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini é unha IA e pode cometer erros. <ph name="BEGIN_LINK" />Máis información sobre os datos relevantes que se envían a Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Non hai nada para importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Inicia sesión en <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318298563956633672">Xa estás facendo un seguimento deste produto.</translation>
 <translation id="5327248766486351172">Nome</translation>
@@ -2206,6 +2213,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7839994177130598711">Os membros da túa familia agora poden usar o teu nome de usuario e contrasinal para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> se usan o xestor de contrasinais de Google.</translation>
 <translation id="7841180087127694526">Buscar texto copiado</translation>
 <translation id="7841418003178675048">Selecciona que cartas queres que se mostren na páxina Nova pestana.</translation>
+<translation id="7842369010458597654">Completando información de pago</translation>
 <translation id="7845466610722898">Mostrar Lista de lectura</translation>
 <translation id="7846161022626028328">Produciuse un erro. Téntao de novo.</translation>
 <translation id="784623644169604270">Ningunha actividade recente</translation>

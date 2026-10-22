@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">ඔබ පිවිසීමට උත්සාහ කළ වෙබ් අඩවියට ප්‍රහාරකයින් විසින් මෘදුකාංග ස්ථාපනය කිරීමට හෝ ඔබේ මුරපද, දුරකථනය, හෝ ණය කාඩ්පත් අංක වැනි දේවල් හෙළි කර ගැනීමට ඔබව රැවටිය හැක. සුරක්ෂිතව ආපසු යාමට Chrome දැඩි ලෙස නිර්දේශ කරයි. <ph name="BEGIN_LEARN_MORE_LINK" />මෙම අනතුරු ඇඟවීම ගැන තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Google Wallet වෙත ID කාඩ්පත ආරක්ෂිතව එක් කරන්න</translation>
 <translation id="1398743098754840707">පටිත්ත විවෘතව තිබුණත්, ඔබ මෙහි එක් කරන වෙබ් අඩවි ප්‍රතිචාර සඳහා යොමු කරනු නොලැබේ. ඔබ එක් කරන අඩවියක් දැනට පොටක භාවිත කරන්නේ නම්, පොට එය යොමු කිරීම නැවැත්වීමට මිනිත්තු 30ක් දක්වා ගත විය හැක.</translation>
+<translation id="1403359480263156644">කාඩ්පත් හිමියාගේ නම යාවත්කාලීන කරන ලදි</translation>
 <translation id="1405567553485452995">ලා කොළ</translation>
 <translation id="1406370515365284486">ඔබේ ගෙවීමේ ක්‍රම තවමත් සුරැකෙනු ඇත</translation>
 <translation id="1406500794671479665">තහවුරු කෙරෙමින්...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">නව කාඩ්පත ස්කෑන් කරන්න</translation>
 <translation id="2501270939904835585">ලේබල් (සැටින්)</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
+<translation id="250307989715832083">අත්සන එක් කරන්න</translation>
 <translation id="250346157641628208">කඩදාසි (ඉන්ක්ජෙට්)</translation>
 <translation id="2505063700931618106">කාඩ්පත් තතු සුරකින ලදි</translation>
 <translation id="2505268675989099013">ගිණුම ආරක්‍ෂා කරන්න</translation>
@@ -1596,7 +1598,6 @@
 <translation id="3693516565203081475">ගෙවීමේ ක්‍රමය තෝරා ගන්න</translation>
 <translation id="3698353241727597930">ඔබේ පරිපාලකයා ඔබේ ව්‍යවසාය කළමනා කරන <ph name="CLOUD_STORAGE" /> ආචයනය තුළ <ph name="FILES" /> සුරැකීමට වින්‍යාස කර ඇත. මෙම ගොනු නිරීක්‍ෂණ කිරීම, විගණන කිරීම, සහ ඔබ මේවා මකන විට රඳවා ගැනීම සිදු වේවි.</translation>
 <translation id="3698629142018988477">අඩවි තනන්න බොත්තම, Google අඩවි තුළ ඉක්මනින් නව අඩවියක් තැනීමට සක්‍රිය කරන්න</translation>
-<translation id="3698708128812719147">වැඩිදුර තතු සොයා ගැනීමට සහ පිරවීමට වෙබයේ ඕනෑම තැනක Ctrl දෙවරක් ඔබන්න</translation>
 <translation id="3700094625653511150">පසුව ගෙවීමේ විකල්ප සැඟවීමට, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> වෙත යන්න</translation>
 <translation id="3700966190175650601">ඔබ මුරපද පිරවීම සඳහා ඔබේ ඇඟිලි සලකුණ භාවිත කරයි</translation>
 <translation id="3701427423622901115">යළි සැකසීම පිළිගැනිණි.</translation>
@@ -1655,7 +1656,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> හට ස්ථාන ප්‍රවේශය ආසන්න සිට නිවැරදි දක්වා වෙනස් කිරීමට අවශ්‍යයි</translation>
 <translation id="3772211998634047851">කඩදාසි (බැඳුණු)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep හි නව සටහනක් ඉක්මනින් තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
-<translation id="3778045607993018262">Pix ගිණුම <ph name="ACCOUNT_EMAIL" /> වෙත සම්බන්ධ කරනු ලැබේ. Pix කේත හඳුනාගැනීම ක්‍රියාවිරහිත කිරීමට, <ph name="BEGIN_LINK1" />Chrome සැකසීම්<ph name="END_LINK1" /> වෙත යන්න</translation>
 <translation id="3780694243617746492">නිමැවුම් කූඩය</translation>
 <translation id="3783418713923659662">මාස්ටර්කාඩ්</translation>
 <translation id="3784372983762739446">බ්ලූටූත් උපාංග</translation>
@@ -1901,7 +1901,6 @@
 <translation id="4185037616931963178">සහන අංකය ආරක්ෂිතව යාවත්කාලීන කරන්න</translation>
 <translation id="4186035307311647330">මිල හඹා නොයන්න</translation>
 <translation id="4191334393248735295">දිග</translation>
-<translation id="4192770747482479191">තවත් තතු සොයා ගැනීමට සහ පිරවීමට වෙබයේ ඕනෑම තැනක ⌘ දෙවරක් ඔබන්න</translation>
 <translation id="4195459680867822611">Chrome ඉඟි බලන්න බොත්තම, Chrome විශේෂාංග පිළිබඳව දැන ගැනීමට සක්‍රිය කරන්න</translation>
 <translation id="4195643157523330669">නව ටැබයක විවෘත කරන්න</translation>
 <translation id="4196861286325780578">&amp;ගෙන යාම යළි කරන්න</translation>
@@ -1919,6 +1918,7 @@
 <translation id="4218327733815631046">ආසන්න ස්ථානය තබා ගන්න</translation>
 <translation id="4219596572397833317">ඔබට වඩා හොඳින් සාප්පු යෑමට උදවු කිරීමට මිල ඉතිහාසය සහ තවත් දේ බලන්න.</translation>
 <translation id="4220128509585149162">බිඳවැටීම්</translation>
+<translation id="4220745762102459826">සහ තවත්</translation>
 <translation id="4221630205957821124">&lt;h4&gt;පියවර 1: ද්වාරයට පුරන්න&lt;/h4&gt;
     &lt;p&gt;ආපන ශාලා හෝ ගුවන් තොටුපළවල ඇති Wi-Fi ජාලවලට ඔබ පුරනය වීම අවශ්‍ය වේ. පුරනය වීමේ පිටුව බැලීමට, &lt;code&gt;http://&lt;/code&gt; භාවිතා කරන පිටුවකට පිවිසෙන්න.&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@
 <translation id="483241715238664915">අනතුරු ඇඟවීම් ක්‍රියාත්මක කරන්න</translation>
 <translation id="4833567658337394628">ඇලවීම නිර්දේශ නොකරයි</translation>
 <translation id="4840250757394056958">ඔබගේ Chrome ඉතිහාසය බලන්න</translation>
+<translation id="4842085418602350953">මීළඟ වතාවේ යෙදුම් මාරු නොකර Pix සමග ගෙවන්න</translation>
 <translation id="4842365697443353018">පසුව ගෙවීමට පෝරමය හිස් කරන්න</translation>
 <translation id="484462545196658690">ස්වයං</translation>
 <translation id="4844937814014739139">බෙදා ගත් පටිති අනුචලනය කිරීම සහ විශාලනය කිරීම</translation>
@@ -2468,6 +2469,7 @@
 <translation id="5115232566827194440">සීමා කළ කළමනාකරණය කළ ආරාධිත සැසි ප්‍රතික්ෂේප කිරීම</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">සංවේදී තතු ස්වයංව පිරවීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
+<translation id="5121592697493894155">පැති පැනලයේ Google සෙවීම</translation>
 <translation id="5122786942953798871">ලියුම් කවරය (කපු)</translation>
 <translation id="5123063207673082822">සති අන්තය</translation>
 <translation id="5124797626438336458">දැන් මිලදී ගන්න-පසුව ගෙවන්න දෝෂ තිරය අඩක් උසින් විවෘත විය.</translation>
@@ -2880,6 +2882,7 @@
 <translation id="5794065675298686371">මිල නිරීක්ෂණ දැනුම්දීම් ක්‍රියාත්මක කරන්න</translation>
 <translation id="5794093550048860249">නිරීක්ෂක අංකය</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />වෙනත් Google නිෂ්පාදනවල ස්මාර්ට් විශේෂාංග<ph name="LINK_END" />” ක්‍රියාත්මක කරන්න</translation>
+<translation id="5797916798049571144">එය ඔබේ කාඩ්පත් තතු සමග සුරකින ලද බැවින් එය ගෙවා පිටවීමේ දී ස්වයංක්‍රීයව පුරවනු ලැබේ</translation>
 <translation id="5797984091151707075">පරිපාලක ප්‍රතිපත්තිය මගින් අවහිර කර ඇත</translation>
 <translation id="5804241973901381774">අවසර</translation>
 <translation id="5806871454498484178">අනුචලනය සහ විශාලනය අවහිර කර ඇත</translation>
@@ -4298,6 +4301,7 @@
 <translation id="8208629719488976364">ඔබ මුද්‍රණ කරන පිටුවල අන්තර්ගතය සහ ඔබේ මුද්‍රණ යන්ත්‍රයේ තොරතුරු විශ්ලේෂණය සඳහා Google Cloud හෝ තෙවන පාර්ශ්ව වෙත යවනු ලැබේ. උදාහරණයක් ලෙස, එය සංවේදී දත්ත සඳහා ස්කෑන් කළ හැකි අතර සමාගම් ප්‍රතිපත්ති මත පදනම්ව ගබඩා කර ඔබේ පරිපාලකයාට දෘශ්‍යමාන විය හැක.</translation>
 <translation id="8210490490377416373">ප්‍රතිපත්ති නම තෝරන්න</translation>
 <translation id="8211406090763984747">සම්බන්ධතාවය ආරක්ෂිත වේ</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ තවත් 1 මූලාශ්‍රයක්}one{+ තවත් මූලාශ්‍ර #ක්}other{+ තවත් මූලාශ්‍ර #ක්}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">අඟ 14 x 18</translation>
 <translation id="8218327578424803826">පැවරූ ස්ථානය:</translation>

@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Open <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> settings in iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link received}other{{count} links received}}</translation>
 <translation id="1941314575388338491">Double tap to copy.</translation>
+<translation id="1942483019269000450">To continue the task, Gemini can ask Google Wallet to fill in your credit card info</translation>
 <translation id="1943478190258551035">Menu → Settings</translation>
 <translation id="1944477975050820119">Get real-time suggestions that can help you find new ways to browse with AI. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Sign in with managed account</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">new item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> accounts using same password</translation>
 <translation id="205013082884273671">Search anything on your screen</translation>
+<translation id="2053311407685904414">Select address</translation>
 <translation id="2054044186557130763">Sign in as <ph name="NAME" /> <ph name="EMAIL" />, managed by your organisation.</translation>
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2060638295449304809">This address is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Translate</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2360196772093551345">Request Mobile Site</translation>
+<translation id="2360272811987888433">Manual sign-in</translation>
 <translation id="2362083820973145409">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="2367025302166767427">Trouble filling in your info</translation>
 <translation id="2371084566192454134">Tabs and tab groups</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Save in Google Photos</translation>
 <translation id="3406506285180498376">Share page…</translation>
 <translation id="340669334496430859">Last modified</translation>
+<translation id="3407832712016477396">Gemini can use Google Password Manager to sign in for you</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oct 2023</translation>
 <translation id="3419787211763835342">Help improve enhanced autofill</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Never allow</translation>
 <translation id="4293154608148215505">your phone</translation>
 <translation id="4294506173142861371">Sign in as <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Manually enter</translation>
+<translation id="4297418774230471285">Select personal info</translation>
 <translation id="4302061870579014542">Set position</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4309403553630140242">Double-tap for more information</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini is AI and can make mistakes. <ph name="BEGIN_LINK" />More about relevant data sent to Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nothing to import</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> of <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Sign in to <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5318298563956633672">You're already tracking this product.</translation>
 <translation id="5327248766486351172">Name</translation>
@@ -2206,6 +2213,7 @@ You can restart at any time.</translation>
 <translation id="7839994177130598711">Your family members can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Search for copied text</translation>
 <translation id="7841418003178675048">Choose what cards you see on your new tab page.</translation>
+<translation id="7842369010458597654">Filling payment info</translation>
 <translation id="7845466610722898">Show reading list</translation>
 <translation id="7846161022626028328">There was an error. Try again.</translation>
 <translation id="784623644169604270">No recent activity</translation>

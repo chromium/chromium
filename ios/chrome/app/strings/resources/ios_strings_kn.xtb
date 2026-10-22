@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">iOS ನಲ್ಲಿ <ph name="BEGIN_BOLD" />ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳ<ph name="END_BOLD" /> ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1938871630297275912">{count,plural, =1{ಲಿಂಕ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ}one{{count} ಲಿಂಕ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ}other{{count} ಲಿಂಕ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="1941314575388338491">ನಕಲಿಸಲು ಡಬಲ್‌ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="1942483019269000450">ಕಾರ್ಯವನ್ನು ಮುಂದುವರಿಸಲು, Gemini ನಿಮ್ಮ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿ ಮಾಡಲು Google Wallet ಅನ್ನು ಕೇಳಬಹುದು</translation>
 <translation id="1943478190258551035">ಮೆನು → ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1944477975050820119">AI ಮೂಲಕ ಬ್ರೌಸ್ ಮಾಡುವ ಹೊಸ ಮಾರ್ಗಗಳನ್ನು ಹುಡುಕಲು ನಿಮಗೆ ನೆರವಾಗುವ ನೈಜ-ಸಮಯದ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಿರಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">ನಿರ್ವಹಿಸಲಾದ ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">ಹೊಸ ಐಟಂ</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> ಖಾತೆಗಳು ಒಂದೇ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸುತ್ತಿವೆ</translation>
 <translation id="205013082884273671">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಮೇಲೆ ಏನನ್ನಾದರೂ ಹುಡುಕಿ</translation>
+<translation id="2053311407685904414">ವಿಳಾಸವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2054044186557130763">ನಿಮ್ಮ ಸಂಸ್ಥೆಯಿಂದ ನಿರ್ವಹಿಸಲ್ಪಡುವ <ph name="NAME" /> <ph name="EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="2059166748188874810">ಪುರಸಭೆ</translation>
 <translation id="2060638295449304809">ಈ ವಿಳಾಸವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಇದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Translate</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2360196772093551345">ಮೊಬೈಲ್ ಸೈಟ್‌ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
+<translation id="2360272811987888433">ಹಸ್ತಚಾಲಿತ ಸೈನ್ ಇನ್</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. <ph name="USER_EMAIL" />. ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="2367025302166767427">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿ ಮಾಡುವಾಗ ಸಮಸ್ಯೆ ಎದುರಾಗಿದೆ</translation>
 <translation id="2371084566192454134">ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Google Photos ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3406506285180498376">ಪುಟವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ…</translation>
 <translation id="340669334496430859">ಕೊನೆಯದಾಗಿ ಮಾರ್ಪಡಿಸಿರುವುದು</translation>
+<translation id="3407832712016477396">ನಿಮ್ಮ ಪರವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲು Gemini, Google Password Manager ಅನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ಅಕ್ಟೋಬರ್ 2023</translation>
 <translation id="3419787211763835342">ವರ್ಧಿಸಿದ ಆಟೋಫಿಲ್ ಅನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">ಎಂದಿಗೂ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="4293154608148215505">ನಿಮ್ಮ ಫೋನ್</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕೆ?</translation>
+<translation id="4297031046690565608">ಹಸ್ತಚಾಲಿತವಾಗಿ ನಮೂದಿಸಿ</translation>
+<translation id="4297418774230471285">ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4302061870579014542">ಸ್ಥಾನವನ್ನು ಸೆಟ್‌ ಮಾಡಿ</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="4309403553630140242">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini ಎಂಬುದು AI ಆಗಿದ್ದು, ತಪ್ಪುಗಳನ್ನು ಮಾಡಬಹುದು. <ph name="BEGIN_LINK" />Google ಗೆ ಕಳುಹಿಸಲಾದ ಸಂಬಂಧಿತ ಡೇಟಾ ಕುರಿತು ಇನ್ನಷ್ಟು ಮಾಹಿತಿ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲು ಏನೂ ಇಲ್ಲ</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ರಲ್ಲಿ <ph name="INDEX" /></translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5318298563956633672">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಈಗಾಗಲೇ ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ.</translation>
 <translation id="5327248766486351172">ಹೆಸರು</translation>
@@ -2206,6 +2213,7 @@
 <translation id="7839994177130598711">ನಿಮ್ಮ ಕುಟುಂಬದ ಸದಸ್ಯರು <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="7841180087127694526">ಕಾಪಿ ಮಾಡಿದ ಪಠ್ಯವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7841418003178675048">ನಿಮ್ಮ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದಲ್ಲಿ ನೀವು ಯಾವ ಕಾರ್ಡ್‌ಗಳನ್ನು ನೋಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ಆರಿಸಿ.</translation>
+<translation id="7842369010458597654">ಪಾವತಿ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7845466610722898">ಓದುವ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7846161022626028328">ದೋಷ ಎದುರಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="784623644169604270">ಯಾವುದೇ ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ ಇಲ್ಲ</translation>

@@ -239,6 +239,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1393071644879491291">Napadalci vas lahko na spletnem mestu, ki ste ga poskušali obiskati, zavedejo, da namestite programsko opremo ali razkrijete stvari, kot so gesla, telefonske številke ali številke kreditnih kartic. Chrome močno priporoča, da se vrnete na varno. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Varno dodajte osebno izkaznico v Google Denarnico</translation>
 <translation id="1398743098754840707">Tukaj dodana spletna mesta ne bodo upoštevana pri odgovorih, tudi če je zavihek odprt. Če se spletno mesto, ki ga dodate, trenutno uporablja v niti, lahko traja do 30 minut, da se nit neha sklicevati nanj.</translation>
+<translation id="1403359480263156644">Ime imetnika kartice je posodobljeno</translation>
 <translation id="1405567553485452995">Svetlo zelena</translation>
 <translation id="1406370515365284486">Plačilna sredstva bodo še vedno shranjena</translation>
 <translation id="1406500794671479665">Preverjanje ...</translation>
@@ -907,6 +908,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2498091847651709837">Optično branje nove kartice</translation>
 <translation id="2501270939904835585">Labels (Satin)</translation>
 <translation id="2501278716633472235">Nazaj</translation>
+<translation id="250307989715832083">Dodaj podpis</translation>
 <translation id="250346157641628208">Paper (Inkjet)</translation>
 <translation id="2505063700931618106">Podatki o kartici so shranjeni</translation>
 <translation id="2505268675989099013">Zaščita računa</translation>
@@ -1596,7 +1598,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3693516565203081475">Izberite plačilno sredstvo</translation>
 <translation id="3698353241727597930">Vaš skrbnik je konfiguriral shranjevanje <ph name="FILES" /> v shrambo <ph name="CLOUD_STORAGE" />, ki jo upravlja podjetje. Te datoteke se lahko spremljajo, revidirajo in obdržijo, ko jih izbrišete.</translation>
 <translation id="3698629142018988477">Gumb za ustvarjanje spletnih mest, aktivirajte, če želite hitro ustvariti novo spletno mesto v Google Spletnih mestih</translation>
-<translation id="3698708128812719147">Kjer koli v spletu dvakrat pritisnite Ctrl za iskanje in izpolnjevanje dodatnih podatkov</translation>
 <translation id="3700094625653511150">Če želite skriti možnosti poznejšega plačila, odprite <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Prstni odtis uporabljate za izpolnjevanje gesel</translation>
 <translation id="3701427423622901115">Ponastavitev je potrjena.</translation>
@@ -1655,7 +1656,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3769584711865378220"><ph name="URL" /> želi spremeniti dostop do lokacije s približne na natančno</translation>
 <translation id="3772211998634047851">Paper (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti nov zapisek v Googlu Keep</translation>
-<translation id="3778045607993018262">Račun Pix bo povezan z računom <ph name="ACCOUNT_EMAIL" />. Zaznavanje kode Pix lahko izklopite v <ph name="BEGIN_LINK1" />Chromovih nastavitvah<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Izhodni koš</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Naprave Bluetooth</translation>
@@ -1901,7 +1901,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4185037616931963178">Varno posodobite številko za pritožbo</translation>
 <translation id="4186035307311647330">Prekliči spremljanje cene</translation>
 <translation id="4191334393248735295">Dolžina</translation>
-<translation id="4192770747482479191">Kjer koli v spletu dvakrat pritisnite ⌘ za iskanje in izpolnjevanje dodatnih podatkov</translation>
 <translation id="4195459680867822611">Gumb za ogled nasvetov za Chrome, aktivirajte, če želite izvedeti več o funkcijah Chroma</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4196861286325780578">&amp;Uveljavi premik</translation>
@@ -1919,6 +1918,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4218327733815631046">Ohrani približno lokacijo</translation>
 <translation id="4219596572397833317">Oglejte si zgodovino cen in drugo za pametnejše nakupovanje.</translation>
 <translation id="4220128509585149162">Zrušitve</translation>
+<translation id="4220745762102459826">in več</translation>
 <translation id="4221630205957821124">&lt;h4&gt;1. korak: prijavite se v portal&lt;/h4&gt;
     &lt;p&gt;V omrežja Wi-Fi na mestih, kot so kavarne ali letališča, se morate prijaviti. Če želite prikazati stran za prijavo, obiščite stran, ki uporablja &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="483241715238664915">Vklopi opozorila</translation>
 <translation id="4833567658337394628">Lepljenje ni priporočljivo</translation>
 <translation id="4840250757394056958">Ogled zgodovine v Chromu</translation>
+<translation id="4842085418602350953">Naslednjič plačajte s storitvijo Pix brez preklapljanja aplikacij</translation>
 <translation id="4842365697443353018">Počistite obrazec, če želite uporabiti možnost poznejšega plačila</translation>
 <translation id="484462545196658690">Samodejno</translation>
 <translation id="4844937814014739139">Pomikanje in povečava/pomanjšava deljenih zavihkov</translation>
@@ -2468,6 +2469,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5115232566827194440">Preglasitev za omejeno upravljano gostujočo sejo</translation>
 <translation id="5115563688576182185">(64-bitno)</translation>
 <translation id="5116015291385561204">Za samodejno izpolnjevanje občutljivih podatkov potrdite, da ste to vi</translation>
+<translation id="5121592697493894155">Iskanje Google v stranskem podoknu</translation>
 <translation id="5122786942953798871">Envelope (Cotton)</translation>
 <translation id="5123063207673082822">Konec tedna</translation>
 <translation id="5124797626438336458">Zaslon z napako za »Kupi zdaj, plačaj pozneje« je odprt pri polovični višini.</translation>
@@ -2880,6 +2882,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5794065675298686371">Vklop obvestil za spremljanje cen</translation>
 <translation id="5794093550048860249">Številka za sledenje</translation>
 <translation id="5796050750059455142">Vklopite »<ph name="BEGIN_LINK" />Pametne funkcije v drugih Googlovih izdelkih<ph name="LINK_END" />«</translation>
+<translation id="5797916798049571144">Shranjeno je s podatki o kartici, da bo samodejno izpolnjeno ob zaključku nakupa</translation>
 <translation id="5797984091151707075">Blokiral skrbniški pravilnik</translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="5806871454498484178">Pomikanje in povečava/pomanjšava sta blokirana</translation>
@@ -4299,6 +4302,7 @@ Dodatne podrobnosti:
 <translation id="8208629719488976364">Vsebina natisnjenih strani in podatki o tiskalniku so poslani v Google Cloud ali drugim ponudnikom v analizo. Lahko je na primer pregledana glede tega, ali vsebuje občutljive podatke, in shranjena glede na pravilnike podjetja ter vidna vašemu skrbniku.</translation>
 <translation id="8210490490377416373">Izberite ime pravilnika</translation>
 <translation id="8211406090763984747">Povezava je varna</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{in še 1 drugi vir}one{in še # drugi vir}two{in še # druga vira}few{in še # drugi viri}other{in še # drugih virov}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 palcev</translation>
 <translation id="8218327578424803826">Dodeljena lokacija:</translation>

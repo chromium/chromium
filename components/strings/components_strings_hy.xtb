@@ -1598,7 +1598,6 @@
 <translation id="3693516565203081475">Ընտրեք վճարման եղանակը</translation>
 <translation id="3698353241727597930">Ձեր ադմինիստրատորն այնպես է կարգավորել, որ <ph name="FILES" /> պահվեն ձեր կազմակերպության կողմից կառավարվող տարածքում <ph name="CLOUD_STORAGE" />։ Այս ֆայլերը կարող են դիտվել, ստուգվել և պահպանվել, երբ ջնջեք դրանք։</translation>
 <translation id="3698629142018988477">«Ստեղծել կայք» կոճակ․ ակտիվացրեք՝ Google Կայքերում հեշտությամբ կայք ստեղծելու համար</translation>
-<translation id="3698708128812719147">Համացանցում ցանկացած տեղ երկու անգամ սեղմեք Ctrl ստեղնը՝ ավելի շատ տեղեկություններ գտնելու և լրացնելու համար</translation>
 <translation id="3700094625653511150">Տարաժամկետ վճարման տարբերակները թաքցնելու համար անցեք <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Դուք օգտագործում եք մատնահետքը գաղտնաբառերի լրացման համար</translation>
 <translation id="3701427423622901115">Վերակայումը հաստատված է։</translation>
@@ -1657,7 +1656,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> կայքն ուզում է տեղորոշման թույլտվությունը մոտավորից փոխել ճշգրիտի</translation>
 <translation id="3772211998634047851">Թուղթ (բոնդ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Keep-ում արագ նշում ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
-<translation id="3778045607993018262">Pix հաշիվը կկապվի <ph name="ACCOUNT_EMAIL" /> հաշվի հետ։ Pix կոդի հայտնաբերումն անջատելու համար անցեք <ph name="BEGIN_LINK1" />Chrome-ի կարգավորումներ<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Արտածման արկղ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth սարքեր</translation>
@@ -1901,7 +1899,6 @@
 <translation id="4185037616931963178">Ապահով կերպով թարմացրեք Redress Number-ը</translation>
 <translation id="4186035307311647330">Այլևս չհետագծել գինը</translation>
 <translation id="4191334393248735295">Երկարություն</translation>
-<translation id="4192770747482479191">Համացանցում ցանկացած տեղ երկու անգամ սեղմեք ⌘ ստեղնը՝ ավելի շատ տեղեկություններ գտնելու և լրացնելու համար</translation>
 <translation id="4195459680867822611">«Տեսնել Chrome-ին առնչվող խորհուրդներ» կոճակ․ ակտիվացրեք՝ Chrome-ի գործառույթների մասին տեղեկանալու համար</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4196861286325780578">&amp;Վերարկել տեղափոխումը</translation>
@@ -2295,6 +2292,7 @@
 <translation id="483241715238664915">Միացնել զգուշացումները</translation>
 <translation id="4833567658337394628">Խորհուրդ չի տրվում տեղադրել</translation>
 <translation id="4840250757394056958">Դիտել Chrome-ի պատմությունը</translation>
+<translation id="4842085418602350953">Հաջորդ անգամ վճարեք Pix-ով՝ առանց մի հավելվածից մյուսն անցնելու</translation>
 <translation id="4842365697443353018">Մաքրեք ձևը՝ ապառիկ գնման տարբերակն օգտագործելու համար</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="4844937814014739139">Ոլորել և խոշորացնել ընդհանուր ներդիրները</translation>
@@ -2470,6 +2468,7 @@
 <translation id="5115232566827194440">Հյուրի կառավարվող աշխատաշրջան սահմանափակ հասանելիությամբ (փոխարինում)</translation>
 <translation id="5115563688576182185">(64 բիթանոց)</translation>
 <translation id="5116015291385561204">Հաստատեք ձեր ինքնությունը՝ զգայուն տեղեկություններն ավտոմատ լրացնելու համար</translation>
+<translation id="5121592697493894155">Google Որոնումը կողային վահանակում</translation>
 <translation id="5122786942953798871">Ծրար (բամբակյա)</translation>
 <translation id="5123063207673082822">Հանգստյան օրեր</translation>
 <translation id="5124797626438336458">Ապառիկ գնման սխալի էկրանը բացված է կիսով չափ։</translation>
@@ -4301,6 +4300,7 @@
 <translation id="8208629719488976364">Ձեր տպած էջերի բովանդակությունը և ձեր տպիչի մասին տեղեկությունները վերլուծության նպատակով ուղարկվում են Google Cloud կամ երրորդ կողմերի։ Օրինակ՝ դրանցում կարող է ստուգվել զգայուն տվյալների առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն ու տեսանելի լինել ձեր ադմինիստրատորին։</translation>
 <translation id="8210490490377416373">Ընտրեք կանոնի անվանում</translation>
 <translation id="8211406090763984747">Կապն անվտանգ է</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{ու ևս 1 աղբյուր}one{ու ևս # աղբյուր}other{ու ևս # աղբյուր}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 դյույմ</translation>
 <translation id="8218327578424803826">Նշանակված տեղադրություն՝</translation>

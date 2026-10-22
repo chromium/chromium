@@ -3648,6 +3648,8 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, menu aksesibilitas me
 <translation id="3146711617256415776">Larang suara text-to-speech enhanced network saat menggunakan Klik untuk Diucapkan</translation>
 <translation id="315013437951136266">Aktifkan fitur <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="3150351525324499342">Jangan tampilkan ikon <ph name="PRODUCT_NAME" /> di toolbar secara default, tetapi izinkan pengguna memilih</translation>
+<translation id="3151501327418961907">Jika kebijakan ini disetel ke 0 atau tidak disetel, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> dan <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> hanya akan diterapkan pada cakupan pengguna bagi pengguna terafiliasi di browser terkelola.
+Jika kebijakan ini disetel ke 1, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> dan <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> akan diterapkan pada cakupan pengguna, meskipun pengguna tersebut tidak terafiliasi.</translation>
 <translation id="3152135410085709340">Mengizinkan akses file lokal ke URL file:// di situs ini di Penampil PDF</translation>
 <translation id="3152425128389603870">Membuat Desktop Terpadu tersedia dan aktif secara default</translation>
 <translation id="3159375329008977062">Pengguna diaktifkan untuk mengekspor/mengimpor container Crostini melalui UI</translation>
@@ -4495,6 +4497,21 @@ Transfer data dengan Takeout juga harus diaktifkan agar aplikasi Transfer konten
 <translation id="370314752761795411">Mulai <ph name="PRODUCT_NAME" /> dengan <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Tangguhkan</translation>
 <translation id="3712861436661566358">Menerapkan pemisahan profil</translation>
+<translation id="3715589988915487768">Mengonfigurasi daftar Domain Penyediaan (PvD) yang akan digunakan <ph name="PRODUCT_NAME" /> untuk mengambil konfigurasi proxy secara dinamis.
+
+Kebijakan ini memungkinkan penentuan daftar nama domain atau URI resource yang mewakili Domain Penyediaan sebagaimana ditentukan dalam RFC 8801 ("Discovering Provisioning Domain Names and Data"). Untuk setiap PvD, browser me-resolve konfigurasi JSON yang sesuai dengan membuat permintaan HTTPS ke jalur endpoint yang sudah dikenal: "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd".
+
+Setiap entri dalam daftar ini menentukan:
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: ID Domain Penyediaan (nama domain).
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: Konfigurasi autentikasi opsional. Jika tidak dikonfigurasi atau disetel ke "none", tidak ada autentikasi yang dilakukan. Jika disetel ke "profile_bearer_token", browser akan mengambil token akses OAuth2 dengan cakupan yang diberikan untuk akun utama yang login dan melampirkannya di header "Authorization" sebagai token "Bearer".
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: Daftar opsional header HTTP kustom yang akan disertakan saat membuat kueri endpoint PvD. Nilai dinamis dapat dimasukkan, seperti "profile_id" (yang mewakili ID unik dan stabil dari profil browser di perangkat, yang memungkinkan penargetan konfigurasi per profil) atau "accept_language" (yang mewakili bahasa pilihan browser).
+
+Konfigurasi yang diambil diuraikan sesuai dengan skema RFC 8801. Hanya aturan pemilihan rute dan proxy terkait dengan konfigurasi proxy dari payload JSON PvD yang diterapkan. Jika kebijakan ini tidak disetel, tidak ada Domain Penyediaan yang akan dibuat kueri atau digunakan untuk mengambil konfigurasi proxy.
+
+Kebijakan ini hanya dapat ditetapkan di tingkat pengguna jika pengguna tersebut berafiliasi dengan browser, jika browser tidak dikelola, atau jika kebijakan <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> disetel ke 1.</translation>
 <translation id="3719826155360621982">Beranda</translation>
 <translation id="3724039569609354541">Gunakan perilaku default saat menentukan apakah situs dapat membuat permintaan ke endpoint jaringan</translation>
 <translation id="3726715125055227414">Kebijakan ini mengonfigurasi <ph name="PRODUCT_OS_NAME" /> untuk mengurutkan algoritma perjanjian kunci pilihannya (grup yang didukung) di TLS 1.3 agar sesuai dengan algoritma yang telah disetujui berdasarkan skema kepatuhan tertentu, saat membuat permintaan jaringan dari layar login.
@@ -12151,6 +12168,7 @@ Fitur ini hanya akan tersedia di saluran Canary.
 
 Jika kebijakan disetel ke Aktif atau tidak disetel, halaman akan dapat diakses.
 Jika kebijakan disetel ke Nonaktif, halaman akan diblokir.</translation>
+<translation id="8266506455952754231">Mengontrol pengguna terkelola mana yang dapat menetapkan kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> dan <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" />.</translation>
 <translation id="8266778278542911985">Jika kebijakan disetel ke 3, situs akan dapat meminta akses ke port serial. Jika kebijakan disetel ke 2, akses ke port serial akan ditolak.
 
       Jika tidak disetel, situs akan dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>

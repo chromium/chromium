@@ -3560,6 +3560,8 @@ Se la policy è impostata su Disattivata o non è impostata, il menu Accessibili
 <translation id="3146711617256415776">Non consentire le voci di sintesi vocale di rete migliorate durante l'utilizzo di Seleziona per ascoltare</translation>
 <translation id="315013437951136266">Attiva la funzionalità <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="3150351525324499342">Non mostrare l'icona <ph name="PRODUCT_NAME" /> nella barra degli strumenti per impostazione predefinita, ma lascia la scelta agli utenti</translation>
+<translation id="3151501327418961907">Se questa policy viene impostata su 0 o non viene configurata, le policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> e <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> verranno applicate all'ambito utente solo per gli utenti affiliati su un browser gestito.
+Se questa policy viene impostata su 1, le policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> e <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> verranno applicate a livello di utente, anche se l'utente non è affiliato.</translation>
 <translation id="3152135410085709340">Consenti l'accesso ai file locali per gli URL file:// su questi siti nel visualizzatore PDF</translation>
 <translation id="3152425128389603870">Rendi disponibile la modalità Desktop unificato e attivala per impostazione predefinita</translation>
 <translation id="3159375329008977062">L'utente è abilitato a importare/esportare contenitori Crostini tramite l'interfaccia</translation>
@@ -4385,6 +4387,21 @@ Per il corretto funzionamento dell'app Trasferimento dei contenuti, è necessari
 <translation id="370314752761795411">Avvia <ph name="PRODUCT_NAME" /> con <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Sospensione</translation>
 <translation id="3712861436661566358">Applica separazione dei profili</translation>
+<translation id="3715589988915487768">Configura un elenco di domini di provisioning (PvD) che <ph name="PRODUCT_NAME" /> utilizzerà per recuperare dinamicamente le configurazioni del proxy.
+
+Questa policy consente di specificare un elenco di nomi di dominio o URI di risorse che rappresentano i domini di provisioning come definiti in RFC 8801 ("Discovering Provisioning Domain Names and Data"). Per ogni PvD, il browser risolve la configurazione JSON corrispondente inviando una richiesta HTTPS al percorso dell'endpoint noto: "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd".
+
+Ogni voce dell'elenco specifica:
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: l'identificatore del dominio di provisioning (un nome di dominio).
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: la configurazione di autenticazione facoltativa. In assenza di configurazione o se questa è impostata su "none", non viene eseguita alcuna autenticazione. Se impostato su "profile_bearer_token", il browser recupera un token di accesso OAuth2 con l'ambito fornito per l'account principale con cui è stato fatto l'accesso e lo allega nell'intestazione "Authorization" come token "Bearer".
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: un elenco facoltativo di intestazioni HTTP personalizzate da includere nelle query all'endpoint PvD. È possibile inserire valori dinamici, ad esempio "profile_id" (che rappresenta un identificatore univoco e stabile del profilo del browser sul dispositivo, consentendo il targeting della configurazione per profilo) o "accept_language" (che rappresenta le lingue preferite del browser).
+
+Le configurazioni recuperate vengono analizzate in base allo schema RFC 8801. Vengono applicati solo i proxy e le regole di routing correlate alla configurazione del proxy dal payload JSON del PvD. Se questa policy non viene configurata, non verrà fatta alcuna query sui domini di provisioning e questi non verranno utilizzati per recuperare le configurazioni del proxy.
+
+Questa policy può essere impostata a livello di utente solo se l'utente è affiliato al browser, se il browser non è gestito o se la policy <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> è impostata su 1.</translation>
 <translation id="3719826155360621982">Home page</translation>
 <translation id="3724039569609354541">Usa il comportamento predefinito quando determini se i siti web possono effettuare richieste agli endpoint di rete</translation>
 <translation id="3726715125055227414">Questa policy configura <ph name="PRODUCT_OS_NAME" /> in modo che ordini i suoi algoritmi di accordo chiave preferiti (gruppi supportati) in TLS 1.3, allo scopo di riflettere una preferenza per gli algoritmi approvati da un regime di conformità specifico, quando si effettuano richieste di rete dalla schermata di accesso.
@@ -11832,6 +11849,7 @@ La funzionalità sarà disponibile soltanto sul canale Canary.
 
 Se la policy viene attivata o se non viene configurata, la pagina sarà accessibile.
 Se la policy viene disattivata, la pagina verrà bloccata.</translation>
+<translation id="8266506455952754231">Controlla quali utenti gestiti possono impostare le policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> e <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" />.</translation>
 <translation id="8266778278542911985">Se la policy viene impostata su 3, i siti web possono chiedere l'accesso alle porte seriali. Se la policy viene impostata su 2, l'accesso alle porte seriali viene negato.
 
       Se non viene configurata, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>

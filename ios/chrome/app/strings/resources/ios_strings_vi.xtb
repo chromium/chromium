@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Mở phần cài đặt <ph name="BEGIN_BOLD" />Ứng dụng mặc định<ph name="END_BOLD" /> trong iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Đã nhận đường liên kết}other{Đã nhận {count} đường liên kết}}</translation>
 <translation id="1941314575388338491">Nhấn đúp để sao chép.</translation>
+<translation id="1942483019269000450">Để tiếp tục tác vụ, Gemini có thể yêu cầu Google Wallet điền thông tin thẻ tín dụng của bạn</translation>
 <translation id="1943478190258551035">Trình đơn → Cài đặt</translation>
 <translation id="1944477975050820119">Nhận đề xuất theo thời gian thực giúp bạn tìm ra những cách duyệt web mới với sự hỗ trợ của AI. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Đăng nhập bằng tài khoản được quản lý</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">mục mới</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> tài khoản sử dụng cùng một mật khẩu</translation>
 <translation id="205013082884273671">Tìm kiếm nội dung bất kỳ trên màn hình</translation>
+<translation id="2053311407685904414">Chọn địa chỉ</translation>
 <translation id="2054044186557130763">Đăng nhập bằng <ph name="NAME" /> <ph name="EMAIL" /> do tổ chức của bạn quản lý.</translation>
 <translation id="2059166748188874810">Thành phố tự trị</translation>
 <translation id="2060638295449304809">Địa chỉ này chỉ được lưu trên thiết bị này. Để sử dụng địa chỉ này trên các thiết bị khác, hãy lưu vào Tài khoản Google của bạn (<ph name="USER_EMAIL" />)</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Dịch</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2360196772093551345">Yêu cầu trang web dành cho thiết bị di động</translation>
+<translation id="2360272811987888433">Đăng nhập thủ công</translation>
 <translation id="2362083820973145409">Đã đăng nhập bằng <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Mở phần cài đặt.</translation>
 <translation id="2367025302166767427">Đã xảy ra lỗi khi điền thông tin của bạn</translation>
 <translation id="2371084566192454134">Thẻ và nhóm thẻ</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Lưu vào Google Photos</translation>
 <translation id="3406506285180498376">Chia sẻ trang…</translation>
 <translation id="340669334496430859">Lần sửa đổi gần nhất</translation>
+<translation id="3407832712016477396">Gemini có thể sử dụng Trình quản lý mật khẩu của Google để đăng nhập thay bạn</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">Ngày 25 tháng 10 năm 2023</translation>
 <translation id="3419787211763835342">Góp phần cải thiện tính năng tự động điền nâng cao</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Không bao giờ cho phép</translation>
 <translation id="4293154608148215505">điện thoại của bạn</translation>
 <translation id="4294506173142861371">Đăng nhập bằng <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Nhập thủ công</translation>
+<translation id="4297418774230471285">Chọn thông tin cá nhân</translation>
 <translation id="4302061870579014542">Thiết lập vị trí</translation>
 <translation id="4304713468139749426">Trình quản lý mật khẩu</translation>
 <translation id="4309403553630140242">Nhấn đúp để xem thêm thông tin</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini là một AI và có thể mắc sai sót. <ph name="BEGIN_LINK" />Tìm hiểu thêm về dữ liệu có liên quan được gửi đến Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Không có gì để nhập</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> trên <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Đăng nhập vào <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5318298563956633672">Bạn đã theo dõi sản phẩm này rồi.</translation>
 <translation id="5327248766486351172">Tên</translation>
@@ -2206,6 +2213,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7839994177130598711">Giờ đây, các thành viên gia đình bạn có thể sử dụng tên người dùng và mật khẩu của bạn khi dùng Trình quản lý mật khẩu của Google để đăng nhập vào <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Tìm kiếm văn bản đã sao chép</translation>
 <translation id="7841418003178675048">Chọn những thẻ bạn muốn thấy trên trang thẻ mới.</translation>
+<translation id="7842369010458597654">Điền thông tin thanh toán</translation>
 <translation id="7845466610722898">Hiện Danh sách đọc</translation>
 <translation id="7846161022626028328">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="784623644169604270">Không có hoạt động nào gần đây</translation>

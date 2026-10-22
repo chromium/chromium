@@ -239,6 +239,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1393071644879491291">Os atacantes do sitio que tentaches visitar poderían enganarte para que instales software ou reveles información como os teus contrasinais, números de teléfono ou tarxetas de crédito. Chrome recoméndache encarecidamente volver a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Engadir o carné de identidade de forma segura a Google Wallet</translation>
 <translation id="1398743098754840707">Os sitios que engadas aquí non se usarán como referencia para as respostas, aínda que a pestana estea aberta. Se un dos sitios que engadas xa se está usando nun fío, este pode tardar ata 30 minutos en deixar de facer referencia a el.</translation>
+<translation id="1403359480263156644">Actualizouse o nome da persoa titular da tarxeta</translation>
 <translation id="1405567553485452995">Verde claro</translation>
 <translation id="1406370515365284486">Os teus métodos de pago seguirán gardados</translation>
 <translation id="1406500794671479665">Verificando...</translation>
@@ -907,6 +908,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2498091847651709837">Dixitalizar nova tarxeta</translation>
 <translation id="2501270939904835585">Etiquetas (satinado)</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
+<translation id="250307989715832083">Engadir sinatura</translation>
 <translation id="250346157641628208">Papel (inxección de tinta)</translation>
 <translation id="2505063700931618106">Gardouse a información da tarxeta</translation>
 <translation id="2505268675989099013">Protexer conta</translation>
@@ -1596,7 +1598,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3693516565203081475">Escoller método de pago</translation>
 <translation id="3698353241727597930">A persoa administradora definiu a configuración para gardar <ph name="FILES" /> no teu almacenamento de <ph name="CLOUD_STORAGE" /> xestionado pola empresa. Estes ficheiros pódense supervisar, auditar e conservar cando os elimines.</translation>
 <translation id="3698629142018988477">Botón para crear un sitio. Actívao para crear rapidamente un sitio en Google Sites</translation>
-<translation id="3698708128812719147">Preme Control dúas veces en calquera lugar da Web para buscar e completar máis información</translation>
 <translation id="3700094625653511150">Para ocultar as opcións de pagar máis tarde, vai a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Estás usando a túa impresión dixital para completar os contrasinais</translation>
 <translation id="3701427423622901115">Realizouse o restablecemento.</translation>
@@ -1655,7 +1656,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3769584711865378220"><ph name="URL" /> quere cambiar o acceso á localización de Aproximada a Precisa</translation>
 <translation id="3772211998634047851">Papel (carta)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente unha nota nova en Google Keep</translation>
-<translation id="3778045607993018262">A conta de Pix vincularase a <ph name="ACCOUNT_EMAIL" />. Para desactivar a detección de código de Pix, vai á <ph name="BEGIN_LINK1" />configuración de Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Bandexa de saída</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
@@ -1901,7 +1901,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4185037616931963178">Actualiza o número Redress de forma segura</translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
 <translation id="4191334393248735295">Lonxitude</translation>
-<translation id="4192770747482479191">Preme ⌘ dúas veces en calquera lugar da Web para buscar e completar máis información</translation>
 <translation id="4195459680867822611">Botón para ver consellos de Chrome. Actívao para obter máis información sobre as funcións de Chrome</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4196861286325780578">&amp;Refacer movemento</translation>
@@ -1919,6 +1918,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4218327733815631046">Manter localización aproximada</translation>
 <translation id="4219596572397833317">Consulta o historial de prezos e moito máis para poder comprar de forma máis intelixente.</translation>
 <translation id="4220128509585149162">Fallos</translation>
+<translation id="4220745762102459826">e máis</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Paso 1: Inicia sesión no portal&lt;/h4&gt;
     &lt;p&gt;Para utilizar redes wifi de lugares como cafeterías ou aeroportos, é necesario iniciar sesión. Para ver a páxina de inicio de sesión, accede a unha páxina que utilice &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4833567658337394628">Non se recomenda pegalo</translation>
 <translation id="4840250757394056958">Ver historial de Chrome</translation>
+<translation id="4842085418602350953">A próxima vez, paga con Pix sen cambiar de aplicación</translation>
 <translation id="4842365697443353018">Borrar formulario para usar a opción de pago aprazado</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4844937814014739139">Desprazarse por pestanas compartidas e achegalas</translation>
@@ -2468,6 +2469,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5115232566827194440">Omisión da sesión de convidado xestionada e restrinxida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
 <translation id="5116015291385561204">Verifica a túa identidade para autocompletar a información confidencial</translation>
+<translation id="5121592697493894155">Busca de Google no panel lateral</translation>
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5124797626438336458">A pantalla de erro de pago aprazado está aberta a altura media.</translation>
@@ -2880,6 +2882,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5794065675298686371">Activar as notificacións de seguimento de prezos</translation>
 <translation id="5794093550048860249">Número de seguimento</translation>
 <translation id="5796050750059455142">Activa a opción <ph name="BEGIN_LINK" />Funcións intelixentes noutros produtos de Google<ph name="LINK_END" /></translation>
+<translation id="5797916798049571144">Gardouse coa información da túa tarxeta, polo que se completará automaticamente ao tramitar as compras</translation>
 <translation id="5797984091151707075">Bloqueouse debido á política de administración</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5806871454498484178">Desprazamento e zoom bloqueados</translation>
@@ -4298,6 +4301,7 @@ Detalles adicionais:
 <translation id="8208629719488976364">O contido das páxinas que imprimas e a información sobre a impresora enviaranse a Google Cloud ou a terceiros para a súa análise. Por exemplo, poderían examinarse para ver se conteñen datos confidenciais e almacenarse en función das políticas da empresa. Tamén podería velos a persoa administradora.</translation>
 <translation id="8210490490377416373">Seleccionar nome da política</translation>
 <translation id="8211406090763984747">A conexión é segura</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{e 1 fonte máis}other{+ # fontes máis}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 polgadas</translation>
 <translation id="8218327578424803826">Localización asignada:</translation>

@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">‏פותחים את ההגדרות של <ph name="BEGIN_BOLD" />יישומי ברירת מחדל<ph name="END_BOLD" /> ב-iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{קישור אחד התקבל}one{‫{count} קישורים התקבלו}two{‫{count} קישורים התקבלו}other{‫{count} קישורים התקבלו}}</translation>
 <translation id="1941314575388338491">כדי להעתיק, לוחצים פעמיים.</translation>
+<translation id="1942483019269000450">‏כדי להמשיך במשימה, Gemini יכול לבקש מ-Google Wallet למלא את פרטי כרטיס האשראי שלך</translation>
 <translation id="1943478190258551035">תפריט ← הגדרות</translation>
 <translation id="1944477975050820119">‏הצעות בזמן אמת יעזרו לך לגלות דרכים חדשות לגלוש באינטרנט באמצעות AI. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">כניסה עם חשבון מנוהל</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">פריט חדש</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> חשבונות משתמשים באותה סיסמה</translation>
 <translation id="205013082884273671">חיפוש של מה שמוצג במסך</translation>
+<translation id="2053311407685904414">בחירת כתובת</translation>
 <translation id="2054044186557130763">כניסה בתור <ph name="NAME" /> <ph name="EMAIL" />, חשבון שמנוהל על ידי הארגון שלך.</translation>
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="2060638295449304809">‏הכתובת הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google, <ph name="USER_EMAIL" />.</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">תרגום</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2360196772093551345">בקשת אתר לנייד</translation>
+<translation id="2360272811987888433">כניסה ידנית לחשבון</translation>
 <translation id="2362083820973145409">נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
 <translation id="2367025302166767427">הייתה בעיה במילוי הפרטים</translation>
 <translation id="2371084566192454134">כרטיסיות וקבוצות של כרטיסיות</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">‏שמירה ב-Google Photos</translation>
 <translation id="3406506285180498376">שיתוף הדף…</translation>
 <translation id="340669334496430859">תאריך השינוי האחרון</translation>
+<translation id="3407832712016477396">‏‫Gemini יכול להשתמש במנהל הסיסמאות של Google כדי להיכנס בשבילך לחשבון</translation>
 <translation id="3409785640040772790">מפות</translation>
 <translation id="3416023309465857378">25 באוקטובר 2023</translation>
 <translation id="3419787211763835342">אפשר להפוך את המילוי האוטומטי המשופר לטוב יותר</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">אף פעם לא לאפשר</translation>
 <translation id="4293154608148215505">הטלפון שלך</translation>
 <translation id="4294506173142861371">להיכנס לחשבון בתור <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">מילוי ידני</translation>
+<translation id="4297418774230471285">בחירת פרטים אישיים</translation>
 <translation id="4302061870579014542">הגדרת המיקום</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
 <translation id="4309403553630140242">לחיצה פעמיים תציג מידע נוסף</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">‏‫Gemini מבוסס על AI ויכול לטעות. <ph name="BEGIN_LINK" />מידע נוסף על נתונים רלוונטיים שנשלחים אל Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">אין מה לייבא</translation>
 <translation id="5316356981864168850">‫<ph name="INDEX" /> מתוך <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">כניסה לחשבון <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5318298563956633672">כבר מתבצע מעקב אחר המוצר הזה.</translation>
 <translation id="5327248766486351172">שם</translation>
@@ -2206,6 +2213,7 @@
 <translation id="7839994177130598711">‏עכשיו החברים בקבוצה המשפחתית יכולים להשתמש בשם המשתמש ובסיסמה שלך כשהם משתמשים במנהל הסיסמאות של Google כדי להיכנס אל <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">חיפוש טקסט שהועתק</translation>
 <translation id="7841418003178675048">אפשר לבחור אילו כרטיסים יופיעו בדף 'כרטיסייה חדשה'.</translation>
+<translation id="7842369010458597654">מילוי פרטי התשלום</translation>
 <translation id="7845466610722898">הצגה של רשימת הקריאה</translation>
 <translation id="7846161022626028328">אירעה שגיאה. אפשר לנסות שוב.</translation>
 <translation id="784623644169604270">אין פעילות מהתקופה האחרונה</translation>

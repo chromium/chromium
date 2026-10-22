@@ -3483,6 +3483,7 @@ PAC 样式的字符串：
 <translation id="3146711617256415776">不允许在使用“随选朗读”功能时使用增强型网络文字转语音的语音</translation>
 <translation id="315013437951136266">启用 <ph name="IP_PROTECTION_NAME" />功能。</translation>
 <translation id="3150351525324499342">默认情况下不在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标，但允许用户选择是否显示</translation>
+<translation id="3151501327418961907">如果此政策设为 0 或未设置，将仅在受管理的浏览器上关联用户的用户范围内应用 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 和 <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> 政策。如果此政策设为 1，将在用户范围内应用 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 和 <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> 政策，即使相应用户不是关联用户也是如此。</translation>
 <translation id="3152135410085709340">允许这些网站使用 PDF 查看器对 file:// 网址进行本地文件访问</translation>
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
@@ -4285,6 +4286,9 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="370314752761795411">在 <ph name="MS_WIN_NAME" /> 启动时启动 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3711895659073496551">暂停</translation>
 <translation id="3712861436661566358">强制执行资料分离</translation>
+<translation id="3715589988915487768">配置预配域 (PvD) 列表，供 <ph name="PRODUCT_NAME" /> 用于动态提取代理配置。此政策允许指定域名或资源 URI 的列表，这些域名或资源 URI 代表 RFC 8801（“发现预配域名和数据”）中所定义的预配域。对于每个 PvD，浏览器都会向“.well-known”端点路径“https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd”发送 HTTPS 请求，以解析相应的 JSON 配置。列表中的每个条目均指定：
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />：预配域的标识符（域名）。* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />：可选的身份验证配置。如果未配置或设置为“none”，则不执行身份验证。如果设置为“profile_bearer_token”，浏览器会为已登录的主账号获取具有指定作用域的 OAuth2 访问令牌，并将其作为“Bearer”令牌附加到“Authorization”标头中。* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />：查询 PvD 端点时要包含的可选自定义 HTTP 标头列表。可以注入动态值，例如“profile_id”（代表设备上浏览器个人资料的稳定唯一标识符，支持针对个人资料进行定向配置）或“accept_language”（代表浏览器的首选语言）。系统会根据 RFC 8801 架构解析提取的配置。系统仅应用 PvD JSON 载荷中与代理配置相关的路由规则和代理。如果未设置此政策，系统将不会查询任何预配域，也不会使用它们来提取代理配置。只有在用户已与浏览器关联、浏览器不受管理或 <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> 政策设为 1 的情况下，才能在用户级别设置此政策。</translation>
 <translation id="3719826155360621982">首页</translation>
 <translation id="3724039569609354541">在确定网站能否向网络端点发送请求时使用默认行为</translation>
 <translation id="3726715125055227414">此政策可将 <ph name="PRODUCT_OS_NAME" /> 配置为，在从登录界面发出网络请求时，对 TLS 1.3 中的首选密钥协议算法（受支持的群组）进行排序，以反映对特定合规制度所批准的算法的偏好程度。
@@ -11552,6 +11556,7 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 
 如果已启用或未设置此政策，用户将能访问该页面。
 如果已停用此政策，该页面将被屏蔽。</translation>
+<translation id="8266506455952754231">控制哪些受管理的用户可以设置 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 和 <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> 政策。</translation>
 <translation id="8266778278542911985">如果此政策设为 3，系统会允许网站请求访问串行端口。如果此政策设为 2，系统会禁止访问串行端口。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>

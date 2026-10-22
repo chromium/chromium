@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">તમે જેની મુલાકાત લેવાનો પ્રયાસ કર્યો હતો તે સાઇટ પરના અટૅક કરનારા લોકો યુક્તિ અજમાવીને તમને સૉફ્ટવેર ઇન્સ્ટૉલ કરવા કે તમારા પાસવર્ડ, ફોન કે ક્રેડિટ કાર્ડ નંબર જેવી બાબતો જણાવવા છેતરી શકે છે. Chrome દ્વારા સલામતી પર પાછા ફરવાનો સુઝાવ ભારપૂર્વક આપવામાં આવે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Google Walletમાં ID કાર્ડ સુરક્ષિત રીતે ઉમેરો</translation>
 <translation id="1398743098754840707">જો ટૅબ ખુલ્લું હોય તો પણ, તમે અહીં ઉમેરેલી સાઇટનો સંદર્ભ જવાબો માટે આપવામાં આવશે નહીં. જો તમે ઉમેરેલી સાઇટનો હાલમાં થ્રેડમાં ઉપયોગ થઈ રહ્યો હોય, તો થ્રેડને તેનો સંદર્ભ આપવાનું બંધ કરવામાં 30 મિનિટ જેટલો સમય લાગી શકે છે.</translation>
+<translation id="1403359480263156644">કાર્ડધારકનું નામ અપડેટ કર્યું</translation>
 <translation id="1405567553485452995">આછો લીલો</translation>
 <translation id="1406370515365284486">તમારી ચુકવણી પદ્ધતિઓ હજી પણ સાચવવામાં આવશે</translation>
 <translation id="1406500794671479665">ચકાસી રહ્યું છે...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">નવું કાર્ડ સ્કૅન કરો</translation>
 <translation id="2501270939904835585">લેબલ (સાટિન)</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
+<translation id="250307989715832083">સહી ઉમેરો</translation>
 <translation id="250346157641628208">પેપર (ઇંકજેટ)</translation>
 <translation id="2505063700931618106">કાર્ડની માહિતી સાચવવામાં આવી</translation>
 <translation id="2505268675989099013">એકાઉન્ટ સુરક્ષિત કરો</translation>
@@ -1596,7 +1598,6 @@
 <translation id="3693516565203081475">ચુકવણી પદ્ધતિ પસંદ કરો</translation>
 <translation id="3698353241727597930">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="FILES" />ને એન્ટરપ્રાઇઝ દ્વારા મેનેજ કરવામાં આવતા તમારા <ph name="CLOUD_STORAGE" /> સ્ટોરેજમાં સાચવવાનું કન્ફિગ્યુર કરવામાં આવ્યું છે. આ ફાઇલોને મૉનિટર કરવામાં, ઑડિટ કરવામાં તેમજ તમે તેને ડિલીટ કરો ત્યારે જાળવી રાખવામાં આવી શકે છે.</translation>
 <translation id="3698629142018988477">'સાઇટ બનાવો' બટન, Google Sitesમાં ઝડપથી કોઈ નવી સાઇટ બનાવવા માટે સક્રિય કરો</translation>
-<translation id="3698708128812719147">વધુ માહિતી શોધવા અને ભરવા માટે વેબ પર ગમે ત્યાં બે વાર Ctrl દબાવો</translation>
 <translation id="3700094625653511150">પછીથી ચુકવણી કરવાના વિકલ્પો છુપાવવા માટે, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> પર જાઓ</translation>
 <translation id="3700966190175650601">પાસવર્ડ ભરવા માટે તમે તમારી ફિંગરપ્રિન્ટનો ઉપયોગ કરી રહ્યાં છો</translation>
 <translation id="3701427423622901115">રીસેટ કરવાનું સ્વીકાર્યું હતું.</translation>
@@ -1655,7 +1656,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> લોકેશનનો ઍક્સેસ અંદાજિતમાંથી બદલીને સચોટ કરવા માગે છે</translation>
 <translation id="3772211998634047851">પેપર (બોન્ડ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepમાં ઝડપથી કોઈ નવી નોંધ બનાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
-<translation id="3778045607993018262">Pix એકાઉન્ટ <ph name="ACCOUNT_EMAIL" /> સાથે લિંક કરવામાં આવશે. Pix કોડની ભાળ મેળવવાની સુવિધા બંધ કરવા માટે, <ph name="BEGIN_LINK1" />Chromeના સેટિંગ<ph name="END_LINK1" />માં જાઓ</translation>
 <translation id="3780694243617746492">આઉટપુટ બિન</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">બ્લૂટૂથ ડિવાઇસ</translation>
@@ -1901,7 +1901,6 @@
 <translation id="4185037616931963178">નિવારણ નંબર સુરક્ષિત રીતે અપડેટ કરો</translation>
 <translation id="4186035307311647330">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="4191334393248735295">લંબાઈ</translation>
-<translation id="4192770747482479191">વધુ માહિતી શોધવા અને ભરવા માટે વેબ પર ગમે ત્યાં બે વાર ⌘ દબાવો</translation>
 <translation id="4195459680867822611">'Chrome ટિપ જુઓ' બટન, Chromeની સુવિધાઓ વિશે જાણવા માટે સક્રિય કરો</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4196861286325780578">&amp;ખસેડવું ફરી કરો</translation>
@@ -1919,6 +1918,7 @@
 <translation id="4218327733815631046">અંદાજિત લોકેશન રાખો</translation>
 <translation id="4219596572397833317">વધુ સ્માર્ટ રીતે ખરીદી કરવામાં તમારી સહાય માટે કિંમતનો ઇતિહાસ અને તેને સંબંધિત બીજી ઘણી બાબતો જુઓ.</translation>
 <translation id="4220128509585149162">ક્રેશેસ</translation>
+<translation id="4220745762102459826">અને વધુ</translation>
 <translation id="4221630205957821124">&lt;h4&gt;પગલું 1: પોર્ટલમાં સાઇન ઇન કરો&lt;/h4&gt;
     &lt;p&gt;કૅફે અથવા એરપોર્ટ જેવા સ્થાન પરના વાઇ-ફાઇ નેટવર્કમાં તમારે સાઇન ઇન કરવું જરૂરી હોય છે. સાઇન ઇન પેજ જોવા માટે, &lt;code&gt;http://&lt;/code&gt;નો ઉપયોગ કરતા પેજની મુલાકાત લો.&lt;/p&gt;
     &lt;ol&gt;
@@ -2469,6 +2469,7 @@
 <translation id="5115232566827194440">પ્રતિબંધિત 'મેનેજ કરેલા અતિથિ સત્ર' માટે ઓવરરાઇડ</translation>
 <translation id="5115563688576182185">(64-બિટ)</translation>
 <translation id="5116015291385561204">સંવેદનશીલ માહિતી ઑટોમૅટિક રીતે ભરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
+<translation id="5121592697493894155">બાજુની પૅનલમાં Google Search</translation>
 <translation id="5122786942953798871">એન્વલપ (કૉટન)</translation>
 <translation id="5123063207673082822">વીકએન્ડ</translation>
 <translation id="5124797626438336458">'હમણાં ખરીદો, પછીથી ચુકવો' ભૂલ બતાવતી સ્ક્રીન અડધી ઊંચાઈએ ખુલી છે.</translation>
@@ -2881,6 +2882,7 @@
 <translation id="5794065675298686371">કિંમતને ટ્રૅક કરવા સંબંધિત નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="5794093550048860249">ટ્રૅકિંગ નંબર</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />અન્ય Google પ્રોડક્ટમાં સ્માર્ટ સુવિધાઓ<ph name="LINK_END" />” ચાલુ કરો</translation>
+<translation id="5797916798049571144">તેને તમારા કાર્ડની માહિતી સાથે સાચવવામાં આવ્યું છે, જેથી ચેકઆઉટ વખતે તે ઑટોમૅટિક રીતે ભરાઈ જશે</translation>
 <translation id="5797984091151707075">ઍડમિન પૉલિસી દ્વારા બ્લૉક કરવામાં આવ્યું છે</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
 <translation id="5806871454498484178">સ્ક્રોલ અને નાનું-મોટું કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>

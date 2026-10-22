@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Avaa <ph name="BEGIN_BOLD" />oletussovellusten<ph name="END_BOLD" /> asetukset iOS:ssä</translation>
 <translation id="1938871630297275912">{count,plural, =1{Linkki vastaanotettu}other{{count} linkkiä vastaanotettu}}</translation>
 <translation id="1941314575388338491">Kopioi kaksoisnapauttamalla.</translation>
+<translation id="1942483019269000450">Gemini voi pyytää Google Walletia täyttämään credit-kortin tiedot, jotta tehtävää voidaan jatkaa</translation>
 <translation id="1943478190258551035">Valikko → Asetukset</translation>
 <translation id="1944477975050820119">Saat reaaliaikaisia ehdotuksia, joiden avulla voit löytää uusia tapoja selata tekoälyn avulla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Kirjaudu sisään hallinnoidulla tilillä</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">uusi tuote</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> tilillä käytetään samaa salasanaa</translation>
 <translation id="205013082884273671">Hae mitä tahansa näytöllä olevaa asiaa</translation>
+<translation id="2053311407685904414">Valitse osoite</translation>
 <translation id="2054044186557130763">Kirjaudu sisään tilillä <ph name="NAME" /> <ph name="EMAIL" />, jota organisaatiosi hallinnoi.</translation>
 <translation id="2059166748188874810">Paikkakunta</translation>
 <translation id="2060638295449304809">Osoite tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi (<ph name="USER_EMAIL" />)</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Käännä</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2360196772093551345">Käytä mobiiliversiota</translation>
+<translation id="2360272811987888433">Manuaalinen sisäänkirjautuminen</translation>
 <translation id="2362083820973145409">Kirjautuneena käyttäjänä <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Avaa asetukset.</translation>
 <translation id="2367025302166767427">Ongelmia tietojen täyttämisessä</translation>
 <translation id="2371084566192454134">Välilehdet ja välilehtiryhmät</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Tallenna Google Kuviin</translation>
 <translation id="3406506285180498376">Jaa sivu…</translation>
 <translation id="340669334496430859">Muokattu viimeksi</translation>
+<translation id="3407832712016477396">Gemini voi käyttää Google Salasanoja kirjautuakseen sisään puolestasi</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25.10.2023</translation>
 <translation id="3419787211763835342">Auta kehittämään parannettua automaattista täyttöä</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Älä salli koskaan</translation>
 <translation id="4293154608148215505">puhelin</translation>
 <translation id="4294506173142861371">Kirjaudutaanko nimellä <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Lisää manuaalisesti</translation>
+<translation id="4297418774230471285">Valitse henkilökohtaiset tiedot</translation>
 <translation id="4302061870579014542">Aseta sijainti</translation>
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
 <translation id="4309403553630140242">Katso lisätietoja kaksoisnapauttamalla</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini on tekoäly ja voi tehdä virheitä. <ph name="BEGIN_LINK" />Lisätietoa Googlelle lähetetystä relevantista datasta<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Ei tuotavia tietoja</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Kirjaudu sisään: <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5318298563956633672">Seuraat jo tätä tuotetta.</translation>
 <translation id="5327248766486351172">Nimi</translation>
@@ -2206,6 +2213,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="7839994177130598711">Perheenjäsenesi voivat nyt käyttää käyttäjätunnustasi ja salasanaasi, kun he kirjautuvat osoitteeseen <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> Googlen Salasanojen avulla.</translation>
 <translation id="7841180087127694526">Hae kopioitua tekstiä</translation>
 <translation id="7841418003178675048">Valitse, mitä kortteja näet Uusi välilehti ‑sivulla.</translation>
+<translation id="7842369010458597654">Täytetään maksutietoja</translation>
 <translation id="7845466610722898">Näytä lukulista</translation>
 <translation id="7846161022626028328">Tapahtui virhe. Yritä uudelleen.</translation>
 <translation id="784623644169604270">Ei uutta toimintaa</translation>

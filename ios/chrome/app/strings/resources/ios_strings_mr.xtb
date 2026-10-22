@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">iOS मध्ये <ph name="BEGIN_BOLD" />डीफॉल्ट अ‍ॅप्स<ph name="END_BOLD" /> सेटिंग्ज उघडा</translation>
 <translation id="1938871630297275912">{count,plural, =1{लिंक मिळाली}other{{count} लिंक मिळाल्या}}</translation>
 <translation id="1941314575388338491">कॉपी करण्‍यासाठी दोनदा टॅप करा.</translation>
+<translation id="1942483019269000450">टास्क पुढे सुरू ठेवण्यासाठी, Gemini हे Google Wallet ला तुमची क्रेडिट कार्ड माहिती भरण्यास सांगू शकते</translation>
 <translation id="1943478190258551035">मेनू → सेटिंग्ज</translation>
 <translation id="1944477975050820119">AI वापरून ब्राउझ करण्याचे नवीन मार्ग शोधण्यात तुम्हाला मदत करू शकणाऱ्या रीअल-टाइम सूचना मिळवा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">व्यवस्थापित केलेल्या खात्यासह साइन इन करा</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">नवीन आयटम</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> खाती हाच पासवर्ड वापरत आहेत</translation>
 <translation id="205013082884273671">तुमच्या स्क्रीनवर काहीही शोधा</translation>
+<translation id="2053311407685904414">पत्ता निवडा</translation>
 <translation id="2054044186557130763"><ph name="EMAIL" />, तुमच्या संस्थेने व्यवस्थापित केला आहे <ph name="NAME" /> म्हणून साइन करा.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2060638295449304809">हा पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तो तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="USER_EMAIL" /> या Google खाते मध्ये सेव्ह करा</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">भाषांतर</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2360196772093551345">मोबाइल साइटची विनंती करा</translation>
+<translation id="2360272811987888433">मॅन्युअल साइन इन</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> म्हणून साइन इन केले. <ph name="USER_EMAIL" />. सेटिंग उघडते.</translation>
 <translation id="2367025302166767427">तुमची माहिती भरताना समस्या आली</translation>
 <translation id="2371084566192454134">टॅब आणि टॅब गट</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Google Photos मध्ये सेव्ह करा</translation>
 <translation id="3406506285180498376">पेज शेअर करा…</translation>
 <translation id="340669334496430859">शेवटचे फेरबदल केलेले</translation>
+<translation id="3407832712016477396">तुमच्यासाठी साइन इन करण्याकरिता Gemini हे Google Password Manager वापरू शकते</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">२५ ऑक्टोबर २०२३</translation>
 <translation id="3419787211763835342">वर्धित ऑटोफिलमध्ये सुधारणा करण्यात मदत करा</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">कधीही अनुमती देऊ नका</translation>
 <translation id="4293154608148215505">तुमचा फोन</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> म्हणून साइन इन करायचे आहे का?</translation>
+<translation id="4297031046690565608">मॅन्‍युअली एंटर करा</translation>
+<translation id="4297418774230471285">वैयक्तिक माहिती निवडा</translation>
 <translation id="4302061870579014542">स्थान सेट करा</translation>
 <translation id="4304713468139749426">पासवर्ड व्यवस्थापक</translation>
 <translation id="4309403553630140242">अधिक माहितीसाठी दोनदा टॅप करा</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini हे AI आहे आणि ते चुका करू शकते. <ph name="BEGIN_LINK" />Google ला पाठवलेल्या सुसंबद्ध डेटाबद्दल अधिक माहिती<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">इंपोर्ट करण्यासाठी काहीही नाही</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> पैकी <ph name="INDEX" /></translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> मध्ये साइन इन करा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5318298563956633672">तुम्ही आधीच या उत्पादनाचा माग ठेवत आहात.</translation>
 <translation id="5327248766486351172">नाव</translation>
@@ -2207,6 +2214,7 @@
 <translation id="7839994177130598711">तुमचे कुटुंब सदस्य हे <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात.</translation>
 <translation id="7841180087127694526">कॉपी केलेला मजकूर शोधा</translation>
 <translation id="7841418003178675048">तुम्हाला तुमच्या नवीन टॅब पेजवर कोणती कार्ड दिसतात ते निवडा.</translation>
+<translation id="7842369010458597654">पेमेंट माहिती भरा</translation>
 <translation id="7845466610722898">वाचन सूची दाखवा</translation>
 <translation id="7846161022626028328">एरर आली. पुन्हा प्रयत्न करा.</translation>
 <translation id="784623644169604270">कोणतीही अलीकडील अ‍ॅक्टिव्हिटी नाही</translation>

@@ -239,6 +239,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1393071644879491291">Árásaraðilar á vefsvæðinu sem þú reyndir að opna gætu reynt að plata þig til að setja upp hugbúnað eða afhjúpa atriði á borð við aðgangsorðið þitt, símanúmer eða kreditkortanúmer. Chrome mælir eindregið með því að þú lokir vefsvæðinu. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Bættu skilríkjum á öruggan hátt við Google-veski</translation>
 <translation id="1398743098754840707">Ekki verður vísað í vefsvæði sem bætt er við hér í svörum, jafnvel þótt flipinn sé opinn. Ef vefsvæði sem þú bætir við er í notkun í þræði getur það tekið allt að 30 mínútur fyrir þráðinn að hætta að vísa í það.</translation>
+<translation id="1403359480263156644">Nafn korthafa uppfært</translation>
 <translation id="1405567553485452995">Ljósgrænn</translation>
 <translation id="1406370515365284486">Greiðslumátarnir þínir verða vistaðir samt sem áður</translation>
 <translation id="1406500794671479665">Staðfestir…</translation>
@@ -907,6 +908,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2498091847651709837">Skanna nýtt kort</translation>
 <translation id="2501270939904835585">Merkimiðar (satín)</translation>
 <translation id="2501278716633472235">Fara til baka</translation>
+<translation id="250307989715832083">Bæta við undirskrift</translation>
 <translation id="250346157641628208">Pappír (bleksprautun)</translation>
 <translation id="2505063700931618106">Kortaupplýsingar vistaðar</translation>
 <translation id="2505268675989099013">Vernda reikning</translation>
@@ -1596,7 +1598,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3693516565203081475">Velja greiðslumáta</translation>
 <translation id="3698353241727597930">Stjórnandi þinn hefur stillt á að vista <ph name="FILES" /> í <ph name="CLOUD_STORAGE" />-geymslu sem er í umsjón fyrirtækis. Hægt er að fylgjast með þessum skrám, fara yfir þær og varðveita þegar þú eyðir þeim.</translation>
 <translation id="3698629142018988477">Hnappurinn „Búa til Site“, virkjaðu til að búa til nýtt Site í Google Sites á skjótan hátt</translation>
-<translation id="3698708128812719147">Ýttu tvisvar á Ctrl hvar sem er á vefnum til að finna og fylla út fleiri upplýsingar</translation>
 <translation id="3700094625653511150">Farðu í <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> til að fela valkosti greiðslufrests</translation>
 <translation id="3700966190175650601">Þú ert að nota fingrafarið þitt til að fylla út aðgangsorð</translation>
 <translation id="3701427423622901115">Endurstilling samþykkt.</translation>
@@ -1655,7 +1656,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3769584711865378220"><ph name="URL" /> vill breyta aðgangi staðsetningu úr áætlaðri í nákvæma</translation>
 <translation id="3772211998634047851">Pappír (teikningapappír)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að búa til nýja glósu í Google Keep á skjótan hátt</translation>
-<translation id="3778045607993018262">Pix-reikningur verður tengdur við <ph name="ACCOUNT_EMAIL" />. Opnaðu <ph name="BEGIN_LINK1" />stillingar Chrome<ph name="END_LINK1" /> til að slökkva á Pix-kóðagreiningu</translation>
 <translation id="3780694243617746492">Útbakki</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-tæki</translation>
@@ -1901,7 +1901,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4185037616931963178">Uppfærðu leiðréttingarnúmer á öruggan hátt</translation>
 <translation id="4186035307311647330">Hætta að vakta verð</translation>
 <translation id="4191334393248735295">Lengd</translation>
-<translation id="4192770747482479191">Ýttu tvisvar á ⌘ hvar sem er á vefnum til að finna og fylla út frekari upplýsingar</translation>
 <translation id="4195459680867822611">Hnappurinn „Sjá ábendingar um Chrome“, virkjaðu til að fá frekari upplýsingar um eiginleika Chrome</translation>
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4196861286325780578">&amp;Endurtaka flutning</translation>
@@ -1919,6 +1918,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4218327733815631046">Halda áætlaðri staðsetningu</translation>
 <translation id="4219596572397833317">Skoðaðu verðferil og fleira til að versla á snjallari hátt.</translation>
 <translation id="4220128509585149162">Hrun</translation>
+<translation id="4220745762102459826">og fleira</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Skref 1: Skráðu þig inn á gáttina&lt;/h4&gt;
     &lt;p&gt;Þegar þú notar Wi-Fi net á stöðum eins og kaffihúsum og flugvöllum þarftu að skrá þig inn. Innskráningarsíðan birtist þegar þú ferð á síðu sem notar &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="483241715238664915">Kveikja á viðvörunum</translation>
 <translation id="4833567658337394628">Ekki mælt með límingu</translation>
 <translation id="4840250757394056958">Skoða Chrome ferilinn þinn</translation>
+<translation id="4842085418602350953">Greiða með Pix án þess að skipta á milli forrita næst</translation>
 <translation id="4842365697443353018">Hreinsa eyðublað til að nota greiðslufrestun</translation>
 <translation id="484462545196658690">Sjálfvirkt</translation>
 <translation id="4844937814014739139">Skoða og stækka/minnka samnýtta flipa</translation>
@@ -2468,6 +2469,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5115232566827194440">Hnekkja takmarkaðri og stýrðri gestalotu</translation>
 <translation id="5115563688576182185">(64 bita)</translation>
 <translation id="5116015291385561204">Staðfestu að þetta sért þú til að fylla sjálfkrafa út viðkvæmar upplýsingar</translation>
+<translation id="5121592697493894155">Google-leit í hliðarglugga</translation>
 <translation id="5122786942953798871">Umslag (bómull)</translation>
 <translation id="5123063207673082822">Helgi</translation>
 <translation id="5124797626438336458">Villuskjár „Kauptu núna, borgaðu síðar“, opinn til hálfs.</translation>
@@ -2880,6 +2882,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5794065675298686371">Kveiktu á tilkynningum verðrakningar</translation>
 <translation id="5794093550048860249">Rakningarnúmer</translation>
 <translation id="5796050750059455142">Kveiktu á „<ph name="BEGIN_LINK" />Snjalleiginleikar í öðrum Google-vörum<ph name="LINK_END" />“</translation>
+<translation id="5797916798049571144">Það er vistað með kortaupplýsingunum þínum til að fylla það út sjálfkrafa við greiðslu</translation>
 <translation id="5797984091151707075">Lokað af stjórnandareglu</translation>
 <translation id="5804241973901381774">Heimildir</translation>
 <translation id="5806871454498484178">Lokað á að fletta og stækka/minnka</translation>
@@ -4298,6 +4301,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8208629719488976364">Efni síðna sem þú prentar og upplýsingar um prentarann þinn eru sendar til Google Cloud eða þriðju aðila til greiningar. Þær gætu til dæmis verið skannaðar í leit að viðkvæmum upplýsingum og kunna að vera geymdar í samræmi við stefnu fyrirtækisins og vera sýnilegar fyrir kerfisstjóra.</translation>
 <translation id="8210490490377416373">Velja heiti reglna</translation>
 <translation id="8211406090763984747">Tengingin er örugg</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 heimild til viðbótar}one{+ # heimild til viðbótar}other{+ # heimildir til viðbótar}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 to.</translation>
 <translation id="8218327578424803826">Úthlutuð staðsetning:</translation>

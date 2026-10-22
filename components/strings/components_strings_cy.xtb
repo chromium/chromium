@@ -239,6 +239,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1393071644879491291">Gallai ymosodwyr ar y wefan y gwnaethoch geisio ymweld â hi eich twyllo i osod meddalwedd neu ddatgelu pethau megis eich cyfrineiriau, eich ffôn, neu'ch rhifau cardiau credyd. Mae Chrome yn argymell yn gryf i fynd yn ôl i ddiogelwch. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Ychwanegu cerdyn adnabod yn ddiogel at Google Wallet</translation>
 <translation id="1398743098754840707">Ni chyfeirir at y gwefannau rydych yn eu hychwanegu yma ar gyfer ymatebion, hyd yn oed os yw'r tab ar agor. Os yw gwefan rydych yn ei hychwanegu yn cael ei defnyddio mewn trywydd ar hyn o bryd, gall gymryd hyd at 30 munud i'r trywydd stopio cyfeirio ato.</translation>
+<translation id="1403359480263156644">Enw deiliad y cerdyn wedi'i ddiweddaru</translation>
 <translation id="1405567553485452995">Gwyrdd Golau</translation>
 <translation id="1406370515365284486">Bydd eich dulliau talu yn dal i gael eu cadw</translation>
 <translation id="1406500794671479665">Wrthi'n dilysu...</translation>
@@ -907,6 +908,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2498091847651709837">Sganio cerdyn newydd</translation>
 <translation id="2501270939904835585">Labeli (Satin)</translation>
 <translation id="2501278716633472235">Mynd yn ôl</translation>
+<translation id="250307989715832083">Ychwanegu llofnod</translation>
 <translation id="250346157641628208">Papur (Inkjet)</translation>
 <translation id="2505063700931618106">Gwybodaeth cerdyn wedi'i chadw</translation>
 <translation id="2505268675989099013">Diogelwch Cyfrif</translation>
@@ -1596,7 +1598,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3693516565203081475">Dewis dull talu</translation>
 <translation id="3698353241727597930">Mae eich gweinyddwr wedi ffurfweddu i gadw <ph name="FILES" /> yn eich storfa <ph name="CLOUD_STORAGE" /> a reolir gan Enterprise. Mae'n bosib y bydd y ffeiliau hyn yn cael eu monitro, eu harchwilio, a'u cadw pan fyddwch yn eu dileu.</translation>
 <translation id="3698629142018988477">Botwm creu gwefan, gweithredwch i greu gwefan newydd yn Google Sites yn gyflym</translation>
-<translation id="3698708128812719147">Pwyswch Ctrl ddwywaith unrhyw le ar y we i ddod o hyd i ragor o wybodaeth a'i llenwi</translation>
 <translation id="3700094625653511150">I guddio opsiynau talu'n ddiweddarach, ewch i <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Rydych yn defnyddio'ch olion bysedd i lenwi cyfrineiriau</translation>
 <translation id="3701427423622901115">Mae'r ailosod wedi'i gydnabod.</translation>
@@ -1655,7 +1656,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3769584711865378220">Mae <ph name="URL" /> eisiau newid mynediad lleoliad o fras i fanwl gywir</translation>
 <translation id="3772211998634047851">Papur (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i greu nodyn newydd yn Google Keep yn gyflym</translation>
-<translation id="3778045607993018262">Bydd cyfrif Pix yn cael ei gysylltu â <ph name="ACCOUNT_EMAIL" />. I ddiffodd canfod cod Pix, ewch i'r <ph name="BEGIN_LINK1" />Gosodiadau Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Bin allbwn</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dyfeisiau Bluetooth</translation>
@@ -1901,7 +1901,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4185037616931963178">Diweddaru rhif unioni cam yn ddiogel</translation>
 <translation id="4186035307311647330">Olrhain prisiau</translation>
 <translation id="4191334393248735295">Hyd</translation>
-<translation id="4192770747482479191">Pwyswch ⌘ ddwywaith unrhyw le ar y we i ddod o hyd i ragor o wybodaeth a'i llenwi</translation>
 <translation id="4195459680867822611">Botwm gweld awgrymiadau Chrome, gweithredwch i ddysgu am nodweddion Chrome</translation>
 <translation id="4195643157523330669">Agor mewn tab newydd</translation>
 <translation id="4196861286325780578">&amp;Ailwneud Symud</translation>
@@ -1919,6 +1918,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4218327733815631046">Cadw lleoliad bras</translation>
 <translation id="4219596572397833317">Gweld hanes prisiau a rhagor i'ch helpu i siopa'n fwy craff.</translation>
 <translation id="4220128509585149162">Toriadau</translation>
+<translation id="4220745762102459826">a mwy</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Cam 1: Mewngofnodwch i'r porth&lt;/h4&gt;
     &lt;p&gt;Mae angen i fewngofnodi i rwydweithiau Wi-Fi mewn lleoedd megis caffis neu feysydd awyr. I weld y dudalen mewngofnodi, ewch i dudalen sy'n defnyddio &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2469,6 +2469,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5115232566827194440">Diystyriad sesiwn gwestai a reolir gyfyngedig</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Cadarnhewch mai chi sydd yno i awtolenwi gwybodaeth sensitif</translation>
+<translation id="5121592697493894155">Google Search yn y panel ochr</translation>
 <translation id="5122786942953798871">Amlen (Cotwm)</translation>
 <translation id="5123063207673082822">Penwythnos</translation>
 <translation id="5124797626438336458">Mae'r sgrîn gwall Prynu-Nawr-Talu-Yn-Ddiweddarach wedi'i hagor ar hanner uchder.</translation>
@@ -2850,7 +2851,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="573974402615125334">I rannu, ymuno a chydweithio mewn grwpiau tabiau, cysonwch eich hanes a'ch tabiau</translation>
 <translation id="5740911612628596808">Amlen C9</translation>
 <translation id="574392208103952083">Canolig</translation>
-<translation id="5744350700955456407">Gall awto-lenwi gwell bellach ddod o hyd i wybodaeth a'i llenwi - megis rhifau archebion a chodau cadarnhau hediadau - o apiau fel Gmail a Photos</translation>
+<translation id="5744350700955456407">Gall awtolenwi gwell bellach ddod o hyd i wybodaeth a'i llenwi — megis rhifau archebion a chodau cadarnhau hediadau — o apiau fel Gmail a Photos</translation>
 <translation id="5745586894920491759">Mae Chrome yn prosesu teitlau tudalennau a chyfeiriadau URL yn y cwmwl</translation>
 <translation id="5745733273847572235">Yn gallu gofyn am eich lleoliad</translation>
 <translation id="5750869797196646528">Olrhain dwylo</translation>
@@ -2881,6 +2882,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5794065675298686371">Trowch hysbysiadau olrhain prisiau ymlaen</translation>
 <translation id="5794093550048860249">Rhif olrhain</translation>
 <translation id="5796050750059455142">Trowch “<ph name="BEGIN_LINK" />Nodweddion clyfar mewn cynhyrchion Google eraill<ph name="LINK_END" />” ymlaen</translation>
+<translation id="5797916798049571144">Mae wedi'i gadw gyda gwybodaeth eich cerdyn felly bydd yn cael ei lenwi'n awtomatig wrth dalu</translation>
 <translation id="5797984091151707075">Wedi'i rwystro gan bolisi gweinyddwr</translation>
 <translation id="5804241973901381774">Caniatadau</translation>
 <translation id="5806871454498484178">Sgrolio a chwyddo wedi'i rwystro</translation>

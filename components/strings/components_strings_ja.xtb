@@ -239,6 +239,7 @@
 <translation id="1393071644879491291">アクセスしようとしたサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Google ウォレットに ID カードを安全に追加</translation>
 <translation id="1398743098754840707">タブに表示されている場合でも、ここに追加したサイトは回答で参照されません。現在スレッドで使用されているサイトを追加する場合、スレッドでそのサイトの参照を停止するまで、最大で 30 分ほどかかることがあります。</translation>
+<translation id="1403359480263156644">カード名義人を更新しました</translation>
 <translation id="1405567553485452995">ライトグリーン</translation>
 <translation id="1406370515365284486">お支払い方法は引き続き保存されます</translation>
 <translation id="1406500794671479665">確認中...</translation>
@@ -907,6 +908,7 @@
 <translation id="2498091847651709837">新しいカードをスキャン</translation>
 <translation id="2501270939904835585">ラベル（サテン）</translation>
 <translation id="2501278716633472235">戻る</translation>
+<translation id="250307989715832083">署名を追加</translation>
 <translation id="250346157641628208">紙（インクジェット）</translation>
 <translation id="2505063700931618106">カード情報を保存しました</translation>
 <translation id="2505268675989099013">アカウントを保護</translation>
@@ -1596,7 +1598,6 @@
 <translation id="3693516565203081475">お支払い方法を選択してください</translation>
 <translation id="3698353241727597930">企業が管理する <ph name="CLOUD_STORAGE" /> ストレージに <ph name="FILES" /> を保存するように管理者が設定しています。これらのファイルは、監視および監査され、削除した場合も保持される可能性があります。</translation>
 <translation id="3698629142018988477">[サイトを作成] ボタンです。実行すると、Google サイトで新しいサイトをすばやく作成できます</translation>
-<translation id="3698708128812719147">ウェブ上の任意の場所で Ctrl キーを 2 回押すと、詳細情報を探して入力できます</translation>
 <translation id="3700094625653511150">後払いオプションを非表示にするには、<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> に移動してください</translation>
 <translation id="3700966190175650601">パスワード入力で指紋認証を使用しています</translation>
 <translation id="3701427423622901115">リセットを確認しました。</translation>
@@ -1655,7 +1656,6 @@
 <translation id="3769584711865378220">位置情報へのアクセスを「おおよその位置」から「正確な位置」に変更することを <ph name="URL" /> が求めています</translation>
 <translation id="3772211998634047851">紙（ボンド）</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google Keep で新しいメモをすばやく作成します</translation>
-<translation id="3778045607993018262">Pix アカウントは <ph name="ACCOUNT_EMAIL" /> にリンクされます。Pix コードの検出をオフにするには、<ph name="BEGIN_LINK1" />Chrome の設定<ph name="END_LINK1" />に移動してください</translation>
 <translation id="3780694243617746492">排紙トレイ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetoothデバイス</translation>
@@ -1901,7 +1901,6 @@
 <translation id="4185037616931963178">Redress 番号を安全に更新</translation>
 <translation id="4186035307311647330">価格トラッキングを停止</translation>
 <translation id="4191334393248735295">長さ</translation>
-<translation id="4192770747482479191">ウェブ上の任意の場所で ⌘ キーを 2 回押すと、詳細情報を探して入力できます</translation>
 <translation id="4195459680867822611">[Chrome のヒントを表示] ボタンです。実行すると、Chrome の機能を確認できます</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4196861286325780578">移動のやり直し（&amp;R）</translation>
@@ -1919,6 +1918,7 @@
 <translation id="4218327733815631046">おおよその位置を保持</translation>
 <translation id="4219596572397833317">価格の推移などを確認して、スマートにショッピング。</translation>
 <translation id="4220128509585149162">クラッシュ</translation>
+<translation id="4220745762102459826">その他</translation>
 <translation id="4221630205957821124">&lt;h4&gt;ステップ 1: ポータルにログインする&lt;/h4&gt;
     &lt;p&gt;カフェや空港といった場所の Wi-Fi ネットワークを使用するには、ログインが必要です。ログインページを表示するには、&lt;code&gt;http://&lt;/code&gt; を使用しているページにアクセスします。&lt;/p&gt;
     &lt;ol&gt;
@@ -2294,6 +2294,7 @@
 <translation id="483241715238664915">警告をオンにする</translation>
 <translation id="4833567658337394628">貼り付けは推奨されません</translation>
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>
+<translation id="4842085418602350953">次回以降、アプリを切り替えずに Pix で支払う</translation>
 <translation id="4842365697443353018">後払いを使用するには、フォームを消去してください</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4844937814014739139">共有タブのスクロールとズーム</translation>
@@ -2468,6 +2469,7 @@
 <translation id="5115232566827194440">制限付き管理対象ゲスト セッションのオーバーライド</translation>
 <translation id="5115563688576182185">（64 ビット）</translation>
 <translation id="5116015291385561204">機密情報を自動入力する際に本人確認を行う</translation>
+<translation id="5121592697493894155">サイドパネルで Google 検索</translation>
 <translation id="5122786942953798871">封筒（コットン）</translation>
 <translation id="5123063207673082822">週末</translation>
 <translation id="5124797626438336458">後払い決済のエラー画面が画面の下半分に表示されています。</translation>
@@ -2880,6 +2882,7 @@
 <translation id="5794065675298686371">価格トラッキングの通知をオンにする</translation>
 <translation id="5794093550048860249">追跡番号</translation>
 <translation id="5796050750059455142">[<ph name="BEGIN_LINK" />他の Google サービスのスマート機能<ph name="LINK_END" />] をオンにします</translation>
+<translation id="5797916798049571144">カード情報とともに保存され、購入手続き時に自動入力されます</translation>
 <translation id="5797984091151707075">管理者ポリシーによりブロックされています</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5806871454498484178">スクロールとズームはブロックされました</translation>
@@ -4299,6 +4302,7 @@
 <translation id="8208629719488976364">印刷するページのコンテンツとプリンタに関する情報は、分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされ、会社のポリシーに基づいて保存され、管理者に公開されます。</translation>
 <translation id="8210490490377416373">ポリシー名を選択</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{他 1 件のソース}other{他 # 件のソース}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14x18 インチ</translation>
 <translation id="8218327578424803826">割り当てられた場所:</translation>

@@ -1595,7 +1595,6 @@
 <translation id="3693516565203081475">भुक्तानी विधि छनौट गर्नुहोस्</translation>
 <translation id="3698353241727597930">तपाईंका एड्मिनले <ph name="FILES" /> इन्टरप्राइजले व्यवस्थापन गर्ने <ph name="CLOUD_STORAGE" /> भण्डारणमा सेभ गर्ने सेटिङ लागू गर्नुभएको छ। यी फाइलहरूको निरीक्षण तथा जाँच गरिन सक्छ र तपाईंले यी फाइलहरू मेटाएपछि पनि यिनलाई सेभ गरेर राखिन सक्छ।</translation>
 <translation id="3698629142018988477">साइट बनाउने बटन, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन यो बटन थिच्नुहोस्</translation>
-<translation id="3698708128812719147">थप जानकारी भेट्टाउन र भर्न वेबमा कतै दुई पटक Ctrl थिच्नुहोस्</translation>
 <translation id="3700094625653511150">पछि भुक्तानी गर्ने विकल्पहरू लुकाउन <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> मा जानुहोस्</translation>
 <translation id="3700966190175650601">तपाईं पासवर्डहरू हाल्न आफ्नो फिंगरप्रिन्ट प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="3701427423622901115">रिसेट स्वीकार गरियो।</translation>
@@ -1654,7 +1653,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> ले लोकेसन एक्सेस परिवर्तन गरी "अनुमानित" बाट "सटीक" बनाउन चाहेको छ</translation>
 <translation id="3772211998634047851">पेपर (बन्ड)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep प्रयोग गरी तुरुन्तै नयाँ टिपोट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
-<translation id="3778045607993018262">Pix खाता <ph name="ACCOUNT_EMAIL" /> मा लिंक गरिने छ। Pix कोड पत्ता लगाउने सुविधा अफ गर्न <ph name="BEGIN_LINK1" />Chrome का सेटिङ<ph name="END_LINK1" />मा जानुहोस्</translation>
 <translation id="3780694243617746492">आउटपुट बिन</translation>
 <translation id="3783418713923659662">मास्टरकार्ड</translation>
 <translation id="3784372983762739446">ब्लुटुथ उपकरणहरू</translation>
@@ -1901,7 +1899,6 @@
 <translation id="4185037616931963178">सुरक्षित रूपमा रिड्रेस नम्बर अपडेट गर्नुहोस्</translation>
 <translation id="4186035307311647330">मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="4191334393248735295">लम्बाइ</translation>
-<translation id="4192770747482479191">थप जानकारी भेट्टाउन र भर्न वेबमा जुनसुकै ठाउँमा दुई पटक ⌘ थिच्नुहोस्</translation>
 <translation id="4195459680867822611">Chrome सम्बन्धी सुझावहरू हेर्ने बटन, Chrome का सुविधाहरूका बारेमा जान्न यो बटन थिच्नुहोस्</translation>
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4196861286325780578">सार्ने कार्य &amp;पुन: गर्नुहोस्</translation>
@@ -2295,6 +2292,7 @@
 <translation id="483241715238664915">चेतावनी देखाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4833567658337394628">पेस्ट गर्न सिफारिस गरिँदैन</translation>
 <translation id="4840250757394056958">Chrome को ब्राउजिङ इतिहास हेर्नुहोस्</translation>
+<translation id="4842085418602350953">अर्को पटक एपहरू अदलबदल नगरिकनै Pix मार्फत भुक्तानी गर्नुहोस्</translation>
 <translation id="4842365697443353018">पछि भुक्तानी गर्ने विकल्प प्रयोग गर्न फाराममा भएको जानकारी हटाउनुहोस्</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4844937814014739139">सेयर गरिएका ट्याबहरू स्क्रोल र जुम गर्ने</translation>
@@ -2469,6 +2467,7 @@
 <translation id="5115232566827194440">व्यवस्थापन गरिएका प्रतिबन्धित अतिथिको सत्रको ओभरराइड</translation>
 <translation id="5115563688576182185">(64-बिट)</translation>
 <translation id="5116015291385561204">संवेदनशील जानकारी अटोफिल गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
+<translation id="5121592697493894155">साइड प्यानलमा खुल्ने Google Search</translation>
 <translation id="5122786942953798871">इन्भलप (कटन)</translation>
 <translation id="5123063207673082822">सप्ताहान्त</translation>
 <translation id="5124797626438336458">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" मा त्रुटि देखिएको कुरा जानकारी दिने स्क्रिन आधा स्क्रिनमा खोलिएको छ।</translation>
@@ -4300,6 +4299,7 @@
 <translation id="8208629719488976364">तपाईंले प्रिन्ट गर्ने पेजका सामग्री र तपाईंको प्रिन्टरसम्बन्धी जानकारी विश्लेषण गर्ने प्रयोजनका लागि Google क्लाउड वा तेस्रो पक्षकहाँ पठाइन्छ। उदाहरणका लागि, उक्त फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
 <translation id="8210490490377416373">नीतिको नाम चयन गर्नुहोस्</translation>
 <translation id="8211406090763984747">जडान सुरक्षित छ</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ अन्य एउटा स्रोत}other{+ अन्य # वटा स्रोत}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">१४ x १८ इन्च</translation>
 <translation id="8218327578424803826">तोकिएको स्थान:</translation>

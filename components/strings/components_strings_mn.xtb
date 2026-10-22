@@ -1599,7 +1599,6 @@
 <translation id="3693516565203081475">Төлбөрийн хэрэгсэл сонгох</translation>
 <translation id="3698353241727597930">Танай администратор <ph name="FILES" />-г танай байгууллагын удирддаг <ph name="CLOUD_STORAGE" />-н хадгалах санд хадгалахаар тохируулсан. Таныг эдгээр файлыг устгах үед хянаж, аудит хийж, хадгалж магадгүй.</translation>
 <translation id="3698629142018988477">Сайт үүсгэх товчлуур, Google Sites-д шинэ сайт шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
-<translation id="3698708128812719147">Веб хөтчийн хаана ч Ctrl товчийг хоёр удаа дарж нэмэлт мэдээлэл хайх, бөглөх боломжтой</translation>
 <translation id="3700094625653511150">Дараа төлөх сонголтуудыг нуухын тулд <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> руу очно уу</translation>
 <translation id="3700966190175650601">Та нууц үгнүүдийг бөглөхөд хурууны хээгээ ашиглаж байна</translation>
 <translation id="3701427423622901115">Шинэчлэлтийг хүлээн зөвшөөрсөн.</translation>
@@ -1658,7 +1657,6 @@
 <translation id="3769584711865378220"><ph name="URL" /> байршлын хандалтыг барагцаалснаас нарийвчилсан болгож өөрчлөхийг хүсэж байна</translation>
 <translation id="3772211998634047851">Цаас (бонд)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-д шинэ тэмдэглэл шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
-<translation id="3778045607993018262">Pix бүртгэлийг <ph name="ACCOUNT_EMAIL" />-д холбоно. Pix код илрүүлэхийг унтраахын тулд <ph name="BEGIN_LINK1" />Chrome-н тохиргоо<ph name="END_LINK1" /> руу очно уу</translation>
 <translation id="3780694243617746492">Гарах цаасны сав</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth төхөөрөмжүүд</translation>
@@ -1904,7 +1902,6 @@
 <translation id="4185037616931963178">Залруулгын хяналтын дугаарыг (redress number) аюулгүй шинэчлээрэй</translation>
 <translation id="4186035307311647330">Үнэ хянахаа болих</translation>
 <translation id="4191334393248735295">Урт</translation>
-<translation id="4192770747482479191">Веб хөтчийн хаана ч ⌘ товчийг хоёр удаа дарж нэмэлт мэдээлэл хайх, бөглөх боломжтой</translation>
 <translation id="4195459680867822611">Chrome-н зөвлөгөө харах товчлуур, Chrome-н онцлогуудын талаар мэдэж авахын тулд идэвхжүүлнэ үү</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4196861286325780578">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>
@@ -2298,6 +2295,7 @@
 <translation id="483241715238664915">Сануулгыг асаах</translation>
 <translation id="4833567658337394628">Буулгахыг зөвлөхгүй</translation>
 <translation id="4840250757394056958">Chrome-н түүхээ үзэх</translation>
+<translation id="4842085418602350953">Дараагийн удаа апп сэлгэхгүйгээр Pix-р төлөөрэй</translation>
 <translation id="4842365697443353018">Дараа төлөхийг ашиглахын тулд маягтын мэдээллийг арилгана уу</translation>
 <translation id="484462545196658690">Автомат</translation>
 <translation id="4844937814014739139">Хуваалцсан табыг гүйлгэх, томруулах</translation>
@@ -2472,6 +2470,7 @@
 <translation id="5115232566827194440">Хязгаарласан хяналттай зочны сургалтыг дарах механизм</translation>
 <translation id="5115563688576182185">(64-бит)</translation>
 <translation id="5116015291385561204">Эмзэг мэдээллийг автоматаар бөглөхийн тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
+<translation id="5121592697493894155">Хажуугийн самбар дахь Google Хайлт</translation>
 <translation id="5122786942953798871">Дугтуй (хөвөн)</translation>
 <translation id="5123063207673082822">Амралтын өдөр</translation>
 <translation id="5124797626438336458">"Одоо ав, дараа төл" төлбөрийн хэрэгслийн алдааны дэлгэцийг тал өндрөөр нээсэн.</translation>
@@ -4302,6 +4301,7 @@
 <translation id="8208629719488976364">Таны хэвлэх хуудасны контент болон хэвлэгчийн талаарх мэдээллийг задлан шинжлүүлэхээр Google Cloud эсвэл гуравдагч талууд руу илгээнэ. Жишээ нь үүнд эмзэг өгөгдөл байгаа эсэхийг скан хийж, үүнийг компанийн бодлогод тулгуурлан хадгалж болох ба танай администратор харна.</translation>
 <translation id="8210490490377416373">Бодлогын нэр сонгох</translation>
 <translation id="8211406090763984747">Холболт аюулгүй байна</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{өөр + 1 эх сурвалж}other{өөр + # эх сурвалж}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 инч</translation>
 <translation id="8218327578424803826">Заасан байршил:</translation>

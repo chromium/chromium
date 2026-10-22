@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Բացեք <ph name="BEGIN_BOLD" />Կանխադրված հավելվածներ (Default Apps)<ph name="END_BOLD" /> կարգավորումը iOS-ում</translation>
 <translation id="1938871630297275912">{count,plural, =1{Հղում է ստացվել}one{{count} հղում է ստացվել}other{{count} հղում է ստացվել}}</translation>
 <translation id="1941314575388338491">Կրկնակի հպեք՝ պատճենելու համար:</translation>
+<translation id="1942483019269000450">Առաջադրանքը շարունակելու համար Gemini-ը կարող է խնդրել Google Wallet-ին լրացնել ձեր վարկային քարտի տվյալները</translation>
 <translation id="1943478190258551035">Ընտրացանկ → Կարգավորումներ</translation>
 <translation id="1944477975050820119">Ստացեք իրական ժամանակում հուշումներ, որոնք կօգնեն ձեզ գտնել ԱԲ-ի միջոցով դիտարկելու նոր եղանակներ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Մուտք գործեք կառավարվող հաշիվ</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">նոր տարր</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> հաշվում նույն գաղտնաբառն է օգտագործվում</translation>
 <translation id="205013082884273671">Որոնեք տեղեկություններ էկրանին ցուցադրվող ցանկացած բանի մասին</translation>
+<translation id="2053311407685904414">Ընտրեք հասցե</translation>
 <translation id="2054044186557130763">Մուտք գործել որպես <ph name="NAME" /> <ph name="EMAIL" />, կառավարվում է ձեր կազմակերպության կողմից։</translation>
 <translation id="2059166748188874810">Մունիցիպալիտետ</translation>
 <translation id="2060638295449304809">Այս հասցեն պահված է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Թարգմանել</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2360196772093551345">Բջջային տարբերակ</translation>
+<translation id="2360272811987888433">Մուտքագրել տվյալները ձեռքով</translation>
 <translation id="2362083820973145409">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />։ Բացել կարգավորումները:</translation>
 <translation id="2367025302166767427">Չհաջողվեց լրացնել ձեր տեղեկությունները</translation>
 <translation id="2371084566192454134">Ներդիրներ և ներդիրների խմբեր</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Պահել Google Լուսանկարներում</translation>
 <translation id="3406506285180498376">Կիսվել էջով…</translation>
 <translation id="340669334496430859">Վերջերս փոփոխված</translation>
+<translation id="3407832712016477396">Gemini-ը կարող է օգտագործել Google գաղտնաբառերի կառավարիչը՝ ձեր փոխարեն մուտք գործելու համար</translation>
 <translation id="3409785640040772790">Քարտեզներ</translation>
 <translation id="3416023309465857378">Հոկ 25, 2023</translation>
 <translation id="3419787211763835342">Օգնեք զարգացնել բարելավված ինքնալրացումը</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Երբեք չթույլատրել</translation>
 <translation id="4293154608148215505">ձեր հեռախոսում</translation>
 <translation id="4294506173142861371">Մուտք գործե՞լ որպես <ph name="FIRST_NAME" /></translation>
+<translation id="4297031046690565608">Մուտքագրել ձեռքով</translation>
+<translation id="4297418774230471285">Ընտրեք անձնական տեղեկություններ</translation>
 <translation id="4302061870579014542">Ընտրել դիրքը</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
 <translation id="4309403553630140242">Կրկնակի հպեք՝ լրացուցիչ տեղեկություններ ստանալու համար</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini-ը արհեստական բանականություն է և կարող է սխալներ թույլ տալ։ <ph name="BEGIN_LINK" />Իմանալ ավելին Google-ին ուղարկվող առնչվող տվյալների մասին<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Ներմուծելու ոչինչ չկա</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />՝ <ph name="NUM_SUGGESTIONS" />-ից</translation>
+<translation id="5316823130598991834">Մուտք գործեք <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5318298563956633672">Դուք արդեն հետագծում եք այս ապրանքը։</translation>
 <translation id="5327248766486351172">Անուն</translation>
@@ -2206,6 +2213,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="7839994177130598711">Այժմ ձեր ընտանիքի անդամները կարող են օգտագործել ձեր օգտանունն ու գաղտնաբառը, երբ Google գաղտնաբառերի կառավարչի օգնությամբ մուտք են գործում <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> կայքում։</translation>
 <translation id="7841180087127694526">Որոնել պատճենված տեքստը</translation>
 <translation id="7841418003178675048">Ընտրեք, թե որ քարտերն եք տեսնում ձեր նոր ներդիրի էջում։</translation>
+<translation id="7842369010458597654">Վճարային տեղեկությունների լրացում</translation>
 <translation id="7845466610722898">Ցույց տալ ընթերցանության ցանկը</translation>
 <translation id="7846161022626028328">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="784623644169604270">Նոր գործողություններ չկան</translation>

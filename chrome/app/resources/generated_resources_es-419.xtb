@@ -163,7 +163,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1109482864356262001">No se habilitarán las funciones que necesitan sensores de movimiento o de luz</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1110965959145884739">Elige los idiomas que quieres instalar en este dispositivo. Los archivos de idioma se comparten entre los usuarios para ahorrar espacio en el disco. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="111168944932507021">Enfocar el grupo de pestañas</translation>
 <translation id="1112227834592480032">Selecciona el botón de Google Lens, haz clic y arrastra el cursor sobre un problema</translation>
 <translation id="1112420131909513020">La pestaña en segundo plano está usando Bluetooth</translation>
 <translation id="1112998165730922436">Se detuvo la transmisión</translation>
@@ -829,6 +828,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1621984899599015181">Tu organización administra las opciones de uso compartido. Es posible que algunos elementos estén ocultos.</translation>
 <translation id="1622054403950683339">Olvidar la red Wi-Fi</translation>
 <translation id="1623723619460186680">Reducción de la luz azul</translation>
+<translation id="1623799258803152950">Esta página y el texto destacado se comparten con Google</translation>
 <translation id="1626581272720526544">Puedes descargar apps y juegos para Android a través de Play Store. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Descriptores de archivos</translation>
 <translation id="1627408615528139100">Ya se descargó</translation>
@@ -1594,7 +1594,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Fuente de contenido multimedia sin nombre</translation>
-<translation id="2223747115628460234">Volver a las pestañas abiertas</translation>
 <translation id="2224337661447660594">Sin Internet</translation>
 <translation id="2224444042887712269">Esta configuración pertenece a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar nombre de carpeta</translation>
@@ -1720,7 +1719,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2318143611928805047">Tamaño del papel</translation>
 <translation id="2319459402137712349">Selecciona un campo de texto para abrir el teclado. También puedes seleccionar el ícono de Teclado en la parte inferior de la pantalla.</translation>
 <translation id="2319993584768066746">Fotos de la pantalla de acceso</translation>
-<translation id="2322015964223112232">Volver a las pestañas abiertas</translation>
 <translation id="2322193970951063277">Encabezados y pies de página</translation>
 <translation id="2322622365472107569">Hora de finalización <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Redes Wi-Fi guardadas</translation>
@@ -2833,6 +2831,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
 <translation id="3144647712221361880">Abrir vínculo como</translation>
+<translation id="3146436581677566946">Modelo integrado en el dispositivo</translation>
 <translation id="3147878021189006333">Cuadro multifunción</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
 <translation id="3150927491400159470">Volver a cargar de manera forzada</translation>
@@ -3198,6 +3197,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3424969259347320884">Describir lo que estabas haciendo cuando se bloqueó la pestaña</translation>
 <translation id="3426562492084153055">Explorar habilidades</translation>
 <translation id="3427092606871434483">Permitir (predeterminado)</translation>
+<translation id="3427822597374329810">Modelo pequeño especializado</translation>
 <translation id="3429086384982427336">Las apps enumeradas a continuación no admitirán nunca los vínculos del protocolo.</translation>
 <translation id="3429174588714165399">Crea un acceso directo a esta página</translation>
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
@@ -3578,6 +3578,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3701167022068948696">Corregir ahora</translation>
 <translation id="3701515417135397388">Advertirme si se hackeó una contraseña en una violación de la seguridad de los datos</translation>
 <translation id="3701778844313851487">Ir a Extensiones</translation>
+<translation id="3701846426433416920">Borrar modelo</translation>
 <translation id="3703166520839776970">Si el problema persiste, selecciona "Más detalles" abajo para obtener más información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3703699162703116302">Se actualizó el ticket</translation>
 <translation id="370415077757856453">Se bloqueó JavaScript</translation>
@@ -4373,6 +4374,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="429312253194641664">Un sitio está reproduciendo contenido multimedia</translation>
 <translation id="4293154608148215505">tu teléfono</translation>
 <translation id="4293219510510666933">Usa el lenguaje cotidiano para buscar en tu historial de navegación y encontrar los sitios que visitaste. También puedes hacer preguntas y obtener respuestas basadas en tu historial de navegación. Este parámetro de configuración está activado.</translation>
+<translation id="429344752071832554">Dejar de enfocar el grupo</translation>
 <translation id="4294392694389031609">Se borró <ph name="FILE_NAME" /> del historial de descargas, pero aún está en tu dispositivo</translation>
 <translation id="429530814437327574">Mostrar apiladas</translation>
 <translation id="4295979599050707005">Vuelve a acceder para confirmar que tu cuenta <ph name="USER_EMAIL" /> se puede usar con sitios web, apps y extensiones en Chrome y Google Play. También puedes quitarla. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -4457,6 +4459,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4360738659108163902">Hacer clic con el botón derecho del mouse</translation>
 <translation id="4361745360460842907">Abrir como pestaña</translation>
 <translation id="4362459470237309049">Usa “.” para soltar un botón del mouse</translation>
+<translation id="4362871358537270439">Mostrar pestañas de otros dispositivos en el panel lateral</translation>
 <translation id="4363262124589131906">Los nuevos archivos de Mi unidad dejarán de sincronizarse automáticamente con esta Chromebook</translation>
 <translation id="4364129298304269786">Es posible que los sitios usen un servicio de protección de contenido para reproducir contenido protegido por derechos de autor</translation>
 <translation id="4364327530094270451">Melón</translation>
@@ -6599,7 +6602,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
 <translation id="6024317249717725918">&amp;Buscar fotograma con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Seguimiento de la pila</translation>
-<translation id="6026436621921471553">Dejar de enfocar el grupo de pestañas</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: Se conectó el dispositivo USB</translation>
 <translation id="6027143200498653403">Cuando haces preguntas sobre tu historial, puedes obtener respuestas sobre información específica de una página que visitaste.</translation>
 <translation id="6027945736510816438">¿Quisiste decir <ph name="WEBSITE" />?</translation>
@@ -7065,7 +7067,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6399675241776343019">Rechazado</translation>
 <translation id="6399774419735315745">Espía</translation>
 <translation id="6400360390396538896">Siempre activada en <ph name="ORIGIN" /></translation>
-<translation id="6400714103322134861">Dejar de enfocar el grupo de pestañas</translation>
 <translation id="6401118106417399952">El EID de tu dispositivo es <ph name="EID_NUMBER" /> y el número de serie es <ph name="SERIAL_NUMBER" />. Estos números se pueden usar para activar el servicio.</translation>
 <translation id="6402042774506839496">Para saber por qué, comunícate con el desarrollador de la app</translation>
 <translation id="6402921224457714577">Los sitios pueden solicitar permiso para controlar y reprogramar tus dispositivos MIDI</translation>
@@ -8107,6 +8108,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7188508872042490670">Datos de sitios en el dispositivo</translation>
 <translation id="7188755083797868960">Abre el modo de lectura más rápido con una combinación de teclas. Presiona Alt + Mayúsculas + R para activar o desactivar el modo de lectura.</translation>
 <translation id="7189234443051076392">Asegúrate de que haya espacio suficiente en tu dispositivo</translation>
+<translation id="7189558282078169397">Pestañas de otros dispositivos</translation>
 <translation id="7189965711416741966">Se agregó la huella digital.</translation>
 <translation id="7190921792980745354">¿Quieres bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Algunos vínculos compatibles se seguirán abriendo en <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> y otras <ph name="NUMBER_OF_OTHER_APPS" /> apps.</translation>
@@ -10035,7 +10037,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8652400352452647993">Error al empaquetar extensiones</translation>
 <translation id="8654151524613148204">El archivo es demasiado grande para que tu equipo lo procese.</translation>
 <translation id="8655295600908251630">Canal</translation>
-<translation id="8656101380279383244">Enfocar el grupo de pestañas</translation>
 <translation id="8656888282555543604">Habilitar el acceso con braille</translation>
 <translation id="8657393004602556571">¿Quieres descartar los comentarios?</translation>
 <translation id="8657542881463614516">Deslizar el dedo para navegar entre páginas</translation>

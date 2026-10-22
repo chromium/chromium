@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Åpne <ph name="BEGIN_BOLD" />Standardapper<ph name="END_BOLD" />-innstillingene i iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link mottatt}other{{count} linker mottatt}}</translation>
 <translation id="1941314575388338491">Dobbelttrykk for å kopiere.</translation>
+<translation id="1942483019269000450">For å fortsette med oppgaven kan Gemini be Google Wallet om å fylle ut kredittkortinformasjonen</translation>
 <translation id="1943478190258551035">Meny → Innstillinger</translation>
 <translation id="1944477975050820119">Få forslag i sanntid som kan hjelpe deg med å finne nye måter å surfe på med AI. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Logg på med administrert konto</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">nytt element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontoer bruker det samme passordet</translation>
 <translation id="205013082884273671">Søk etter hva som helst på skjermen</translation>
+<translation id="2053311407685904414">Velg adresse</translation>
 <translation id="2054044186557130763">Logg på som <ph name="NAME" /> <ph name="EMAIL" />, som administreres av organisasjonen din.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2060638295449304809">Denne adressen er bare lagret på denne enheten. For å bruke den på andre enheter, lagre den i Google-kontoen din (<ph name="USER_EMAIL" />).</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Oversett</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2360196772093551345">Be om mobilversjonen av nettstedet</translation>
+<translation id="2360272811987888433">Manuell pålogging</translation>
 <translation id="2362083820973145409">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
 <translation id="2367025302166767427">Kunne ikke fylle ut informasjonen din</translation>
 <translation id="2371084566192454134">Faner og fanegrupper</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Lagre i Google Foto</translation>
 <translation id="3406506285180498376">Del siden…</translation>
 <translation id="340669334496430859">Sist endret</translation>
+<translation id="3407832712016477396">Gemini kan bruke Google Passordlagring til å logge på for deg</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25. oktober 2023</translation>
 <translation id="3419787211763835342">Bidra til å gjøre forbedret autofyll bedre</translation>
@@ -1049,6 +1053,8 @@
 <translation id="4290920330097335010">Aldri tillat</translation>
 <translation id="4293154608148215505">telefonen din</translation>
 <translation id="4294506173142861371">Vil du logge på som <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Skriv inn manuelt</translation>
+<translation id="4297418774230471285">Velg personopplysninger</translation>
 <translation id="4302061870579014542">Velg posisjon</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4309403553630140242">Dobbelttrykk for å se mer informasjon</translation>
@@ -1387,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini er AI og kan gjøre feil. <ph name="BEGIN_LINK" />Mer om relevante data som sendes til Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Ingenting å importere</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Logg på <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318298563956633672">Du sporer allerede dette produktet.</translation>
 <translation id="5327248766486351172">Navn</translation>
@@ -2206,6 +2213,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="7839994177130598711">Nå kan familiemedlemmene dine bruke brukernavnet og passordet ditt når de bruker Google Passordlagring til å logge på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Søk etter teksten du kopierte</translation>
 <translation id="7841418003178675048">Velg hvilke kort du vil se på Ny fane-siden.</translation>
+<translation id="7842369010458597654">Fyller ut betalingsopplysninger</translation>
 <translation id="7845466610722898">Vis leselisten</translation>
 <translation id="7846161022626028328">Det oppsto en feil. Prøv på nytt.</translation>
 <translation id="784623644169604270">Ingen nylig aktivitet</translation>

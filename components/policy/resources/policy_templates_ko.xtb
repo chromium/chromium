@@ -3554,6 +3554,8 @@ URL 목록에 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />를 사용 �
 <translation id="3146711617256415776">텍스트 읽어주기 사용 시 향상된 네트워크 텍스트 음성 변환 음성을 허용하지 않음</translation>
 <translation id="315013437951136266"><ph name="IP_PROTECTION_NAME" /> 기능을 사용 설정합니다.</translation>
 <translation id="3150351525324499342">기본적으로 툴바에 <ph name="PRODUCT_NAME" /> 아이콘이 표시되지 않지만 사용자가 선택하도록 허용</translation>
+<translation id="3151501327418961907">이 정책을 0으로 설정하거나 설정하지 않으면 관리 브라우저에서 연결된 사용자의 사용자 범위에만 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 및 <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> 정책이 적용됩니다.
+이 정책을 1로 설정하면 사용자가 연결되지 않았더라도 사용자 범위에서 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 및 <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> 정책이 적용됩니다.</translation>
 <translation id="3152135410085709340">로컬 파일이 PDF 뷰어에서 사이트의 file:// URL에 액세스하도록 허용</translation>
 <translation id="3152425128389603870">통합 바탕화면을 기본적으로 허용하고 사용 설정합니다.</translation>
 <translation id="3159375329008977062">사용자가 UI를 통해 Crostini 컨테이너를 내보내고 가져올 수 있음</translation>
@@ -4382,6 +4384,21 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="370314752761795411"><ph name="MS_WIN_NAME" />로 <ph name="PRODUCT_NAME" /> 시작</translation>
 <translation id="3711895659073496551">일시중지</translation>
 <translation id="3712861436661566358">프로필 분리 적용</translation>
+<translation id="3715589988915487768"><ph name="PRODUCT_NAME" />에서 프록시 구성을 동적으로 가져오는 데 사용할 프로비저닝 도메인(PvD) 목록을 구성합니다.
+
+이 정책을 사용하면 RFC 8801('프로비저닝 도메인 이름 및 데이터 검색')에 정의된 대로 프로비저닝 도메인을 나타내는 도메인 이름 또는 리소스 URI 목록을 지정할 수 있습니다. 각 PvD에 대해 브라우저는 잘 알려진 엔드포인트 경로("https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd")에 HTTPS 요청을 전송하여 해당 JSON 구성을 확인합니다.
+
+목록의 각 항목은 다음을 지정합니다.
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: 프로비저닝 도메인의 식별자(도메인 이름)입니다.
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: 선택적 인증 구성입니다. 구성되지 않았거나 '없음'으로 설정된 경우 인증이 수행되지 않습니다. 'profile_bearer_token'으로 설정하면 브라우저가 로그인된 기본 계정에 제공된 범위로 OAuth2 액세스 토큰을 가져와 'Authorization' 헤더에 'Bearer' 토큰으로 연결합니다.
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: PvD 엔드포인트를 쿼리할 때 포함할 선택적 커스텀 HTTP 헤더 목록입니다. 'profile_id'(프로필별 구성 타겟팅을 사용 설정하는 기기의 브라우저 프로필에 대한 안정적인 고유 식별자를 나타냄) 또는 'accept_language'(브라우저의 기본 언어를 나타냄)와 같은 동적 값을 삽입할 수 있습니다.
+
+가져온 구성은 RFC 8801 스키마에 따라 파싱됩니다. PvD의 JSON 페이로드에 있는 프록시 구성 관련 라우팅 규칙 및 프록시만 적용됩니다. 이 정책을 설정하지 않으면 프로비저닝 도메인이 쿼리되거나 프록시 구성을 가져오는 데 사용되지 않습니다.
+
+이 정책은 사용자가 브라우저와 연결되어 있거나, 브라우저가 관리되지 않거나, <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> 정책이 1로 설정된 경우에만 사용자 수준에서 설정할 수 있습니다.</translation>
 <translation id="3719826155360621982">홈페이지</translation>
 <translation id="3724039569609354541">웹사이트에서 네트워크 엔드포인트에 요청할 수 있는지 여부를 결정할 때 기본 동작을 사용합니다.</translation>
 <translation id="3726715125055227414">이 정책은 로그인 화면에서 네트워크 요청을 할 때 특정 규정 준수 체계에서 승인한 알고리즘에 대한 선호도를 반영하기 위해 <ph name="PRODUCT_OS_NAME" /> 제품이 TLS 1.3에서 선호하는 키 계약 알고리즘(지원되는 그룹)을 우선하도록 설정합니다.
@@ -11866,6 +11883,7 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 
 정책을 사용 설정하거나 설정하지 않으면 페이지에 액세스할 수 있습니다.
 정책을 사용 중지하면 페이지가 차단됩니다.</translation>
+<translation id="8266506455952754231">관리 사용자가 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 및 <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME" /> 정책을 설정할 수 있는지 제어합니다.</translation>
 <translation id="8266778278542911985">이 정책을 3으로 설정하면 웹사이트에서 직렬 포트 액세스를 요청할 수 있습니다. 정책을 2로 설정하면 직렬 포트 액세스를 거부합니다.
 
       정책을 설정하지 않으면 웹사이트에서 액세스를 요청할 수 있지만, 사용자가 이 설정을 변경할 수 있습니다.</translation>

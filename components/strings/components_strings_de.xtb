@@ -1596,7 +1596,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3693516565203081475">Zahlungsmethode wählen</translation>
 <translation id="3698353241727597930">Dein Administrator hat festgelegt, dass <ph name="FILES" /> im unternehmensverwalteten <ph name="CLOUD_STORAGE" />‑Speicher gespeichert werden. Diese Dateien werden möglicherweise überwacht, geprüft und aufbewahrt, nachdem du sie gelöscht hast.</translation>
 <translation id="3698629142018988477">Button „Website erstellen“ – aktivieren, um schnell eine neue Website in Google Sites zu erstellen</translation>
-<translation id="3698708128812719147">Drücke an einer beliebigen Stelle im Web zweimal die Taste „Strg“, um weitere Informationen abzurufen und einzufügen</translation>
 <translation id="3700094625653511150">Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> auf</translation>
 <translation id="3700966190175650601">Du verwendest deinen Fingerabdruck zum Ausfüllen von Passwörtern</translation>
 <translation id="3701427423622901115">Zurücksetzen bestätigt.</translation>
@@ -1655,7 +1654,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3769584711865378220"><ph name="URL" /> möchte für den Zugriff den Standort von „Ungefähr“ zu „Genau“ ändern</translation>
 <translation id="3772211998634047851">Papier (Hartpost)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Notiz in Google Notizen zu erstellen</translation>
-<translation id="3778045607993018262">Das Pix-Konto wird mit <ph name="ACCOUNT_EMAIL" /> verknüpft. Wenn du die Erkennung von Pix-Codes deaktivieren möchtest, rufe die <ph name="BEGIN_LINK1" />Chrome-Einstellungen<ph name="END_LINK1" /> auf.</translation>
 <translation id="3780694243617746492">Ausgabefach</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-Geräte</translation>
@@ -1901,7 +1899,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4185037616931963178">Redress Number sicher aktualisieren</translation>
 <translation id="4186035307311647330">Preis nicht mehr beobachten</translation>
 <translation id="4191334393248735295">Länge</translation>
-<translation id="4192770747482479191">Drücke an einer beliebigen Stelle im Web zweimal die Taste „⌘“, um weitere Informationen abzurufen und einzufügen</translation>
 <translation id="4195459680867822611">Button „Chrome-Tipps aufrufen“ – aktivieren, um mehr über die Funktionen von Chrome zu erfahren</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4196861286325780578">&amp;Verschieben wiederholen</translation>
@@ -2295,6 +2292,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="483241715238664915">Warnmeldungen aktivieren</translation>
 <translation id="4833567658337394628">Einfügen nicht empfohlen</translation>
 <translation id="4840250757394056958">Chrome-Verlauf ansehen</translation>
+<translation id="4842085418602350953">Beim nächsten Mal mit Pix bezahlen, ohne zwischen Apps zu wechseln</translation>
 <translation id="4842365697443353018">Formular löschen, um die Option „Später bezahlen“ zu verwenden</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Scrollen und Zoomen auf geteilten Tabs</translation>
@@ -2469,6 +2467,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5115232566827194440">Eingeschränkte verwaltete Gastsitzung überschreiben</translation>
 <translation id="5115563688576182185">(64-Bit)</translation>
 <translation id="5116015291385561204">Vor Autofill von vertraulichen Daten Identität bestätigen</translation>
+<translation id="5121592697493894155">Google Suche in der Seitenleiste</translation>
 <translation id="5122786942953798871">Umschlag (Baumwolle)</translation>
 <translation id="5123063207673082822">Wochenende</translation>
 <translation id="5124797626438336458">Der Fehlerbildschirm für „Jetzt kaufen, später bezahlen“ ist halb geöffnet.</translation>
@@ -4301,6 +4300,7 @@ Weitere Details:
 <translation id="8208629719488976364">Die Inhalte der von dir gedruckten Seiten und Informationen zu deinem Drucker werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten geprüft, gemäß Unternehmensrichtlinien gespeichert und für deinen Administrator sichtbar sein.</translation>
 <translation id="8210490490377416373">Richtlinienname auswählen</translation>
 <translation id="8211406090763984747">Verbindung ist sicher</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 weitere Quelle}other{+ # weitere Quellen}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 × 18 Zoll</translation>
 <translation id="8218327578424803826">Zugewiesener Standort: </translation>

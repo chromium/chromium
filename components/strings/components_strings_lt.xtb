@@ -239,6 +239,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1393071644879491291">Svetainės, kurioje bandėte apsilankyti, atakos vykdytojai gali apgaule priversti jus įdiegti programinę įrangą ar atskleisti informaciją, pvz., slaptažodžius, telefono ar kredito kortelių numerius. „Chrome“ primygtinai rekomenduoja vėl naudoti saugos režimą. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau apie šį perspėjimą<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1397342126322860141">Saugiai pridėkite asmens tapatybės kortelės duomenis prie „Google Wallet“</translation>
 <translation id="1398743098754840707">Čia pridėtos svetainės nebus nurodomos atsakymuose, net jei skirtukas bus atidarytas. Jei svetainė, kurią pridedate, šiuo metu naudojama grupėje, gali praeiti iki 30 minučių, kol grupė nustos ją nurodyti.</translation>
+<translation id="1403359480263156644">Kortelės savininko vardas ir pavardė atnaujinti</translation>
 <translation id="1405567553485452995">Šviesiai žalia</translation>
 <translation id="1406370515365284486">Mokėjimo metodai vis tiek bus išsaugoti</translation>
 <translation id="1406500794671479665">Patvirtinama...</translation>
@@ -907,6 +908,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2498091847651709837">Nuskaityti naują kortelę</translation>
 <translation id="2501270939904835585">Etiketės (atlasinės)</translation>
 <translation id="2501278716633472235">Grįžti</translation>
+<translation id="250307989715832083">Pridėti parašą</translation>
 <translation id="250346157641628208">Popierius (rašalinis)</translation>
 <translation id="2505063700931618106">Kortelės informacija išsaugota</translation>
 <translation id="2505268675989099013">Apsaugoti paskyrą</translation>
@@ -1597,7 +1599,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3693516565203081475">Pasirinkite mokėjimo metodą</translation>
 <translation id="3698353241727597930">Administratorius sukonfigūravo išsaugoti <ph name="FILES" /> jūsų įmonės tvarkomoje <ph name="CLOUD_STORAGE" /> saugykloje. Šie failai gali būti stebimi, tikrinami ir saugomi, kai juos ištrinate.</translation>
 <translation id="3698629142018988477">Mygtukas „Sukurti svetainę“; suaktyvinkite, kad galėtumėte sparčiai sukurti naują svetainę „Google“ svetainėse</translation>
-<translation id="3698708128812719147">Bet kurioje žiniatinklio vietoje dukart paspauskite „Ctrl“, kad būtų rasta ir užpildyta daugiau informacijos</translation>
 <translation id="3700094625653511150">Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Naudojate piršto atspaudą slaptažodžiams užpildyti</translation>
 <translation id="3701427423622901115">Nustatymas iš naujo patvirtintas.</translation>
@@ -1656,7 +1657,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3769584711865378220"><ph name="URL" /> nori pakeisti prieigą prie vietovės iš apytikslės į tikslią</translation>
 <translation id="3772211998634047851">Popierius (standusis)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – klavišą „Enter“, jei norite greitai sukurti naują „Google Keep“ užrašą</translation>
-<translation id="3778045607993018262">„Pix“ paskyra bus susieta su <ph name="ACCOUNT_EMAIL" />. Jei norite išjungti „Pix“ kodo aptikimą, eikite į <ph name="BEGIN_LINK1" />„Chrome“ nustatymus<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Išvesties dėklas</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">„Bluetooth“ įrenginiai</translation>
@@ -1902,7 +1902,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4185037616931963178">Patikimai atnaujinkite skundo numerį</translation>
 <translation id="4186035307311647330">Nebestebėti kainų</translation>
 <translation id="4191334393248735295">Ilgis</translation>
-<translation id="4192770747482479191">Bet kurioje žiniatinklio vietoje dukart paspauskite ⌘, kad būtų rasta ir užpildyta daugiau informacijos</translation>
 <translation id="4195459680867822611">Mygtukas „Žr. „Chrome“ patarimus“; suaktyvinkite, jei norite sužinoti apie „Chrome“ funkcijas</translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
 <translation id="4196861286325780578">&amp;Perkelti dar kartą</translation>
@@ -1920,6 +1919,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4218327733815631046">Išlaikyti apytikslę vietovę</translation>
 <translation id="4219596572397833317">Peržiūrėkite kainų istoriją ir kt., kad galėtumėte apsipirkti išmaniau.</translation>
 <translation id="4220128509585149162">Gedimai</translation>
+<translation id="4220745762102459826">ir kt.</translation>
 <translation id="4221630205957821124">&lt;h4&gt;1 veiksmas: prisijunkite prie portalo&lt;/h4&gt;
     &lt;p&gt;Norint naudotis „Wi-Fi“ tinklais tokiose vietose kaip kavinės ar oro uostai, reikia prisijungti. Kad būtų rodomas prisijungimo puslapis, apsilankykite puslapyje, kuriame naudojama &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2295,6 +2295,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="483241715238664915">Įjungti įspėjimus</translation>
 <translation id="4833567658337394628">Nerekomenduojama įklijuoti</translation>
 <translation id="4840250757394056958">Peržiūrėti „Chrome“ istoriją</translation>
+<translation id="4842085418602350953">Kitą kartą mokėkite naudodami „Pix“ neperjungę programų</translation>
 <translation id="4842365697443353018">Išvalykite formą, kad galėtumėte naudoti mokėjimo vėliau parinktį</translation>
 <translation id="484462545196658690">Automatiškai</translation>
 <translation id="4844937814014739139">Slinkimas bendrinamais skirtukais ir jų mastelio keitimas</translation>
@@ -2469,6 +2470,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5115232566827194440">Apribotos valdomos svečio sesijos nepaisymas</translation>
 <translation id="5115563688576182185">(64 bitų)</translation>
 <translation id="5116015291385561204">Patvirtinkite savo tapatybę, kad galėtumėte automatiškai užpildyti neskelbtiną informaciją</translation>
+<translation id="5121592697493894155">„Google“ paieška šoniniame skydelyje</translation>
 <translation id="5122786942953798871">Vokas (medvilninis)</translation>
 <translation id="5123063207673082822">Savaitgalis</translation>
 <translation id="5124797626438336458">Funkcijos „Pirkite dabar, mokėkite vėliau“ klaidos ekranas atidarytas per pusę ekrano aukščio.</translation>
@@ -2881,6 +2883,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5794065675298686371">Įjunkite kainų stebėjimo pranešimus</translation>
 <translation id="5794093550048860249">Stebėjimo numeris</translation>
 <translation id="5796050750059455142">Įjunkite parinktį „<ph name="BEGIN_LINK" />Išmaniosios funkcijos kituose „Google“ produktuose<ph name="LINK_END" />“.</translation>
+<translation id="5797916798049571144">Jie išsaugoti su kortelės informacija, todėl bus automatiškai įvesti atsiskaitant</translation>
 <translation id="5797984091151707075">Užblokuota vadovaujantis administratoriaus politika</translation>
 <translation id="5804241973901381774">Leidimai</translation>
 <translation id="5806871454498484178">Slinkimas ir mastelio keitimas užblokuotas</translation>
@@ -4300,6 +4303,7 @@ Papildoma išsami informacija:
 <translation id="8208629719488976364">Spausdinamų puslapių turinys ir informacija apie spausdintuvą siunčiami „Google Cloud“ arba trečiosioms šalims analizuoti. Pavyzdžiui, jie gali būti nuskaityti tikrinant, ar juose nėra neskelbtinų duomenų, ir saugomi atsižvelgiant į įmonės politiką bei matomi administratoriui.</translation>
 <translation id="8210490490377416373">Pasirinkite politikos pavadinimą</translation>
 <translation id="8211406090763984747">Ryšys saugus</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ dar 1 šaltinis}one{+ dar # šaltinis}few{+ dar # šaltiniai}many{+ dar # šaltinio}other{+ dar # šaltinių}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 col.</translation>
 <translation id="8218327578424803826">Priskirta vieta:</translation>
