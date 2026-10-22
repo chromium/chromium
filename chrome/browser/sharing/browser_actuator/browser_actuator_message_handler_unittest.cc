@@ -61,15 +61,19 @@ class BrowserActuatorMessageHandlerTest : public testing::Test {
   }
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
-    browser_actuator::BrowserActuatorServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            profile_.get(),
-            base::BindRepeating([](content::BrowserContext* context)
-                                    -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  browser_actuator::MockBrowserActuatorService>();
-            }));
+    // Install the mock before the profile exists: KeyedServices created with
+    // the profile (such as ActorKeyedService) look up BrowserActuatorService
+    // at construction and again at shutdown, and must see the same instance.
+    profile_ =
+        TestingProfile::Builder()
+            .AddTestingFactory(
+                browser_actuator::BrowserActuatorServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<
+                      browser_actuator::MockBrowserActuatorService>();
+                }))
+            .Build();
     mock_service_ = static_cast<browser_actuator::MockBrowserActuatorService*>(
         browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
             profile_.get()));
@@ -340,8 +344,7 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
   }
 
   browser_actuator::SendSessionMessageRequest WaitForUpstreamRequest() {
-    const GURL upstream_url =
-        browser_actuator::transport::GetSendSessionMessageEndpoint();
+    const GURL upstream_url = browser_actuator::GetSendSessionMessageEndpoint();
     browser_actuator::SendSessionMessageRequest parsed;
     bool received = browser_actuator::transport::WaitFor([&]() {
       auto* pending = test_url_loader_factory_.pending_requests();
@@ -376,8 +379,7 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
 TEST_F(BrowserActuatorFcmIntegrationTest,
        FcmStartSessionStartsChannelAndSendsStartSessionAck) {
   browser_actuator::transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_,
-      browser_actuator::transport::GetWatchSessionsEndPoint());
+      &test_url_loader_factory_, browser_actuator::GetWatchSessionsEndPoint());
 
   components_sharing_message::SharingMessage sharing_msg;
   auto* bundled = sharing_msg.mutable_actuator_downstream_message();
@@ -485,8 +487,7 @@ class EchoTriggeringFactory
 TEST_F(BrowserActuatorFcmIntegrationTest,
        FcmGlicExperimentalTriggeringStartsChannelAndSendsUpstreamReply) {
   browser_actuator::transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_,
-      browser_actuator::transport::GetWatchSessionsEndPoint());
+      &test_url_loader_factory_, browser_actuator::GetWatchSessionsEndPoint());
   auto* service =
       browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
           profile_.get());

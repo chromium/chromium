@@ -10,6 +10,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+class GURL;
+
 namespace browser_actuator {
 
 BASE_DECLARE_FEATURE(kBrowserActuator);
@@ -19,6 +21,16 @@ BASE_DECLARE_FEATURE(kEnableBrowserActuatorForGlicExperimentalTriggering);
 // The OAuth2 scope used by the Browser Actuator for authentication with
 // Google APIs. This is configurable via Finch to support testing.
 extern const base::FeatureParam<std::string> kBrowserActuatorOAuth2ScopeParam;
+
+// Endpoints of the transport's OnePlatform API, configurable via Finch
+// (`BrowserActuatorEndpointUrl` and the two path params) to support testing.
+// `TransportServiceFactory` passes them to the transport.
+
+// Returns the full endpoint URL for `sendSessionMessage`.
+GURL GetSendSessionMessageEndpoint();
+
+// Returns the full endpoint URL for `watchSessions`.
+GURL GetWatchSessionsEndPoint();
 
 }  // namespace browser_actuator
 

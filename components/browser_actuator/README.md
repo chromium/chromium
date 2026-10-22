@@ -13,7 +13,8 @@ and internal implementations.
   interface (`BrowserActuatorService`), allowing embedders (e.g., `//chrome`,
   `//ios`) to consume the service without depending on internal implementation
   details.
-* `internal/`: The service implementation, which owns the transport channel.
+* `internal/`: The service implementation, which reaches the transport
+  through `TransportService`.
 * `test_support/`: Fakes, mocks, and test utilities for unit and browser
   integration testing.
 
@@ -24,12 +25,20 @@ The bi-directional transport between Chrome and the server lives in the
 component, so other features can use it on its own:
 
 * `public/transport/`: interfaces for features and embedders
-  (`TransportChannel`, `TransportSession`, `TransportHandler`,
-  `TransportHandlerFactory`, their registries, and `PayloadType`).
-* `internal/transport/`: the channel, session and registry implementations,
-  control commands, the session stream recorder, the transport protos, and
-  the wire layer (see `internal/transport/README.md`).
+  (`TransportService`, `TransportChannel`, `TransportSession`,
+  `TransportHandler`, `TransportHandlerFactory`, their registries, and
+  `PayloadType`).
+* `internal/transport/`: `TransportServiceImpl`, the channel, session and
+  registry implementations, control commands, the session stream recorder,
+  the transport protos, and the wire layer (see `internal/transport/README.md`).
 * `test_support/transport/`: mocks for the transport interfaces.
+
+`TransportService` is a per-profile KeyedService of its own, created by
+`//chrome/browser/browser_actuator/transport:TransportServiceFactory`. The
+factory decides the endpoints and whether sessions are recorded, so the
+transport reads none of its clients' features. Features that use the transport
+depend on `TransportServiceFactory` directly rather than on
+`BrowserActuatorService`.
 
 `DEPS` files forbid transport code from including the rest of this component,
 and `//components/browser_actuator/internal/transport:isolation_check` fails

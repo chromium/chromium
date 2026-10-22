@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("transport") {
+  sources = [
+    "transport_service_factory.cc",
+    "transport_service_factory.h",
+  ]
+
+  public_deps = [ "//chrome/browser/profiles:profile" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/signin",
+    "//components/browser_actuator/internal/transport:service",
+    "//components/browser_actuator/public:feature_list",
+    "//components/browser_actuator/public/transport:service",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "transport_service_factory_unittest.cc" ]
+
+  deps = [
+    ":transport",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/browser_actuator/public:feature_list",
+    "//components/browser_actuator/public/transport:service",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -9,13 +9,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/568448841): The endpoint params still hang off
-  # browser_actuator::kBrowserActuator.
-  "features\\.cc": [
-    "+components/browser_actuator/public/features.h",
-  ],
   ".*_unittest\\.cc": [
     "+components/browser_actuator/test_support/transport",
+    "+net/base/net_errors.h",
   ],
   "rust_stream_framer_unittest\\.cc": [
     "+components/browser_actuator/test_support/transport",

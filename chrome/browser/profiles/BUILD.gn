@@ -766,6 +766,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/bookmarks",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/browser_actuator",
+    "//chrome/browser/browser_actuator/transport",
     "//chrome/browser/browsing_data",
     "//chrome/browser/btm",
     "//chrome/browser/client_hints",

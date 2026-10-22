@@ -14,15 +14,15 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
-#include "components/browser_actuator/internal/browser_actuator_service_impl.h"
 #include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 #include "components/browser_actuator/internal/transport/test_support/fake_proto_stream_server.h"
 #include "components/browser_actuator/internal/transport/test_support/wait_for.h"
 #include "components/browser_actuator/internal/transport/transport_channel_impl.h"
-#include "components/browser_actuator/public/features.h"
+#include "components/browser_actuator/internal/transport/transport_service_impl.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport/transport_channel.h"
@@ -33,14 +33,23 @@
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
-namespace browser_actuator {
+namespace browser_actuator::transport {
 namespace {
+
+// Test-only endpoints, so that the test does not depend on the
+// endpoints any embedder configures.
+constexpr char kTestWatchSessionsEndpoint[] =
+    "https://transport.test/v1:watchSessions";
+constexpr char kTestSendSessionMessageEndpoint[] =
+    "https://transport.test/v1:sendSessionMessage";
 
 ActuatorDownstreamMessage BuildDownstreamControlMessage(
     std::string_view session_id,
@@ -51,8 +60,8 @@ ActuatorDownstreamMessage BuildDownstreamControlMessage(
   msg.set_sequence_number(sequence_number);
   auto* typed = msg.add_typed_payloads();
   typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
-  typed->mutable_proto_payload()->set_type_url(std::string(
-      transport::ExpectedTypeUrl(transport::PayloadType::kControl)));
+  typed->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kControl)));
   typed->mutable_proto_payload()->set_value(command.SerializeAsString());
   return msg;
 }
@@ -68,18 +77,17 @@ ActuatorDownstreamMessage BuildDownstreamExperimentalTriggeringMessage(
   typed->set_payload_type(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   typed->mutable_proto_payload()->set_type_url(
-      std::string(transport::ExpectedTypeUrl(
-          transport::PayloadType::kExperimentalTriggering)));
+      std::string(ExpectedTypeUrl(PayloadType::kExperimentalTriggering)));
   typed->mutable_proto_payload()->set_value(payload.SerializeAsString());
   return msg;
 }
 
 // A real feature handler that records incoming `kExperimentalTriggering`
 // payloads and optionally sends an upstream reply on `session_`.
-class EchoExperimentalTriggeringHandler : public transport::TransportHandler {
+class EchoExperimentalTriggeringHandler : public TransportHandler {
  public:
   EchoExperimentalTriggeringHandler(
-      transport::TransportSession* session,
+      TransportSession* session,
       std::vector<components_sharing_message::GlicExperimentalTriggering>*
           received_messages,
       bool send_upstream_reply)
@@ -87,9 +95,9 @@ class EchoExperimentalTriggeringHandler : public transport::TransportHandler {
         received_messages_(received_messages),
         send_upstream_reply_(send_upstream_reply) {}
 
-  void OnMessage(transport::PayloadType payload_type,
+  void OnMessage(PayloadType payload_type,
                  std::string_view serialized_payload) override {
-    EXPECT_EQ(payload_type, transport::PayloadType::kExperimentalTriggering);
+    EXPECT_EQ(payload_type, PayloadType::kExperimentalTriggering);
     components_sharing_message::GlicExperimentalTriggering parsed;
     ASSERT_TRUE(parsed.ParseFromArray(serialized_payload.data(),
                                       serialized_payload.size()));
@@ -100,14 +108,13 @@ class EchoExperimentalTriggeringHandler : public transport::TransportHandler {
       reply.set_context_id("ack:" + parsed.context_id());
       EXPECT_TRUE(
           session_
-              ->SendUpstreamMessage(
-                  transport::PayloadType::kExperimentalTriggering, reply)
+              ->SendUpstreamMessage(PayloadType::kExperimentalTriggering, reply)
               .has_value());
     }
   }
 
  private:
-  const raw_ptr<transport::TransportSession> session_;
+  const raw_ptr<TransportSession> session_;
   const raw_ptr<
       std::vector<components_sharing_message::GlicExperimentalTriggering>>
       received_messages_;
@@ -117,8 +124,7 @@ class EchoExperimentalTriggeringHandler : public transport::TransportHandler {
 // TODO(crbug.com/566363773): Add an integration test for the concrete
 // BrowserActuator action payload handler once the wire payload type is
 // defined in ActuatorDownstreamPayloadType.
-class EchoExperimentalTriggeringFactory
-    : public transport::TransportHandlerFactory {
+class EchoExperimentalTriggeringFactory : public TransportHandlerFactory {
  public:
   explicit EchoExperimentalTriggeringFactory(
       std::vector<components_sharing_message::GlicExperimentalTriggering>*
@@ -127,17 +133,16 @@ class EchoExperimentalTriggeringFactory
       : received_messages_(received_messages),
         send_upstream_reply_(send_upstream_reply) {}
 
-  transport::FactoryId GetFactoryId() const override {
-    return transport::FactoryId::kExperimentalTriggering;
+  FactoryId GetFactoryId() const override {
+    return FactoryId::kExperimentalTriggering;
   }
 
-  std::vector<transport::PayloadType> GetSupportedPayloadTypes()
-      const override {
-    return {transport::PayloadType::kExperimentalTriggering};
+  std::vector<PayloadType> GetSupportedPayloadTypes() const override {
+    return {PayloadType::kExperimentalTriggering};
   }
 
-  std::unique_ptr<transport::TransportHandler> OnNewSession(
-      transport::TransportSession* session) override {
+  std::unique_ptr<TransportHandler> OnNewSession(
+      TransportSession* session) override {
     return std::make_unique<EchoExperimentalTriggeringHandler>(
         session, received_messages_, send_upstream_reply_);
   }
@@ -150,36 +155,39 @@ class EchoExperimentalTriggeringFactory
 };
 
 // Component-level integration tests exercising the full
-// `BrowserActuatorServiceImpl` stack (`ProtoStreamClient`, `RustStreamFramer`,
+// `TransportServiceImpl` stack (`ProtoStreamClient`, `RustStreamFramer`,
 // `UpstreamMessageClient`, `OAuthTokenGetterImpl`, `TransportChannelImpl`,
 // `TransportSessionRegistryImpl`, `TransportSessionImpl`, and
 // `ControlTransportHandler`) against `FakeProtoStreamServer` and
 // `TestURLLoaderFactory`.
-class BrowserActuatorIntegrationTest : public testing::Test {
+class TransportServiceIntegrationTest : public testing::Test {
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kBrowserActuator,
-                              transport::kBrowserActuatorChannelEnabled,
-                              kBrowserActuatorInternals},
+        /*enabled_features=*/{kBrowserActuatorChannelEnabled},
         /*disabled_features=*/{});
 
     identity_test_env_.MakePrimaryAccountAvailable(
         "user@example.com", signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
 
-    service_ = std::make_unique<BrowserActuatorServiceImpl>(
+    TransportServiceConfig config;
+    config.watch_sessions_endpoint = GURL(kTestWatchSessionsEndpoint);
+    config.send_session_message_endpoint =
+        GURL(kTestSendSessionMessageEndpoint);
+    config.record_sessions = true;
+    service_ = std::make_unique<TransportServiceImpl>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        identity_test_env_.identity_manager());
+        identity_test_env_.identity_manager(), std::move(config));
   }
 
   // Waits for an upstream HTTP POST request, parses its protobuf body into
   // `SendSessionMessageRequest`, and completes the request with HTTP 200 OK.
   SendSessionMessageRequest WaitForUpstreamRequest() {
-    const GURL upstream_url = transport::GetSendSessionMessageEndpoint();
+    const GURL upstream_url = GURL(kTestSendSessionMessageEndpoint);
     SendSessionMessageRequest parsed;
-    bool received = transport::WaitFor([&]() {
+    bool received = WaitFor([&]() {
       auto* pending_requests = test_url_loader_factory_.pending_requests();
       for (auto it = pending_requests->begin(); it != pending_requests->end();
            ++it) {
@@ -206,9 +214,8 @@ class BrowserActuatorIntegrationTest : public testing::Test {
     received_messages_.clear();
   }
 
-  transport::TransportChannelImpl* channel_impl() {
-    return static_cast<transport::TransportChannelImpl*>(
-        service_->GetChannel());
+  TransportChannelImpl* channel_impl() {
+    return static_cast<TransportChannelImpl*>(service_->GetChannel());
   }
 
   std::vector<components_sharing_message::GlicExperimentalTriggering>
@@ -218,15 +225,15 @@ class BrowserActuatorIntegrationTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<BrowserActuatorServiceImpl> service_;
+  std::unique_ptr<TransportServiceImpl> service_;
 };
 
-TEST_F(BrowserActuatorIntegrationTest,
+TEST_F(TransportServiceIntegrationTest,
        DownstreamStartSessionTriggersUpstreamStartSessionAck) {
-  transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
 
-  transport::TransportSession* session =
+  TransportSession* session =
       service_->GetOrCreateSession("session-handshake-1");
   ASSERT_NE(session, nullptr);
 
@@ -257,7 +264,7 @@ TEST_F(BrowserActuatorIntegrationTest,
   EXPECT_EQ(upstream_msg.typed_payloads(0).payload_type(),
             ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   EXPECT_EQ(upstream_msg.typed_payloads(0).proto_payload().type_url(),
-            transport::ExpectedTypeUrl(transport::PayloadType::kControl));
+            ExpectedTypeUrl(PayloadType::kControl));
 
   ControlCommand ack_cmd;
   ASSERT_TRUE(ack_cmd.ParseFromString(
@@ -267,7 +274,7 @@ TEST_F(BrowserActuatorIntegrationTest,
   // Verify chrome://browser-actuator-internals SessionStreamRecorderFactory
   // records both the downstream StartSession message (via TransportHandler)
   // and the upstream StartSessionAck message (via TransportMessageObserver).
-  transport::SessionStreamRecorderFactory* recorder_factory =
+  SessionStreamRecorderFactory* recorder_factory =
       service_->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
   base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
@@ -283,7 +290,7 @@ TEST_F(BrowserActuatorIntegrationTest,
 }
 
 TEST_F(
-    BrowserActuatorIntegrationTest,
+    TransportServiceIntegrationTest,
     DownstreamExperimentalTriggeringReachesFeatureHandlerAndCorrelatesUpstreamReply) {
   EchoExperimentalTriggeringFactory feature_factory(
       &received_messages_,
@@ -291,15 +298,14 @@ TEST_F(
   service_->GetChannel()->GetHandlerFactoryRegistry()->RegisterFactory(
       &feature_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
-      &transport::TransportHandlerFactoryRegistry::UnregisterFactory,
+      &TransportHandlerFactoryRegistry::UnregisterFactory,
       base::Unretained(service_->GetChannel()->GetHandlerFactoryRegistry()),
       &feature_factory));
 
-  transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
 
-  transport::TransportSession* session =
-      service_->GetOrCreateSession("session-feature-1");
+  TransportSession* session = service_->GetOrCreateSession("session-feature-1");
   ASSERT_NE(session, nullptr);
   stream_server.WaitForConnection();
 
@@ -321,8 +327,7 @@ TEST_F(
   EXPECT_EQ(upstream_msg.typed_payloads(0).payload_type(),
             ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   EXPECT_EQ(upstream_msg.typed_payloads(0).proto_payload().type_url(),
-            transport::ExpectedTypeUrl(
-                transport::PayloadType::kExperimentalTriggering));
+            ExpectedTypeUrl(PayloadType::kExperimentalTriggering));
 
   components_sharing_message::GlicExperimentalTriggering upstream_reply;
   ASSERT_TRUE(upstream_reply.ParseFromString(
@@ -330,9 +335,9 @@ TEST_F(
   EXPECT_EQ(upstream_reply.context_id(), "ack:navigate:https://example.com");
 }
 
-TEST_F(BrowserActuatorIntegrationTest, DownstreamCloseSessionDestroysSession) {
-  transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
+TEST_F(TransportServiceIntegrationTest, DownstreamCloseSessionDestroysSession) {
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
 
   ASSERT_NE(service_->GetOrCreateSession("session-to-close"), nullptr);
   stream_server.WaitForConnection();
@@ -342,10 +347,10 @@ TEST_F(BrowserActuatorIntegrationTest, DownstreamCloseSessionDestroysSession) {
   stream_server.PushMessage(BuildDownstreamControlMessage(
       "session-to-close", /*sequence_number=*/2, close_cmd));
 
-  ASSERT_TRUE(transport::WaitFor(
+  ASSERT_TRUE(WaitFor(
       [&]() { return service_->GetSession("session-to-close") == nullptr; }));
 
-  transport::SessionStreamRecorderFactory* recorder_factory =
+  SessionStreamRecorderFactory* recorder_factory =
       service_->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
   base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
@@ -358,16 +363,16 @@ TEST_F(BrowserActuatorIntegrationTest, DownstreamCloseSessionDestroysSession) {
   EXPECT_EQ(session_dict->FindBool("is_active"), false);
 }
 
-TEST_F(BrowserActuatorIntegrationTest,
+TEST_F(TransportServiceIntegrationTest,
        DownstreamCloseChannelDisconnectsStream) {
-  transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
 
   ASSERT_NE(service_->GetOrCreateSession("session-channel-close"), nullptr);
   stream_server.WaitForConnection();
-  ASSERT_TRUE(transport::WaitFor([&]() {
+  ASSERT_TRUE(WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
-           transport::DownstreamConnectionState::kConnected;
+           DownstreamConnectionState::kConnected;
   }));
 
   ControlCommand close_channel_cmd;
@@ -375,25 +380,25 @@ TEST_F(BrowserActuatorIntegrationTest,
   stream_server.PushMessage(BuildDownstreamControlMessage(
       "session-channel-close", /*sequence_number=*/3, close_channel_cmd));
 
-  ASSERT_TRUE(transport::WaitFor([&]() {
+  ASSERT_TRUE(WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
-           transport::DownstreamConnectionState::kDisconnected;
+           DownstreamConnectionState::kDisconnected;
   }));
 }
 
-TEST_F(BrowserActuatorIntegrationTest,
+TEST_F(TransportServiceIntegrationTest,
        KeepAliveNoopIgnoredAndReconnectResumesFromLastSeenSequenceNumber) {
   EchoExperimentalTriggeringFactory feature_factory(
       &received_messages_, /*send_upstream_reply=*/false);
   service_->GetChannel()->GetHandlerFactoryRegistry()->RegisterFactory(
       &feature_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
-      &transport::TransportHandlerFactoryRegistry::UnregisterFactory,
+      &TransportHandlerFactoryRegistry::UnregisterFactory,
       base::Unretained(service_->GetChannel()->GetHandlerFactoryRegistry()),
       &feature_factory));
 
-  transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
 
   ASSERT_NE(service_->GetOrCreateSession("session-resume"), nullptr);
   stream_server.WaitForConnection();
@@ -409,8 +414,7 @@ TEST_F(BrowserActuatorIntegrationTest,
   payload_1.set_context_id("step-1");
   stream_server.PushMessage(BuildDownstreamExperimentalTriggeringMessage(
       "session-resume", /*sequence_number=*/1, payload_1));
-  ASSERT_TRUE(
-      transport::WaitFor([&]() { return received_messages_.size() == 1u; }));
+  ASSERT_TRUE(WaitFor([&]() { return received_messages_.size() == 1u; }));
   EXPECT_EQ(received_messages_[0].context_id(), "step-1");
 
   // 2. Abort the stream with a network reset and advance mock time by the 3s
@@ -430,44 +434,44 @@ TEST_F(BrowserActuatorIntegrationTest,
             1);
 }
 
-TEST_F(BrowserActuatorIntegrationTest,
+TEST_F(TransportServiceIntegrationTest,
        StreamStatusTrailersCleanlyFinishWithoutReconnecting) {
-  transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
 
   ASSERT_NE(service_->GetOrCreateSession("session-status-finish"), nullptr);
   stream_server.WaitForConnection();
-  ASSERT_TRUE(transport::WaitFor([&]() {
+  ASSERT_TRUE(WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
-           transport::DownstreamConnectionState::kConnected;
+           DownstreamConnectionState::kConnected;
   }));
 
   stream_server.PushTrailersAndFinish(/*rpc_status_code=*/0, "OK");
-  ASSERT_TRUE(transport::WaitFor([&]() {
+  ASSERT_TRUE(WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
-           transport::DownstreamConnectionState::kDisconnected;
+           DownstreamConnectionState::kDisconnected;
   }));
   task_environment_.FastForwardBy(base::Seconds(10));
 
   EXPECT_EQ(channel_impl()->downstream_connection_state(),
-            transport::DownstreamConnectionState::kDisconnected);
+            DownstreamConnectionState::kDisconnected);
   EXPECT_EQ(stream_server.connection_count(), 1);
 }
 
 TEST_F(
-    BrowserActuatorIntegrationTest,
+    TransportServiceIntegrationTest,
     DownstreamUnknownPayloadTypeDroppedGracefullyAndSubsequentPayloadDelivered) {
   EchoExperimentalTriggeringFactory feature_factory(
       &received_messages_, /*send_upstream_reply=*/false);
   service_->GetChannel()->GetHandlerFactoryRegistry()->RegisterFactory(
       &feature_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
-      &transport::TransportHandlerFactoryRegistry::UnregisterFactory,
+      &TransportHandlerFactoryRegistry::UnregisterFactory,
       base::Unretained(service_->GetChannel()->GetHandlerFactoryRegistry()),
       &feature_factory));
 
-  transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
 
   ASSERT_NE(service_->GetOrCreateSession("session-unknown-type"), nullptr);
   stream_server.WaitForConnection();
@@ -491,25 +495,24 @@ TEST_F(
   stream_server.PushMessage(BuildDownstreamExperimentalTriggeringMessage(
       "session-unknown-type", /*sequence_number=*/2, downstream_payload));
 
-  ASSERT_TRUE(
-      transport::WaitFor([&]() { return received_messages_.size() == 1u; }));
+  ASSERT_TRUE(WaitFor([&]() { return received_messages_.size() == 1u; }));
   EXPECT_EQ(received_messages_[0].context_id(), "step-after-unknown");
   EXPECT_NE(service_->GetSession("session-unknown-type"), nullptr);
 }
 
-TEST_F(BrowserActuatorIntegrationTest,
+TEST_F(TransportServiceIntegrationTest,
        OutOfOrderDownstreamMessagesDeliveredInSequence) {
   EchoExperimentalTriggeringFactory feature_factory(
       &received_messages_, /*send_upstream_reply=*/true);
   service_->GetChannel()->GetHandlerFactoryRegistry()->RegisterFactory(
       &feature_factory);
   base::ScopedClosureRunner unregister_runner(base::BindOnce(
-      &transport::TransportHandlerFactoryRegistry::UnregisterFactory,
+      &TransportHandlerFactoryRegistry::UnregisterFactory,
       base::Unretained(service_->GetChannel()->GetHandlerFactoryRegistry()),
       &feature_factory));
 
-  transport::FakeProtoStreamServer stream_server(
-      &test_url_loader_factory_, transport::GetWatchSessionsEndPoint());
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
 
   ASSERT_NE(service_->GetOrCreateSession("session-reordered"), nullptr);
   stream_server.WaitForConnection();
@@ -539,4 +542,4 @@ TEST_F(BrowserActuatorIntegrationTest,
 }
 
 }  // namespace
-}  // namespace browser_actuator
+}  // namespace browser_actuator::transport

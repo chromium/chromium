@@ -2527,6 +2527,7 @@ test("unit_tests") {
     "//chrome/browser/breadcrumbs:unit_tests",
     "//chrome/browser/browser_actuator:unit_tests",
     "//chrome/browser/browser_actuator/internals:unit_tests",
+    "//chrome/browser/browser_actuator/transport:unit_tests",
     "//chrome/browser/browsing_data:unit_tests",
     "//chrome/browser/btm:unit_tests",
     "//chrome/browser/chooser_controller:unit_tests",

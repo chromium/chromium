@@ -24,7 +24,6 @@
 #include "base/test/task_environment.h"
 #include "components/browser_actuator/internal/transport/control_transport_handler.h"
 #include "components/browser_actuator/internal/transport/downstream_message_sequencer.h"
-#include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
@@ -47,9 +46,13 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace browser_actuator::transport {
 namespace {
+
+constexpr char kTestSendSessionMessageEndpoint[] =
+    "https://transport.test/v1:sendSessionMessage";
 
 using ::testing::AllOf;
 using ::testing::Property;
@@ -178,7 +181,8 @@ class TransportChannelImplTestBase : public testing::Test {
         std::make_unique<UpstreamMessageClient>(
             test_shared_url_loader_factory_,
             identity_test_env_.identity_manager(),
-            GetSendSessionMessageEndpoint(), TRAFFIC_ANNOTATION_FOR_TESTS),
+            GURL(kTestSendSessionMessageEndpoint),
+            TRAFFIC_ANNOTATION_FOR_TESTS),
         base::BindOnce(
             [](std::unique_ptr<FakeMessageStreamClient> owned_client,
                std::unique_ptr<StreamConnectionDelegate>)
@@ -556,7 +560,7 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessage) {
       test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_NE(pending, nullptr);
 
-  EXPECT_EQ(pending->request.url, GetSendSessionMessageEndpoint());
+  EXPECT_EQ(pending->request.url, GURL(kTestSendSessionMessageEndpoint));
   EXPECT_EQ(pending->request.method, "POST");
 
   std::optional<std::string> content_type =

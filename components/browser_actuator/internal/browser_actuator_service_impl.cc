@@ -4,185 +4,48 @@
 
 #include "components/browser_actuator/internal/browser_actuator_service_impl.h"
 
-#include <memory>
-#include <utility>
-
-#include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "components/browser_actuator/internal/transport/features.h"
-#include "components/browser_actuator/internal/transport/message_stream_client.h"
-#include "components/browser_actuator/internal/transport/oauth/oauth_stream_connection_delegate.h"
-#include "components/browser_actuator/internal/transport/proto_stream_client/proto_stream_client.h"
-#include "components/browser_actuator/internal/transport/proto_stream_client/rust_stream_framer.h"
-#include "components/browser_actuator/internal/transport/session_stream_recorder.h"
-#include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
-#include "components/browser_actuator/internal/transport/transport_channel_impl.h"
-#include "components/browser_actuator/internal/transport/upstream_message_client/upstream_message_client.h"
-#include "components/browser_actuator/public/features.h"
-#include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
-#include "components/browser_actuator/public/transport/transport_session_registry.h"
-#include "components/signin/public/base/oauth_consumer_id.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "url/gurl.h"
+#include "components/browser_actuator/public/transport/transport_service.h"
 
 namespace browser_actuator {
 
-namespace {
-
-net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
-  return net::DefineNetworkTrafficAnnotation("browser_actuator_transport", R"(
-    semantics {
-      sender: "Browser Actuator Service"
-      description:
-        "Transfers browser agent commands, execution results, page state, "
-        "and screenshots between Chrome and Google servers. This allows "
-        "Chrome to receive and execute automated browsing actions requested "
-        "by the user, and report execution status, annotated page context, "
-        "and tab state back to the servers."
-      trigger:
-        "Triggered when a signed-in user initiates an automated task or "
-        "workflow from the Gemini App or assistant surface that delegates "
-        "actions to Chrome on their device, after an explicit device opt-in "
-        "dialog for the first query."
-      data:
-        "OAuth2 authentication token, current webpage URLs, annotated page "
-        "context (DOM elements and text), screenshots of the tab, and "
-        "action execution results or status."
-      destination: GOOGLE_OWNED_SERVICE
-      internal {
-        contacts {
-          email: "chrome-agents-team@google.com"
-        }
-      }
-      user_data {
-        type: ACCESS_TOKEN
-        type: SENSITIVE_URL
-        type: USER_CONTENT
-        type: WEB_CONTENT
-        type: IMAGE
-      }
-      last_reviewed: "2026-08-25"
-    }
-    policy {
-      cookies_allowed: NO
-      setting:
-        "Feature not launched and disabled by default. "
-        "TODO(crbug.com/552478160) to create an explicit setting to toggle the "
-        "browser actuator service"
-      chrome_policy {
-        # TODO(crbug.com/552478160): Add a feature-specific enterprise policy
-        # once implemented.
-        GenAiDefaultSettings {
-          GenAiDefaultSettings: 2
-        }
-        GeminiSettings {
-          GeminiSettings: 1
-        }
-      }
-    })");
-}
-
-std::unique_ptr<transport::MessageStreamClient> CreateStreamClient(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager* identity_manager,
-    std::unique_ptr<transport::StreamConnectionDelegate> resume_delegate) {
-  GURL endpoint = transport::GetWatchSessionsEndPoint();
-  return std::make_unique<transport::ProtoStreamClient>(
-      std::move(url_loader_factory), std::move(endpoint),
-      std::make_unique<transport::OAuthStreamConnectionDelegate>(
-          std::move(resume_delegate), identity_manager,
-          signin::OAuthConsumerId::kBrowserActuator),
-      transport::RustStreamFramer::MakeFactory(), GetTrafficAnnotation());
-}
-
-}  // namespace
-
 BrowserActuatorServiceImpl::BrowserActuatorServiceImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager* identity_manager) {
-  if (base::FeatureList::IsEnabled(transport::kBrowserActuatorChannelEnabled)) {
-    channel_ = std::make_unique<transport::TransportChannelImpl>(
-        std::make_unique<transport::UpstreamMessageClient>(
-            url_loader_factory, identity_manager,
-            transport::GetSendSessionMessageEndpoint(), GetTrafficAnnotation()),
-        // Safe because BrowserActuatorServiceFactory depends on
-        // IdentityManagerFactory, so `identity_manager` outlives `channel_`.
-        base::BindOnce(&CreateStreamClient, url_loader_factory,
-                       base::Unretained(identity_manager)));
-  }
+    transport::TransportService* transport_service)
+    : transport_service_(transport_service) {}
 
-  // The internals page is the only consumer of the recorded session history,
-  // so the recorder is created only when that page is enabled. This keeps the
-  // memory cost at zero for regular users.
-  if (base::FeatureList::IsEnabled(kBrowserActuatorInternals)) {
-    session_stream_recorder_factory_ =
-        std::make_unique<transport::SessionStreamRecorderFactory>();
-  }
-
-  // The channel is only created when the channel feature is on. When it is off
-  // the recorder factory is still owned here, but there is nothing to register
-  // with.
-  if (session_stream_recorder_factory_ && channel_) {
-    if (transport::TransportHandlerFactoryRegistry* registry =
-            channel_->GetHandlerFactoryRegistry()) {
-      registry->RegisterFactory(session_stream_recorder_factory_.get());
-    }
-    channel_->AddObserver(session_stream_recorder_factory_.get());
-  }
-}
-
-BrowserActuatorServiceImpl::~BrowserActuatorServiceImpl() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!channel_) {
-    return;
-  }
-  // Unregister before anything is destroyed. The registry and channel store
-  // raw pointers and do not own the factory.
-  if (session_stream_recorder_factory_) {
-    if (transport::TransportHandlerFactoryRegistry* registry =
-            channel_->GetHandlerFactoryRegistry()) {
-      registry->UnregisterFactory(session_stream_recorder_factory_.get());
-    }
-    channel_->RemoveObserver(session_stream_recorder_factory_.get());
-  }
-}
+BrowserActuatorServiceImpl::~BrowserActuatorServiceImpl() = default;
 
 bool BrowserActuatorServiceImpl::IsInitialized() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
 }
 
+// TODO(crbug.com/568448841): The methods below forward to TransportService
+// until every caller uses TransportServiceFactory directly.
+
 transport::TransportChannel* BrowserActuatorServiceImpl::GetChannel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return channel_.get();
-}
-
-transport::SessionStreamRecorderFactory*
-BrowserActuatorServiceImpl::GetStreamRecorderFactory() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return session_stream_recorder_factory_.get();
+  return transport_service_ ? transport_service_->GetChannel() : nullptr;
 }
 
 transport::TransportSession* BrowserActuatorServiceImpl::GetOrCreateSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  transport::TransportChannel* channel = GetChannel();
-  if (channel && channel->GetSessionRegistry()) {
-    return channel->GetSessionRegistry()->GetOrCreateSession(session_id);
-  }
-  return nullptr;
+  return transport_service_ ? transport_service_->GetOrCreateSession(session_id)
+                            : nullptr;
 }
 
 transport::TransportSession* BrowserActuatorServiceImpl::GetSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  transport::TransportChannel* channel = GetChannel();
-  if (channel && channel->GetSessionRegistry()) {
-    return channel->GetSessionRegistry()->GetSession(session_id);
-  }
-  return nullptr;
+  return transport_service_ ? transport_service_->GetSession(session_id)
+                            : nullptr;
+}
+
+transport::SessionStreamRecorderFactory*
+BrowserActuatorServiceImpl::GetStreamRecorderFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return transport_service_ ? transport_service_->GetStreamRecorderFactory()
+                            : nullptr;
 }
 
 }  // namespace browser_actuator

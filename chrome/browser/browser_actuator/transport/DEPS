@@ -1,0 +1,4 @@
+include_rules = [
+  # Only the factory may construct the transport's implementation.
+  "+components/browser_actuator/internal/transport/transport_service_impl.h",
+]

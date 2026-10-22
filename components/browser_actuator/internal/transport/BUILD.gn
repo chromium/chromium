@@ -43,17 +43,7 @@ source_set("features") {
     "features.h",
   ]
 
-  public_deps = [
-    "//base",
-    "//url",
-  ]
-
-  deps = [
-    # TODO(crbug.com/568448841): The endpoint params still hang off
-    # browser_actuator::kBrowserActuator.
-    "//components/browser_actuator/public:feature_list",
-    "//net",
-  ]
+  public_deps = [ "//base" ]
 
   visibility = [
     "//chrome/browser/sharing/browser_actuator:*",
@@ -65,7 +55,6 @@ source_set("session_stream_recorder") {
   visibility = [
     ":*",
     "//chrome/browser/browser_actuator/internals:*",
-    "//components/browser_actuator/internal:*",
   ]
 
   sources = [
@@ -93,10 +82,7 @@ source_set("session_stream_recorder") {
 # The channel, sessions and registries that route payloads between the stream
 # and feature handlers.
 source_set("channel") {
-  visibility = [
-    ":*",
-    "//components/browser_actuator/internal:*",
-  ]
+  visibility = [ ":*" ]
 
   sources = [
     "control_transport_handler.cc",
@@ -130,6 +116,42 @@ source_set("channel") {
   ]
 }
 
+# TransportServiceImpl: assembles the stream client, upstream client and channel
+# for one profile. Only the embedder's KeyedService factory constructs it.
+source_set("service") {
+  visibility = [
+    ":*",
+    "//chrome/browser/browser_actuator/transport:*",
+  ]
+
+  sources = [
+    "transport_service_impl.cc",
+    "transport_service_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/public/transport:service",
+    "//url",
+  ]
+
+  deps = [
+    ":channel",
+    ":features",
+    ":session_stream_recorder",
+    ":transport",
+    "//components/browser_actuator/internal/transport/oauth",
+    "//components/browser_actuator/internal/transport/proto_stream_client",
+    "//components/browser_actuator/internal/transport/proto_stream_client:rust_stream_framer",
+    "//components/browser_actuator/internal/transport/upstream_message_client",
+    "//components/browser_actuator/public/transport",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -142,6 +164,8 @@ source_set("unit_tests") {
     "transport_channel_impl_unittest.cc",
     "transport_handler_factory_registry_impl_unittest.cc",
     "transport_handler_unittest.cc",
+    "transport_service_impl_unittest.cc",
+    "transport_service_integration_unittest.cc",
     "transport_session_impl_unittest.cc",
     "transport_session_registry_impl_unittest.cc",
   ]
@@ -150,6 +174,7 @@ source_set("unit_tests") {
     ":channel",
     ":features",
     ":metrics_utils",
+    ":service",
     ":session_stream_recorder",
     ":transport",
     "test_support",
@@ -164,11 +189,13 @@ source_set("unit_tests") {
     "//components/sharing_message/proto",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 
   visibility = [ "//components/browser_actuator/internal:unit_tests" ]
@@ -184,6 +211,7 @@ group("isolation_check") {
     ":channel",
     ":features",
     ":metrics_utils",
+    ":service",
     ":session_stream_recorder",
     ":transport",
     "oauth",
@@ -195,6 +223,7 @@ group("isolation_check") {
     "upstream_message_client",
     "//components/browser_actuator/public/transport",
     "//components/browser_actuator/public/transport:payload_type_mapping",
+    "//components/browser_actuator/public/transport:service",
     "//components/browser_actuator/test_support/transport",
   ]
 

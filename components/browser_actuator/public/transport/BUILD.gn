@@ -46,3 +46,17 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+# The per-profile TransportService KeyedService interface. Separate from
+# ":transport" so that handler code does not pull in //components/keyed_service.
+source_set("service") {
+  sources = [
+    "transport_service.cc",
+    "transport_service.h",
+  ]
+
+  public_deps = [
+    ":transport",
+    "//components/keyed_service/core",
+  ]
+}
