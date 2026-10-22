@@ -82,11 +82,6 @@ const char kVSyncInterval[] = "vsync-interval";
 // resolution is high enough).  Otherwise, cast_shell defaults to 720p.
 const char kDesktopWindow1080p[] = "desktop-window-1080p";
 
-// When present overrides the screen resolution used by CanDisplayType API,
-// instead of using the values obtained from avsettings.
-const char kForceMediaResolutionHeight[] = "force-media-resolution-height";
-const char kForceMediaResolutionWidth[] = "force-media-resolution-width";
-
 // Background color used when Chromium hasn't rendered anything yet.
 const char kCastAppBackgroundColor[] = "cast-app-background-color";
 

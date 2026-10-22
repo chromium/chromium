@@ -408,8 +408,6 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
     // the renderer go here.
     static const char* const kForwardSwitches[] = {
         switches::kCastAppBackgroundColor,
-        switches::kForceMediaResolutionHeight,
-        switches::kForceMediaResolutionWidth,
         network::switches::kUnsafelyTreatInsecureOriginAsSecure,
         switches::kCastAssetsDir,
         switches::kHomeEnvOverride};

@@ -10,7 +10,6 @@ config("public_config") {
 
 cast_source_set("public") {
   sources = [
-    "avsettings.h",
     "cast_egl_platform.h",
     "cast_egl_platform_shlib.h",
     "cast_media_shlib.h",
@@ -30,10 +29,6 @@ cast_source_set("public") {
 
 if (is_android) {
   import("//build/config/android/rules.gni")
-
-  java_cpp_enum("java_enums") {
-    sources = [ "avsettings.h" ]
-  }
 
   java_cpp_enum("java_enums_volume_control") {
     sources = [ "volume_control.h" ]
