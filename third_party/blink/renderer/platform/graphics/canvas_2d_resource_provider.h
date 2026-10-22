@@ -119,8 +119,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags,
       base::OnceClosure context_lost_callback = {});
 
-  static std::unique_ptr<Canvas2DResourceProvider>
-  CreateWithClearForSoftwareCompositor(
+  Canvas2DResourceProvider(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -181,13 +180,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
                            base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                            bool is_accelerated,
                            gpu::SharedImageUsageSet shared_image_usage_flags,
-                           base::OnceClosure context_lost_callback = {});
-  Canvas2DResourceProvider(gfx::Size,
-                           viz::SharedImageFormat,
-                           SkAlphaType,
-                           const gfx::ColorSpace&,
-                           const gfx::HDRMetadata&,
-                           WebGraphicsSharedImageInterfaceProvider*,
                            base::OnceClosure context_lost_callback = {});
 
   void ClearUnusedResources();

@@ -607,30 +607,6 @@ Canvas2DResourceProvider::CreateWithClear(
   return provider;
 }
 
-std::unique_ptr<Canvas2DResourceProvider>
-Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    base::OnceClosure context_lost_callback) {
-  CHECK(!SharedGpuContext::IsGpuCompositingEnabled());
-
-  if (!shared_image_interface_provider ||
-      !shared_image_interface_provider->SharedImageInterface()) {
-    return nullptr;
-  }
-
-  CHECK(format == viz::SharedImageFormat::N32Format() ||
-        format == viz::SinglePlaneFormat::kRGBA_F16);
-
-  return base::WrapUnique(new Canvas2DResourceProvider(
-      size, format, alpha_type, color_space, hdr_metadata,
-      shared_image_interface_provider, std::move(context_lost_callback)));
-}
-
 void Canvas2DResourceProvider::NotifyGpuContextLostTask(
     base::WeakPtr<Canvas2DResourceProvider> provider) {
   if (provider && provider->context_lost_callback_) {

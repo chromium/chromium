@@ -282,19 +282,28 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
 
 void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
   CHECK(!HasBacking());
-  shared_image_provider_ =
-      Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
-          Host()->Size(), color_params_.GetSharedImageFormat(),
-          color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(),
-          color_params_.GetGfxHdrMetadata(),
-          SharedGpuContext::SharedImageInterfaceProvider(),
-          blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
-                          WrapWeakPersistent(Host())));
-  if (shared_image_provider_) {
-    CreateSoftwareSurface();
-    if (!surface_) {
-      shared_image_provider_.reset();
-    }
+  CHECK(!SharedGpuContext::IsGpuCompositingEnabled());
+
+  auto* shared_image_interface_provider =
+      SharedGpuContext::SharedImageInterfaceProvider();
+  if (!shared_image_interface_provider ||
+      !shared_image_interface_provider->SharedImageInterface()) {
+    return;
+  }
+
+  const viz::SharedImageFormat format = color_params_.GetSharedImageFormat();
+  CHECK(format == viz::SharedImageFormat::N32Format() ||
+        format == viz::SinglePlaneFormat::kRGBA_F16);
+
+  shared_image_provider_ = std::make_unique<Canvas2DResourceProvider>(
+      Host()->Size(), format, color_params_.GetAlphaType(),
+      color_params_.GetGfxColorSpace(), color_params_.GetGfxHdrMetadata(),
+      shared_image_interface_provider,
+      blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
+                      WrapWeakPersistent(Host())));
+  CreateSoftwareSurface();
+  if (!surface_) {
+    shared_image_provider_.reset();
   }
 }
 
