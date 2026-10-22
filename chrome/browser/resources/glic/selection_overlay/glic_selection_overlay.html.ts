@@ -43,6 +43,7 @@ export function getHtml(this: GlicSelectionOverlayElement) {
             .screenshotDataUri="${this.screenshotDataUri}"
             .selectionOverlayRect="${this.selectionOverlayRect}"
             .borderGlowEnabled="${this.enableBorderGlow}"
+            ?skip-scrim-transition="${this.skipIntroAnimation}"
             region-stroke-color1="#FFFFFF"
             region-stroke-color2="#FFFFFF"
             region-stroke-color3="#FFFFFF"

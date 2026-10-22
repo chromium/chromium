@@ -32,6 +32,8 @@ struct InteractionOptions {
   bool hide_handles = false;
   // When true, the user can't add more regions unless Ctrl or Cmd is held.
   bool disable_multi_select = false;
+  // When true, the overlay opens directly in the post-selection state.
+  bool skip_intro_animation = false;
 };
 
 enum DismissOverlayReason {

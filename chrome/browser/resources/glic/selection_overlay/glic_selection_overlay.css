@@ -117,6 +117,12 @@
   opacity: 10%;
 }
 
+/* Use visibility instead of display so that the glow's fade-out animation
+ * still runs while hidden and does not replay when the glow is shown again. */
+:host([skip-intro-animation]) #overlayBorderGlow {
+  visibility: hidden;
+}
+
 #selectionElements > * {
   inset: 0;
   position: absolute;

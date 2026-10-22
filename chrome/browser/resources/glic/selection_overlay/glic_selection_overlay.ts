@@ -14,6 +14,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OverlayBorderGlowElement} from '/lens/overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from '/lens/overlay_shimmer_canvas.js';
 import type {PostSelectionBoundingBox, PostSelectionRendererElement} from '/lens/post_selection_renderer.js';
@@ -88,6 +89,7 @@ export class GlicSelectionOverlayElement extends
       enableSelectionOverlayPromptBox: {type: Boolean},
       hideHandles: {type: Boolean},
       disableMultiSelect: {type: Boolean, reflect: true},
+      skipIntroAnimation: {type: Boolean, reflect: true},
     };
   }
 
@@ -105,6 +107,7 @@ export class GlicSelectionOverlayElement extends
       loadTimeData.getBoolean('enableSelectionOverlayPromptBox');
   accessor hideHandles: boolean = false;
   accessor disableMultiSelect: boolean = false;
+  accessor skipIntroAnimation: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -113,6 +116,7 @@ export class GlicSelectionOverlayElement extends
         (options: InteractionOptions) => {
           this.hideHandles = options.hideHandles;
           this.disableMultiSelect = options.disableMultiSelect;
+          this.skipIntroAnimation = options.skipIntroAnimation;
         }));
   }
 
@@ -132,6 +136,11 @@ export class GlicSelectionOverlayElement extends
     this.eventTracker_.add(
         document, 'post-selection-updated',
         (e: CustomEvent<PostSelectionBoundingBox>) => {
+          // `PostSelectionRendererElement.clearSelection()` reports a cleared
+          // selection as an update with zero size.
+          if (e.detail.width === 0 && e.detail.height === 0) {
+            this.skipIntroAnimation = false;
+          }
           const prev = this.activeSelection;
           const selectionChanged = !prev ||
               Math.abs(prev.top - e.detail.top) > 1e-5 ||
@@ -152,6 +161,10 @@ export class GlicSelectionOverlayElement extends
           }
         });
 
+    // TODO(b/501134201): 'post-selection-cleared' is never dispatched. Move
+    // this cleanup into the zero-size branch of the 'post-selection-updated'
+    // listener above and return early there, so that a cleared selection does
+    // not re-activate the scrim. Then remove this listener.
     this.eventTracker_.add(document, 'post-selection-cleared', () => {
       this.activeSelection = null;
       this.showFloatingPrompt = false;
@@ -173,6 +186,15 @@ export class GlicSelectionOverlayElement extends
         this.shadowRoot.querySelector<HTMLElement>('#floatingPromptContainer');
     if (container) {
       this.floatingPromptResizeObserver_.observe(container);
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('skipIntroAnimation') &&
+        this.skipIntroAnimation) {
+      this.selectionElements.regionSelectionLayer
+          .handlePostSelectionDragGestureEnd();
     }
   }
 

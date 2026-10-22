@@ -354,7 +354,8 @@ void GlicSelectionWidgetController::ShowSelectionOverlay() {
     controller->ShowWithSelection(
         delegate_->GetSelectedFrame(), *bounds,
         selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true));
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
   } else {
     controller->Show(/*options=*/nullptr);
   }

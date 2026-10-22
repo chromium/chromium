@@ -197,6 +197,13 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
         std::move(options));
   }
 
+  auto LoadPageAndWaitForPaint(ui::ElementIdentifier tab) {
+    return Steps(InstrumentTab(tab),
+                 NavigateWebContents(
+                     tab, embedded_test_server()->GetURL("/title2.html")),
+                 WaitForWebContentsPainted(tab));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -401,14 +408,16 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithTextSelection,
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                        ShowWithSelectionSendsInteractionOptions) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kOverlay = {"selection-overlay-app",
                               "glic-selection-overlay"};
 
   RunTestSequence(
-      Do([this]() {
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/false, /*disable_multi_select=*/true));
+            /*hide_handles=*/false, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -417,10 +426,39 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                         "el => !el.hideHandles && el.disableMultiSelect"));
 }
 
-// With `disable_multi_select`, the overlay shows the normal cursor and a
-// background click dismisses it instead of drawing a new region.
+// A session with a pre-selected region opens directly in the post-selection
+// state, without the intro border glow.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
-                       DisableMultiSelectClickDismissesOverlay) {
+                       ShowWithSelectionSkipsBorderGlow) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlay = {"selection-overlay-app",
+                              "glic-selection-overlay"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlay,
+                        "el => el.skipIntroAnimation && "
+                        "getComputedStyle(el.shadowRoot.querySelector("
+                        "'#overlayBorderGlow')).visibility === 'hidden' && "
+                        "el.shadowRoot.querySelector('#regionSelectionLayer')"
+                        ".hasAttribute('has-selected') && "
+                        "el.shadowRoot.querySelector('#regionSelectionLayer')"
+                        ".hasAttribute('skip-scrim-transition')"));
+}
+
+// Drawing a new region clears the pre-selected region, which restores the
+// normal border glow and scrim behavior.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       ShowWithSelectionNewDragRestoresDefaultState) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kOverlay = {"selection-overlay-app",
                               "glic-selection-overlay"};
@@ -429,15 +467,57 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                                "post-selection-renderer"};
 
   RunTestSequence(
-      Do([this]() {
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/false, /*disable_multi_select=*/true));
+            /*hide_handles=*/false, /*disable_multi_select=*/false,
+            /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
-                        "el => el.screenshot_ !== null"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0 && el.skipIntroAnimation"),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.hasSelection()"),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(300, 300)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(400, 400)),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlay,
+                        "el => !el.skipIntroAnimation && "
+                        "getComputedStyle(el.shadowRoot.querySelector("
+                        "'#overlayBorderGlow')).visibility === 'visible' && "
+                        "!el.shadowRoot.querySelector('#regionSelectionLayer')"
+                        ".hasAttribute('skip-scrim-transition')"));
+}
+
+// With `disable_multi_select`, the overlay shows the normal cursor and a
+// background click dismisses it instead of drawing a new region.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       DisableMultiSelectClickDismissesOverlay) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlay = {"selection-overlay-app",
+                              "glic-selection-overlay"};
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/false, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0"),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.hasSelection()"),
       WaitForJsResultAt(
@@ -455,21 +535,27 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 // of drawing a new region.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                        DisableMultiSelectDragDismissesOverlay) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlay = {"selection-overlay-app",
+                              "glic-selection-overlay"};
   const DeepQuery kRenderer = {"selection-overlay-app",
                                "glic-selection-overlay",
                                "post-selection-renderer"};
 
   RunTestSequence(
-      Do([this]() {
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/false, /*disable_multi_select=*/true));
+            /*hide_handles=*/false, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
-                        "el => el.screenshot_ !== null"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0"),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.hasSelection()"),
       MoveMouseTo(OverlayBaseController::kOverlayId,
@@ -481,14 +567,16 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                        ShowWithSelectionHidesHandles) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kRenderer = {"selection-overlay-app",
                                "glic-selection-overlay",
                                "post-selection-renderer"};
 
-  RunTestSequence(Do([this]() {
+  RunTestSequence(LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
                     ShowWithSelection(selection::InteractionOptions::New(
-                        /*hide_handles=*/true, /*disable_multi_select=*/false));
+                        /*hide_handles=*/true, /*disable_multi_select=*/false,
+                        /*skip_intro_animation=*/true));
                   }),
                   WaitForShow(OverlayBaseController::kOverlayId),
                   InstrumentNonTabWebView(kOverlayWebContentsId,

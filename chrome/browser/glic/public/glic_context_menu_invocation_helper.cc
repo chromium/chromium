@@ -165,6 +165,7 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
     if (!selection_bounds.IsEmpty()) {
       interaction_options->hide_handles = true;
       interaction_options->disable_multi_select = true;
+      interaction_options->skip_intro_animation = true;
     }
   }
   controller->ShowWithSelection(&frame, selection_bounds,

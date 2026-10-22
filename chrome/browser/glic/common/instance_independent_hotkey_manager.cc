@@ -139,7 +139,8 @@ void InstanceIndependentHotkeyManager::RequestCaptureRegion() {
       controller->ShowWithSelection(
           selection_observer->GetSelectedFrame(), *bounds,
           selection::InteractionOptions::New(
-              /*hide_handles=*/true, /*disable_multi_select=*/true));
+              /*hide_handles=*/true, /*disable_multi_select=*/true,
+              /*skip_intro_animation=*/true));
       return;
     }
   }
