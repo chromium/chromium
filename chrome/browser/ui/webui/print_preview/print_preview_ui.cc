@@ -81,7 +81,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler_chromeos.h"
-#include "chrome/common/chrome_features.h"
 #endif
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -353,9 +352,6 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("isBorderlessPrintingEnabled", true);
-  source->AddBoolean("isUseManagedPrintJobOptionsInPrintPreviewEnabled",
-                     base::FeatureList::IsEnabled(
-                         ::features::kUseManagedPrintJobOptionsInPrintPreview));
   source->AddBoolean("isUsePageOrientationCapabilityInPrintPreviewEnabled",
                      base::FeatureList::IsEnabled(
                          kUsePageOrientationCapabilityInPrintPreview));

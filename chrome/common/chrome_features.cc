@@ -1581,13 +1581,6 @@ BASE_FEATURE(kOverridePrefetchOnSingleton, base::FEATURE_DISABLED_BY_DEFAULT);
 // Allows Chrome to do preconnect when prerender fails.
 BASE_FEATURE(kPrerenderFallbackToPreconnect, base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// If enabled, use managed per-printer print job options set via
-// DevicePrinters/PrinterBulkConfiguration policy in print preview.
-BASE_FEATURE(kUseManagedPrintJobOptionsInPrintPreview,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kUserValueDefaultBrowserStrings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

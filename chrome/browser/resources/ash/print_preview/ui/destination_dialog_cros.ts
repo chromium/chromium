@@ -26,7 +26,6 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/ash/common/cr_elements
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Destination} from '../data/destination_cros.js';
@@ -349,10 +348,7 @@ export class PrintPreviewDestinationDialogCrosElement extends
               destination.capabilities = response.capabilities;
               // Merge print destination capabilities with the managed print
               // options for that destination if they exist.
-              if (loadTimeData.getBoolean(
-                      'isUseManagedPrintJobOptionsInPrintPreviewEnabled')) {
-                destination.applyAllowedManagedPrintOptions();
-              }
+              destination.applyAllowedManagedPrintOptions();
               this.selectDestination_(destination);
               // After destination is selected, start fetching for the EULA
               // URL.

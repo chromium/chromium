@@ -22,7 +22,6 @@ suite('ManagedPrintOptionsTest', () => {
     document.body.appendChild(model);
 
     loadTimeData.overrideValues({
-      isUseManagedPrintJobOptionsInPrintPreviewEnabled: true,
       isUsePageOrientationCapabilityInPrintPreviewEnabled: true,
     });
   });
@@ -42,35 +41,6 @@ suite('ManagedPrintOptionsTest', () => {
     // Set rasterize available so that it can be tested.
     model.set('settings.rasterize.available', true);
   }
-
-  test('DisabledViaExperiment', () => {
-    loadTimeData.overrideValues(
-        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: false});
-    const managedPrintOptions: ManagedPrintOptions = {
-      color: {defaultValue: false},
-      mediaType: {allowedValues: ['photographic']},
-    };
-    const params: DestinationOptionalParams = {
-      managedPrintOptions: managedPrintOptions,
-    };
-    const testDestination1 = new Destination(
-        /*id_=*/ 'TestDestination1',
-        /*origin_=*/ DestinationOrigin.LOCAL,
-        /*displayName_=*/ 'TestDestination1',
-        /*params_=*/ params);
-    testDestination1.capabilities =
-        getCddTemplate('TestDestination1').capabilities;
-    initializeModel();
-    model.destination = testDestination1;
-
-    model.applyDestinationSpecificPolicies();
-
-    // Managed per-printers options are disabled via experiment, so the
-    // destination default and allowed values should be used.
-    assertTrue(model.getSettingValue('color'));
-    assertEquals(
-        testDestination1.capabilities!.printer.media_type!.option.length, 2);
-  });
 
   test('SupportedDefaultValues', () => {
     const managedPrintOptions: ManagedPrintOptions = {

@@ -1438,8 +1438,6 @@ extern const base::FeatureParam<std::string> kRestrictedWebUICodeCacheResources;
 
 #if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kUmaStorageDimensions);
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kUseManagedPrintJobOptionsInPrintPreview);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 COMPONENT_EXPORT(CHROME_FEATURES)

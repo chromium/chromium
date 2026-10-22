@@ -1873,12 +1873,8 @@ export class PrintPreviewModelElement extends PolymerElement {
       }
     }
 
-    if (loadTimeData.getBoolean(
-            'isUseManagedPrintJobOptionsInPrintPreviewEnabled')) {
-      this.applyDestinationManagedJobOptionsDefaults_();
-      this.updateSetByDestinationPolicyProperties_();
-    }
-
+    this.applyDestinationManagedJobOptionsDefaults_();
+    this.updateSetByDestinationPolicyProperties_();
     this.updateManaged_();
   }
 

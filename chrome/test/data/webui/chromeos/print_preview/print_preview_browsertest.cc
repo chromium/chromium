@@ -1392,11 +1392,6 @@ class PrintPreviewManagedPrintOptionsTest : public PrintPreviewBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
-                       DisabledViaExperiment) {
-  RunTestCase("DisabledViaExperiment");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
                        SupportedDefaultValues) {
   RunTestCase("SupportedDefaultValues");
 }
