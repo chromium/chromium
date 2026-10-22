@@ -9,9 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -59,163 +58,160 @@ struct StarboardMatrix3x3 {
 constexpr char kPropertyFromStarboard[] = "from_sb";
 constexpr size_t kPropertyFromStarboardSize = 1;
 
-const base::flat_map<SbKey, ui::DomCode>& GetSbKeyToDomCodeMap() {
-  static const base::NoDestructor<base::flat_map<SbKey, ui::DomCode>> kMap({
-      // Common Keys
-      {kSbKeySpace, ui::DomCode::SPACE},
-      {kSbKeyReturn, ui::DomCode::ENTER},
-      {kSbKeySelect, ui::DomCode::SELECT},
-      {kSbKeyUp, ui::DomCode::ARROW_UP},
-      {kSbKeyDown, ui::DomCode::ARROW_DOWN},
-      {kSbKeyLeft, ui::DomCode::ARROW_LEFT},
-      {kSbKeyRight, ui::DomCode::ARROW_RIGHT},
-      {kSbKeyEscape, ui::DomCode::ESCAPE},
-      {kSbKeyTab, ui::DomCode::TAB},
-      {kSbKeyBacktab,
-       ui::DomCode::TAB},  // No distinct backtab in DomCode, handle with Shift
-      {kSbKeyOem1, ui::DomCode::SEMICOLON},
-      {kSbKeyOemPlus, ui::DomCode::EQUAL},
-      {kSbKeyOemComma, ui::DomCode::COMMA},
-      {kSbKeyOemMinus, ui::DomCode::MINUS},
-      {kSbKeyOemPeriod, ui::DomCode::PERIOD},
-      {kSbKeyOem2, ui::DomCode::SLASH},
-      {kSbKeyOem3, ui::DomCode::BACKQUOTE},
-      {kSbKeyOem4, ui::DomCode::BRACKET_LEFT},
-      {kSbKeyOem5, ui::DomCode::BACKSLASH},
-      {kSbKeyOem6, ui::DomCode::BRACKET_RIGHT},
-      {kSbKeyOem7, ui::DomCode::QUOTE},
+constexpr auto kSbKeyToDomCodeMap = base::MakeFixedFlatMap<SbKey, ui::DomCode>({
+    // Common Keys
+    {kSbKeySpace, ui::DomCode::SPACE},
+    {kSbKeyReturn, ui::DomCode::ENTER},
+    {kSbKeySelect, ui::DomCode::SELECT},
+    {kSbKeyUp, ui::DomCode::ARROW_UP},
+    {kSbKeyDown, ui::DomCode::ARROW_DOWN},
+    {kSbKeyLeft, ui::DomCode::ARROW_LEFT},
+    {kSbKeyRight, ui::DomCode::ARROW_RIGHT},
+    {kSbKeyEscape, ui::DomCode::ESCAPE},
+    {kSbKeyTab, ui::DomCode::TAB},
+    {kSbKeyBacktab,
+     ui::DomCode::TAB},  // No distinct backtab in DomCode, handle with Shift
+    {kSbKeyOem1, ui::DomCode::SEMICOLON},
+    {kSbKeyOemPlus, ui::DomCode::EQUAL},
+    {kSbKeyOemComma, ui::DomCode::COMMA},
+    {kSbKeyOemMinus, ui::DomCode::MINUS},
+    {kSbKeyOemPeriod, ui::DomCode::PERIOD},
+    {kSbKeyOem2, ui::DomCode::SLASH},
+    {kSbKeyOem3, ui::DomCode::BACKQUOTE},
+    {kSbKeyOem4, ui::DomCode::BRACKET_LEFT},
+    {kSbKeyOem5, ui::DomCode::BACKSLASH},
+    {kSbKeyOem6, ui::DomCode::BRACKET_RIGHT},
+    {kSbKeyOem7, ui::DomCode::QUOTE},
 
-      // Media Keys
-      {kSbKeyMediaPlayPause, ui::DomCode::MEDIA_PLAY_PAUSE},
-      {kSbKeyMediaRewind, ui::DomCode::MEDIA_REWIND},
-      {kSbKeyMediaFastForward, ui::DomCode::MEDIA_FAST_FORWARD},
-      {kSbKeyMediaNextTrack, ui::DomCode::MEDIA_TRACK_NEXT},
-      {kSbKeyMediaPrevTrack, ui::DomCode::MEDIA_TRACK_PREVIOUS},
-      {kSbKeyPause, ui::DomCode::PAUSE},
-      {kSbKeyPlay, ui::DomCode::MEDIA_PLAY},
-      {kSbKeyMediaStop, ui::DomCode::MEDIA_STOP},
-      {kSbKeyChannelUp, ui::DomCode::CHANNEL_UP},
-      {kSbKeyChannelDown, ui::DomCode::CHANNEL_DOWN},
-      {kSbKeyClosedCaption, ui::DomCode::CLOSED_CAPTION_TOGGLE},
+    // Media Keys
+    {kSbKeyMediaPlayPause, ui::DomCode::MEDIA_PLAY_PAUSE},
+    {kSbKeyMediaRewind, ui::DomCode::MEDIA_REWIND},
+    {kSbKeyMediaFastForward, ui::DomCode::MEDIA_FAST_FORWARD},
+    {kSbKeyMediaNextTrack, ui::DomCode::MEDIA_TRACK_NEXT},
+    {kSbKeyMediaPrevTrack, ui::DomCode::MEDIA_TRACK_PREVIOUS},
+    {kSbKeyPause, ui::DomCode::PAUSE},
+    {kSbKeyPlay, ui::DomCode::MEDIA_PLAY},
+    {kSbKeyMediaStop, ui::DomCode::MEDIA_STOP},
+    {kSbKeyChannelUp, ui::DomCode::CHANNEL_UP},
+    {kSbKeyChannelDown, ui::DomCode::CHANNEL_DOWN},
+    {kSbKeyClosedCaption, ui::DomCode::CLOSED_CAPTION_TOGGLE},
 #if SB_API_VERSION >= 15
-      {kSbKeyRecord, ui::DomCode::MEDIA_RECORD},
+    {kSbKeyRecord, ui::DomCode::MEDIA_RECORD},
 #endif  // SB_API_VERSION >=15
-      {kSbKeyVolumeUp, ui::DomCode::VOLUME_UP},
-      {kSbKeyVolumeDown, ui::DomCode::VOLUME_DOWN},
-      {kSbKeyVolumeMute, ui::DomCode::VOLUME_MUTE},
+    {kSbKeyVolumeUp, ui::DomCode::VOLUME_UP},
+    {kSbKeyVolumeDown, ui::DomCode::VOLUME_DOWN},
+    {kSbKeyVolumeMute, ui::DomCode::VOLUME_MUTE},
 
-      // Alphabet
-      {kSbKeyA, ui::DomCode::US_A},
-      {kSbKeyB, ui::DomCode::US_B},
-      {kSbKeyC, ui::DomCode::US_C},
-      {kSbKeyD, ui::DomCode::US_D},
-      {kSbKeyE, ui::DomCode::US_E},
-      {kSbKeyF, ui::DomCode::US_F},
-      {kSbKeyG, ui::DomCode::US_G},
-      {kSbKeyH, ui::DomCode::US_H},
-      {kSbKeyI, ui::DomCode::US_I},
-      {kSbKeyJ, ui::DomCode::US_J},
-      {kSbKeyK, ui::DomCode::US_K},
-      {kSbKeyL, ui::DomCode::US_L},
-      {kSbKeyM, ui::DomCode::US_M},
-      {kSbKeyN, ui::DomCode::US_N},
-      {kSbKeyO, ui::DomCode::US_O},
-      {kSbKeyP, ui::DomCode::US_P},
-      {kSbKeyQ, ui::DomCode::US_Q},
-      {kSbKeyR, ui::DomCode::US_R},
-      {kSbKeyS, ui::DomCode::US_S},
-      {kSbKeyT, ui::DomCode::US_T},
-      {kSbKeyU, ui::DomCode::US_U},
-      {kSbKeyV, ui::DomCode::US_V},
-      {kSbKeyW, ui::DomCode::US_W},
-      {kSbKeyX, ui::DomCode::US_X},
-      {kSbKeyY, ui::DomCode::US_Y},
-      {kSbKeyZ, ui::DomCode::US_Z},
+    // Alphabet
+    {kSbKeyA, ui::DomCode::US_A},
+    {kSbKeyB, ui::DomCode::US_B},
+    {kSbKeyC, ui::DomCode::US_C},
+    {kSbKeyD, ui::DomCode::US_D},
+    {kSbKeyE, ui::DomCode::US_E},
+    {kSbKeyF, ui::DomCode::US_F},
+    {kSbKeyG, ui::DomCode::US_G},
+    {kSbKeyH, ui::DomCode::US_H},
+    {kSbKeyI, ui::DomCode::US_I},
+    {kSbKeyJ, ui::DomCode::US_J},
+    {kSbKeyK, ui::DomCode::US_K},
+    {kSbKeyL, ui::DomCode::US_L},
+    {kSbKeyM, ui::DomCode::US_M},
+    {kSbKeyN, ui::DomCode::US_N},
+    {kSbKeyO, ui::DomCode::US_O},
+    {kSbKeyP, ui::DomCode::US_P},
+    {kSbKeyQ, ui::DomCode::US_Q},
+    {kSbKeyR, ui::DomCode::US_R},
+    {kSbKeyS, ui::DomCode::US_S},
+    {kSbKeyT, ui::DomCode::US_T},
+    {kSbKeyU, ui::DomCode::US_U},
+    {kSbKeyV, ui::DomCode::US_V},
+    {kSbKeyW, ui::DomCode::US_W},
+    {kSbKeyX, ui::DomCode::US_X},
+    {kSbKeyY, ui::DomCode::US_Y},
+    {kSbKeyZ, ui::DomCode::US_Z},
 
-      // Digits
-      {kSbKey0, ui::DomCode::DIGIT0},
-      {kSbKey1, ui::DomCode::DIGIT1},
-      {kSbKey2, ui::DomCode::DIGIT2},
-      {kSbKey3, ui::DomCode::DIGIT3},
-      {kSbKey4, ui::DomCode::DIGIT4},
-      {kSbKey5, ui::DomCode::DIGIT5},
-      {kSbKey6, ui::DomCode::DIGIT6},
-      {kSbKey7, ui::DomCode::DIGIT7},
-      {kSbKey8, ui::DomCode::DIGIT8},
-      {kSbKey9, ui::DomCode::DIGIT9},
+    // Digits
+    {kSbKey0, ui::DomCode::DIGIT0},
+    {kSbKey1, ui::DomCode::DIGIT1},
+    {kSbKey2, ui::DomCode::DIGIT2},
+    {kSbKey3, ui::DomCode::DIGIT3},
+    {kSbKey4, ui::DomCode::DIGIT4},
+    {kSbKey5, ui::DomCode::DIGIT5},
+    {kSbKey6, ui::DomCode::DIGIT6},
+    {kSbKey7, ui::DomCode::DIGIT7},
+    {kSbKey8, ui::DomCode::DIGIT8},
+    {kSbKey9, ui::DomCode::DIGIT9},
 
-      // Numpad Digits
-      {kSbKeyNumpad0, ui::DomCode::NUMPAD0},
-      {kSbKeyNumpad1, ui::DomCode::NUMPAD1},
-      {kSbKeyNumpad2, ui::DomCode::NUMPAD2},
-      {kSbKeyNumpad3, ui::DomCode::NUMPAD3},
-      {kSbKeyNumpad4, ui::DomCode::NUMPAD4},
-      {kSbKeyNumpad5, ui::DomCode::NUMPAD5},
-      {kSbKeyNumpad6, ui::DomCode::NUMPAD6},
-      {kSbKeyNumpad7, ui::DomCode::NUMPAD7},
-      {kSbKeyNumpad8, ui::DomCode::NUMPAD8},
-      {kSbKeyNumpad9, ui::DomCode::NUMPAD9},
+    // Numpad Digits
+    {kSbKeyNumpad0, ui::DomCode::NUMPAD0},
+    {kSbKeyNumpad1, ui::DomCode::NUMPAD1},
+    {kSbKeyNumpad2, ui::DomCode::NUMPAD2},
+    {kSbKeyNumpad3, ui::DomCode::NUMPAD3},
+    {kSbKeyNumpad4, ui::DomCode::NUMPAD4},
+    {kSbKeyNumpad5, ui::DomCode::NUMPAD5},
+    {kSbKeyNumpad6, ui::DomCode::NUMPAD6},
+    {kSbKeyNumpad7, ui::DomCode::NUMPAD7},
+    {kSbKeyNumpad8, ui::DomCode::NUMPAD8},
+    {kSbKeyNumpad9, ui::DomCode::NUMPAD9},
 
-      // Numpad Others
-      {kSbKeyMultiply, ui::DomCode::NUMPAD_MULTIPLY},
-      {kSbKeyAdd, ui::DomCode::NUMPAD_ADD},
-      {kSbKeySubtract, ui::DomCode::NUMPAD_SUBTRACT},
-      {kSbKeyDecimal, ui::DomCode::NUMPAD_DECIMAL},
-      {kSbKeyDivide, ui::DomCode::NUMPAD_DIVIDE},
-      {kSbKeyNumlock, ui::DomCode::NUM_LOCK},
+    // Numpad Others
+    {kSbKeyMultiply, ui::DomCode::NUMPAD_MULTIPLY},
+    {kSbKeyAdd, ui::DomCode::NUMPAD_ADD},
+    {kSbKeySubtract, ui::DomCode::NUMPAD_SUBTRACT},
+    {kSbKeyDecimal, ui::DomCode::NUMPAD_DECIMAL},
+    {kSbKeyDivide, ui::DomCode::NUMPAD_DIVIDE},
+    {kSbKeyNumlock, ui::DomCode::NUM_LOCK},
 
-      // Function Keys
-      {kSbKeyF1, ui::DomCode::F1},
-      {kSbKeyF2, ui::DomCode::F2},
-      {kSbKeyF3, ui::DomCode::F3},
-      {kSbKeyF4, ui::DomCode::F4},
-      {kSbKeyF5, ui::DomCode::F5},
-      {kSbKeyF6, ui::DomCode::F6},
-      {kSbKeyF7, ui::DomCode::F7},
-      {kSbKeyF8, ui::DomCode::F8},
-      {kSbKeyF9, ui::DomCode::F9},
-      {kSbKeyF10, ui::DomCode::F10},
-      {kSbKeyF11, ui::DomCode::F11},
-      {kSbKeyF12, ui::DomCode::F12},
+    // Function Keys
+    {kSbKeyF1, ui::DomCode::F1},
+    {kSbKeyF2, ui::DomCode::F2},
+    {kSbKeyF3, ui::DomCode::F3},
+    {kSbKeyF4, ui::DomCode::F4},
+    {kSbKeyF5, ui::DomCode::F5},
+    {kSbKeyF6, ui::DomCode::F6},
+    {kSbKeyF7, ui::DomCode::F7},
+    {kSbKeyF8, ui::DomCode::F8},
+    {kSbKeyF9, ui::DomCode::F9},
+    {kSbKeyF10, ui::DomCode::F10},
+    {kSbKeyF11, ui::DomCode::F11},
+    {kSbKeyF12, ui::DomCode::F12},
 
-      // Modifiers
-      {kSbKeyShift, ui::DomCode::SHIFT_LEFT},
-      {kSbKeyLshift, ui::DomCode::SHIFT_LEFT},
-      {kSbKeyRshift, ui::DomCode::SHIFT_RIGHT},
-      {kSbKeyControl, ui::DomCode::CONTROL_LEFT},
-      {kSbKeyLcontrol, ui::DomCode::CONTROL_LEFT},
-      {kSbKeyRcontrol, ui::DomCode::CONTROL_RIGHT},
-      {kSbKeyMenu, ui::DomCode::ALT_LEFT},
-      {kSbKeyLmenu, ui::DomCode::ALT_LEFT},
-      {kSbKeyRmenu, ui::DomCode::ALT_RIGHT},
-      {kSbKeyLwin, ui::DomCode::META_LEFT},
-      {kSbKeyRwin, ui::DomCode::META_RIGHT},
-      {kSbKeyApps, ui::DomCode::CONTEXT_MENU},
+    // Modifiers
+    {kSbKeyShift, ui::DomCode::SHIFT_LEFT},
+    {kSbKeyLshift, ui::DomCode::SHIFT_LEFT},
+    {kSbKeyRshift, ui::DomCode::SHIFT_RIGHT},
+    {kSbKeyControl, ui::DomCode::CONTROL_LEFT},
+    {kSbKeyLcontrol, ui::DomCode::CONTROL_LEFT},
+    {kSbKeyRcontrol, ui::DomCode::CONTROL_RIGHT},
+    {kSbKeyMenu, ui::DomCode::ALT_LEFT},
+    {kSbKeyLmenu, ui::DomCode::ALT_LEFT},
+    {kSbKeyRmenu, ui::DomCode::ALT_RIGHT},
+    {kSbKeyLwin, ui::DomCode::META_LEFT},
+    {kSbKeyRwin, ui::DomCode::META_RIGHT},
+    {kSbKeyApps, ui::DomCode::CONTEXT_MENU},
 
-      // Other common keys
-      {kSbKeyCapital, ui::DomCode::CAPS_LOCK},
-      {kSbKeyBackspace, ui::DomCode::BACKSPACE},
-      {kSbKeyDelete, ui::DomCode::DEL},
-      {kSbKeyInsert, ui::DomCode::INSERT},
-      {kSbKeyHome, ui::DomCode::HOME},
-      {kSbKeyEnd, ui::DomCode::END},
-      {kSbKeyPrior, ui::DomCode::PAGE_UP},
-      {kSbKeyNext, ui::DomCode::PAGE_DOWN},
-      {kSbKeyPrint, ui::DomCode::PRINT_SCREEN},
-      {kSbKeySnapshot, ui::DomCode::PRINT_SCREEN},
-      {kSbKeyScroll, ui::DomCode::SCROLL_LOCK},
+    // Other common keys
+    {kSbKeyCapital, ui::DomCode::CAPS_LOCK},
+    {kSbKeyBackspace, ui::DomCode::BACKSPACE},
+    {kSbKeyDelete, ui::DomCode::DEL},
+    {kSbKeyInsert, ui::DomCode::INSERT},
+    {kSbKeyHome, ui::DomCode::HOME},
+    {kSbKeyEnd, ui::DomCode::END},
+    {kSbKeyPrior, ui::DomCode::PAGE_UP},
+    {kSbKeyNext, ui::DomCode::PAGE_DOWN},
+    {kSbKeyPrint, ui::DomCode::PRINT_SCREEN},
+    {kSbKeySnapshot, ui::DomCode::PRINT_SCREEN},
+    {kSbKeyScroll, ui::DomCode::SCROLL_LOCK},
 
-      // Browser Keys
-      {kSbKeyBrowserBack, ui::DomCode::BROWSER_BACK},
-      {kSbKeyBrowserForward, ui::DomCode::BROWSER_FORWARD},
-      {kSbKeyBrowserRefresh, ui::DomCode::BROWSER_REFRESH},
-      {kSbKeyBrowserStop, ui::DomCode::BROWSER_STOP},
-      {kSbKeyBrowserSearch, ui::DomCode::BROWSER_SEARCH},
-      {kSbKeyBrowserFavorites, ui::DomCode::BROWSER_FAVORITES},
-      {kSbKeyBrowserHome, ui::DomCode::BROWSER_HOME},
-  });
-  return *kMap;
-}
+    // Browser Keys
+    {kSbKeyBrowserBack, ui::DomCode::BROWSER_BACK},
+    {kSbKeyBrowserForward, ui::DomCode::BROWSER_FORWARD},
+    {kSbKeyBrowserRefresh, ui::DomCode::BROWSER_REFRESH},
+    {kSbKeyBrowserStop, ui::DomCode::BROWSER_STOP},
+    {kSbKeyBrowserSearch, ui::DomCode::BROWSER_SEARCH},
+    {kSbKeyBrowserFavorites, ui::DomCode::BROWSER_FAVORITES},
+    {kSbKeyBrowserHome, ui::DomCode::BROWSER_HOME},
+});
 
 // Helper function to map Starboard modifiers to ui::EventFlags
 int MapStarboardModifiersToUiFlags(unsigned int sb_modifiers) {
@@ -303,9 +299,8 @@ std::unique_ptr<ui::Event> CreateKeyEvent(const SbInputData* input_data,
     return nullptr;
   }
 
-  const auto& key_map = GetSbKeyToDomCodeMap();
-  auto it = key_map.find(raw_key);
-  if (it != key_map.end()) {
+  auto it = kSbKeyToDomCodeMap.find(raw_key);
+  if (it != kSbKeyToDomCodeMap.end()) {
     ui::DomCode dom_code = it->second;
     ui::DomKey dom_key;
     ui::KeyboardCode key_code;
