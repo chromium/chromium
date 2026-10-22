@@ -8,10 +8,12 @@ function reportProgress(msg) {
 }
 
 // These must be "var" rather than "let" for the Telemetry harness to
-// see them.
+// see them. Also anchor `device` to window to prevent premature GC
+// while awaiting device.lost.
 var gotDevice;
 var deviceLost;
 var proceed;
+var device;
 
 const later = (delay) =>
   new Promise(resolve => setTimeout(resolve, delay));
@@ -34,7 +36,6 @@ async function init() {
 
     console.log('Iteration ' + idx + ': got adapter');
 
-    let device;
     try {
       device = await adapter.requestDevice();
       gotDevice = true;

@@ -7,6 +7,9 @@ function reportProgress(msg) {
   console.log(msg);
 }
 
+// Anchor `device` to window to prevent premature GC while awaiting device.lost.
+var device;
+
 async function requestDevice() {
   const adapter = await navigator.gpu.requestAdapter();
   if (!adapter) {
@@ -25,7 +28,7 @@ async function requestDevice() {
 }
 
 async function init() {
-  const device = await requestDevice();
+  device = await requestDevice();
   if (device == null) {
     return;
   }
