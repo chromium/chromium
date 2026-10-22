@@ -281,13 +281,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.RecoveryKeyStoreURLFetchResponse{Reason}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-31">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-10-21">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
     Counts of responses (both http code and net error code) for requests to the
     recovery key store server (aka Vault Service). Note that requests that timed
-    out are not covered by this histogram.
+    out are not covered by this histogram. Warning: this histogram was expired
+    from 2025-07-31 to 2026-10-21; data may be missing.
 
     {Reason}
   </summary>
