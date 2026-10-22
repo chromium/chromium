@@ -102,10 +102,19 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "tab_model_list_unittest.cc" ]
   deps = [
+    ":tab_model",
     ":test_support",
+    "//base",
+    "//chrome/browser/android:tabs_public",
+    "//chrome/browser/ui/navigator",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/sessions",
+    "//components/sessions:session_id",
     "//content/public/browser",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
   ]
 }
 

@@ -58,7 +58,14 @@ void TabModelList::HandlePopupNavigation(NavigateParams* params) {
 
   // NOTE: If this fails contact dtrainor@.
   CHECK(tab, base::NotFatalUntil::M162);
-  TabModel* model = FindTabModelWithWindowSessionId(tab->GetWindowId());
+  if (!tab) {
+    return;
+  }
+  // Prefer membership lookup as unassociated TabModels lack a valid SessionID.
+  TabModel* model = GetTabModelForTabAndroid(tab);
+  if (!model && tab->GetWindowId().is_valid()) {
+    model = FindTabModelWithWindowSessionId(tab->GetWindowId());
+  }
   if (model) {
     model->HandlePopupNavigation(tab, params);
   }
