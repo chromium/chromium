@@ -4,7 +4,13 @@
 
 #include "url/gurl_shim.h"
 
+#include <string_view>
+
 namespace url {
+
+std::unique_ptr<GURL> CreateGURLFromStr(rust::Str spec) {
+  return std::make_unique<GURL>(std::string_view(spec));
+}
 
 rust::Str GURLPossiblyInvalidSpec(const GURL& gurl) {
   return rust::Str(gurl.possibly_invalid_spec());

@@ -16,6 +16,12 @@ pub mod ffi {
 
         pub type GURL;
 
+        fn is_valid(self: &GURL) -> bool;
+
+        #[namespace = "url"]
+        #[rust_name = "create_gurl_from_str"]
+        fn CreateGURLFromStr(spec: &str) -> UniquePtr<GURL>;
+
         #[namespace = "url"]
         #[rust_name = "possibly_invalid_spec"]
         fn GURLPossiblyInvalidSpec(gurl: &GURL) -> &str;

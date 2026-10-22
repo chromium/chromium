@@ -206,6 +206,7 @@ test("url_unittests") {
 
   deps = [
     ":url",
+    ":url_rust_unittests",
     ":url_test_support",
     "//base",
     "//base/test:test_support",
@@ -450,5 +451,16 @@ source_set("url_shim") {
   deps = [
     ":url",
     "//third_party/rust/cxx/v1:lib",
+  ]
+}
+
+rust_static_library("url_rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  sources = [ "gurl_unittest.rs" ]
+  crate_root = "gurl_unittest.rs"
+  deps = [
+    ":url_rust",
+    "//testing/rust_gtest_interop",
   ]
 }
