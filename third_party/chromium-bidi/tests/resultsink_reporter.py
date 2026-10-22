@@ -448,10 +448,14 @@ def pytest_collection_modifyitems(session, config, items):
             filter_groups.append(TestFilterGroup([TestFilter(t) for t in tokens]))
 
     for f_path in test_filter_files:
-        if os.path.exists(f_path):
+        try:
             group = TestFilterGroup.from_filter_file(f_path)
-            if group.filters:
-                filter_groups.append(group)
+        except (OSError, UnicodeError) as error:
+            raise pytest.UsageError(
+                f"Could not read test filter file {f_path!r}: {error}"
+            ) from error
+        if group.filters:
+            filter_groups.append(group)
 
     if not filter_groups:
         return

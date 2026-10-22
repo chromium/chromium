@@ -61,7 +61,7 @@ def pytest_sessionfinish(session, exitstatus):
 
 @pytest.fixture
 def run_nested(tmp_path):
-    def run(source, *args, plugin=""):
+    def run(source, *args, plugin="", env_overrides=None):
         (tmp_path / "pytest.ini").write_text("[pytest]\n", encoding="utf-8")
         (tmp_path / "conftest.py").write_text(
             RECORDER + textwrap.dedent(plugin), encoding="utf-8"
@@ -90,6 +90,7 @@ def run_nested(tmp_path):
                 "PYTHONPATH": str(Path(resultsink_reporter.__file__).parent),
             }
         )
+        env.update(env_overrides or {})
         completed = subprocess.run(
             [
                 sys.executable,
@@ -425,3 +426,171 @@ def test_incompatible_repeat_metadata_fails_collection(run_nested, corruption):
         completed.stdout + completed.stderr
     )
     assert captured is None or captured["results"] == []
+
+
+FILTER_CASES = """
+    from pathlib import Path
+
+    import pytest
+
+    @pytest.mark.parametrize('value', ['literal', 'other'], ids=['literal*', 'other'])
+    def test_case(value):
+        Path(f'{value}.ran').touch()
+
+    def test_unrelated():
+        Path('unrelated.ran').touch()
+"""
+
+
+def assert_filter_error(completed, captured, tmp_path, path):
+    executed = sorted(p.name for p in tmp_path.glob("*.ran"))
+    assert completed.returncode == pytest.ExitCode.USAGE_ERROR, (
+        completed.stdout,
+        completed.stderr,
+        executed,
+    )
+    assert f"Could not read test filter file {str(path)!r}" in completed.stderr
+    assert executed == []
+    assert captured is None or captured["reports"] == captured["results"] == []
+
+
+@pytest.mark.parametrize(
+    "option", ["--test-filter-file", "--isolated-script-test-filter-file"]
+)
+@pytest.mark.parametrize("kind", ["missing", "directory", "invalid-utf8", "empty-path"])
+def test_unreadable_filter_file(run_nested, tmp_path, option, kind):
+    path = tmp_path / "filter.txt"
+    if kind == "directory":
+        path.mkdir()
+    elif kind == "invalid-utf8":
+        path.write_bytes(b"\xff")
+    elif kind == "empty-path":
+        path = ""
+    completed, captured = run_nested(FILTER_CASES, option, str(path))
+    assert_filter_error(completed, captured, tmp_path, path)
+
+
+@pytest.mark.parametrize("other_selector", ["file", "string", "no-match"])
+def test_missing_filter_file_with_other_selection(run_nested, tmp_path, other_selector):
+    valid = tmp_path / "valid.txt"
+    valid.write_text("test_case[literal*]\n", encoding="utf-8")
+    selectors = {
+        "file": ["--test-filter-file", str(valid)],
+        "string": ["--test-filter=test_case[literal*]"],
+        "no-match": ["--test-filter=nonexistent_test"],
+    }
+    missing = tmp_path / "missing.txt"
+    completed, captured = run_nested(
+        FILTER_CASES, *selectors[other_selector], "--test-filter-file", str(missing)
+    )
+    assert_filter_error(completed, captured, tmp_path, missing)
+
+
+@pytest.mark.parametrize(
+    "isolated, fallback, fails",
+    [
+        (None, "missing", True),
+        ("missing", None, True),
+        ("missing", "valid", True),
+        ("valid", "missing", False),
+        ("", "valid", False),
+    ],
+)
+def test_filter_file_environment_precedence(
+    run_nested, tmp_path, isolated, fallback, fails
+):
+    valid = tmp_path / "valid.txt"
+    valid.write_text("test_case[literal*]\n", encoding="utf-8")
+    missing = tmp_path / "missing.txt"
+    paths = {"valid": str(valid), "missing": str(missing), "": ""}
+    env = {
+        key: paths[value]
+        for key, value in (
+            ("ISOLATED_SCRIPT_TEST_FILTER_FILE", isolated),
+            ("TEST_FILTER_FILE", fallback),
+        )
+        if value is not None
+    }
+    completed, captured = run_nested(FILTER_CASES, env_overrides=env)
+    if fails:
+        assert_filter_error(completed, captured, tmp_path, missing)
+    else:
+        assert completed.returncode == 0, completed.stdout + completed.stderr
+        assert case_counts(captured) == Counter({("test_case[literal*]",): 1})
+        assert sorted(p.name for p in tmp_path.glob("*.ran")) == ["literal.ran"]
+
+
+@pytest.mark.parametrize("count", [1, 3])
+@pytest.mark.parametrize("second_input", ["cli", "environment"])
+def test_filter_files_intersect_and_preserve_repeat_identity(
+    run_nested, tmp_path, count, second_input
+):
+    first = tmp_path / "first.txt"
+    first.write_text(
+        ":chromium-bidi!pytest::test_cases.py#test_case*\n", encoding="utf-8"
+    )
+    second = tmp_path / "second.txt"
+    second.write_text(
+        "*\n-:chromium-bidi!pytest::test_cases.py#test_case[other]\n",
+        encoding="utf-8",
+    )
+    args = [f"--count={count}", "--test-filter-file", str(first)]
+    env = {}
+    if second_input == "cli":
+        args.extend(["--isolated-script-test-filter-file", str(second)])
+    else:
+        env["TEST_FILTER_FILE"] = str(second)
+    completed, captured = run_nested(FILTER_CASES, *args, env_overrides=env)
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert case_counts(captured) == Counter({("test_case[literal*]",): count})
+    assert sorted(p.name for p in tmp_path.glob("*.ran")) == ["literal.ran"]
+
+
+@pytest.mark.parametrize("contents", [None, "", "# Only a comment\n\n"])
+@pytest.mark.parametrize("narrowed", [False, True])
+def test_empty_filter_inputs_preserve_selection(
+    run_nested, tmp_path, contents, narrowed
+):
+    args = []
+    if contents is not None:
+        path = tmp_path / "empty.txt"
+        path.write_text(contents, encoding="utf-8")
+        args.extend(["--test-filter-file", str(path)])
+    if narrowed:
+        args.append("--test-filter=test_case[literal*]")
+    completed, captured = run_nested(
+        FILTER_CASES,
+        *args,
+        env_overrides={"ISOLATED_SCRIPT_TEST_FILTER_FILE": "", "TEST_FILTER_FILE": ""},
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    expected = {("test_case[literal*]",): 1}
+    executed = ["literal.ran"]
+    if not narrowed:
+        expected.update({("test_case[other]",): 1, ("test_unrelated",): 1})
+        executed.extend(["other.ran", "unrelated.ran"])
+    assert case_counts(captured) == Counter(expected)
+    assert sorted(p.name for p in tmp_path.glob("*.ran")) == executed
+
+
+@pytest.mark.parametrize("error_type", ["PermissionError", "FileNotFoundError"])
+def test_filter_file_read_errors(run_nested, tmp_path, error_type):
+    path = tmp_path / "filter.txt"
+    path.write_text("*\n", encoding="utf-8")
+    completed, captured = run_nested(
+        FILTER_CASES,
+        "--test-filter-file",
+        str(path),
+        # Avoid permission assumptions and timing-dependent removal races.
+        plugin=f"""
+        def pytest_sessionstart(session):
+            import resultsink_reporter
+
+            def fail_read(path):
+                raise {error_type}('controlled read failure')
+
+            resultsink_reporter.TestFilterGroup.from_filter_file = staticmethod(fail_read)
+        """,
+    )
+    assert_filter_error(completed, captured, tmp_path, path)
+    assert "controlled read failure" in completed.stderr
