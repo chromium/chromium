@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
@@ -17,10 +16,6 @@
 
 class OmniboxAimPopupWebUIContent;
 
-namespace content {
-class WebContents;
-}
-
 namespace gfx {
 class Point;
 }
@@ -29,8 +24,7 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
  public:
   OmniboxPopupAimHandler(
       mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler> receiver,
-      mojo::PendingRemote<omnibox_popup_aim::mojom::Page> page,
-      content::WebContents* web_contents);
+      mojo::PendingRemote<omnibox_popup_aim::mojom::Page> page);
 
   OmniboxPopupAimHandler(const OmniboxPopupAimHandler&) = delete;
   OmniboxPopupAimHandler& operator=(const OmniboxPopupAimHandler&) = delete;
@@ -79,7 +73,6 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
  private:
   mojo::Receiver<omnibox_popup_aim::mojom::PageHandler> receiver_;
   mojo::Remote<omnibox_popup_aim::mojom::Page> page_;
-  raw_ptr<content::WebContents> web_contents_;
   base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
   std::string cached_draft_text_;
 };

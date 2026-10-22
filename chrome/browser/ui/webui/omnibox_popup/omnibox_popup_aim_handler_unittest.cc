@@ -76,7 +76,7 @@ class OmniboxPopupAimHandlerTest : public ChromeRenderViewHostTestHarness {
     omnibox_popup_ui_ = std::make_unique<OmniboxPopupUI>(&web_ui_);
     handler_ = std::make_unique<TestOmniboxPopupAimHandler>(
         mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler>(),
-        page_.BindAndGetRemote(), web_contents());
+        page_.BindAndGetRemote());
     embedder_ = std::make_unique<TestEmbedder>();
     handler_->set_embedder(embedder_->GetWeakPtr());
   }
