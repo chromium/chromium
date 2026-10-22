@@ -19,7 +19,6 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/apple/url_conversions.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -121,6 +120,11 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     _mode = mode;
     _offTheRecord = offTheRecord;
     self.backgroundColor = [[self class] sadTabBackgroundColor];
+    NSArray<UITrait>* traits = @[
+      UITraitHorizontalSizeClass.class,
+      UITraitVerticalSizeClass.class,
+    ];
+    [self registerForTraitChanges:traits withAction:@selector(setNeedsLayout)];
   }
   return self;
 }
@@ -366,6 +370,11 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
   [self.containerView addSubview:self.footerLabel];
 }
 
+- (void)didMoveToWindow {
+  [super didMoveToWindow];
+  [self setNeedsLayout];
+}
+
 - (void)layoutSubviews {
   [super layoutSubviews];
 
@@ -425,12 +434,12 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 - (void)layoutActionButton {
   CGRect containerBounds = self.containerBounds;
-  BOOL isIPadIdiom = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-  BOOL isPortrait = IsPortrait(self.window);
-  BOOL shouldAddActionButtonToContainer = isIPadIdiom || !isPortrait;
+  BOOL isRegularXRegular = IsRegularXRegularSizeClass(self);
+  BOOL isCompactHeight = IsCompactHeight(self);
+  BOOL shouldAddActionButtonToContainer = isRegularXRegular || isCompactHeight;
   LayoutRect actionButtonLayout = LayoutRectZero;
   actionButtonLayout.size =
-      isIPadIdiom
+      isRegularXRegular
           ? [self.actionButton sizeThatFits:CGSizeZero]
           : CGSizeMake(CGRectGetWidth(containerBounds), kActionButtonHeight);
   if (shouldAddActionButtonToContainer) {
@@ -467,11 +476,11 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
   CGFloat containerOriginX =
       (CGRectGetWidth(self.bounds) - containerSize.width) / 2.0f;
   CGFloat containerOriginY = 0.0f;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // Center the containerView on iPads.
+  if (IsRegularXRegularSizeClass(self)) {
+    // Center the containerView on Regular x Regular size classes.
     containerOriginY =
         (CGRectGetHeight(self.bounds) - containerSize.height) / 2.0f;
-  } else if (IsPortrait(self.window)) {
+  } else if (!IsCompactHeight(self)) {
     // Align containerView to a quarter of the view height on portrait iPhones.
     containerOriginY =
         (CGRectGetHeight(self.bounds) - containerSize.height) / 4.0f;

@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ui/base/device_form_factor.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 @interface PrivacyCoordinator () <
     IncognitoLockCoordinatorDelegate,
@@ -167,9 +167,9 @@
 
   id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-  [quickDeleteHandler
-      showQuickDeleteAndCanPerformRadialWipeAnimation:
-          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
+  [quickDeleteHandler showQuickDeleteAndCanPerformRadialWipeAnimation:
+                          IsRegularXRegularSizeClass(
+                              self.baseNavigationController.view.window)];
 }
 
 - (void)showSafeBrowsing {

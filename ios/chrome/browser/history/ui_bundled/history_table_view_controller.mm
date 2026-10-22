@@ -57,11 +57,11 @@
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/strings/grit/ui_strings.h"
@@ -614,9 +614,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   }
   id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-  [quickDeleteHandler
-      showQuickDeleteAndCanPerformRadialWipeAnimation:
-          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
+  [quickDeleteHandler showQuickDeleteAndCanPerformRadialWipeAnimation:
+                          IsRegularXRegularSizeClass(self.view.window)];
 }
 
 #pragma mark - Setter & Getters

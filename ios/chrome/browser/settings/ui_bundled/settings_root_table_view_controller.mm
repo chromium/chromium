@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -384,8 +384,12 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   // Create `waitButton`.
   BOOL displayActivityIndicatorOnTheRight =
       self.navigationItem.rightBarButtonItem != nil;
+  UITraitCollection* traitCollection =
+      self.view.window
+          ? self.view.window.traitCollection
+          : self.navigationController.presentingViewController.traitCollection;
   CGFloat activityIndicatorDimension =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+      IsRegularXRegularSizeClass(traitCollection)
           ? kActivityIndicatorDimensionIPad
           : kActivityIndicatorDimensionIPhone;
   BarButtonActivityIndicator* indicator = [[BarButtonActivityIndicator alloc]

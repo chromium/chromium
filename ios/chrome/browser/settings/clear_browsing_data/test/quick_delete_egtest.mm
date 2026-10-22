@@ -860,7 +860,7 @@ TAG_SMOKE_TEST(QuickDeleteTestCase, testBrowsingHistoryForDeletion);
 // visible after the deletion. This test is only for iPhones. on iPads the
 // animation is still run.
 - (void)testTabsForDeletionFromPrivacySettingsForIphones {
-  if ([ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isRegularXRegularSizeClass]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPads. In iPads, the tabs clsoure animation is ran even "
         @"if Quick Delete is triggered on top of privacy settings.");
@@ -901,7 +901,7 @@ TAG_SMOKE_TEST(QuickDeleteTestCase, testBrowsingHistoryForDeletion);
 // visible after the deletion. This test is only for iPads. on iPhones the
 // animation is not run.
 - (void)testTabsForDeletionFromPrivacySettingsForiPads {
-  if (![ChromeEarlGrey isIPadIdiom]) {
+  if (![ChromeEarlGrey isRegularXRegularSizeClass]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhones. In iPhones, the tabs clsoure animation is not "
         @"run if Quick Delete is triggered on top of privacy settings.");
