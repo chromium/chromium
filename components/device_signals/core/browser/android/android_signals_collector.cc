@@ -4,6 +4,7 @@
 
 #include "components/device_signals/core/browser/android/android_signals_collector.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/device_signals/core/browser/android/os_security_info_provider.h"
 #include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
@@ -58,7 +60,8 @@ void LogSafetyNetMetrics(HasHarmfulAppsResultStatus result,
 }  // namespace
 
 AndroidSignalsCollector::AndroidSignalsCollector(
-    policy::CloudPolicyManager* device_cloud_policy_manager)
+    policy::CloudPolicyManager* device_cloud_policy_manager,
+    std::unique_ptr<OsSecurityInfoProvider> os_security_info_provider)
     : BaseSignalsCollector({
           {SignalName::kOsSignals,
            base::BindRepeating(&AndroidSignalsCollector::GetOsSignals,
@@ -67,7 +70,10 @@ AndroidSignalsCollector::AndroidSignalsCollector(
            base::BindRepeating(&AndroidSignalsCollector::GetVerifyApps,
                                base::Unretained(this))},
       }),
-      device_cloud_policy_manager_(device_cloud_policy_manager) {}
+      device_cloud_policy_manager_(device_cloud_policy_manager),
+      os_security_info_provider_(std::move(os_security_info_provider)) {
+  CHECK(os_security_info_provider_);
+}
 
 AndroidSignalsCollector::~AndroidSignalsCollector() = default;
 
@@ -100,6 +106,9 @@ void AndroidSignalsCollector::GetOsSignals(
       device_signals::TryGetEnrollmentDomain(device_cloud_policy_manager_);
   signal_response.security_patch_ms =
       device_signals::GetSecurityPatchLevelEpoch();
+  signal_response.screen_lock_secured =
+      os_security_info_provider_->IsDeviceSecure() ? SettingValue::ENABLED
+                                                   : SettingValue::DISABLED;
 
   response.os_signals_response = std::move(signal_response);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

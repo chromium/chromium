@@ -6,6 +6,7 @@
 
 #include "base/android/device_info.h"
 #include "base/run_loop.h"
+#include "components/device_signals/core/browser/android/os_security_info_provider.h"
 #include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -88,6 +89,10 @@ void VerifyOsReportSignals(const em::OSReport& os_report,
     EXPECT_EQ(os_report.version(), device_signals::GetOsVersion());
     EXPECT_EQ(os_report.security_patch_ms(),
               device_signals::GetSecurityPatchLevelEpoch());
+    EXPECT_EQ(os_report.screen_lock_secured(),
+              device_signals::OsSecurityInfoProvider().IsDeviceSecure()
+                  ? em::SettingValue::ENABLED
+                  : em::SettingValue::DISABLED);
     base::RunLoop run_loop;
     VerifyIsVerifyAppsEnabled(
         std::ref(os_report),

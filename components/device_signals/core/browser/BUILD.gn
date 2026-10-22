@@ -72,9 +72,16 @@ static_library("browser") {
   }
 
   if (is_android) {
-    public += [ "android/android_signals_collector.h" ]
-    sources += [ "android/android_signals_collector.cc" ]
+    public += [
+      "android/android_signals_collector.h",
+      "android/os_security_info_provider.h",
+    ]
+    sources += [
+      "android/android_signals_collector.cc",
+      "android/os_security_info_provider.cc",
+    ]
     deps += [
+      "//components/device_signals/core/browser/android:jni_headers",
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_api_handler_util",
     ]
@@ -145,6 +152,13 @@ static_library("test_support") {
     "//services/network/public/cpp",
     "//testing/gmock",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/mock_os_security_info_provider.cc",
+      "android/mock_os_security_info_provider.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_ANDROID_ANDROID_SIGNALS_COLLECTOR_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_ANDROID_ANDROID_SIGNALS_COLLECTOR_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/device_signals/core/browser/base_signals_collector.h"
@@ -22,12 +24,14 @@ enum class HasHarmfulAppsResultStatus;
 
 namespace device_signals {
 
+class OsSecurityInfoProvider;
 struct VerifyAppsSignalsResponse;
 
 class AndroidSignalsCollector : public BaseSignalsCollector {
  public:
-  explicit AndroidSignalsCollector(
-      policy::CloudPolicyManager* device_cloud_policy_manager);
+  AndroidSignalsCollector(
+      policy::CloudPolicyManager* device_cloud_policy_manager,
+      std::unique_ptr<OsSecurityInfoProvider> os_security_info_provider);
 
   ~AndroidSignalsCollector() override;
 
@@ -60,6 +64,7 @@ class AndroidSignalsCollector : public BaseSignalsCollector {
       int status_code);
 
   const raw_ptr<policy::CloudPolicyManager> device_cloud_policy_manager_;
+  const std::unique_ptr<OsSecurityInfoProvider> os_security_info_provider_;
   base::WeakPtrFactory<AndroidSignalsCollector> weak_factory_{this};
 };
 
