@@ -17,8 +17,6 @@ import android.view.ViewConfiguration;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.webview.chromium.WebSurface;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -357,8 +355,8 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     public void testMultipleWebSurfaces_evictionTriggersInvalidation() {
         TestEventListener listener1 = new TestEventListener();
         TestEventListener listener2 = new TestEventListener();
-        WebSurface surface1 = new WebSurface(listener1);
-        WebSurface surface2 = new WebSurface(listener2);
+        AwWebSurface surface1 = new AwWebSurface(listener1);
+        AwWebSurface surface2 = new AwWebSurface(listener2);
         AwWebContent webContent = new AwWebContent();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -395,7 +393,7 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
                     "/popup.html",
                     "window.open('/popup.html')");
 
-            // Bind the surface before the popup WebContents is supplied, like WebSurface does.
+            // Bind the surface before the popup WebContents is supplied, like AwWebSurface does.
             AwActivityTestRule.PopupInfo popupInfo =
                     mActivityTestRule.createPopupContents(mAwContents);
             CallbackHelper overScrollHelper = new CallbackHelper();
@@ -425,7 +423,7 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     }
 
     /** Records invalidations and leaves all scrolling to the page. */
-    private static class TestEventListener implements WebSurface.EventListener {
+    private static class TestEventListener implements AwWebSurface.EventListener {
         final CallbackHelper mInvalidateHelper = new CallbackHelper();
 
         @Override

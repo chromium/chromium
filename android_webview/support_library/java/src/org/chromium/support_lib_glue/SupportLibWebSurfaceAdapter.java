@@ -7,8 +7,7 @@ package org.chromium.support_lib_glue;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
-import com.android.webview.chromium.WebSurface;
-
+import org.chromium.android_webview.AwWebSurface;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
@@ -22,11 +21,11 @@ import java.util.function.BiConsumer;
 /** Adapter for WebSurfaceBoundaryInterface. */
 @NullMarked
 class SupportLibWebSurfaceAdapter implements WebSurfaceBoundaryInterface {
-    private final WebSurface mWebSurface;
+    private final AwWebSurface mWebSurface;
 
     public SupportLibWebSurfaceAdapter(
             BiConsumer<@WebSurfaceEvent Integer, @Nullable Object> eventListener) {
-        mWebSurface = new WebSurface(new EventListenerImpl(eventListener));
+        mWebSurface = new AwWebSurface(new EventListenerImpl(eventListener));
     }
 
     @Override
@@ -63,7 +62,7 @@ class SupportLibWebSurfaceAdapter implements WebSurfaceBoundaryInterface {
         mWebSurface.destroy();
     }
 
-    private static class EventListenerImpl implements WebSurface.EventListener {
+    private static class EventListenerImpl implements AwWebSurface.EventListener {
         private final BiConsumer<@WebSurfaceEvent Integer, @Nullable Object> mEventListener;
 
         EventListenerImpl(BiConsumer<@WebSurfaceEvent Integer, @Nullable Object> eventListener) {

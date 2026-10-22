@@ -40,6 +40,8 @@ public class AwWebSurface {
     }
 
     private final EventListener mEventListener;
+    private final AwWebContent.SurfaceBindingListener mSurfaceBindingListener;
+    @Nullable private AwWebContent mWebContent;
     @Nullable private AwContents mAwContents;
     private int mWidth;
     private int mHeight;
@@ -47,6 +49,26 @@ public class AwWebSurface {
     public AwWebSurface(EventListener eventListener) {
         assert eventListener != null : "EventListener cannot be null.";
         mEventListener = eventListener;
+        mSurfaceBindingListener =
+                awContents -> {
+                    if (awContents == null) {
+                        mWebContent = null;
+                    }
+                    setAwContents(awContents);
+                };
+    }
+
+    public void setWebContent(@Nullable AwWebContent webContent) {
+        if (mWebContent == webContent) {
+            return;
+        }
+        if (mWebContent != null) {
+            mWebContent.bindSurface(null);
+        }
+        if (webContent != null) {
+            webContent.bindSurface(mSurfaceBindingListener);
+            mWebContent = webContent;
+        }
     }
 
     public void setAwContents(@Nullable AwContents awContents) {
@@ -109,6 +131,10 @@ public class AwWebSurface {
     public boolean onTouchEvent(MotionEvent event) {
         if (mAwContents == null) return false;
         return mAwContents.getViewMethods().onTouchEvent(event);
+    }
+
+    public void destroy() {
+        setWebContent(null);
     }
 
     @CalledByNative
