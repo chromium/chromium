@@ -188,6 +188,7 @@ source_set("unit_test") {
   testonly = true
   sources = [
     "h264_vaapi_video_encoder_delegate_unittest.cc",
+    "test_utils_unittest.cc",
     "vaapi_video_encode_accelerator_unittest.cc",
     "vaapi_wrapper_unittest.cc",
     "vp9_vaapi_video_encoder_delegate_unittest.cc",
@@ -195,6 +196,7 @@ source_set("unit_test") {
   deps = [
     ":common",
     ":vaapi",
+    ":vaapi_test_utils",
     "//base",
     "//base/test:test_support",
     "//gpu:test_support",

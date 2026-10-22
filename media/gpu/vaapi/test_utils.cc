@@ -6,10 +6,14 @@
 
 #include <sys/mman.h>
 
+#include <array>
 #include <memory>
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -24,8 +28,6 @@
 
 namespace media {
 namespace vaapi_test_utils {
-
-#if BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -46,84 +48,84 @@ namespace {
 // hanging fruit optimization might be to experiment with prefetching to help
 // with the unusual memory read pattern.
 
-constexpr int kTile4TileWidth = 8;
-constexpr int kTile4TileHeight = 8;
-constexpr int kTile4SubtileWidth = 16;
-constexpr int kTile4SubtileHeight = 4;
-constexpr int kTile4SubtileSizeBytes = kTile4SubtileWidth * kTile4SubtileHeight;
-constexpr int kTile4TileWidthBytes = kTile4TileWidth * kTile4SubtileWidth;
-constexpr int kTile4TileHeightBytes = kTile4TileHeight * kTile4SubtileHeight;
+constexpr size_t kTile4TileWidth = 8;
+constexpr size_t kTile4TileHeight = 8;
+constexpr size_t kTile4SubtileWidth = 16;
+constexpr size_t kTile4SubtileHeight = 4;
+constexpr size_t kTile4SubtileSizeBytes =
+    kTile4SubtileWidth * kTile4SubtileHeight;
+constexpr size_t kTile4TileWidthBytes = kTile4TileWidth * kTile4SubtileWidth;
+constexpr size_t kTile4TileHeightBytes = kTile4TileHeight * kTile4SubtileHeight;
 
-void Detile4(uint8_t* linear_dest,
-             const uint8_t* tiled_src,
-             int width,
-             int height) {
-  constexpr int kTile4TileSizeBytes =
+}  // namespace
+
+void Detile4(base::span<uint8_t> linear_dest,
+             base::span<const uint8_t> tiled_src,
+             size_t width,
+             size_t height) {
+  constexpr size_t kTile4TileSizeBytes =
       kTile4TileWidthBytes * kTile4TileHeightBytes;
-  constexpr int kTile4ZWidth = 4;
+  constexpr size_t kTile4ZWidth = 4;
 
-  width = base::bits::AlignDown(base::checked_cast<uint32_t>(width),
-                                uint32_t{kTile4TileWidthBytes});
-  height = base::bits::AlignDown(base::checked_cast<uint32_t>(height),
-                                 uint32_t{kTile4TileHeightBytes});
+  width = base::bits::AlignDown(width, kTile4TileWidthBytes);
+  height = base::bits::AlignDown(height, kTile4TileHeightBytes);
 
-  for (int y = 0; y < height; y += kTile4TileHeight * kTile4SubtileHeight) {
-    for (int tile_y = 0; tile_y < kTile4TileHeight; tile_y++) {
-      for (int subtile_y = 0; subtile_y < kTile4SubtileHeight; subtile_y++) {
-        const uint8_t* row_ptr = tiled_src;
-        for (int x = 0; x < width; x += kTile4TileWidth * kTile4SubtileWidth) {
-          int tile_x = 0;
+  base::SpanWriter<uint8_t> dest(linear_dest);
+  base::SpanReader<const uint8_t> src(tiled_src);
+
+  for (size_t y = 0; y < height; y += kTile4TileHeight * kTile4SubtileHeight) {
+    for (size_t tile_y = 0; tile_y < kTile4TileHeight; tile_y++) {
+      for (size_t subtile_y = 0; subtile_y < kTile4SubtileHeight; subtile_y++) {
+        base::SpanReader<const uint8_t> row = src;
+        for (size_t x = 0; x < width;
+             x += kTile4TileWidth * kTile4SubtileWidth) {
+          size_t tile_x = 0;
           // Copy 1 row from 4 subtiles.
           for (; tile_x < kTile4ZWidth; tile_x++) {
-            UNSAFE_TODO(memcpy(linear_dest, row_ptr, kTile4SubtileWidth));
-            UNSAFE_TODO(linear_dest += kTile4SubtileWidth);
-            UNSAFE_TODO(row_ptr += kTile4SubtileSizeBytes);
+            dest.Write(*row.Read<kTile4SubtileWidth>());
+            row.Skip(kTile4SubtileSizeBytes - kTile4SubtileWidth);
           }
-          UNSAFE_TODO(row_ptr += kTile4ZWidth * kTile4SubtileSizeBytes);
+          row.Skip(kTile4ZWidth * kTile4SubtileSizeBytes);
           // Copy 1 row from another 4 subtiles.
           for (; tile_x < kTile4TileWidth; tile_x++) {
-            UNSAFE_TODO(memcpy(linear_dest, row_ptr, kTile4SubtileWidth));
-            UNSAFE_TODO(linear_dest += kTile4SubtileWidth);
-            UNSAFE_TODO(row_ptr += kTile4SubtileSizeBytes);
+            dest.Write(*row.Read<kTile4SubtileWidth>());
+            row.Skip(kTile4SubtileSizeBytes - kTile4SubtileWidth);
           }
 
           // Advance to the tile to the right.
-          UNSAFE_TODO(row_ptr += kTile4TileSizeBytes -
-                                 (3 * kTile4ZWidth * kTile4SubtileSizeBytes));
+          row.Skip(kTile4TileSizeBytes -
+                   (3 * kTile4ZWidth * kTile4SubtileSizeBytes));
         }
 
         // Advance to the next row in the subtile.
-        UNSAFE_TODO(tiled_src += kTile4SubtileWidth);
+        src.Skip(kTile4SubtileWidth);
       }
 
       // Advance to the next row in the tile.
       if (tile_y % 2 == 0) {
-        UNSAFE_TODO(tiled_src += kTile4ZWidth * kTile4SubtileSizeBytes -
-                                 kTile4SubtileSizeBytes);
+        src.Skip(kTile4ZWidth * kTile4SubtileSizeBytes -
+                 kTile4SubtileSizeBytes);
       } else {
-        UNSAFE_TODO(tiled_src += 3 * kTile4ZWidth * kTile4SubtileSizeBytes -
-                                 kTile4SubtileSizeBytes);
+        src.Skip(3 * kTile4ZWidth * kTile4SubtileSizeBytes -
+                 kTile4SubtileSizeBytes);
       }
     }
 
     // Advance to the tile below.
-    UNSAFE_TODO(tiled_src += width * kTile4TileHeight * kTile4SubtileHeight -
-                             kTile4TileSizeBytes);
+    src.Skip(width * kTile4TileHeight * kTile4SubtileHeight -
+             kTile4TileSizeBytes);
   }
 }
 
-}  // namespace
-
-#endif
-
+DecodedImage::DecodedImage() = default;
+DecodedImage::DecodedImage(const DecodedImage&) = default;
+DecodedImage& DecodedImage::operator=(const DecodedImage&) = default;
 DecodedImage::~DecodedImage() = default;
 
 std::string TestParamToString(
     const testing::TestParamInfo<TestParam>& param_info) {
   return param_info.param.test_name;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
 
 DecodedImage ScopedVAImageToDecodedImage(const ScopedVAImage* scoped_va_image) {
   DecodedImage decoded_image{};
@@ -139,17 +141,21 @@ DecodedImage ScopedVAImageToDecodedImage(const ScopedVAImage* scoped_va_image) {
 
   // This is safe because |number_of_planes| is retrieved from the VA-API and it
   // can not be greater than 3, which is also the size of the |planes| array.
+  const auto offsets = base::span(scoped_va_image->image()->offsets);
+  const auto pitches = base::span(scoped_va_image->image()->pitches);
   for (uint32_t i = 0u; i < decoded_image.number_of_planes; ++i) {
-    UNSAFE_TODO(
-        decoded_image.planes[i].data =
-            static_cast<uint8_t*>(scoped_va_image->va_buffer()->data()) +
-            scoped_va_image->image()->offsets[i]);
-    UNSAFE_TODO(decoded_image.planes[i].stride = base::checked_cast<int>(
-                    scoped_va_image->image()->pitches[i]));
+    // SAFETY: `va_buffer()->data()` points to the mapped VAImage buffer, and
+    // `offsets[i]` is the byte offset to plane `i` provided by VA-API.
+    decoded_image.planes[i].data = UNSAFE_BUFFERS(
+        static_cast<uint8_t*>(scoped_va_image->va_buffer()->data()) +
+        offsets[i]);
+    decoded_image.planes[i].stride = base::checked_cast<int>(pitches[i]);
   }
 
   return decoded_image;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
 
 class NativePixmapMapping {
  public:
@@ -212,9 +218,9 @@ class Tile4Mapping : public NativePixmapMapping {
       gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
       viz::SharedImageFormat format) {
-    size_t plane_strides[2];
-    size_t plane_sizes[2];
-    uint8_t* plane_addrs[2];
+    std::array<size_t, 2> plane_strides;
+    std::array<size_t, 2> plane_sizes;
+    std::array<raw_ptr<uint8_t>, 2> plane_addrs;
 
     int aligned_width = base::bits::AlignUp(
         handle.planes[0].stride, static_cast<uint32_t>(kTile4TileWidthBytes));
@@ -248,27 +254,32 @@ class Tile4Mapping : public NativePixmapMapping {
 
     CHECK_EQ(handle.planes.size(), 2u);
     for (size_t plane_idx = 0; plane_idx < handle.planes.size(); plane_idx++) {
-      int width = UNSAFE_TODO(plane_strides[plane_idx]);
-      int height = UNSAFE_TODO(plane_sizes[plane_idx]) / width;
+      size_t width = plane_strides[plane_idx];
+      size_t height = plane_sizes[plane_idx] / width;
+      size_t plane_size = plane_sizes[plane_idx];
       const uint8_t* src = static_cast<uint8_t*>(gbm_buffer->memory(plane_idx));
       uint8_t* dest = static_cast<uint8_t*>(
-          mmap(nullptr, UNSAFE_TODO(plane_sizes[plane_idx]),
-               PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+          mmap(nullptr, plane_size, PROT_READ | PROT_WRITE,
+               MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
       if (dest == MAP_FAILED) {
         PLOG(ERROR) << "Failed to create detiled mapping!";
         return nullptr;
       }
 
-      Detile4(dest, src, width, height);
+      // SAFETY: `dest` is mapped via `mmap` with `plane_size` bytes, and `src`
+      // is mapped by `gbm_buffer` for plane `plane_idx` with at least
+      // `plane_size` bytes.
+      Detile4(UNSAFE_BUFFERS(base::span(dest, plane_size)),
+              UNSAFE_BUFFERS(base::span(src, plane_size)), width, height);
 
-      UNSAFE_TODO(plane_addrs[plane_idx]) = dest;
+      plane_addrs[plane_idx] = dest;
 
       // We don't want to give the user the impression that this mapping is
       // bidirectional. We are performing a one-off detile operation to allow
       // this Tile4 buffer to be read, but we have no way of propagating writes
       // from our temporary linear buffer to the underlying Tile4 buffer. So, we
       // mark these pages as read only.
-      if (mprotect(dest, UNSAFE_TODO(plane_sizes[plane_idx]), PROT_READ)) {
+      if (mprotect(dest, plane_sizes[plane_idx], PROT_READ)) {
         PLOG(ERROR) << "Failed to mark detiled mapping read only!";
         return nullptr;
       }
@@ -283,19 +294,19 @@ class Tile4Mapping : public NativePixmapMapping {
   }
 
   Tile4Mapping(gfx::Size size,
-               size_t plane_strides[2],
-               size_t plane_sizes[2],
-               uint8_t* plane_addrs[2])
+               std::array<size_t, 2> plane_strides,
+               std::array<size_t, 2> plane_sizes,
+               std::array<raw_ptr<uint8_t>, 2> plane_addrs)
       : size_(size),
-        plane_strides_{UNSAFE_TODO(plane_strides[0], plane_strides[1])},
-        plane_sizes_{UNSAFE_TODO(plane_sizes[0], plane_sizes[1])},
-        plane_addrs_{UNSAFE_TODO(plane_addrs[0], plane_addrs[1])} {}
+        plane_strides_(plane_strides),
+        plane_sizes_(plane_sizes),
+        plane_addrs_(plane_addrs) {}
 
   ~Tile4Mapping() override {
     for (size_t plane_idx = 0; plane_idx < std::size(plane_addrs_);
          plane_idx++) {
-      munmap(static_cast<void*>(UNSAFE_TODO(plane_addrs_[plane_idx])),
-             UNSAFE_TODO(plane_sizes_[plane_idx]));
+      munmap(static_cast<void*>(plane_addrs_[plane_idx]),
+             plane_sizes_[plane_idx]);
     }
   }
 
@@ -304,7 +315,7 @@ class Tile4Mapping : public NativePixmapMapping {
       return nullptr;
     }
 
-    return UNSAFE_TODO(plane_addrs_[plane_idx]);
+    return plane_addrs_[plane_idx];
   }
 
   int GetStride(size_t plane_idx) const override {
@@ -312,16 +323,16 @@ class Tile4Mapping : public NativePixmapMapping {
       return -1;
     }
 
-    return UNSAFE_TODO(plane_strides_[plane_idx]);
+    return plane_strides_[plane_idx];
   }
 
   gfx::Size GetSize() const override { return size_; }
 
  private:
   const gfx::Size size_;
-  const size_t plane_strides_[2];
-  const size_t plane_sizes_[2];
-  uint8_t* const plane_addrs_[2];
+  const std::array<size_t, 2> plane_strides_;
+  const std::array<size_t, 2> plane_sizes_;
+  const std::array<raw_ptr<uint8_t>, 2> plane_addrs_;
 };
 
 std::unique_ptr<NativePixmapMapping> CreateNativePixmapMapping(
@@ -347,8 +358,8 @@ struct NativePixmapDecodedImage : public DecodedImage {
     this->size = size;
 
     for (size_t plane_idx = 0; plane_idx < number_of_planes; plane_idx++) {
-      UNSAFE_TODO(planes[plane_idx].data) = mapping_->GetData(plane_idx);
-      UNSAFE_TODO(planes[plane_idx].stride) = mapping_->GetStride(plane_idx);
+      planes[plane_idx].data = mapping_->GetData(plane_idx);
+      planes[plane_idx].stride = mapping_->GetStride(plane_idx);
     }
   }
 

@@ -9,8 +9,10 @@
 #include <stdint.h>
 #include <va/va.h>
 
+#include <array>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,15 +42,20 @@ static_assert(
 
 // A structure to hold generic image decodes in planar format.
 struct DecodedImage {
+  struct Plane {
+    raw_ptr<uint8_t> data;
+    int stride;
+  };
+
+  DecodedImage();
+  DecodedImage(const DecodedImage&);
+  DecodedImage& operator=(const DecodedImage&);
   virtual ~DecodedImage();
 
   uint32_t fourcc;
   uint32_t number_of_planes;  // Can not be greater than kMaxNumberPlanes.
   gfx::Size size;
-  struct {
-    raw_ptr<uint8_t> data;
-    int stride;
-  } planes[kMaxNumberPlanes];
+  std::array<Plane, kMaxNumberPlanes> planes;
 };
 
 // Takes a ScopedVAImage and returns a DecodedImage object that represents
@@ -69,6 +76,11 @@ std::unique_ptr<DecodedImage> NativePixmapToDecodedImage(
 bool CompareImages(const DecodedImage& reference_image,
                    const DecodedImage& hw_decoded_image,
                    double min_ssim = 0.995);
+
+void Detile4(base::span<uint8_t> linear_dest,
+             base::span<const uint8_t> tiled_src,
+             size_t width,
+             size_t height);
 
 }  // namespace vaapi_test_utils
 }  // namespace media
