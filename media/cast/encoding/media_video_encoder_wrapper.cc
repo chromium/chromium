@@ -257,13 +257,6 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   CHECK(!video_frame->visible_rect().IsEmpty());
 
-  // TODO(crbug.com/282984511): consider adding optimization to store frames
-  // that are queued for encoding and sending them once updating options is
-  // complete.
-  if (num_pending_updates_ > 0) {
-    return false;
-  }
-
   // Construct and initialize the encoder on the first call to this method.
   const gfx::Size frame_size = video_frame->visible_rect().size();
   if (frame_size != options_.frame_size) {
@@ -699,10 +692,12 @@ void MediaVideoEncoderWrapper::OnOptionsUpdated(int encoder_version,
   --num_pending_updates_;
 
   if (num_pending_updates_ == 0) {
-    for (auto& task : pending_encodes_) {
+    std::vector<base::OnceClosure> pending_encodes =
+        std::move(pending_encodes_);
+    pending_encodes_.clear();
+    for (auto& task : pending_encodes) {
       CallEncoderOnCorrectThread(std::move(task));
     }
-    pending_encodes_.clear();
   }
 
   OnEncoderStatus(encoder_version, status);

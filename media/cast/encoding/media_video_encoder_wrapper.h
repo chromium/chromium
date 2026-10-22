@@ -201,8 +201,9 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // These options are for the entire encoder.
   media::VideoEncoder::Options options_;
 
-  // If we have any pending updates, any enqueued frames will be rejected. In
-  // some cases we may have multiple pending updates in flight.
+  // The number of options updates currently in flight. While > 0, frames that
+  // finish complexity estimation are queued in `pending_encodes_` and encoded
+  // once all pending updates complete.
   int num_pending_updates_ = 0;
 
   // These options are intended to be per frame.
