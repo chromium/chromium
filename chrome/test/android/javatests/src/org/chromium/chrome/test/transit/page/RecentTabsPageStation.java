@@ -6,7 +6,7 @@ package org.chromium.chrome.test.transit.page;
 
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.chrome.browser.ntp.RecentTabsPage;
+import org.chromium.chrome.browser.recent_tabs.RecentTabsPage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** A station representing the Recent Tabs page. */

@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp;
+package org.chromium.chrome.browser.recent_tabs;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntry;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedTab;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedTabManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** A fake implementation of {@link RecentlyClosedTabManager} for testing purposes. */
+@NullMarked
 public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
-    @Nullable private Runnable mEntriesUpdatedRunnable;
+    private @Nullable Runnable mEntriesUpdatedRunnable;
     private List<RecentlyClosedEntry> mTabs = new ArrayList<>();
 
     public FakeRecentlyClosedTabManager() {

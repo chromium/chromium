@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp;
+package org.chromium.chrome.browser.recent_tabs;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -18,15 +18,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedBulkEvent;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManager;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntry;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedGroup;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedTab;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedWindow;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;

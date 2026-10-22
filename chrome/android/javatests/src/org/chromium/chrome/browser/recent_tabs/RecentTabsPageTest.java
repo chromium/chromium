@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp;
+package org.chromium.chrome.browser.recent_tabs;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -70,12 +70,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedBulkEvent;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManager;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntry;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedGroup;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedTab;
-import org.chromium.chrome.browser.recent_tabs.RecentlyClosedWindow;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;

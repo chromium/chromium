@@ -22,7 +22,7 @@ found in the LICENSE file.
         android:focusable="true"
         android:focusableInTouchMode="true" >
 
-        <org.chromium.chrome.browser.ntp.RecentTabsExpandableListView
+        <org.chromium.chrome.browser.recent_tabs.RecentTabsExpandableListView
             android:id="@+id/odp_listview"
             android:paddingTop="@dimen/recent_tabs_group_view_vertical_padding"
             android:layout_height="match_parent"

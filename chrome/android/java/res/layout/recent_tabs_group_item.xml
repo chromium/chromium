@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.ntp.RecentTabsGroupView
+<org.chromium.chrome.browser.recent_tabs.RecentTabsGroupView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/recent_tabs_group_view"
     android:layout_height="wrap_content"
@@ -50,4 +50,4 @@ found in the LICENSE file.
         android:background="@drawable/small_icon_background_selector"
         android:importantForAccessibility="no" />
 
-</org.chromium.chrome.browser.ntp.RecentTabsGroupView>
+</org.chromium.chrome.browser.recent_tabs.RecentTabsGroupView>
