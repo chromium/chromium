@@ -58,9 +58,11 @@ def _CheckNullabilityAnnotations(input_api, output_api):
 
     errors = []
     for f in input_api.AffectedFiles():
-        if f.LocalPath().startswith(
-            'ios/web_view/public/'
-        ) or f.LocalPath().startswith('ios/third_party/'):
+        if (
+            f.LocalPath().startswith('ios/web_view/public/')
+            or f.LocalPath().startswith('ios/third_party/')
+            or f.LocalPath().endswith(('.md', 'PRESUBMIT_test.py'))
+        ):
             # ios/web_view/public tries to mimic an existing API that
             # might have nullability in it and that is acceptable.
             continue
@@ -85,6 +87,8 @@ def _CheckBugInToDo(input_api, output_api):
     errors = []
     warnings = []
     for f in input_api.AffectedFiles():
+        if f.LocalPath().endswith(('.md', 'PRESUBMIT_test.py')):
+            continue
         for line_num, line in f.ChangedContents():
             if _HasToDoWithNoBug(input_api, line):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
@@ -179,7 +183,7 @@ def _CheckHasNoPipeInComment(input_api, output_api):
     for f in input_api.AffectedFiles():
         if not _IsInIosPackage(input_api, f.LocalPath()):
             continue
-        if f.LocalPath().endswith('.md'):
+        if f.LocalPath().endswith(('.md', 'PRESUBMIT_test.py')):
             continue
         for line_num, line in f.ChangedContents():
             if pipe_regex.search(line):
@@ -288,6 +292,8 @@ def _CheckHasNoBoxedBOOL(input_api, output_api):
 
     errors = []
     for f in input_api.AffectedFiles():
+        if f.LocalPath().endswith(('.md', 'PRESUBMIT_test.py')):
+            continue
         for line_num, line in f.ChangedContents():
             if boxed_BOOL_regex.search(line):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
