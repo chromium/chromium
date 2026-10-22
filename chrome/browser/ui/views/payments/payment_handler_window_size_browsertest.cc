@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 
+#include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -184,10 +185,41 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest,
 constexpr int kHeaderAndProgressBarHeight =
     kPaymentHandlerHeaderHeight + kPaymentHandlerProgressBarHeight;
 
+// The payment handler dialog is shrunk to fit the browser if the browser
+// content area is smaller than the dialog size scaled by this ratio. Must match
+// kShrinkToBrowserRatio in payment_request_dialog_view.cc.
+constexpr float kShrinkToBrowserRatio = 1.15f;
+
+constexpr char kBrowserContentAreaTooSmallMessage[] =
+    "The browser content area is too small to show the payment handler dialog "
+    "without shrinking it.";
+
 // Base class for tests of custom Payment Handler window sizes, which open the
 // payment handler window directly and check its size.
 class PaymentHandlerCustomSizeTest : public PaymentHandlerWindowSizeTest {
  protected:
+  // Returns whether the browser content area is too small to show a payment
+  // handler dialog of the max size without shrinking it to fit the browser.
+  // This happens when the test display is too small for the requested browser
+  // bounds, e.g. on some macOS and ChromeOS bots (crbug.com/573138234). Callers
+  // should GTEST_SKIP() in that case.
+  bool IsBrowserContentAreaTooSmallForTheTest() {
+    const gfx::Size dialog_size(kPaymentHandlerMaxDialogWidth,
+                                kPaymentHandlerMaxDialogHeight);
+    // Mirrors PaymentRequestDialogView::ResizeToFitPaymentHandlerWebContents().
+    const gfx::Size browser_content_area =
+        GetActiveWebContents()->GetContainerBounds().size();
+    const gfx::Size max_dialog_size = gfx::ScaleToFlooredSize(
+        browser_content_area, 1.0f / kShrinkToBrowserRatio);
+    if (dialog_size.width() <= max_dialog_size.width() &&
+        dialog_size.height() <= max_dialog_size.height()) {
+      return false;
+    }
+    LOG(WARNING) << "Browser content area " << browser_content_area.ToString()
+                 << " is too small for dialog size " << dialog_size.ToString();
+    return true;
+  }
+
   // Installs a payment app and opens its payment handler window, with
   // openWindow({preferredSize}) if `preferred_web_contents_size` is set.
   // Returns the payment handler WebContents, or nullptr on failure.
@@ -254,7 +286,10 @@ class PaymentHandlerCustomSizeTest : public PaymentHandlerWindowSizeTest {
 IN_PROC_BROWSER_TEST_F(PaymentHandlerCustomSizeTest, DefaultWindowSize) {
   // Make the browser large enough that the dialog is not shrunk to fit the
   // browser window.
-  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1000, 800));
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1920, 1080));
+  if (IsBrowserContentAreaTooSmallForTheTest()) {
+    GTEST_SKIP() << kBrowserContentAreaTooSmallMessage;
+  }
 
   content::WebContents* payment_handler_web_contents =
       OpenPaymentHandlerWindow();
@@ -335,10 +370,9 @@ constexpr CustomSizeTestParams kCustomSizeTestParams[] = {
      .expected_web_contents_size = gfx::Size(
          kInRangeWebContentWidth,
          kPaymentHandlerMinDialogHeight - kHeaderAndProgressBarHeight)},
-// TODO(crbug.com/573138234): The ChromeOS and Windows test displays are too
-// small for kPaymentHandlerMaxDialogHeight, so the dialog is shrunk to fit
-// the browser. Decide whether they need different size bounds.
-// TODO(crbug.com/575291944): Fails on Mac.
+// TODO(crbug.com/573138234): The ChromeOS, Windows, and Mac test displays
+// are too small for kPaymentHandlerMaxDialogHeight, so the dialog is shrunk
+// to fit the browser. Decide whether they need different size bounds.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
     {.test_name = "HeightAboveMaxIsClampedToMaxHeight",
      .preferred_web_contents_size =
@@ -450,6 +484,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerResizeToTest, ResizeToRepeatedly) {
   ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1920, 1080));
+  if (IsBrowserContentAreaTooSmallForTheTest()) {
+    GTEST_SKIP() << kBrowserContentAreaTooSmallMessage;
+  }
 
   content::WebContents* payment_handler_web_contents =
       OpenPaymentHandlerWindow();
@@ -472,6 +509,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerResizeToTest, ResizeToRepeatedly) {
 IN_PROC_BROWSER_TEST_F(PaymentHandlerResizeToTest,
                        ResizeToIgnoredWhileProcessingSpinnerIsShown) {
   ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1920, 1080));
+  if (IsBrowserContentAreaTooSmallForTheTest()) {
+    GTEST_SKIP() << kBrowserContentAreaTooSmallMessage;
+  }
 
   content::WebContents* payment_handler_web_contents =
       OpenPaymentHandlerWindow();
@@ -542,7 +582,10 @@ class PaymentHandlerResizeToDisabledTest : public PaymentHandlerCustomSizeTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerResizeToDisabledTest, ResizeToIsIgnored) {
-  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1000, 800));
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1920, 1080));
+  if (IsBrowserContentAreaTooSmallForTheTest()) {
+    GTEST_SKIP() << kBrowserContentAreaTooSmallMessage;
+  }
 
   content::WebContents* payment_handler_web_contents =
       OpenPaymentHandlerWindow();
