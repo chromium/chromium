@@ -790,8 +790,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
     bounds.set_width(width);
     EXPECT_LE(region_view()
                   ->GetPinnedTabsContainer()
-                  ->CalculateProposedLayout(bounds)
-                  .host_size.width(),
+                  ->GetPreferredSize(bounds)
+                  .width(),
               bounds.width());
   };
   // Test for a variety of bounding widths.
