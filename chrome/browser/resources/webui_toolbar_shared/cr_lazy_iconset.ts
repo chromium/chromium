@@ -56,17 +56,17 @@ export class CrLazyIconset implements Iconset {
       sourceSvg = this.parsedIcons_.get(id)!;
     } else if (this.lazyIcons_.has(id)) {
       const callback = this.lazyIcons_.get(id);
-      assert(callback);
+      assert(callback, id);
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = callback();
       const svgElement = tempDiv.firstElementChild;
-      assert(svgElement);
+      assert(svgElement, id);
       sourceSvg = svgElement.firstElementChild as SVGGElement;
       this.parsedIcons_.set(id, sourceSvg);
       this.lazyIcons_.delete(id);
     }
 
-    assert(sourceSvg);
+    assert(sourceSvg, id);
 
     const svgClone =
         document.createElementNS('http://www.w3.org/2000/svg', 'svg');
