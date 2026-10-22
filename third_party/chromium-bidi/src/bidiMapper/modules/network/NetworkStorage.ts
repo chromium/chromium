@@ -256,6 +256,24 @@ export class NetworkStorage {
   async getCollectedData(
     params: Network.GetDataParameters,
   ): Promise<Network.GetDataResult> {
+    if (params.disown && params.collector === undefined) {
+      throw new InvalidArgumentException(
+        'Cannot disown collected data without collector ID',
+      );
+    }
+
+    if (
+      params.dataType === Network.DataType.Response &&
+      !this.#collectorsStorage.isCollected(
+        params.request,
+        params.dataType,
+        params.collector,
+      ) &&
+      this.#collectorsStorage.hasCollectors()
+    ) {
+      await this.#waitForRequestFinished(params.request);
+    }
+
     if (
       !this.#collectorsStorage.isCollected(
         params.request,
@@ -267,12 +285,6 @@ export class NetworkStorage {
         params.collector === undefined
           ? `No collected ${params.dataType} data`
           : `Collector ${params.collector} didn't collect ${params.dataType} data`,
-      );
-    }
-
-    if (params.disown && params.collector === undefined) {
-      throw new InvalidArgumentException(
-        'Cannot disown collected data without collector ID',
       );
     }
 
@@ -306,6 +318,25 @@ export class NetworkStorage {
     }
 
     return result;
+  }
+
+  /**
+   * For redirected requests, the same request ID spawns multiple internal
+   * requests. Waits for the final request in the chain to finish.
+   */
+  async #waitForRequestFinished(id: Network.Request): Promise<void> {
+    while (true) {
+      const request = this.getRequestById(id);
+      if (
+        !request ||
+        request.isFinished ||
+        request.interceptPhase ||
+        (!request.hasResponse && request.redirectCount === 0)
+      ) {
+        return;
+      }
+      await Promise.race([request.finishedPromise, request.waitNextPhase]);
+    }
   }
 
   async #getCollectedResponseData(
@@ -504,13 +535,14 @@ export class NetworkStorage {
     if (!request) {
       return;
     }
+    if (!request.isFinished) {
+      // Keep request if it's still active (e.g. intercepted), to allow
+      // subsequent `provideResponse` or `continueRequest`.
+      return;
+    }
     if (this.#collectorsStorage.isCollected(id)) {
       // Keep request, as it's data can be accessed later.
       request.disposeData();
-      return;
-    }
-    if (!request.isFinished) {
-      // Keep request if it's still active (e.g. intercepted), to allow subsequent provideResponse or continueRequest.
       return;
     }
     // TODO: dispose Network data from Chromium once there is a CDP command for that.

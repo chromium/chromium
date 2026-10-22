@@ -66,13 +66,6 @@ export class NetworkRequest {
 
   #fetchId?: Protocol.Fetch.RequestId;
 
-  // Tracks if the request has finished loading or failed, preventing premature disposal.
-  #isFinished = false;
-
-  get isFinished(): boolean {
-    return this.#isFinished;
-  }
-
   /**
    * Indicates the network intercept phase, if the request is currently blocked.
    * Undefined necessarily implies that the request is not blocked.
@@ -135,6 +128,9 @@ export class NetworkRequest {
   };
 
   waitNextPhase: Deferred<void> = new Deferred<void>();
+  // Resolved when the request is finished, used to await pending data
+  // collection.
+  #finished: Deferred<void> = new Deferred<void>();
 
   constructor(
     id: Network.Request,
@@ -150,6 +146,20 @@ export class NetworkRequest {
     this.#cdpTarget = cdpTarget;
     this.#redirectCount = redirectCount;
     this.#logger = logger;
+  }
+
+  // Tracks if the request has finished loading or failed, preventing premature
+  // disposal.
+  get isFinished(): boolean {
+    return this.#finished.isFinished;
+  }
+
+  get finishedPromise(): Promise<void> {
+    return this.#finished;
+  }
+
+  get hasResponse(): boolean {
+    return Boolean(this.#response.info || this.#response.paused);
   }
 
   get id(): string {
@@ -503,7 +513,7 @@ export class NetworkRequest {
   }
 
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
-    this.#isFinished = true;
+    this.#finished.resolve();
     // TODO: use event.redirectResponse;
     // Temporary workaround to emit ResponseCompleted event for redirects
     this.#response.hasExtraInfo = false;
@@ -588,7 +598,16 @@ export class NetworkRequest {
       (loadingFinished || options.wasRedirected)
     ) {
       this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
-      this.#networkStorage.disposeRequest(this.id);
+      if (!this.#response.loadingFailed) {
+        if (this.#response.loadingFinished) {
+          this.#networkStorage.collectIfNeeded(this, Network.DataType.Response);
+        }
+        // Resolve `#finished` after `collectIfNeeded` and `ResponseCompleted`
+        // so `getData` sees updated size-limit state and `disposeRequest` does
+        // not wipe state before `ResponseCompleted` is emitted.
+        this.#finished.resolve();
+        this.#networkStorage.disposeRequest(this.id);
+      }
     }
   }
 
@@ -631,7 +650,6 @@ export class NetworkRequest {
     this.#response.hasExtraInfo = event.hasExtraInfo;
     this.#response.info = event.response;
     this.#responseBytesReceived = event.response.encodedDataLength;
-    this.#networkStorage.collectIfNeeded(this, Network.DataType.Response);
     this.#emitEventsIfReady();
   }
 
@@ -641,11 +659,9 @@ export class NetworkRequest {
   }
 
   onLoadingFinishedEvent(event: Protocol.Network.LoadingFinishedEvent): void {
-    this.#isFinished = true;
     this.#response.loadingFinished = event;
     this.#responseBytesReceived = event.encodedDataLength;
     this.#encodedResponseBodySize = event.encodedBodyLength ?? null;
-    this.#networkStorage.collectIfNeeded(this, Network.DataType.Response);
     this.#emitEventsIfReady();
   }
 
@@ -655,7 +671,6 @@ export class NetworkRequest {
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent): void {
-    this.#isFinished = true;
     this.#response.loadingFailed = event;
     this.#emitEventsIfReady();
 
@@ -668,7 +683,8 @@ export class NetworkRequest {
         },
       };
     });
-    this.disposeData();
+    this.#finished.resolve();
+    this.#networkStorage.disposeRequest(this.id);
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
@@ -924,6 +940,8 @@ export class NetworkRequest {
   }
 
   dispose(): void {
+    // Unblock any pending `getData` calls when the target detaches.
+    this.#finished.resolve();
     this.waitNextPhase.reject(new Error('waitNextPhase disposed'));
   }
 

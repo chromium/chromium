@@ -17,9 +17,15 @@
  */
 import {describe, it, beforeEach} from 'node:test';
 import {assert} from 'chai';
+import sinon from 'sinon';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import {ChromiumBidi, Network} from '../../../protocol/protocol.js';
+import {
+  ChromiumBidi,
+  Network,
+  NoSuchNetworkCollectorException,
+  NoSuchNetworkDataException,
+} from '../../../protocol/protocol.js';
 import {ProcessingQueue} from '../../../utils/ProcessingQueue.js';
 import type {OutgoingMessage} from '../../OutgoingMessage.js';
 import {UserContextStorage} from '../browser/UserContextStorage.js';
@@ -736,6 +742,302 @@ describe('NetworkStorage', () => {
 
       assert.equal(networkStorage.getCacheBehavior(CONTEXT_1), 'bypass');
       assert.equal(networkStorage.getCacheBehavior(CONTEXT_2), 'bypass');
+    });
+  });
+
+  describe('getCollectedData', () => {
+    it('should await final response after redirect', async () => {
+      const sendCommandStub = sinon
+        .stub(cdpClient, 'sendCommand')
+        .resolves({body: 'final body', base64Encoded: false});
+      networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Response],
+        maxEncodedDataSize: 10_000,
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+      request.requestWillBeSentRedirect();
+
+      const dataPromise = networkStorage.getCollectedData({
+        request: request.requestId,
+        dataType: Network.DataType.Response,
+      });
+
+      sinon.assert.notCalled(sendCommandStub);
+
+      request.responseReceived();
+      request.loadingFinished();
+
+      const result = await dataPromise;
+      assert.deepEqual(result, {
+        bytes: {type: 'string', value: 'final body'},
+      });
+      sinon.assert.calledOnceWithExactly(
+        sendCommandStub,
+        'Network.getResponseBody',
+        {requestId: request.requestId},
+      );
+    });
+
+    it('should reject immediately when no response has been received yet', async () => {
+      const sendCommandStub = sinon.stub(cdpClient, 'sendCommand');
+      networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Response],
+        maxEncodedDataSize: 10_000,
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+
+      await networkStorage
+        .getCollectedData({
+          request: request.requestId,
+          dataType: Network.DataType.Response,
+        })
+        .then(
+          () => assert.fail('Expected getCollectedData to reject'),
+          (error: unknown) =>
+            assert.instanceOf(error, NoSuchNetworkDataException),
+        );
+      sinon.assert.notCalled(sendCommandStub);
+    });
+
+    it('should reject when response exceeds maxEncodedDataSize on finish', async () => {
+      const sendCommandStub = sinon.stub(cdpClient, 'sendCommand');
+      networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Response],
+        maxEncodedDataSize: 100,
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+      request.responseReceived();
+
+      const dataPromise = networkStorage.getCollectedData({
+        request: request.requestId,
+        dataType: Network.DataType.Response,
+      });
+
+      // `loadingFinished` reports `encodedDataLength: 999`, exceeding
+      // `maxEncodedDataSize: 100`.
+      request.loadingFinished();
+
+      await dataPromise.then(
+        () => assert.fail('Expected getCollectedData to reject'),
+        (error: unknown) =>
+          assert.instanceOf(error, NoSuchNetworkDataException),
+      );
+      sinon.assert.notCalled(sendCommandStub);
+    });
+
+    it('should reject when in-flight request fails and remove uncollected request', async () => {
+      const sendCommandStub = sinon.stub(cdpClient, 'sendCommand');
+      networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Response],
+        maxEncodedDataSize: 10_000,
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+      request.responseReceived();
+
+      const dataPromise = networkStorage.getCollectedData({
+        request: request.requestId,
+        dataType: Network.DataType.Response,
+      });
+
+      request.loadingFailed();
+
+      await dataPromise.then(
+        () => assert.fail('Expected getCollectedData to reject'),
+        (error: unknown) =>
+          assert.instanceOf(error, NoSuchNetworkDataException),
+      );
+      sinon.assert.notCalled(sendCommandStub);
+      assert.isUndefined(networkStorage.getRequestById(request.requestId));
+    });
+
+    it('should wait for responseReceivedExtraInfo when loadingFinished arrives first', async () => {
+      sinon
+        .stub(cdpClient, 'sendCommand')
+        .resolves({body: 'final body', base64Encoded: false});
+      const collector = networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Response],
+        maxEncodedDataSize: 10_000,
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+      request.requestWillBeSentExtraInfo();
+      request.responseReceived(true);
+      request.loadingFinished();
+
+      const dataPromise = networkStorage.getCollectedData({
+        request: request.requestId,
+        dataType: Network.DataType.Response,
+        collector,
+        disown: true,
+      });
+
+      request.responseReceivedExtraInfo();
+
+      const result = await dataPromise;
+      assert.deepEqual(result, {
+        bytes: {type: 'string', value: 'final body'},
+      });
+      const event = await getEvent('network.responseCompleted');
+      assert.exists(event);
+    });
+
+    it('should reject immediately when request is blocked in an intercept phase', async () => {
+      networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Response],
+        maxEncodedDataSize: 10_000,
+      });
+      const request = new MockCdpNetworkEvents(cdpClient);
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      request.requestWillBeSent();
+      request.requestPaused();
+
+      await networkStorage
+        .getCollectedData({
+          request: request.requestId,
+          dataType: Network.DataType.Response,
+        })
+        .then(
+          () => assert.fail('Expected getCollectedData to reject'),
+          (error: unknown) =>
+            assert.instanceOf(error, NoSuchNetworkDataException),
+        );
+    });
+
+    it('should reject when request enters an intercept phase while waiting', async () => {
+      networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Response],
+        maxEncodedDataSize: 10_000,
+      });
+      const request = new MockCdpNetworkEvents(cdpClient);
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      request.requestWillBeSent();
+      request.requestWillBeSentRedirect();
+
+      const dataPromise = networkStorage.getCollectedData({
+        request: request.requestId,
+        dataType: Network.DataType.Response,
+      });
+
+      request.requestPaused();
+
+      await dataPromise.then(
+        () => assert.fail('Expected getCollectedData to reject'),
+        (error: unknown) =>
+          assert.instanceOf(error, NoSuchNetworkDataException),
+      );
+    });
+
+    it('should reject immediately on in-flight request when no collectors exist', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+
+      await networkStorage
+        .getCollectedData({
+          request: request.requestId,
+          dataType: Network.DataType.Response,
+        })
+        .then(
+          () => assert.fail('Expected getCollectedData to reject'),
+          (error: unknown) =>
+            assert.instanceOf(error, NoSuchNetworkDataException),
+        );
+    });
+
+    it('should reject immediately with unknown collector on in-flight request', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+
+      await networkStorage
+        .getCollectedData({
+          request: request.requestId,
+          dataType: Network.DataType.Response,
+          collector: 'unknown-collector',
+        })
+        .then(
+          () => assert.fail('Expected getCollectedData to reject'),
+          (error: unknown) =>
+            assert.instanceOf(error, NoSuchNetworkCollectorException),
+        );
+    });
+
+    it('should keep in-flight request state when disowning request data before finish', async () => {
+      sinon
+        .stub(cdpClient, 'sendCommand')
+        .resolves({postData: 'payload', base64Encoded: false});
+      const collector = networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Request, Network.DataType.Response],
+        maxEncodedDataSize: 10_000,
+      });
+      // Keeps the request data collected after `collector` disowns it.
+      networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Request],
+        maxEncodedDataSize: 10_000,
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+
+      const result = await networkStorage.getCollectedData({
+        request: request.requestId,
+        dataType: Network.DataType.Request,
+        collector,
+        disown: true,
+      });
+      assert.deepEqual(result, {
+        bytes: {type: 'string', value: 'payload'},
+      });
+
+      // The request is still in-flight, so its URL and state must not be wiped.
+      const storedRequest = networkStorage.getRequestById(request.requestId);
+      assert.exists(storedRequest);
+      assert.equal(storedRequest?.url, request.url);
+    });
+
+    it('should unblock pending getCollectedData when target is disposed', async () => {
+      const sendCommandStub = sinon.stub(cdpClient, 'sendCommand');
+      networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Response],
+        maxEncodedDataSize: 10_000,
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+      request.responseReceived();
+
+      const dataPromise = networkStorage.getCollectedData({
+        request: request.requestId,
+        dataType: Network.DataType.Response,
+      });
+
+      networkStorage.disposeRequestMap(cdpClient.sessionId!);
+
+      await dataPromise.then(
+        () => assert.fail('Expected getCollectedData to reject'),
+        (error: unknown) =>
+          assert.instanceOf(error, NoSuchNetworkDataException),
+      );
+      sinon.assert.notCalled(sendCommandStub);
     });
   });
 });

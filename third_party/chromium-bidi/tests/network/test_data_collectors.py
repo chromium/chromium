@@ -18,12 +18,16 @@ import pytest_asyncio
 from test_helpers import (
     ANY_UUID,
     AnyExtending,
+    create_request_via_fetch,
     execute_command,
     goto_url,
     send_JSON_command,
     subscribe,
+    wait_for_command,
     wait_for_event,
 )
+
+from . import create_blocked_request
 
 SOME_CONTENT = "some response content"
 SOME_POST_REQUEST_CONTENT = "some post request content"
@@ -625,3 +629,282 @@ async def test_network_collector_get_data_response_oopif(websocket, context_id, 
             "params": {"dataType": "response", "request": another_process_request_id},
         },
     )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("phase", ["beforeRequestSent", "responseStarted"])
+async def test_network_collector_get_data_response_blocked_request(
+    websocket, context_id, url_base, get_url, phase
+):
+    await goto_url(websocket, context_id, url_base)
+
+    await execute_command(
+        websocket,
+        {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE,
+            },
+        },
+    )
+
+    request_id = await create_blocked_request(
+        websocket, context_id, url=get_url(SOME_CONTENT), phase=phase
+    )
+
+    with pytest.raises(
+        Exception,
+        match=str(
+            {"error": "no such network data", "message": "No collected response data"}
+        ),
+    ):
+        await execute_command(
+            websocket,
+            {
+                "method": "network.getData",
+                "params": {"dataType": "response", "request": request_id},
+            },
+        )
+
+
+@pytest.mark.asyncio
+async def test_network_collector_get_data_response_no_collector_inflight(
+    websocket, context_id, url_base, url_hang_forever
+):
+    await goto_url(websocket, context_id, url_base)
+
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    await create_request_via_fetch(websocket, context_id, url_hang_forever)
+
+    before_request_sent = await wait_for_event(websocket, "network.beforeRequestSent")
+    request_id = before_request_sent["params"]["request"]["request"]
+
+    with pytest.raises(
+        Exception,
+        match=str(
+            {"error": "no such network data", "message": "No collected response data"}
+        ),
+    ):
+        await execute_command(
+            websocket,
+            {
+                "method": "network.getData",
+                "params": {
+                    "dataType": "response",
+                    "request": request_id,
+                },
+            },
+        )
+
+
+@pytest.mark.asyncio
+async def test_network_collector_get_data_response_unknown_collector_inflight(
+    websocket, context_id, url_base, url_hang_forever
+):
+    await goto_url(websocket, context_id, url_base)
+
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    await create_request_via_fetch(websocket, context_id, url_hang_forever)
+
+    before_request_sent = await wait_for_event(websocket, "network.beforeRequestSent")
+    request_id = before_request_sent["params"]["request"]["request"]
+
+    with pytest.raises(
+        Exception,
+        match=str(
+            {
+                "error": "no such network collector",
+                "message": f"Unknown collector {SOME_UNKNOWN_COLLECTOR_ID}",
+            }
+        ),
+    ):
+        await execute_command(
+            websocket,
+            {
+                "method": "network.getData",
+                "params": {
+                    "dataType": "response",
+                    "request": request_id,
+                    "collector": SOME_UNKNOWN_COLLECTOR_ID,
+                },
+            },
+        )
+
+
+@pytest.mark.asyncio
+async def test_network_collector_get_data_response_before_response_started(
+    websocket, context_id, url_base, url_hang_forever
+):
+    await goto_url(websocket, context_id, url_base)
+
+    await execute_command(
+        websocket,
+        {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE,
+            },
+        },
+    )
+
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    await create_request_via_fetch(websocket, context_id, url_hang_forever)
+
+    before_request_sent = await wait_for_event(websocket, "network.beforeRequestSent")
+    request_id = before_request_sent["params"]["request"]["request"]
+
+    with pytest.raises(
+        Exception,
+        match=str(
+            {"error": "no such network data", "message": "No collected response data"}
+        ),
+    ):
+        await execute_command(
+            websocket,
+            {
+                "method": "network.getData",
+                "params": {"dataType": "response", "request": request_id},
+            },
+        )
+
+
+@pytest.mark.asyncio
+async def test_network_collector_get_data_response_failed_inflight_request(
+    websocket, context_id, url_base, url_hang_forever_download
+):
+    await goto_url(websocket, context_id, url_base)
+
+    await execute_command(
+        websocket,
+        {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE,
+            },
+        },
+    )
+
+    await subscribe(
+        websocket,
+        ["network.responseStarted", "network.fetchError"],
+        [context_id],
+    )
+
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""
+                    window.controller = new AbortController();
+                    fetch('{url_hang_forever_download()}', {{signal: window.controller.signal}})
+                        .then((r) => r.text())
+                        .catch(() => {{}});
+                """,
+                "target": {"context": context_id},
+                "awaitPromise": False,
+            },
+        },
+    )
+
+    response_started = await wait_for_event(websocket, "network.responseStarted")
+    request_id = response_started["params"]["request"]["request"]
+
+    get_data_command_id = await send_JSON_command(
+        websocket,
+        {
+            "method": "network.getData",
+            "params": {"dataType": "response", "request": request_id},
+        },
+    )
+
+    await execute_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.controller.abort()",
+                "target": {"context": context_id},
+                "awaitPromise": False,
+            },
+        },
+    )
+
+    with pytest.raises(
+        Exception,
+        match=str(
+            {"error": "no such network data", "message": "No collected response data"}
+        ),
+    ):
+        await wait_for_command(websocket, get_data_command_id)
+
+
+@pytest.mark.asyncio
+async def test_network_collector_disown_data_response_blocked_in_response_started(
+    websocket, context_id, url_base, get_url
+):
+    await goto_url(websocket, context_id, url_base)
+
+    resp = await execute_command(
+        websocket,
+        {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE,
+            },
+        },
+    )
+    collector_id = resp["collector"]
+
+    request_id = await create_blocked_request(
+        websocket, context_id, url=get_url(SOME_CONTENT), phase="responseStarted"
+    )
+
+    with pytest.raises(
+        Exception,
+        match=str(
+            {
+                "error": "no such network data",
+                "message": f"Collector {collector_id} didn't collect response data",
+            }
+        ),
+    ):
+        await execute_command(
+            websocket,
+            {
+                "method": "network.disownData",
+                "params": {
+                    "dataType": "response",
+                    "collector": collector_id,
+                    "request": request_id,
+                },
+            },
+        )
+
+    await execute_command(
+        websocket,
+        {
+            "method": "network.continueResponse",
+            "params": {"request": request_id},
+        },
+    )
+
+    resp = await execute_command(
+        websocket,
+        {
+            "method": "network.getData",
+            "params": {
+                "dataType": "response",
+                "request": request_id,
+                "collector": collector_id,
+            },
+        },
+    )
+    assert resp == {"bytes": {"type": "string", "value": SOME_CONTENT}}

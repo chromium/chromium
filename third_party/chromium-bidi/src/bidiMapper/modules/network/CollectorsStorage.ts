@@ -60,6 +60,10 @@ export class CollectorsStorage {
     return collectorId;
   }
 
+  hasCollectors(): boolean {
+    return this.#collectors.size > 0;
+  }
+
   isCollected(
     requestId: Network.Request,
     dataType?: Network.DataType,

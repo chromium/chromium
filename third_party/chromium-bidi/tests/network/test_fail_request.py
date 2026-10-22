@@ -191,7 +191,7 @@ async def test_fail_request_twice(websocket, context_id, url_example):
         match=str(
             {
                 "error": "no such request",
-                "message": f"No blocked request found for network id '{network_id}'",
+                "message": f"Network request with ID '{network_id}' doesn't exist",
             }
         ),
     ):

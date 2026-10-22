@@ -2023,7 +2023,6 @@ crbug.com/573055465 external/wpt/webdriver/tests/bidi/emulation/set_media_featur
 crbug.com/563673588 external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Failure Pass ]
 crbug.com/575786309 external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch_simultaneous.py [ Failure ]
 crbug.com/492281019 external/wpt/webdriver/tests/bidi/log/entry_added/console.py [ Failure ]  # Flaky output
-crbug.com/575784654 external/wpt/webdriver/tests/bidi/network/get_data/request.py [ Failure Pass ]
 crbug.com/453772805 external/wpt/webdriver/tests/bidi/script/add_preload_script/execution_order_tentative.py [ Failure ]  # Flaky output
 crbug.com/494337166 external/wpt/webdriver/tests/classic/add_cookie/add.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/delete_all_cookies/delete.py [ Failure ]
