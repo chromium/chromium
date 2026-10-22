@@ -4,19 +4,21 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {PrintPreviewLayoutSettingsElement} from 'chrome://print/print_preview.js';
+import type {PageOrientationOption, PrintPreviewLayoutSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
-import {selectOption} from './print_preview_test_utils.js';
+import {getCddTemplateWithAdvancedSettings, selectOption} from './print_preview_test_utils.js';
 
 suite('LayoutSettingsTest', function() {
   let layoutSection: PrintPreviewLayoutSettingsElement;
+  let model: PrintPreviewModelElement;
 
   /** @override */
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const model = document.createElement('print-preview-model');
+    model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
     layoutSection = document.createElement('print-preview-layout-settings');
@@ -48,5 +50,45 @@ suite('LayoutSettingsTest', function() {
     await selectOption(layoutSection, 'landscape');
     assertTrue(layoutSection.getSettingValue('layout') as boolean);
     assertTrue(layoutSection.getSetting('layout').setFromUi);
+  });
+
+  test('disabled by destination policy', function() {
+    const select = layoutSection.shadowRoot!.querySelector('select')!;
+    assertFalse(select.disabled);
+
+    layoutSection.set('settings.layout.setByDestinationPolicy', true);
+    assertTrue(select.disabled);
+  });
+
+  test('switch destinations', function() {
+    const testDestination1 =
+        new Destination('FooDevice', DestinationOrigin.LOCAL, 'FooName');
+    testDestination1.capabilities =
+        getCddTemplateWithAdvancedSettings(1, 'FooDevice').capabilities;
+    testDestination1.capabilities!.printer.page_orientation = {
+      option: [
+        {type: 'PORTRAIT'},
+        {type: 'LANDSCAPE', is_default: true},
+      ] as PageOrientationOption[],
+    };
+
+    const testDestination2 =
+        new Destination('BarDevice', DestinationOrigin.LOCAL, 'BarName');
+    testDestination2.capabilities =
+        getCddTemplateWithAdvancedSettings(2, 'BarDevice').capabilities;
+    testDestination2.capabilities!.printer.page_orientation = {
+      option: [
+        {type: 'PORTRAIT', is_default: true},
+      ] as PageOrientationOption[],
+    };
+
+    model.destination = testDestination1;
+    model.applyStickySettings();
+    const select = layoutSection.shadowRoot!.querySelector('select')!;
+    assertEquals('landscape', select.value);
+
+    model.destination = testDestination2;
+    model.applyStickySettings();
+    assertEquals('portrait', select.value);
   });
 });

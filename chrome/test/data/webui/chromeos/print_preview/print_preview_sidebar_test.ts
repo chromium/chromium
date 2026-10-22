@@ -4,7 +4,7 @@
 
 import type {PrintPreviewModelElement, PrintPreviewSidebarElement} from 'chrome://print/print_preview.js';
 import {NativeLayerImpl} from 'chrome://print/print_preview.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
@@ -33,6 +33,17 @@ suite('PrintPreviewSidebarTest', function() {
 
     sidebar = document.createElement('print-preview-sidebar');
     sidebar.settings = model.settings;
+    sidebar.documentSettings = {
+      allPagesHaveCustomSize: false,
+      allPagesHaveCustomOrientation: false,
+      hasSelection: false,
+      isFromArc: false,
+      isModifiable: true,
+      isScalingDisabled: false,
+      fitToPageScaling: 100,
+      pageCount: 1,
+      title: 'title',
+    };
     sidebar.setSetting('duplex', false);
     sidebar.pageCount = 1;
     fakeDataBind(model, sidebar, 'settings');
@@ -67,21 +78,44 @@ suite('PrintPreviewSidebarTest', function() {
   test('ManagedPrintOptionsAppliedChangesSettingVisibility', function() {
     toggleMoreSettings(sidebar);
 
-    ['color', 'mediaSize', 'mediaType', 'dpi', 'duplex'].forEach(setting => {
-      const element = sidebar.shadowRoot!.querySelector<HTMLElement>(
-          `print-preview-${camelToKebab(setting)}-settings`)!;
-      // Disable setting availability, otherwise this setting will never be
-      // hidden.
-      sidebar.set(`settings.${setting}.available`, false);
-      // Show, hide and reset.
-      [true, false, true].forEach(value => {
-        sidebar.set(
-            `destination.allowedManagedPrintOptionsApplied.${setting}`, value);
-        // Element expected to be visible when managed print options are
-        // applied.
-        assertEquals(!value, element.hidden);
-      });
-    });
+    ['layout', 'color', 'mediaSize', 'mediaType', 'dpi', 'duplex'].forEach(
+        setting => {
+          const element = sidebar.shadowRoot!.querySelector<HTMLElement>(
+              `print-preview-${camelToKebab(setting)}-settings`)!;
+          // Disable setting availability, otherwise this setting will never be
+          // hidden.
+          sidebar.set(`settings.${setting}.available`, false);
+          // Show, hide and reset.
+          [true, false, true].forEach(value => {
+            sidebar.set(
+                `destination.allowedManagedPrintOptionsApplied.${setting}`,
+                value);
+            // Element expected to be visible when managed print options are
+            // applied.
+            assertEquals(!value, element.hidden);
+          });
+        });
+
+    const layoutElement = sidebar.shadowRoot!.querySelector<HTMLElement>(
+        'print-preview-layout-settings')!;
+    sidebar.set('settings.layout.available', false);
+    sidebar.set('destination.allowedManagedPrintOptionsApplied.layout', true);
+    assertFalse(layoutElement.hidden);
+
+    // PDF documents (unmodifiable and not from ARC) should hide layout even
+    // when managed print options are applied.
+    sidebar.set('documentSettings.isModifiable', false);
+    assertTrue(layoutElement.hidden);
+
+    // ARC documents should still show layout.
+    sidebar.set('documentSettings.isFromArc', true);
+    assertFalse(layoutElement.hidden);
+
+    // HTML documents with custom CSS orientation should hide layout.
+    sidebar.set('documentSettings.isModifiable', true);
+    sidebar.set('documentSettings.isFromArc', false);
+    sidebar.set('documentSettings.allPagesHaveCustomOrientation', true);
+    assertTrue(layoutElement.hidden);
   });
 
   // Tests that number of sheets is correctly calculated if duplex setting is

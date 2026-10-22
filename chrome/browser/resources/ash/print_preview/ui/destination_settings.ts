@@ -268,6 +268,7 @@ export class PrintPreviewDestinationSettingsElement extends
     this.notifyPath('destination.allowedManagedPrintOptionsApplied.color');
     this.notifyPath('destination.allowedManagedPrintOptionsApplied.dpi');
     this.notifyPath('destination.allowedManagedPrintOptionsApplied.quality');
+    this.notifyPath('destination.allowedManagedPrintOptionsApplied.layout');
 
     this.updateRecentDestinations_();
     if (this.destinationState === DestinationState.SET) {

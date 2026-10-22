@@ -33,6 +33,12 @@ export enum ManagedPrintOptionsQualityType {
   HIGH = 3,
 }
 
+export enum ManagedPrintOptionsLayoutType {
+  UNKNOWN_LAYOUT = 0,
+  PORTRAIT = 1,
+  LANDSCAPE = 2,
+}
+
 export interface ManagedPrintOptions {
   mediaSize?: PrintOption<ManagedPrintOptionsSize>;
   mediaType?: PrintOption<string>;
@@ -41,6 +47,7 @@ export interface ManagedPrintOptions {
   dpi?: PrintOption<ManagedPrintOptionsDpi>;
   quality?: PrintOption<ManagedPrintOptionsQualityType>;
   printAsImage?: PrintOption<boolean>;
+  layout?: PrintOption<ManagedPrintOptionsLayoutType>;
 }
 
 // Name of the IPP attribute that corresponds to the "quality" field in the
@@ -80,6 +87,22 @@ export function managedPrintOptionsQualityToIpp(
       return QualityIppValue.NORMAL;
     case ManagedPrintOptionsQualityType.HIGH:
       return QualityIppValue.HIGH;
+    default:
+      return null;
+  }
+}
+
+/**
+ * Converts a ManagedPrintOptionsLayoutType value to a page orientation
+ * type string used in CDD. Returns null if conversion is not possible.
+ */
+export function managedPrintOptionsLayoutToCdd(
+    managedPrintOptionsLayout: ManagedPrintOptionsLayoutType): string|null {
+  switch (managedPrintOptionsLayout) {
+    case ManagedPrintOptionsLayoutType.PORTRAIT:
+      return 'PORTRAIT';
+    case ManagedPrintOptionsLayoutType.LANDSCAPE:
+      return 'LANDSCAPE';
     default:
       return null;
   }

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ColorOption, DuplexOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import type {ColorOption, DuplexOption, PageOrientationOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {IPP_PRINT_QUALITY, ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from 'chrome://print/print_preview.js';
+import {IPP_PRINT_QUALITY, ManagedPrintOptionsDuplexType, ManagedPrintOptionsLayoutType, ManagedPrintOptionsQualityType} from 'chrome://print/print_preview.js';
 import type {DestinationOptionalParams, ManagedPrintOptions} from 'chrome://print/print_preview.js';
 
 import {
@@ -21,8 +21,10 @@ suite('ManagedPrintOptionsTest', () => {
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
-    loadTimeData.overrideValues(
-        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
+    loadTimeData.overrideValues({
+      isUseManagedPrintJobOptionsInPrintPreviewEnabled: true,
+      isUsePageOrientationCapabilityInPrintPreviewEnabled: true,
+    });
   });
 
   function initializeModel() {
@@ -79,6 +81,9 @@ suite('ManagedPrintOptionsTest', () => {
       dpi: {defaultValue: {horizontal: 100, vertical: 100}},
       quality: {defaultValue: ManagedPrintOptionsQualityType.DRAFT},
       printAsImage: {defaultValue: true},
+      layout: {
+        defaultValue: ManagedPrintOptionsLayoutType.LANDSCAPE,
+      },
     };
     const params: DestinationOptionalParams = {
       managedPrintOptions: managedPrintOptions,
@@ -106,6 +111,7 @@ suite('ManagedPrintOptionsTest', () => {
         /* ManagedPrintOptionsQualityType.DRAFT */ '3',
         model.getSettingValue('vendorItems')[IPP_PRINT_QUALITY]);
     assertTrue(model.getSettingValue('rasterize'));
+    assertTrue(model.getSettingValue('layout'));
   });
 
   test('UnsupportedDefaultValues', () => {
@@ -117,6 +123,9 @@ suite('ManagedPrintOptionsTest', () => {
       dpi: {defaultValue: {horizontal: 1, vertical: 1}},
       quality: {defaultValue: ManagedPrintOptionsQualityType.UNKNOWN_QUALITY},
       printAsImage: {defaultValue: true},
+      layout: {
+        defaultValue: ManagedPrintOptionsLayoutType.UNKNOWN_LAYOUT,
+      },
     };
     const params: DestinationOptionalParams = {
       managedPrintOptions: managedPrintOptions,
@@ -152,6 +161,7 @@ suite('ManagedPrintOptionsTest', () => {
         /* ManagedPrintOptionsQualityType.NORMAL */ '4',
         model.getSettingValue('vendorItems')[IPP_PRINT_QUALITY]);
     assertFalse(model.getSettingValue('rasterize'));
+    assertFalse(model.getSettingValue('layout'));
   });
 
   test('AllowedValuesApplied', () => {
@@ -185,6 +195,11 @@ suite('ManagedPrintOptionsTest', () => {
           ManagedPrintOptionsQualityType.DRAFT,
         ],
       },
+      layout: {
+        allowedValues: [
+          ManagedPrintOptionsLayoutType.LANDSCAPE,
+        ],
+      },
     };
     const params: DestinationOptionalParams = {
       managedPrintOptions: managedPrintOptions,
@@ -207,6 +222,8 @@ suite('ManagedPrintOptionsTest', () => {
     assertEquals(2, allowedCapabilities!.printer.duplex!.option.length);
     assertEquals(1, allowedCapabilities!.printer.color!.option.length);
     assertEquals(1, allowedCapabilities!.printer.dpi!.option.length);
+    assertEquals(
+        1, allowedCapabilities!.printer.page_orientation!.option.length);
     const vendorCapabilities = allowedCapabilities!.printer.vendor_capability;
     const printQualityCapabilities = vendorCapabilities!.find(o => {
       return o.id === IPP_PRINT_QUALITY;
@@ -228,6 +245,11 @@ suite('ManagedPrintOptionsTest', () => {
       quality: {
         allowedValues: [
           ManagedPrintOptionsQualityType.HIGH,
+        ],
+      },
+      layout: {
+        allowedValues: [
+          ManagedPrintOptionsLayoutType.LANDSCAPE,
         ],
       },
     };
@@ -252,6 +274,11 @@ suite('ManagedPrintOptionsTest', () => {
         {type: 'STANDARD_MONOCHROME', is_default: true},
       ] as ColorOption[],
     };
+    capabilities!.printer.page_orientation = {
+      option: [
+        {type: 'PORTRAIT', is_default: true},
+      ] as PageOrientationOption[],
+    };
     testDestination1.capabilities = capabilities;
     testDestination1.applyAllowedManagedPrintOptions();
     // All the allowed values in 'managedPrintOptions' are unsupported by the
@@ -264,6 +291,8 @@ suite('ManagedPrintOptionsTest', () => {
     assertEquals(2, allowedCapabilities!.printer.duplex!.option.length);
     assertEquals(1, allowedCapabilities!.printer.color!.option.length);
     assertEquals(2, allowedCapabilities!.printer.dpi!.option.length);
+    assertEquals(
+        1, allowedCapabilities!.printer.page_orientation!.option.length);
     const vendorCapabilities = allowedCapabilities!.printer.vendor_capability;
     const printQualityCapabilities = vendorCapabilities!.find(o => {
       return o.id === IPP_PRINT_QUALITY;
@@ -282,6 +311,9 @@ suite('ManagedPrintOptionsTest', () => {
       },
       color: {allowedValues: [false]},
       dpi: {allowedValues: [{horizontal: 100, vertical: 100}]},
+      layout: {
+        allowedValues: [ManagedPrintOptionsLayoutType.LANDSCAPE],
+      },
     };
     const params: DestinationOptionalParams = {
       managedPrintOptions: managedPrintOptions,
@@ -302,6 +334,7 @@ suite('ManagedPrintOptionsTest', () => {
     assertGE(capabilities.duplex!.option.length, 2);
     assertGE(capabilities.color!.option.length, 2);
     assertGE(capabilities.dpi!.option.length, 2);
+    assertGE(capabilities.page_orientation!.option.length, 2);
 
     testDestination1.applyAllowedManagedPrintOptions();
     initializeModel();
@@ -317,6 +350,7 @@ suite('ManagedPrintOptionsTest', () => {
     assertTrue(model.getSetting('duplexShortEdge').setByDestinationPolicy);
     assertTrue(model.getSetting('color').setByDestinationPolicy);
     assertTrue(model.getSetting('dpi').setByDestinationPolicy);
+    assertTrue(model.getSetting('layout').setByDestinationPolicy);
   });
 
   class DuplexSettingTestCase {
@@ -427,6 +461,88 @@ suite('ManagedPrintOptionsTest', () => {
       assertEquals(
           testCase.duplexShortEdgeSetByDestinationPolicy,
           model.getSetting('duplexShortEdge').setByDestinationPolicy);
+    }
+  });
+
+  test('LayoutSetting', () => {
+    const testCases: Array<{
+      managedPrintOptions: ManagedPrintOptions,
+      expectedLayoutValue: boolean,
+      expectedSetByDestinationPolicy: boolean,
+    }> =
+        [
+          // All values are allowed.
+          {
+            managedPrintOptions: {
+              layout: {
+                allowedValues: [
+                  ManagedPrintOptionsLayoutType.PORTRAIT,
+                  ManagedPrintOptionsLayoutType.LANDSCAPE,
+                ],
+              },
+            },
+            expectedLayoutValue: false,
+            expectedSetByDestinationPolicy: false,
+          },
+          // Only landscape is allowed (without a default value).
+          {
+            managedPrintOptions: {
+              layout: {
+                allowedValues: [
+                  ManagedPrintOptionsLayoutType.LANDSCAPE,
+                ],
+              },
+            },
+            expectedLayoutValue: true,
+            expectedSetByDestinationPolicy: true,
+          },
+          // Only portrait is allowed (without a default value).
+          {
+            managedPrintOptions: {
+              layout: {
+                allowedValues: [
+                  ManagedPrintOptionsLayoutType.PORTRAIT,
+                ],
+              },
+            },
+            expectedLayoutValue: false,
+            expectedSetByDestinationPolicy: true,
+          },
+        ];
+
+    for (const testCase of testCases) {
+      const params: DestinationOptionalParams = {
+        managedPrintOptions: testCase.managedPrintOptions,
+      };
+
+      const testDestination1 = new Destination(
+          /*id_=*/ 'TestDestination1',
+          /*origin_=*/ DestinationOrigin.LOCAL,
+          /*displayName_=*/ 'TestDestination1',
+          /*params_=*/ params);
+
+      testDestination1.capabilities =
+          getCddTemplate('TestDestination1').capabilities;
+
+      testDestination1.applyAllowedManagedPrintOptions();
+      initializeModel();
+
+      model.destination = testDestination1;
+      model.applyDestinationSpecificPolicies();
+
+      assertEquals(
+          testCase.expectedLayoutValue, model.getSettingValue('layout'));
+      assertEquals(
+          testCase.expectedSetByDestinationPolicy,
+          model.getSetting('layout').setByDestinationPolicy);
+
+      // When the document does not support layout (e.g. PDF or custom CSS
+      // orientation), unavailableValue should fall back to portrait (false).
+      model.set('documentSettings.isModifiable', false);
+      assertFalse(model.getSettingValue('layout'));
+      model.set('documentSettings.isModifiable', true);
+      model.set('documentSettings.allPagesHaveCustomOrientation', true);
+      assertFalse(model.getSettingValue('layout'));
     }
   });
 });

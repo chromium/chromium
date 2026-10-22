@@ -65,7 +65,13 @@
   </print-preview-copies-settings>
   <print-preview-layout-settings settings="[[settings]]"
       disabled="[[controlsDisabled_]]"
-      hidden$="[[!settings.layout.available]]" class="settings-section">
+      hidden$="[[hideLayout_(
+          settings.layout.available,
+          destination.allowedManagedPrintOptionsApplied.layout,
+          documentSettings.isModifiable,
+          documentSettings.isFromArc,
+          documentSettings.allPagesHaveCustomOrientation)]]"
+      class="settings-section">
   </print-preview-layout-settings>
   <print-preview-color-settings settings="[[settings]]"
       disabled="[[controlsDisabled_]]"

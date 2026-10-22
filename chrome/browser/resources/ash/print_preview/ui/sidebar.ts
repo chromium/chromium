@@ -32,6 +32,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
 import type {Destination} from '../data/destination_cros.js';
+import type {DocumentSettings} from '../data/document_info.js';
 import type {Settings} from '../data/model.js';
 import type {Error} from '../data/state.js';
 import {State} from '../data/state.js';
@@ -77,6 +78,8 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
         type: Number,
         notify: true,
       },
+
+      documentSettings: Object,
 
       error: {
         type: Number,
@@ -141,6 +144,7 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   declare controlsManaged: boolean;
   declare destination: Destination|null;
   declare destinationState: DestinationState;
+  declare documentSettings: DocumentSettings;
   declare error: Error;
   declare isPdf: boolean;
   declare pageCount: number;
@@ -286,6 +290,19 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
       settingAvailable: boolean,
       allowedManagedPrintOptionsApplied: boolean): boolean {
     return !settingAvailable && !allowedManagedPrintOptionsApplied;
+  }
+
+  private hideLayout_(
+      settingAvailable: boolean, allowedManagedPrintOptionsApplied: boolean,
+      isModifiable: boolean, isFromArc: boolean,
+      allPagesHaveCustomOrientation: boolean): boolean {
+    const documentSupportsLayout =
+        (isModifiable || isFromArc) && !allPagesHaveCustomOrientation;
+    if (!documentSupportsLayout) {
+      return true;
+    }
+    return this.hideSetting_(
+        settingAvailable, allowedManagedPrintOptionsApplied);
   }
 }
 

@@ -15,7 +15,7 @@ import {DuplexType} from './cdd.js';
 import type {Destination, RecentDestination} from './destination_cros.js';
 import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination_cros.js';
 import type {DocumentSettings} from './document_info.js';
-import {IPP_PRINT_QUALITY, managedPrintOptionsDuplexToCdd, managedPrintOptionsQualityToIpp} from './managed_print_options_cros.js';
+import {IPP_PRINT_QUALITY, managedPrintOptionsDuplexToCdd, managedPrintOptionsLayoutToCdd, managedPrintOptionsQualityToIpp} from './managed_print_options_cros.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
 import {PrinterStatusReason} from './printer_status_cros.js';
@@ -909,6 +909,14 @@ export class PrintPreviewModelElement extends PolymerElement {
         !this.documentSettings.isFromArc && !!caps && !!caps.dpi &&
             !!caps.dpi.option && caps.dpi.option.length > 1);
     this.setSettingPath_('layout.available', this.isLayoutAvailable_(caps));
+    // `layout.unavailableValue` depends on whether the document supports
+    // layout, and `documentSettings` (e.g. `allPagesHaveCustomOrientation` via
+    // the `'page-layout-ready'` event) can be updated asynchronously after
+    // destination capabilities have already been applied.
+    if (loadTimeData.getBoolean(
+            'isUsePageOrientationCapabilityInPrintPreviewEnabled')) {
+      this.updateLayoutUnavailableValue_(caps);
+    }
   }
 
   private updateSettingsAvailabilityFromDocumentSettings_() {
@@ -1009,11 +1017,16 @@ export class PrintPreviewModelElement extends PolymerElement {
     return !!this.documentSettings && !this.documentSettings.isModifiable;
   }
 
+  private doesDocumentSupportLayout_(): boolean {
+    return !!this.documentSettings &&
+        (this.documentSettings.isModifiable ||
+         this.documentSettings.isFromArc) &&
+        !this.documentSettings.allPagesHaveCustomOrientation;
+  }
+
   private isLayoutAvailable_(caps: CddCapabilities|null): boolean {
     if (!caps || !caps.page_orientation || !caps.page_orientation.option ||
-        (!this.documentSettings.isModifiable &&
-         !this.documentSettings.isFromArc) ||
-        this.documentSettings.allPagesHaveCustomOrientation) {
+        !this.doesDocumentSupportLayout_()) {
       return false;
     }
     let hasAutoOrPortraitOption = false;
@@ -1024,6 +1037,19 @@ export class PrintPreviewModelElement extends PolymerElement {
       hasLandscapeOption = hasLandscapeOption || option.type === 'LANDSCAPE';
     });
     return hasLandscapeOption && hasAutoOrPortraitOption;
+  }
+
+  private updateLayoutUnavailableValue_(caps: CddCapabilities|null) {
+    if (!this.settings.layout.available && this.doesDocumentSupportLayout_() &&
+        caps?.page_orientation?.option?.length === 1) {
+      this.setSettingPath_(
+          'layout.unavailableValue',
+          caps.page_orientation.option[0].type === 'LANDSCAPE');
+    } else if (!this.settings.layout.available) {
+      // If no layout capability is reported, or the document does not support
+      // layout, assume portrait.
+      this.setSettingPath_('layout.unavailableValue', false);
+    }
   }
 
   /**
@@ -1169,6 +1195,21 @@ export class PrintPreviewModelElement extends PolymerElement {
       // If no duplex capability is reported, assume false.
       this.setSettingPath_('duplex.unavailableValue', false);
       this.setSettingPath_('duplexShortEdge.unavailableValue', false);
+    }
+
+    if (loadTimeData.getBoolean(
+            'isUsePageOrientationCapabilityInPrintPreviewEnabled')) {
+      if (!this.settings.layout.setFromUi && this.settings.layout.available &&
+          caps.page_orientation?.option) {
+        const defaultOption =
+            caps.page_orientation.option.find(o => !!o.is_default) ||
+            caps.page_orientation.option[0];
+        if (defaultOption) {
+          this.setSetting('layout', defaultOption.type === 'LANDSCAPE', true);
+        }
+      } else {
+        this.updateLayoutUnavailableValue_(caps);
+      }
     }
 
     if (this.settings.vendorItems.available) {
@@ -1741,6 +1782,18 @@ export class PrintPreviewModelElement extends PolymerElement {
           'rasterize', managedPrintOptions.printAsImage.defaultValue,
           /*noSticky=*/ true);
     }
+
+    if (!this.settings.layout.setFromUi &&
+        managedPrintOptions.layout?.defaultValue) {
+      const cddPageOrientation = managedPrintOptionsLayoutToCdd(
+          managedPrintOptions.layout.defaultValue);
+      if (cddPageOrientation &&
+          this.destination.supportsPageOrientation(cddPageOrientation)) {
+        this.setSetting(
+            'layout', cddPageOrientation === 'LANDSCAPE',
+            /*noSticky=*/ true);
+      }
+    }
   }
 
   /**
@@ -1796,6 +1849,11 @@ export class PrintPreviewModelElement extends PolymerElement {
         'settings.dpi.setByDestinationPolicy',
         allowedManagedPrintOptionsApplied?.dpi &&
             capabilities?.printer.dpi?.option.length === 1);
+
+    this.set(
+        'settings.layout.setByDestinationPolicy',
+        allowedManagedPrintOptionsApplied?.layout &&
+            capabilities?.printer.page_orientation?.option.length === 1);
   }
 
   /**

@@ -28,21 +28,34 @@ export class PrintPreviewLayoutSettingsElement extends
   static get properties() {
     return {
       disabled: Boolean,
+
+      disabled_: {
+        type: Boolean,
+        computed: 'computeDisabled_(disabled, ' +
+            'settings.layout.setByDestinationPolicy)',
+      },
     };
   }
 
-  declare disabled: boolean;
-
   static get observers() {
-    return ['onLayoutSettingChange_(settings.layout.value)'];
+    return ['onLayoutSettingChange_(settings.layout.*)'];
   }
 
-  private onLayoutSettingChange_(newValue: boolean) {
-    this.selectedValue = newValue ? 'landscape' : 'portrait';
+  declare disabled: boolean;
+  declare private disabled_: boolean;
+
+  private onLayoutSettingChange_() {
+    this.selectedValue =
+        this.getSettingValue('layout') ? 'landscape' : 'portrait';
   }
 
   override onProcessSelectChange(value: string) {
     this.setSetting('layout', value === 'landscape');
+  }
+
+  private computeDisabled_(
+      disabled: boolean, managedByDestinationPolicy: boolean): boolean {
+    return disabled || managedByDestinationPolicy;
   }
 }
 

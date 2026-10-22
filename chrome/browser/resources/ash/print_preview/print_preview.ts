@@ -17,7 +17,7 @@ export {DestinationErrorType, DestinationStore, DestinationStoreEventType} from 
 export type {PageLayoutInfo} from './data/document_info.js';
 export type {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
 export type {ManagedPrintOptions} from './data/managed_print_options_cros.js';
-export {IPP_PRINT_QUALITY, ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from './data/managed_print_options_cros.js';
+export {IPP_PRINT_QUALITY, ManagedPrintOptionsDuplexType, ManagedPrintOptionsLayoutType, ManagedPrintOptionsQualityType} from './data/managed_print_options_cros.js';
 export type {MarginsSetting} from './data/margins.js';
 export {CustomMarginsOrientation, Margins, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';

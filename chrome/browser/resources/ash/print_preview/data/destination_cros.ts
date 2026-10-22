@@ -11,7 +11,7 @@ import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import type {Cdd, ColorCapability, ColorOption, CopiesCapability, DpiOption, DuplexType, MediaSizeOption, MediaTypeOption} from './cdd.js';
 import type {ManagedPrintOptions} from './managed_print_options_cros.js';
-import {IPP_PRINT_QUALITY, managedPrintOptionsDuplexToCdd, managedPrintOptionsQualityToIpp} from './managed_print_options_cros.js';
+import {IPP_PRINT_QUALITY, managedPrintOptionsDuplexToCdd, managedPrintOptionsLayoutToCdd, managedPrintOptionsQualityToIpp} from './managed_print_options_cros.js';
 import {getStatusReasonFromPrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
 
 /**
@@ -139,6 +139,7 @@ export interface AllowedManagedPrintOptionsApplied {
   dpi: boolean;
   quality: boolean;
   printAsImage: boolean;
+  layout: boolean;
 }
 
 function createDefaultAllowedManagedPrintOptionsApplied() {
@@ -150,6 +151,7 @@ function createDefaultAllowedManagedPrintOptionsApplied() {
     dpi: false,
     quality: false,
     printAsImage: false,
+    layout: false,
   };
 }
 
@@ -498,7 +500,8 @@ export class Destination {
         this.allowedManagedPrintOptionsApplied.color ||
         this.allowedManagedPrintOptionsApplied.dpi ||
         this.allowedManagedPrintOptionsApplied.quality ||
-        this.allowedManagedPrintOptionsApplied.printAsImage;
+        this.allowedManagedPrintOptionsApplied.printAsImage ||
+        this.allowedManagedPrintOptionsApplied.layout;
   }
 
   /**
@@ -652,6 +655,35 @@ export class Destination {
           printQualityCapability.select_cap.option = allowedSupportedValues;
           this.allowedManagedPrintOptionsApplied.quality = true;
         }
+      }
+    }
+
+    if (this.capabilities_.printer.page_orientation &&
+        this.managedPrintOptions_.layout?.allowedValues &&
+        this.managedPrintOptions_.layout.allowedValues.length > 0) {
+      const allowedLayoutValues =
+          this.managedPrintOptions_.layout.allowedValues;
+      // Filter out 'AUTO' because Print Preview and the per-printer policy only
+      // support 'PORTRAIT' and 'LANDSCAPE'. Keeping 'AUTO' would cause
+      // `allowedSupportedValues.length < supportedPageOrientations.length`
+      // below to be true even when both 'PORTRAIT' and 'LANDSCAPE' are allowed.
+      const supportedPageOrientations =
+          this.capabilities_.printer.page_orientation.option.filter(
+              o => o.type !== 'AUTO');
+
+      const allowedSupportedValues =
+          supportedPageOrientations.filter((supportedValue) => {
+            return allowedLayoutValues.some((allowedValue) => {
+              return supportedValue.type ===
+                  managedPrintOptionsLayoutToCdd(allowedValue);
+            });
+          });
+
+      if (allowedSupportedValues.length > 0 &&
+          allowedSupportedValues.length < supportedPageOrientations.length) {
+        this.capabilities_.printer.page_orientation.option =
+            allowedSupportedValues;
+        this.allowedManagedPrintOptionsApplied.layout = true;
       }
     }
   }
@@ -835,6 +867,22 @@ export class Destination {
 
     return availableDuplexOptions.some(o => {
       return o.type === duplex;
+    });
+  }
+
+  /**
+   * @return Returns true if the current printing destination supports the given
+   * page orientation value. Returns false in all other cases.
+   */
+  supportsPageOrientation(pageOrientation: string): boolean {
+    const availablePageOrientationOptions =
+        this.capabilities?.printer.page_orientation?.option;
+    if (!availablePageOrientationOptions) {
+      return false;
+    }
+
+    return availablePageOrientationOptions.some(o => {
+      return o.type === pageOrientation;
     });
   }
 
