@@ -204,8 +204,8 @@ TEST_F(IOSChromeVariationsSeedStoreTest, testNoSeedFetched) {
 // previous run crashes on FRE screens.
 TEST_F(IOSChromeVariationsSeedStoreTest, testLateSeedFetched) {
   // Simulate a seed in the core variations seed store.
-  GetLocalState()->SetString(variations::prefs::kVariationsSeedSignature,
-                             "seed");
+  GetLocalState()->SetTime(variations::prefs::kVariationsSeedDate,
+                           base::Time::Now());
 
   ASSERT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
             SeedApplicationStage::kNoSeed);

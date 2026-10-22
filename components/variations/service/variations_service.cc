@@ -308,7 +308,7 @@ bool IsFetchingEnabled() {
 std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
     VariationsServiceClient* client,
     PrefService* local_state) {
-  if (!local_state->HasPrefPath(prefs::kVariationsSeedSignature)) {
+  if (!local_state->HasPrefPath(prefs::kVariationsSeedDate)) {
     DVLOG(1) << "Importing first run seed from native preferences.";
     return client->TakeSeedFromNativeVariationsSeedStore();
   }
@@ -1187,7 +1187,7 @@ void VariationsService::OnSimpleLoaderComplete(
 
   const base::TimeTicks now = base::TimeTicks::Now();
   if (is_first_request &&
-      !local_state_->HasPrefPath(prefs::kVariationsSeedSignature)) {
+      !local_state_->HasPrefPath(prefs::kVariationsSeedDate)) {
     base::UmaHistogramTimes("Variations.SeedFetchTimeOnFirstRun",
                             now - last_request_started_time_);
   }

@@ -190,6 +190,15 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     should_delay_runtime_mutability_ = should_delay_runtime_mutability;
   }
 
+  std::unique_ptr<SeedResponse> TakeSeedFromNativeVariationsSeedStore()
+      override {
+    take_seed_from_native_call_count_++;
+    return nullptr;
+  }
+
+  int take_seed_from_native_call_count() const {
+    return take_seed_from_native_call_count_;
+  }
  private:
   // VariationsServiceClient:
   version_info::Channel GetChannel() override { return channel_; }
@@ -199,6 +208,7 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   int rotate_uma_log_for_runtime_mutability_call_count_ = 0;
+  int take_seed_from_native_call_count_ = 0;
   metrics::MetricsService::RotateUmaLogResult rotate_uma_log_result_ =
       metrics::MetricsService::RotateUmaLogResult::kSuccess;
   bool should_delay_runtime_mutability_ = false;
@@ -4679,6 +4689,30 @@ TEST_F(VariationsServiceTest, VariationsServiceSeedFetchingPauseResume) {
 
   // Verify that resume immediately triggered a fetch.
   EXPECT_TRUE(service.fetch_attempted());
+}
+
+TEST_F(VariationsServiceTest,
+       MaybeImportFirstRunSeedSkippedWhenSeedDatePresent) {
+  {
+    TestVariationsService service(
+        std::make_unique<web_resource::TestRequestAllowedNotifier>(
+            &prefs_, network_tracker_),
+        &prefs_, GetMetricsStateManager(), true);
+    EXPECT_EQ(service.client()->take_seed_from_native_call_count(), 1);
+  }
+
+  // Once `kVariationsSeedDate` is stored in Local State (which happens in both
+  // Local State and SeedFiles storage backends), first-run seed import is
+  // skipped on subsequent startups.
+  prefs_.SetTime(prefs::kVariationsSeedDate, base::Time::Now());
+
+  {
+    TestVariationsService service(
+        std::make_unique<web_resource::TestRequestAllowedNotifier>(
+            &prefs_, network_tracker_),
+        &prefs_, GetMetricsStateManager(), true);
+    EXPECT_EQ(service.client()->take_seed_from_native_call_count(), 0);
+  }
 }
 
 }  // namespace variations
