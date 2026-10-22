@@ -9,16 +9,20 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
-
 class AccountId;
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash {
 
-// Returns a callback to retrieve device DMToken if the user with
-// given `account_id` is affiliated on the device.
-base::RepeatingCallback<std::string(const std::vector<std::string>&)>
-GetDeviceDMTokenForUserPolicyGetter(const AccountId& account_id);
+// Returns device DMToken if the user with given `account_id` is affiliated on
+// the device.
+std::string GetDeviceDMTokenIfAffiliated(
+    const policy::BrowserPolicyConnectorAsh& browser_policy_connector_ash,
+    const AccountId& account_id,
+    const std::vector<std::string>& user_affiliation_ids);
 
 }  // namespace ash
 
