@@ -55,6 +55,10 @@ public class FuseboxMetrics {
             "Lens.Composebox.ImageUpload.Java.C2paDetected";
 
     @VisibleForTesting
+    /* package */ static final String ATTACHMENT_READ_RESULT_HISTOGRAM =
+            "Omnibox.MobileFusebox.AttachmentReadResult";
+
+    @VisibleForTesting
     /* package */ static final String TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM =
             "Omnibox.MobileFusebox.TabAttachment.EffectiveDuration";
 
@@ -251,6 +255,50 @@ public class FuseboxMetrics {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxTabAttachStartFailureReason)
+
+    // LINT.IfChange(FuseboxAttachmentReadResult)
+    @IntDef({
+        FuseboxAttachmentReadResult.SUCCESS,
+        FuseboxAttachmentReadResult.SUCCESS_AFTER_RETRY,
+        FuseboxAttachmentReadResult.EMPTY,
+        FuseboxAttachmentReadResult.SHORT_READ,
+        FuseboxAttachmentReadResult.IO_ERROR,
+        FuseboxAttachmentReadResult.OOM,
+        FuseboxAttachmentReadResult.DECODE_FAILED,
+        FuseboxAttachmentReadResult.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    @NullMarked
+    public @interface FuseboxAttachmentReadResult {
+        /** Bytes were read in full on the first attempt. */
+        int SUCCESS = 0;
+
+        /** The first read was empty or short; the retry produced a complete payload. */
+        int SUCCESS_AFTER_RETRY = 1;
+
+        /** The content provider returned no stream or zero bytes, even after a retry. */
+        int EMPTY = 2;
+
+        /**
+         * Fewer bytes were read than the provider-reported size, even after a retry. The payload is
+         * still forwarded so that the decoder has the final say.
+         */
+        int SHORT_READ = 3;
+
+        /** Reading the stream threw an IOException. */
+        int IO_ERROR = 4;
+
+        /** Reading the stream threw an OutOfMemoryError. */
+        int OOM = 5;
+
+        /** Bytes were read, but the platform image decoder could not decode them. */
+        int DECODE_FAILED = 6;
+
+        int COUNT = 7;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxAttachmentReadResult)
 
     private boolean mSessionStarted;
     private boolean mAttachmentsPopupButtonUsedInSession;
@@ -492,6 +540,23 @@ public class FuseboxMetrics {
 
     static void recordAttachmentC2paDetected(boolean detected) {
         RecordHistogram.recordBooleanHistogram(ATTACHMENT_C2PA_DETECTED_HISTOGRAM, detected);
+    }
+
+    static void recordAttachmentReadResult(
+            @FuseboxAttachmentReadResult int result, @MimeTypeUtils.Type int fileType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ATTACHMENT_READ_RESULT_HISTOGRAM, result, FuseboxAttachmentReadResult.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                getAttachmentReadResultHistogram(fileType),
+                result,
+                FuseboxAttachmentReadResult.COUNT);
+    }
+
+    @VisibleForTesting
+    /* package */ static String getAttachmentReadResultHistogram(@MimeTypeUtils.Type int fileType) {
+        return ATTACHMENT_READ_RESULT_HISTOGRAM
+                + TOKEN_SEPARATOR
+                + getHistogramExtensionForMimeType(fileType);
     }
 
     @VisibleForTesting

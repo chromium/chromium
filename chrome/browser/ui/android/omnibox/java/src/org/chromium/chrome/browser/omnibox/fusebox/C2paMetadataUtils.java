@@ -13,6 +13,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +50,26 @@ public final class C2paMetadataUtils {
             return hasC2paMetadata(inputStream);
         } catch (IOException e) {
             Log.w(TAG, "Failed to read attachment for C2PA check", e);
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the given, already-read image bytes contain C2PA metadata in the first 256KB.
+     * Prefer this over the URI variant when the bytes are already in memory, so that the content
+     * URI is not opened a second time.
+     *
+     * @param data The raw image bytes.
+     * @return true if C2PA metadata is detected and the bypass feature is enabled; false otherwise.
+     */
+    public static boolean hasC2paMetadata(byte[] data) {
+        if (!ChromeFeatureList.sLensBypassCompressionForC2pa.isEnabled()) {
+            return false;
+        }
+        try {
+            return hasC2paMetadata(new ByteArrayInputStream(data));
+        } catch (IOException e) {
+            // ByteArrayInputStream does not throw; keep the signature-mandated handler.
             return false;
         }
     }

@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -54,10 +55,12 @@ import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentReadResult;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -403,11 +406,12 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     public void testFetchAttachmentDetails_forImageNoThumbnail() {
         String title = SAMPLE_PNG_TITLE;
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
-        // We pass an empty byte array so that the fallback thumbnail generation fails.
-        byte[] data = new byte[] {};
+        byte[] data = SAMPLE_DATA;
         Bitmap thumbnail = null;
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.GALLERY;
         setupFetcherWithAttachment(title, mimeType, data, thumbnail, buttonType);
+        // Make the fallback thumbnail generation fail.
+        setupMockBitmapDecoder(/* bitmap= */ null, /* throwOom= */ false);
 
         mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -426,11 +430,12 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         setIsNetworkMetered(false);
         String title = "large_image.png";
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
-        byte[] data = new byte[] {};
+        byte[] data = SAMPLE_DATA;
         Bitmap thumbnail = null;
         long size = FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES + 1;
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
         setupFetcherWithAttachment(title, mimeType, data, thumbnail, size, buttonType);
+        setupMockBitmapDecoder(/* bitmap= */ null, /* throwOom= */ false);
 
         mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -480,12 +485,13 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         setIsNetworkMetered(true);
         String title = "large_image.png";
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
-        byte[] data = new byte[] {};
+        byte[] data = SAMPLE_DATA;
         Bitmap thumbnail = null;
         long size =
                 FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK + 1;
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
         setupFetcherWithAttachment(title, mimeType, data, thumbnail, size, buttonType);
+        setupMockBitmapDecoder(/* bitmap= */ null, /* throwOom= */ false);
 
         mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -662,15 +668,69 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
 
     @Test
     @EnableFeatures("OmniboxAimImageDownscaling")
-    public void testFetchAttachmentDetails_ioExceptionOnDownscaledImage_fallsBackToRegular() {
+    public void testFetchAttachmentDetails_ioExceptionOnDownscaledImage_failsWithDecodeFailed() {
         String title = SAMPLE_PNG_TITLE;
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
         byte[] data = SAMPLE_DATA;
-        Bitmap thumbnail = SAMPLE_SMALL_BITMAP;
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
-        setupFetcherWithAttachment(title, mimeType, data, thumbnail, buttonType);
+        // No thumbnail stub: the attachment is rejected before the thumbnail is ever fetched.
+        setupFetcherWithAttachment(title, mimeType, data, /* thumbnail= */ null, buttonType);
         setupMockImageDecoder(/* throwOom= */ false, /* throwIoException= */ true);
         setupOomHistogramWatcher(/* oomExpected= */ false, MimeTypeUtils.Type.IMAGE);
+        var readResultWatcher =
+                newReadResultWatcher(
+                        FuseboxAttachmentReadResult.DECODE_FAILED, MimeTypeUtils.Type.IMAGE);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The bytes were read in full but the platform decoder rejected them; native would reject
+        // them too, so the attachment is dropped locally rather than forwarded.
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
+        verifyOomHistogram();
+        readResultWatcher.assertExpected();
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_emptyStream_failsWithEmpty() throws IOException {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.GALLERY;
+        setupFetcherWithAttachment(
+                title, mimeType, /* data= */ new byte[] {}, /* thumbnail= */ null, buttonType);
+        var readResultWatcher =
+                newReadResultWatcher(FuseboxAttachmentReadResult.EMPTY, MimeTypeUtils.Type.IMAGE);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
+        // One initial open plus one retry.
+        verify(mContentResolver, times(FuseboxAttachmentDetailsFetcher.MAX_READ_ATTEMPTS))
+                .openInputStream(SAMPLE_URI);
+        readResultWatcher.assertExpected();
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_shortReadRecoveredOnRetry_succeeds() throws IOException {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] fullData = new byte[] {1, 2, 3, 4, 5, 6};
+        byte[] truncatedData = new byte[] {1, 2, 3};
+        Bitmap thumbnail = SAMPLE_SMALL_BITMAP;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.GALLERY;
+        setupFetcherWithAttachment(
+                title, mimeType, fullData, thumbnail, (long) fullData.length, buttonType);
+        // First open yields a truncated stream (e.g. cloud media still being prepared); the
+        // second yields the full payload.
+        when(mContentResolver.openInputStream(SAMPLE_URI))
+                .thenReturn(new ByteArrayInputStream(truncatedData))
+                .thenReturn(new ByteArrayInputStream(fullData));
+        var readResultWatcher =
+                newReadResultWatcher(
+                        FuseboxAttachmentReadResult.SUCCESS_AFTER_RETRY, MimeTypeUtils.Type.IMAGE);
 
         mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -678,11 +738,122 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         verifyAttachmentResult(
                 title,
                 mimeType,
-                data,
+                fullData,
                 thumbnail,
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 buttonType);
-        verifyOomHistogram();
+        verify(mContentResolver, times(2)).openInputStream(SAMPLE_URI);
+        readResultWatcher.assertExpected();
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_persistentShortRead_forwardsBytesAndRecords()
+            throws IOException {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] truncatedData = new byte[] {1, 2, 3};
+        long advertisedSize = 1_000L;
+        Bitmap thumbnail = SAMPLE_SMALL_BITMAP;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.GALLERY;
+        setupFetcherWithAttachment(
+                title, mimeType, truncatedData, thumbnail, advertisedSize, buttonType);
+        var readResultWatcher =
+                newReadResultWatcher(
+                        FuseboxAttachmentReadResult.SHORT_READ, MimeTypeUtils.Type.IMAGE);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The provider-reported size is advisory; non-empty bytes are still forwarded, but the
+        // short read is recorded so it can be correlated with downstream decode failures.
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                truncatedData,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                buttonType);
+        verify(mContentResolver, times(FuseboxAttachmentDetailsFetcher.MAX_READ_ATTEMPTS))
+                .openInputStream(SAMPLE_URI);
+        readResultWatcher.assertExpected();
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_shortReadThenRetryThrows_keepsFirstRead()
+            throws IOException {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] truncatedData = new byte[] {1, 2, 3};
+        long advertisedSize = 1_000L;
+        Bitmap thumbnail = SAMPLE_SMALL_BITMAP;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.GALLERY;
+        setupFetcherWithAttachment(
+                title, mimeType, truncatedData, thumbnail, advertisedSize, buttonType);
+        // One-shot pipe-backed provider: the first open yields a short stream, the second open
+        // fails outright. The bytes from the first open must survive.
+        when(mContentResolver.openInputStream(SAMPLE_URI))
+                .thenReturn(new ByteArrayInputStream(truncatedData))
+                .thenThrow(new FileNotFoundException("Cannot reopen pipe"));
+        var readResultWatcher =
+                newReadResultWatcher(
+                        FuseboxAttachmentReadResult.SHORT_READ, MimeTypeUtils.Type.IMAGE);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                truncatedData,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                buttonType);
+        readResultWatcher.assertExpected();
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_successfulRead_recordsSuccess() {
+        setupFetcherWithTxtFileAttachment(FILE_SIZE_SMALL);
+        var readResultWatcher =
+                newReadResultWatcher(FuseboxAttachmentReadResult.SUCCESS, MimeTypeUtils.Type.TEXT);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(isNotNull());
+        readResultWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING,
+        ChromeFeatureList.LENS_BYPASS_COMPRESSION_FOR_C2PA
+    })
+    public void testFetchAttachmentDetails_downscalingWithC2paCheck_opensUriOnce()
+            throws IOException {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        Bitmap thumbnail = SAMPLE_SMALL_BITMAP;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.GALLERY;
+        setupFetcherWithAttachment(title, mimeType, SAMPLE_DATA, thumbnail, buttonType);
+        setupMockImageDecoder(/* throwOom= */ false, /* throwIoException= */ false);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(isNotNull());
+        // Previously the C2PA sniff, the ImageDecoder source and the raw fallback each opened the
+        // URI. Pipe-backed cloud media must only be streamed once.
+        verify(mContentResolver).openInputStream(SAMPLE_URI);
+    }
+
+    private static HistogramWatcher newReadResultWatcher(
+            @FuseboxAttachmentReadResult int expected, @MimeTypeUtils.Type int fileType) {
+        return HistogramWatcher.newBuilder()
+                .expectIntRecord(FuseboxMetrics.ATTACHMENT_READ_RESULT_HISTOGRAM, expected)
+                .expectIntRecord(
+                        FuseboxMetrics.getAttachmentReadResultHistogram(fileType), expected)
+                .build();
     }
 
     @Test

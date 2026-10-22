@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -30,6 +32,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentReadResult;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentSizeLimitCheck;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -37,6 +40,7 @@ import org.chromium.ui.base.MimeTypeUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 /**
  * An AsyncTask that fetches attachment details (thumbnail, title, and description) from a content
@@ -56,6 +60,13 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
     @VisibleForTesting
     static final long MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK = 20 * 1000 * 1000L; /* 20 MB */
+
+    /**
+     * Number of times to open the content URI before giving up on an empty or short read. Cloud
+     * media providers may hand back a partially-populated stream on first open; a single retry is
+     * cheap and usually sufficient once the provider has cached the item.
+     */
+    @VisibleForTesting static final int MAX_READ_ATTEMPTS = 2;
 
     private static BitmapDecoder sBitmapDecoder = BitmapFactory::decodeByteArray;
     private static FileStreamReader sFileStreamReader = FileUtils::readStream;
@@ -120,7 +131,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
         recordAttachmentSizeLimitCheck(isMetered, /* isTooLarge= */ false);
 
-        mData = fetchData(mMimeType);
+        mData = fetchData(mMimeType, size);
         if (mData == null) return false;
 
         mThumbnail = fetchThumbnail(mData, mMimeType);
@@ -207,58 +218,125 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         return cursor.getLong(sizeIndex);
     }
 
-    private byte @Nullable [] fetchData(String mimeType) {
-        byte[] data = null;
+    /**
+     * Reads the attachment payload from {@link #mUri}, validating that the bytes look complete and
+     * (for downscalable images) decodable before handing them to the upload pipeline.
+     *
+     * <p>The content URI is opened at most twice (once, plus one retry on an empty/short read). The
+     * same in-memory bytes are reused for the C2PA sniff and for downscaling, so pipe-backed
+     * providers (e.g. cloud media that "needs to be prepared") are not re-streamed.
+     *
+     * @param mimeType Resolved mime type of the attachment.
+     * @param expectedSize Size reported by the content provider, if known.
+     * @return The payload to upload, or null if the data could not be read or is unusable.
+     */
+    private byte @Nullable [] fetchData(String mimeType, @Nullable Long expectedSize) {
+        @MimeTypeUtils.Type int fileType = MimeTypeUtils.getTypeFromMimeType(mimeType);
+        ReadOutcome read = readAttachmentBytes(expectedSize);
+        boolean oomOccurred = read.mResult == FuseboxAttachmentReadResult.OOM;
+        @FuseboxAttachmentReadResult int result = read.mResult;
+        byte[] data = read.mData;
 
         @Nullable CompressFormat outputFormat = getCompressionFormat(mimeType);
-        boolean oomOccurred = false;
         boolean downscalingEnabled =
                 outputFormat != null && OmniboxFeatures.sOmniboxAimImageDownscaling.isEnabled();
-        boolean hasC2pa =
-                downscalingEnabled && C2paMetadataUtils.hasC2paMetadata(mContentResolver, mUri);
-        if (downscalingEnabled) {
+
+        if (data != null && downscalingEnabled) {
+            boolean hasC2pa = C2paMetadataUtils.hasC2paMetadata(data);
             FuseboxMetrics.recordAttachmentC2paDetected(hasC2pa);
-        }
 
-        if (outputFormat != null && downscalingEnabled && !hasC2pa) {
-            try {
-                data = loadDownscaledImage(outputFormat);
-            } catch (OutOfMemoryError e) {
-                Log.w(TAG, "Failed to read attachment data", e);
-                oomOccurred = true;
-            }
-        }
-
-        if (data == null) {
-            try (InputStream inputStream = mContentResolver.openInputStream(mUri)) {
-                if (inputStream != null) {
-                    data = sFileStreamReader.readStream(inputStream);
+            if (!hasC2pa) {
+                try {
+                    data = loadDownscaledImage(data, assumeNonNull(outputFormat));
+                } catch (OutOfMemoryError e) {
+                    // Keep the raw bytes; native may still manage to process them.
+                    Log.w(TAG, "OOM while downscaling attachment; using original bytes", e);
+                    oomOccurred = true;
+                } catch (IOException | IllegalArgumentException e) {
+                    // We hold the complete payload and the platform decoder rejected it. Native
+                    // decoding will fail the same way, so fail fast here with a precise reason
+                    // rather than surfacing a generic IMAGE_PROCESSING_ERROR later.
+                    Log.w(TAG, "Attachment bytes are not decodable (%d bytes)", data.length, e);
+                    result = FuseboxAttachmentReadResult.DECODE_FAILED;
+                    data = null;
                 }
-            } catch (IOException e) {
-                Log.w(TAG, "Failed to read attachment data", e);
-            } catch (OutOfMemoryError e) {
-                Log.w(TAG, "Failed to read attachment data", e);
-                oomOccurred = true;
             }
         }
 
-        FuseboxMetrics.recordAttachmentLoadOom(
-                oomOccurred, MimeTypeUtils.getTypeFromMimeType(mimeType));
-
+        FuseboxMetrics.recordAttachmentLoadOom(oomOccurred, fileType);
+        FuseboxMetrics.recordAttachmentReadResult(result, fileType);
         return data;
     }
 
-    private byte @Nullable [] loadDownscaledImage(CompressFormat outputFormat) {
-        Bitmap bitmap;
-        try {
-            bitmap =
-                    sImageDecoder.decodeBitmap(
-                            ImageDecoder.createSource(mContentResolver, mUri),
-                            FuseboxAttachmentDetailsFetcher::setDecoderForDownscaling);
-        } catch (IOException | IllegalArgumentException e) {
-            Log.w(TAG, "Failed to decode image from URI", e);
-            return null;
+    /**
+     * Reads the full byte stream behind {@link #mUri}, retrying once if the provider returns
+     * nothing or fewer bytes than it advertised.
+     */
+    private ReadOutcome readAttachmentBytes(@Nullable Long expectedSize) {
+        byte @Nullable [] best = null;
+
+        for (int attempt = 0; attempt < MAX_READ_ATTEMPTS; attempt++) {
+            byte @Nullable [] data;
+            try (InputStream inputStream = mContentResolver.openInputStream(mUri)) {
+                data = inputStream == null ? null : sFileStreamReader.readStream(inputStream);
+            } catch (IOException e) {
+                Log.w(TAG, "Failed to read attachment data", e);
+                // A failed retry must not discard bytes already captured on an earlier attempt
+                // (e.g. one-shot pipe-backed providers that cannot be reopened).
+                if (best != null && best.length > 0) break;
+                return new ReadOutcome(null, FuseboxAttachmentReadResult.IO_ERROR);
+            } catch (OutOfMemoryError e) {
+                Log.w(TAG, "Failed to read attachment data", e);
+                if (best != null && best.length > 0) break;
+                return new ReadOutcome(null, FuseboxAttachmentReadResult.OOM);
+            }
+
+            if (data != null && (best == null || data.length > best.length)) {
+                best = data;
+            }
+
+            if (best != null && best.length > 0 && !isShortRead(best.length, expectedSize)) {
+                return new ReadOutcome(
+                        best,
+                        attempt > 0
+                                ? FuseboxAttachmentReadResult.SUCCESS_AFTER_RETRY
+                                : FuseboxAttachmentReadResult.SUCCESS);
+            }
+
+            Log.w(
+                    TAG,
+                    "Attachment read incomplete (attempt %d): got %d bytes, expected %s",
+                    attempt + 1,
+                    data == null ? 0 : data.length,
+                    expectedSize == null ? "unknown" : expectedSize.toString());
         }
+
+        if (best == null || best.length == 0) {
+            return new ReadOutcome(null, FuseboxAttachmentReadResult.EMPTY);
+        }
+
+        // Short, but non-empty. The provider-reported size is not always authoritative (e.g.
+        // cloud-backed media), so forward what we have and let the decoder decide.
+        return new ReadOutcome(best, FuseboxAttachmentReadResult.SHORT_READ);
+    }
+
+    private static boolean isShortRead(int actualLength, @Nullable Long expectedSize) {
+        return expectedSize != null && expectedSize > 0 && actualLength < expectedSize;
+    }
+
+    /**
+     * Decodes {@code source} with a bounded target size and re-encodes it as {@code outputFormat}.
+     *
+     * @throws IOException if the bytes cannot be decoded.
+     * @throws IllegalArgumentException if the decoder rejects the source.
+     * @throws OutOfMemoryError if allocation fails.
+     */
+    private byte[] loadDownscaledImage(byte[] source, CompressFormat outputFormat)
+            throws IOException {
+        Bitmap bitmap =
+                sImageDecoder.decodeBitmap(
+                        ImageDecoder.createSource(ByteBuffer.wrap(source)),
+                        FuseboxAttachmentDetailsFetcher::setDecoderForDownscaling);
 
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -414,6 +492,17 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     private static final class ImageDimensions {
         int mWidth;
         int mHeight;
+    }
+
+    /** Result of reading the attachment bytes, paired with the reason it ended that way. */
+    private static final class ReadOutcome {
+        final byte @Nullable [] mData;
+        final @FuseboxAttachmentReadResult int mResult;
+
+        ReadOutcome(byte @Nullable [] data, @FuseboxAttachmentReadResult int result) {
+            mData = data;
+            mResult = result;
+        }
     }
 
     static void setBitmapDecoderForTesting(BitmapDecoder decoder) {

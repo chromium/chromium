@@ -2958,6 +2958,30 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="FuseboxAttachmentFileType" variants="FuseboxAttachmentFileType"/>
 </histogram>
 
+<histogram
+    name="Omnibox.MobileFusebox.AttachmentReadResult{FuseboxAttachmentFileType}"
+    enum="FuseboxAttachmentReadResult" expires_after="2027-04-30">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the outcome of reading the bytes of a {FuseboxAttachmentFileType}
+    attachment from its content URI, after the Android file/gallery picker
+    returns and before the attachment is uploaded.
+
+    Distinguishes a clean read from an empty stream, a short read (fewer bytes
+    than the provider-reported size, possibly recovered by a retry), I/O and
+    memory errors, and - when AIM image downscaling is enabled - bytes that the
+    platform image decoder rejected. Empty, I/O, OOM and undecodable outcomes
+    cause the attachment to be dropped on the client; short reads are forwarded
+    to the upload pipeline so that the decoder has the final say.
+
+    There is a unique histogram for each file type (Audio, Image, PDF, ...), and
+    a general aggregate total histogram for all file types. Recorded once per
+    attachment fetch; duplicate files produce separate emissions.
+  </summary>
+  <token key="FuseboxAttachmentFileType" variants="FuseboxAttachmentFileType"/>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AttachmentSizeLimitCheck"
     enum="FuseboxAttachmentSizeLimitCheck" expires_after="2027-03-14">
   <owner>jkoblinsky@google.com</owner>
