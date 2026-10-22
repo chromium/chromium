@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server.h"
@@ -335,25 +337,9 @@ class SingleClientExtensionsExplicitSigninSyncTest
       public testing::WithParamInterface<bool> {
  public:
   SingleClientExtensionsExplicitSigninSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (content::IsPreTest()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{
-              syncer::kReplaceSyncPromosWithSignInPromos,
-              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-    } else {
-      if (GetParam()) {
-        feature_list_.InitWithFeatures(
-            /*enabled_features=*/
-            {syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
-            /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
-      } else {
-        feature_list_.InitWithFeatures(
-            /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
-            /*disabled_features=*/{
-                syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-      }
-    }
+    feature_list_.InitWithFeatureState(
+        syncer::kReplaceSyncPromosWithSignInPromos,
+        !content::IsPreTest() && !GetParam());
   }
 
   // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
@@ -370,6 +356,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionsExplicitSigninSyncTest,
                        PRE_ExtensionsEnabledDefaultValue) {
   ASSERT_TRUE(SignIn());
 
+  // Simulate signing in before explicit sign-in for extensions was launched.
+  const GaiaId gaia_id = GetSyncService(0)->GetSyncAccountInfoForPrefs().gaia;
+  SigninPrefs(*GetProfile(0)->GetPrefs())
+      .SetExtensionsExplicitBrowserSignin(gaia_id, false);
+
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kExtensions));
 }
@@ -379,8 +370,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionsExplicitSigninSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // If the `kReplaceSyncPromosWithSigninPromosNewSignin` is enabled
-  // (param=true), syncing extensions is turned off by default. If
+  // If `kReplaceSyncPromosWithSignInPromos` is disabled (param=true), syncing
+  // extensions is turned off by default for pre-existing sessions. If
   // `kReplaceSyncPromosWithSignInPromos` is enabled (param=false), then
   // extensions should be on by default.
   EXPECT_NE(GetParam(),
@@ -403,56 +394,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SingleClientExtensionsExplicitSigninSyncTest,
                          testing::Bool());
 
-class SingleClientExtensionsExplicitSigninBothFeaturesSyncTest
-    : public SyncTest {
- public:
-  SingleClientExtensionsExplicitSigninBothFeaturesSyncTest()
-      : SyncTest(SINGLE_CLIENT) {
-    if (content::IsPreTest()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{
-              syncer::kReplaceSyncPromosWithSignInPromos,
-              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
-          /*disabled_features=*/{});
-    }
-  }
-
-  // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
-  // explicitly pick Sync-the-feature or Sync-the-transport.
-  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return SetupSyncMode::kSyncTransportOnly;
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninBothFeaturesSyncTest,
-                       PRE_ExtensionsEnabledDefaultValue) {
-  ASSERT_TRUE(SignIn());
-
-  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kExtensions));
-}
-
-IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninBothFeaturesSyncTest,
-                       ExtensionsEnabledDefaultValue) {
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-
-  // Both features being enabled should act like the
-  // `kReplaceSyncPromosWithSignInPromos` enabled. Extensions should be enabled
-  // for pre-existing sessions.
-  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kExtensions));
-}
-
 class SingleClientExtensionsExplicitSigninTransitionTest : public SyncTest {
  public:
   SingleClientExtensionsExplicitSigninTransitionTest()
@@ -462,23 +403,16 @@ class SingleClientExtensionsExplicitSigninTransitionTest : public SyncTest {
 
     if (test_name.starts_with("PRE_PRE_")) {
       // Stage 1: Main feature OFF.
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{
-              syncer::kReplaceSyncPromosWithSignInPromos,
-              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+      feature_list_.InitAndDisableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
     } else if (test_name.starts_with("PRE_")) {
-      // Stage 2: Old Main ON.
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
-          /*disabled_features=*/{
-              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+      // Stage 2: Main feature ON.
+      feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
     } else {
-      // Stage 3: New Main ON.
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
-          /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+      // Stage 3: Main feature OFF again.
+      feature_list_.InitAndDisableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
     }
   }
 
@@ -496,37 +430,40 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninTransitionTest,
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
   ASSERT_TRUE(SignIn());
 
+  // Simulate signing in before explicit sign-in for extensions was launched.
+  const GaiaId gaia_id = GetSyncService(0)->GetSyncAccountInfoForPrefs().gaia;
+  SigninPrefs(*GetProfile(0)->GetPrefs())
+      .SetExtensionsExplicitBrowserSignin(gaia_id, false);
+
   // If `kReplaceSyncPromosWithSignInPromos` is disabled, syncing extensions is
-  // turned off.
+  // turned off for pre-existing sessions.
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kExtensions));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninTransitionTest,
                        PRE_ExplicitSigninForExtensionsOffToOn) {
-  ASSERT_TRUE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin));
+  ASSERT_TRUE(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // For the user group with `kReplaceSyncPromosWithSignInPromos` but before
-  // `kReplaceSyncPromosWithSigninPromosNewSignin` being enabled, extensions
-  // were enabled for pre-existing sessions and did not require new sign-in.
+  // For the user group with `kReplaceSyncPromosWithSignInPromos` enabled,
+  // extensions are enabled for pre-existing sessions and do not require new
+  // sign-in.
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kExtensions));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninTransitionTest,
                        ExplicitSigninForExtensionsOffToOn) {
-  ASSERT_TRUE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin));
+  ASSERT_FALSE(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // Moving the user group to `kReplaceSyncPromosWithSigninPromosNewSignin`
-  // enabled should not impact syncing extensions.
+  // Disabling `kReplaceSyncPromosWithSignInPromos` afterwards should not impact
+  // syncing extensions.
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kExtensions));
 }

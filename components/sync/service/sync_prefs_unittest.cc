@@ -485,8 +485,9 @@ TEST_F(SyncPrefsTest, SetTypeDisabledByCustodian) {
 }
 
 // kReplaceSyncPromosWithSignInPromos has been enabled by default on mobile
-// platforms for a long time, so the feature-disabled case is not worth testing.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// and desktop platforms, so the feature-disabled case is only tested on
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsTest,
        DefaultSelectedTypesForAccountInTransportMode_SyncToSigninDisabled) {
   base::test::ScopedFeatureList features;
@@ -494,8 +495,7 @@ TEST_F(SyncPrefsTest,
       /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             switches::kEnablePreferencesAccountStorage},
-      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos,
-                             kReplaceSyncPromosWithSigninPromosNewSignin});
+      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
   EXPECT_THAT(
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
@@ -503,7 +503,7 @@ TEST_F(SyncPrefsTest,
                                          UserSelectableType::kAutofill,
                                          UserSelectableType::kPayments})));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncPrefsTest,
        DefaultSelectedTypesForAccountInTransportMode_SyncToSigninEnabled) {
@@ -948,6 +948,7 @@ TEST_F(SyncPrefsMigrationTest, RunsOnlyOnce) {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsMigrationTest, RunsAgainAfterFeatureReenabled) {
   // The feature gets enabled for the first time.
   {
@@ -968,10 +969,8 @@ TEST_F(SyncPrefsMigrationTest, RunsAgainAfterFeatureReenabled) {
   // On the next startup, the feature is disabled.
   {
     base::test::ScopedFeatureList disable_sync_to_signin;
-    disable_sync_to_signin.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos,
-                               kReplaceSyncPromosWithSigninPromosNewSignin});
+    disable_sync_to_signin.InitAndDisableFeature(
+        kReplaceSyncPromosWithSignInPromos);
 
     SyncPrefs prefs(&pref_service_);
 
@@ -998,6 +997,7 @@ TEST_F(SyncPrefsMigrationTest, RunsAgainAfterFeatureReenabled) {
         /*is_using_explicit_passphrase=*/true));
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncPrefsMigrationTest, GlobalPrefsAreUnchanged) {
   base::test::ScopedFeatureList enable_sync_to_signin(
@@ -1554,13 +1554,10 @@ TEST_F(SyncPrefsMigrationTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForExtensionsEnabled_SyncEverything) {
-  base::test::ScopedFeatureList feature_list(
 #if BUILDFLAG(IS_CHROMEOS)
-      syncer::kReplaceSyncPromosWithSignInPromos
-#else
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  );
 
   // All types including kExtensions are selected in the global prefs.
   {
@@ -1581,13 +1578,10 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForExtensionsEnabled_TypeEnabled) {
-  base::test::ScopedFeatureList feature_list(
 #if BUILDFLAG(IS_CHROMEOS)
-      syncer::kReplaceSyncPromosWithSignInPromos
-#else
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  );
 
   // All types including kExtensions are selected in the global prefs.
   {
@@ -1608,13 +1602,10 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForExtensionsEnabled_TypeDisabled) {
-  base::test::ScopedFeatureList feature_list(
 #if BUILDFLAG(IS_CHROMEOS)
-      syncer::kReplaceSyncPromosWithSignInPromos
-#else
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  );
 
   // All types except for kExtensions are selected in the global prefs.
   {
@@ -1635,9 +1626,6 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForBookmarksEnabled_SyncEverything) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
-
   // All types including kBookmarks are selected in the global prefs.
   {
     SyncPrefs old_prefs(&pref_service_);
@@ -1657,9 +1645,6 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForBookmarksEnabled_TypeEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
-
   // All types including kBookmarks are selected in the global prefs.
   {
     SyncPrefs old_prefs(&pref_service_);
@@ -1679,9 +1664,6 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForBookmarksEnabled_TypeDisabled) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
-
   // All types except for kBookmarks are selected in the global prefs.
   {
     SyncPrefs old_prefs(&pref_service_);
@@ -1702,9 +1684,6 @@ TEST_F(SyncPrefsMigrationTest,
 // Regression test for crbug.com/568406887.
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForReadingListEnabled_SyncEverything) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
-
   // All types including kReadingList are selected in the global prefs.
   {
     SyncPrefs old_prefs(&pref_service_);
@@ -1729,9 +1708,6 @@ TEST_F(SyncPrefsMigrationTest,
 // Regression test for crbug.com/568406887.
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForReadingListEnabled_TypeEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
-
   // All types including kReadingList are selected in the global prefs.
   {
     SyncPrefs old_prefs(&pref_service_);
@@ -1752,9 +1728,6 @@ TEST_F(SyncPrefsMigrationTest,
 // Regression test for crbug.com/568406887.
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForReadingListEnabled_TypeDisabled) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
-
   // All types except for kReadingList are selected in the global prefs.
   {
     SyncPrefs old_prefs(&pref_service_);

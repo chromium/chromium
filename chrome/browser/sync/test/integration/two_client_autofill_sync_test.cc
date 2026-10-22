@@ -47,11 +47,8 @@ using autofill_helper::UpdateProfile;
 class TwoClientAutofillProfileSyncTest : public SyncTest {
  public:
   TwoClientAutofillProfileSyncTest() : SyncTest(TWO_CLIENT) {
-    features_override_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            syncer::kReplaceSyncPromosWithSignInPromos,
-            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+    features_override_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
   }
 
   TwoClientAutofillProfileSyncTest(const TwoClientAutofillProfileSyncTest&) =

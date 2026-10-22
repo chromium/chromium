@@ -209,8 +209,9 @@ TEST_F(SyncUserSettingsImplTest, GetSelectedTypesWhileSignedOut) {
 }
 
 // kReplaceSyncPromosWithSignInPromos has been enabled by default on mobile
-// platforms for a long time, so the feature-disabled case is not worth testing.
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+// and desktop platforms, so the feature-disabled case is only tested on
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncUserSettingsImplTest,
        DefaultSelectedTypesWhileSignedIn_SyncToSigninDisabled) {
   base::test::ScopedFeatureList feature_list;
@@ -220,8 +221,7 @@ TEST_F(SyncUserSettingsImplTest,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
                             switches::kEnablePreferencesAccountStorage},
-      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos,
-                             kReplaceSyncPromosWithSigninPromosNewSignin});
+      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
@@ -241,17 +241,8 @@ TEST_F(SyncUserSettingsImplTest,
   expected_types.Put(UserSelectableType::kThemes);
   EXPECT_THAT(sync_user_settings->GetSelectedTypes(),
               ContainerEq(expected_types));
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  SigninPrefs(pref_service_)
-      .SetBookmarksExplicitBrowserSignin(kTestGaiaId, true);
-  expected_types.Put(UserSelectableType::kBookmarks);
-  expected_types.Put(UserSelectableType::kReadingList);
-  EXPECT_THAT(sync_user_settings->GetSelectedTypes(),
-              ContainerEq(expected_types));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncUserSettingsImplTest,
        DefaultSelectedTypesWhileSignedIn_SyncToSigninEnabled) {

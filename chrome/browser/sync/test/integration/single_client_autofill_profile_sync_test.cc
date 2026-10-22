@@ -42,11 +42,8 @@ class AutofillProfileDisabledChecker : public SingleClientStatusChangeChecker {
 class SingleClientAutofillProfileSyncTest : public SyncTest {
  public:
   SingleClientAutofillProfileSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            syncer::kReplaceSyncPromosWithSignInPromos,
-            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+    features_override_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
   }
 
   SingleClientAutofillProfileSyncTest(

@@ -4,9 +4,7 @@
 
 #include "chrome/browser/sync/sync_ui_util.h"
 
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,14 +17,11 @@ TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError) {
   EXPECT_TRUE(ShouldShowSyncPassphraseError(&service));
 }
 
+// TODO(crbug.com/40066949): Remove this test when ConsentLevel::kSync is
+// removed.
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_SyncDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          syncer::kReplaceSyncPromosWithSignInPromos,
-          syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   syncer::TestSyncService service;
+  service.SetSignedIn(signin::ConsentLevel::kSync);  // nocheck
   service.SetInitialSyncFeatureSetupComplete(false);
   service.SetPassphraseRequired();
   EXPECT_FALSE(ShouldShowSyncPassphraseError(&service));
