@@ -240,16 +240,9 @@ void AttestationCAClient::CheckIfAnyProxyPresent(
   // Uses the injected network context if present.
   if (network_context_for_testing_ != nullptr) {
     network_context = network_context_for_testing_;
-  } else if (!g_browser_process ||
-             !g_browser_process->system_network_context_manager() ||
-             !g_browser_process->system_network_context_manager()
-                  ->GetContext()) {
-    LOG(DFATAL) << "No valid system network context.";
-    std::move(callback).Run(/*is_any_proxy_present=*/true);
-    return;
   } else {
-    network_context =
-        g_browser_process->system_network_context_manager()->GetContext();
+    CHECK(SystemNetworkContextManager::HasInstance());
+    network_context = SystemNetworkContextManager::GetInstance()->GetContext();
   }
 
   CAProxyLookupClient::LookUpProxyForURL(
