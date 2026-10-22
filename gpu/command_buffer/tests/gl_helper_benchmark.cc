@@ -10,7 +10,7 @@
 // but cannot really "fail". There is no point in making these tests part
 // of any test automation run.
 
-#include <GLES2/gl2.h>
+#include <GLES2/gl2chromium.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
 #include <stddef.h>

@@ -7,7 +7,7 @@
 
 #if defined(VR_USE_COMMAND_BUFFER)
 
-#include <GLES2/gl2.h>
+#include <GLES2/gl2chromium.h>
 #include <GLES2/gl2ext.h>
 
 #elif defined(VR_USE_NATIVE_GL)

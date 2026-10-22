@@ -7,7 +7,7 @@
 #ifndef GPU_COMMAND_BUFFER_TESTS_GL_TEST_UTILS_H_
 #define GPU_COMMAND_BUFFER_TESTS_GL_TEST_UTILS_H_
 
-#include <GLES2/gl2.h>
+#include <GLES2/gl2chromium.h>
 #include <stdint.h>
 
 #include <string_view>

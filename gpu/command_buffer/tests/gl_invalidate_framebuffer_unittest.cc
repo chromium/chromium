@@ -6,7 +6,7 @@
 #define GL_GLEXT_PROTOTYPES
 #endif
 
-#include <GLES2/gl2.h>
+#include <GLES2/gl2chromium.h>
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
 #include <stdint.h>

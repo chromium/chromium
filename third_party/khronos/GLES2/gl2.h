@@ -34,9 +34,6 @@ extern "C" {
 **   https://github.com/KhronosGroup/OpenGL-Registry
 */
 
-/* Chromium-specific GLES2 declarations */
-#include <GLES2/gl2chromium.h>
-
 #include <GLES2/gl2platform.h>
 
 #ifndef GL_APIENTRYP

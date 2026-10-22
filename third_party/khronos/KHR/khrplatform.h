@@ -102,8 +102,7 @@
 #elif defined (__SYMBIAN32__)
 #   define KHRONOS_APICALL IMPORT_C
 #elif defined(__ANDROID__)
-#   include <sys/cdefs.h>
-#   define KHRONOS_APICALL __attribute__((visibility("default"))) __NDK_FPABI__
+#   define KHRONOS_APICALL __attribute__((visibility("default")))
 #else
 #   define KHRONOS_APICALL
 #endif
@@ -119,18 +118,6 @@
 #   define KHRONOS_APIENTRY __stdcall
 #else
 #   define KHRONOS_APIENTRY
-#endif
-
-/*-------------------------------------------------------------------------
- * Chromium-specific overrides of KHRONOS_APICALL and KHRONOS_APIENTRY
- *-----------------------------------------------------------------------*/
-#undef KHRONOS_APICALL
-#if defined(GLES2_USE_MOJO)
-#include "mojo/public/c/gles2/gles2_export.h"
-#define KHRONOS_APICALL MOJO_GLES2_EXPORT
-#else
-#include "gpu/command_buffer/client/gles2_c_lib_export.h"
-#define KHRONOS_APICALL GLES2_C_LIB_EXPORT
 #endif
 
 /*-------------------------------------------------------------------------

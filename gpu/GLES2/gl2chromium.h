@@ -7,6 +7,11 @@
 #ifndef GPU_GLES2_GL2CHROMIUM_H_
 #define GPU_GLES2_GL2CHROMIUM_H_
 
+#include "gpu/command_buffer/client/gles2_c_lib_export.h"
+
+#undef GL_APICALL
+#define GL_APICALL GLES2_C_LIB_EXPORT
+
 #include <GLES2/gl2platform.h>
 
 #if defined(GLES2_USE_MOJO)
@@ -22,6 +27,10 @@
 #endif
 
 #include <GLES2/gl2chromium_autogen.h>
+
+// Must be included after gl2chromium_autogen.h so GL prototypes are rewritten
+// to their GLES2* equivalents with GLES2_C_LIB_EXPORT.
+#include <GLES2/gl2.h>
 
 #endif  // GPU_GLES2_GL2CHROMIUM_H_
 
