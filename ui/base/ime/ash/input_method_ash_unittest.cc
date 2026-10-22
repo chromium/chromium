@@ -2090,4 +2090,115 @@ TEST_F(InputMethodAshKeyEventTest,
   EXPECT_EQ(u"x", inserted_text_);
 }
 
+TEST_F(InputMethodAshKeyEventTest,
+       ConfirmCompositionAppliesPendingCompositionRangeWhileHandlingKeyEvent) {
+  input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  surrounding_text_ = u"abc";
+  text_range_ = gfx::Range(0, 3);
+  selection_range_ = gfx::Range(0, 0);
+
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                     ui::DomCode::SPACE, ui::EF_NONE,
+                     ui::DomKey::FromCharacter(' '), ui::EventTimeForNow());
+  input_method_ash_->DispatchKeyEvent(&event);
+
+  EXPECT_TRUE(
+      input_method_ash_->SetCompositionRange(/*before=*/0, /*after=*/2, {}));
+  input_method_ash_->ConfirmComposition(/*reset_engine=*/true);
+
+  EXPECT_EQ(u"ab", confirmed_text_.text);
+  EXPECT_TRUE(composition_text_.text.empty());
+  EXPECT_EQ(1, mock_ime_engine_handler_->reset_call_count());
+
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+  EXPECT_TRUE(composition_text_.text.empty());
+}
+
+TEST_F(InputMethodAshKeyEventTest,
+       CancelCompositionResetsEngineWhenPendingCompositionRangePresent) {
+  input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  surrounding_text_ = u"abc";
+  text_range_ = gfx::Range(0, 3);
+  selection_range_ = gfx::Range(0, 0);
+
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                     ui::DomCode::SPACE, ui::EF_NONE,
+                     ui::DomKey::FromCharacter(' '), ui::EventTimeForNow());
+  input_method_ash_->DispatchKeyEvent(&event);
+
+  EXPECT_TRUE(
+      input_method_ash_->SetCompositionRange(/*before=*/0, /*after=*/2, {}));
+  input_method_ash_->CancelComposition(this);
+
+  EXPECT_EQ(1, mock_ime_engine_handler_->reset_call_count());
+
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+  EXPECT_TRUE(composition_text_.text.empty());
+}
+
+TEST_F(InputMethodAshKeyEventTest,
+       ConfirmCompositionPreservesPendingCommitWhenPendingCompositionPresent) {
+  input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                     ui::DomCode::SPACE, ui::EF_NONE,
+                     ui::DomKey::FromCharacter(' '), ui::EventTimeForNow());
+  input_method_ash_->DispatchKeyEvent(&event);
+
+  CompositionText composition;
+  composition.text = u"abc";
+  input_method_ash_->UpdateCompositionText(composition, /*cursor_pos=*/3,
+                                           /*visible=*/true);
+  input_method_ash_->CommitText(
+      u" ", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  input_method_ash_->ConfirmComposition(/*reset_engine=*/false);
+
+  EXPECT_EQ(u"abc", confirmed_text_.text);
+  EXPECT_EQ(0, inserted_char_);
+
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+  EXPECT_EQ(u' ', inserted_char_);
+}
+
+TEST_F(InputMethodAshKeyEventTest,
+       FocusChangeToPasswordDoesNotLeakPendingCommitFromPreviousClient) {
+  input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                     ui::DomCode::SPACE, ui::EF_NONE,
+                     ui::DomKey::FromCharacter(' '), ui::EventTimeForNow());
+  input_method_ash_->DispatchKeyEvent(&event);
+
+  CompositionText composition;
+  composition.text = u"abc";
+  input_method_ash_->UpdateCompositionText(composition, /*cursor_pos=*/3,
+                                           /*visible=*/true);
+  input_method_ash_->CommitText(
+      u"xy", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+  // Moving focus to a password client confirms composition on `this` and must
+  // not leak `pending_commit_` into `password_client`.
+  FakeTextInputClient password_client(ui::TEXT_INPUT_TYPE_PASSWORD);
+  input_method_ash_->SetFocusedTextInputClient(&password_client);
+  EXPECT_EQ(u"abc", confirmed_text_.text);
+
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+  EXPECT_EQ(u"", password_client.text());
+  input_method_ash_->SetFocusedTextInputClient(nullptr);
+}
+
 }  // namespace ash

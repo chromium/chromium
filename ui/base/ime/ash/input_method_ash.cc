@@ -443,6 +443,12 @@ void InputMethodAsh::OnBlur() {
 
 void InputMethodAsh::OnWillChangeFocusedClient(TextInputClient* focused_before,
                                                TextInputClient* focused) {
+  // Discard any buffered commit for `focused_before` before confirming
+  // composition so it is not leaked if the new focus target is nullptr,
+  // password, or NONE (where `ResetContext()` in `OnDidChangeFocusedClient()`
+  // returns early), and so `ConfirmComposition()` does not early-return when
+  // only `pending_commit_` is queued.
+  pending_commit_ = std::nullopt;
   ConfirmComposition(/* reset_engine */ true);
 
   // Remove any autocorrect range in the unfocused TextInputClient.
@@ -592,20 +598,32 @@ void InputMethodAsh::ConfirmComposition(bool reset_engine) {
   base::WeakPtr<TextInputClient> client =
       GetTextInputClient() ? GetTextInputClient()->AsWeakPtr() : nullptr;
   // TODO(b/223075193): Quick fix for the case where we have a pending commit.
-  // Without this, then we would lose the pending commit after confirming the
-  // composition text.
+  // Without this, confirming composition when no pending composition update is
+  // queued would prematurely confirm any existing client composition text and
+  // reset `composing_text_` before `MaybeProcessPendingInputMethodResult()`
+  // processes `pending_commit_`.
   // Fix this properly by getting rid of the pending mechanism completely.
   if (pending_commit_ && !pending_composition_range_ && !pending_composition_) {
     // Only a pending commit, so confirming the composition is a no-op.
     return;
   }
+  if (client && pending_composition_range_) {
+    const PendingSetCompositionRange range =
+        std::move(*pending_composition_range_);
+    pending_composition_range_ = std::nullopt;
+    composition_changed_ = false;
+    // `SetComposingRange()` defers setting `composing_text_` while a key event
+    // is in flight; set it here so `ResetContext()` below knows composition was
+    // active and resets the engine when `reset_engine` is true.
+    composing_text_ = true;
+    client->SetCompositionFromExistingText(range.range, range.text_spans);
+  }
   // TODO(b/225723475): Similar to the comment above, this is a quick fix to
   // solve the autocorrect issue outlined in the linked bug. This is due to the
   // pending composition being reset before it could be applied to the current
   // text. Again we need to fix this properly by removing the pending mechanism.
-  if (client && pending_composition_ && !pending_commit_ &&
-      !pending_composition_range_) {
-    ui::CompositionText composition = std::move(*pending_composition_);
+  if (client && pending_composition_) {
+    const CompositionText composition = std::move(*pending_composition_);
     pending_composition_ = std::nullopt;
     composition_changed_ = false;
     client->SetCompositionText(composition);
@@ -616,8 +634,15 @@ void InputMethodAsh::ConfirmComposition(bool reset_engine) {
         client->ConfirmCompositionText(/*keep_selection*/ true);
     typing_session_manager_.CommitCharacters(characters_committed);
   }
+  std::optional<PendingCommit> pending_commit = std::move(pending_commit_);
   // See https://crbug.com/984472.
   ResetContext(reset_engine);
+  // Only restore `pending_commit_` if the target client is still alive and
+  // focused; composition callbacks above may have detached or changed the
+  // focused client.
+  if (client && client.get() == GetTextInputClient()) {
+    pending_commit_ = std::move(pending_commit);
+  }
 }
 
 void InputMethodAsh::ResetContext(bool reset_engine) {
@@ -625,9 +650,14 @@ void InputMethodAsh::ResetContext(bool reset_engine) {
     return;
   }
 
-  const bool was_composing = composing_text_;
+  // `SetComposingRange()` does not set `composing_text_` while handling a key
+  // event, so also check `pending_composition_range_` when deciding whether the
+  // engine needs to be reset.
+  const bool was_composing =
+      composing_text_ || pending_composition_range_.has_value();
 
   pending_composition_ = std::nullopt;
+  pending_composition_range_ = std::nullopt;
   pending_commit_ = std::nullopt;
   composing_text_ = false;
   composition_changed_ = false;
