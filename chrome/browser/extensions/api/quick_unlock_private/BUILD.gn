@@ -33,6 +33,7 @@ source_set("quick_unlock_private") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/cryptohome:public",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/osauth/public",
     "//components/prefs",

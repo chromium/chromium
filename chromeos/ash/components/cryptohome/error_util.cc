@@ -9,11 +9,11 @@
 
 namespace cryptohome {
 
-bool HasError(ErrorWrapper error) {
+bool HasError(const ErrorWrapper& error) {
   return error.code() != ::user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
 }
 
-bool ErrorMatches(ErrorWrapper value,
+bool ErrorMatches(const ErrorWrapper& value,
                   ::user_data_auth::CryptohomeErrorCode error_code) {
   return value.code() == error_code;
 }

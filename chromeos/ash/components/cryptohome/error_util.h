@@ -12,13 +12,13 @@ namespace cryptohome {
 
 // Checks if `error` actually contain error code.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-bool HasError(ErrorWrapper error);
+bool HasError(const ErrorWrapper& error);
 
 // Checks if `value` matches given error codes, encapsulates
 // all implementation details of error matching.
 // TODO(b/246499081): add extra parameter based on user_data_auth::PrimaryAction
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-bool ErrorMatches(ErrorWrapper value,
+bool ErrorMatches(const ErrorWrapper& value,
                   ::user_data_auth::CryptohomeErrorCode error_code);
 
 }  // namespace cryptohome

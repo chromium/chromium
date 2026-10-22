@@ -5,29 +5,33 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_ERROR_TYPES_H_
 #define CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_ERROR_TYPES_H_
 
+#include <iosfwd>
+#include <memory>
+#include <optional>
+
 #include "base/component_export.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+
+namespace user_data_auth {
+class CryptohomeErrorInfo;
+enum CryptohomeErrorCode : int;
+}  // namespace user_data_auth
 
 namespace cryptohome {
 
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) ErrorWrapper {
  public:
   ErrorWrapper(const ErrorWrapper& other);
+  ErrorWrapper(ErrorWrapper&& other) noexcept;
+  ErrorWrapper& operator=(const ErrorWrapper& other);
+  ErrorWrapper& operator=(ErrorWrapper&& other) noexcept;
 
   ~ErrorWrapper();
 
   ::user_data_auth::CryptohomeErrorCode code() const { return code_; }
 
-  std::optional<::user_data_auth::CryptohomeErrorInfo> info() const {
-    return info_;
-  }
+  std::optional<::user_data_auth::CryptohomeErrorInfo> info() const;
 
-  static ErrorWrapper success() {
-    ::user_data_auth::CryptohomeErrorInfo info;
-    info.set_primary_action(::user_data_auth::PrimaryAction::PRIMARY_NO_ERROR);
-    return ErrorWrapper(
-        ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET, info);
-  }
+  static ErrorWrapper success();
 
   // Creates an ErrorWrapper with both legacy CryptohomeErrorCode and the new
   // CryptohomeErrorInfo. This should be used if possible.
@@ -40,17 +44,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) ErrorWrapper {
 
  private:
   ErrorWrapper(::user_data_auth::CryptohomeErrorCode code,
-               std::optional<::user_data_auth::CryptohomeErrorInfo> info);
+               std::unique_ptr<::user_data_auth::CryptohomeErrorInfo> info);
 
   // code_ is the legacy CryptohomeErrorCode.
   ::user_data_auth::CryptohomeErrorCode code_;
 
-  // info_ is the new way to represent Cryptohome Error.
-  std::optional<::user_data_auth::CryptohomeErrorInfo> info_;
+  // info_ is the new way to represent Cryptohome Error. Null if not set.
+  std::unique_ptr<::user_data_auth::CryptohomeErrorInfo> info_;
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-std::ostream& operator<<(std::ostream& os, ErrorWrapper error);
+std::ostream& operator<<(std::ostream& os, const ErrorWrapper& error);
 
 }  // namespace cryptohome
 

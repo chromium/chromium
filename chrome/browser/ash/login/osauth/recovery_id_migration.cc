@@ -10,6 +10,7 @@
 
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"

@@ -67,6 +67,7 @@ static_library("people") {
     "//chromeos/ash/components/account_manager",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/components/sync:sync_service_provider",

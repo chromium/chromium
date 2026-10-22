@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"

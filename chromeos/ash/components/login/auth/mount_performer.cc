@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"

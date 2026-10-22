@@ -13,9 +13,23 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+
+namespace cryptohome {
+class AccountIdentifier;
+}  // namespace cryptohome
+
+namespace user_data_auth {
+class CreatePersistentUserReply;
+class PrepareEphemeralVaultReply;
+class PrepareGuestVaultReply;
+class PreparePersistentVaultReply;
+class PrepareVaultForMigrationReply;
+class RemoveReply;
+class StartMigrateToDircryptoReply;
+class UnmountReply;
+}  // namespace user_data_auth
 
 namespace ash {
 

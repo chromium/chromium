@@ -15,12 +15,15 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_status.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+
+namespace user_data_auth {
+class AuthSessionProperties;
+}  // namespace user_data_auth
 
 namespace ash {
 

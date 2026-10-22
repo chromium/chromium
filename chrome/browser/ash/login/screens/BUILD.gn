@@ -192,6 +192,7 @@ static_library("screens") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/hid_detection",
     "//chromeos/ash/components/login/auth",

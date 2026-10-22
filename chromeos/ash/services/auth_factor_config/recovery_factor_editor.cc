@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"

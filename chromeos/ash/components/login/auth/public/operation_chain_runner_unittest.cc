@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/bind.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
