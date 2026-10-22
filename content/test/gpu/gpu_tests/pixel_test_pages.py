@@ -1279,7 +1279,7 @@ class PixelTestPages:
   def SwiftShaderPages(base_name: str) -> list[PixelTestPage]:
     browser_args = [
       cba.DISABLE_GPU,
-      '--enable-features=AllowSwiftShaderFallback',
+      '--enable-unsafe-swiftshader',
       '--disable-features=AllowD3D11WarpFallback',
     ]
     suffix = '_SwiftShader'
@@ -1319,7 +1319,6 @@ class PixelTestPages:
   def WARPPages(base_name: str) -> list[PixelTestPage]:
     browser_args = [
       cba.DISABLE_GPU,
-      '--disable-features=AllowSwiftShaderFallback',
       '--enable-features=AllowD3D11WarpFallback',
     ]
     suffix = '_WARP'

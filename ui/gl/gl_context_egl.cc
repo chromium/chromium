@@ -177,8 +177,7 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
 
   if (attribs.webgl_compatibility_context && is_swangle &&
       IsARMSwiftShaderPlatform() &&
-      !features::IsSwiftShaderAllowedByCommandLine(
-          base::CommandLine::ForCurrentProcess())) {
+      !features::IsSwiftShaderAllowed(base::CommandLine::ForCurrentProcess())) {
     // crbug.com/1378476: LLVM 10 is used as the JIT compiler for SwiftShader,
     // which doesn't fully support ARM. Disable Swiftshader on ARM CPUs for
     // WebGL until LLVM is upgraded.

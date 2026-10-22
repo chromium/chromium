@@ -732,10 +732,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self, test_path: str
   ) -> None:
     # This test loads functional_webgl.html with GPU disabled and verifies that
-    # SwiftShader is not available without the --enable-unsafe-swiftshader flag
-    # or AllowSwiftShaderFallback killswitch.
-    # Because AllowSwiftShaderFallback is currently enabled by default, disable
-    # it to test the upcoming default behavior.
+    # SwiftShader is not available without the --enable-unsafe-swiftshader flag.
     # Make sure to force disable WARP fallback which takes precedence over
     # SwiftShader fallback when both are enabled.
     disable_hardware_webgl_args_list = [
@@ -744,8 +741,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       # Explicitly disable GPU access.
       [cba.DISABLE_GPU],
     ]
-    disable_swiftshader_fallback_feature = [
-      '--disable-features=AllowSwiftShaderFallback',
+    disable_warp_fallback_feature = [
       '--disable-features=AllowD3D11WarpFallback',
     ]
     allow_swiftshader_args_list = [
@@ -758,14 +754,10 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--use-angle=swiftshader',
         '--disable-features=AllowD3D11WarpFallback',
       ],
-      [
-        '--enable-features=AllowSwiftShaderFallback',
-        '--disable-features=AllowD3D11WarpFallback',
-      ],
     ]
     for disable_hardware_webgl_args in disable_hardware_webgl_args_list:
       self.RestartBrowserIfNecessaryWithArgs(
-        disable_hardware_webgl_args + disable_swiftshader_fallback_feature
+        disable_hardware_webgl_args + disable_warp_fallback_feature
       )
       self._NavigateAndWait(test_path)
 

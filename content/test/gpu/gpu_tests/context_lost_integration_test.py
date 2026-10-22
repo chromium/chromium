@@ -635,8 +635,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self.RestartBrowserIfNecessaryWithArgs(
       [
         cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS,
-        '--enable-features=AllowSoftwareGLFallbackDueToCrashes,'
-        'AllowSwiftShaderFallback',
+        '--enable-features=AllowSoftwareGLFallbackDueToCrashes',
+        '--enable-unsafe-swiftshader',
       ]
     )
     self._NavigateAndWaitForLoad(test_path)
