@@ -310,7 +310,7 @@ void PKIMetadataComponentInstallerService::ConfigureMtcMetadata() {
     // If the feature flag is disabled, call the observer immediately. This is
     // slightly weird but allows tests to easily test both the enabled and
     // disabled state.
-    NotifyMtcMetadataConfigured();
+    NotifyMtcMetadataProcessed();
     return;
   }
 
@@ -339,39 +339,43 @@ void PKIMetadataComponentInstallerService::ConfigureMtcMetadata() {
 void PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI(
     ChromeRootStoreAndMtcConfig root_store_and_mtc_config) {
   auto& [chrome_root_store, mtc_config] = root_store_and_mtc_config;
-  if (chrome_root_store.has_value()) {
-    bool updated_tai = UpdateCRSTrustAnchorIDs(chrome_root_store.value());
-    if (mtc_config.has_value() &&
-        UpdateSignerSetTrustAnchorIDs(mtc_config.value())) {
-      updated_tai = true;
-    }
-    if (updated_tai) {
-      UpdateTrustAnchorIDsImpl();
-    }
-
-    content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-        std::move(chrome_root_store.value()), std::move(mtc_config),
-        base::BindOnce(&PKIMetadataComponentInstallerService::
-                           NotifyChromeRootStoreConfigured,
-                       weak_factory_.GetWeakPtr()));
+  if (!chrome_root_store.has_value()) {
+    NotifyChromeRootStoreProcessed();
+    return;
   }
+
+  bool updated_tai = UpdateCRSTrustAnchorIDs(chrome_root_store.value());
+  if (mtc_config.has_value() &&
+      UpdateSignerSetTrustAnchorIDs(mtc_config.value())) {
+    updated_tai = true;
+  }
+  if (updated_tai) {
+    UpdateTrustAnchorIDsImpl();
+  }
+
+  content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
+      std::move(chrome_root_store.value()), std::move(mtc_config),
+      base::BindOnce(
+          &PKIMetadataComponentInstallerService::NotifyChromeRootStoreProcessed,
+          weak_factory_.GetWeakPtr()));
 }
 
 void PKIMetadataComponentInstallerService::UpdateMtcMetadataOnUI(
     std::optional<mojo_base::ProtoWrapper> mtc_metadata) {
   if (!mtc_metadata.has_value()) {
+    NotifyMtcMetadataProcessed();
     return;
   }
   if (!UpdateMtcMetadataTrustAnchorIDs(mtc_metadata.value())) {
     // If the Metadata was out of date, don't bother sending it to the cert
     // verifier service either.
-    NotifyMtcMetadataConfigured();
+    NotifyMtcMetadataProcessed();
     return;
   }
   content::GetCertVerifierServiceFactory()->UpdateMtcMetadata(
       std::move(mtc_metadata.value()),
       base::BindOnce(
-          &PKIMetadataComponentInstallerService::NotifyMtcMetadataConfigured,
+          &PKIMetadataComponentInstallerService::NotifyMtcMetadataProcessed,
           weak_factory_.GetWeakPtr()));
 }
 
@@ -572,17 +576,17 @@ bool PKIMetadataComponentInstallerService::UpdateMtcMetadataTrustAnchorIDs(
   return true;
 }
 
-void PKIMetadataComponentInstallerService::NotifyChromeRootStoreConfigured() {
+void PKIMetadataComponentInstallerService::NotifyChromeRootStoreProcessed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observers_) {
-    observer.OnChromeRootStoreConfigured();
+    observer.OnChromeRootStoreProcessed();
   }
 }
 
-void PKIMetadataComponentInstallerService::NotifyMtcMetadataConfigured() {
+void PKIMetadataComponentInstallerService::NotifyMtcMetadataProcessed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observers_) {
-    observer.OnMtcMetadataConfigured();
+    observer.OnMtcMetadataProcessed();
   }
 }
 
@@ -626,6 +630,8 @@ void PKIMetadataComponentInstallerService::ReconfigureAfterNetworkRestart() {
         base::BindOnce(&PKIMetadataComponentInstallerService::
                            UpdateNetworkServiceCTListOnUI,
                        weak_factory_.GetWeakPtr()));
+  } else {
+    NotifyCTLogListProcessed();
   }
 #if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -688,12 +694,14 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     // on the default disqualified certs in the CT list allowing
     // disqualified certs to be trusted. Treat empty string as invalid proto
     // instead.
+    NotifyCTLogListProcessed();
     return;
   }
 
   auto proto =
       std::make_unique<chrome_browser_certificate_transparency::CTConfig>();
   if (!proto->ParseFromString(ct_config_bytes)) {
+    NotifyCTLogListProcessed();
     return;
   }
 
@@ -707,7 +715,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     base::RepeatingClosure done_callback = BarrierClosure(
         /*num_closures=*/2,
         base::BindOnce(
-            &PKIMetadataComponentInstallerService::NotifyCTLogListConfigured,
+            &PKIMetadataComponentInstallerService::NotifyCTLogListProcessed,
             weak_factory_.GetWeakPtr()));
     content::GetCertVerifierServiceFactory()->DisableCtEnforcement(
         done_callback);
@@ -717,6 +725,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
 
   if (proto->log_list().compatibility_version() >
       kMaxSupportedCTCompatibilityVersion) {
+    NotifyCTLogListProcessed();
     return;
   }
 
@@ -728,6 +737,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
   // the built in list, unless it is allowed for testing.
   if (proto_timestamp < certificate_transparency::GetLogListTimestamp() &&
       !allow_old_ct_log_list_updates_for_testing_) {
+    NotifyCTLogListProcessed();
     return;
   }
 
@@ -810,7 +820,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
   base::RepeatingClosure done_callback = BarrierClosure(
       /*num_closures=*/3,
       base::BindOnce(
-          &PKIMetadataComponentInstallerService::NotifyCTLogListConfigured,
+          &PKIMetadataComponentInstallerService::NotifyCTLogListProcessed,
           weak_factory_.GetWeakPtr()));
   content::GetCertVerifierServiceFactory()->UpdateCtLogList(
       std::move(log_list_mojo), proto_timestamp, done_callback);
@@ -823,6 +833,8 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
       BytesArrayFromProtoBytes(proto->popular_scts());
   network_service->UpdateCtKnownPopularSCTs(std::move(popular_scts),
                                             done_callback);
+#else
+  NotifyCTLogListProcessed();
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 }
 
@@ -877,10 +889,10 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
 }
 #endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
-void PKIMetadataComponentInstallerService::NotifyCTLogListConfigured() {
+void PKIMetadataComponentInstallerService::NotifyCTLogListProcessed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observers_) {
-    observer.OnCTLogListConfigured();
+    observer.OnCTLogListProcessed();
   }
 }
 

@@ -33,15 +33,21 @@ class PKIMetadataComponentInstallerService final {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called after the CT Log list data is configured.
-    virtual void OnCTLogListConfigured() {}
+    // Called after the CT Log list data was processed. This may be called after
+    // the update was successfully configured or if the update was ignored due
+    // to an error.
+    virtual void OnCTLogListProcessed() {}
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    // Called after the Chrome Root Store data was configured.
-    virtual void OnChromeRootStoreConfigured() {}
+    // Called after the Chrome Root Store data was processed. This may be
+    // called after the update was successfully configured or if the update
+    // was ignored due to an error.
+    virtual void OnChromeRootStoreProcessed() {}
 
-    // Called after the MTC Metadata was configured.
-    virtual void OnMtcMetadataConfigured() {}
+    // Called after the MTC Metadata was processed. This may be called after
+    // the update was successfully configured or if the update was ignored due
+    // to an error.
+    virtual void OnMtcMetadataProcessed() {}
 #endif
   };
 
@@ -159,15 +165,15 @@ class PKIMetadataComponentInstallerService final {
       const mojo_base::ProtoWrapper& mtc_metadata);
 
   // Notifies all observers that the Chrome Root Store data has been
-  // configured.
-  void NotifyChromeRootStoreConfigured();
+  // processed.
+  void NotifyChromeRootStoreProcessed();
 
-  // Notifies all observers that the MTC Metadata has been configured.
-  void NotifyMtcMetadataConfigured();
+  // Notifies all observers that the MTC Metadata has been processed.
+  void NotifyMtcMetadataProcessed();
 #endif
 
-  // Notifies all observers that the CT Log list data has been configured.
-  void NotifyCTLogListConfigured();
+  // Notifies all observers that the CT Log list data has been processed.
+  void NotifyCTLogListProcessed();
 
   // The install folder path. An empty path if the component is not ready.
   base::FilePath install_dir_;

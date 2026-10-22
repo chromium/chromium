@@ -405,23 +405,16 @@ class PKIMetadataComponentUpdaterTest
   }
 
  protected:
-  // Waits for the PKI to have been configured at least |expected_times|.
+  // Waits for the PKI to have been processed at least |expected_times|.
   void WaitForPKIConfiguration(int expected_times) {
-    if (GetParam() == CTEnforcement::kDisabledByFeature) {
-      // When CT is disabled by the feature flag there are no callbacks to
-      // wait on, so just spin the runloop.
-      base::RunLoop().RunUntilIdle();
-      EXPECT_EQ(pki_metadata_configured_times_, 0);
-    } else {
-      expected_pki_metadata_configured_times_ = expected_times;
-      if (pki_metadata_configured_times_ >=
-          expected_pki_metadata_configured_times_) {
-        return;
-      }
-      base::RunLoop run_loop;
-      pki_metadata_config_closure_ = run_loop.QuitClosure();
-      run_loop.Run();
+    expected_pki_metadata_configured_times_ = expected_times;
+    if (pki_metadata_configured_times_ >=
+        expected_pki_metadata_configured_times_) {
+      return;
     }
+    base::RunLoop run_loop;
+    pki_metadata_config_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
   }
 
   const base::FilePath& GetComponentDirPath() const {
@@ -438,7 +431,7 @@ class PKIMetadataComponentUpdaterTest
       bool expect_ct_error);
 
  private:
-  void OnCTLogListConfigured() override {
+  void OnCTLogListProcessed() override {
     ++pki_metadata_configured_times_;
     if (pki_metadata_config_closure_ &&
         pki_metadata_configured_times_ >=
@@ -858,13 +851,13 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
   base::ScopedTempDir component_dir_;
 
  private:
-  void OnChromeRootStoreConfigured() override {
+  void OnChromeRootStoreProcessed() override {
     if (crs_config_closure_) {
       std::move(crs_config_closure_).Run();
     }
   }
 
-  void OnMtcMetadataConfigured() override {
+  void OnMtcMetadataProcessed() override {
     if (mtc_metadata_config_closure_) {
       std::move(mtc_metadata_config_closure_).Run();
     }
@@ -3022,25 +3015,17 @@ class PKIMetadataComponentCtAndCrsTestBase
   }
 
  protected:
-  // Waits for the CT log lists to have been configured at least
+  // Waits for the CT log lists to have been processed at least
   // |expected_times|.
-  void WaitForCtConfiguration(int expected_times,
-                              bool ct_disabled_by_feature = false) {
-    if (ct_disabled_by_feature) {
-      // When CT is disabled by the feature flag there are no callbacks to
-      // wait on, so just spin the runloop.
-      base::RunLoop().RunUntilIdle();
-      EXPECT_EQ(ct_log_list_configured_times_, 0);
-    } else {
-      expected_ct_log_list_configured_times_ = expected_times;
-      if (ct_log_list_configured_times_ >=
-          expected_ct_log_list_configured_times_) {
-        return;
-      }
-      base::RunLoop run_loop;
-      pki_metadata_config_closure_ = run_loop.QuitClosure();
-      run_loop.Run();
+  void WaitForCtConfiguration(int expected_times) {
+    expected_ct_log_list_configured_times_ = expected_times;
+    if (ct_log_list_configured_times_ >=
+        expected_ct_log_list_configured_times_) {
+      return;
     }
+    base::RunLoop run_loop;
+    pki_metadata_config_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
   }
 
   const base::FilePath& GetComponentDirPath() const {
@@ -3066,7 +3051,7 @@ class PKIMetadataComponentCtAndCrsTestBase
   base::ScopedTempDir component_dir_;
 
  private:
-  void OnCTLogListConfigured() override {
+  void OnCTLogListProcessed() override {
     ++ct_log_list_configured_times_;
     if (pki_metadata_config_closure_ &&
         ct_log_list_configured_times_ >=
@@ -3075,7 +3060,7 @@ class PKIMetadataComponentCtAndCrsTestBase
     }
   }
 
-  void OnChromeRootStoreConfigured() override {
+  void OnChromeRootStoreProcessed() override {
     if (crs_config_closure_) {
       std::move(crs_config_closure_).Run();
     }
@@ -3209,12 +3194,6 @@ class PKIMetadataComponentCtAndCrsUpdaterTest
           },
           /*disabled_features=*/{});
     }
-  }
-
- protected:
-  void WaitForCtConfiguration(int expected_times) {
-    PKIMetadataComponentCtAndCrsTestBase::WaitForCtConfiguration(
-        expected_times, GetParam() == CTEnforcement::kDisabledByFeature);
   }
 };
 

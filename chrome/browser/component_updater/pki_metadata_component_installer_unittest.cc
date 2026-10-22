@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -79,6 +80,23 @@ constexpr char kPopularSCT1[] = "EBESExQVFhcYGRobHB0eHwEjRWeJq83v";
 constexpr char kPopularSCT2[] = "oKGio6SlpqeoqaqrrK2urwEjRWeJq83v";
 
 constexpr uint64_t kMaxSupportedCTCompatibilityVersion = 4;
+
+class CTLogListWaiter : public PKIMetadataComponentInstallerService::Observer {
+ public:
+  CTLogListWaiter() {
+    PKIMetadataComponentInstallerService::GetInstance()->AddObserver(this);
+  }
+  ~CTLogListWaiter() override {
+    PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnCTLogListProcessed() override { run_loop_.Quit(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
 
 }  // namespace
 
@@ -308,9 +326,10 @@ TEST_F(PKIMetadataComponentInstallerTest, CTEnforcementKillSwitch) {
 
   ct_config_.set_disable_ct_enforcement(true);
   WriteCTConfigToFile();
+  CTLogListWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
-  task_environment_.RunUntilIdle();
+  waiter.Wait();
 
   network::NetworkService* network_service =
       network::NetworkService::GetNetworkServiceForTesting();
@@ -468,9 +487,10 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentUpdatesCTConfig) {
   task_environment_.RunUntilIdle();
 
   WriteCTConfigToFile();
+  CTLogListWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
-  task_environment_.RunUntilIdle();
+  waiter.Wait();
 
   network::NetworkService* network_service =
       network::NetworkService::GetNetworkServiceForTesting();
@@ -540,9 +560,10 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentInvalidCTProto) {
       FILE_PATH_LITERAL("ct_config.pb"));
   ASSERT_TRUE(base::WriteFile(file_path, "mismatch"));
 
+  CTLogListWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
-  task_environment_.RunUntilIdle();
+  waiter.Wait();
 
   network::NetworkService* network_service =
       network::NetworkService::GetNetworkServiceForTesting();
@@ -576,9 +597,10 @@ TEST_F(PKIMetadataComponentInstallerTest,
       kMaxSupportedCTCompatibilityVersion + 1);
   WriteCTConfigToFile();
 
+  CTLogListWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
-  task_environment_.RunUntilIdle();
+  waiter.Wait();
 
   network::NetworkService* network_service =
       network::NetworkService::GetNetworkServiceForTesting();
@@ -615,9 +637,10 @@ TEST_F(PKIMetadataComponentInstallerTest,
       1);
   WriteCTConfigToFile();
 
+  CTLogListWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
-  task_environment_.RunUntilIdle();
+  waiter.Wait();
 
   network::NetworkService* network_service =
       network::NetworkService::GetNetworkServiceForTesting();
