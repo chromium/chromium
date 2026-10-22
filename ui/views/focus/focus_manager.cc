@@ -416,9 +416,9 @@ void FocusManager::AdvanceFocusIfNecessary() {
 
   // If widget is active and focused view is not focusable, advance focus or,
   // if not possible, clear focus.
-  if (focused_view_ && !IsFocusable(focused_view_)) {
+  if (focused_view_ && !IsFocusableInCurrentMode(focused_view_)) {
     AdvanceFocus(false);
-    if (focused_view_ && !IsFocusable(focused_view_)) {
+    if (focused_view_ && !IsFocusableInCurrentMode(focused_view_)) {
       ClearFocus();
     }
   }
@@ -456,8 +456,7 @@ bool FocusManager::RestoreFocusedView() {
   View* view = GetStoredFocusView();
   if (view) {
     if (ContainsView(view)) {
-      if (!view->IsFocusable() &&
-          view->GetViewAccessibility().IsAccessibilityFocusable()) {
+      if (!view->IsFocusable() && IsFocusableInCurrentMode(view)) {
         // RequestFocus would fail, but we want to restore focus to controls
         // that had focus in accessibility mode.
         SetFocusedViewWithReason(view, FocusChangeReason::kFocusRestore);
@@ -616,7 +615,7 @@ bool FocusManager::ProcessArrowKeyTraversal(const ui::KeyEvent& event) {
   return true;
 }
 
-bool FocusManager::IsFocusable(View* view) const {
+bool FocusManager::IsFocusableInCurrentMode(View* view) const {
   DCHECK(view);
 
 // |keyboard_accessible_| is only used on Mac.

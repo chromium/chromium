@@ -51,6 +51,10 @@
 #include "ui/views/widget/native_widget_aura.h"
 #endif  // USE_AURA
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/test/scoped_fake_full_keyboard_access.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace views {
 
 enum FocusTestEventType { ON_FOCUS = 0, ON_BLUR };
@@ -1032,11 +1036,14 @@ TEST_F(FocusManagerTest, StoreFocusedViewFullKeyboardAccess) {
   EXPECT_EQ(nullptr, GetFocusManager()->GetFocusedView());
 
   // Turn off full keyboard access mode and restore focused view. Since view1 is
-  // no longer focusable, view3 should have focus.
+  // no longer focusable, it isn't restored, and focus doesn't move to another
+  // view either.
   GetFocusManager()->SetKeyboardAccessible(false);
   EXPECT_FALSE(GetFocusManager()->RestoreFocusedView());
-  EXPECT_EQ(view3, GetFocusManager()->GetFocusedView());
+  EXPECT_EQ(nullptr, GetFocusManager()->GetFocusedView());
 
+  view3->RequestFocus();
+  EXPECT_EQ(view3, GetFocusManager()->GetFocusedView());
   GetFocusManager()->StoreFocusedView(false);
   EXPECT_EQ(nullptr, GetFocusManager()->GetFocusedView());
 
@@ -1258,6 +1265,45 @@ TEST_F(FocusManagerTest, NavigateIntoAnchoredDialog) {
   bubble_widget->GetFocusManager()->AdvanceFocus(true);
   EXPECT_TRUE(parent3->HasFocus());
 }
+
+#if BUILDFLAG(IS_MAC)
+// Tests that activating a widget whose stored focus view isn't focusable in the
+// current mode (an ACCESSIBLE_ONLY view with Full Keyboard Access off) doesn't
+// move focus out of the widget into its focus traversable parent.
+// Regression test for crbug.com/576344604.
+TEST_F(FocusManagerTest,
+       ActivationDoesNotTraverseOutFromUnfocusableStoredView) {
+  ui::test::ScopedFakeFullKeyboardAccess::GetInstance()
+      ->set_full_keyboard_access_state(false);
+
+  View* anchor = GetContentsView()->AddChildView(std::make_unique<View>());
+  anchor->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  View* parent_view = GetContentsView()->AddChildView(std::make_unique<View>());
+  parent_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  auto* bubble = new FocusManagerTestBubbleDialogDelegateView(anchor);
+  View* bubble_view = bubble->AddChildView(std::make_unique<View>());
+  bubble_view->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
+  Widget* bubble_widget = BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble_widget->SetFocusTraversableParent(GetWidget()->GetFocusTraversable());
+  bubble_widget->SetFocusTraversableParentView(anchor);
+  bubble->set_close_on_deactivate(false);
+  bubble_widget->ShowInactive();
+  ASSERT_TRUE(GetWidget()->IsActive());
+  ASSERT_FALSE(bubble_widget->IsActive());
+
+  // Like Widget::SetInitialFocus() does for a widget shown inactive.
+  FocusManager* bubble_focus_manager = bubble_widget->GetFocusManager();
+  bubble_focus_manager->SetStoredFocusView(bubble_view);
+  ASSERT_FALSE(bubble_focus_manager->keyboard_accessible());
+
+  bubble_widget->Activate();
+  EXPECT_TRUE(bubble_widget->IsActive());
+  EXPECT_EQ(nullptr, bubble_focus_manager->GetFocusedView());
+  EXPECT_FALSE(anchor->HasFocus());
+  EXPECT_FALSE(parent_view->HasFocus());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(FocusManagerTest, AnchoredDialogOnContainerView) {
   // The parent Widget has four focusable views, with the middle two views

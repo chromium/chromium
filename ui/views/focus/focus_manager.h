@@ -336,9 +336,14 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // and should not be processed further.
   bool ProcessArrowKeyTraversal(const ui::KeyEvent& event);
 
-  // Whether |view| is currently focusable as per the platform's interpretation
-  // of |keyboard_accesible_|.
-  bool IsFocusable(View* view) const;
+  // Returns whether `view` is considered focusable in the current keyboard
+  // access mode.
+  // On Mac, this follows the system's Full Keyboard Access (FKA): when
+  // disabled, only View::IsFocusable() views are considered focusable; when
+  // enabled, accessibility-focusable views (e.g. buttons) are also considered
+  // focusable.
+  // Other platforms behave like Mac's FKA.
+  bool IsFocusableInCurrentMode(View* view) const;
 
   // ViewObserver:
   void OnViewIsDeleting(View* view) override;

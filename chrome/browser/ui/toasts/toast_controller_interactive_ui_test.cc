@@ -62,6 +62,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/test/scoped_fake_full_keyboard_access.h"
+#endif
+
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
@@ -724,3 +728,60 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
       WaitForHide(toasts::ToastView::kToastViewId),
       CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1));
 }
+
+#if BUILDFLAG(IS_MAC)
+class ToastControllerNoFullKeyboardAccessInteractiveTest
+    : public ToastControllerInteractiveTest {
+ public:
+  ToastControllerNoFullKeyboardAccessInteractiveTest()
+      : original_full_keyboard_access_state_(
+            ui::test::ScopedFakeFullKeyboardAccess::GetInstance()
+                ->full_keyboard_access_state()) {
+    // The test suite already fakes Full Keyboard Access.
+    ui::test::ScopedFakeFullKeyboardAccess::GetInstance()
+        ->set_full_keyboard_access_state(false);
+  }
+
+  ~ToastControllerNoFullKeyboardAccessInteractiveTest() override {
+    ui::test::ScopedFakeFullKeyboardAccess::GetInstance()
+        ->set_full_keyboard_access_state(original_full_keyboard_access_state_);
+  }
+
+ private:
+  const bool original_full_keyboard_access_state_;
+};
+
+// Tests that clicking a toast's close button with Full Keyboard Access off
+// doesn't move focus into the page by tab traversal, which would focus the
+// page's first focusable element. Regression test for crbug.com/576344604.
+IN_PROC_BROWSER_TEST_F(ToastControllerNoFullKeyboardAccessInteractiveTest,
+                       ClickingCloseButtonDoesNotMoveFocusIntoPage) {
+  RunTestSequence(
+      InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, GetURL()),
+      // Make a link the page's first focusable element, like Wikipedia's
+      // "Jump to content" skip link.
+      ExecuteJs(kFirstTab, R"(() => {
+        const link = document.createElement('a');
+        link.id = 'skip';
+        link.href = '#target';
+        link.textContent = 'Skip';
+        document.body.prepend(link);
+      })"),
+      Do([this]() {
+        browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+      }),
+      CheckJsResult(kFirstTab,
+                    "() => document.activeElement === document.body"),
+      ShowToast(ToastParams(ToastId::kAddedToReadingList)),
+      WaitForShow(toasts::ToastView::kToastCloseButton),
+      MoveMouseTo(toasts::ToastView::kToastCloseButton), ClickMouse(),
+      WaitForHide(toasts::ToastView::kToastViewId),
+      // Wait a couple of frames so that any focus change in the page lands.
+      CheckJsResult(kFirstTab,
+                    R"(() => new Promise(resolve => {
+                         requestAnimationFrame(() => requestAnimationFrame(
+                             () => resolve(document.activeElement.id)));
+                       }))",
+                    ""));
+}
+#endif  // BUILDFLAG(IS_MAC)
