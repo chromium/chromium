@@ -15,7 +15,6 @@
 #include "media/base/video_frame.h"
 #include "media/gfx/video_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -94,16 +93,13 @@ class VideoFrameImageUtilTest : public ::testing::TestWithParam<bool> {
           VideoOrientationBehavior::kTagOrientation) {
     auto info = CreateSnapshotProviderInfoForVideoFrame(*frame);
     if (ShouldCreateAcceleratedImages(raster_context_provider())) {
-      auto snapshot_provider = CanvasNon2DResourceProvider::Create(
-          info.size, info.format, info.alpha_type, info.color_space,
-          info.hdr_metadata, SharedGpuContext::ContextProviderWrapper(),
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
-      if (!snapshot_provider) {
-        DLOG(ERROR) << "Failed to create CanvasNon2DResourceProvider.";
+      auto snapshot_pool = VideoFrameAcceleratedSnapshotPool::Create(info);
+      if (!snapshot_pool) {
+        DLOG(ERROR) << "Failed to create VideoFrameAcceleratedSnapshotPool.";
         return nullptr;
       }
       return CreateAcceleratedImageFromVideoFrame(
-          std::move(frame), snapshot_provider.get(), video_renderer,
+          std::move(frame), snapshot_pool.get(), video_renderer,
           orientation_behavior);
     } else {
       return CreateUnacceleratedImageFromVideoFrame(

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/raster/playback_image_provider.h"
@@ -12,6 +13,7 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -171,6 +173,37 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
 }  // namespace
 
+// static
+std::unique_ptr<VideoFrameAcceleratedSnapshotPool>
+VideoFrameAcceleratedSnapshotPool::Create(const CanvasSnapshotInfo& info) {
+  auto provider = CanvasNon2DResourceProvider::Create(
+      info.size, info.format, info.alpha_type, info.color_space,
+      info.hdr_metadata, SharedGpuContext::ContextProviderWrapper(),
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+  if (!provider) {
+    return nullptr;
+  }
+  return base::WrapUnique(
+      new VideoFrameAcceleratedSnapshotPool(std::move(provider)));
+}
+
+VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
+    std::unique_ptr<CanvasNon2DResourceProvider> provider)
+    : provider_(std::move(provider)) {
+  CHECK(provider_);
+}
+
+VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() =
+    default;
+
+bool VideoFrameAcceleratedSnapshotPool::IsValid() const {
+  return provider_->IsValid();
+}
+
+CanvasSnapshotInfo VideoFrameAcceleratedSnapshotPool::GetInfo() const {
+  return provider_->GetInfo();
+}
+
 scoped_refptr<StaticBitmapImage> DrawAndSnapshotToImage(
     const CanvasSnapshotInfo& info,
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
@@ -282,6 +315,18 @@ scoped_refptr<StaticBitmapImage> CreateAcceleratedImageFromVideoFrame(
   return CreateImageFromVideoFrame(
       std::move(frame), snapshot_provider, /*sw_draw_info=*/std::nullopt,
       video_renderer, orientation_behavior, color_space_interpretation);
+}
+
+scoped_refptr<StaticBitmapImage> CreateAcceleratedImageFromVideoFrame(
+    scoped_refptr<media::VideoFrame> frame,
+    VideoFrameAcceleratedSnapshotPool* snapshot_pool,
+    media::PaintCanvasVideoRenderer* video_renderer,
+    VideoOrientationBehavior orientation_behavior,
+    VideoColorSpaceInterpretation color_space_interpretation) {
+  CHECK(snapshot_pool);
+  return CreateAcceleratedImageFromVideoFrame(
+      std::move(frame), snapshot_pool->provider(), video_renderer,
+      orientation_behavior, color_space_interpretation);
 }
 
 scoped_refptr<StaticBitmapImage> CreateUnacceleratedImageFromVideoFrame(
