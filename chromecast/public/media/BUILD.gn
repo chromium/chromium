@@ -6,8 +6,6 @@ import("//chromecast/chromecast.gni")
 
 cast_source_set("media") {
   sources = [
-    "audio_post_processor2_shlib.h",
-    "audio_post_processor_shlib.h",
     "cast_decoder_buffer.h",
     "cast_decrypt_config.h",
     "cast_key_system.h",
