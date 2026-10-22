@@ -298,16 +298,10 @@ IN_PROC_BROWSER_TEST_P(GlicWebClientManagerBrowserTest,
   EXPECT_GT(samples[0].min, 0);
 }
 
-// TODO(crbug.com/572980728): Consistently failing on ChromeOS and Linux
-// dbg/asan.
-#if BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_LINUX) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER)))
-#define MAYBE_TimeToWarmedRecordedOnceOnly DISABLED_TimeToWarmedRecordedOnceOnly
-#else
-#define MAYBE_TimeToWarmedRecordedOnceOnly TimeToWarmedRecordedOnceOnly
-#endif
+// TODO(crbug.com/572980728): Flaky on all platforms, and consistently
+// failing on some builders (e.g. Win10 Tests x64, mac-fieldtrial-tester).
 IN_PROC_BROWSER_TEST_P(GlicWebClientManagerBrowserTest,
-                       MAYBE_TimeToWarmedRecordedOnceOnly) {
+                       DISABLED_TimeToWarmedRecordedOnceOnly) {
   base::HistogramTester histogram_tester;
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
