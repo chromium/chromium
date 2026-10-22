@@ -31,8 +31,8 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_request.h"
-#include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/dip_util.h"
 

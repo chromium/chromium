@@ -16,13 +16,13 @@
 #include "cc/layers/texture_layer_client.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
-#include "third_party/khronos/GLES2/gl2.h"
 
 namespace blink {
 class WebGraphicsContext3DProvider;

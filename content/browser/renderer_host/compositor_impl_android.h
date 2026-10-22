@@ -34,7 +34,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/privileged/mojom/compositing/begin_frame_observer.mojom.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
-#include "third_party/khronos/GLES2/gl2.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/android/resources/ui_resource_provider.h"
 #include "ui/android/window_android.h"

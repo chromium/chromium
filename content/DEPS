@@ -82,7 +82,7 @@ include_rules = [
   "+third_party/re2",
   "+third_party/skia",
   "+third_party/sqlite",
-  "+third_party/khronos",
+  "+third_party/angle/include",
   "+third_party/webrtc",
   "+third_party/webrtc_overrides",
   "+third_party/zlib/google",

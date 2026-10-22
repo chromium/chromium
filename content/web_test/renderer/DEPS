@@ -22,7 +22,7 @@ include_rules = [
   "+services/network/public/cpp/permissions_policy",
   "+services/service_manager/public/cpp",
   "+skia",
-  "+third_party/khronos/GLES2/gl2.h",
+  "+third_party/angle/include/GLES2/gl2.h",
   "+third_party/skia",
   "+third_party/blink/public/platform",
   "+third_party/blink/public/web",
