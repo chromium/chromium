@@ -633,6 +633,21 @@ TEST_F(MojoCdmTest, SessionKeysChangeCB_Success) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(MojoCdmTest, ConnectionError_DestroyCdmInSessionClosedCB) {
+  const std::string session_id_1 = "session1";
+  const std::string session_id_2 = "session2";
+  Initialize(SUCCESS);
+  CreateSessionAndExpect(session_id_1, SUCCESS);
+  CreateSessionAndExpect(session_id_2, SUCCESS);
+
+  EXPECT_CALL(cdm_client_,
+              OnSessionClosed(_, CdmSessionClosedReason::kInternalError))
+      .WillOnce(WithoutArgs([this]() { mojo_cdm_.reset(); }))
+      .WillOnce(Return());
+
+  ForceConnectionError();
+}
+
 TEST_F(MojoCdmTest, NoDecryptor) {
   Initialize(SUCCESS);
   auto* cdm_context = mojo_cdm_->GetCdmContext();

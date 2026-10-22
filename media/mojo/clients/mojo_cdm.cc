@@ -123,6 +123,11 @@ void MojoCdm::OnConnectionError(uint32_t custom_reason,
 
   remote_cdm_.reset();
 
+  // Keep `this` alive in case rejecting a promise or closing a session drops
+  // what would otherwise be the last reference to `this` while in the middle
+  // of looping through the remaining promises/sessions.
+  scoped_refptr<MojoCdm> self(this);
+
   // As communication with the remote CDM is broken, reject any outstanding
   // promises and close all the existing sessions.
   cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kConnectionError);
