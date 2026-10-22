@@ -1124,6 +1124,20 @@ void ClientSharedImage::WaitSyncTokenAndFinish(
   gl->Finish();
 }
 
+void ClientSharedImage::WaitSyncTokenAndSignal(
+    std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+    std::vector<SyncToken> sync_tokens,
+    gles2::GLES2Interface* gl,
+    ContextSupport* context_support,
+    base::OnceClosure callback) {
+  CHECK(gl && context_support);
+  WaitSyncTokensInternal(std::move(shared_images), std::move(sync_tokens), gl);
+  gl->Flush();
+  SyncToken flushed;
+  gl->GenSyncTokenCHROMIUM(flushed.GetData());
+  context_support->SignalSyncToken(flushed, std::move(callback));
+}
+
 void ClientSharedImage::WaitSyncTokenInternal(InterfaceBase* ib,
                                               const SyncToken& sync_token) {
   if (base::FeatureList::IsEnabled(
