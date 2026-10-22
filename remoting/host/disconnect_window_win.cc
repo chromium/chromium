@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -31,6 +32,7 @@
 #include "remoting/host/host_window.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/win/core_resource.h"
+#include "remoting/host/win/host_window_win_util.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/event.h"
 
@@ -38,16 +40,7 @@ namespace remoting {
 
 namespace {
 
-constexpr int DISCONNECT_HOTKEY_ID = 1000;
-
 constexpr wchar_t kShellTrayWindowName[] = L"Shell_TrayWnd";
-constexpr int kWindowBorderRadius = 14;
-
-// Margin between dialog controls (in dialog units).
-constexpr int kWindowTextMargin = 8;
-
-// The amount of time to wait before hiding the disconnect window.
-constexpr base::TimeDelta kAutoHideTimeout = base::Seconds(10);
 
 // The length of the hide and show animations.
 constexpr DWORD kAnimationDurationMs = 200;
@@ -140,34 +133,6 @@ class DisconnectWindowWin : public DisconnectWindowBase {
 
   base::WeakPtrFactory<DisconnectWindowWin> weak_factory_{this};
 };
-
-// Returns the text for the given dialog control window.
-bool GetControlText(HWND control, std::wstring* text) {
-  // GetWindowText truncates the text if it is longer than can fit into
-  // the buffer.
-  WCHAR buffer[256];
-  int result = GetWindowText(control, buffer, std::size(buffer));
-  if (!result) {
-    return false;
-  }
-
-  text->assign(buffer);
-  return true;
-}
-
-// Returns width |text| rendered in |control| window.
-bool GetControlTextWidth(HWND control, const std::wstring& text, LONG* width) {
-  RECT rect = {0, 0, 0, 0};
-  base::win::ScopedGetDC dc(control);
-  base::win::ScopedSelectObject font(
-      dc, (HFONT)SendMessage(control, WM_GETFONT, 0, 0));
-  if (!DrawText(dc, text.c_str(), -1, &rect, DT_CALCRECT | DT_SINGLELINE)) {
-    return false;
-  }
-
-  *width = rect.right;
-  return true;
-}
 
 DisconnectWindowWin::DisconnectWindowWin()
     : border_pen_(
@@ -366,7 +331,7 @@ bool DisconnectWindowWin::BeginDialog() {
   DCHECK(!(GetWindowLong(hwnd_, GWL_EXSTYLE) & WS_EX_APPWINDOW));
 
   // Set up handler for Ctrl-Alt-Esc shortcut.
-  if (!has_hotkey_ && RegisterHotKey(hwnd_, DISCONNECT_HOTKEY_ID,
+  if (!has_hotkey_ && RegisterHotKey(hwnd_, kDisconnectHotkeyId,
                                      MOD_ALT | MOD_CONTROL, VK_ESCAPE)) {
     has_hotkey_ = true;
   }
@@ -384,7 +349,7 @@ void DisconnectWindowWin::EndDialog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (has_hotkey_) {
-    UnregisterHotKey(hwnd_, DISCONNECT_HOTKEY_ID);
+    UnregisterHotKey(hwnd_, kDisconnectHotkeyId);
     has_hotkey_ = false;
   }
 
@@ -459,8 +424,8 @@ void DisconnectWindowWin::OnLocalMouseEvent(
   // This will prevent the dialog from being reshown due to small movements
   // caused by hardware/software issues which cause cursor drift or small
   // vibrations in the environment around the remote host.
-  if (std::abs(position.x() - mouse_position_.x()) > 1 ||
-      std::abs(position.y() - mouse_position_.y()) > 1) {
+  if (std::abs(position.x() - mouse_position_.x()) > kMouseJitterThresholdPx ||
+      std::abs(position.y() - mouse_position_.y()) > kMouseJitterThresholdPx) {
     ShowDialog();
   }
 
@@ -477,7 +442,7 @@ void DisconnectWindowWin::DrawBorder(HWND hwnd, HDC hdc) {
   base::win::ScopedSelectObject border(hdc, border_pen_.get());
   base::win::ScopedSelectObject brush(hdc, GetStockObject(NULL_BRUSH));
   RoundRect(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1,
-            kWindowBorderRadius, kWindowBorderRadius);
+            kBaseWindowBorderRadius, kBaseWindowBorderRadius);
 }
 
 // Returns |control| rectangle in the dialog coordinates.
@@ -527,13 +492,7 @@ void DisconnectWindowWin::UpdateToggleButtonText() {
   int string_id = (current_anchor() == WindowAnchor::kBottom)
                       ? IDS_MOVE_TO_TOP_BUTTON
                       : IDS_MOVE_TO_BOTTOM_BUTTON;
-  const wchar_t* string_ptr = nullptr;
-  int string_length = LoadStringW(CURRENT_MODULE(), string_id,
-                                  reinterpret_cast<wchar_t*>(&string_ptr), 0);
-  std::wstring tooltip_text;
-  if (string_length > 0 && string_ptr) {
-    tooltip_text.assign(string_ptr, string_length);
-  }
+  std::wstring tooltip_text = LoadModuleString(string_id);
 
   if (hwnd_tooltip_) {
     TOOLINFO tool_info = {sizeof(tool_info)};
@@ -626,8 +585,8 @@ bool DisconnectWindowWin::SetStrings() {
 
   std::wstring button_text;
   std::wstring message_text;
-  if (!GetControlText(hwnd_button, &button_text) ||
-      !GetControlText(hwnd_message, &message_text)) {
+  if (!GetWindowTextString(hwnd_button, &button_text) ||
+      !GetWindowTextString(hwnd_message, &message_text)) {
     return false;
   }
 
@@ -666,7 +625,8 @@ bool DisconnectWindowWin::SetStrings() {
   }
 
   LONG control_width;
-  if (!GetControlTextWidth(hwnd_message, message_text, &control_width)) {
+  if (!GetControlTextWidth(hwnd_message, message_text, /*is_rtl=*/false,
+                           &control_width)) {
     return false;
   }
   message_rect.left = margin + toggle_width + margin;
@@ -684,7 +644,8 @@ bool DisconnectWindowWin::SetStrings() {
     return false;
   }
 
-  if (!GetControlTextWidth(hwnd_button, button_text, &control_width)) {
+  if (!GetControlTextWidth(hwnd_button, button_text, /*is_rtl=*/false,
+                           &control_width)) {
     return false;
   }
 
@@ -709,14 +670,15 @@ bool DisconnectWindowWin::SetStrings() {
   }
 
   // Make the corners of the disconnect window rounded.
-  HRGN rgn = CreateRoundRectRgn(0, 0, width, height, kWindowBorderRadius,
-                                kWindowBorderRadius);
-  if (!rgn) {
+  base::win::ScopedGDIObject<HRGN> rgn(CreateRoundRectRgn(
+      0, 0, width, height, kBaseWindowBorderRadius, kBaseWindowBorderRadius));
+  if (!rgn.is_valid()) {
     return false;
   }
-  if (!SetWindowRgn(hwnd_, rgn, TRUE)) {
+  if (!SetWindowRgn(hwnd_, rgn.get(), TRUE)) {
     return false;
   }
+  std::ignore = rgn.release();
 
   return true;
 }

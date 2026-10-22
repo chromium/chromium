@@ -153,6 +153,8 @@ source_set("win") {
     "host_event_logger.h",
     "host_event_windows_event_logger.h",
     "host_service.h",
+    "host_window_win_util.cc",
+    "host_window_win_util.h",
     "input_extra_info.cc",
     "input_extra_info.h",
     "launch_process_with_token.cc",
@@ -229,7 +231,10 @@ source_set("win") {
   if (!is_ios) {
     deps += [ "//components/policy:generated" ]
   }
-  libs = [ "userenv.lib" ]
+  libs = [
+    "shcore.lib",
+    "userenv.lib",
+  ]
 }
 
 source_set("unit_tests") {
@@ -242,6 +247,7 @@ source_set("unit_tests") {
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",
+    "host_window_win_util_unittest.cc",
     "input_extra_info_unittest.cc",
     "mouse_cursor_monitor_win_unittest.cc",
     "rdp_client_unittest.cc",
