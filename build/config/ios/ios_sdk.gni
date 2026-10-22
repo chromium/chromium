@@ -28,7 +28,8 @@ declare_args() {
   xcode_build = ""
   machine_os_build = ""
 
-  # Set DEVELOPER_DIR while running sdk_info.py.
+  # Set DEVELOPER_DIR while running sdk_info.py. May be source-absolute (for
+  # example, a toolchain checked out under `//ios_internal` for Linux hosts).
   ios_sdk_developer_dir = ""
 
   # Set to true if building an app extension.
@@ -40,6 +41,19 @@ declare_args() {
 
   # True when Swift 6.3 is used (= the XCode version is >=2700).
   has_swift_6_3_support = false
+}
+
+if (ios_sdk_developer_dir != "") {
+  assert(path_exists(ios_sdk_developer_dir),
+         "ios_sdk_developer_dir ($ios_sdk_developer_dir) does not exist. If " +
+             "it is installed by DEPS, run `gclient sync`.")
+
+  # Every user passes `ios_sdk_developer_dir` to a script or tool, which runs
+  # from `root_build_dir`. Make a source-absolute path relative to it here, so
+  # there is only one variable to use.
+  if (filter_include([ ios_sdk_developer_dir ], [ "//*" ]) != []) {
+    ios_sdk_developer_dir = rebase_path(ios_sdk_developer_dir, root_build_dir)
+  }
 }
 
 # Building XCTests requires copying XCTRunner.app which is part of the iOS

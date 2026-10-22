@@ -866,7 +866,7 @@ template("single_apple_toolchain") {
         }
 
         if (invoker.sdk_developer_dir != "") {
-          _env_vars += " DEVELOPER_DIR=${toolchain_args.sdk_developer_dir}"
+          _env_vars += " DEVELOPER_DIR=${invoker.sdk_developer_dir}"
         }
 
         if (swift_toolchain_path != "") {
@@ -940,7 +940,7 @@ template("single_apple_toolchain") {
 
         _env_vars = "TOOL_VERSION=${tool_versions.compile_xcassets}"
         if (invoker.sdk_developer_dir != "") {
-          _env_vars += " DEVELOPER_DIR=${toolchain_args.sdk_developer_dir}"
+          _env_vars += " DEVELOPER_DIR=${invoker.sdk_developer_dir}"
         }
 
         _xcassets_args =
