@@ -10,6 +10,7 @@
 
 @implementation GeminiModalContentViewController {
   UIView* _contentView;
+  UIBarButtonItem* _closeButton;
 }
 
 - (instancetype)initWithContentView:(UIView*)contentView {
@@ -20,6 +21,14 @@
   return self;
 }
 
+#pragma mark - Public
+
+- (void)setCloseButtonAccessibilityLabel:
+    (NSString*)closeButtonAccessibilityLabel {
+  _closeButtonAccessibilityLabel = [closeButtonAccessibilityLabel copy];
+  _closeButton.accessibilityLabel = _closeButtonAccessibilityLabel;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -28,13 +37,14 @@
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   // Configure close button.
-  UIBarButtonItem* closeButton = [[UIBarButtonItem alloc]
+  _closeButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self
                            action:@selector(closeButtonTapped)];
-  closeButton.accessibilityIdentifier =
+  _closeButton.accessibilityIdentifier =
       kGeminiModalContentCloseButtonAccessibilityIdentifier;
-  self.navigationItem.rightBarButtonItem = closeButton;
+  _closeButton.accessibilityLabel = self.closeButtonAccessibilityLabel;
+  self.navigationItem.rightBarButtonItem = _closeButton;
 
   // Configure content view.
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;

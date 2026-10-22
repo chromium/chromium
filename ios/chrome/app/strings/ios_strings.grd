@@ -3857,6 +3857,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         =1 {Only 1 tab can be shared.}
         other {Only {COUNT} tabs can be shared.}}
       </message>
+      <message name="IDS_IOS_GEMINI_WEB_MODAL_CLOSE_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label for the close button of the modal sheet that shows a web page (e.g. a quiz or flashcards) on top of the Gemini chat panel. Spoken by VoiceOver to distinguish it from the Gemini chat panel's own close button. [iOS only]">
+        Close <ph name="PAGE_TITLE">$1<ex>Challenging Bat Biology Quiz</ex></ph>
+      </message>
+      <message name="IDS_IOS_GEMINI_WEB_MODAL_CLOSE_BUTTON_FALLBACK_ACCESSIBILITY_LABEL" desc="Accessibility label for the close button of the modal sheet that shows a web page on top of the Gemini chat panel, used while the page has no title yet. Spoken by VoiceOver to distinguish it from the Gemini chat panel's own close button. [iOS only]">
+        Close page
+      </message>
       <message name="IDS_IOS_GENERIC_PASSKIT_ERROR" desc="Generic error message on failure reading a PassKit object. [Length: 60em] [iOS only]">
         Sorry, your Pass cannot be installed to Passbook at this time.
       </message>

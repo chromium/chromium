@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
@@ -29,6 +30,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
@@ -155,6 +157,21 @@ TEST_F(GeminiWebModalCoordinatorTest, NavigationItemShowsDomain) {
   } else {
     EXPECT_NSEQ(@(kTestURLHost), viewController.title);
   }
+}
+
+// Test that, while the page has no title, the close button's accessibility
+// label indicates it closes the open page.
+TEST_F(GeminiWebModalCoordinatorTest,
+       CloseButtonHasFallbackAccessibilityLabel) {
+  [coordinator_ start];
+
+  GeminiModalContentViewController* viewController = PresentedModal();
+  ASSERT_TRUE(viewController);
+  [viewController loadViewIfNeeded];
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(
+          IDS_IOS_GEMINI_WEB_MODAL_CLOSE_BUTTON_FALLBACK_ACCESSIBILITY_LABEL),
+      viewController.navigationItem.rightBarButtonItem.accessibilityLabel);
 }
 
 // Test that stopping the coordinator dismisses the modal.

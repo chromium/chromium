@@ -28,6 +28,9 @@
 @property(nonatomic, weak) id<GeminiModalContentViewControllerDelegate>
     delegate;
 
+// Accessibility label for the close button.
+@property(nonatomic, copy) NSString* closeButtonAccessibilityLabel;
+
 // Initializes the view controller with the view rendering the content.
 - (instancetype)initWithContentView:(UIView*)contentView
     NS_DESIGNATED_INITIALIZER;

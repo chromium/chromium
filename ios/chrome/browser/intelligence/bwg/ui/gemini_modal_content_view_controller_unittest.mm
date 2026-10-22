@@ -45,6 +45,22 @@ TEST_F(GeminiModalContentViewControllerTest, TestCloseButtonConfiguration) {
               CloseButton().accessibilityIdentifier);
 }
 
+// Tests that the close button's accessibility label follows the property,
+// whether it is set before or after the view loads.
+TEST_F(GeminiModalContentViewControllerTest,
+       TestCloseButtonAccessibilityLabel) {
+  view_controller_.closeButtonAccessibilityLabel = @"Close quiz";
+  EXPECT_NSEQ(@"Close quiz", CloseButton().accessibilityLabel);
+
+  GeminiModalContentViewController* other =
+      [[GeminiModalContentViewController alloc]
+          initWithContentView:[[UIView alloc] init]];
+  other.closeButtonAccessibilityLabel = @"Close other";
+  [other loadViewIfNeeded];
+  EXPECT_NSEQ(@"Close other",
+              other.navigationItem.rightBarButtonItem.accessibilityLabel);
+}
+
 // Tests that tapping the close button notifies the delegate.
 TEST_F(GeminiModalContentViewControllerTest, TestCloseButtonNotifiesDelegate) {
   OCMExpect([mock_delegate_

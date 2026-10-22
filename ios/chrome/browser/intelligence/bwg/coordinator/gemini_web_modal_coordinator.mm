@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
@@ -27,6 +28,7 @@
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 #import "url/url_constants.h"
 
@@ -244,19 +246,28 @@ bool IsAllowedWebModalURL(const GURL& URL) {
       base::SysUTF16ToNSString(url_formatter::FormatUrlForSecurityDisplay(
           _webState->GetVisibleURL(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  web::NavigationItem* item =
+      _webState->GetNavigationManager()->GetVisibleItem();
+  NSString* pageTitle = item ? base::SysUTF16ToNSString(item->GetTitle()) : nil;
 
   if (@available(iOS 26, *)) {
     // Subtitle is available. Show the page title and domain as the
     // navigation item title & subtitle.
-    web::NavigationItem* item =
-        _webState->GetNavigationManager()->GetVisibleItem();
-    _viewController.title =
-        item ? base::SysUTF16ToNSString(item->GetTitle()) : nil;
+    _viewController.title = pageTitle;
     _viewController.navigationItem.subtitle = domain;
   } else {
     // Subtitle is unavailable. Just show the domain as navigation item title.
     _viewController.title = domain;
   }
+
+  // Name the page in the close button's a11y label.
+  _viewController.closeButtonAccessibilityLabel =
+      pageTitle.length > 0
+          ? l10n_util::GetNSStringF(
+                IDS_IOS_GEMINI_WEB_MODAL_CLOSE_BUTTON_ACCESSIBILITY_LABEL,
+                base::SysNSStringToUTF16(pageTitle))
+          : l10n_util::GetNSString(
+                IDS_IOS_GEMINI_WEB_MODAL_CLOSE_BUTTON_FALLBACK_ACCESSIBILITY_LABEL);
 }
 
 @end

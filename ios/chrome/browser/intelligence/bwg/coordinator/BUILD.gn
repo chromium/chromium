@@ -132,6 +132,7 @@ source_set("coordinator") {
     "//ios/web/public/navigation",
     "//ios/web/public/ui",
     "//net",
+    "//ui/base",
     "//url",
   ]
 }
