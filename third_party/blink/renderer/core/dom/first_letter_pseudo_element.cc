@@ -274,7 +274,10 @@ LayoutObject* FirstInFlowInlineDescendantForFirstLetter(LayoutObject& parent) {
       // Applying ::first-letter styles from multiple nested containers is not
       // supported. ::first-letter styles from the inner-most container is
       // applied - bail out.
-      return nullptr;
+      auto* element = DynamicTo<Element>(first_inline->GetNode());
+      if (element && element->GetPseudoElement(kPseudoIdFirstLetter)) {
+        return nullptr;
+      }
     }
     first_inline = first_inline->SlowFirstChild();
   }

@@ -11176,6 +11176,15 @@ void Element::UpdateFirstLetterPseudoElement(
         ->SetPseudoElement(kPseudoIdFirstLetter, nullptr)
         .RefreshNode(*this);
     GetDocument().GetStyleEngine().PseudoElementRemoved(*this);
+    // Removing this ::first-letter may allow an ancestor's ::first-letter to
+    // apply. The interleaved style recalc for a size container skips
+    // RecalcStyleForTraversalRootAncestor() for its ancestors, so mark for
+    // layout tree rebuild to make sure RebuildFirstLetterLayoutTree() is
+    // called for them.
+    if (!ChildNeedsReattachLayoutTree()) {
+      SetChildNeedsReattachLayoutTree();
+      MarkAncestorsWithChildNeedsReattachLayoutTree();
+    }
   }
 }
 
