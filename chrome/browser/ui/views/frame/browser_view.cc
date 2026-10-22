@@ -5268,11 +5268,15 @@ const views::View* BrowserView::GetViewByElementId(
 // BrowserView, ui::AcceleratorTarget overrides:
 
 bool BrowserView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+#if BUILDFLAG(IS_MAC)
+  // Forward accelerators to ExclusiveAccessManager to handle Esc press-and-hold
+  // fullscreen exit when native UI has focus on macOS (crbug.com/460745767).
   NativeWebKeyboardEvent native_event(accelerator.ToKeyEvent());
   if (ExclusiveAccessManager::From(browser_)->HandleUserKeyEvent(
           native_event)) {
     return true;
   }
+#endif
 
   int command_id;
   // Though AcceleratorManager should not send unknown |accelerator| to us, it's
@@ -5701,8 +5705,16 @@ void BrowserView::LoadAccelerators() {
         accelerator, ui::AcceleratorManager::kNormalPriority, this);
   }
 
+#if BUILDFLAG(IS_MAC)
   // Register the Esc accelerators (both press and release) to ensure they are
   // sent to the ExclusiveAccessManager for press-and-hold fullscreen exit.
+  // This is only needed on macOS due to AppKit fullscreen transitions leaving
+  // focus on native UI (crbug.com/460745767).
+  //
+  // On non-macOS platforms: FocusManager::RedirectAcceleratorToParentWidget()
+  // would route unhandled Esc releases from bubble dialogs (e.g. after a
+  // dropdown menu closes) to BrowserView, causing the bubble to lose focus and
+  // close unexpectedly (crbug.com/576592761).
   ui::Accelerator escape_pressed(ui::VKEY_ESCAPE, ui::EF_NONE,
                                  ui::Accelerator::KeyState::PRESSED);
   if (accelerator_table_.find(escape_pressed) == accelerator_table_.end()) {
@@ -5716,6 +5728,7 @@ void BrowserView::LoadAccelerators() {
     focus_manager->RegisterAccelerator(
         escape_released, ui::AcceleratorManager::kNormalPriority, this);
   }
+#endif
 }
 
 int BrowserView::GetCommandIDForAppCommandID(int app_command_id) const {

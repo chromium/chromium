@@ -150,6 +150,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ImmersiveFullscreenViewTreeOrder) {
 }
 #endif
 
+#if BUILDFLAG(IS_MAC)
 // Test that holding Esc correctly exits fullscreen when focus is on the native
 // browser UI.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest,
@@ -213,6 +214,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
 
   EXPECT_TRUE(browser_view()->IsFullscreen());
 }
+#endif  // BUILDFLAG(IS_MAC)
 
 // Test whether the top view including toolbar and tab strip shows up or hides
 // correctly in browser fullscreen mode.
