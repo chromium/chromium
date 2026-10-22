@@ -1033,7 +1033,8 @@ void NetworkService::SetCtEnforcementEnabled(
 
 #if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 void NetworkService::UpdateKeyPinsList(mojom::PinListPtr pin_list,
-                                       base::Time update_time) {
+                                       base::Time update_time,
+                                       UpdateKeyPinsListCallback callback) {
   pins_list_updated_ = true;
   pinsets_.clear();
   host_pins_.clear();
@@ -1053,6 +1054,8 @@ void NetworkService::UpdateKeyPinsList(mojom::PinListPtr pin_list,
       state->UpdatePinList(pinsets_, host_pins_, pins_list_update_time_);
     }
   }
+
+  std::move(callback).Run();
 }
 #endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 

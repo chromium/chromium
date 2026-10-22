@@ -38,6 +38,13 @@ class PKIMetadataComponentInstallerService final {
     // to an error.
     virtual void OnCTLogListProcessed() {}
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+    // Called after the Key Pins list data is processed. This may be called
+    // after the update was successfully configured or if the update was ignored
+    // due to an error.
+    virtual void OnKeyPinsListProcessed() {}
+#endif
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     // Called after the Chrome Root Store data was processed. This may be
     // called after the update was successfully configured or if the update
@@ -116,6 +123,9 @@ class PKIMetadataComponentInstallerService final {
   // Updates the network service pins list with the component delivered data.
   // |kp_config_bytes| should be a serialized KPConfig proto message.
   void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
+
+  // Notifies all observers that the key pinning list data has been processed.
+  void NotifyKeyPinsListProcessed();
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

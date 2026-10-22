@@ -235,7 +235,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
 #if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
   void UpdateKeyPinsList(mojom::PinListPtr pin_list,
-                         base::Time update_time) override;
+                         base::Time update_time,
+                         UpdateKeyPinsListCallback callback) override;
 #endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 #if BUILDFLAG(IS_ANDROID)

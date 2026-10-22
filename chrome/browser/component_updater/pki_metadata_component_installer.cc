@@ -844,12 +844,14 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto proto = std::make_unique<chrome_browser_key_pinning::PinList>();
   if (!proto->ParseFromString(kp_config_bytes)) {
+    NotifyKeyPinsListProcessed();
     return;
   }
   network::mojom::NetworkService* network_service =
       content::GetNetworkService();
 
   if (proto->compatibility_version() > kMaxSupportedKPCompatibilityVersion) {
+    NotifyKeyPinsListProcessed();
     return;
   }
 
@@ -861,6 +863,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
   // built in list.
   if (proto_timestamp <
       net::TransportSecurityState::GetBuiltInPinsListTimestamp()) {
+    NotifyKeyPinsListProcessed();
     return;
   }
 
@@ -885,7 +888,18 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
     pinlist_ptr->host_pins.push_back(std::move(pininfo_ptr));
   }
 
-  network_service->UpdateKeyPinsList(std::move(pinlist_ptr), proto_timestamp);
+  network_service->UpdateKeyPinsList(
+      std::move(pinlist_ptr), proto_timestamp,
+      base::BindOnce(
+          &PKIMetadataComponentInstallerService::NotifyKeyPinsListProcessed,
+          weak_factory_.GetWeakPtr()));
+}
+
+void PKIMetadataComponentInstallerService::NotifyKeyPinsListProcessed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (Observer& observer : observers_) {
+    observer.OnKeyPinsListProcessed();
+  }
 }
 #endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 

@@ -98,6 +98,26 @@ class CTLogListWaiter : public PKIMetadataComponentInstallerService::Observer {
   base::RunLoop run_loop_;
 };
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+class KeyPinsListWaiter
+    : public PKIMetadataComponentInstallerService::Observer {
+ public:
+  KeyPinsListWaiter() {
+    PKIMetadataComponentInstallerService::GetInstance()->AddObserver(this);
+  }
+  ~KeyPinsListWaiter() override {
+    PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnKeyPinsListProcessed() override { run_loop_.Quit(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+#endif
+
 }  // namespace
 
 class PKIMetadataComponentInstallerTest : public testing::Test {
@@ -268,6 +288,16 @@ class PKIMetadataComponentInstallerKeyPinningTest
     ASSERT_TRUE(base::WriteFile(kp_file_path, kp_data));
   }
 
+  void WriteKPConfigAndUpdate() {
+    WriteKPConfigToFile();
+
+    KeyPinsListWaiter waiter;
+    policy_->ComponentReady(base::Version("1.2.3.4"),
+                            component_install_dir_.GetPath(),
+                            base::DictValue());
+    waiter.Wait();
+  }
+
  protected:
   chrome_browser_key_pinning::PinList pinlist_;
 };
@@ -358,10 +388,8 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
   // Initialize the network service.
   content::GetNetworkService();
   task_environment_.RunUntilIdle();
-  WriteKPConfigToFile();
-  policy_->ComponentReady(base::Version("1.2.3.4"),
-                          component_install_dir_.GetPath(), base::DictValue());
-  task_environment_.RunUntilIdle();
+
+  WriteKPConfigAndUpdate();
 
   network::NetworkService* network_service =
       network::NetworkService::GetNetworkServiceForTesting();
@@ -399,9 +427,10 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
       FILE_PATH_LITERAL("kp_pinslist.pb"));
   ASSERT_TRUE(base::WriteFile(file_path, "mismatch"));
 
+  KeyPinsListWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
-  task_environment_.RunUntilIdle();
+  waiter.Wait();
 
   network::NetworkService* network_service =
       network::NetworkService::GetNetworkServiceForTesting();
@@ -427,11 +456,8 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
 
   // Change the version to an unsupported value.
   pinlist_.set_compatibility_version(kMaxSupportedKPCompatibilityVersion + 1);
-  WriteKPConfigToFile();
 
-  policy_->ComponentReady(base::Version("1.2.3.4"),
-                          component_install_dir_.GetPath(), base::DictValue());
-  task_environment_.RunUntilIdle();
+  WriteKPConfigAndUpdate();
 
   network::NetworkService* network_service =
       network::NetworkService::GetNetworkServiceForTesting();
@@ -461,11 +487,8 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
            .InMillisecondsSinceUnixEpoch() /
        1000) -
       1);
-  WriteKPConfigToFile();
 
-  policy_->ComponentReady(base::Version("1.2.3.4"),
-                          component_install_dir_.GetPath(), base::DictValue());
-  task_environment_.RunUntilIdle();
+  WriteKPConfigAndUpdate();
 
   network::NetworkService* network_service =
       network::NetworkService::GetNetworkServiceForTesting();

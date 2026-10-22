@@ -385,7 +385,7 @@ interface NetworkService {
   // timestamp that the pins list was considered fresh/current, in order to
   // ensure that key pinning is not enforced if the list is too out of date.
   [EnableIf=chrome_key_pinning_supported]
-  UpdateKeyPinsList(PinList pin_list, mojo_base.mojom.Time update_time);
+  UpdateKeyPinsList(PinList pin_list, mojo_base.mojom.Time update_time) => ();
 
   // Calls base::debug::DumpWithoutCrashing for the network process.
   // TODO(http://crbug.com/934317): Remove this once done debugging renderer
