@@ -4979,11 +4979,15 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     // TODO(crbug.com/40860307): consider delaying process shutdown for fenced
     // frames.
     if (!is_main_frame() && IsActive()) {
-      base::TimeDelta subframe_shutdown_timeout =
-          frame_tree_->IsBeingDestroyed()
+      const bool is_discarded =
+          GetOutermostMainFrame()->document_associated_data().is_discarded();
+
+      const base::TimeDelta subframe_shutdown_timeout =
+          (frame_tree_->IsBeingDestroyed() || is_discarded)
               ? base::TimeDelta()
               : GetSubframeProcessShutdownDelay(
                     GetSiteInstance()->GetBrowserContext(), memory_limit());
+
       // If this document has unload handlers (and is active), ensure that they
       // have a chance to execute by delaying process cleanup. This will prevent
       // the process from shutting down immediately in the case where this is
@@ -4992,8 +4996,11 @@ void RenderFrameHostImpl::DeleteRenderFrame(
       // keep track of pending delete RenderFrameHost
       // (https://crbug.com/609963), but there are still a few exceptions where
       // this is needed (https://crbug.com/1014550).
+      // When discarding, we want immediate memory reclamation rather than
+      // keeping the OOPIF process alive for unload handlers.
       const base::TimeDelta unload_handler_timeout =
-          has_unload_handlers() ? subframe_unload_timeout_ : base::TimeDelta();
+          (!is_discarded && has_unload_handlers()) ? subframe_unload_timeout_
+                                                   : base::TimeDelta();
 
       if (!subframe_shutdown_timeout.is_zero() ||
           !unload_handler_timeout.is_zero()) {
@@ -5007,8 +5014,10 @@ void RenderFrameHostImpl::DeleteRenderFrame(
       }
       // If the subframe takes too long to unload, force its removal from the
       // tree. See https://crbug.com/950625.
+      const base::TimeDelta actual_unload_timeout =
+          is_discarded ? base::TimeDelta() : subframe_unload_timeout_;
       subframe_unload_timer_.Start(
-          FROM_HERE, subframe_unload_timeout_, this,
+          FROM_HERE, actual_unload_timeout, this,
           &RenderFrameHostImpl::OnSubframeDeletionUnloadTimeout);
     }
   }

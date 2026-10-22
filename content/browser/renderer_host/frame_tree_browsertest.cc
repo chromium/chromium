@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/ipc_utils.h"
@@ -1646,6 +1647,46 @@ class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 };
+
+IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
+                       DiscardedPageTerminatesOOPIFProcessImmediately) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+
+  // 1. Navigate to a page with a cross-site iframe.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = frame_tree.root();
+  ASSERT_EQ(1U, root->child_count());
+
+  // 2. Ensure they are in different processes.
+  RenderProcessHost* oopif_process =
+      root->child_at(0)->current_frame_host()->GetProcess();
+  EXPECT_NE(root->current_frame_host()->GetProcess(), oopif_process);
+
+  // 3. Watch for the OOPIF process to exit.
+  RenderProcessHostWatcher process_exit_observer(
+      oopif_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  // Ensure the subframe has a pagehide handler and a long unload timeout so
+  // that the test times out if the timeout bypass logic does not work.
+  RenderFrameHostImpl* subframe_rfh = root->child_at(0)->current_frame_host();
+  EXPECT_TRUE(
+      ExecJs(subframe_rfh, "window.addEventListener('pagehide', () => {});"));
+  subframe_rfh->SetSubframeUnloadTimeoutForTesting(
+      TestTimeouts::action_max_timeout());
+
+  // 4. Discard the frame tree.
+  frame_tree.Discard();
+  EXPECT_TRUE(root->was_discarded());
+
+  // Wait for the OOPIF process to exit. With the shutdown and unload timeouts
+  // bypassed on discard, this should exit immediately instead of timing out.
+  process_exit_observer.Wait();
+  EXPECT_TRUE(process_exit_observer.did_exit_normally());
+}
 
 // Ensure that we can complete a cross-process subframe navigation.
 IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
