@@ -14,10 +14,10 @@ struct Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 
-  std::string str = std::string(reinterpret_cast<const char*>(data), size);
-
-  NSString* formatted_string = [NSString
-      stringWithFormat:@"googlechrome://ChromeExternalAction/%s", str.c_str()];
+  NSString* formatted_string =
+      [NSString stringWithFormat:@"googlechrome://ChromeExternalAction/%.*s",
+                                 static_cast<int>(size),
+                                 reinterpret_cast<const char*>(data)];
   NSURL* url = [NSURL URLWithString:formatted_string];
   [ChromeAppStartupParameters
       startupParametersWithURL:url
