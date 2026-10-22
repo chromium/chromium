@@ -78,7 +78,7 @@ declare_args() {
 
   # Controls whether background continued processing mode is enabled (added to
   # plist).
-  ios_enable_background_continued_processing = true
+  ios_enable_background_continued_processing = false
 
   # Enable iOS 26 liquid glass.
   ios_enable_liquid_glass = true
