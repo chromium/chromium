@@ -83,7 +83,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
 // tracking.
 TEST_F(QuickSettingsFooterTest, ButtonNamesAndVisibility) {
   auto primary = SimulateUserLogin(kRegularUserLoginInfo);
-  SimulateUserLogin({"user1@tray"});
+  SimulateUserLogin({.display_email = "user1@tray"});
   SwitchActiveUser(primary);
   SetUpView();
 
@@ -191,8 +191,8 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesGuestMode) {
 }
 
 TEST_F(QuickSettingsFooterTest, ButtonStatesPublicAccount) {
-  SimulateUserLogin(
-      {"foo@example.com", user_manager::UserType::kPublicAccount});
+  SimulateUserLogin({.display_email = "foo@example.com",
+                     .user_type = user_manager::UserType::kPublicAccount});
   SetUpView();
 
   ASSERT_TRUE(GetSettingsButton());

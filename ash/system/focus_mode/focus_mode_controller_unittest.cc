@@ -164,15 +164,15 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
   void SimulateUser1Login(
       std::optional<base::DictValue> init_prefs = std::nullopt) {
     NoSessionAshTestBase::SimulateUserLogin(
-        {.init_pref_service_value = std::move(init_prefs)},
-        GetUser1AccountId());
+        {.account_id = GetUser1AccountId(),
+         .init_pref_service_value = std::move(init_prefs)});
   }
 
   void SimulateUser2Login(
       std::optional<base::DictValue> init_prefs = std::nullopt) {
     NoSessionAshTestBase::SimulateUserLogin(
-        {.init_pref_service_value = std::move(init_prefs)},
-        GetUser2AccountId());
+        {.account_id = GetUser2AccountId(),
+         .init_pref_service_value = std::move(init_prefs)});
   }
 
   void AdvanceClock(base::TimeDelta time_delta) {

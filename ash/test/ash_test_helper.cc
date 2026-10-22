@@ -626,7 +626,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
     // TODO(crbug.com/383441831): Remove Reset();
     session_controller_client_->Reset();
 
-    SimulateUserLogin({}, AccountId::FromUserEmail("user0@tray"));
+    SimulateUserLogin({.account_id = AccountId::FromUserEmail("user0@tray")});
   }
 }
 
@@ -635,12 +635,9 @@ display::Display AshTestHelper::GetSecondaryDisplay() const {
       .GetSecondaryDisplay();
 }
 
-AccountId AshTestHelper::SimulateUserLogin(
-    const LoginInfo& login_info,
-    std::optional<AccountId> opt_account_id,
-    bool activate_session) {
-  AccountId account_id =
-      session_controller_client_->AddUserSession(login_info, opt_account_id);
+AccountId AshTestHelper::SimulateUserLogin(const LoginInfo& login_info,
+                                           bool activate_session) {
+  AccountId account_id = session_controller_client_->AddUserSession(login_info);
 
   // Taken some concept from User::CanLock(). Kiosk/Guest accounts are
   // disallowed to lock screen here. Other accounts are allowed by default.

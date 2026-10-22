@@ -266,7 +266,9 @@ class FastPairPresenterImplTest : public AshTestBase {
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
         /*new_user=*/false, /*has_active_session=*/true);
 
-    SimulateUserLogin(LoginInfo{display_email, user_type}, account_id);
+    SimulateUserLogin(LoginInfo{.account_id = account_id,
+                                .display_email = display_email,
+                                .user_type = user_type});
   }
 
   void OnDiscoveryAction(scoped_refptr<Device> device, DiscoveryAction action) {

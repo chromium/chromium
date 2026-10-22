@@ -46,7 +46,8 @@ class ShelfContextMenuModelTest
 
   void SetUp() override {
     AshTestBase::SetUp();
-    SimulateUserLogin({"user1@test.com", GetUserType()});
+    SimulateUserLogin(
+        {.display_email = "user1@test.com", .user_type = GetUserType()});
   }
 
   user_manager::UserType GetUserType() const { return GetParam(); }

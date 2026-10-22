@@ -161,7 +161,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
     ClearLogin();
 
-    SimulateUserLogin({kUserEmail});
+    SimulateUserLogin({.display_email = kUserEmail});
 
     adapter_ = base::MakeRefCounted<FakeMetricBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);

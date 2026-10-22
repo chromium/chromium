@@ -166,7 +166,7 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownRegularUser) {
   // Notification should be shown at login.
-  SimulateUserLogin({"user1@email.com"});
+  SimulateUserLogin({.display_email = "user1@email.com"});
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
@@ -185,8 +185,8 @@ TEST_F(FirmwareUpdateStartupNotificationTest,
 
 TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
   // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin(
-      {"user1@email.com", user_manager::UserType::kKioskChromeApp});
+  SimulateUserLogin({.display_email = "user1@email.com",
+                     .user_type = user_manager::UserType::kKioskChromeApp});
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(
@@ -196,7 +196,8 @@ TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownKioskPWA) {
   // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin({"user1@email.com", user_manager::UserType::kKioskWebApp});
+  SimulateUserLogin({.display_email = "user1@email.com",
+                     .user_type = user_manager::UserType::kKioskWebApp});
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(

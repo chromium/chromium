@@ -304,7 +304,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   base::TimeTicks NowTicks() const override { return task_runner_->NowTicks(); }
 
   void SimulateUserLoginWithCustomPrefs(std::string_view user_email) {
-    AccountId account_id = SimulateUserLogin({user_email});
+    AccountId account_id = SimulateUserLogin({.display_email = user_email});
     auto* prefs = static_cast<TestingPrefServiceSimple*>(
         GetSessionControllerClient()->GetUserPrefService(account_id));
     prefs->registry()->RegisterBooleanPref(kTestEnabledPref, false);

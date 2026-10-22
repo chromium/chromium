@@ -361,7 +361,7 @@ class NetworkListViewControllerTest : public AshTestBase {
   }
 
   void LoginAsSecondaryUser() {
-    SimulateUserLogin({kUser1Email});
+    SimulateUserLogin({.display_email = kUser1Email});
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::LOGIN_SECONDARY);
     base::RunLoop().RunUntilIdle();

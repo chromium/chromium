@@ -30,7 +30,7 @@ void InformedRestoreTestBase::SetUp() {
 
   ClearLogin();
 
-  auto account_id = SimulateUserLogin({kTestUserEmail});
+  auto account_id = SimulateUserLogin({.display_email = kTestUserEmail});
 
   // Disable the onboarding dialog for testing.
   PrefService* prefs =

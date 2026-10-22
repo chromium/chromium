@@ -129,7 +129,7 @@ TEST_F(InactiveUserNotificationBlockerTest, Basic) {
   EXPECT_TRUE(ShouldShow(random_system_notifier, kEmptyUserId));
 
   // Login triggers blocking state change.
-  SimulateUserLogin({kDefaultUserEmail});
+  SimulateUserLogin({.display_email = kDefaultUserEmail});
   EXPECT_EQ(1, GetStateChangedCountAndReset());
 
   // Notifications for a single user session are not blocked.
@@ -139,7 +139,7 @@ TEST_F(InactiveUserNotificationBlockerTest, Basic) {
 
   // Notifications from a user other than the active one (in this case, default)
   // are generally blocked unless they're ash system notifications.
-  SimulateUserLogin({"user1@tray"});
+  SimulateUserLogin({.display_email = "user1@tray"});
   SwitchActiveUser(kDefaultUserEmail);
 
   EXPECT_EQ(2, GetStateChangedCountAndReset());

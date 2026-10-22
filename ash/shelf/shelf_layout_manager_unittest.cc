@@ -4683,12 +4683,12 @@ TEST_F(NoSessionShelfLayoutManagerTest, UpdateShelfVisibilityAfterLogin) {
 
   // Simulate login.
   SimulateUserLogin(
-      {.init_pref_service_value = base::DictValue()
+      {.account_id = kUserAccount,
+       .init_pref_service_value = base::DictValue()
                                       .Set(prefs::kShelfAutoHideBehaviorLocal,
                                            kShelfAutoHideBehaviorAlways)
                                       .Set(prefs::kShelfAutoHideBehavior,
-                                           kShelfAutoHideBehaviorAlways)},
-      kUserAccount);
+                                           kShelfAutoHideBehaviorAlways)});
 
   // The window should be the same height.
   EXPECT_EQ(kExpectedWindowHeight, window->bounds().height());

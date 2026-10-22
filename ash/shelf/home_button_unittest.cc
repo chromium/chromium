@@ -1011,7 +1011,8 @@ TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
   EXPECT_EQ(1.0f, home_button_view->layer()->opacity());
 }
 
-inline constexpr LoginInfo k2ndRegularUserLoginInfo = {"user1@tray"};
+inline constexpr LoginInfo k2ndRegularUserLoginInfo = {.display_email =
+                                                           "user1@tray"};
 
 TEST_P(HomeButtonNoSessionTest, LongPressGestureSunfishScanner) {
   // Simulate two users with primary user as active.

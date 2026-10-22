@@ -285,7 +285,7 @@ TEST_F(BirchModelTest, DataFetchForNonPrimaryUserClearsModel) {
   TestModelConsumer consumer;
 
   // Sign in to a secondary user.
-  SimulateUserLogin({"user2@test.com"});
+  SimulateUserLogin({.display_email = "user2@test.com"});
   ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
 
   // Add an item to the model.
@@ -1159,7 +1159,7 @@ TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
   ASSERT_TRUE(model->IsDataFresh());
 
   // Sign in to a secondary user.
-  SimulateUserLogin({"user2@test.com"});
+  SimulateUserLogin({.display_email = "user2@test.com"});
   ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
 
   // The model is empty.

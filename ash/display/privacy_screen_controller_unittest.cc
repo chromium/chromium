@@ -65,7 +65,7 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
 
     // Create user 1 session and simulate its login.
-    SimulateUserLogin({kUser1Email});
+    SimulateUserLogin({.display_email = kUser1Email});
 
     native_display_delegate_ =
         new display::test::TestNativeDisplayDelegate(logger_.get());
@@ -227,7 +227,7 @@ TEST_F(PrivacyScreenControllerTest, TestEnableAndDisable) {
   // Switching accounts should trigger observers but should not notify ui.
   ::testing::Mock::VerifyAndClear(observer());
   EXPECT_CALL(*observer(), OnPrivacyScreenSettingChanged(false, false));
-  SimulateUserLogin({kUser2Email});
+  SimulateUserLogin({.display_email = kUser2Email});
   EXPECT_FALSE(controller()->GetEnabled());
 
   // Switch back to user 1, expect it to be enabled.

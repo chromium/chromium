@@ -845,7 +845,7 @@ TEST_F(KeyboardControllerImplTest, RecordsKeyRepeatSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.KeyboardAutoRepeatInterval", /*count=*/0u);
 
-  auto account_id = SimulateUserLogin({"user1"});
+  auto account_id = SimulateUserLogin({.display_email = "user1"});
 
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.KeyboardAutoRepeatDelay", /*count=*/1u);
@@ -854,7 +854,7 @@ TEST_F(KeyboardControllerImplTest, RecordsKeyRepeatSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.KeyboardAutoRepeatInterval", /*count=*/1u);
 
-  SimulateUserLogin({"user2"});
+  SimulateUserLogin({.display_email = "user2"});
 
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.KeyboardAutoRepeatDelay", /*count=*/2u);

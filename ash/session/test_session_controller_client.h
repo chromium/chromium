@@ -75,19 +75,18 @@ class TestSessionControllerClient final : public SessionControllerClient {
   void SetIsRunningInAppMode(bool app_mode);
   void SetIsDemoSession();
 
-  // Adds a user session from a given LoginInfo and `account_id`.
-  // For convenience, `LoginInfo.user_email` can be used to create an AccountId,
-  // in which case, the `account_id` should be std::nullopt. For testing
-  // behavior where |AccountId|s are compared, prefer the method of the same
-  // name that takes an |AccountId| created with a valid storage key
-  // instead. See the documentation for|AccountId::GetUserEmail| for discussion.
+  // Adds a user session from a given `login_info`.
+  // For convenience, `LoginInfo::display_email` can be used to create an
+  // AccountId, in which case `LoginInfo::account_id` should be std::nullopt.
+  // For testing behavior where |AccountId|s are compared, prefer specifying
+  // `LoginInfo::account_id` created with a valid storage key instead. See the
+  // documentation for |AccountId::GetUserEmail| for discussion.
   //
   // It will create a new PrefService (initialized with
   // `login_info.init_pref_service_value` if provided). However, if
   // `pref_service_must_exist_` is set to true, the PrefService for the account
   // must already exist, or it will result in CHECK failure.
-  AccountId AddUserSession(const LoginInfo& login_info,
-                           std::optional<AccountId> account_id = std::nullopt);
+  AccountId AddUserSession(const LoginInfo& login_info);
 
   // Synchronously lock screen by requesting screen lock and waiting for the
   // request to complete.

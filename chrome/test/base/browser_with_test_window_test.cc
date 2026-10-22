@@ -340,7 +340,8 @@ void BrowserWithTestWindowTest::PostUserProfileCreation(
       AccountId::FromUserEmail(email));
   if (user) {
     OnUserProfileCreated(email, profile);
-    GetSessionControllerClient()->AddUserSession({email, user->GetType()});
+    GetSessionControllerClient()->AddUserSession(
+        {.display_email = email, .user_type = user->GetType()});
   }
 }
 

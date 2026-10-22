@@ -81,7 +81,8 @@ class ActiveSessionAuthControllerTest
     NoSessionAshTestBase::SetUp();
 
     ClearLogin();
-    SimulateUserLogin({kUserEmail, user_manager::UserType::kRegular});
+    SimulateUserLogin({.display_email = kUserEmail,
+                       .user_type = user_manager::UserType::kRegular});
   }
 
   void TearDown() override {

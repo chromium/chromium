@@ -344,7 +344,7 @@ TEST_F(PowerPrefsTest, LoginScreen) {
 
 TEST_F(PowerPrefsTest, UserSession) {
   const char kUserEmail[] = "user@example.net";
-  SimulateUserLogin({kUserEmail});
+  SimulateUserLogin({.display_email = kUserEmail});
   PrefService* prefs = GetUserPrefService(kUserEmail);
   ASSERT_TRUE(prefs);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::UNLOCKED),
@@ -356,7 +356,7 @@ TEST_F(PowerPrefsTest, UserSession) {
 TEST_F(PowerPrefsTest, PrimaryUserPrefs) {
   // Add a user with restrictive prefs.
   const char kFirstUserEmail[] = "user1@example.net";
-  SimulateUserLogin({kFirstUserEmail});
+  SimulateUserLogin({.display_email = kFirstUserEmail});
   PrefService* first_prefs = GetUserPrefService(kFirstUserEmail);
   ASSERT_TRUE(first_prefs);
   first_prefs->SetBoolean(prefs::kPowerAllowScreenWakeLocks, false);
@@ -365,7 +365,7 @@ TEST_F(PowerPrefsTest, PrimaryUserPrefs) {
 
   // Add a second user with lenient prefs.
   const char kSecondUserEmail[] = "user2@example.net";
-  SimulateUserLogin({kSecondUserEmail});
+  SimulateUserLogin({.display_email = kSecondUserEmail});
   PrefService* second_prefs = GetUserPrefService(kSecondUserEmail);
   ASSERT_TRUE(second_prefs);
   second_prefs->SetBoolean(prefs::kPowerAllowScreenWakeLocks, true);
@@ -383,7 +383,7 @@ TEST_F(PowerPrefsTest, PrimaryUserPrefs) {
 
 TEST_F(PowerPrefsTest, AvoidLockDelaysAfterInactivity) {
   const char kUserEmail[] = "user@example.net";
-  SimulateUserLogin({kUserEmail});
+  SimulateUserLogin({.display_email = kUserEmail});
   PrefService* prefs = GetUserPrefService(kUserEmail);
   ASSERT_TRUE(prefs);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::UNLOCKED),
@@ -412,7 +412,7 @@ TEST_F(PowerPrefsTest, AvoidLockDelaysAfterInactivity) {
 
 TEST_F(PowerPrefsTest, DisabledLockScreen) {
   const char kUserEmail[] = "user@example.net";
-  SimulateUserLogin({kUserEmail});
+  SimulateUserLogin({.display_email = kUserEmail});
   PrefService* prefs = GetUserPrefService(kUserEmail);
   ASSERT_TRUE(prefs);
 

@@ -4278,8 +4278,8 @@ class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
         base::DictValue()
             .Set("ash.holding_space.time_of_first_availability", now.Clone())
             .Set("ash.holding_space.time_of_first_add", std::move(now));
-    SimulateUserLogin({.init_pref_service_value = std::move(init_prefs)},
-                      user_account);
+    SimulateUserLogin({.account_id = user_account,
+                       .init_pref_service_value = std::move(init_prefs)});
   }
 
   void TearDown() override {
@@ -4750,7 +4750,7 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
   {
     base::RunLoop loop;
     camera_controller->SetOnCameraListReceivedForTesting(loop.QuitClosure());
-    SimulateUserLogin({"example@gmail.com"});
+    SimulateUserLogin({.display_email = "example@gmail.com"});
     loop.Run();
   }
 

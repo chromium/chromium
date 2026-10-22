@@ -51,7 +51,7 @@ TEST_F(LogoutButtonTrayTest, Visibility) {
   EXPECT_FALSE(button->GetVisible());
 
   // Button is not visible after simulated login.
-  SimulateUserLogin({kUserEmail});
+  SimulateUserLogin({.display_email = kUserEmail});
   EXPECT_FALSE(button->GetVisible());
 
   PrefService* pref_service =
@@ -163,7 +163,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressedInDemoSession) {
 }
 
 TEST_F(LogoutButtonTrayTest, AccessibleName) {
-  SimulateUserLogin({kUserEmail});
+  SimulateUserLogin({.display_email = kUserEmail});
   {
     ui::AXNodeData node_data;
     tray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);

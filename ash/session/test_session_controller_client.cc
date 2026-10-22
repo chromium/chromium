@@ -105,15 +105,14 @@ void TestSessionControllerClient::SetIsDemoSession() {
 }
 
 AccountId TestSessionControllerClient::AddUserSession(
-    const LoginInfo& login_info,
-    std::optional<AccountId> opt_account_id) {
-  CHECK(opt_account_id || login_info.display_email);
+    const LoginInfo& login_info) {
+  CHECK(login_info.account_id || login_info.display_email);
 
   std::string_view display_email = login_info.display_email.value_or(
-      opt_account_id ? opt_account_id->GetUserEmail() : std::string_view());
+      login_info.account_id ? login_info.account_id->GetUserEmail()
+                            : std::string_view());
 
-  // value_or can't be used because user_email may be nullopt.
-  AccountId account_id = opt_account_id.value_or(
+  AccountId account_id = login_info.account_id.value_or(
       AccountId::FromUserEmail(gaia::CanonicalizeEmail(display_email)));
 
   // When both `account_id` and `display_email` is specified, the account_id's

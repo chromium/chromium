@@ -254,7 +254,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(PrivacyHubMicrophoneControllerTest, SetSystemMuteOnSwitchUser) {
   const AccountId user1_account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();
-  auto user2_account_id = SimulateUserLogin({"other@user.test"});
+  auto user2_account_id =
+      SimulateUserLogin({.display_email = "other@user.test"});
   SwitchActiveUser(user1_account_id);
 
   for (bool microphone_allowed : {false, true, false}) {

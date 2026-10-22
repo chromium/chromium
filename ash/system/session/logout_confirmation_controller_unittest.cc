@@ -216,7 +216,8 @@ class LastWindowClosedTest : public NoSessionAshTestBase {
   // Simulate a managed guest session (non-demo session) login.
   void StartManagedGuestSession() {
     ClearLogin();
-    SimulateUserLogin({kUserEmail, user_manager::UserType::kPublicAccount});
+    SimulateUserLogin({.display_email = kUserEmail,
+                       .user_type = user_manager::UserType::kPublicAccount});
   }
 
   // Simulate a demo session signing in.

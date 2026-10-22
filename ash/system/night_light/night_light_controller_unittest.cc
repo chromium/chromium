@@ -476,7 +476,7 @@ TEST_F(NightLightTest, TestUserSwitchAndSettingsPersistence) {
   TestCompositorsTemperature(user1_temperature);
 
   // Switch to user 2, and expect NightLight to be disabled.
-  SimulateUserLogin({kUser2Email});
+  SimulateUserLogin({.display_email = kUser2Email});
   EXPECT_FALSE(controller->IsNightLightEnabled());
   // Changing user_2's color temperature shouldn't affect user_1's settings.
   const float user2_temperature = 0.2f;
@@ -1082,7 +1082,7 @@ TEST_F(NightLightTest, MultiUserManualStatusToggleWithSchedules) {
   controller->SetCustomEndTime(MakeTimeOfDay(8, kPM));
   controller->SetScheduleType(ScheduleType::kCustom);
   controller->SetColorTemperature(kUser1Temperature);
-  SimulateUserLogin({kUser2Email});
+  SimulateUserLogin({.display_email = kUser2Email});
   controller->SetScheduleType(ScheduleType::kSunsetToSunrise);
   controller->SetColorTemperature(kUser2Temperature);
   SwitchActiveUser(kUser1Email);

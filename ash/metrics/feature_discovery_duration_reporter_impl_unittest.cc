@@ -71,8 +71,8 @@ class FeatureDiscoveryDurationReporterImplTest : public AshTestBase {
 
     // Set up the primary account and the secondary account.
     GetSessionController()->ClearUserSessionsForTest();
-    SimulateUserLogin({kPrimaryUserEmail});
-    SimulateUserLogin({kSecondaryUserEmail});
+    SimulateUserLogin({.display_email = kPrimaryUserEmail});
+    SimulateUserLogin({.display_email = kSecondaryUserEmail});
 
     // Switch to the primary account and lock the screen.
     SwitchActiveUser(primary_account_id_);

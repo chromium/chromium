@@ -515,8 +515,8 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
 
     ClearLogin();
     if (should_sign_in_) {
-      SimulateUserLogin({kUserEmail1});
-      SimulateUserLogin({kUserEmail2});
+      SimulateUserLogin({.display_email = kUserEmail1});
+      SimulateUserLogin({.display_email = kUserEmail2});
       SwitchActiveUser(kAccountId1);
     }
 

@@ -17,6 +17,9 @@
 namespace ash {
 
 struct LoginInfo {
+  // The account ID of the user.
+  const std::optional<AccountId> account_id;
+
   // The user's non canonicalized email address.
   const std::optional<std::string_view> display_email;
 
@@ -43,7 +46,8 @@ struct LoginInfo {
 
 inline constexpr std::string_view kDefaultUserEmail("user0@tray");
 
-inline constexpr LoginInfo kRegularUserLoginInfo = {kDefaultUserEmail};
+inline constexpr LoginInfo kRegularUserLoginInfo = {.display_email =
+                                                        kDefaultUserEmail};
 
 }  // namespace ash
 

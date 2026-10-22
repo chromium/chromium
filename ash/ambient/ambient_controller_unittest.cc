@@ -378,7 +378,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings,
             AmbientUiVisibility::kShouldShow);
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
 
-  SimulateUserLogin({kUser2});
+  SimulateUserLogin({.display_email = kUser2});
   EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
             AmbientUiVisibility::kClosed);
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
@@ -429,7 +429,7 @@ TEST_F(AmbientControllerTest, ConsumerShouldNotRecordManagedMetrics) {
 TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
   // Simulate the login screen.
   ClearLogin();
-  SimulateUserLogin({kUser1});
+  SimulateUserLogin({.display_email = kUser1});
   SetAmbientModeEnabled(true);
 
   LockScreen();
@@ -441,7 +441,7 @@ TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
             AmbientUiVisibility::kShouldShow);
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
 
-  SimulateUserLogin({kUser2});
+  SimulateUserLogin({.display_email = kUser2});
   SetAmbientModeEnabled(true);
 
   // Ambient mode should not show for second user even if that user has the pref
@@ -1445,7 +1445,7 @@ TEST_F(AmbientControllerTest, BindsObserversWhenAmbientEnabled) {
 
 TEST_F(AmbientControllerTest, SwitchActiveUsersDoesNotDoubleBindObservers) {
   ClearLogin();
-  SimulateUserLogin({kUser1});
+  SimulateUserLogin({.display_email = kUser1});
   SetAmbientModeEnabled(true);
 
   // Observers are bound for primary user with Ambient mode enabled.
@@ -1453,7 +1453,7 @@ TEST_F(AmbientControllerTest, SwitchActiveUsersDoesNotDoubleBindObservers) {
   EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
 
   // Observers are still bound when secondary user logs in.
-  SimulateUserLogin({kUser2});
+  SimulateUserLogin({.display_email = kUser2});
   EXPECT_TRUE(AreSessionSpecificObserversBound());
   EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
 
@@ -2333,7 +2333,7 @@ TEST_F(AmbientControllerDurationTest, SetScreenSaverDuration) {
 TEST_F(AmbientControllerDurationTest, AcquireWakeLockAfterScreenSaverStarts) {
   // Simulate User logged in.
   ClearLogin();
-  SimulateUserLogin({kUser1});
+  SimulateUserLogin({.display_email = kUser1});
 
   // Set screen saver duration to forever.
   SetAmbientModeEnabled(true);
@@ -2374,7 +2374,7 @@ TEST_F(AmbientControllerDurationTest, AcquireWakeLockAfterScreenSaverStarts) {
 TEST_F(AmbientControllerDurationTest, ReleaseWakeLockWhenDurationIsReached) {
   // Simulate User logged in.
   ClearLogin();
-  SimulateUserLogin({kUser1});
+  SimulateUserLogin({.display_email = kUser1});
 
   // Simulate a device being connected to a charger initially.
   SetPowerStateCharging();
@@ -2405,7 +2405,7 @@ TEST_F(AmbientControllerDurationTest, ReleaseWakeLockWhenDurationIsReached) {
 TEST_F(AmbientControllerDurationTest, HoldWakeLockIfDurationIsSetToForever) {
   // Simulate User logged in.
   ClearLogin();
-  SimulateUserLogin({kUser1});
+  SimulateUserLogin({.display_email = kUser1});
 
   // Simulate a device being connected to a charger initially.
   SetPowerStateCharging();
@@ -2438,7 +2438,7 @@ TEST_F(AmbientControllerDurationTest, HoldWakeLockIfDurationIsSetToForever) {
 
 TEST_F(AmbientControllerDurationTest, DoNotAcquireWakeLockOnBatteryMode) {
   ClearLogin();
-  SimulateUserLogin({kUser1});
+  SimulateUserLogin({.display_email = kUser1});
 
   // Set power to battery mode.
   SetPowerStateDischarging();
@@ -2458,7 +2458,7 @@ TEST_F(AmbientControllerDurationTest, DoNotAcquireWakeLockOnBatteryMode) {
 
 TEST_F(AmbientControllerDurationTest, AcquireWakeLockWhileOnAcMode) {
   ClearLogin();
-  SimulateUserLogin({kUser1});
+  SimulateUserLogin({.display_email = kUser1});
 
   // Set power to AC mode, charging.
   SetPowerStateCharging();
@@ -2478,7 +2478,7 @@ TEST_F(AmbientControllerDurationTest, AcquireWakeLockWhileOnAcMode) {
 
 TEST_F(AmbientControllerDurationTest, ReleaseWakeLockWhenUnplugged) {
   ClearLogin();
-  SimulateUserLogin({kUser1});
+  SimulateUserLogin({.display_email = kUser1});
 
   // Set power to AC mode. Verify that wake lock is acquired.
   SetPowerStateCharging();

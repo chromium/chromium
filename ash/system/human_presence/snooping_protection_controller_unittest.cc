@@ -104,7 +104,7 @@ class SnoopingProtectionControllerTestBase : public NoSessionAshTestBase {
   // asynchronous logic to complete, revealing whether a DBus call was correctly
   // or incorrectly made.
   void SimulateLogin() {
-    SimulateUserLogin({"testuser@gmail.com"});
+    SimulateUserLogin({.display_email = "testuser@gmail.com"});
     task_environment()->FastForwardBy(kShortTime);
   }
 
@@ -289,7 +289,7 @@ TEST_F(SnoopingProtectionControllerTestPresent, Oobe) {
   // Simulate end of OOBE when user is logged in.
   SimulateUserLogin(
       {.display_email = "testuser@gmail.com", .is_new_profile = true},
-      /*opt_account_id=*/std::nullopt, /*activate_session=*/false);
+      /*activate_session=*/false);
   session->SetSessionState(session_manager::SessionState::OOBE);
 
   // Shouldn't configure, as the session isn't active.

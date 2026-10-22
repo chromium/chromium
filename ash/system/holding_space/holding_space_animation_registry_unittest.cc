@@ -44,7 +44,7 @@ class HoldingSpaceAnimationRegistryTest : public NoSessionAshTestBase {
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
         user_account, client(), model());
-    SimulateUserLogin({kTestUser});
+    SimulateUserLogin({.display_email = kTestUser});
     holding_space_prefs::MarkTimeOfFirstAvailability(
         GetSessionControllerClient()->GetUserPrefService(user_account));
   }

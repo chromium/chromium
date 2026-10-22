@@ -2095,7 +2095,7 @@ class AccessibilityControllerSigninTest
         break;
 
       case TestUserLoginType::kExistingUser:
-        SimulateUserLogin({kUserEmail});
+        SimulateUserLogin({.display_email = kUserEmail});
         break;
     }
   }
@@ -2991,11 +2991,12 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
 
       case TestUserLoginType::kGuest:
         ash_test_helper_->SimulateUserLogin(
-            {user_manager::kGuestUserName, user_manager::UserType::kGuest});
+            {.display_email = user_manager::kGuestUserName,
+             .user_type = user_manager::UserType::kGuest});
         break;
 
       case TestUserLoginType::kExistingUser:
-        ash_test_helper_->SimulateUserLogin({kUserEmail});
+        ash_test_helper_->SimulateUserLogin({.display_email = kUserEmail});
         break;
     }
   }

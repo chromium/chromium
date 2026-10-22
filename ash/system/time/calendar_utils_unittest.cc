@@ -593,7 +593,8 @@ TEST_F(CalendarUtilsUnitTest, GetYearOfDay) {
 }
 
 TEST_F(CalendarUtilsUnitTest, ChildLoggedIn) {
-  SimulateUserLogin({"test@test.test", user_manager::UserType::kChild});
+  SimulateUserLogin({.display_email = "test@test.test",
+                     .user_type = user_manager::UserType::kChild});
   EXPECT_TRUE(calendar_utils::IsActiveUser());
 }
 

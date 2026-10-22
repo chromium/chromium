@@ -139,12 +139,15 @@ class DisplayPrefsTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void LoggedInAsUser() { SimulateUserLogin({"user1@test.com"}); }
+  void LoggedInAsUser() {
+    SimulateUserLogin({.display_email = "user1@test.com"});
+  }
 
   void LoggedInAsGuest() { SimulateGuestLogin(); }
 
   void LoggedInAsPublicAccount() {
-    SimulateUserLogin({"pa@test.com", user_manager::UserType::kPublicAccount});
+    SimulateUserLogin({.display_email = "pa@test.com",
+                       .user_type = user_manager::UserType::kPublicAccount});
   }
 
   void LoadDisplayPreferences() { display_prefs()->LoadDisplayPreferences(); }

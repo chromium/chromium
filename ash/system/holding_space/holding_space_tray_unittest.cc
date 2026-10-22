@@ -368,8 +368,8 @@ class HoldingSpaceTrayTestBase : public NoSessionAshTestBase {
     auto init_prefs =
         base::DictValue().Set("ash.holding_space.time_of_first_availability",
                               base::TimeToValue(base::Time::Now()));
-    SimulateUserLogin({.init_pref_service_value = std::move(init_prefs)},
-                      user_account);
+    SimulateUserLogin({.account_id = user_account,
+                       .init_pref_service_value = std::move(init_prefs)});
   }
 
   void TearDown() override {

@@ -29,7 +29,7 @@ class WelcomeTourDialogPixelTest
     scoped_feature_list_.InitAndEnableFeature(
         features::kWelcomeTourForceUserEligibility);
     UserEducationAshTestBase::SetUp();
-    SimulateUserLogin({"primary@test"});
+    SimulateUserLogin({.display_email = "primary@test"});
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -115,9 +115,9 @@ TEST_P(WelcomeTourChangedExperimentalArmMetricTest,
 
   // Add a primary user session for an existing user. This should *not* trigger
   // the Welcome Tour to start.
-  const auto primary_account_id = SimulateUserLogin(
-      {.display_email = "primary@test"}, /*opt_account_id=*/std::nullopt,
-      /*activate_session=*/false);
+  const auto primary_account_id =
+      SimulateUserLogin({.display_email = "primary@test"},
+                        /*activate_session=*/false);
 
   const std::optional<ExperimentalArm> pref_value = GetPrefValue();
   if (pref_value) {

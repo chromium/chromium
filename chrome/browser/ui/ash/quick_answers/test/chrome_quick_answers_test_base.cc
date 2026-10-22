@@ -68,10 +68,10 @@ void ChromeQuickAnswersTestBase::SetUp() {
   auto* test_session_controller_client = GetSessionControllerClient();
   test_session_controller_client->SetUnownedUserPrefService(
       user->GetAccountId(), profile_->GetPrefs());
-  SimulateUserLogin({.display_email = user->GetDisplayEmail(),
+  SimulateUserLogin({.account_id = user->GetAccountId(),
+                     .display_email = user->GetDisplayEmail(),
                      .user_type = user->GetType(),
-                     .given_name = base::UTF16ToUTF8(user->GetGivenName())},
-                    user->GetAccountId());
+                     .given_name = base::UTF16ToUTF8(user->GetGivenName())});
   ASSERT_EQ(
       profile_->GetPrefs(),
       test_session_controller_client->GetUserPrefService(user->GetAccountId()));

@@ -356,7 +356,8 @@ class PersonalizationAppThemeProviderImplJellyTest
 
     user_manager->AddUser(kAccountId);
     user_manager->LoginUser(kAccountId);
-    SimulateUserLogin({kFakeTestEmail}, kAccountId);
+    SimulateUserLogin(
+        {.account_id = kAccountId, .display_email = kFakeTestEmail});
     user_manager->SwitchActiveUser(kAccountId);
   }
 

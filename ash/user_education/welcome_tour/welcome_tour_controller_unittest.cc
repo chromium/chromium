@@ -380,7 +380,7 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // Add a primary and secondary user session for the first time. This should
   // *not* trigger the Welcome Tour to start.
   auto* const session_controller_client = GetSessionControllerClient();
-  SimulateUserLogin({.is_new_profile = true}, primary_account_id,
+  SimulateUserLogin({.account_id = primary_account_id, .is_new_profile = true},
                     /*activate_session=*/false);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
@@ -414,7 +414,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
 
   // Switch to the secondary user session and back again. This should *not*
   // trigger the Welcome Tour to start.
-  SimulateUserLogin({.is_new_profile = true}, secondary_account_id);
+  SimulateUserLogin(
+      {.account_id = secondary_account_id, .is_new_profile = true});
   SwitchActiveUser(primary_account_id);
 
   // Deactivate and then reactivate the primary user session. This should *not*
@@ -759,7 +760,7 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
   base::HistogramTester histogram_tester;
   auto primary_account_id = SimulateUserLogin(
       {.display_email = "primary@test", .is_new_profile = true},
-      /*opt_account_id=*/std::nullopt, /*activate_session=*/false);
+      /*activate_session=*/false);
 
   // Enable the spoken feedback after the pref service is ready and before the
   // session becomes active.

@@ -101,8 +101,11 @@ class CompanionAppBrokerImplUnitTest : public AshTestBase,
     // For guest, don't also pass kUserEmail as the LoginInfo's display_email:
     // SimulateUserLogin() CHECKs that it matches account_id's email when both
     // are given, and GuestAccountId()'s email isn't kUserEmail.
-    LoginInfo login_info = is_guest ? LoginInfo{std::nullopt, user_type}
-                                    : LoginInfo{kUserEmail, user_type};
+    LoginInfo login_info =
+        is_guest ? LoginInfo{.account_id = account_id, .user_type = user_type}
+                 : LoginInfo{.account_id = account_id,
+                             .display_email = kUserEmail,
+                             .user_type = user_type};
 
     // Registration must happen before any login call: TestHelper refuses to
     // add a user once someone is already logged in.
@@ -124,7 +127,7 @@ class CompanionAppBrokerImplUnitTest : public AshTestBase,
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
         /*new_user=*/false, /*has_active_session=*/true);
 
-    SimulateUserLogin(login_info, account_id);
+    SimulateUserLogin(login_info);
   }
 
   void SetIdentityManager(signin::IdentityManager* identity_manager) {

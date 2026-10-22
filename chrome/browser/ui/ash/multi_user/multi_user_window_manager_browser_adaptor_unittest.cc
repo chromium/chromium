@@ -212,7 +212,9 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
         user->GetAccountId(), profile->GetPrefs());
 
     GetSessionControllerClient()->AddUserSession(
-        {user->GetDisplayEmail(), user->GetType()}, user->GetAccountId());
+        {.account_id = user->GetAccountId(),
+         .display_email = user->GetDisplayEmail(),
+         .user_type = user->GetType()});
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::ACTIVE);
 
