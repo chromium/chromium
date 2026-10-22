@@ -27,20 +27,6 @@ namespace {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(InkDropHost, kInkDropKey)
 
-// TODO(pbos): Remove this by changing the constructor parameters to
-// InkDropImpl.
-std::unique_ptr<InkDrop> CreateInkDropImpl(
-    InkDropHost* host,
-    InkDropImpl::AutoHighlightMode auto_highlight_mode,
-    bool highlight_on_hover,
-    bool highlight_on_focus) {
-  auto ink_drop = std::make_unique<InkDropImpl>(host, host->host_view()->size(),
-                                                auto_highlight_mode);
-  ink_drop->SetShowHighlightOnHover(highlight_on_hover);
-  ink_drop->SetShowHighlightOnFocus(highlight_on_focus);
-  return ink_drop;
-}
-
 }  // namespace
 
 InkDrop::~InkDrop() = default;
@@ -63,11 +49,11 @@ std::unique_ptr<InkDrop> InkDrop::CreateInkDropForSquareRipple(
     bool highlight_on_hover,
     bool highlight_on_focus,
     bool show_highlight_on_ripple) {
-  return CreateInkDropImpl(host,
-                           show_highlight_on_ripple
-                               ? InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE
+  return std::make_unique<InkDropImpl>(
+      host, host->host_view()->size(),
+      show_highlight_on_ripple ? InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE
                                : InkDropImpl::AutoHighlightMode::HIDE_ON_RIPPLE,
-                           highlight_on_hover, highlight_on_focus);
+      highlight_on_hover, highlight_on_focus);
 }
 
 void InkDrop::UseInkDropForSquareRipple(InkDropHost* host,
@@ -84,11 +70,11 @@ std::unique_ptr<InkDrop> InkDrop::CreateInkDropForFloodFillRipple(
     bool highlight_on_hover,
     bool highlight_on_focus,
     bool show_highlight_on_ripple) {
-  return CreateInkDropImpl(host,
-                           show_highlight_on_ripple
-                               ? InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE
+  return std::make_unique<InkDropImpl>(
+      host, host->host_view()->size(),
+      show_highlight_on_ripple ? InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE
                                : InkDropImpl::AutoHighlightMode::HIDE_ON_RIPPLE,
-                           highlight_on_hover, highlight_on_focus);
+      highlight_on_hover, highlight_on_focus);
 }
 
 void InkDrop::UseInkDropForFloodFillRipple(InkDropHost* host,
@@ -104,8 +90,9 @@ std::unique_ptr<InkDrop> InkDrop::CreateInkDropWithoutAutoHighlight(
     InkDropHost* host,
     bool highlight_on_hover,
     bool highlight_on_focus) {
-  return CreateInkDropImpl(host, InkDropImpl::AutoHighlightMode::NONE,
-                           highlight_on_hover, highlight_on_focus);
+  return std::make_unique<InkDropImpl>(host, host->host_view()->size(),
+                                       InkDropImpl::AutoHighlightMode::NONE,
+                                       highlight_on_hover, highlight_on_focus);
 }
 
 void InkDrop::UseInkDropWithoutAutoHighlight(InkDropHost* host,

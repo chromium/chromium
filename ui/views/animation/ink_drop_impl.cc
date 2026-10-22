@@ -578,10 +578,14 @@ InkDropImpl::HighlightStateFactory::CreateVisibleState(
 
 InkDropImpl::InkDropImpl(InkDropHost* ink_drop_host,
                          const gfx::Size& host_size,
-                         AutoHighlightMode auto_highlight_mode)
+                         AutoHighlightMode auto_highlight_mode,
+                         bool show_highlight_on_hover,
+                         bool show_highlight_on_focus)
     : ink_drop_host_(ink_drop_host),
       highlight_state_factory_(auto_highlight_mode, this),
-      root_layer_(std::make_unique<ui::LayerNotDrawn>()) {
+      root_layer_(std::make_unique<ui::LayerNotDrawn>()),
+      show_highlight_on_hover_(show_highlight_on_hover),
+      show_highlight_on_focus_(show_highlight_on_focus) {
   root_layer_->SetBounds(gfx::Rect(host_size));
   root_layer_->SetName("InkDropImpl:RootLayer");
   SetHighlightState(highlight_state_factory_.CreateStartState());
