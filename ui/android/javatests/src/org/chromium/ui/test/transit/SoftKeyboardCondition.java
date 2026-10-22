@@ -9,6 +9,9 @@ import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
 import android.view.View;
+import android.view.WindowInsets;
+
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
@@ -50,10 +53,22 @@ public class SoftKeyboardCondition extends ConditionWithResult<Boolean> {
         }
 
         View view = activity.getWindow().getDecorView();
-        return whether(
-                        KeyboardUtils.isAndroidSoftKeyboardShowing(view)
-                                == mExpectShowingWhenNoPhysicalKeyboard)
-                .withResult(true);
+        if (KeyboardUtils.isAndroidSoftKeyboardShowing(view)) {
+            return whether(mExpectShowingWhenNoPhysicalKeyboard, "IME insets present")
+                    .withResult(true);
+        }
+
+        // In split-screen, the system moves the window above the soft keyboard, so the window gets
+        // no IME insets even though the soft keyboard is showing. Check if the IME is visible.
+        View rootView = view.getRootView();
+        WindowInsets rootWindowInsets = rootView.getRootWindowInsets();
+        if (rootWindowInsets != null
+                && WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets, rootView)
+                        .isVisible(WindowInsetsCompat.Type.ime())) {
+            return whether(mExpectShowingWhenNoPhysicalKeyboard, "IME visible").withResult(true);
+        }
+
+        return whether(!mExpectShowingWhenNoPhysicalKeyboard, "IME not visible").withResult(true);
     }
 
     /**
