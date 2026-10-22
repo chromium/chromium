@@ -16,6 +16,7 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace em = enterprise_management;

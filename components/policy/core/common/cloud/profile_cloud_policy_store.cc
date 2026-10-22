@@ -14,6 +14,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/proto/policy_signing_key.pb.h"
 

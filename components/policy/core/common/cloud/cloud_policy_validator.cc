@@ -25,6 +25,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"

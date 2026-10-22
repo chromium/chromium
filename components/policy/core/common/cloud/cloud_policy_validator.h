@@ -23,7 +23,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "components/policy/core/common/cloud/policy_value_validator.h"
 #include "components/policy/policy_export.h"
-#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -43,6 +42,9 @@ class MessageLite;
 }  // namespace google
 
 namespace enterprise_management {
+class CloudPolicySettings;
+class ExtensionInstallPolicies;
+class ExternalPolicyData;
 class PolicyData;
 class PolicyFetchResponse;
 }  // namespace enterprise_management

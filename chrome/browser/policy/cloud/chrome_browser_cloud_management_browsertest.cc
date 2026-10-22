@@ -52,6 +52,7 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
