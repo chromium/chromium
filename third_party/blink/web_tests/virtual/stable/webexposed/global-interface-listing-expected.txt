@@ -11756,6 +11756,8 @@ interface WebSocketStream
 interface WebTransport
     static getter supportsReliableOnly
     attribute @@toStringTag
+    getter anticipatedConcurrentIncomingBidirectionalStreams
+    getter anticipatedConcurrentIncomingUnidirectionalStreams
     getter closed
     getter datagrams
     getter incomingBidirectionalStreams
@@ -11768,6 +11770,8 @@ interface WebTransport
     method constructor
     method createBidirectionalStream
     method createUnidirectionalStream
+    setter anticipatedConcurrentIncomingBidirectionalStreams
+    setter anticipatedConcurrentIncomingUnidirectionalStreams
 interface WebTransportBidirectionalStream
     attribute @@toStringTag
     getter readable
