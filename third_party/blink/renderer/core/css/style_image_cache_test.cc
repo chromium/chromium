@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -267,6 +268,48 @@ TEST_F(StyleImageCacheWithLoadingTest, LoadFailedBackgroundImageURL) {
   EXPECT_FALSE(rule1_image2->ErrorOccurred());
   EXPECT_TRUE(FetchedImageMap().Contains(image_url.GetString()));
   EXPECT_EQ(FetchedImageMap().size(), 1u);
+}
+
+TEST_F(StyleImageCacheWithLoadingTest, DifferingCORSModesImageURLs) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .rule1 { background-image: url(http://test.com/background_image.png) }
+      .rule2 { mask-image: url(http://test.com/background_image.png) }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  const auto image_url =
+      url_test_helpers::ToKURL("http://test.com/background_image.png");
+  WebURLResponse response(image_url);
+  response.SetMimeType("image/png");
+  response.SetHttpHeaderField(http_names::kContentType, kTestResourceMimeType);
+  response.SetHttpStatusCode(200);
+  // Mark the response as opaque (cross-origin no-cors) so IsCorsSameOrigin()
+  // is false:
+  response.SetType(network::mojom::FetchResponseType::kOpaque);
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+      image_url, test::CoreTestDataPath(kTestResourceFilename), response);
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  ASSERT_FALSE(target->ComputedStyleRef().BackgroundLayers().GetImage());
+
+  target->setAttribute(html_names::kClassAttr, AtomicString("rule1"));
+  UpdateAllLifecyclePhasesForTest();
+  url_test_helpers::ServeAsynchronousRequests();
+
+  ImageResourceContent* rule1_image =
+      target->ComputedStyleRef().BackgroundLayers().GetImage()->CachedImage();
+  EXPECT_TRUE(rule1_image);
+
+  target->setAttribute(html_names::kClassAttr, AtomicString("rule2"));
+  UpdateAllLifecyclePhasesForTest();
+  url_test_helpers::ServeAsynchronousRequests();
+
+  ImageResourceContent* rule2_image =
+      target->ComputedStyleRef().MaskLayers().GetImage()->CachedImage();
+  EXPECT_NE(rule1_image, rule2_image);
 }
 
 }  // namespace blink
