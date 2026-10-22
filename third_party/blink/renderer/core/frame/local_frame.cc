@@ -3670,6 +3670,10 @@ void LocalFrame::ClosePageForTesting() {
   mojo_handler_->ClosePageForTesting();
 }
 
+void LocalFrame::FlushLocalFrameHostForTesting() {
+  mojo_handler_->FlushLocalFrameHostForTesting();
+}
+
 void LocalFrame::SetInitialFocus(bool reverse) {
   GetDocument()->ClearFocusedElement();
   GetPage()->GetFocusController().SetInitialFocus(

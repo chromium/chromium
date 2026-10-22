@@ -7917,7 +7917,7 @@ class TestScrolledFrameClient : public frame_test_helpers::TestWebFrameClient {
       return;
     }
     EXPECT_FALSE(did_scroll_frame_);
-    LocalFrameView* view = To<WebLocalFrameImpl>(Frame())->GetFrameView();
+    LocalFrameView* view = Frame()->GetFrameView();
     // LocalFrameView can be scrolled in
     // LocalFrameView::SetFixedVisibleContentRect which is called from
     // LocalFrame::CreateView (before the frame is associated with the the
@@ -9661,10 +9661,10 @@ TEST_F(WebFrameTest, EmbedderTriggeredDetachWithRemoteMainFrame) {
 
 class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
  public:
-  explicit WebFrameSwapTestClient(WebFrameSwapTestClient* parent = nullptr) {
+  WebFrameSwapTestClient() {
     local_frame_host_ =
         std::make_unique<TestLocalFrameHostForFrameOwnerPropertiesChanges>(
-            parent);
+            this);
     local_frame_host_->Init(GetRemoteNavigationAssociatedInterfaces());
   }
 
@@ -9679,7 +9679,7 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
       ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override {
     return CreateLocalChild(
-        *Frame(), scope, std::make_unique<WebFrameSwapTestClient>(this),
+        *Frame(), scope, std::make_unique<WebFrameSwapTestClient>(),
         std::move(policy_container_bind_params), finish_creation);
   }
 
@@ -9689,6 +9689,7 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
   }
 
   bool DidPropagateDisplayNoneProperty() const {
+    Frame()->GetFrame()->FlushLocalFrameHostForTesting();
     return did_propagate_display_none_;
   }
 
@@ -9697,22 +9698,19 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
       : public FakeLocalFrameHost {
    public:
     explicit TestLocalFrameHostForFrameOwnerPropertiesChanges(
-        WebFrameSwapTestClient* parent)
-        : parent_(parent) {}
+        WebFrameSwapTestClient* client)
+        : client_(client) {}
     ~TestLocalFrameHostForFrameOwnerPropertiesChanges() override = default;
 
     // FakeLocalFrameHost:
     void DidChangeFrameOwnerProperties(
         const blink::FrameToken& child_frame_token,
         mojom::blink::FrameOwnerPropertiesPtr properties) override {
-      if (parent_) {
-        parent_->DidChangeFrameOwnerProperties(std::move(properties));
-      }
+      client_->DidChangeFrameOwnerProperties(std::move(properties));
     }
 
-    bool did_propagate_display_none_ = false;
     raw_ptr<WebFrameSwapTestClient, UnprotectedInRelease | DanglingUntriaged>
-        parent_ = nullptr;
+        client_;
   };
 
   std::unique_ptr<TestLocalFrameHostForFrameOwnerPropertiesChanges>

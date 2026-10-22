@@ -64,6 +64,7 @@ class LocalFrameMojoHandler
   void DidDetachFrame();
 
   void ClosePageForTesting();
+  void FlushLocalFrameHostForTesting();
 
   mojom::blink::LocalFrameHost& LocalFrameHostRemote() {
     return *local_frame_host_remote_.get();

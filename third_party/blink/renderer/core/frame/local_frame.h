@@ -806,6 +806,7 @@ class CORE_EXPORT LocalFrame final
 
   void SetScaleFactor(float scale);
   void ClosePageForTesting();
+  void FlushLocalFrameHostForTesting();
   void SetInitialFocus(bool reverse);
 
 #if BUILDFLAG(IS_MAC)

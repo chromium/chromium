@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/display/screen_info.h"
@@ -533,7 +534,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
   static bool IsLoading() { return loads_in_progress_ > 0; }
   Vector<String>& ConsoleMessages() { return console_messages_; }
 
-  WebNavigationControl* Frame() const { return frame_; }
+  WebLocalFrameImpl* Frame() const { return frame_.Get(); }
   // Pass ownership of the TestWebFrameClient to |self_owned| here if the
   // TestWebFrameClient should delete itself on frame detach.
   void Bind(WebLocalFrame*,
@@ -614,10 +615,8 @@ class TestWebFrameClient : public WebLocalFrameClient {
 
   std::unique_ptr<AssociatedInterfaceProvider> associated_interface_provider_;
 
-  // This is null from when the client is created until it is initialized with
-  // Bind().
-  raw_ptr<WebNavigationControl, UnprotectedInRelease | DanglingUntriaged>
-      frame_ = nullptr;
+  // This is null until the client is initialized with Bind().
+  WeakPersistent<WebLocalFrameImpl> frame_;
 
   base::CancelableOnceCallback<void()> navigation_callback_;
   WebEffectiveConnectionType effective_connection_type_;

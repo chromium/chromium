@@ -403,6 +403,12 @@ void LocalFrameMojoHandler::ClosePageForTesting() {
   ClosePage(base::DoNothing());
 }
 
+void LocalFrameMojoHandler::FlushLocalFrameHostForTesting() {
+  if (local_frame_host_remote_.is_bound()) {
+    local_frame_host_remote_.FlushForTesting();
+  }
+}
+
 mojom::blink::BackForwardCacheControllerHost&
 LocalFrameMojoHandler::BackForwardCacheControllerHostRemote() {
   return *back_forward_cache_controller_host_remote_.get();
