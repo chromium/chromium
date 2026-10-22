@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/public/cpp/network_connection_tracker.h"
+
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
@@ -195,6 +198,19 @@ IN_PROC_BROWSER_TEST_F(NetworkConnectionTrackerBrowserTest,
   EXPECT_EQ(1u, network_connection_observer.num_notifications());
 
   SimulateNetworkServiceCrash();
+
+  // SimulateNetworkServiceCrash() doesn't wait for `tracker` to observe that
+  // its pipe to the crashed network service closed. Until it does,
+  // GetConnectionType() below synchronously returns the CONNECTION_3G reported
+  // by the crashed network service instead of waiting for `tracker` to
+  // reconnect to the restarted one, so the 2G change could be broadcast before
+  // `tracker` is listening. The restarted network service reports the real
+  // connection type, so wait until `tracker` no longer reports CONNECTION_3G.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    net::NetworkChangeNotifier::ConnectionType type;
+    return !tracker->GetConnectionType(&type, base::DoNothing()) ||
+           type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G;
+  }));
 
   // Issue a GetConnectionType() request to make sure NetworkService has been
   // started up. This way, NetworkService will receive the broadcast when
