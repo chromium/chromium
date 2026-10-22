@@ -4,8 +4,12 @@
 
 #include "chrome/browser/android/compositor/tab_strip_ntb_webui_host.h"
 
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -20,9 +24,13 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/view_android.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -44,13 +52,36 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
   return content::WebContents::Create(params);
 }
 
+bool IsActivatingInputEvent(const blink::WebInputEvent& event) {
+  switch (event.GetType()) {
+    case blink::WebInputEvent::Type::kGestureTap:
+      return true;
+    case blink::WebInputEvent::Type::kMouseUp:
+      return static_cast<const blink::WebMouseEvent&>(event).button ==
+             blink::WebMouseEvent::Button::kLeft;
+    case blink::WebInputEvent::Type::kKeyDown:
+      return static_cast<const blink::WebKeyboardEvent&>(event)
+                 .windows_key_code == ui::VKEY_RETURN;
+    case blink::WebInputEvent::Type::kKeyUp:
+      return static_cast<const blink::WebKeyboardEvent&>(event)
+                 .windows_key_code == ui::VKEY_SPACE;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 // TODO(crbug.com/498763314): Enable the event bridge when it supports
 // lazily-restored Android tabs without WebContents. The NTB does not observe
 // tab strip events.
-TabStripNtbWebUiHost::TabStripNtbWebUiHost(TabModel* tab_model)
+TabStripNtbWebUiHost::TabStripNtbWebUiHost(
+    TabModel* tab_model,
+    base::TimeTicks activity_creation_time,
+    const base::android::JavaRef<jobject>& java_coordinator)
     : tab_model_(tab_model),
+      activity_creation_time_(activity_creation_time),
+      java_coordinator_(java_coordinator),
       service_(std::make_unique<tabs_api::TabStripServiceImpl>(
           std::make_unique<tabs_api::AndroidTabStripApiInjector>(
               tab_model,
@@ -63,11 +94,16 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(TabModel* tab_model)
   web_contents_->SetDelegate(this);
   // The page only paints the button; the tab strip behind must show through.
   web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
+  InitializePageLoadMetricsForWebContents(web_contents_.get());
   // Attached before navigating, so the WebUI can bind to the service during
   // construction.
   tabstrip_ntb::TabStripNtbUI::SetTabStripServiceForWebContents(
       web_contents_.get(), service_.get());
   Observe(web_contents_.get());
+  if (content::RenderFrameHost* main_frame =
+          web_contents_->GetPrimaryMainFrame()) {
+    input_event_observation_.Observe(main_frame->GetRenderWidgetHost());
+  }
 
   content::NavigationController::LoadURLParams load_params(url);
   load_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
@@ -93,6 +129,8 @@ void TabStripNtbWebUiHost::Reset() {
   if (!web_contents_) {
     return;
   }
+  input_event_observation_.Reset();
+  java_coordinator_.Reset();
   Observe(nullptr);
   web_contents_->SetDelegate(nullptr);
   // Destroy before |service_| so TabStripServiceUserData is torn down first.
@@ -129,6 +167,29 @@ void TabStripNtbWebUiHost::RenderFrameCreated(
   }
 }
 
+void TabStripNtbWebUiHost::RenderFrameHostChanged(
+    content::RenderFrameHost* old_host,
+    content::RenderFrameHost* new_host) {
+  if (!new_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  input_event_observation_.Reset();
+  input_event_observation_.Observe(new_host->GetRenderWidgetHost());
+}
+
+void TabStripNtbWebUiHost::OnFirstContentfulPaintInPrimaryMainFrame(
+    base::TimeTicks presentation_time) {
+  if (recorded_first_paint_ || activity_creation_time_.is_null()) {
+    return;
+  }
+  recorded_first_paint_ = true;
+  if (presentation_time >= activity_creation_time_) {
+    base::UmaHistogramMediumTimes(
+        "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint",
+        presentation_time - activity_creation_time_);
+  }
+}
+
 bool TabStripNtbWebUiHost::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
@@ -136,16 +197,37 @@ bool TabStripNtbWebUiHost::HandleContextMenu(
   return true;
 }
 
+void TabStripNtbWebUiHost::OnInputEvent(const content::RenderWidgetHost& widget,
+                                        const blink::WebInputEvent& event,
+                                        input::InputEventSource source) {
+  // Assumes the new tab button covers the entire WebUI surface, so any
+  // activating input event reaching the WebContents targets the button.
+  if (java_coordinator_ && IsActivatingInputEvent(event)) {
+    Java_NtbWebUiCoordinator_onInputInteraction(
+        base::android::AttachCurrentThread(), java_coordinator_,
+        event.TimeStamp().ToUptimeMillis());
+  }
+}
+
 content::WebContents* TabStripNtbWebUiHost::GetWebContents() {
   return web_contents_.get();
 }
 
-static int64_t JNI_NtbWebUiCoordinator_Init(JNIEnv* env, int32_t session_id) {
+static int64_t JNI_NtbWebUiCoordinator_Init(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& caller,
+    int32_t session_id,
+    int64_t activity_creation_uptime_ms) {
   SessionID id = SessionID::FromSerializedValue(session_id);
   CHECK(id.is_valid());
   TabModel* tab_model = TabModelList::FindTabModelWithWindowSessionId(id);
   CHECK(tab_model);
-  return reinterpret_cast<intptr_t>(new TabStripNtbWebUiHost(tab_model));
+  base::TimeTicks activity_creation_time =
+      activity_creation_uptime_ms > 0
+          ? base::TimeTicks::FromUptimeMillis(activity_creation_uptime_ms)
+          : base::TimeTicks();
+  return reinterpret_cast<intptr_t>(
+      new TabStripNtbWebUiHost(tab_model, activity_creation_time, caller));
 }
 
 static content::WebContents* JNI_NtbWebUiCoordinator_GetWebContents(

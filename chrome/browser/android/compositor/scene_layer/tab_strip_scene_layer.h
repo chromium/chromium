@@ -48,7 +48,8 @@ class TabStripSceneLayer : public SceneLayer {
                     int32_t reorder_background_corner_radius,
                     float tab_underline_thickness,
                     float tab_underline_corner_radius,
-                    float tab_underline_bottom_margin);
+                    float tab_underline_bottom_margin,
+                    int64_t activity_creation_uptime_ms);
 
   void SetContentTree(JNIEnv* env,
                       const base::android::JavaRef<jobject>& jcontent_tree);

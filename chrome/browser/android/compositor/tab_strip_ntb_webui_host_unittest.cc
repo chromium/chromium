@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
@@ -26,7 +28,8 @@ TEST_F(TabStripNtbWebUiHostTest, ResetOnTabModelRemovedUnblocksOtrDestruction) {
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   auto otr_tab_model = std::make_unique<OwningTestTabModel>(otr_profile);
 
-  TabStripNtbWebUiHost host(otr_tab_model.get());
+  TabStripNtbWebUiHost host(otr_tab_model.get(), base::TimeTicks(),
+                            /*java_coordinator=*/nullptr);
   ASSERT_NE(nullptr, host.GetWebContents());
   content::WebContentsDestroyedWatcher watcher(host.GetWebContents());
 
@@ -49,6 +52,27 @@ TEST_F(TabStripNtbWebUiHostTest, ResetOnTabModelRemovedUnblocksOtrDestruction) {
 
   // Subsequent calls and host destruction are safe no-ops.
   host.Resize(32, 32);
+}
+
+TEST_F(TabStripNtbWebUiHostTest, RecordsActivityCreationToFirstPaintOnce) {
+  base::HistogramTester histogram_tester;
+  OwningTestTabModel tab_model(profile());
+  const base::TimeTicks activity_creation_time =
+      base::TimeTicks() + base::Seconds(10);
+
+  TabStripNtbWebUiHost host(&tab_model, activity_creation_time,
+                            /*java_coordinator=*/nullptr);
+  host.OnFirstContentfulPaintInPrimaryMainFrame(activity_creation_time +
+                                                base::Milliseconds(125));
+  histogram_tester.ExpectUniqueTimeSample(
+      "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint",
+      base::Milliseconds(125), 1);
+
+  // Subsequent FCP notifications do not record a second sample.
+  host.OnFirstContentfulPaintInPrimaryMainFrame(activity_creation_time +
+                                                base::Milliseconds(250));
+  histogram_tester.ExpectTotalCount(
+      "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint", 1);
 }
 
 }  // namespace

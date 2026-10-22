@@ -111,7 +111,7 @@ public class TabStripSceneLayerTest {
     }
 
     private void initializeTest() {
-        mTabStripSceneLayer = new TabStripSceneLayer(DP_TO_PX);
+        mTabStripSceneLayer = new TabStripSceneLayer(DP_TO_PX, /* activityCreationUptimeMs= */ 0L);
         when(mTabStripSceneMock.init(mTabStripSceneLayer)).thenReturn(1L);
         mGlicDismissButton =
                 new TintedCompositorButton(

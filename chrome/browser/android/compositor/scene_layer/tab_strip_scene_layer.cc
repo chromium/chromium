@@ -7,7 +7,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/android/token_android.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "cc/slim/layer.h"
+#include "cc/slim/layer_tree.h"
 #include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/ui_resource_layer.h"
@@ -15,6 +19,7 @@
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/base/l10n/l10n_util_android.h"
@@ -33,9 +38,62 @@ using base::android::JavaRef;
 
 namespace android {
 
+namespace {
+
+// Root layer for TabStripSceneLayer that records the first-paint presentation
+// time of the native new tab button once both the button is visible and the
+// scene layer is attached to a cc::slim::LayerTree.
+class TabStripRootLayer : public cc::slim::Layer {
+ public:
+  TabStripRootLayer() = default;
+
+  void SetActivityCreationTime(base::TimeTicks activity_creation_time) {
+    activity_creation_time_ = activity_creation_time;
+  }
+
+  void OnNewTabButtonVisible() {
+    ntb_first_paint_ready_ = true;
+    MaybeRequestFirstPaintPresentationTime();
+  }
+
+  void SetLayerTree(cc::slim::LayerTree* layer_tree) override {
+    cc::slim::Layer::SetLayerTree(layer_tree);
+    MaybeRequestFirstPaintPresentationTime();
+  }
+
+ private:
+  ~TabStripRootLayer() override = default;
+
+  void MaybeRequestFirstPaintPresentationTime() {
+    if (recorded_ntb_first_paint_ || !ntb_first_paint_ready_ ||
+        activity_creation_time_.is_null() || !layer_tree()) {
+      return;
+    }
+    recorded_ntb_first_paint_ = true;
+    layer_tree()->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+        [](base::TimeTicks activity_creation_time,
+           const viz::FrameTimingDetails& details) {
+          base::TimeTicks presentation_time =
+              details.presentation_feedback.timestamp;
+          if (presentation_time >= activity_creation_time) {
+            base::UmaHistogramMediumTimes(
+                "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint",
+                presentation_time - activity_creation_time);
+          }
+        },
+        activity_creation_time_));
+  }
+
+  base::TimeTicks activity_creation_time_;
+  bool ntb_first_paint_ready_ = false;
+  bool recorded_ntb_first_paint_ = false;
+};
+
+}  // namespace
+
 TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
                                        const JavaRef<jobject>& jobj)
-    : SceneLayer(env, jobj),
+    : SceneLayer(env, jobj, base::MakeRefCounted<TabStripRootLayer>()),
       background_layer_(cc::slim::SolidColorLayer::Create()),
       tab_strip_layer_(cc::slim::SolidColorLayer::Create()),
       group_ui_parent_layer_(cc::slim::Layer::Create()),
@@ -189,7 +247,8 @@ void TabStripSceneLayer::SetConstants(JNIEnv* env,
                                       int32_t reorder_background_corner_radius,
                                       float tab_underline_thickness,
                                       float tab_underline_corner_radius,
-                                      float tab_underline_bottom_margin) {
+                                      float tab_underline_bottom_margin,
+                                      int64_t activity_creation_uptime_ms) {
   GroupIndicatorLayer::SetConstants(
       reorder_background_top_margin, reorder_background_bottom_margin,
       reorder_background_padding_short, reorder_background_padding_long,
@@ -198,6 +257,12 @@ void TabStripSceneLayer::SetConstants(JNIEnv* env,
   TabHandleLayer::SetConstants(tab_underline_thickness,
                                tab_underline_corner_radius,
                                tab_underline_bottom_margin);
+
+  if (activity_creation_uptime_ms > 0) {
+    static_cast<TabStripRootLayer*>(layer().get())
+        ->SetActivityCreationTime(
+            base::TimeTicks::FromUptimeMillis(activity_creation_uptime_ms));
+  }
 }
 
 void TabStripSceneLayer::SetContentTree(JNIEnv* env,
@@ -352,6 +417,10 @@ void TabStripSceneLayer::UpdateNewTabButton(
                          should_apply_hover_highlight, button_alpha,
                          new_tab_button_keyboard_focus_ring_,
                          is_keyboard_focused, keyboard_focus_ring_drawable);
+
+  if (visible) {
+    static_cast<TabStripRootLayer*>(layer().get())->OnNewTabButtonVisible();
+  }
 }
 
 void TabStripSceneLayer::UpdateNtbWebUi(JNIEnv* env,

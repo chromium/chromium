@@ -45,6 +45,7 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -530,6 +531,10 @@ public class StripLayoutHelper
 
     private final TintedCompositorButton mNewTabButton;
     private final TintedCompositorButton mTabSearchButton;
+    // The SystemClock.uptimeMillis() timestamp of the most recent user interaction with the new
+    // tab button, consumed when the resulting tab is added to record interaction-to-new-tab
+    // latency.
+    private @Nullable Long mLastNtbInteractionTimeMs;
 
     // Layout Constants
     private final float mNewTabButtonWidth;
@@ -3327,7 +3332,10 @@ public class StripLayoutHelper
         resetTabCloseButtonPressedState();
         if (mNewTabButton.onUpOrCancel() && mModel != null) {
             if (!mModel.isIncognito()) mModel.commitAllTabClosures();
-            if (mTabCreator != null) TabCreatorUtil.launchNtp(mTabCreator);
+            if (mTabCreator != null) {
+                mLastNtbInteractionTimeMs = TimeUtils.uptimeMillis();
+                TabCreatorUtil.launchNtp(mTabCreator);
+            }
         }
         if (mTabSearchButton.onUpOrCancel()) {
             handleTabSearchClick();
@@ -3562,12 +3570,19 @@ public class StripLayoutHelper
         mModel.setTabGroupCollapsed(tabGroupId, !isCollapsed, /* animate= */ true);
     }
 
+    @Nullable Long takeLastNtbInteractionTimeMs() {
+        Long time = mLastNtbInteractionTimeMs;
+        mLastNtbInteractionTimeMs = null;
+        return time;
+    }
+
     private void handleNewTabClick(@NewTabSource int source) {
         if (mModel == null || mTabCreator == null) return;
 
         switch (source) {
             case NewTabSource.BUTTON:
                 RecordUserAction.record("MobileToolbarNewTab");
+                mLastNtbInteractionTimeMs = TimeUtils.uptimeMillis();
                 break;
             case NewTabSource.EMPTY_SPACE_CONTEXT_MENU:
                 RecordUserAction.record("Android.TabStripMenu.NewTab");

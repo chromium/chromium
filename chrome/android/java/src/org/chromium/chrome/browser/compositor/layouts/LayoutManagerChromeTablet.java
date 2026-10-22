@@ -121,6 +121,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     activated.
      * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for
      *     registering menu or keyboard action handlers.
+     * @param activityCreationUptimeMs The {@link android.os.SystemClock#uptimeMillis()} timestamp
+     *     when the hosting activity was created, or 0 if unavailable.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -155,7 +157,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             TabObscuringHandler tabObscuringHandler,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
-            MenuOrKeyboardActionController menuOrKeyboardActionController) {
+            MenuOrKeyboardActionController menuOrKeyboardActionController,
+            long activityCreationUptimeMs) {
         super(
                 host,
                 contentContainer,
@@ -204,7 +207,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         sideUiStateProviderSupplier,
                         tabObscuringHandler,
                         canActivateTabLayoutToggleMenuSupplier,
-                        menuOrKeyboardActionController);
+                        menuOrKeyboardActionController,
+                        activityCreationUptimeMs);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;

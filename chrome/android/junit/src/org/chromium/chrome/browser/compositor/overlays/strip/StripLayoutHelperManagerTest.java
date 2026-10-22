@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
@@ -52,6 +53,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -60,6 +62,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
@@ -95,12 +98,16 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
@@ -243,7 +250,7 @@ public class StripLayoutHelperManagerTest {
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
         when(mPrefChangeRegistrarJniMock.init(any(), any())).thenReturn(1L);
         NtbWebUiCoordinatorJni.setInstanceForTesting(mNtbWebUiCoordinatorJniMock);
-        when(mNtbWebUiCoordinatorJniMock.init(anyInt())).thenReturn(1L);
+        when(mNtbWebUiCoordinatorJniMock.init(any(), anyInt(), anyLong())).thenReturn(1L);
         when(mNtbWebUiCoordinatorJniMock.getWebContents(1L)).thenReturn(mWebContents);
         when(mWebContents.getEventForwarder()).thenReturn(mEventForwarder);
 
@@ -327,7 +334,8 @@ public class StripLayoutHelperManagerTest {
                         mSideUiStateProviderSupplier,
                         mTabObscuringHandler,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
-                        mMenuOrKeyboardActionController);
+                        mMenuOrKeyboardActionController,
+                        /* activityCreationUptimeMs= */ 0L);
         ShadowLooper.idleMainLooper();
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
@@ -1581,7 +1589,11 @@ public class StripLayoutHelperManagerTest {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         initializeTest();
 
-        verify(mNtbWebUiCoordinatorJniMock).init(1);
+        verify(mNtbWebUiCoordinatorJniMock)
+                .init(
+                        eq(mStripLayoutHelperManager.getNtbWebUiCoordinatorForTesting()),
+                        eq(1),
+                        eq(0L));
         assertEquals(1L, mStripLayoutHelperManager.getNtbWebUiNativePtr());
         assertEquals(1, mControlContainer.getChildCount());
 
@@ -1633,5 +1645,94 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
                 new RectF(), new RectF(), mResourceManager);
         verify(mNtbWebUiCoordinatorJniMock, times(1)).resize(eq(1L), anyInt(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_NEW_TAB_BUTTON_TABSTRIP_WEB_UI,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
+    public void testNtbWebUiCoordinator_RecordsInteractionToNewTab() {
+        mStripLayoutHelperManager.destroy();
+        clearInvocations(mTabModelSelector);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        initializeTest();
+
+        ArgumentCaptor<TabModelObserver> observerCaptor =
+                ArgumentCaptor.forClass(TabModelObserver.class);
+        verify(mTabModelSelector).addObserverToAllModels(observerCaptor.capture());
+        TabModelObserver observer = observerCaptor.getValue();
+
+        NtbWebUiCoordinator coordinator =
+                mStripLayoutHelperManager.getNtbWebUiCoordinatorForTesting();
+        assertNotNull(coordinator);
+        coordinator.onInputInteraction(TimeUtils.uptimeMillis());
+
+        // Non-UI tab creations do not consume the interaction timestamp or record the metric.
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.TabStrip.NewTabButton.InteractionToNewTab")
+                        .build()) {
+            observer.didAddTab(
+                    mSelectedTab,
+                    TabLaunchType.FROM_LINK,
+                    TabCreationState.LIVE_IN_FOREGROUND,
+                    /* markedForSelection= */ true);
+        }
+
+        // FROM_CHROME_UI consumes the interaction timestamp and records the metric once.
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabStrip.NewTabButton.InteractionToNewTab")) {
+            observer.didAddTab(
+                    mSelectedTab,
+                    TabLaunchType.FROM_CHROME_UI,
+                    TabCreationState.LIVE_IN_FOREGROUND,
+                    /* markedForSelection= */ true);
+        }
+
+        // Subsequent FROM_CHROME_UI tab creations without a new interaction do not record again.
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.TabStrip.NewTabButton.InteractionToNewTab")
+                        .build()) {
+            observer.didAddTab(
+                    mSelectedTab,
+                    TabLaunchType.FROM_CHROME_UI,
+                    TabCreationState.LIVE_IN_FOREGROUND,
+                    /* markedForSelection= */ true);
+        }
+    }
+
+    @Test
+    public void testNativeNewTabButton_RecordsInteractionToNewTab() {
+        mStripLayoutHelperManager.destroy();
+        clearInvocations(mTabModelSelector);
+        TabCreator tabCreator = mock(TabCreator.class);
+        when(mTabCreatorManager.getTabCreator(false)).thenReturn(tabCreator);
+        initializeTest();
+
+        ArgumentCaptor<TabModelObserver> observerCaptor =
+                ArgumentCaptor.forClass(TabModelObserver.class);
+        verify(mTabModelSelector).addObserverToAllModels(observerCaptor.capture());
+        TabModelObserver observer = observerCaptor.getValue();
+
+        mStripLayoutHelperManager
+                .getActiveStripLayoutHelper()
+                .onClick(
+                        TimeUtils.uptimeMillis(),
+                        mStripLayoutHelperManager.getNewTabButton(),
+                        /* motionEventButtonState= */ 0,
+                        /* modifiers= */ 0);
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabStrip.NewTabButton.InteractionToNewTab")) {
+            observer.didAddTab(
+                    mSelectedTab,
+                    TabLaunchType.FROM_CHROME_UI,
+                    TabCreationState.LIVE_IN_FOREGROUND,
+                    /* markedForSelection= */ true);
+        }
     }
 }

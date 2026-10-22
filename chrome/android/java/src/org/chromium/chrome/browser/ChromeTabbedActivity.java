@@ -1215,6 +1215,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     assertNonNull(mRootUiCoordinator.getDataSharingTabManager());
             var bottomSheetController =
                     assertNonNull(mRootUiCoordinator.getBottomSheetController());
+            var startupMetricsTracker = getStartupMetricsTracker();
+            long activityCreationUptimeMs =
+                    startupMetricsTracker != null
+                            ? startupMetricsTracker.getActivityStartTimeMs()
+                            : 0;
             return new LayoutManagerChromeTablet(
                     compositorViewHolder,
                     mContentContainer,
@@ -1248,7 +1253,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     tabbedRootUiCoordinator.getSideUiStateProviderSupplier(),
                     mRootUiCoordinator.getTabObscuringHandler(),
                     tabbedRootUiCoordinator.canActivateTabLayoutToggleMenu(),
-                    getMenuOrKeyboardActionController());
+                    getMenuOrKeyboardActionController(),
+                    activityCreationUptimeMs);
         }
     }
 

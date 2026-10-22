@@ -4,6 +4,7 @@
 
 #include <cstdint>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/notreached.h"
 #include "content/public/browser/web_contents.h"
 
@@ -12,7 +13,11 @@
 
 namespace android {
 
-static int64_t JNI_NtbWebUiCoordinator_Init(JNIEnv* env, int32_t session_id) {
+static int64_t JNI_NtbWebUiCoordinator_Init(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& caller,
+    int32_t session_id,
+    int64_t activity_creation_uptime_ms) {
   return 0;
 }
 

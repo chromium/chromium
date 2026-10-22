@@ -6428,6 +6428,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint"
+    units="ms" expires_after="2027-04-05">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Duration from ChromeActivity creation to the first presentation timestamp of
+    the tab strip New Tab Button. Recorded at most once per activity.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabStrip.NewTabButton.InteractionToNewTab" units="ms"
+    expires_after="2027-04-05">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Duration from an activating user interaction on the tab strip New Tab Button
+    to when the new tab is added to the TabModel. Recorded each time a tab is
+    opened via the button.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabStrip.NullTabHoverCardView.ShowDelayed"
     enum="Boolean" expires_after="2026-06-01">
   <owner>renkens@google.com</owner>

@@ -50,8 +50,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
     /**
      * @param density Density for Dp to Px conversion.
+     * @param activityCreationUptimeMs The {@code SystemClock.uptimeMillis()} timestamp when the
+     *     hosting activity was created, or 0 if unavailable.
      */
-    public TabStripSceneLayer(float density) {
+    public TabStripSceneLayer(float density, long activityCreationUptimeMs) {
         mDpToPx = density;
         TabStripSceneLayerJni.get()
                 .setConstants(
@@ -66,7 +68,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                                 StripLayoutGroupTitle.REORDER_BACKGROUND_CORNER_RADIUS * mDpToPx),
                         StripLayoutTab.TAB_UNDERLINE_THICKNESS_DP * mDpToPx,
                         StripLayoutTab.TAB_UNDERLINE_CORNER_RADIUS_DP * mDpToPx,
-                        StripLayoutTab.TAB_UNDERLINE_BOTTOM_MARGIN_DP * mDpToPx);
+                        StripLayoutTab.TAB_UNDERLINE_BOTTOM_MARGIN_DP * mDpToPx,
+                        activityCreationUptimeMs);
     }
 
     public static void setTestFlag(boolean testFlag) {
@@ -511,7 +514,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int reorderBackgroundCornerRadius,
                 float tabUnderlineThickness,
                 float tabUnderlineCornerRadius,
-                float tabUnderlineBottomMargin);
+                float tabUnderlineBottomMargin,
+                long activityCreationUptimeMs);
 
         void beginBuildingFrame(
                 long nativeTabStripSceneLayer,

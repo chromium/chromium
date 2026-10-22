@@ -11,6 +11,9 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -52,6 +55,10 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
     private int mWidthPx;
     private int mHeightPx;
     private boolean mStripInteractive = true;
+    // The SystemClock.uptimeMillis() timestamp of the most recent input event forwarded from the
+    // WebUI new tab button, consumed when the resulting tab is added to record
+    // interaction-to-new-tab latency.
+    private @Nullable Long mLastInteractionTimeMs;
 
     /**
      * Returns whether the tab strip should use the WebUI new tab button. Must be called after
@@ -68,9 +75,14 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
      * @param windowAndroid The {@link WindowAndroid} of the activity hosting the tab strip.
      * @param tabModel The {@link TabModel} of the window.
      * @param controlContainer The control container, which sits on top of the tab strip.
+     * @param activityCreationUptimeMs The {@code SystemClock.uptimeMillis()} timestamp when the
+     *     hosting activity was created, or 0 if unavailable.
      */
     public NtbWebUiCoordinator(
-            WindowAndroid windowAndroid, TabModel tabModel, ControlContainer controlContainer) {
+            WindowAndroid windowAndroid,
+            TabModel tabModel,
+            ControlContainer controlContainer,
+            long activityCreationUptimeMs) {
         try (TraceEvent e = TraceEvent.scoped("NtbWebUiCoordinator.<init>")) {
             // The coordinator is created and owned by the activity's tab strip, so the activity
             // is alive at this point.
@@ -81,7 +93,8 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
             // it to the WebUI. The navigation commits asynchronously, so the view and the window
             // attached below are in place before the page is created.
             int sessionId = assertNonNull(tabModel.getNativeSessionId());
-            mNativePtr = NtbWebUiCoordinatorJni.get().init(sessionId);
+            mNativePtr =
+                    NtbWebUiCoordinatorJni.get().init(this, sessionId, activityCreationUptimeMs);
             if (mNativePtr == 0) {
                 mInputView = null;
                 mEventForwarder = null;
@@ -113,6 +126,18 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
     /** Returns the pointer to the native TabStripNtbWebUiHost, or 0 if disabled or destroyed. */
     public long getNativePtr() {
         return mNativePtr;
+    }
+
+    @CalledByNative
+    @VisibleForTesting
+    void onInputInteraction(long eventTimeUptimeMs) {
+        mLastInteractionTimeMs = eventTimeUptimeMs;
+    }
+
+    @Nullable Long takeLastInteractionTimeMs() {
+        Long time = mLastInteractionTimeMs;
+        mLastInteractionTimeMs = null;
+        return time;
     }
 
     /**
@@ -200,7 +225,7 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
 
     @NativeMethods
     interface Natives {
-        long init(int sessionId);
+        long init(NtbWebUiCoordinator caller, int sessionId, long activityCreationUptimeMs);
 
         @JniType("content::WebContents*")
         WebContents getWebContents(long hostPtr);

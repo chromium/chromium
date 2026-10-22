@@ -234,6 +234,11 @@ public class StartupMetricsTracker {
                 this::updateSafeBrowsingCheckTime);
     }
 
+    /** Returns the {@link SystemClock#uptimeMillis()} timestamp when the activity was created. */
+    public long getActivityStartTimeMs() {
+        return mActivityStartTimeMs;
+    }
+
     /**
      * Sets up a listener for ApplicationStartInfo that will eventually report TimeToFirstFrame once
      * per application lifecycle.

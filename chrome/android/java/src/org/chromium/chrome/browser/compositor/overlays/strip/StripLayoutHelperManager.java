@@ -32,6 +32,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
+import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -209,6 +211,7 @@ public class StripLayoutHelperManager
     private final LayoutRenderHost mRenderHost;
     private final TabObscuringHandler mTabObscuringHandler;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    private final long mActivityCreationUptimeMs;
     private @Nullable ResourceManager mResourceManager;
 
     // Event Filters
@@ -494,6 +497,8 @@ public class StripLayoutHelperManager
      * @param canActivateTabLayoutToggleMenuSupplier Whether the tab layout toggle menu can open.
      * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for
      *     registering menu or keyboard action handlers.
+     * @param activityCreationUptimeMs The {@link SystemClock#uptimeMillis()} timestamp when the
+     *     hosting activity was created, or 0 if unavailable.
      */
     // TODO(crbug.com/484116872): Suppressing to observe SharedPreferences, which is discouraged;
     // should use another messaging channel instead.
@@ -532,7 +537,8 @@ public class StripLayoutHelperManager
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             TabObscuringHandler tabObscuringHandler,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
-            MenuOrKeyboardActionController menuOrKeyboardActionController) {
+            MenuOrKeyboardActionController menuOrKeyboardActionController,
+            long activityCreationUptimeMs) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         Resources res = context.getResources();
@@ -542,7 +548,8 @@ public class StripLayoutHelperManager
 
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mDensity = res.getDisplayMetrics().density;
-        mTabStripTreeProvider = new TabStripSceneLayer(mDensity);
+        mActivityCreationUptimeMs = activityCreationUptimeMs;
+        mTabStripTreeProvider = new TabStripSceneLayer(mDensity, mActivityCreationUptimeMs);
         if (UiAndroidFeatureList.sConnectedDisplayDensityDebugLogs.isEnabled()) {
             Log.i(
                     TAG,
@@ -1013,7 +1020,14 @@ public class StripLayoutHelperManager
         assert tabModel.getProfile() != null;
         mNtbWebUiCoordinator =
                 new NtbWebUiCoordinator(
-                        mWindowAndroid, tabModel, (ControlContainer) mControlContainer);
+                        mWindowAndroid,
+                        tabModel,
+                        (ControlContainer) mControlContainer,
+                        mActivityCreationUptimeMs);
+    }
+
+    @Nullable NtbWebUiCoordinator getNtbWebUiCoordinatorForTesting() {
+        return mNtbWebUiCoordinator;
     }
 
     private void maybeUpdateNtbWebUiBounds() {
@@ -1557,6 +1571,21 @@ public class StripLayoutHelperManager
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
                         updateTitleForTab(tab);
+                        if (launchType == TabLaunchType.FROM_CHROME_UI) {
+                            Long interactionStartTimeMs =
+                                    mNtbWebUiCoordinator != null
+                                            ? mNtbWebUiCoordinator.takeLastInteractionTimeMs()
+                                            : getActiveStripLayoutHelper()
+                                                    .takeLastNtbInteractionTimeMs();
+                            if (interactionStartTimeMs != null) {
+                                long durationMs = TimeUtils.uptimeMillis() - interactionStartTimeMs;
+                                if (durationMs >= 0) {
+                                    RecordHistogram.recordTimesHistogram(
+                                            "Android.TabStrip.NewTabButton.InteractionToNewTab",
+                                            durationMs);
+                                }
+                            }
+                        }
                     }
                 };
         modelSelector.addObserverToAllModels(mTabModelObserver);
