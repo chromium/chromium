@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -75,6 +77,14 @@ std::unique_ptr<KeyedService> CreateFakeDiscoverFeedService(
   return std::make_unique<FakeDiscoverFeedService>();
 }
 
+TestProfileIOS::Builder CreateProfileBuilder() {
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      DiscoverFeedServiceFactory::GetInstance(),
+      base::BindRepeating(&CreateFakeDiscoverFeedService));
+  return builder;
+}
+
 }  // namespace
 
 class DiscoverFeedProviderTest : public PlatformTest {
@@ -84,15 +94,11 @@ class DiscoverFeedProviderTest : public PlatformTest {
     scoped_feature_list_.InitAndEnableFeature(
         kEnableDiscoverBackgroundRefresh);
 
-    TestProfileIOS::Builder builder;
-    builder.SetName("Default");
-    builder.AddTestingFactory(
-        DiscoverFeedServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateFakeDiscoverFeedService));
-    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(CreateProfileBuilder());
 
     GetApplicationContext()->GetLocalState()->SetString(
-        prefs::kLastUsedProfile, "Default");
+        prefs::kLastUsedProfile, personal_profile_->GetProfileName());
 
     provider_ = [[DiscoverFeedProvider alloc] init];
   }
@@ -103,7 +109,7 @@ class DiscoverFeedProviderTest : public PlatformTest {
 
   FakeDiscoverFeedService* GetFakeService() {
     return static_cast<FakeDiscoverFeedService*>(
-        DiscoverFeedServiceFactory::GetForProfile(profile_));
+        DiscoverFeedServiceFactory::GetForProfile(personal_profile_));
   }
 
  protected:
@@ -111,7 +117,7 @@ class DiscoverFeedProviderTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> personal_profile_;
   DiscoverFeedProvider* provider_;
 };
 
@@ -130,14 +136,11 @@ TEST_F(DiscoverFeedProviderTest, FeatureDisabled) {
 // the provider safely handles it without crashing.
 TEST_F(DiscoverFeedProviderTest, NullServiceHandledSafely) {
   g_return_null_service = true;
-  TestProfileIOS::Builder builder;
-  builder.SetName("NoServiceProfile");
-  builder.AddTestingFactory(
-      DiscoverFeedServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateFakeDiscoverFeedService));
-  profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity fakeManagedIdentity],
+      CreateProfileBuilder());
   GetApplicationContext()->GetLocalState()->SetString(
-      prefs::kLastUsedProfile, "NoServiceProfile");
+      prefs::kLastUsedProfile, managed_profile->GetProfileName());
 
   EXPECT_FALSE([provider_ isDue]);
   EXPECT_EQ([provider_ refreshInterval],
@@ -160,14 +163,11 @@ TEST_F(DiscoverFeedProviderTest, AccountRemovalDoesNotCrashOnRefreshInterval) {
 
   // Step 2: Switch to a profile state where DiscoverFeedService is null.
   g_return_null_service = true;
-  TestProfileIOS::Builder builder;
-  builder.SetName("LoggedOutProfile");
-  builder.AddTestingFactory(
-      DiscoverFeedServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateFakeDiscoverFeedService));
-  profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity fakeManagedIdentity],
+      CreateProfileBuilder());
   GetApplicationContext()->GetLocalState()->SetString(
-      prefs::kLastUsedProfile, "LoggedOutProfile");
+      prefs::kLastUsedProfile, managed_profile->GetProfileName());
 
   // Step 3: App goes to background after account removal, triggering refreshInterval.
   EXPECT_FALSE([provider_ isDue]);
