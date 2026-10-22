@@ -3506,4 +3506,125 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_TRUE(handle_->GetTokenForTab(session_id).is_empty());
 }
 
+TEST_F(ContextualSearchSessionHandleTest,
+       GetNonDeselectedTabSessionIds_CombinesAttachedAndRestoredAndFilters) {
+  const SessionID attached_id = SessionID::FromSerializedValue(11);
+  const SessionID restored_id = SessionID::FromSerializedValue(22);
+
+  base::UnguessableToken token = handle_->CreateContextToken();
+  handle_->AttachTabPendingUpload(token, attached_id.id(),
+                                  GURL("https://example.com/11"), "Tab 11");
+  handle_->SetRestoredTabs(
+      {MakeRestoredTab("https://example.com/22", "Tab 22", restored_id.id())});
+
+  EXPECT_THAT(handle_->GetNonDeselectedTabSessionIds(),
+              testing::UnorderedElementsAre(attached_id, restored_id));
+
+  handle_->AddDeselectedTab(attached_id, GURL("https://example.com/11"),
+                            "Tab 11");
+  EXPECT_THAT(handle_->GetNonDeselectedTabSessionIds(),
+              testing::ElementsAre(restored_id));
+
+  handle_->RemoveDeselectedTab(attached_id);
+  EXPECT_THAT(handle_->GetNonDeselectedTabSessionIds(),
+              testing::UnorderedElementsAre(attached_id, restored_id));
+}
+
+TEST_F(
+    ContextualSearchSessionHandleTest,
+    DeleteTabContext_BySessionId_DisplacesRestoredTabWhenDeselectionEnabled) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+  auto local_handle =
+      service_->CreateSessionForTesting(std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  const SessionID session_id = SessionID::FromSerializedValue(33);
+  const base::UnguessableToken submitted_token =
+      base::UnguessableToken::Create();
+  local_handle->SetSubmittedContextTokens({submitted_token});
+
+  // Cancelling a non-attached token via `RemoveUploadedContextToken()` must not
+  // query `GetFileInfo()` for submitted tokens (e.g. during handler teardown).
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(_)).Times(0);
+  EXPECT_FALSE(local_handle->RemoveUploadedContextToken(submitted_token));
+  testing::Mock::VerifyAndClearExpectations(mock_controller_ptr);
+
+  FileInfo submitted_info;
+  submitted_info.file_token = submitted_token;
+  submitted_info.tab_session_id = session_id;
+  submitted_info.tab_url = GURL("https://example.com/33");
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(3333);
+  submitted_info.request_id = req_id;
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(submitted_token))
+      .WillRepeatedly(testing::Return(&submitted_info));
+
+  const base::UnguessableToken second_submitted_token =
+      base::UnguessableToken::Create();
+  FileInfo second_submitted_info;
+  second_submitted_info.file_token = second_submitted_token;
+  second_submitted_info.tab_session_id = session_id;
+  second_submitted_info.tab_url = GURL("https://example.com/33");
+  lens::LensOverlayRequestId second_req_id;
+  second_req_id.set_uuid(4444);
+  second_submitted_info.request_id = second_req_id;
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(second_submitted_token))
+      .WillRepeatedly(testing::Return(&second_submitted_info));
+  EXPECT_CALL(*mock_controller_ptr, DeleteFile(_)).Times(0);
+
+  // With all deselection/rearchitecture flags disabled, `DeleteTabContext`
+  // removes the restored entry locally without recording server deselection.
+  {
+    base::test::ScopedFeatureList disabled_flags;
+    disabled_flags.InitWithFeatures(
+        {}, {omnibox::kContextManagementInComposebox,
+             contextual_tasks::kContextualTasksRearchitecture,
+             contextual_tasks::kContextualTasksSidePanelRearchitecture});
+    local_handle->SetRestoredTabs(
+        {MakeRestoredTab("https://example.com/33", "Tab 33", session_id.id())});
+    std::optional<std::vector<base::UnguessableToken>> removed_tokens =
+        local_handle->DeleteTabContext(
+            session_id, GURL("https://example.com/33"), "Tab 33");
+    ASSERT_TRUE(removed_tokens.has_value());
+    EXPECT_TRUE(local_handle->GetTabContextState().restored.empty());
+    EXPECT_FALSE(local_handle->IsTabDeselected(
+        session_id, GURL("https://example.com/33"), "Tab 33"));
+    EXPECT_TRUE(local_handle->TakeRemovedContexts().empty());
+  }
+
+  // With Contextual Tasks Rearchitecture enabled (even without
+  // `kContextManagementInComposebox`), `DeleteTabContext` marks the tab
+  // deselected, clears all `submitted_context_tokens_` without double-deleting
+  // sibling tokens from the controller, and reports `3333u` in
+  // `TakeRemovedContexts()`.
+  {
+    base::test::ScopedFeatureList enabled_flags;
+    enabled_flags.InitWithFeatures(
+        {contextual_tasks::kContextualTasksRearchitecture},
+        {omnibox::kContextManagementInComposebox});
+    local_handle->SetSubmittedContextTokens(
+        {submitted_token, second_submitted_token});
+    local_handle->SetRestoredTabs(
+        {MakeRestoredTab("https://example.com/33", "Tab 33", session_id.id())});
+    std::optional<std::vector<base::UnguessableToken>> removed_tokens =
+        local_handle->DeleteTabContext(
+            session_id, GURL("https://example.com/33"), "Tab 33");
+    ASSERT_TRUE(removed_tokens.has_value());
+    EXPECT_THAT(*removed_tokens,
+                testing::ElementsAre(submitted_token, second_submitted_token));
+    EXPECT_TRUE(local_handle->GetTabContextState().restored.empty());
+    EXPECT_TRUE(local_handle->GetSubmittedContextTokens().empty());
+    EXPECT_TRUE(local_handle->IsTabDeselected(
+        session_id, GURL("https://example.com/33"), "Tab 33"));
+
+    const std::vector<lens::LensOverlayRequestId> removed =
+        local_handle->TakeRemovedContexts();
+    ASSERT_EQ(removed.size(), 1u);
+    EXPECT_EQ(removed[0].uuid(), 3333u);
+  }
+}
+
 }  // namespace contextual_search

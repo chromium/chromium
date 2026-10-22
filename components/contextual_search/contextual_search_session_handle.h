@@ -13,6 +13,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -347,6 +348,11 @@ class ContextualSearchSessionHandle {
                          const GURL& url2,
                          const std::string& title2) const;
 
+  // Records `tab_session_id` as explicitly deselected at `url` and `title`.
+  void AddDeselectedTab(SessionID tab_session_id,
+                        const GURL& url,
+                        const std::string& title);
+
   // Removes a tab from the deselected list (e.g. when it is re-selected).
   void RemoveDeselectedTab(SessionID tab_session_id);
 
@@ -502,6 +508,10 @@ class ContextualSearchSessionHandle {
   // Returns the current snapshot of attached and restored tabs.
   const TabContextState& GetTabContextState() const;
 
+  // Returns the set of valid `SessionID`s across `attached` and `restored`
+  // tabs that are not currently marked as deselected.
+  base::flat_set<SessionID> GetNonDeselectedTabSessionIds() const;
+
   // Replace the set of tabs restored from durable task context. Unlike
   // attached tabs, these come from the AIM thread's history in this thread from
   // the server. Each restored tab has `restored_from_aim` set to true
@@ -552,6 +562,19 @@ class ContextualSearchSessionHandle {
   // non-tab tokens are just deleted. Returns the `TabInfo::tab_id` of the
   // attached tab for `token`, if any.
   std::optional<int32_t> DeleteTabContext(const base::UnguessableToken& token);
+
+  // Deletes all uploaded, submitted, attached, and restored tab context entries
+  // matching `session_id` (e.g. when unselecting a tab by ID). When tab
+  // deselection is enabled and the tab was already submitted or restored,
+  // records `session_id` as deselected at `current_url` and `current_title`
+  // (falling back to the stored tab URL/title if `current_url` is invalid) and
+  // queues any submitted `FileInfo` for server-side removal reporting in
+  // `TakeRemovedContexts()`. Returns the removed tokens if `session_id` was in
+  // `attached` or `restored`, or `std::nullopt` otherwise.
+  std::optional<std::vector<base::UnguessableToken>> DeleteTabContext(
+      SessionID session_id,
+      const GURL& current_url,
+      const std::string& current_title);
 
  private:
   friend class ContextualSearchService;
