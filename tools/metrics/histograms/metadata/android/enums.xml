@@ -1761,12 +1761,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="App is minimized and current tab is closed"/>
 </enum>
 
-<enum name="MissingDeviceLockDialogEvent">
-  <int value="0" label="Dialog shown"/>
-  <int value="1" label="Continue without a device lock"/>
-  <int value="2" label="Device lock restored"/>
-</enum>
-
 <enum name="MissingNavbarInsetsReason">
   <int value="0" label="Other"/>
   <int value="1" label="InMultiWindow"/>

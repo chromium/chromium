@@ -11,7 +11,6 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -68,11 +67,6 @@ public class MissingDeviceLockLauncher {
             if (mMissingDeviceLockCoordinator != null) {
                 mMissingDeviceLockCoordinator.hideDialog(
                         DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Android.Automotive.DeviceLockRemovalDialogEvent",
-                        MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent
-                                .DEVICE_LOCK_RESTORED,
-                        MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent.COUNT);
                 mMissingDeviceLockCoordinator = null;
             }
             ChromeSharedPreferences.getInstance()

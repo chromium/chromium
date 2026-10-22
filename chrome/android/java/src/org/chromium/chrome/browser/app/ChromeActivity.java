@@ -12,10 +12,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.HandoffActivityData;
 import android.app.HandoffActivityDataRequestInfo;
-import android.app.KeyguardManager;
 import android.app.PictureInPictureUiState;
 import android.app.assist.AssistContent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
@@ -1462,11 +1460,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     private void checkForDeviceLockOnAutomotive() {
         if (DeviceInfo.isAutomotive()) {
-            KeyguardManager keyguardManager =
-                    (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.Automotive.DeviceLockSet", keyguardManager.isDeviceSecure());
-
             if (mMissingDeviceLockLauncher == null) {
                 var modalDialogManager = getModalDialogManagerSupplier().get();
                 assert modalDialogManager != null;
