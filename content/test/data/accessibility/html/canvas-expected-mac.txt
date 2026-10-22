@@ -1,5 +1,6 @@
 AXWebArea
 ++AXGroup
+++++AXImage
 ++++AXGroup
 ++++++AXStaticText AXValue='Static fallback'
 ++++AXGroup

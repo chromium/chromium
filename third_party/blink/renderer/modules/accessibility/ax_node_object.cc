@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_accessibility_manager.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -1308,12 +1309,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIgnoreObject;
   }
 
-  if (IsCanvas()) {
-    if (!CanvasAnnotation().empty()) {
-      return kIncludeObject;
-    }
-  }
-
   return kDefaultBehavior;
 }
 
@@ -1487,6 +1482,26 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
           ignored_reasons->push_back(IgnoredReason(kAXProbablyPresentational));
         }
         return true;
+      }
+
+      // When canvas accessibility is enabled, rendered canvases that meet the
+      // minimum size threshold (matching
+      // HTMLCanvasAccessibilityManager::kMinPixelSizeForTextVisibility) are
+      // included in the accessibility tree so automatic text capture and OCR
+      // annotations can run. Smaller unlabeled canvases will not be annotated
+      // and remain ignored.
+      if (base::FeatureList::IsEnabled(::features::kAccessibilityCanvas)) {
+        if (size.width < HTMLCanvasAccessibilityManager::
+                             kMinPixelSizeForTextVisibility ||
+            size.height < HTMLCanvasAccessibilityManager::
+                              kMinPixelSizeForTextVisibility) {
+          if (ignored_reasons) {
+            ignored_reasons->push_back(
+                IgnoredReason(kAXProbablyPresentational));
+          }
+          return true;
+        }
+        return false;
       }
     }
 

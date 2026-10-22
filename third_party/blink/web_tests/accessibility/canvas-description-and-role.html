@@ -6,7 +6,7 @@
 <style>canvas { display: inline; border: 1px solid #000; }</style>
     <!-- No whitespace between canvases on purpose, so there's the same
          number of children of the container element on all platforms. -->
-    <div id="container" tabIndex=0 aria-label="Container"><canvas id="canvas1" width="100" height="100" aria-label="Canvas label">Fallback text</canvas><canvas id="canvas2" width="100" height="100"><button>Inner button</button></canvas><canvas width="100" height="100"></canvas></div>
+    <div id="container" tabIndex=0 aria-label="Container"><canvas id="canvas1" width="100" height="100" aria-label="Canvas label">Fallback text</canvas><canvas id="canvas2" width="100" height="100"><button>Inner button</button></canvas><canvas id="canvas3" width="100" height="100" aria-label="Canvas 3 label"></canvas></div>
 
 <div id="console"></div>
 <script>
@@ -18,7 +18,7 @@ if (window.testRunner && window.accessibilityController) {
     document.getElementById('container').focus();
     var axContainer = accessibilityController.focusedElement;
 
-    shouldBe("axContainer.childrenCount", "2");
+    shouldBe("axContainer.childrenCount", "3");
 
     var axCanvas1 = axContainer.childAtIndex(0);
     debug('Canvas 1 description: ' + axCanvas1.name);
@@ -27,6 +27,10 @@ if (window.testRunner && window.accessibilityController) {
     var axCanvas2 = axContainer.childAtIndex(1);
     debug('Canvas 2 description: ' + axCanvas2.name);
     debug('Canvas 2 role: ' + axCanvas2.role);
+
+    var axCanvas3 = axContainer.childAtIndex(2);
+    debug('Canvas 3 description: ' + axCanvas3.name);
+    debug('Canvas 3 role: ' + axCanvas3.role);
 }
 
 </script>

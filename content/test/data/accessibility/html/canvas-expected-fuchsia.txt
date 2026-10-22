@@ -2,6 +2,7 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++UNKNOWN
+++++++UNKNOWN
 ++++++++STATIC_TEXT label='Static fallback'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Static fallback'

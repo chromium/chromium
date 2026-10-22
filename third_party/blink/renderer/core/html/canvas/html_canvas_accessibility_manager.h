@@ -53,6 +53,11 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
   // extracted, requiring support from the OCR service.
   static constexpr size_t kMaxTextRuns = 10;
 
+  // Minimum pixel size in either dimension for canvas text visibility.
+  // Canvases smaller than this threshold in either dimension are considered
+  // too small for automatic text capture or accessibility annotation.
+  static constexpr float kMinPixelSizeForTextVisibility = 10;
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // LINT.IfChange(CanvasAccessibilityHeuristicResult)

@@ -111,7 +111,6 @@ HTMLCanvasAccessibilityManager::ComputeHeuristicResult(
 
 bool HTMLCanvasAccessibilityManager::IsTooSmall(
     const HTMLCanvasElement& canvas_element) {
-  constexpr float kMinPixelSizeForTextVisibility = 10;
   gfx::SizeF layout_size;
   if (auto* layout_box =
           DynamicTo<LayoutBox>(canvas_element.GetLayoutObject())) {

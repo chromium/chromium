@@ -1,6 +1,7 @@
 [document web]
 ++[section]
 ++++[canvas]
+++++[canvas]
 ++++++[static] name='Static fallback'
 ++++[canvas]
 ++++++[static] name='Static fallback'

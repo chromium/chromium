@@ -134,6 +134,10 @@ void DumpAccessibilityTreeTest::RunApgPatternThirdPartyTest(
 void DumpAccessibilityTreeTest::ChooseFeatures(
     std::vector<base::test::FeatureRef>* enabled_features,
     std::vector<base::test::FeatureRef>* disabled_features) {
+  // Enable AccessibilityCanvas to ensure dump accessibility tree tests
+  // evaluate canvas structure with the feature enabled, consistent with
+  // the field trial testing configuration.
+  enabled_features->emplace_back(features::kAccessibilityCanvas);
   // crbug.com/339418716 - temporary until enabled by default
   enabled_features->emplace_back(blink::features::kUserMediaElement);
   enabled_features->emplace_back(blink::features::kUserMediaElementLegacy);

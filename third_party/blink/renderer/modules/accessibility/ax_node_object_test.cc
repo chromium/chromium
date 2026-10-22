@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -12,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -1154,6 +1157,118 @@ TEST_F(AccessibilityTest, ButtonWithSVGForeignObject) {
   const AXObject* btn_svg_title = GetAXObjectByElementId("btn-svg-title");
   ASSERT_NE(nullptr, btn_svg_title);
   EXPECT_EQ("SVG Title Override", btn_svg_title->ComputedName());
+}
+
+TEST_F(AccessibilityTest, UnlabeledCanvasIgnoredState) {
+  // 1. When kAccessibilityCanvas is disabled, an unlabeled canvas without an id
+  // attribute is ignored as uninteresting.
+  {
+    GetDocument().GetSettings()->SetScriptEnabled(true);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(::features::kAccessibilityCanvas);
+
+    SetBodyInnerHTML(R"HTML(
+      <canvas width="300" height="150"></canvas>
+      <canvas width="1" height="1"></canvas>
+    )HTML");
+
+    auto* canvases = GetDocument().QuerySelectorAll(AtomicString("canvas"));
+    ASSERT_EQ(2u, canvases->length());
+
+    const AXObject* ax_canvas = GetAXObject(*canvases->item(0));
+    ASSERT_NE(nullptr, ax_canvas);
+    EXPECT_TRUE(ax_canvas->IsIgnored());
+
+    const AXObject* ax_canvas_1x1 = GetAXObject(*canvases->item(1));
+    ASSERT_NE(nullptr, ax_canvas_1x1);
+    EXPECT_TRUE(ax_canvas_1x1->IsIgnored());
+  }
+
+  // 2. When kAccessibilityCanvas is enabled, visible rendered canvases meeting
+  // the minimum size threshold (>= 10x10 CSS pixels) are included in the
+  // accessibility tree even without an id attribute, while sub-10px, hidden,
+  // or presentational canvases remain ignored.
+  {
+    GetDocument().GetSettings()->SetScriptEnabled(true);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(::features::kAccessibilityCanvas);
+
+    SetBodyInnerHTML(R"HTML(
+      <canvas width="300" height="150"></canvas>
+      <canvas width="10" height="10"></canvas>
+      <canvas width="9" height="9"></canvas>
+      <canvas width="10" height="9"></canvas>
+      <canvas width="9" height="10"></canvas>
+      <canvas width="500" height="500" style="width: 5px; height: 5px;"></canvas>
+      <canvas width="5" height="5"></canvas>
+      <canvas width="1" height="1"></canvas>
+      <canvas style="display:none;" width="300" height="150"></canvas>
+      <canvas style="visibility:hidden;" width="300" height="150"></canvas>
+      <canvas aria-hidden="true" width="300" height="150"></canvas>
+      <canvas role="presentation" width="300" height="150"></canvas>
+    )HTML");
+
+    auto* canvases = GetDocument().QuerySelectorAll(AtomicString("canvas"));
+    ASSERT_EQ(12u, canvases->length());
+
+    // An unlabeled canvas >= 10x10 is NOT ignored when the feature is enabled.
+    const AXObject* ax_canvas_valid = GetAXObject(*canvases->item(0));
+    ASSERT_NE(nullptr, ax_canvas_valid);
+    EXPECT_FALSE(ax_canvas_valid->IsIgnored());
+
+    // A 10x10 canvas meets the minimum threshold and is NOT ignored.
+    const AXObject* ax_canvas_10x10 = GetAXObject(*canvases->item(1));
+    ASSERT_NE(nullptr, ax_canvas_10x10);
+    EXPECT_FALSE(ax_canvas_10x10->IsIgnored());
+
+    // Canvases smaller than 10 CSS pixels in either dimension are ignored.
+    const AXObject* ax_canvas_9x9 = GetAXObject(*canvases->item(2));
+    ASSERT_NE(nullptr, ax_canvas_9x9);
+    EXPECT_TRUE(ax_canvas_9x9->IsIgnored());
+
+    const AXObject* ax_canvas_10x9 = GetAXObject(*canvases->item(3));
+    ASSERT_NE(nullptr, ax_canvas_10x9);
+    EXPECT_TRUE(ax_canvas_10x9->IsIgnored());
+
+    const AXObject* ax_canvas_9x10 = GetAXObject(*canvases->item(4));
+    ASSERT_NE(nullptr, ax_canvas_9x10);
+    EXPECT_TRUE(ax_canvas_9x10->IsIgnored());
+
+    // A canvas with large buffer dimensions but styled layout size < 10x10 is
+    // ignored.
+    const AXObject* ax_canvas_styled_5x5 = GetAXObject(*canvases->item(5));
+    ASSERT_NE(nullptr, ax_canvas_styled_5x5);
+    EXPECT_TRUE(ax_canvas_styled_5x5->IsIgnored());
+
+    const AXObject* ax_canvas_5x5 = GetAXObject(*canvases->item(6));
+    ASSERT_NE(nullptr, ax_canvas_5x5);
+    EXPECT_TRUE(ax_canvas_5x5->IsIgnored());
+
+    // A 1x1 canvas is ignored as presentational.
+    const AXObject* ax_canvas_1x1 = GetAXObject(*canvases->item(7));
+    ASSERT_NE(nullptr, ax_canvas_1x1);
+    EXPECT_TRUE(ax_canvas_1x1->IsIgnored());
+
+    // A display:none canvas is ignored.
+    const AXObject* ax_canvas_none = GetAXObject(*canvases->item(8));
+    ASSERT_NE(nullptr, ax_canvas_none);
+    EXPECT_TRUE(ax_canvas_none->IsIgnored());
+
+    // A visibility:hidden canvas is ignored.
+    const AXObject* ax_canvas_hidden = GetAXObject(*canvases->item(9));
+    ASSERT_NE(nullptr, ax_canvas_hidden);
+    EXPECT_TRUE(ax_canvas_hidden->IsIgnored());
+
+    // An aria-hidden="true" canvas is ignored.
+    const AXObject* ax_canvas_aria_hidden = GetAXObject(*canvases->item(10));
+    ASSERT_NE(nullptr, ax_canvas_aria_hidden);
+    EXPECT_TRUE(ax_canvas_aria_hidden->IsIgnored());
+
+    // A role="presentation" canvas is ignored.
+    const AXObject* ax_canvas_presentation = GetAXObject(*canvases->item(11));
+    ASSERT_NE(nullptr, ax_canvas_presentation);
+    EXPECT_TRUE(ax_canvas_presentation->IsIgnored());
+  }
 }
 
 }  // namespace blink
