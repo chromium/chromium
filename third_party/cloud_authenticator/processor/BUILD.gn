@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_static_library.gni")
+import("//build/rust/cargo_crate.gni")
 
-rust_static_library("processor") {
-  crate_name = "processor"
+cargo_crate("processor") {
+  allow_unsafe = false
   sources = [
     "src/der.rs",
     "src/lib.rs",
@@ -25,9 +25,8 @@ rust_static_library("processor") {
     "//third_party/rust/prost/v0_14:lib",
     "//third_party/rust/static_assertions/v1:lib",
   ]
-  no_chromium_prelude = true
+  build_native_rust_unit_tests = false
   testonly = true
-  no_clippy = true  # TODO(https://crbug.com/472355480)
 
   # Switches to using test keys for the recovery key store.
   features = [ "chromium_integration_test" ]

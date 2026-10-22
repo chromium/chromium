@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_static_library.gni")
+import("//build/rust/cargo_crate.gni")
 
-rust_static_library("crypto") {
-  crate_name = "crypto"
+cargo_crate("crypto") {
+  allow_unsafe = false
   edition = "2021"
   sources = [ "src/lib.rs" ]
   deps = [
@@ -13,6 +13,6 @@ rust_static_library("crypto") {
     "//third_party/cloud_authenticator/cbor",
   ]
   features = [ "bssl" ]
-  no_chromium_prelude = true
+  build_native_rust_unit_tests = false
   testonly = true
 }

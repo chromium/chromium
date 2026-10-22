@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_static_library.gni")
+import("//build/rust/cargo_crate.gni")
 
-rust_static_library("handshake") {
-  crate_name = "handshake"
+cargo_crate("handshake") {
+  allow_unsafe = false
   sources = [
     "src/error.rs",
     "src/lib.rs",
@@ -15,7 +15,6 @@ rust_static_library("handshake") {
     "//third_party/cloud_authenticator/crypto",
     "//third_party/rust/static_assertions/v1:lib",
   ]
-  no_chromium_prelude = true
+  build_native_rust_unit_tests = false
   testonly = true
-  no_clippy = true  # TODO(https://crbug.com/472355480)
 }
