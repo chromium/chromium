@@ -92,6 +92,7 @@ public class AuxiliarySearchControllerImplUnitTest {
 
     @Before
     public void setUp() {
+        when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
 
         ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mHooks);

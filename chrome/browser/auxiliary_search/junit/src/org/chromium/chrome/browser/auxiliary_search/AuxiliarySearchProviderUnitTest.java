@@ -79,6 +79,7 @@ public class AuxiliarySearchProviderUnitTest {
         when(mMockFaviconHelperJni.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mMockFaviconHelperJni);
 
+        when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
         mAuxiliarySearchProvider =
                 new AuxiliarySearchProvider(

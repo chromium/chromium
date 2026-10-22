@@ -31,6 +31,7 @@ public class AuxiliarySearchControllerFactory {
     private @TriState int mIsTablet;
 
     private @Nullable AuxiliarySearchController mAuxiliarySearchMultiDataController;
+    private @Nullable AuxiliarySearchController mAuxiliarySearchCustomTabController;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
@@ -115,6 +116,18 @@ public class AuxiliarySearchControllerFactory {
                                 context, profile, AuxiliarySearchHostType.CTA);
             }
             return mAuxiliarySearchMultiDataController;
+        }
+
+        if (hostType == AuxiliarySearchHostType.CUSTOM_TAB) {
+            if (profile.isOffTheRecord()) {
+                return null;
+            }
+            if (mAuxiliarySearchCustomTabController == null) {
+                mAuxiliarySearchCustomTabController =
+                        new AuxiliarySearchControllerImpl(
+                                context, profile, /* tabModelSelector= */ null, hostType);
+            }
+            return mAuxiliarySearchCustomTabController;
         }
 
         return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector, hostType);

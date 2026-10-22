@@ -351,6 +351,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     protected void onDestroyInternal() {
+        mAuxiliarySearchController = null;
         if (mTimeoutHandler != null) mTimeoutHandler.onDestroy();
         super.onDestroyInternal();
     }
