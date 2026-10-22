@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "components/sync/base/data_type_histogram.h"
@@ -26,11 +25,6 @@
 namespace syncer {
 
 namespace {
-
-// When enabled, all the fields for SyncEntity are populated for commit-only
-// data types (otherwise, only `specifics` and `id_string` were populated).
-BASE_FEATURE(kSyncPopulateAllFieldsForCommitOnlyTypes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 CommitResponseData BuildCommitResponseData(
     const CommitRequestData& commit_request,
@@ -98,21 +92,8 @@ void CommitContributionImpl::AddToCommitMessage(
       CHECK(!commit_request->entity->is_deleted());
     }
 
-    if (CommitOnlyTypes().Has(type_) &&
-        !base::FeatureList::IsEnabled(
-            kSyncPopulateAllFieldsForCommitOnlyTypes)) {
-      // Only send specifics to server for commit-only types.
-      sync_entity->mutable_specifics()->CopyFrom(
-          commit_request->entity->specifics);
-
-      // Populate randomly-generated ID string similar to an uncommitted version
-      // of normal data types.
-      sync_entity->set_id_string(
-          base::Uuid::GenerateRandomV4().AsLowercaseString());
-    } else {
-      PopulateCommitProto(type_, *commit_request, sync_entity);
-      AdjustCommitProto(sync_entity);
-    }
+    PopulateCommitProto(type_, *commit_request, sync_entity);
+    AdjustCommitProto(sync_entity);
 
     // Purposefully crash if we have client only data, as this could result in
     // sending password in plain text.
