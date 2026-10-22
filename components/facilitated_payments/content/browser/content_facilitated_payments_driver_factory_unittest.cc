@@ -377,7 +377,7 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
 }
 
 // Tests that qualifying signals request images with the QR code size and
-// aspect ratio limits from Finch rather than Wallet's.
+// aspect ratio limits from Finch.
 TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
        OnHeuristicSignalsReported_DetectsWithQrCodeExtractionOptions) {
   static constexpr uint32_t kMinImageSize = 80;
@@ -408,7 +408,7 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   EXPECT_EQ(barcode_detector_->detect_count(), 0);
 }
 
-// Tests that a decoded QR code ends the evaluation, latches the page as
+// Tests that a decoded QR code ends the evaluation, marks the page as
 // detected and stops the renderer from rescanning.
 TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
        OnBarcodesDetected_QrCode_StopsDetectionForPage) {
@@ -432,7 +432,7 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   EXPECT_TRUE(factory_->has_detected_qr_code_for_testing());
 }
 
-// Tests that an evaluation without a QR code ends without latching the page,
+// Tests that an evaluation without a QR code ends without marking the page,
 // so that a later report can try again.
 TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
        OnBarcodesDetected_NoQrCode_AllowsAnotherEvaluation) {
@@ -462,6 +462,78 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
                               .format = wallet::WalletBarcodeFormat::QR_CODE}});
 
   EXPECT_FALSE(factory_->has_detected_qr_code_for_testing());
+}
+
+// Mirrors the factory's per-page limit on image extractions.
+constexpr int kMaxQrCodeChecksPerPage = 3;
+
+// Finishes a pending detection on the page without finding a QR code.
+void FinishWithoutQrCode(FakeBarcodeDetector& barcode_detector) {
+  barcode_detector.Finish({{.raw_value = "012345678905",
+                            .format = wallet::WalletBarcodeFormat::UPC_A}});
+}
+
+// Tests that a page is checked at most three times, so that a qualifying page
+// without a QR code is not decoded again after every change.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnHeuristicSignalsReported_AfterThreeChecks_DoesNotDetect) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  for (int i = 0; i < kMaxQrCodeChecksPerPage; ++i) {
+    SCOPED_TRACE(testing::Message() << "Check " << i + 1);
+    factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+    ASSERT_EQ(barcode_detector_->detect_count(), i + 1);
+    ASSERT_EQ(factory_->qr_code_check_count_for_testing(), i + 1);
+    FinishWithoutQrCode(*barcode_detector_);
+  }
+
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  EXPECT_EQ(barcode_detector_->detect_count(), kMaxQrCodeChecksPerPage);
+  EXPECT_FALSE(factory_->is_evaluating_qr_code_for_testing());
+}
+
+// Tests that the renderer's scans stop after the last check finds no QR code,
+// since further signals could not start another check.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_LastCheckWithoutQrCode_StopsRendererScans) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent> remote;
+  MockFacilitatedPaymentsAgent mock_agent;
+  mojo::AssociatedReceiver<mojom::FacilitatedPaymentsAgent> receiver(
+      &mock_agent, remote.BindNewEndpointAndPassDedicatedReceiver());
+  factory_->GetOrCreateForFrame(main_rfh())
+      .SetFacilitatedPaymentsAgentForTesting(std::move(remote));
+  for (int i = 0; i < kMaxQrCodeChecksPerPage - 1; ++i) {
+    factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+    FinishWithoutQrCode(*barcode_detector_);
+  }
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(mock_agent, SetQrCodeDetectionEnabled(false))
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  FinishWithoutQrCode(*barcode_detector_);
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(factory_->has_detected_qr_code_for_testing());
+}
+
+// Tests that committing a new document gives the next page its own checks.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       DidFinishNavigation_ResetsQrCodeCheckCount) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  for (int i = 0; i < kMaxQrCodeChecksPerPage; ++i) {
+    factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+    FinishWithoutQrCode(*barcode_detector_);
+  }
+  ASSERT_EQ(factory_->qr_code_check_count_for_testing(),
+            kMaxQrCodeChecksPerPage);
+
+  NavigateAndCommit(GURL("https://merchant.example/order"));
+  EXPECT_EQ(factory_->qr_code_check_count_for_testing(), 0);
+
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+  EXPECT_EQ(barcode_detector_->detect_count(), kMaxQrCodeChecksPerPage + 1);
 }
 
 // Parameters: `has_facilitated_payment_link`, `has_square_candidate`,

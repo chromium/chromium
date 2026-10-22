@@ -53,8 +53,8 @@ class ContentFacilitatedPaymentsDriverFactory
 
   // Decides from the renderer's page `signals` whether to extract images from
   // `render_frame_host` for QR code decoding. Images are extracted only for the
-  // active primary main frame, at most one evaluation at a time, and if there
-  // is no QR code detected on the current page.
+  // active primary main frame, at most one evaluation at a time, at most three
+  // times per page.
   virtual void OnHeuristicSignalsReported(
       content::RenderFrameHost* render_frame_host,
       const mojom::HeuristicSignals& signals);
@@ -65,6 +65,7 @@ class ContentFacilitatedPaymentsDriverFactory
   bool has_detected_qr_code_for_testing() const {
     return has_detected_qr_code_;
   }
+  int qr_code_check_count_for_testing() const { return qr_code_check_count_; }
   void set_has_detected_qr_code_for_testing(bool has_detected_qr_code) {
     has_detected_qr_code_ = has_detected_qr_code;
   }
@@ -123,8 +124,8 @@ class ContentFacilitatedPaymentsDriverFactory
   bool IsEligibleForQrCodeDetection(const GURL& url) const;
 
   // Handles the `barcodes` decoded from the images of `document`. Ends the
-  // current evaluation, and if a QR code was found, stops detection for the
-  // rest of the page.
+  // current evaluation, and stops detection for the rest of the page if a QR
+  // code was found or the page has used all its checks.
   void OnBarcodesDetected(content::WeakDocumentPtr document,
                           std::vector<wallet::WalletBarcode> barcodes);
 
@@ -135,7 +136,7 @@ class ContentFacilitatedPaymentsDriverFactory
                  std::unique_ptr<ContentFacilitatedPaymentsDriver>>
       driver_map_;
 
-  // Per-page QR code state. Both are reset when the primary main frame commits
+  // Per-page QR code state. All are reset when the primary main frame commits
   // a new document.
   // True while images are being extracted and decoded. Prevents a page that
   // fires many layout or scroll events from starting overlapping extractions.
@@ -143,6 +144,9 @@ class ContentFacilitatedPaymentsDriverFactory
   // True once a QR code has been found. Stops detection for the rest of the
   // page.
   bool has_detected_qr_code_ = false;
+  // The number of image extractions started for the page. Detection stops once
+  // it reaches the per-page limit.
+  int qr_code_check_count_ = 0;
 
   // Extracts the page images and decodes the barcodes in them.
   std::unique_ptr<wallet::WalletablePassBarcodeDetector> barcode_detector_;

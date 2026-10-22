@@ -41,6 +41,9 @@ bool ShouldExtractImagesForQrCode(const mojom::HeuristicSignals& signals) {
          (signals.url_keyword_match || signals.text_keyword_match);
 }
 
+// The maximum number of image extractions per page.
+constexpr int kMaxQrCodeChecksPerPage = 3;
+
 }  // namespace
 
 ContentFacilitatedPaymentsDriverFactory::
@@ -80,7 +83,8 @@ void ContentFacilitatedPaymentsDriverFactory::OnHeuristicSignalsReported(
       !render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
-  if (has_detected_qr_code_ || is_evaluating_qr_code_) {
+  if (has_detected_qr_code_ || is_evaluating_qr_code_ ||
+      qr_code_check_count_ >= kMaxQrCodeChecksPerPage) {
     return;
   }
   if (!ShouldExtractImagesForQrCode(signals)) {
@@ -88,6 +92,7 @@ void ContentFacilitatedPaymentsDriverFactory::OnHeuristicSignalsReported(
   }
 
   is_evaluating_qr_code_ = true;
+  ++qr_code_check_count_;
   // Uses the same Finch limits as the renderer's square image signal, so that
   // only the images that made the page qualify are decoded.
   barcode_detector_->Detect(
@@ -116,19 +121,24 @@ void ContentFacilitatedPaymentsDriverFactory::OnBarcodesDetected(
   }
 
   // The detector decodes every barcode format, so only QR codes count.
-  if (std::ranges::none_of(barcodes, [](const wallet::WalletBarcode& barcode) {
+  const bool has_qr_code =
+      std::ranges::any_of(barcodes, [](const wallet::WalletBarcode& barcode) {
         return barcode.format == wallet::WalletBarcodeFormat::QR_CODE;
-      })) {
+      });
+  if (!has_qr_code && qr_code_check_count_ < kMaxQrCodeChecksPerPage) {
     return;
   }
 
-  has_detected_qr_code_ = true;
-  // Turns off the renderer's heuristic scans, since this page already has a
-  // QR code and no further signals are needed.
+  has_detected_qr_code_ = has_qr_code;
+  // Turns off the renderer's heuristic scans, since this page either has a QR
+  // code or has used all its checks, so no further signals are needed.
   const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>& agent =
       GetOrCreateForFrame(render_frame_host).GetFacilitatedPaymentsAgent();
   if (agent.is_bound()) {
     agent->SetQrCodeDetectionEnabled(false);
+  }
+  if (!has_qr_code) {
+    return;
   }
   // TODO(crbug.com/556832672): Validate the decoded QR codes and forward them
   // to the frame's driver.
@@ -149,6 +159,7 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishNavigation(
   }
   is_evaluating_qr_code_ = false;
   has_detected_qr_code_ = false;
+  qr_code_check_count_ = 0;
 
   auto& driver = GetOrCreateForFrame(navigation_handle->GetRenderFrameHost());
 #if BUILDFLAG(IS_ANDROID)
