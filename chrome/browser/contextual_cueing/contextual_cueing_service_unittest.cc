@@ -349,6 +349,9 @@ TEST_F(ContextualCueingServiceV2Test, HatsSurveyCategoryResolution) {
             ContextualCueSurveyCategory::kEducation);
   EXPECT_EQ(GetSurveyCategory(CueTargetType::kContextualSearch, "TRAVEL"),
             ContextualCueSurveyCategory::kUnknown);
+  EXPECT_EQ(
+      GetSurveyCategory(CueTargetType::kAbaSearchJourney, "AbaSearchJourney"),
+      ContextualCueSurveyCategory::kUnknown);
   EXPECT_EQ(GetSurveyCategory(CueTargetType::kTestSource, "Test"),
             ContextualCueSurveyCategory::kUnknown);
 

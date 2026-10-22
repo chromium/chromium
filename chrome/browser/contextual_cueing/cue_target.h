@@ -36,7 +36,8 @@ enum class CueTargetType {
   kTestSource = 1,
   kIndigo = 2,
   kContextualSearch = 3,
-  kMaxValue = kContextualSearch
+  kAbaSearchJourney = 4,
+  kMaxValue = kAbaSearchJourney
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:CueTargetType)
 

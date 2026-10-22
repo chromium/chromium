@@ -48,6 +48,8 @@ const char* GetName(CueTargetType type) {
       return "Indigo";
     case CueTargetType::kContextualSearch:
       return "ContextualSearch";
+    case CueTargetType::kAbaSearchJourney:
+      return "AbaSearchJourney";
   }
 }
 

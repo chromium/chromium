@@ -330,6 +330,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Test Source"/>
   <int value="2" label="Indigo"/>
   <int value="3" label="ContextualSearch"/>
+  <int value="4" label="AbaSearchJourney"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/cue_target.h:CueTargetType) -->
