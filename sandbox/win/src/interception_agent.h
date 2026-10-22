@@ -10,16 +10,16 @@
 #define SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_
 
 #include <windows.h>
+
 #include <winternl.h>
 
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/sandbox_types.h"
 
 namespace sandbox {
 
 // Internal structures used for communication between the broker and the target.
-struct ThunkData;
+struct DllInterceptionData;
 struct SharedMemory;
 struct DllPatchInfo;
 
@@ -38,6 +38,8 @@ class ResolverThunk;
 // loader lock.
 class InterceptionAgent {
  public:
+  InterceptionAgent() = delete;
+
   // Returns the single InterceptionAgent object for this process.
   static InterceptionAgent* GetInterceptionAgent();
 
@@ -58,27 +60,21 @@ class InterceptionAgent {
   void OnDllUnload(void* base_address);
 
  private:
-  // Holds interception data for a loaded DLL.
-  struct DllData {
-    // RAW_PTR_EXCLUSION: Module base address not managed by an allocation.
-    RAW_PTR_EXCLUSION void* base = nullptr;
-    // RAW_PTR_EXCLUSION: Accessed too early during the process startup to
-    // support raw_ptr<T> / raw_span<T>.
-    RAW_PTR_EXCLUSION base::span<ThunkData> thunks;
-  };
+  ~InterceptionAgent() {}
 
-  explicit InterceptionAgent(SharedMemory* shared_memory);
-  // The singleton lives for the lifetime of the process and is never destroyed.
-  ~InterceptionAgent() = delete;
+  // Performs initialization of the singleton.
+  bool Init(SharedMemory* shared_memory);
 
   // Returns true if we are interested on this dll. dll_info is an entry of the
   // list of intercepted dlls.
   bool DllMatch(const UNICODE_STRING* full_path, const UNICODE_STRING* name,
                 const DllPatchInfo* dll_info);
 
-  // Performs the patching of the dll described by `dll_info` and `dll`.
+  // Performs the patching of the dll loaded at base_address.
+  // The patches to perform are described on dll_info, and thunks is the thunk
+  // storage for the whole dll.
   // Returns true on success.
-  bool PatchDll(const DllPatchInfo* dll_info, DllData& dll);
+  bool PatchDll(const DllPatchInfo* dll_info, DllInterceptionData* thunks);
 
   // Returns a resolver for a given interception type.
   ResolverThunk* GetResolver(InterceptionType type);
@@ -88,10 +84,10 @@ class InterceptionAgent {
   // raw_ptr<T>.
   RAW_PTR_EXCLUSION SharedMemory* interceptions_;
 
-  // Thunk data buffers for the intercepted dlls.
-  // RAW_PTR_EXCLUSION: Accessed too early during the process startup to support
-  // raw_span<T>.
-  RAW_PTR_EXCLUSION base::span<DllData> dlls_;
+  // Array of thunk data buffers for the intercepted dlls. This object singleton
+  // is allocated with a placement new with enough space to hold the complete
+  // array of pointers, not just the first element.
+  DllInterceptionData* dlls_[1];
 };
 
 }  // namespace sandbox
