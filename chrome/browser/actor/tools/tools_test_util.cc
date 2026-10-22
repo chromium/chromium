@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/actor/core/actor_features.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_client.h"
@@ -212,7 +213,22 @@ void MockActorLoginService::OnActionSequenceEnded(bool success) {
 ActorToolsTest::ActorToolsTest() {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{features::kGlic, {}}},
+      {{features::kGlic, {}},
+       {kActorPageStability,
+        {{kActorPageStabilityMinWait.name, "0ms"},
+         {kActorPaintStabilityInitialPaintTimeout.name, "0ms"},
+         {kActorPaintStabilitySubsequentPaintTimeout.name, "0ms"}}},
+       {kActorObservationDelay, {{kActorObservationDelayLcp.name, "0ms"}}},
+       {kActorTypeToolObservationStartDelay,
+        {{kActorTypeToolObservationStartDelayDuration.name, "0ms"}}},
+       {kActorTypeToolEnterDelay,
+        {{kActorTypeToolEnterDelayParam.name, "0ms"}}},
+       {features::kGlicActorIncrementalTyping,
+        {{features::kGlicActorKeyDownDuration.name, "0ms"},
+         {features::kGlicActorKeyUpDuration.name, "0ms"}}},
+       {features::kGlicActorUiMagicCursor,
+        {{features::kGlicActorUiMagicCursorMinDuration.name, "1"},
+         {features::kGlicActorUiMagicCursorMaxDuration.name, "1"}}}},
       /*disabled_features=*/{features::kGlicWarming});
 }
 
