@@ -2465,117 +2465,10 @@ TEST_F(
   // `observer_` was not notified of any pref change.
 }
 
-class DualLayerUserPrefStoreMaybeMergeEnabledTest
-    : public DualLayerUserPrefStoreMergeTest {
-  base::test::ScopedFeatureList feature_list_{
-      features::kOptimizeDualLayerUserPrefStoreMaybeMerge};
-};
-
-class DualLayerUserPrefStoreMaybeMergeDisabledTest
-    : public DualLayerUserPrefStoreMergeTest {
- public:
-  DualLayerUserPrefStoreMaybeMergeDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kOptimizeDualLayerUserPrefStoreMaybeMerge);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(DualLayerUserPrefStoreMaybeMergeDisabledTest,
-       ShouldMergeAndNotifyWhenOptimizationDisabled) {
-  store()->GetAccountPrefStore()->SetValueSilently(
-      kMergeableDictPref1,
-      base::Value(base::DictValue()
-                      .Set("account_key", "account_value")
-                      .Set("common_key", "account_value")),
-      0);
-  store()->GetLocalPrefStore()->SetValueSilently(
-      kMergeableDictPref1,
-      base::Value(base::DictValue()
-                      .Set("local_key", "local_value")
-                      .Set("common_key", "local_value")),
-      0);
-
-  const base::Value* merged_value = nullptr;
-  ASSERT_TRUE(store()->GetValue(kMergeableDictPref1, &merged_value));
-  EXPECT_EQ(*merged_value,
-            base::Value(base::DictValue()
-                            .Set("account_key", "account_value")
-                            .Set("local_key", "local_value")
-                            .Set("common_key", "account_value")));
-
-  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableDictPref1));
-  store()->GetLocalPrefStore()->SetValue(
-      kMergeableDictPref1,
-      base::Value(base::DictValue()
-                      .Set("local_key", "new_local_value")
-                      .Set("common_key", "local_value")),
-      0);
-}
-
-TEST_F(DualLayerUserPrefStoreMaybeMergeDisabledTest,
-       ShouldUpdateMergedPrefOnWriteToUnderlyingStoresUsingSetValueSilently) {
-  store()->GetAccountPrefStore()->SetValueSilently(
-      kMergeableDictPref1,
-      base::Value(base::DictValue()
-                      .Set("account_key", "account_value")
-                      .Set("common_key", "account_value")),
-      0);
-  store()->GetLocalPrefStore()->SetValueSilently(
-      kMergeableDictPref1,
-      base::Value(base::DictValue()
-                      .Set("local_key", "local_value")
-                      .Set("common_key", "local_value")),
-      0);
-
-  ASSERT_TRUE(
-      ValueInStoreIs(*store(), kMergeableDictPref1,
-                     base::Value(base::DictValue()
-                                     .Set("account_key", "account_value")
-                                     .Set("local_key", "local_value")
-                                     .Set("common_key", "account_value"))));
-
-  // Update account value.
-  store()->GetAccountPrefStore()->SetValueSilently(
-      kMergeableDictPref1,
-      base::Value(base::DictValue()
-                      // Updated value.
-                      .Set("account_key", "new_account_value")
-                      .Set("common_key", "account_value")),
-      0);
-
-  // Updated account value should reflect in the merged view.
-  EXPECT_TRUE(
-      ValueInStoreIs(*store(), kMergeableDictPref1,
-                     base::Value(base::DictValue()
-                                     // Updated value.
-                                     .Set("account_key", "new_account_value")
-                                     .Set("local_key", "local_value")
-                                     .Set("common_key", "account_value"))));
-
-  // Add new key to local value.
-  store()->GetLocalPrefStore()->SetValueSilently(
-      kMergeableDictPref1,
-      base::Value(base::DictValue()
-                      .Set("local_key", "local_value")
-                      .Set("new_local_key", "local_value")
-                      .Set("common_key", "local_value")),
-      0);
-
-  // Updated local value should reflect in the merged view.
-  EXPECT_TRUE(
-      ValueInStoreIs(*store(), kMergeableDictPref1,
-                     base::Value(base::DictValue()
-                                     .Set("account_key", "new_account_value")
-                                     .Set("local_key", "local_value")
-                                     // New entry.
-                                     .Set("new_local_key", "local_value")
-                                     .Set("common_key", "account_value"))));
-}
-
-TEST_F(DualLayerUserPrefStoreMaybeMergeEnabledTest,
+// Verifies that the cached merged preference pointer remains stable when
+// underlying stores are updated, both when the effective merged value is
+// unchanged and when it is updated in-place.
+TEST_F(DualLayerUserPrefStoreMergeTest,
        MergedPrefPointerStabilityOnUnderlyingWrites) {
   // Initial setup.
   store()->GetAccountPrefStore()->SetValueSilently(
@@ -2598,7 +2491,7 @@ TEST_F(DualLayerUserPrefStoreMaybeMergeEnabledTest,
 
   // 1. Edge Case: Update local store's conflicting key.
   // Since account store wins on conflicts, the merged value should NOT change.
-  // Use SetValue (non-silent) so it triggers the observer and cache update.
+  // Use `SetValue()` (non-silent) so it triggers the observer and cache update.
   store()->GetLocalPrefStore()->SetValue(
       kMergeableDictPref1,
       base::Value(
@@ -2644,9 +2537,11 @@ TEST_F(DualLayerUserPrefStoreMaybeMergeEnabledTest,
                                      .Set("common_key", "account_value"))));
 }
 
-TEST_F(DualLayerUserPrefStoreMaybeMergeEnabledTest,
+// Verifies that setting the exact same merged preference value via `SetValue()`
+// preserves the cached merged value pointer.
+TEST_F(DualLayerUserPrefStoreMergeTest,
        MergedPrefPointerStabilityOnSetValueSameValue) {
-  // Initial setup via SetValueSilently.
+  // Initial setup via `SetValueSilently()`.
   store()->SetValueSilently(
       kMergeableDictPref1,
       base::Value(base::DictValue()

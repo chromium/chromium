@@ -77,9 +77,7 @@ void DualLayerUserPrefStore::UnderlyingPrefStoreObserver::OnPrefValueChanged(
   // Note: Observers should only be notified if the effective value of a pref
   // changes.
   if (outer_->IsPrefKeyMergeable(key)) {
-    if (base::FeatureList::IsEnabled(
-            features::kOptimizeDualLayerUserPrefStoreMaybeMerge) &&
-        !outer_->UpdateMergedPrefCacheIfMergeable(key)) {
+    if (!outer_->UpdateMergedPrefCacheIfMergeable(key)) {
       // The effective value of the mergeable pref did not change.
       return;
     }
@@ -738,9 +736,7 @@ const base::Value* DualLayerUserPrefStore::MaybeMerge(
   }
 
   const base::Value* merged_pref = nullptr;
-  if (base::FeatureList::IsEnabled(
-          features::kOptimizeDualLayerUserPrefStoreMaybeMerge) &&
-      merged_prefs_.GetValue(pref_name, &merged_pref)) {
+  if (merged_prefs_.GetValue(pref_name, &merged_pref)) {
     return merged_pref;
   }
 
@@ -766,9 +762,7 @@ base::Value* DualLayerUserPrefStore::MaybeMerge(std::string_view pref_name,
 
 bool DualLayerUserPrefStore::UpdateMergedPrefCacheIfMergeable(
     std::string_view key) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kOptimizeDualLayerUserPrefStoreMaybeMerge) ||
-      !IsPrefKeyMergeable(key)) {
+  if (!IsPrefKeyMergeable(key)) {
     return false;
   }
 
