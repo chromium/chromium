@@ -32,6 +32,7 @@ class MenuRunner;
 }  // namespace views
 
 class BrowserWindowInterface;
+class OrganizerPanelController;
 class TabSearchBubbleHost;
 class TabStripFlatEdgeButton;
 class ExpandOnHoverLock;
@@ -87,6 +88,11 @@ class TabStripComboButton : public views::View,
   gfx::Size GetPreferredSizeForOrientation(
       views::LayoutOrientation orientation);
 
+  void OnMenuClosedForTesting() { OnMenuClosed(); }
+  const base::OneShotTimer& hide_tab_search_timer_for_testing() const {
+    return hide_tab_search_timer_;
+  }
+
  protected:
   // views::View:
   void ChildVisibilityChanged(views::View* child) override;
@@ -107,6 +113,9 @@ class TabStripComboButton : public views::View,
   void OnMenuClosed();
 
   void MaybeHideTabSearchButton();
+
+  void OnOrganizerPanelStateChanged(OrganizerPanelController* controller);
+  bool IsOrganizerPanelEmbeddedInVerticalTabStrip() const;
 
   bool IsTabSearchPinned();
 
@@ -139,6 +148,7 @@ class TabStripComboButton : public views::View,
   base::OneShotTimer hide_tab_search_timer_;
   base::ScopedObservation<TabSearchBubbleHost, TabSearchBubbleHostObserver>
       tab_search_bubble_host_observation_{this};
+  base::CallbackListSubscription organizer_panel_subscription_;
 
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 };

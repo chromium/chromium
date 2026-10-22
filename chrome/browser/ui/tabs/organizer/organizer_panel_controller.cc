@@ -204,6 +204,17 @@ bool OrganizerPanelController::IsOrganizerPanelVisible() const {
   return is_visible_;
 }
 
+bool OrganizerPanelController::IsOrganizerPanelEmbeddedInVerticalTabStrip()
+    const {
+  return IsOrganizerPanelVisible() &&
+         (GetCurrentOrganizerPanelLocation() ==
+              OrganizerPanelLocation::kVerticalTabStrip ||
+          (GetCurrentOrganizerPanelLocation() ==
+               OrganizerPanelLocation::kNone &&
+           OrganizerPanelHost::GetPreferredLocation(*browser_window_) ==
+               OrganizerPanelLocation::kVerticalTabStrip));
+}
+
 void OrganizerPanelController::SetOrganizerVisible(bool visible,
                                                    bool immediate) {
   if (is_visible_ == visible) {
@@ -301,12 +312,7 @@ void OrganizerPanelController::UpdateOrganizerActionItem() {
   }
 
   const bool is_panel_in_vertical_strip =
-      IsOrganizerPanelVisible() &&
-      (GetCurrentOrganizerPanelLocation() ==
-           OrganizerPanelLocation::kVerticalTabStrip ||
-       (GetCurrentOrganizerPanelLocation() == OrganizerPanelLocation::kNone &&
-        OrganizerPanelHost::GetPreferredLocation(*browser_window_) ==
-            OrganizerPanelLocation::kVerticalTabStrip));
+      IsOrganizerPanelEmbeddedInVerticalTabStrip();
   const auto& text = is_panel_in_vertical_strip
                          ? IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH
                          : IDS_TAB_SEARCH_MENU;

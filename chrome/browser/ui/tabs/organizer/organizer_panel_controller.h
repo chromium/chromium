@@ -46,6 +46,10 @@ class OrganizerPanelController {
 
   bool IsOrganizerPanelVisible() const;
 
+  // Returns whether the organizer panel is currently visible and embedded
+  // within the vertical tab strip.
+  bool IsOrganizerPanelEmbeddedInVerticalTabStrip() const;
+
   void SetOrganizerVisible(bool visible, bool immediate = false);
 
   OrganizerPanelLocation GetCurrentOrganizerPanelLocation() const;

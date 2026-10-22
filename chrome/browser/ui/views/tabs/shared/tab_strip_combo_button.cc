@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 
+#include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -103,6 +105,15 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
       base::BindRepeating(&TabStripComboButton::UpdateButtonsVisibility,
                           base::Unretained(this)));
 
+  if (context_ == Context::kVerticalTabStrip &&
+      organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+    auto* controller = OrganizerPanelController::From(browser_);
+    CHECK(controller);
+    organizer_panel_subscription_ = controller->RegisterOnStateChanged(
+        base::BindRepeating(&TabStripComboButton::OnOrganizerPanelStateChanged,
+                            base::Unretained(this)));
+  }
+
   UpdateButtonsVisibility();
   UpdateStyles();
 
@@ -145,8 +156,10 @@ void TabStripComboButton::UpdateButtonsVisibility() {
         prefs->GetBoolean(prefs::kEverythingMenuPinnedToTabstrip));
   }
 
+  const bool is_tab_search_visible =
+      IsTabSearchPinned() || show_tab_search_ephemerally_;
   update_button_visibility(GetEndButtonActionItem(), end_button_animation_,
-                           IsTabSearchPinned() || show_tab_search_ephemerally_);
+                           is_tab_search_visible);
 }
 
 void TabStripComboButton::SetOrientation(views::LayoutOrientation orientation) {
@@ -321,7 +334,7 @@ void TabStripComboButton::ShowContextMenuForViewImpl(
 
 void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_TAB_SEARCH_TOGGLE_PIN) {
-    show_tab_search_ephemerally_ = false;
+    show_tab_search_ephemerally_ = IsOrganizerPanelEmbeddedInVerticalTabStrip();
     hide_tab_search_timer_.Stop();
     chrome::ExecuteCommand(browser_, command_id);
     return;
@@ -397,12 +410,36 @@ void TabStripComboButton::SetTabSearchBubbleHost(TabSearchBubbleHost* host) {
 }
 
 void TabStripComboButton::MaybeHideTabSearchButton() {
-  if (IsTabSearchPinned() || (menu_runner_ && menu_runner_->IsRunning())) {
+  if (IsTabSearchPinned() || (menu_runner_ && menu_runner_->IsRunning()) ||
+      IsOrganizerPanelEmbeddedInVerticalTabStrip()) {
     return;
   }
 
   show_tab_search_ephemerally_ = false;
   UpdateButtonsVisibility();
+}
+
+void TabStripComboButton::OnOrganizerPanelStateChanged(
+    OrganizerPanelController* controller) {
+  if (IsTabSearchPinned()) {
+    return;
+  }
+
+  if (controller->IsOrganizerPanelEmbeddedInVerticalTabStrip()) {
+    hide_tab_search_timer_.Stop();
+    show_tab_search_ephemerally_ = true;
+    UpdateButtonsVisibility();
+  } else if (show_tab_search_ephemerally_) {
+    hide_tab_search_timer_.Start(
+        FROM_HERE, kHideTabSearchButtonDelay,
+        base::BindOnce(&TabStripComboButton::MaybeHideTabSearchButton,
+                       base::Unretained(this)));
+  }
+}
+
+bool TabStripComboButton::IsOrganizerPanelEmbeddedInVerticalTabStrip() const {
+  auto* controller = OrganizerPanelController::From(browser_);
+  return controller && controller->IsOrganizerPanelEmbeddedInVerticalTabStrip();
 }
 
 bool TabStripComboButton::IsTabSearchPinned() {
@@ -516,7 +553,8 @@ gfx::Size TabStripComboButton::GetPreferredSizeForOrientation(
 void TabStripComboButton::OnMenuClosed() {
   expand_on_hover_lock_.reset();
   menu_runner_.reset();
-  if (show_tab_search_ephemerally_) {
+  if (show_tab_search_ephemerally_ &&
+      !IsOrganizerPanelEmbeddedInVerticalTabStrip()) {
     hide_tab_search_timer_.Start(
         FROM_HERE, kHideTabSearchButtonDelay,
         base::BindOnce(&TabStripComboButton::MaybeHideTabSearchButton,

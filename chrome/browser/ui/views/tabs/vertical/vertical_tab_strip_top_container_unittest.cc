@@ -11,12 +11,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller_impl.h"
+#include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_segmented_control.h"
 #include "chrome/common/pref_names.h"
@@ -98,6 +101,8 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
   void TearDown() override {
     top_container_ = nullptr;
     widget_.reset();
+    organizer_panel_controller_.reset();
+    animation_controller_.reset();
     if (controller_) {
       controller_->SetDelegate(nullptr);
     }
@@ -107,6 +112,20 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
 
   void ResetTopContainer() {
     top_container_ = nullptr;
+    if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+      if (!organizer_panel_controller_) {
+        animation_controller_ = std::make_unique<BrowserAnimationController>(
+            mock_browser_window_interface_);
+        animation_controller_->AddAnimationProvider(
+            std::make_unique<OrganizerPanelAnimations>());
+        organizer_panel_controller_ =
+            std::make_unique<OrganizerPanelController>(
+                mock_browser_window_interface_, /*root_action_item=*/nullptr);
+      }
+    } else {
+      organizer_panel_controller_.reset();
+      animation_controller_.reset();
+    }
     top_container_ =
         widget_->SetContentsView(std::make_unique<VerticalTabStripTopContainer>(
             controller_.get(), action_item_.get(),
@@ -152,6 +171,8 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
   raw_ptr<VerticalTabStripTopContainer> top_container_;
   TestVerticalTabStripDelegate test_delegate_;
   std::unique_ptr<tabs::VerticalTabStripStateController> controller_;
+  std::unique_ptr<BrowserAnimationController> animation_controller_;
+  std::unique_ptr<OrganizerPanelController> organizer_panel_controller_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   TestingProfile profile_;
   MockBrowserWindowInterface mock_browser_window_interface_;

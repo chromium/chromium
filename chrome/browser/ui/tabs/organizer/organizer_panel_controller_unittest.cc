@@ -201,7 +201,13 @@ class OrganizerPanelControllerMovePanelTest
                                    : tray_view())
                   ->Contains(view);
             },
-            true));
+            true),
+        CheckResult(
+            [this]() {
+              return state_controller_
+                  ->IsOrganizerPanelEmbeddedInVerticalTabStrip();
+            },
+            in_tab_strip));
     AddDescriptionPrefix(steps, "ExpectPanel");
     return steps;
   }

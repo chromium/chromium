@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
@@ -252,6 +253,23 @@ class TabStripComboButtonOrganizerPanelInteractiveUiTest
                        return button->GetTooltipText() == expected_tooltip;
                      });
   }
+
+  auto ResizeVerticalTabsRegionToWidth(int width) {
+    return Do([this, width]() {
+      auto* vt_region_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->vertical_tab_strip_region_view_for_testing();
+      vt_region_view->OnResize(width - vt_region_view->width(), true);
+      RunScheduledLayouts();
+    });
+  }
+
+  auto ExecuteCommand(int command_id) {
+    return WithView(
+        kTabStripComboButtonElementId, [command_id](views::View* combo) {
+          views::AsViewClass<TabStripComboButton>(combo)->ExecuteCommand(
+              command_id, 0);
+        });
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
@@ -290,6 +308,131 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
       PressButton(kTabSearchButtonElementId),
       WaitForHide(kOrganizerPanelElementId), CheckTabSearchIcon(search_icon),
       CheckTabSearchTooltip(view_tooltip));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
+                       HideTabSearchAfterEphemeralShow) {
+  const gfx::VectorIcon& search_icon = features::IsRoundedIconsEnabled()
+                                           ? kManageSearchIcon
+                                           : kTabSearchTabStripOldIcon;
+  const gfx::VectorIcon& close_icon = features::IsRoundedIconsEnabled()
+                                          ? kCloseSmallIcon
+                                          : kCloseChromeRefreshOldIcon;
+  const std::u16string search_tooltip =
+      chrome::GetCleanText(l10n_util::GetStringUTF16(IDS_TAB_SEARCH_MENU));
+  const std::u16string close_tooltip = chrome::GetCleanText(
+      l10n_util::GetStringUTF16(IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH));
+
+  RunTestSequence(
+      // Ensure tab search is not pinned.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
+      WaitForHide(kTabSearchButtonElementId),
+      // Open organizer panel.
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH); }),
+      WaitForShow(kOrganizerPanelElementId),
+      // Button should be visible ephemerally with close icon/tooltip.
+      WaitForShow(kTabSearchButtonElementId), CheckTabSearchIcon(close_icon),
+      CheckTabSearchTooltip(close_tooltip),
+      // Close organizer panel by pressing the button.
+      PressButton(kTabSearchButtonElementId),
+      WaitForHide(kOrganizerPanelElementId),
+      // After closing, the button should ephemerally display the search icon.
+      CheckTabSearchIcon(search_icon), CheckTabSearchTooltip(search_tooltip),
+      // Button should disappear after a couple seconds.
+      WaitForHide(kTabSearchButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
+                       PinTabSearchWhileEphemeral) {
+  RunTestSequence(
+      // Ensure tab search is not pinned.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
+      WaitForHide(kTabSearchButtonElementId),
+      // Open organizer panel.
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH); }),
+      WaitForShow(kOrganizerPanelElementId),
+      // Button should be visible ephemerally.
+      WaitForShow(kTabSearchButtonElementId),
+      // Pin tab search via context menu command.
+      ExecuteCommand(IDC_TAB_SEARCH_TOGGLE_PIN),
+      // Close organizer panel.
+      PressButton(kTabSearchButtonElementId),
+      WaitForHide(kOrganizerPanelElementId),
+      // Button should still be visible because it is pinned.
+      CheckView(kTabSearchButtonElementId,
+                [](views::View* view) { return view->GetVisible(); }),
+      CheckResult(
+          [this]() {
+            return browser()->GetProfile()->GetPrefs()->GetBoolean(
+                prefs::kTabSearchPinnedToTabstrip);
+          },
+          true));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
+                       PinTabSearchAfterClosingPanelWhileEphemeral) {
+  RunTestSequence(
+      // Ensure tab search is not pinned.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
+      WaitForHide(kTabSearchButtonElementId),
+      // Open organizer panel.
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH); }),
+      WaitForShow(kOrganizerPanelElementId),
+      WaitForShow(kTabSearchButtonElementId),
+      // Close organizer panel.
+      PressButton(kTabSearchButtonElementId),
+      WaitForHide(kOrganizerPanelElementId),
+      // Button should still be visible ephemerally. Pin via context menu.
+      ExecuteCommand(IDC_TAB_SEARCH_TOGGLE_PIN),
+      // Button should remain visible because it is pinned.
+      CheckView(kTabSearchButtonElementId,
+                [](views::View* view) { return view->GetVisible(); }),
+      CheckResult(
+          [this]() {
+            return browser()->GetProfile()->GetPrefs()->GetBoolean(
+                prefs::kTabSearchPinnedToTabstrip);
+          },
+          true));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
+                       ContextMenuClosedWhilePanelIsOpenDoesNotHideButton) {
+  RunTestSequence(
+      // Ensure tab search is not pinned.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
+      WaitForHide(kTabSearchButtonElementId),
+      // Open organizer panel.
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH); }),
+      WaitForShow(kOrganizerPanelElementId),
+      WaitForShow(kTabSearchButtonElementId),
+      // Simulate context menu closing without pinning while panel is open.
+      WithView(kTabStripComboButtonElementId,
+               [](TabStripComboButton* combo) {
+                 combo->OnMenuClosedForTesting();
+                 EXPECT_FALSE(
+                     combo->hide_tab_search_timer_for_testing().IsRunning());
+               }),
+      // Button should remain visible while panel is open.
+      CheckView(kTabSearchButtonElementId,
+                [](views::View* view) { return view->GetVisible(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
+                       NotEphemeralWhenPanelInTray) {
+  constexpr int kVerticalTabsRegionWidth =
+      organizer_panel::kOrganizerPanelMinWidth -
+      organizer_panel::kOrganizerPanelMinOverlap;
+  RunTestSequence(
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
+      WaitForHide(kTabSearchButtonElementId),
+      ResizeVerticalTabsRegionToWidth(kVerticalTabsRegionWidth),
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH); }),
+      WaitForShow(kOrganizerPanelElementId),
+      // Button in vertical tab strip should NOT be shown because panel is in
+      // tray.
+      CheckView(kTabStripComboButtonElementId, [](TabStripComboButton* combo) {
+        return !combo->end_button() || !combo->end_button()->GetVisible();
+      }));
 }
 
 class TabStripComboButtonHorizontalInteractiveUiTest
