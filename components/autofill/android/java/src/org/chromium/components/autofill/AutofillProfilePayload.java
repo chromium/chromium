@@ -43,6 +43,6 @@ public final class AutofillProfilePayload implements Payload {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mGuid);
+        return Objects.hashCode(mGuid);
     }
 }

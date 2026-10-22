@@ -53,7 +53,7 @@ public class AttributeInstance {
 
         @Override
         public int hashCode() {
-            return Objects.hash(mValue);
+            return Objects.hashCode(mValue);
         }
     }
 
@@ -128,7 +128,7 @@ public class AttributeInstance {
 
         @Override
         public int hashCode() {
-            return Objects.hash(mDate);
+            return Objects.hashCode(mDate);
         }
     }
 

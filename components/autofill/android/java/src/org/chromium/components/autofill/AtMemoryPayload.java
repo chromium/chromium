@@ -40,6 +40,6 @@ public final class AtMemoryPayload implements Payload {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mTypeName);
+        return Objects.hashCode(mTypeName);
     }
 }

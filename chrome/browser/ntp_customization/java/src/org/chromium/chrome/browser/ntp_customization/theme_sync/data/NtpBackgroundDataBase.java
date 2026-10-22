@@ -17,8 +17,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 
-import java.util.Objects;
-
 /** Base class for NTP background data. */
 @NullMarked
 public class NtpBackgroundDataBase {
@@ -138,7 +136,7 @@ public class NtpBackgroundDataBase {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getBackgroundType());
+        return Integer.hashCode(getBackgroundType());
     }
 
     /** Returns the image bitmap of this background data. */

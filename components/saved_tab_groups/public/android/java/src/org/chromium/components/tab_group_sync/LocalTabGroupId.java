@@ -40,7 +40,7 @@ public class LocalTabGroupId {
 
     @Override
     public int hashCode() {
-        return Objects.hash(tabGroupId);
+        return Objects.hashCode(tabGroupId);
     }
 
     @Override
