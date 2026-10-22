@@ -4056,7 +4056,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PoliciesEverFetchedWithProfileId" enum="Boolean"
-    expires_after="2026-12-01">
+    expires_after="2027-06-01">
   <owner>nicolaso@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
