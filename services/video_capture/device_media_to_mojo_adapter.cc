@@ -144,8 +144,11 @@ void DeviceMediaToMojoAdapter::StartInternal(
   if (requested_settings.buffer_type !=
           media::VideoCaptureBufferType::kSharedMemory &&
       requested_settings.buffer_type !=
-          media::VideoCaptureBufferType::kGpuMemoryBuffer) {
-    // Buffer types other than shared memory are not supported.
+          media::VideoCaptureBufferType::kGpuMemoryBuffer &&
+      requested_settings.buffer_type !=
+          media::VideoCaptureBufferType::kSharedImage) {
+    // Only shared memory, GpuMemoryBuffer and shared image buffers are
+    // supported.
     media_receiver->OnError(
         media::VideoCaptureError::
             kDeviceMediaToMojoAdapterEncounteredUnsupportedBufferType);

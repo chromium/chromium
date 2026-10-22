@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
@@ -156,7 +157,12 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 #if BUILDFLAG(IS_WIN)
   if (media::IsMediaFoundationD3D11VideoCaptureEnabled() &&
       params.requested_format.pixel_format == media::PIXEL_FORMAT_NV12) {
-    new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
+    if (base::FeatureList::IsEnabled(
+            media::kMediaFoundationD3D11VideoCaptureUseSharedImage)) {
+      new_params.buffer_type = media::VideoCaptureBufferType::kSharedImage;
+    } else {
+      new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
+    }
   }
 #elif BUILDFLAG(IS_MAC)
   // For mac(https://crbug.com/1175142), zero-copy is always enabled unless the

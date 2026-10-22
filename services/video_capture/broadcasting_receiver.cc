@@ -154,7 +154,21 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
       NOTREACHED() << "Unexpected GpuMemoryBuffer handle type";
 #endif
     case media::VideoCaptureBufferType::kSharedImage:
+#if BUILDFLAG(IS_WIN)
+      // On Windows with MediaFoundationD3D11VideoCapture, a frame that the
+      // texture path could not produce is delivered from system memory
+      // instead, and VideoCaptureBufferPoolImpl backs it with a shared memory
+      // tracker. Shared image and GpuMemoryBuffer handles returned above, so
+      // anything reaching here is that fallback buffer.
+      if (buffer_handle_->is_unsafe_shmem_region()) {
+        return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+            buffer_handle_->get_unsafe_shmem_region().Duplicate());
+      } else {
+        NOTREACHED() << "Unexpected SharedImage handle type";
+      }
+#else
       NOTREACHED() << "Unexpected SharedImage handle type";
+#endif
   }
   return media::mojom::VideoBufferHandlePtr();
 }

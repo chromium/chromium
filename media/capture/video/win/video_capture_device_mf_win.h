@@ -186,6 +186,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   void OnIncomingCapturedDataInternal();
   bool RecreateMFSource();
   void OnFrameDroppedInternal(VideoCaptureFrameDropReason reason);
+
+  // Records |result| if the shared-image pool is in use and the outcome
+  // differs from the last one recorded.
+  void MaybeLogSharedImageDeliveryResult(
+      MediaFoundationSharedImageDeliveryResult result);
   void ProcessEventError(HRESULT hr);
   void OnCameraInUseReport(bool in_use, bool is_default_action);
 
@@ -245,6 +250,16 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 
   base::TimeTicks last_premapped_request_;
+
+  // Whether captured frames are delivered through the shared-image buffer
+  // pool. Cached at AllocateAndStart() time: the feature cannot change for the
+  // lifetime of a capture session, and this is consulted per frame.
+  bool use_shared_image_pool_ = false;
+
+  // Last shared-image delivery outcome recorded via
+  // MaybeLogSharedImageDeliveryResult().
+  std::optional<MediaFoundationSharedImageDeliveryResult>
+      last_shared_image_delivery_result_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

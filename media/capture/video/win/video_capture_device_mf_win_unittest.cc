@@ -21,11 +21,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
+#include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/test_utils.h"
 #include "media/capture/video/win/d3d_capture_test_utils.h"
@@ -1179,6 +1183,23 @@ class MockCaptureHandleProvider
     gfx::GpuMemoryBufferHandle handle(gfx::DXGIHandle::CreateFakeForTest());
     return handle;
   }
+};
+
+// A handle provider that serves a valid premapped region and records how
+// often it was asked to do so.
+class PremappedMockCaptureHandleProvider : public MockCaptureHandleProvider {
+ public:
+  base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {
+    ++premap_request_count_;
+    return region_.Duplicate();
+  }
+
+  int premap_request_count() const { return premap_request_count_; }
+
+ private:
+  int premap_request_count_ = 0;
+  base::UnsafeSharedMemoryRegion region_ =
+      base::UnsafeSharedMemoryRegion::Create(1024);
 };
 
 }  // namespace
@@ -2339,6 +2360,310 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
 
   capture_preview_sink_->sample_callback->OnSample(sample.Get());
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(VideoCaptureDeviceMFWinTestWithDXGI,
+       SharedImagePoolTakesPrecedenceOverZeroCopy) {
+  if (ShouldSkipTest()) {
+    return;
+  }
+
+  // Enable the shared-image capture pool. Zero-copy capture is enabled as
+  // well to verify that the shared-image pool takes precedence over the
+  // zero-copy delivery path.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kMediaFoundationD3D11VideoCaptureUseSharedImage,
+       kMediaFoundationD3D11VideoCaptureZeroCopy},
+      {});
+
+  const GUID expected_subtype = MFVideoFormat_NV12;
+  PrepareMFDeviceWithOneVideoStream(expected_subtype);
+
+  const gfx::Size expected_size(640, 480);
+  base::HistogramTester histogram_tester;
+
+  // Verify that an output capture buffer is reserved from the client
+  EXPECT_CALL(*client_, ReserveOutputBuffer)
+      .WillOnce(
+          [expected_size](const gfx::Size& size, VideoPixelFormat format,
+                          int feedback_id,
+                          VideoCaptureDevice::Client::Buffer* capture_buffer,
+                          int* require_new_buffer_id, int* retire_old_buffer_id,
+                          const gfx::ColorSpace& color_space) {
+            EXPECT_EQ(size, expected_size);
+            EXPECT_EQ(format, PIXEL_FORMAT_NV12);
+            capture_buffer->handle_provider =
+                std::make_unique<MockCaptureHandleProvider>();
+            return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
+          });
+
+  Microsoft::WRL::ComPtr<MockD3D11Device> mock_device =
+      MakeComPtrFromRefCounted<MockD3D11Device>();
+
+  EXPECT_CALL(*dxgi_device_manager_.get(), GetDevice)
+      .WillOnce(Return(mock_device));
+
+  // Create a mock source texture carrying the shared-handle flags, so the
+  // zero-copy delivery path would be eligible if it were not disabled.
+  D3D11_TEXTURE2D_DESC mock_desc = {};
+  mock_desc.Format = DXGI_FORMAT_NV12;
+  mock_desc.Width = expected_size.width();
+  mock_desc.Height = expected_size.height();
+  mock_desc.MiscFlags =
+      D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> mock_source_texture_2d;
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_source_texture =
+      MakeComPtrFromRefCounted<MockD3D11Texture2D>(mock_desc,
+                                                   mock_device.Get());
+  EXPECT_TRUE(SUCCEEDED(
+      mock_source_texture.CopyTo(IID_PPV_ARGS(&mock_source_texture_2d))));
+
+  // Create mock target texture with matching dimensions/format
+  // (to be provided from the capture device to the capture client)
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> mock_target_texture_2d;
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_target_texture =
+      MakeComPtrFromRefCounted<MockD3D11Texture2D>(mock_desc,
+                                                   mock_device.Get());
+  EXPECT_TRUE(SUCCEEDED(
+      mock_target_texture.CopyTo(IID_PPV_ARGS(&mock_target_texture_2d))));
+  // Mock OpenSharedResource call on mock D3D device to return target texture
+  EXPECT_CALL(*mock_device.Get(), DoOpenSharedResource1)
+      .WillOnce([&mock_target_texture_2d](HANDLE resource,
+                                          REFIID returned_interface,
+                                          void** resource_out) {
+        return mock_target_texture_2d.CopyTo(returned_interface, resource_out);
+      });
+  // Expect call to copy source texture to target on immediate context
+  ID3D11Resource* expected_source =
+      static_cast<ID3D11Resource*>(mock_source_texture_2d.Get());
+  ID3D11Resource* expected_target =
+      static_cast<ID3D11Resource*>(mock_target_texture_2d.Get());
+  EXPECT_CALL(*mock_device->mock_immediate_context_.Get(),
+              OnCopySubresourceRegion(expected_target, _, _, _, _,
+                                      expected_source, _, _))
+      .Times(1);
+
+  // Expect the client to receive the buffer copied into the pool slot. If the
+  // zero-copy path had been taken (both flags are enabled and the source
+  // texture is cross-process shareable), the frame would have been delivered
+  // through OnIncomingCapturedExternalBuffer instead and this expectation
+  // would fail.
+  EXPECT_CALL(*client_, OnIncomingCapturedBufferExt)
+      .WillOnce([](VideoCaptureDevice::Client::Buffer buffer,
+                   const VideoCaptureFormat&, const gfx::ColorSpace&,
+                   base::TimeTicks, base::TimeDelta,
+                   std::optional<base::TimeTicks>, gfx::Rect,
+                   const std::optional<VideoFrameMetadata>& metadata) {
+        gfx::GpuMemoryBufferHandle gmb_handle =
+            buffer.handle_provider->GetGpuMemoryBufferHandle();
+        EXPECT_EQ(gmb_handle.type,
+                  gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+        // No premapping was requested, so the frame is not premapped.
+        EXPECT_FALSE(buffer.is_premapped);
+      });
+
+  // Init capture
+  VideoCaptureFormat format(expected_size, 30, media::PIXEL_FORMAT_NV12);
+  VideoCaptureParams video_capture_params;
+  video_capture_params.requested_format = format;
+  // The buffer type is what ServiceVideoCaptureDeviceLauncher selects for an
+  // NV12 request with the shared-image feature on, and is what the device
+  // keys its shared-image handling off - not the feature flag directly.
+  video_capture_params.buffer_type = VideoCaptureBufferType::kSharedImage;
+
+  task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                           device_->AllocateAndStart(video_capture_params,
+                                                     std::move(client_));
+                         }));
+  task_environment_.RunUntilIdle();
+
+  // Create MF sample and provide to sample callback on capture device
+  Microsoft::WRL::ComPtr<IMFSample> sample;
+  EXPECT_TRUE(SUCCEEDED(MFCreateSample(&sample)));
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> dxgi_buffer;
+  EXPECT_TRUE(SUCCEEDED(MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
+                                                  mock_source_texture_2d.Get(),
+                                                  0, FALSE, &dxgi_buffer)));
+  EXPECT_TRUE(SUCCEEDED(sample->AddBuffer(dxgi_buffer.Get())));
+
+  capture_preview_sink_->sample_callback->OnSample(sample.Get());
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "Media.VideoCapture.Win.MediaFoundation.SharedImageDeliveryResult",
+      MediaFoundationSharedImageDeliveryResult::kDeliveredSharedImage, 1);
+}
+
+TEST_F(VideoCaptureDeviceMFWinTestWithDXGI,
+       DeliverSharedImageCaptureBuffersPremapped) {
+  if (ShouldSkipTest()) {
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kMediaFoundationD3D11VideoCaptureUseSharedImage);
+
+  const GUID expected_subtype = MFVideoFormat_NV12;
+  PrepareMFDeviceWithOneVideoStream(expected_subtype);
+
+  const gfx::Size expected_size(640, 480);
+  base::HistogramTester histogram_tester;
+
+  // Owned by the Buffer once reserved. The raw reference below is only read
+  // from inside the delivery callback, which receives the Buffer by value and
+  // so keeps the provider alive for the duration of the check.
+  auto owned_handle_provider =
+      std::make_unique<PremappedMockCaptureHandleProvider>();
+  PremappedMockCaptureHandleProvider* handle_provider =
+      owned_handle_provider.get();
+  EXPECT_CALL(*client_, ReserveOutputBuffer)
+      .WillOnce([expected_size, &owned_handle_provider](
+                    const gfx::Size& size, VideoPixelFormat format,
+                    int feedback_id,
+                    VideoCaptureDevice::Client::Buffer* capture_buffer,
+                    int* require_new_buffer_id, int* retire_old_buffer_id,
+                    const gfx::ColorSpace& color_space) {
+        EXPECT_EQ(size, expected_size);
+        EXPECT_EQ(format, PIXEL_FORMAT_NV12);
+        capture_buffer->handle_provider = std::move(owned_handle_provider);
+        return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
+      });
+
+  Microsoft::WRL::ComPtr<MockD3D11Device> mock_device =
+      MakeComPtrFromRefCounted<MockD3D11Device>();
+  EXPECT_CALL(*dxgi_device_manager_.get(), GetDevice)
+      .WillOnce(Return(mock_device));
+
+  D3D11_TEXTURE2D_DESC mock_desc = {};
+  mock_desc.Format = DXGI_FORMAT_NV12;
+  mock_desc.Width = expected_size.width();
+  mock_desc.Height = expected_size.height();
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> mock_source_texture_2d;
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_source_texture =
+      MakeComPtrFromRefCounted<MockD3D11Texture2D>(mock_desc,
+                                                   mock_device.Get());
+  EXPECT_TRUE(SUCCEEDED(
+      mock_source_texture.CopyTo(IID_PPV_ARGS(&mock_source_texture_2d))));
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> mock_target_texture_2d;
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_target_texture =
+      MakeComPtrFromRefCounted<MockD3D11Texture2D>(mock_desc,
+                                                   mock_device.Get());
+  EXPECT_TRUE(SUCCEEDED(
+      mock_target_texture.CopyTo(IID_PPV_ARGS(&mock_target_texture_2d))));
+  EXPECT_CALL(*mock_device.Get(), DoOpenSharedResource1)
+      .WillOnce([&mock_target_texture_2d](HANDLE resource,
+                                          REFIID returned_interface,
+                                          void** resource_out) {
+        return mock_target_texture_2d.CopyTo(returned_interface, resource_out);
+      });
+  ID3D11Resource* expected_source =
+      static_cast<ID3D11Resource*>(mock_source_texture_2d.Get());
+  ID3D11Resource* expected_target =
+      static_cast<ID3D11Resource*>(mock_target_texture_2d.Get());
+  EXPECT_CALL(*mock_device->mock_immediate_context_.Get(),
+              OnCopySubresourceRegion(expected_target, _, _, _, _,
+                                      expected_source, _, _))
+      .Times(1);
+
+  // Expect the client to receive a premapped buffer: the region populated by
+  // the handle provider is delivered with the frame. The provider is still
+  // alive while the buffer is delivered, so its premap request count can be
+  // asserted here.
+  EXPECT_CALL(*client_, OnIncomingCapturedBufferExt)
+      .WillOnce(
+          [handle_provider](VideoCaptureDevice::Client::Buffer buffer,
+                            const VideoCaptureFormat&, const gfx::ColorSpace&,
+                            base::TimeTicks, base::TimeDelta,
+                            std::optional<base::TimeTicks>, gfx::Rect,
+                            const std::optional<VideoFrameMetadata>& metadata) {
+            EXPECT_TRUE(buffer.is_premapped);
+            EXPECT_EQ(handle_provider->premap_request_count(), 1);
+          });
+
+  // Init capture
+  VideoCaptureFormat format(expected_size, 30, media::PIXEL_FORMAT_NV12);
+  VideoCaptureParams video_capture_params;
+  video_capture_params.requested_format = format;
+  // The buffer type is what ServiceVideoCaptureDeviceLauncher selects for an
+  // NV12 request with the shared-image feature on, and is what the device
+  // keys its shared-image handling off - not the feature flag directly.
+  video_capture_params.buffer_type = VideoCaptureBufferType::kSharedImage;
+
+  task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                           device_->AllocateAndStart(video_capture_params,
+                                                     std::move(client_));
+                         }));
+  task_environment_.RunUntilIdle();
+
+  // Request premapped frames; the request must reach the device before the
+  // sample is delivered.
+  task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                           media::VideoCaptureFeedback feedback;
+                           feedback.require_mapped_frame = true;
+                           device_->OnUtilizationReport(feedback);
+                         }));
+  task_environment_.RunUntilIdle();
+
+  // Create MF sample and provide to sample callback on capture device
+  Microsoft::WRL::ComPtr<IMFSample> sample;
+  EXPECT_TRUE(SUCCEEDED(MFCreateSample(&sample)));
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> dxgi_buffer;
+  EXPECT_TRUE(SUCCEEDED(MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
+                                                  mock_source_texture_2d.Get(),
+                                                  0, FALSE, &dxgi_buffer)));
+  EXPECT_TRUE(SUCCEEDED(sample->AddBuffer(dxgi_buffer.Get())));
+
+  capture_preview_sink_->sample_callback->OnSample(sample.Get());
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "Media.VideoCapture.Win.MediaFoundation.SharedImageDeliveryResult",
+      MediaFoundationSharedImageDeliveryResult::kDeliveredSharedImage, 1);
+}
+
+// A frame that arrives without a usable texture must still reach the client
+// from system memory, exactly as it does for a GpuMemoryBuffer pool:
+// VideoCaptureDeviceClient converts it to I420, and VideoCaptureBufferPoolImpl
+// hands out a shared memory tracker for any non-NV12 format regardless of
+// whether the pool is kSharedImage or kGpuMemoryBuffer.
+TEST_F(VideoCaptureDeviceMFWinTestWithDXGI,
+       FallsBackToSoftwareWhenTextureUnavailable) {
+  if (ShouldSkipTest()) {
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kMediaFoundationD3D11VideoCaptureUseSharedImage);
+
+  PrepareMFDeviceWithOneVideoStream(MFVideoFormat_NV12);
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, OnFrameDropped(_)).Times(0);
+
+  VideoCaptureParams video_capture_params;
+  video_capture_params.buffer_type = VideoCaptureBufferType::kSharedImage;
+
+  task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                           device_->AllocateAndStart(video_capture_params,
+                                                     std::move(client_));
+                         }));
+  task_environment_.RunUntilIdle();
+
+  // A memory-backed sample carries no DXGI texture, so the texture path
+  // cannot run and delivery falls through to the software path.
+  Microsoft::WRL::ComPtr<IMFSample> test_sample =
+      CreateEmptySampleWithBuffer(kMFSampleBufferLength, 0);
+  capture_preview_sink_->sample_callback->OnSample(test_sample.Get());
+  task_environment_.RunUntilIdle();
+
+  // DeliverTextureToClient() never ran, so there is no shared-image delivery
+  // outcome to report for this frame.
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.Win.MediaFoundation.SharedImageDeliveryResult", 0);
 }
 
 }  // namespace media

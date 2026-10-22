@@ -35,4 +35,11 @@ void LogNumberOfRetriesNeededToWorkAroundMFInvalidRequest(
   }
 }
 
+void LogMediaFoundationSharedImageDeliveryResult(
+    MediaFoundationSharedImageDeliveryResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.VideoCapture.Win.MediaFoundation.SharedImageDeliveryResult",
+      result);
+}
+
 }  // namespace media

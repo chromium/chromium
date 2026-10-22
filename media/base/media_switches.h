@@ -523,6 +523,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationClearPlayback);
 // For feature check of kMediaFoundationD3D11VideoCapture at runtime,
 // please use IsMediaFoundationD3D11VideoCaptureEnabled() instead.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationD3D11VideoCapture);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(
+    kMediaFoundationD3D11VideoCaptureUseSharedImage);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationD3D11VideoCaptureZeroCopy);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationD3DVideoProcessing);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationMultiGpuAdapterSelection);

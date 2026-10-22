@@ -42,6 +42,7 @@
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
 #include "media/capture/video/win/capability_list_win.h"
+#include "media/capture/video/win/metrics.h"
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/video_capture_device_utils_win.h"
 #include "ui/gfx/color_space.h"
@@ -1465,6 +1466,13 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
   client_ = std::move(client);
   DCHECK_EQ(false, is_started_);
 
+  // Keyed off the pool actually allocated for us rather than the feature
+  // flag: the buffer type is chosen in ServiceVideoCaptureDeviceLauncher,
+  // which additionally requires D3D11 capture and an NV12 request, so the
+  // flag alone is broader than the pool we were given.
+  use_shared_image_pool_ =
+      params_.buffer_type == VideoCaptureBufferType::kSharedImage;
+
   if (!engine_) {
     OnError(VideoCaptureError::kWinMediaFoundationEngineIsNull, FROM_HERE,
             E_FAIL);
@@ -2283,7 +2291,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
   }
 
   if (base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCaptureZeroCopy) &&
-      is_cross_process_shared_texture) {
+      !use_shared_image_pool_ && is_cross_process_shared_texture) {
     return DeliverExternalBufferToClient(
         std::move(imf_buffer), texture, texture_size, pixel_format,
         reference_time, timestamp, capture_begin_time);
@@ -2291,18 +2299,28 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
 
   VideoCaptureDevice::Client::Buffer capture_buffer;
   constexpr int kDummyFrameFeedbackId = 0;
+
   auto result = client_->ReserveOutputBuffer(
       texture_size, pixel_format, kDummyFrameFeedbackId, &capture_buffer,
-      /*require_new_buffer_id=*/nullptr, /*retire_old_buffer_id=*/nullptr);
+      /*require_new_buffer_id=*/nullptr, /*retire_old_buffer_id=*/nullptr,
+      color_space_);
   if (result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
     LOG(ERROR) << "Failed to reserve output capture buffer: " << (int)result;
+    MaybeLogSharedImageDeliveryResult(
+        result == VideoCaptureDevice::Client::ReserveResult::
+                      kMaxBufferCountExceeded
+            ? MediaFoundationSharedImageDeliveryResult::kPoolExhausted
+            : MediaFoundationSharedImageDeliveryResult::kSlotCreationFailed);
     return MF_E_UNEXPECTED;
   }
 
   auto gmb_handle = capture_buffer.handle_provider->GetGpuMemoryBufferHandle();
-  if (!gmb_handle.dxgi_handle().IsValid()) {
+  // dxgi_handle() CHECKs the handle type, so test for an empty handle first.
+  if (gmb_handle.is_null() || !gmb_handle.dxgi_handle().IsValid()) {
     // If the device is removed and GMB tracker fails to recreate it,
     // an empty gmb handle may be returned here.
+    MaybeLogSharedImageDeliveryResult(
+        MediaFoundationSharedImageDeliveryResult::kSlotCreationFailed);
     return MF_E_UNEXPECTED;
   }
   hr = CopyTextureToGpuMemoryBuffer(texture,
@@ -2311,16 +2329,21 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to copy camera device texture to output texture: "
                << logging::SystemErrorCodeToString(hr);
+    MaybeLogSharedImageDeliveryResult(
+        MediaFoundationSharedImageDeliveryResult::kSlotCopyFailed);
     return hr;
   }
+
+  MaybeLogSharedImageDeliveryResult(
+      MediaFoundationSharedImageDeliveryResult::kDeliveredSharedImage);
 
   capture_buffer.is_premapped = false;
   if (last_premapped_request_ >
       base::TimeTicks::Now() - kMaxFeedbackPremappingEffectDuration) {
-    // Only a flag on the Buffer is set here; the region itself isn't passed
-    // anywhere because it was passed when the buffer was created.
-    // Now the flag would tell the consumer that the region contains actual
-    // frame data.
+    // Only a flag on the Buffer is set here; the region itself is delivered
+    // with the buffer handle - the GMB handle for the GMB pool, the exported
+    // shared image's buffer handle for the shared-image pool. The flag tells
+    // the consumer that the region contains actual frame data.
     if (capture_buffer.handle_provider->DuplicateAsUnsafeRegion().IsValid()) {
       capture_buffer.is_premapped = true;
     }
@@ -2480,6 +2503,8 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal() {
   }
 
   if (!delivered_texture && client_.get()) {
+    // The texture path either was not attempted or failed, so deliver the
+    // frame from system memory.
     client_->OnIncomingCapturedData(
         locked_buffer.as_span(), selected_video_capability_->supported_format,
         color_space_, camera_rotation_.value(), false /* flip_y */,
@@ -2529,6 +2554,18 @@ void VideoCaptureDeviceMFWin::OnFrameDroppedInternal(
   if (client_.get()) {
     client_->OnFrameDropped(reason);
   }
+}
+
+void VideoCaptureDeviceMFWin::MaybeLogSharedImageDeliveryResult(
+    MediaFoundationSharedImageDeliveryResult result) {
+  if (!use_shared_image_pool_) {
+    return;
+  }
+  if (last_shared_image_delivery_result_ == result) {
+    return;
+  }
+  last_shared_image_delivery_result_ = result;
+  LogMediaFoundationSharedImageDeliveryResult(result);
 }
 
 void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {

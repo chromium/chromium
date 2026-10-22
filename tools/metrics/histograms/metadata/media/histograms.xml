@@ -8627,6 +8627,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.VideoCapture.Win.MediaFoundation.SharedImageDeliveryResult"
+    enum="MediaFoundationSharedImageDeliveryResult" expires_after="2027-07-15">
+  <owner>ilnik@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    Outcome of attempting to deliver a captured D3D11 frame through the
+    shared-image capture buffer pool on Windows, when the
+    MediaFoundationD3D11VideoCaptureUseSharedImage feature is enabled. Recorded
+    once per change of outcome for a given capture device, not once per frame,
+    so the samples describe which states a device moves through and how often it
+    transitions between them. They cannot be used to derive a per-frame success
+    or failure rate.
+  </summary>
+</histogram>
+
+<histogram
     name="Media.VideoCapture.Windows.NumberOfRetriesNeededForMFGetDeviceStreamCategory"
     units="retries" expires_after="2023-03-26">
   <owner>guidou@chromium.org</owner>

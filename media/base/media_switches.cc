@@ -1669,6 +1669,11 @@ BASE_FEATURE(kMediaFoundationD3D11VideoCapture,
 BASE_FEATURE(kMediaFoundationD3D11VideoCaptureZeroCopy,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the MediaFoundation D3D11 video capture path backs its capture
+// buffer pool with shared image instead of GMB.
+BASE_FEATURE(kMediaFoundationD3D11VideoCaptureUseSharedImage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMediaFoundationD3DVideoProcessing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
