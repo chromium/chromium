@@ -888,19 +888,7 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
   }
 
   if (IsRenderingContext2D()) {
-    context_->ResetWithSize(old_size);
-
-    if (old_size != new_size) {
-      RenderingContext()->SizeChanged();
-
-      ResetLayer();
-      UpdateMemoryUsage();
-      dirty_rect_ = gfx::Rect();
-      if (context_->isContextLost()) {
-        context_->RestoreFromInvalidSizeIfNeeded();
-      }
-    }
-
+    context_->Reshape(old_size, new_size);
   } else if (IsWebGL()) {
     context_->Reshape(old_size, new_size);
   } else if (IsWebGPU()) {
@@ -942,6 +930,10 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
   if (accessibility_manager_) {
     accessibility_manager_->OnResize();
   }
+}
+
+void HTMLCanvasElement::ClearDirtyRect() {
+  dirty_rect_ = gfx::Rect();
 }
 
 void HTMLCanvasElement::ResetLayer() {

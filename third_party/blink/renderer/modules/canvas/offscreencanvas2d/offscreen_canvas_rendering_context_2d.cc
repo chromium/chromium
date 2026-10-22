@@ -281,6 +281,17 @@ void OffscreenCanvasRenderingContext2D::Reset() {
   BaseRenderingContext2D::ResetInternal();
 }
 
+void OffscreenCanvasRenderingContext2D::Reshape(gfx::Size old_size,
+                                                gfx::Size new_size) {
+  if (old_size != new_size && isContextLost()) {
+    RestoreFromInvalidSizeIfNeeded();
+  }
+
+  // Setting size of a canvas also resets it.
+  Reset();
+  DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+}
+
 scoped_refptr<CanvasResource>
 OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
   if (!InitializeBacking()) {

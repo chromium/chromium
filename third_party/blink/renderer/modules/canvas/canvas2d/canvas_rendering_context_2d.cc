@@ -1051,6 +1051,21 @@ void CanvasRenderingContext2D::SizeChanged() {
   did_fail_to_create_backing_ = false;
 }
 
+void CanvasRenderingContext2D::Reshape(gfx::Size old_size, gfx::Size new_size) {
+  ResetWithSize(old_size);
+
+  if (old_size != new_size) {
+    SizeChanged();
+
+    canvas()->ResetLayer();
+    Host()->UpdateMemoryUsage();
+    Host()->ClearDirtyRect();
+    if (isContextLost()) {
+      RestoreFromInvalidSizeIfNeeded();
+    }
+  }
+}
+
 CanvasHibernationHandler* CanvasRenderingContext2D::GetHibernationHandler()
     const {
   return hibernation_handler_.get();

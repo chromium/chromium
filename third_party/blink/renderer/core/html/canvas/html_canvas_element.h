@@ -204,6 +204,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void SetNeedsPushProperties();
 
   void DiscardResources() override;
+  void ClearDirtyRect() override;
 
   std::optional<CanvasDrawablePaintRecord> GetCanvasDrawablePaintRecord(
       DOMNodeId drawable_id) const override;

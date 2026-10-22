@@ -153,6 +153,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   void SetPreferred2DRasterMode(RasterModeHint);
 
   virtual void DiscardResources() = 0;
+  virtual void ClearDirtyRect() { NOTREACHED(); }
 
   virtual std::optional<CanvasDrawablePaintRecord> GetCanvasDrawablePaintRecord(
       DOMNodeId drawable_id) const {

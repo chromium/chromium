@@ -321,14 +321,8 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
     return;
   }
   if (context_->IsRenderingContext2D()) {
-    if (size_ != old_size && context_->isContextLost()) {
-      context_->RestoreFromInvalidSizeIfNeeded();
-    }
-
-    // Setting size of a canvas also resets it.
-    context_->Reset();
     origin_clean_ = true;
-    context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+    context_->Reshape(old_size, Size());
   } else if (context_->IsWebGL()) {
     context_->Reshape(old_size, Size());
   } else if (context_->IsWebGPU()) {
