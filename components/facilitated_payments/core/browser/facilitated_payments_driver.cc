@@ -18,7 +18,7 @@
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/pix_manager.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
-#include "components/facilitated_payments/core/validation/pix_validator_cxx.rs.h"
+#include "components/facilitated_payments/core/validation/payment_qr_validator_cxx.rs.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace payments::facilitated {

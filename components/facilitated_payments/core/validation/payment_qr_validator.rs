@@ -49,10 +49,11 @@ pub fn get_pix_qr_code_type(code: &[u8]) -> PixQrCodeResult {
     // types data object values:
     // - Numeric: encoded as the ASCII digits from "0" to "9"
     // - Alphanumeric Special: 96 characters, i.e. the "Common Character Set" as
-    //   defined in [EMV Book 4]. Interestingly enough, the Merchant-Presented QR
-    //   code specification claims 96 characters, while EMV Book 4 only claims 95
-    //   characters. The characters in question are the characters that are common
-    //   to all ISO 8859 encodings, with codepoints from 0x20 to 0x7F.
+    //   defined in [EMV Book 4]. Interestingly enough, the Merchant-Presented
+    //   QR code specification claims 96 characters, while EMV Book 4 only
+    //   claims 95 characters. The characters in question are the characters
+    //   that are common to all ISO 8859 encodings, with codepoints from 0x20 to
+    //   0x7F.
     // - Unicode: encoded as UTF-8
     //
     // So any `code` that is not valid UTF-8 can be ignored.
@@ -61,8 +62,8 @@ pub fn get_pix_qr_code_type(code: &[u8]) -> PixQrCodeResult {
         Err(_) => return Err(Error::NotPaymentCode),
     };
 
-    // 4.6.1.1 The Payload Format Indicator (ID "00") shall be the first data object
-    // in the QR Code.
+    // 4.6.1.1 The Payload Format Indicator (ID "00") shall be the first data
+    // object in the QR Code.
     let Some((first_data_object, mut rest)) = parse_next_data_object(code) else {
         return Err(Error::NotPaymentCode);
     };
@@ -115,10 +116,10 @@ fn parse_next_data_object(input: &str) -> Option<(Section<'_>, &str)> {
     // 3.2: Each data object is made up of three individual fields [...]:
     // - The ID is coded as a two-digit numeric value, with a value ranging from
     //   "00" to "99",
-    // - The length is coded as a two-digit numeric value, with a value ranging from
-    //   "01" to "99"
-    // - The value field has a minimum length of one character and maximum length of
-    //   99 characters.
+    // - The length is coded as a two-digit numeric value, with a value ranging
+    //   from "01" to "99"
+    // - The value field has a minimum length of one character and maximum
+    //   length of 99 characters.
     let (id, rest) = input.split_at_checked(2)?;
     if id.chars().any(|c| !c.is_ascii_digit()) {
         return None;
@@ -153,9 +154,9 @@ fn get_type_from_merchant_account_info_data_object(
 ) -> Result<PixQrCodeType, PixQrCodeError> {
     type Error = PixQrCodeError;
 
-    // 4.7.11.2: If present, a Merchant Account Information template shall contain a
-    // primitive Globally Unique Identifier data object with a data object ID
-    // "00", as defined in Table 4.2.
+    // 4.7.11.2: If present, a Merchant Account Information template shall
+    // contain a primitive Globally Unique Identifier data object with a
+    // data object ID "00", as defined in Table 4.2.
     let Some((gui_data_object, rest)) = parse_next_data_object(data_object.value) else {
         return Err(Error::InvalidMerchantPresentedCode);
     };
@@ -167,9 +168,10 @@ fn get_type_from_merchant_account_info_data_object(
         return Err(Error::NonPixMerchantPresentedCode);
     }
 
-    // 4.7.11.2: The value of the Globally Unique Identifier sets the context for
-    // the remainder of the template and the meaning of the other data objects
-    // in the template are context specific and outside of the scope of EMVCo.
+    // 4.7.11.2: The value of the Globally Unique Identifier sets the context
+    // for the remainder of the template and the meaning of the other data
+    // objects in the template are context specific and outside of the scope
+    // of EMVCo.
     let Some((next_data_object, rest)) = parse_next_data_object(rest) else {
         return Err(Error::InvalidMerchantPresentedCode);
     };
@@ -184,10 +186,11 @@ fn get_type_from_merchant_account_info_data_object(
     // 3.2: The position of all other data objects under the root or within
     // templates is arbitrary and may appear in any order.
     //
-    // While Pix does not appear to mandate a specific ordering for data objects, in
-    // practice, the validator expects the first data object after the Globally
-    // Unique Identifier to indicate whether the Pix code is static or dynamic.
-    // If it does not, treat the Pix code as malformed.
+    // While Pix does not appear to mandate a specific ordering for data
+    // objects, in practice, the validator expects the first data object
+    // after the Globally Unique Identifier to indicate whether the Pix code
+    // is static or dynamic. If it does not, treat the Pix code as
+    // malformed.
     match next_data_object.id {
         MERCHANT_ACCOUNT_INFORMATION_DYNAMIC_URL_DATA_OBJECT_ID => Ok(PixQrCodeType::Dynamic),
         MERCHANT_ACCOUNT_INFORMATION_STATIC_KEY_DATA_OBJECT_ID => Ok(PixQrCodeType::Static),

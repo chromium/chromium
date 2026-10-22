@@ -5,16 +5,16 @@
 import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 
-rust_static_library("pix_validator_rs") {
-  crate_root = "pix_validator.rs"
-  sources = [ "pix_validator.rs" ]
+rust_static_library("payment_qr_validator_rs") {
+  crate_root = "payment_qr_validator.rs"
+  sources = [ "payment_qr_validator.rs" ]
 
   visibility = [ ":*" ]
 }
 
-rust_static_library("pix_validator_rs_ffi_glue") {
-  crate_root = "pix_validator_cxx.rs"
-  sources = [ "pix_validator_cxx.rs" ]
+rust_static_library("payment_qr_validator_rs_ffi_glue") {
+  crate_root = "payment_qr_validator_cxx.rs"
+  sources = [ "payment_qr_validator_cxx.rs" ]
 
   visibility = [
     ":*",
@@ -22,9 +22,9 @@ rust_static_library("pix_validator_rs_ffi_glue") {
   ]
 
   allow_unsafe = true
-  cxx_bindings = [ "pix_validator_cxx.rs" ]
+  cxx_bindings = [ "payment_qr_validator_cxx.rs" ]
 
-  deps = [ ":pix_validator_rs" ]
+  deps = [ ":payment_qr_validator_rs" ]
 }
 
 static_library("validation") {
@@ -46,7 +46,7 @@ source_set("unit_tests") {
 
   deps = [
     ":fuzzer_util",
-    ":pix_validator_rs_ffi_glue",
+    ":payment_qr_validator_rs_ffi_glue",
     ":validation",
     "//base",
     "//testing/gtest",
@@ -70,7 +70,7 @@ test("pix_validator_fuzzer") {
 
   deps = [
     ":fuzzer_util",
-    ":pix_validator_rs_ffi_glue",
+    ":payment_qr_validator_rs_ffi_glue",
     "//base",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]

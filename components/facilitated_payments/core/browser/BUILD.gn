@@ -66,7 +66,7 @@ static_library("browser") {
     "//url",
   ]
 
-  deps = [ "//components/facilitated_payments/core/validation:pix_validator_rs_ffi_glue" ]
+  deps = [ "//components/facilitated_payments/core/validation:payment_qr_validator_rs_ffi_glue" ]
 }
 
 source_set("unit_tests") {

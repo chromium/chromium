@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chromium::import! {
-    "//components/facilitated_payments/core/validation:pix_validator_rs";
+    "//components/facilitated_payments/core/validation:payment_qr_validator_rs";
 }
 
 #[cxx::bridge(namespace=payments::facilitated)]
@@ -47,33 +47,35 @@ pub mod ffi {
     }
 }
 
-impl std::convert::From<pix_validator_rs::PixQrCodeResult> for ffi::PixQrCodeResult {
-    fn from(value: pix_validator_rs::PixQrCodeResult) -> Self {
+impl std::convert::From<payment_qr_validator_rs::PixQrCodeResult> for ffi::PixQrCodeResult {
+    fn from(value: payment_qr_validator_rs::PixQrCodeResult) -> Self {
         match value {
-            Ok(pix_validator_rs::PixQrCodeType::Dynamic) => Self::Dynamic,
-            Ok(pix_validator_rs::PixQrCodeType::Static) => Self::Static,
-            Err(pix_validator_rs::PixQrCodeError::NotPaymentCode) => Self::NotPaymentCode,
-            Err(pix_validator_rs::PixQrCodeError::MissingPayloadFormatIndicator) => {
+            Ok(payment_qr_validator_rs::PixQrCodeType::Dynamic) => Self::Dynamic,
+            Ok(payment_qr_validator_rs::PixQrCodeType::Static) => Self::Static,
+            Err(payment_qr_validator_rs::PixQrCodeError::NotPaymentCode) => Self::NotPaymentCode,
+            Err(payment_qr_validator_rs::PixQrCodeError::MissingPayloadFormatIndicator) => {
                 Self::MissingPayloadFormatIndicator
             }
-            Err(pix_validator_rs::PixQrCodeError::InvalidMerchantPresentedCode) => {
+            Err(payment_qr_validator_rs::PixQrCodeError::InvalidMerchantPresentedCode) => {
                 Self::InvalidMerchantPresentedCode
             }
-            Err(pix_validator_rs::PixQrCodeError::MissingGloballyUniqueIdentifier) => {
+            Err(payment_qr_validator_rs::PixQrCodeError::MissingGloballyUniqueIdentifier) => {
                 Self::MissingGloballyUniqueIdentifier
             }
-            Err(pix_validator_rs::PixQrCodeError::NonPixMerchantPresentedCode) => {
+            Err(payment_qr_validator_rs::PixQrCodeError::NonPixMerchantPresentedCode) => {
                 Self::NonPixMerchantPresentedCode
             }
-            Err(pix_validator_rs::PixQrCodeError::EmptyAdditionalDataFieldTemplate) => {
+            Err(payment_qr_validator_rs::PixQrCodeError::EmptyAdditionalDataFieldTemplate) => {
                 Self::EmptyAdditionalDataFieldTemplate
             }
-            Err(pix_validator_rs::PixQrCodeError::NonFinalCrc) => Self::NonFinalCrc,
-            Err(pix_validator_rs::PixQrCodeError::UnknownPixCodeType) => Self::UnknownPixCodeType,
+            Err(payment_qr_validator_rs::PixQrCodeError::NonFinalCrc) => Self::NonFinalCrc,
+            Err(payment_qr_validator_rs::PixQrCodeError::UnknownPixCodeType) => {
+                Self::UnknownPixCodeType
+            }
         }
     }
 }
 
 fn get_pix_qr_code_type(code: &[u8]) -> ffi::PixQrCodeResult {
-    pix_validator_rs::get_pix_qr_code_type(code).into()
+    payment_qr_validator_rs::get_pix_qr_code_type(code).into()
 }

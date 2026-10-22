@@ -5,7 +5,7 @@
 #include <string_view>
 
 #include "base/strings/string_view_rust.h"
-#include "components/facilitated_payments/core/validation/pix_validator_cxx.rs.h"
+#include "components/facilitated_payments/core/validation/payment_qr_validator_cxx.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {

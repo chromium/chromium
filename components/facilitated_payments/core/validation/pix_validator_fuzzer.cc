@@ -5,7 +5,7 @@
 #include <string>
 
 #include "base/strings/string_view_rust.h"
-#include "components/facilitated_payments/core/validation/pix_validator_cxx.rs.h"
+#include "components/facilitated_payments/core/validation/payment_qr_validator_cxx.rs.h"
 #include "components/facilitated_payments/core/validation/pix_validator_fuzzer_util.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
