@@ -443,6 +443,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Hides any currently showing Autofill popup.
   void HidePopup();
 
+  gfx::Rect GetCaretBounds() const;
+
   // Helpers for SelectFieldOptionsChanged() and
   // DataListOptionsChanged(), which get called after a timer that is restarted
   // when another event of the same type started.

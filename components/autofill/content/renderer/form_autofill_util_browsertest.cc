@@ -1278,6 +1278,46 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(FindFormAndFieldForFormControlElement(form_control), std::nullopt);
 }
 
+// Regression test for crbug.com/565839464: Ensure that if forcing layout during
+// form/field extraction causes an ancestor <object> to render fallback content
+// and detach the frame, extraction does not UAF the destroyed RenderFrame.
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_FrameDetachedDuringLayout) {
+  LoadHTML(R"(<object id="obj" data="about:blank">fallback</object>)");
+  WebElement obj = GetElementById(GetDocument(), "obj");
+  ASSERT_TRUE(obj);
+  blink::WebFrame* child_frame = blink::WebFrame::FromFrameOwnerElement(obj);
+  ASSERT_TRUE(child_frame && child_frame->IsWebLocalFrame());
+  WebDocument child_doc = child_frame->ToWebLocalFrame()->GetDocument();
+
+  ExecuteJavaScriptForTests(R"(
+    const obj = document.getElementById('obj');
+    const doc = obj.contentDocument;
+    doc.body.innerHTML =
+        '<div style="content-visibility: hidden">' +
+        '<input id="i1"><input id="i2"><iframe></iframe></div>';
+    // Flush layout so the content-visibility DisplayLockContext is active, and
+    // detach `obj`'s LayoutObject (without detaching its ContentFrame) via
+    // display:none.
+    doc.body.offsetTop;
+    obj.style.display = 'none';
+    obj.offsetTop;
+    // Switch `obj` to an invalid image data URL while it has no LayoutObject,
+    // then mark it display:block without forcing layout. The next layout
+    // (triggered by BoundsInWidget()) will invoke CustomStyleForLayoutObject ->
+    // HTMLImageLoader -> RenderFallbackContent -> DisconnectContentFrame.
+    obj.data = 'data:image/png;base64,invalid';
+    obj.style.display = 'block';
+  )");
+
+  WebFormControlElement input = GetFormControlElementById(child_doc, "i1");
+  ASSERT_TRUE(input);
+  ASSERT_NE(child_doc.GetFrame(), nullptr);
+
+  EXPECT_NE(FindFormAndFieldForFormControlElement(input), std::nullopt);
+  EXPECT_EQ(child_doc.GetFrame(), nullptr);
+}
+
 // Tests that Autofill form ownership follows Blink form's association, which,
 // in compliance with the HTML standard, associates forms with an unclosed
 // <form> element.

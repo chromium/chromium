@@ -1203,10 +1203,14 @@ PasswordAutofillAgent::CreateSuggestionRequest(
                              &username_element, &password_element,
                              &password_info);
 
+  gfx::Rect bounds = user_input.BoundsInWidget();
+  if (content::RenderFrame* render_frame = unsafe_render_frame()) {
+    bounds = render_frame->ConvertViewportToWindow(bounds);
+  }
+
   return PasswordSuggestionRequest(
       TriggeringField(form_and_field->field, trigger_source, typed_username,
-                      gfx::RectF(unsafe_render_frame()->ConvertViewportToWindow(
-                          user_input.BoundsInWidget()))),
+                      gfx::RectF(bounds)),
       std::move(form_and_field->form),
       {.frame_token = {},
        .renderer_id = username_element ? GetFieldRendererId(username_element)

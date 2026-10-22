@@ -1850,7 +1850,7 @@ bool HasFormInclusiveAncestor(WebNode node) {
   return false;
 }
 
-// Populates out a FormFieldData object from a given autofillable
+// Populates a FormFieldData object from a given autofillable
 // WebFormControlElement. Field properties are copied from |field_data_manager|,
 // if the argument is not null and has entry for |element| (see properties in
 // FieldPropertiesFlags).
@@ -1861,7 +1861,6 @@ void WebFormControlElementToFormField(
     FormFieldData* field) {
   DCHECK(field);
   DCHECK(element);
-  DCHECK(element.GetDocument().GetFrame());
   DCHECK(IsAccessible(element));
   DCHECK(IsAutofillableElement(element));
 
@@ -2007,10 +2006,14 @@ void WebFormControlElementToFormField(
     }
   }
 
+  // `BoundsInWidget()` triggers style and layout updates, which may
+  // synchronously detach the frame and destroy the `content::RenderFrame`.
+  // Evaluate it before retrieving the frame.
+  gfx::Rect bounds = element.BoundsInWidget();
   if (auto* local_frame = element.GetDocument().GetFrame()) {
     if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
-      field->set_bounds(gfx::RectF(
-          render_frame->ConvertViewportToWindow(element.BoundsInWidget())));
+      field->set_bounds(
+          gfx::RectF(render_frame->ConvertViewportToWindow(bounds)));
     }
   }
 
@@ -2144,10 +2147,15 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     } else if (iframe && iframe->IsWebRemoteFrame()) {
       child_frame.token = RemoteFrameToken(
           iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
-    } else {
-      NOTREACHED();
     }
   }
+  // `WebFormControlElementToFormField()` triggers layout via
+  // `BoundsInWidget()`, which may synchronously detach frames that were alive
+  // when `iframe_elements` was filtered above.
+  std::erase_if(child_frames, [](const FrameTokenWithPredecessor& child_frame) {
+    return std::visit([](const auto& token) { return token.is_empty(); },
+                      child_frame.token);
+  });
 
   FormData form;
   if (!form_element) {
@@ -2540,10 +2548,14 @@ std::optional<FormData> FindFormForContentEditable(
   field.set_autocomplete_attribute(GetAutocompleteAttribute(content_editable));
   field.set_parsed_autocomplete(
       ParseAutocompleteAttribute(field.autocomplete_attribute()));
+  // `BoundsInWidget()` triggers style and layout updates, which may
+  // synchronously detach the frame and destroy the `content::RenderFrame`.
+  // Evaluate it before retrieving the frame.
+  gfx::Rect bounds = content_editable.BoundsInWidget();
   if (auto* local_frame = document.GetFrame()) {
     if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
-      field.set_bounds(gfx::RectF(render_frame->ConvertViewportToWindow(
-          content_editable.BoundsInWidget())));
+      field.set_bounds(
+          gfx::RectF(render_frame->ConvertViewportToWindow(bounds)));
     }
   }
   if (base::EqualsCaseInsensitiveASCII(
