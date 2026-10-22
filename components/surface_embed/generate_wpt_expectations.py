@@ -1,113 +1,286 @@
+#!/usr/bin/env vpython3
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Generates FlagExpectations/surface-embed from wpt.fyi.
+"""Generates FlagExpectations/surface-embed using ResultDB x wpt.fyi.
 
-This script generates the third_party/blink/web_tests/FlagExpectations/surface-embed
-file, which filters out discrepancies between content_shell and real Chrome on
-the linux-surface-embed-rel test bot:
+`surface_embed_chrome_wpt_tests` automatically inherits standard Chromium WPT
+CI filtering at runtime via flags in `//infra/config/targets/tests.star`
+(`--no-virtual-tests`, `--skip-failing-tests`, `--skip-timeouts`, and
+`--inverted-test-launcher-filter-file=.../TestLists/content_shell.filter`),
+along with subtest baselines (`*-expected.txt`).
 
-1. Virtual test suites: Skipped entirely because they are not run on wpt.live / wpt.fyi.
-2. Tests that fail on default Chrome (from wpt.fyi): These are pre-existing
-   Chrome failures not caused by surface-embed.
-3. Tests that are skipped on default Chrome (from wpt.fyi): Tests disabled via
-   WPT metadata (.ini) or unsupported on Chrome.
-4. Tests that pass on default Chrome (from wpt.fyi) but have content_shell
-   *-expected.txt failure baselines checked into Chromium: Because
-   linux-surface-embed-rel runs real Chrome, these tests pass; adding them to
-   FlagExpectations allows them to pass without conflicting with the
-   content_shell baseline.
+For tests that still report non-PASS on `ci/linux-surface-embed-rel`, this
+script combines `rdb` results with default-Chrome results from `wpt.fyi`:
+  1. Tests that actually pass all subtests on `linux-surface-embed-rel` and
+     only failed in historical ResultDB runs due to a now-removed
+     `headless_shell` `[FAIL]` `*-expected.txt` baseline (or that should be
+     moved to `TestLists/chrome.filter`) are excluded from skip sections.
+  2. Tests that PASS in default Chrome on `wpt.fyi` yet fail on
+     `linux-surface-embed-rel` represent candidate `SurfaceEmbed` / `Webium`
+     issues (Sections 1 & 2). Existing entries are preserved across refreshes;
+     newly introduced `SurfaceEmbed`-only failures are reported as warnings and
+     are NOT added unless `--include-new-surface-embed-failures` is passed.
+  3. Tests that ALSO fail or skip in default Chrome on `wpt.fyi` are written
+     to Sections 4 & 5 (`Default Chrome discrepancies`, `[ Skip ]`).
 """
 
+import argparse
+from concurrent.futures import ThreadPoolExecutor
 import datetime
+import fnmatch
 import gzip
 import json
 import os
-import re
-import urllib.request
+import subprocess
+import sys
+import urllib.parse
+
+BUILDER = "chromium/ci/linux-surface-embed-rel"
+WPT_TEST_ID_REGEX = ".*chrome_wpt_tests.*"
+WPT_FYI_RUNS_URL = (
+    "https://wpt.fyi/api/runs?product=chrome&label=master&max-count=1"
+)
+GLOB_SKIPS = (
+    # `headless_shell` mocks built-in AI APIs (`EchoAIManagerImpl`), whereas
+    # Chrome uses `OptimizationGuide` without a downloaded model on CI bots.
+    "external/wpt/ai/*",
+)
+
+SEC_CHROME_CONSISTENT = "chrome_consistent"
+SEC_CHROME_FLAKY = "chrome_flaky"
+SEC_SE_CONSISTENT = "se_consistent"
+SEC_SE_FLAKY = "se_flaky"
 
 
-def is_failing_on_wpt(result):
-    """Returns a set of failure statuses if the wpt.fyi result represents a failure/crash/timeout."""
-    statuses = set()
-    status = result.get("s")
-    if status in ("F", "C", "T", "TIMEOUT", "FAIL", "CRASH", "ERROR", "E"):
-        statuses.add(status)
-    if "c" in result:
-        passes, total = result["c"]
-        if passes < total:
-            statuses.add("FAIL")
-    return statuses
+def parse_resultdb_test_id(test_id: str) -> str:
+    marker = "!webtest::"
+    idx = test_id.find(marker)
+    rest = test_id[idx + len(marker) :] if idx != -1 else test_id.lstrip(":")
+    return rest.replace("#", "/", 1)
 
 
-def is_skipped_on_wpt(result):
-    """Returns True if the test was skipped on wpt.fyi."""
-    status = result.get("s")
-    return status in ("S", "SKIP")
+def fetch_wpt_fyi_non_passing() -> tuple[set[str], list[str]]:
+    import requests
+
+    print("Fetching latest default Chrome run from wpt.fyi...")
+    runs = requests.get(
+        WPT_FYI_RUNS_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=60
+    ).json()
+    if not runs:
+        raise RuntimeError("No runs returned by wpt.fyi")
+
+    results_url = runs[0]["results_url"]
+    print(f"Downloading wpt.fyi summary: {results_url}")
+    body = requests.get(
+        results_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=120
+    ).content
+    raw = gzip.decompress(body) if body.startswith(b"\x1f\x8b") else body
+    summary = json.loads(raw.decode("utf-8"))
+
+    exact: set[str] = set()
+    globs: list[str] = []
+    for test_path, result in summary.items():
+        status = result.get("s")
+        counts = result.get("c")
+        non_pass = status in (
+            "F",
+            "C",
+            "T",
+            "S",
+            "E",
+            "FAIL",
+            "CRASH",
+            "TIMEOUT",
+            "SKIP",
+            "ERROR",
+        ) or (counts is not None and counts[0] < counts[1])
+        if not non_pass:
+            continue
+        norm = f"external/wpt{test_path}"
+        if "*" in norm:
+            globs.append(norm[: norm.find("*") + 1])
+        else:
+            exact.add(norm)
+    return exact, globs
 
 
-def is_passing_on_wpt(result):
-    """Returns True if the test ran and passed completely on wpt.fyi."""
-    return not is_skipped_on_wpt(result) and not is_failing_on_wpt(result)
+def fetch_build_results(build_id: str) -> dict[str, list[str]]:
+    proc = subprocess.run(
+        [
+            "rdb",
+            "query",
+            "-n",
+            "0",
+            "-json",
+            "-tr-fields",
+            "testId,status,expected",
+            "-test",
+            WPT_TEST_ID_REGEX,
+            f"build-{build_id}",
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    per_test: dict[str, list[str]] = {}
+    for line in proc.stdout.splitlines():
+        tr = json.loads(line).get("testResult")
+        if not tr:
+            continue
+        test_name = parse_resultdb_test_id(tr["testId"])
+        per_test.setdefault(test_name, []).append(tr.get("status", ""))
+    return per_test
 
 
-def get_candidate_baseline_paths(wpt_root, test_path):
-    """Returns possible *-expected.txt filepaths in Blink for a given WPT test path."""
-    base = test_path.lstrip("/")
-    candidates = []
-
-    idx = base.find("?")
-    if idx != -1:
-        clean_path = base[:idx]
-        query_part = base[idx:]
-        sanitized_query = re.sub(r"[^A-Za-z0-9_.-]", "_", query_part)
-    else:
-        clean_path = base
-        sanitized_query = None
-
-    stem, _ = os.path.splitext(clean_path)
-    stems = [stem]
-    if ".any." in clean_path:
-        any_stem = clean_path[: clean_path.find(".any.") + 4]
-        if any_stem not in stems:
-            stems.append(any_stem)
-
-    for s in stems:
-        candidates.append(os.path.join(wpt_root, f"{s}-expected.txt"))
-        if sanitized_query:
-            candidates.append(
-                os.path.join(wpt_root, f"{s}{sanitized_query}-expected.txt")
-            )
-
-    if not sanitized_query:
-        candidates.append(os.path.join(wpt_root, f"{stem}.html-expected.txt"))
-
-    return candidates
+def fetch_unexpected_non_passing(build_ids: list[str]) -> set[str]:
+    proc = subprocess.run(
+        [
+            "rdb",
+            "query",
+            "-u",
+            "-n",
+            "0",
+            "-json",
+            "-tr-fields",
+            "testId,status,expected",
+            "-test",
+            WPT_TEST_ID_REGEX,
+            *[f"build-{bid}" for bid in build_ids],
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    unexpected: set[str] = set()
+    for line in proc.stdout.splitlines():
+        tr = json.loads(line).get("testResult")
+        if tr and tr.get("status") not in ("PASS", "SKIP"):
+            unexpected.add(parse_resultdb_test_id(tr["testId"]))
+    return unexpected
 
 
-def has_failure_baseline(wpt_root, test_path):
-    """Returns True if a checked-in *-expected.txt exists and expects failure."""
-    for path in get_candidate_baseline_paths(wpt_root, test_path):
-        if os.path.exists(path):
-            try:
-                with open(path, "r", encoding="utf-8", errors="replace") as f:
-                    content = f.read()
-                if any(
-                    kw in content
-                    for kw in ("FAIL", "TIMEOUT", "NOTRUN", "Harness Error")
-                ):
-                    return True
-            except OSError:
-                pass
-    return False
+def fetch_actual_text_artifacts(
+    build_id: str, candidate_tests: set[str]
+) -> dict[str, list[str]]:
+    import requests
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+
+    artifacts = []
+    page_token = ""
+    while True:
+        payload: dict[str, object] = {
+            "invocations": [f"invocations/build-{build_id}"],
+            "predicate": {
+                "testResultPredicate": {"testIdRegexp": WPT_TEST_ID_REGEX},
+                "artifactIdRegexp": "actual_text",
+            },
+            "pageSize": 1000,
+        }
+        if page_token:
+            payload["pageToken"] = page_token
+        proc = subprocess.run(
+            ["rdb", "rpc", "luci.resultdb.v1.ResultDB", "QueryArtifacts"],
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        resp = json.loads(proc.stdout)
+        for art in resp.get("artifacts", []):
+            raw_id = urllib.parse.unquote(art["name"].split("/results/", 1)[0])
+            test_name = parse_resultdb_test_id(raw_id)
+            if test_name in candidate_tests:
+                artifacts.append((test_name, art["fetchUrl"]))
+        page_token = resp.get("nextPageToken", "")
+        if not page_token:
+            break
+
+    session = requests.Session()
+    adapter = HTTPAdapter(
+        pool_connections=16,
+        pool_maxsize=16,
+        max_retries=Retry(total=3, backoff_factor=0.3),
+    )
+    session.mount("https://", adapter)
+
+    def download(item: tuple[str, str]) -> tuple[str, str]:
+        test_name, url = item
+        resp = session.get(url, timeout=30)
+        resp.raise_for_status()
+        return test_name, resp.content.decode("utf-8", errors="replace")
+
+    per_test: dict[str, list[str]] = {}
+    with ThreadPoolExecutor(max_workers=12) as pool:
+        for test_name, text in pool.map(download, artifacts):
+            per_test.setdefault(test_name, []).append(text)
+    return per_test
 
 
-def main():
+def read_existing_sections(output_path: str) -> dict[str, set[str]]:
+    sections: dict[str, set[str]] = {
+        SEC_CHROME_CONSISTENT: set(),
+        SEC_CHROME_FLAKY: set(),
+        SEC_SE_CONSISTENT: set(),
+        SEC_SE_FLAKY: set(),
+    }
+    if not os.path.exists(output_path):
+        return sections
+    current = SEC_SE_FLAKY
+    with open(output_path, "r", encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line:
+                continue
+            if "Known SurfaceEmbed consistent failures" in line:
+                current = SEC_SE_CONSISTENT
+            elif "Known SurfaceEmbed / multi-process" in line:
+                current = SEC_SE_FLAKY
+            elif "Default Chrome consistent failures" in line:
+                current = SEC_CHROME_CONSISTENT
+            elif "Default Chrome flaky failures" in line:
+                current = SEC_CHROME_FLAKY
+            elif not line.startswith("#") and "[ Skip ]" in line:
+                path = line.split("[", 1)[0].strip()
+                if not path.endswith("*"):
+                    sections[current].add(path)
+    return sections
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--full-builds",
+        type=int,
+        default=5,
+        help="Number of recent completed builds to query in full.",
+    )
+    parser.add_argument(
+        "--unexpected-builds",
+        type=int,
+        default=20,
+        help="Number of recent completed builds to scan for unexpected flakes.",
+    )
+    parser.add_argument(
+        "--include-new-surface-embed-failures",
+        action="store_true",
+        help=(
+            "Also skip newly detected failures that pass in default Chrome "
+            "on wpt.fyi (otherwise only report them as warnings)."
+        ),
+    )
+    args = parser.parse_args()
+
     script_dir = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-    wpt_root = os.path.join(
-        repo_root, "third_party", "blink", "web_tests", "external", "wpt"
-    )
+    sys.path.insert(0, os.path.join(repo_root, "third_party", "blink", "tools"))
+
+    from blinkpy.common.host import Host
+    from blinkpy.web_tests.models import testharness_results
+    from blinkpy.web_tests.models.test_expectations import TestExpectations
+    from blinkpy.web_tests.models.typ_types import ResultType
+
     output_path = os.path.join(
         repo_root,
         "third_party",
@@ -116,160 +289,279 @@ def main():
         "FlagExpectations",
         "surface-embed",
     )
-
-    print("Fetching run details from wpt.fyi...")
-    runs_url = (
-        "https://wpt.fyi/api/runs?product=chrome&label=master&max-count=1"
+    content_shell_filter_path = os.path.join(
+        repo_root,
+        "third_party",
+        "blink",
+        "web_tests",
+        "TestLists",
+        "content_shell.filter",
     )
-    req = urllib.request.Request(
-        runs_url, headers={"User-Agent": "Mozilla/5.0"}
+
+    host = Host()
+    std_port = host.port_factory.get("linux")
+    std_port.set_option_default("manifest_update", False)
+    std_exp = TestExpectations(std_port)
+
+    with open(content_shell_filter_path, "r", encoding="utf-8") as f:
+        content_shell_patterns = [
+            line.strip()
+            for line in f
+            if line.strip() and not line.strip().startswith("#")
+        ]
+
+    wpt_exact, wpt_globs = fetch_wpt_fyi_non_passing()
+
+    def fails_on_default_chrome(test_name: str) -> bool:
+        return test_name in wpt_exact or any(
+            fnmatch.fnmatchcase(test_name, g) for g in wpt_globs
+        )
+
+    max_builds = max(args.full_builds, args.unexpected_builds)
+    bb_out = subprocess.check_output(
+        [
+            "bb",
+            "ls",
+            BUILDER,
+            "-status",
+            "ended",
+            "-n",
+            str(max_builds),
+            "-json",
+        ],
+        text=True,
     )
-    with urllib.request.urlopen(req) as response:
-        runs_data = json.loads(response.read().decode("utf-8"))
-
-    if not runs_data:
-        print("No runs found")
-        return
-
-    run = runs_data[0]
-    results_url = run["results_url"]
-    print(f"Latest Chrome run results URL: {results_url}")
-
-    print("Downloading results summary...")
-    req_summary = urllib.request.Request(
-        results_url, headers={"User-Agent": "Mozilla/5.0"}
-    )
-    with urllib.request.urlopen(req_summary) as response_summary:
-        body = response_summary.read()
-        if body.startswith(b"\x1f\x8b"):
-            raw_data = gzip.decompress(body)
-        else:
-            raw_data = body
-        summary = json.loads(raw_data.decode("utf-8"))
-
-    print(f"Total test files in summary: {len(summary)}")
-
-    chrome_failures = {}
-    chrome_skips = set()
-    content_shell_baseline_overrides = set()
-
-    for test_path, result in summary.items():
-        normalized_path = f"external/wpt{test_path}"
-        if "*" in normalized_path:
-            idx = normalized_path.find("*")
-            normalized_path = normalized_path[: idx + 1]
-
-        failing_statuses = is_failing_on_wpt(result)
-        if is_skipped_on_wpt(result):
-            chrome_skips.add(normalized_path)
-        elif failing_statuses:
-            chrome_failures.setdefault(normalized_path, set()).update(
-                failing_statuses
-            )
-        elif has_failure_baseline(wpt_root, test_path):
-            content_shell_baseline_overrides.add(normalized_path)
-
+    builds = [json.loads(line) for line in bb_out.strip().splitlines()]
+    full_builds = builds[: args.full_builds]
     print(
-        f"Found {len(chrome_failures)} failing test files in default Chrome"
-        " (Section 1)."
-    )
-    print(
-        f"Found {len(chrome_skips)} skipped test files in default Chrome"
-        " (Section 2)."
-    )
-    print(
-        f"Found {len(content_shell_baseline_overrides)} tests passing in Chrome"
-        " with content_shell baselines (Section 3)."
+        f"Querying {len(full_builds)} full builds from {BUILDER}: "
+        f"{[b['number'] for b in full_builds]}"
     )
 
-    today = datetime.datetime.now().strftime("%Y-%m-%d")
-    header = f"""# tags: [ Linux ]
-# tags: [ Release Debug ]
-# results: [ Timeout Crash Pass Failure Slow Skip ]
+    with ThreadPoolExecutor(max_workers=len(full_builds)) as pool:
+        per_build_results = list(
+            pool.map(lambda b: fetch_build_results(b["id"]), full_builds)
+        )
 
-# ==============================================================================
-# Automatically generated expectations for linux-surface-embed-rel.
-#
-# Generated by components/surface_embed/generate_wpt_expectations.py.
-#
-# This file filters out discrepancies caused by using real Chrome instead of
-# content_shell / headless_shell:
-#
-# 1. Virtual test suites:
-#    Virtual test suites are not run on wpt.live / wpt.fyi and are skipped here.
-#
-# 2. Section 1 (Pre-existing failures on default Chrome from wpt.fyi):
-#    Tests that fail in default Chrome (on wpt.fyi / wpt.live). We allow
-#    [ Failure Pass ] (or Crash/Timeout) so pre-existing Chrome bugs do not
-#    fail the linux-surface-embed-rel bot.
-#
-# 3. Section 2 (Tests skipped on default Chrome from wpt.fyi):
-#    Tests that are skipped on default Chrome on wpt.fyi / wpt.live (e.g. disabled
-#    via WPT metadata .ini files or unsupported features). We skip them here too.
-#
-# 4. Section 3 (Tests passing in default Chrome with content_shell baselines):
-#    Tests that fail in content_shell have *-expected.txt baselines checked in
-#    recording FAIL subtests. However, these tests pass in real Chrome and on
-#    wpt.live (e.g. cross-origin/iframe focus tests). When real Chrome runs on
-#    linux-surface-embed-rel, all subtests pass, which mismatches the
-#    content_shell baseline and is treated as an unexpected failure. We add
-#    [ Failure Pass ] to allow them to pass without conflicting with the
-#    baseline.
-#
-# Last update: {today}
-#
-# To update, run:
-#   vpython3 components/surface_embed/generate_wpt_expectations.py
-# ==============================================================================
+    unexpected_set = fetch_unexpected_non_passing(
+        [b["id"] for b in builds[: args.unexpected_builds]]
+    )
 
-# Skip all virtual test suites because they are not run on wpt.live / wpt.fyi.
-virtual/* [ Skip ]
+    statuses_across_builds: dict[str, list[str]] = {}
+    for build_map in per_build_results:
+        for test_name, statuses in build_map.items():
+            non_skip = [s for s in statuses if s != "SKIP"]
+            if non_skip:
+                statuses_across_builds.setdefault(test_name, []).extend(
+                    non_skip
+                )
 
-# ------------------------------------------------------------------------------
-# Section 1: Pre-existing failures on default Chrome (from wpt.fyi)
-# ------------------------------------------------------------------------------
-"""
+    consistent_failures = {
+        test_name
+        for test_name, statuses in statuses_across_builds.items()
+        if "PASS" not in statuses
+    }
+    intermittent_failures = (
+        {
+            test_name
+            for test_name, statuses in statuses_across_builds.items()
+            if any(s != "PASS" for s in statuses)
+        }
+        | unexpected_set
+    ) - consistent_failures
 
-    section2_header = """
-# ------------------------------------------------------------------------------
-# Section 2: Tests skipped on default Chrome (from wpt.fyi)
-# ------------------------------------------------------------------------------
-"""
+    def should_include(test_name: str) -> bool:
+        if test_name.startswith("virtual/"):
+            return False
+        if any(fnmatch.fnmatchcase(test_name, g) for g in GLOB_SKIPS):
+            return False
+        if any(
+            fnmatch.fnmatchcase(test_name, pat)
+            for pat in content_shell_patterns
+        ):
+            return False
+        if not std_port.test_exists(test_name):
+            return False
+        std_results = std_exp.get_expectations(test_name).results
+        if std_results & {
+            ResultType.Skip,
+            ResultType.Failure,
+            ResultType.Timeout,
+        }:
+            return False
+        return True
 
-    section3_header = """
-# ------------------------------------------------------------------------------
-# Section 3: Tests passing in default Chrome with content_shell baselines
-#            (overriding *-expected.txt)
-# ------------------------------------------------------------------------------
-"""
+    need_text_by_build: dict[str, set[str]] = {}
+    for test_name in consistent_failures:
+        if not should_include(test_name):
+            continue
+        for build, build_map in zip(full_builds, per_build_results):
+            if any(s != "SKIP" for s in build_map.get(test_name, [])):
+                need_text_by_build.setdefault(build["id"], set()).add(
+                    test_name
+                )
+                break
+
+    latest_texts: dict[str, list[str]] = {}
+    for bid, candidates in need_text_by_build.items():
+        latest_texts.update(fetch_actual_text_artifacts(bid, candidates))
+
+    # Exclude tests that pass 100% of subtests on linux-surface-embed-rel
+    # and only failed in historical runs due to a headless_shell [FAIL]
+    # *-expected.txt baseline (they belong in TestLists/chrome.filter with
+    # their obsolete *-expected.txt removed).
+    all_pass_tests: set[str] = set()
+    for test_name in sorted(consistent_failures):
+        if not should_include(test_name):
+            continue
+        texts = latest_texts.get(test_name)
+        if texts and all(
+            testharness_results.is_all_pass_test_result(t) for t in texts
+        ):
+            all_pass_tests.add(test_name)
+
+    existing = read_existing_sections(output_path)
+    existing_all = set().union(*existing.values())
+
+    consistent_candidates = {
+        t
+        for t in (
+            consistent_failures
+            | existing[SEC_CHROME_CONSISTENT]
+            | existing[SEC_SE_CONSISTENT]
+        )
+        if should_include(t) and t not in all_pass_tests
+    }
+    chrome_consistent_out = sorted(
+        t for t in consistent_candidates if fails_on_default_chrome(t)
+    )
+    raw_se_consistent = {
+        t for t in consistent_candidates if not fails_on_default_chrome(t)
+    }
+    new_se_consistent = sorted(raw_se_consistent - existing_all)
+    if args.include_new_surface_embed_failures:
+        se_consistent_out = sorted(raw_se_consistent)
+    else:
+        se_consistent_out = sorted(raw_se_consistent & existing_all)
+
+    already_consistent = set(chrome_consistent_out) | set(se_consistent_out)
+    flaky_candidates = {
+        t
+        for t in (
+            intermittent_failures
+            | existing[SEC_CHROME_FLAKY]
+            | existing[SEC_SE_FLAKY]
+        )
+        - already_consistent
+        if should_include(t) and t not in all_pass_tests
+    }
+    chrome_flaky_out = sorted(
+        t for t in flaky_candidates if fails_on_default_chrome(t)
+    )
+    raw_se_flaky = {
+        t for t in flaky_candidates if not fails_on_default_chrome(t)
+    }
+    new_se_flaky = sorted(raw_se_flaky - existing_all)
+    if args.include_new_surface_embed_failures:
+        se_flaky_out = sorted(raw_se_flaky)
+    else:
+        se_flaky_out = sorted(raw_se_flaky & existing_all)
+
+    today = datetime.date.today().isoformat()
+    sep = "# " + "=" * 76
+    subsep = "# " + "-" * 76
+    lines = [
+        "# tags: [ Linux ]",
+        "# tags: [ Release Debug ]",
+        "# results: [ Skip ]",
+        "",
+        sep,
+        "# Expectations for `surface_embed_chrome_wpt_tests`",
+        "# (`--product=chrome --flag-specific=surface-embed`).",
+        "#",
+        "# Standard CI expectations (`TestExpectations`, `NeverFixTests`,",
+        "# `TestLists/content_shell.filter`, and `*-expected.txt` baselines)",
+        "# are inherited automatically at runtime via flags in",
+        "# `//infra/config/targets/tests.star`.",
+        "#",
+        "# Always use `[ Skip ]` here (never `[ Failure Pass ]`) so entries",
+        "# never override `[ Skip ]` or `[ Timeout ]` rules in standard",
+        "# `TestExpectations` / `NeverFixTests`.",
+        "#",
+        f"# Last refreshed: {today}",
+        "# Refresh helper:",
+        "#   vpython3 components/surface_embed/generate_wpt_expectations.py",
+        sep,
+        "",
+        subsep,
+        "# 1. Known SurfaceEmbed consistent failures (PASS in default Chrome",
+        "#    on wpt.fyi, FAIL consistently on linux-surface-embed-rel)",
+        "#    TODO(https://crbug.com/558819229): Fix and unskip these tests.",
+        "#    [Not auto-updated: existing entries are preserved; new failures",
+        "#    are only warned unless --include-new-surface-embed-failures]",
+        subsep,
+        *[f"{t} [ Skip ]" for t in se_consistent_out],
+        "",
+        subsep,
+        "# 2. Known SurfaceEmbed / multi-process Chrome intermittent flakes",
+        "#    (PASS on wpt.fyi, flaky on linux-surface-embed-rel)",
+        "#    TODO(https://crbug.com/558819229): Triage and deflake these",
+        "#    tests (see also https://crbug.com/575925048).",
+        "#    [Not auto-updated: existing entries are preserved; new flakes",
+        "#    are only warned unless --include-new-surface-embed-failures]",
+        subsep,
+        *[f"{t} [ Skip ]" for t in se_flaky_out],
+        "",
+        subsep,
+        "# 3. Chrome vs. headless_shell embedder feature differences",
+        "#    [Static globs maintained in GLOB_SKIPS; written on every run]",
+        subsep,
+        "# Built-in AI WPTs use a mock `EchoAIManagerImpl` in",
+        "# `headless_shell`, whereas Chrome uses `OptimizationGuide` without",
+        "# a downloaded model on CI bots.",
+        *[f"{g} [ Skip ]" for g in GLOB_SKIPS],
+        "",
+        subsep,
+        "# 4. Default Chrome consistent failures / skips (also non-passing on",
+        "#    wpt.fyi default Chrome — not caused by SurfaceEmbed)",
+        "#    [Auto-updated on every run of generate_wpt_expectations.py]",
+        subsep,
+        *[f"{t} [ Skip ]" for t in chrome_consistent_out],
+        "",
+        subsep,
+        "# 5. Default Chrome flaky failures (also non-passing on wpt.fyi",
+        "#    default Chrome — not caused by SurfaceEmbed)",
+        "#    [Auto-updated on every run of generate_wpt_expectations.py]",
+        subsep,
+        *[f"{t} [ Skip ]" for t in chrome_flaky_out],
+        "",
+    ]
 
     with open(output_path, "w", encoding="utf-8") as f:
-        f.write(header)
-        for path, statuses in sorted(chrome_failures.items()):
-            exps = set()
-            for status in statuses:
-                if status in ("C", "CRASH"):
-                    exps.add("Crash")
-                elif status in ("T", "TIMEOUT"):
-                    exps.add("Timeout")
-                else:
-                    exps.add("Failure")
-            # Add "Pass" expectations so that flaky tests won't show up as "pass
-            # unexpectedly" in the test results.
-            exps.add("Pass")
-            exp_str = " ".join(sorted(list(exps)))
-            f.write(f"{path} [ {exp_str} ]\n")
+        f.write("\n".join(lines))
 
-        f.write(section2_header)
-        for path in sorted(chrome_skips):
-            f.write(f"{path} [ Skip ]\n")
-
-        f.write(section3_header)
-        for path in sorted(content_shell_baseline_overrides):
-            f.write(f"{path} [ Failure Pass ]\n")
-
-    print(f"Written expectations to {output_path}")
+    print(
+        f"Excluded {len(all_pass_tests)} all-PASS tests, and wrote "
+        f"{len(GLOB_SKIPS)} globs, "
+        f"{len(chrome_consistent_out)} default-Chrome consistent skips, "
+        f"{len(chrome_flaky_out)} default-Chrome flaky skips, "
+        f"{len(se_consistent_out)} SurfaceEmbed consistent skips, and "
+        f"{len(se_flaky_out)} SurfaceEmbed flaky skips."
+    )
+    if not args.include_new_surface_embed_failures and (
+        new_se_consistent or new_se_flaky
+    ):
+        print(
+            f"\nWARNING: {len(new_se_consistent)} new consistent and "
+            f"{len(new_se_flaky)} new flaky SurfaceEmbed-only failures were "
+            "NOT added (pass --include-new-surface-embed-failures to include):"
+        )
+        for t in new_se_consistent:
+            print(f"  [CONSISTENT] {t}")
+        for t in new_se_flaky:
+            print(f"  [FLAKY]      {t}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
