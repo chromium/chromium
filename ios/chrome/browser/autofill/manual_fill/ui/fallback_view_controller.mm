@@ -63,9 +63,12 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 enum class ItemType { kItemTypeData = kItemTypeEnumZero, kItemTypeAction };
 
 // Returns whether the view should be resized to match the desired popover UI.
-bool ShouldResizeViewForPopover(
-    UIModalPresentationStyle modal_presentation_style) {
-  return [ManualFillUtil shouldUsePopover] &&
+bool ShouldResizeViewForPopover(UIViewController* view_controller) {
+  UIModalPresentationStyle modal_presentation_style =
+      view_controller.parentViewController
+          ? view_controller.parentViewController.modalPresentationStyle
+          : view_controller.modalPresentationStyle;
+  return [ManualFillUtil shouldUsePopover:view_controller] &&
          modal_presentation_style == UIModalPresentationPopover;
 }
 
@@ -121,7 +124,7 @@ bool ShouldResizeViewForPopover(
   self.tableView.allowsSelection = NO;
   self.definesPresentationContext = YES;
   if (!self.tableViewModel) {
-    if (ShouldResizeViewForPopover(self.modalPresentationStyle)) {
+    if (ShouldResizeViewForPopover(self)) {
       self.preferredContentSize = CGSizeMake(
           PopoverPreferredWidth, AlignValueToLowerPixel(PopoverLoadingHeight));
     }
@@ -132,7 +135,7 @@ bool ShouldResizeViewForPopover(
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  if (ShouldResizeViewForPopover(self.modalPresentationStyle)) {
+  if (ShouldResizeViewForPopover(self)) {
     CGSize systemLayoutSize = self.tableView.contentSize;
     CGFloat preferredHeight =
         std::min(systemLayoutSize.height, PopoverMaxHeight);

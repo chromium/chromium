@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MANUAL_FILL_PUBLIC_MANUAL_FILL_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MANUAL_FILL_PUBLIC_MANUAL_FILL_CONSTANTS_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "components/autofill/core/browser/filling/filling_product.h"
 
@@ -112,8 +112,9 @@ enum class PaymentFieldType {
 
 @interface ManualFillUtil : NSObject
 
-// Returns whether to use the popover view for manual fill.
-+ (BOOL)shouldUsePopover;
+// Returns whether to use the popover view for manual fill in
+// `traitEnvironment`.
++ (BOOL)shouldUsePopover:(id<UITraitEnvironment>)traitEnvironment;
 
 // Returns a ManualFillDataType based on the provided FillingProduct.
 + (manual_fill::ManualFillDataType)manualFillDataTypeFromFillingProduct:

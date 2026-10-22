@@ -23,7 +23,10 @@
 
 @end
 
-@implementation FallbackCoordinator
+@implementation FallbackCoordinator {
+  // Button used to anchor the popover presentation.
+  __weak UIButton* _sourceButton;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -38,8 +41,7 @@
 
 - (BOOL)dismissIfNecessaryThenDoCompletion:(void (^)(void))completion {
   // Dismiss the popover before the settings are presented.
-  if ([ManualFillUtil shouldUsePopover] &&
-      self.viewController.presentingViewController) {
+  if (self.viewController.presentingViewController) {
     // When using a popover view, fallback coordinators are coordinators of
     // subviews of the expanded manual fill view, so they can't dismiss the
     // entire popup, otherwise changing the type of autofill data between
@@ -53,7 +55,7 @@
   } else {
     if (completion) {
       completion();
-      if ([ManualFillUtil shouldUsePopover]) {
+      if ([ManualFillUtil shouldUsePopover:self.baseViewController]) {
         [self.delegate fallbackCoordinatorDidDismissPopover:self];
       }
     }
@@ -72,10 +74,23 @@
                                                   animated:YES
                                                 completion:nil];
 
+  _sourceButton = button;
   UIPopoverPresentationController* popoverPresentationController =
       self.viewController.popoverPresentationController;
-  popoverPresentationController.sourceView = button;
-  popoverPresentationController.sourceRect = button.bounds;
+  if (topFrontWindow && button.window &&
+      CGRectIsNull([button convertRect:button.bounds
+                     toCoordinateSpace:topFrontWindow])) {
+    // When `topFrontWindow` belongs to a separate screen coordinate space from
+    // `button.window` (e.g., `_UIKeyboardInputScene` vs the application's
+    // `UIWindowScene`), UIKit cannot convert `button.bounds` across windows.
+    // Anchor in `topFrontWindow` using `button`'s window coordinates instead.
+    popoverPresentationController.sourceView = topFrontWindow;
+    popoverPresentationController.sourceRect = [button convertRect:button.bounds
+                                                            toView:nil];
+  } else {
+    popoverPresentationController.sourceView = button;
+    popoverPresentationController.sourceRect = button.bounds;
+  }
   popoverPresentationController.permittedArrowDirections =
       UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
   popoverPresentationController.delegate = self;
@@ -95,6 +110,15 @@
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
+
+- (void)popoverPresentationController:
+            (UIPopoverPresentationController*)popoverPresentationController
+          willRepositionPopoverToRect:(inout CGRect*)rect
+                               inView:(inout UIView**)view {
+  if (_sourceButton.window && *view != _sourceButton) {
+    *rect = [_sourceButton convertRect:_sourceButton.bounds toView:nil];
+  }
+}
 
 - (void)popoverPresentationControllerDidDismissPopover:
     (UIPopoverPresentationController*)popoverPresentationController {

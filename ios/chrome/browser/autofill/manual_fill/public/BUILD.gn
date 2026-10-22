@@ -11,6 +11,6 @@ source_set("public") {
   deps = [
     "//components/autofill/core/browser",
     "//components/webauthn/ios:features",
-    "//ui/base",
+    "//ios/chrome/common/ui/util",
   ]
 }

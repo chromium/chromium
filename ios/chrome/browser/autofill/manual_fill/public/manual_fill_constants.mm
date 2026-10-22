@@ -7,7 +7,7 @@
 #import "base/feature_list.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/webauthn/ios/features.h"
-#import "ui/base/device_form_factor.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace manual_fill {
 
@@ -86,8 +86,24 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
 
 @implementation ManualFillUtil
 
-+ (BOOL)shouldUsePopover {
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
++ (BOOL)shouldUsePopover:(id<UITraitEnvironment>)traitEnvironment {
+  if ([traitEnvironment isKindOfClass:[UIViewController class]]) {
+    UIViewController* viewController =
+        static_cast<UIViewController*>(traitEnvironment);
+    // When presented inside a `UIPopoverPresentationController`, UIKit
+    // overrides the presented view controller's `horizontalSizeClass` to
+    // `UIUserInterfaceSizeClassCompact`. Check `modalPresentationStyle` first
+    // so presented manual fill view controllers continue to recognize popover
+    // mode.
+    UIModalPresentationStyle modalPresentationStyle =
+        viewController.parentViewController
+            ? viewController.parentViewController.modalPresentationStyle
+            : viewController.modalPresentationStyle;
+    if (modalPresentationStyle == UIModalPresentationPopover) {
+      return YES;
+    }
+  }
+  return IsRegularXRegularSizeClass(traitEnvironment);
 }
 
 + (manual_fill::ManualFillDataType)manualFillDataTypeFromFillingProduct:

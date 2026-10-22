@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller.h"
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
 #import "base/metrics/histogram_macros.h"
@@ -200,6 +202,9 @@ NSArray<FormSuggestion*>* TruncateSuggestionsIfNeeded(
 
   // Whether the keyboard was closed before the keyboard accessory appeared.
   BOOL _keyboardWasClosed;
+
+  // Whether the manual fill menu most recently used popover presentation.
+  std::optional<BOOL> _shouldUsePopover;
 }
 
 @synthesize addressButtonHidden = _addressButtonHidden;
@@ -492,7 +497,7 @@ NSArray<FormSuggestion*>* TruncateSuggestionsIfNeeded(
                     forDataType:(manual_fill::ManualFillDataType)dataType {
   // Hide the keyboard accessory while the expanded view is visible and not
   // presented in a popover.
-  self.formInputAccessoryView.hidden = ![ManualFillUtil shouldUsePopover];
+  self.formInputAccessoryView.hidden = ![ManualFillUtil shouldUsePopover:self];
 
   [_formInputAccessoryViewControllerDelegate
       formInputAccessoryViewController:self
@@ -511,8 +516,8 @@ NSArray<FormSuggestion*>* TruncateSuggestionsIfNeeded(
 
 // Returns the manual fill symbol used for the manual fill menu (input view VS
 // popover).
-UIImage* GetManualFillSymbol() {
-  if ([ManualFillUtil shouldUsePopover]) {
+UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
+  if ([ManualFillUtil shouldUsePopover:trait_environment]) {
     return SymbolWithPointSize(SymbolListBullet, kManualFillSymbolPointSize);
   }
 
@@ -545,6 +550,10 @@ UIImage* GetManualFillSymbol() {
   BOOL isTabletFormFactor =
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
   BOOL isCompact = [self isCompact];
+  if (self.traitCollection.horizontalSizeClass !=
+      UIUserInterfaceSizeClassUnspecified) {
+    _shouldUsePopover = [ManualFillUtil shouldUsePopover:self];
+  }
 
   UIImage* closeButtonSymbol =
       SymbolWithPointSize(SymbolKeyboardDown, kSymbolActionPointSize);
@@ -555,7 +564,7 @@ UIImage* GetManualFillSymbol() {
   [formInputAccessoryView
             setUpWithLeadingView:self.leadingView
               navigationDelegate:self.navigationDelegate
-                manualFillSymbol:GetManualFillSymbol()
+                manualFillSymbol:GetManualFillSymbol(self)
         passwordManualFillSymbol:SymbolWithPointSize(SymbolPassword,
                                                      kSymbolActionPointSize)
       creditCardManualFillSymbol:SymbolWithPointSize(SymbolCreditCard,
@@ -750,11 +759,25 @@ UIImage* GetManualFillSymbol() {
     [self updateOmniboxTypingShieldVisibility];
   }
 
-  BOOL isCompact = [self isCompact];
-  [self.formInputAccessoryView setIsCompact:isCompact];
-  self.formInputAccessoryView.accessibilityViewIsModal = isCompact;
-  [self.formSuggestionView setIsCompact:isCompact];
-  [self updateFormSuggestionViewMaskLayout];
+  if (self.traitCollection.horizontalSizeClass !=
+      UIUserInterfaceSizeClassUnspecified) {
+    BOOL isCompact = [self isCompact];
+    [self.formInputAccessoryView setIsCompact:isCompact];
+    self.formInputAccessoryView.accessibilityViewIsModal = isCompact;
+    [self.formSuggestionView setIsCompact:isCompact];
+    [self updateFormSuggestionViewMaskLayout];
+
+    BOOL shouldUsePopover = [ManualFillUtil shouldUsePopover:self];
+    if (_shouldUsePopover != shouldUsePopover) {
+      BOOL hadPreviousValue = _shouldUsePopover.has_value();
+      _shouldUsePopover = shouldUsePopover;
+      self.formInputAccessoryView.manualFillSymbol = GetManualFillSymbol(self);
+      if (hadPreviousValue) {
+        [self.formInputAccessoryViewControllerDelegate
+            formInputAccessoryViewControllerReset:self];
+      }
+    }
+  }
 
   [self forceUserInterfaceStyle];
 }

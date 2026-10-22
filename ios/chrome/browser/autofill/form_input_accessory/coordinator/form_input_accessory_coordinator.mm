@@ -440,7 +440,7 @@ void UndoInSessionSuppressedEntity(
       expandedManualFillCoordinator;
   [expandedManualFillCoordinator start];
 
-  if ([ManualFillUtil shouldUsePopover]) {
+  if ([ManualFillUtil shouldUsePopover:_formInputAccessoryViewController]) {
     [expandedManualFillCoordinator presentFromButton:button];
   } else {
     self.formInputViewController = expandedManualFillCoordinator.viewController;
@@ -457,7 +457,7 @@ void UndoInSessionSuppressedEntity(
 }
 
 - (void)dismissPopover {
-  if ([ManualFillUtil shouldUsePopover]) {
+  if ([ManualFillUtil shouldUsePopover:_formInputAccessoryViewController]) {
     // Close the popover view.
     [self stopChildren];
   }
@@ -573,7 +573,7 @@ void UndoInSessionSuppressedEntity(
   BOOL invokedOnObfuscatedField =
       [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
 
-  if (![ManualFillUtil shouldUsePopover]) {
+  if (![ManualFillUtil shouldUsePopover:formInputAccessoryViewController]) {
     [self stopChildren];
   }
 
@@ -592,6 +592,20 @@ void UndoInSessionSuppressedEntity(
 - (void)formInputAccessoryViewControllerReset:
     (FormInputAccessoryViewController*)formInputAccessoryViewController {
   CHECK_EQ(_formInputAccessoryViewController, formInputAccessoryViewController);
+  // If an expanded manual fill view is open when the size class transitions
+  // between compact (`_formInputViewController != nil`) and popover
+  // (`_formInputViewController == nil`) presentation modes, stop the manual
+  // fill coordinator and reload the first responder's input views. Otherwise
+  // (e.g., during `viewDidDisappear:`), only reset the input views.
+  BOOL isManualFillOpen =
+      _formInputAccessoryMediator.formInputInteractionDelegate != nil;
+  BOOL isPopoverMode =
+      [ManualFillUtil shouldUsePopover:formInputAccessoryViewController];
+  if (isManualFillOpen &&
+      ((_formInputViewController == nil) != isPopoverMode)) {
+    [self reset];
+    return;
+  }
   [self resetInputViews];
 }
 
@@ -996,8 +1010,9 @@ void UndoInSessionSuppressedEntity(
 #pragma mark - CRWResponderInputView
 
 - (UIView*)inputView {
-  return [ManualFillUtil shouldUsePopover] ? nil
-                                           : self.formInputViewController.view;
+  return [ManualFillUtil shouldUsePopover:_formInputAccessoryViewController]
+             ? nil
+             : self.formInputViewController.view;
 }
 
 - (UIView*)inputAccessoryView {
@@ -1359,7 +1374,7 @@ void UndoInSessionSuppressedEntity(
 - (void)cardCoordinatorDidCompleteManualFill:(CardCoordinator*)cardCoordinator {
   // This is re-triggered automatically only when it is an input view (as
   // opposed to a popover anchored to a button).
-  if ([ManualFillUtil shouldUsePopover]) {
+  if ([ManualFillUtil shouldUsePopover:_formInputAccessoryViewController]) {
     return;
   }
 

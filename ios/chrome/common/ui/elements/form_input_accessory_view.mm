@@ -165,8 +165,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
 @property(nonatomic, weak) UIView* trailingView;
 
-@property(nonatomic, strong) UIImage* manualFillSymbol;
-
 @property(nonatomic, strong) UIImage* passwordManualFillSymbol;
 
 @property(nonatomic, strong) UIImage* creditCardManualFillSymbol;
@@ -280,6 +278,17 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   }
 }
 
+- (void)setManualFillSymbol:(UIImage*)manualFillSymbol {
+  if ([_manualFillSymbol isEqual:manualFillSymbol]) {
+    return;
+  }
+
+  _manualFillSymbol = manualFillSymbol;
+  if (self.manualFillButton) {
+    [self adjustManualFillButtonTitle:self.manualFillButton];
+  }
+}
+
 - (void)setIsCompact:(BOOL)isCompact {
   if (_isCompact == isCompact) {
     return;
@@ -363,31 +372,29 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     return;
   }
   BOOL fixedSpacing = !self.manualFillButton.hidden;
+  // In `kManualFillButtons` or `kAtMemoryFullButton` mode on iPad or
+  // non-compact layouts (e.g. unfolded iPhone Duo), the effect view's
+  // constraint that aligns to the leading edge of the keyboard accessory is
+  // disabled so `_trailingViewCenteringConstraint` can center the manual fill
+  // buttons in the keyboard accessory.
+  BOOL centerMode =
+      (_isTabletFormFactor || !_isCompact) &&
+      (_currentGroup ==
+           FormInputAccessoryViewSubitemGroup::kManualFillButtons ||
+       _currentGroup ==
+           FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton);
+  _effectViewLeadingConstraint.active = !centerMode;
+  _trailingViewCenteringConstraint.active = centerMode;
   if (_isTabletFormFactor) {
     // iPad:
     // The close button is hidden for iPad. The spacing constraint isn't
     // needed.
     _splitViewSpacingConstraint.active = NO;
-
-    // In `kDetailedButtons` mode, the effect view's constraint that aligns to
-    // the leading edge of the keyboard accessary has to be disabled. The
-    // `_trailingViewCenteringConstraint` then centers the manual fill buttons
-    // to the center of the keyboard accessory.
-    BOOL centerMode =
-        _currentGroup ==
-            FormInputAccessoryViewSubitemGroup::kManualFillButtons ||
-        _currentGroup ==
-            FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton;
-    _effectViewLeadingConstraint.active = !centerMode;
-    _trailingViewCenteringConstraint.active = centerMode;
     _trailingConstraint.active = !centerMode && !_isCompact;
   } else {
     // iPhone:
-    // The effect view is always aligned to the leading anchor of the keyboard
-    // accessory. `trailingView`, does not need to be centered or aligned to
-    // the trailing anchor of the keyboard accessory.
-    _effectViewLeadingConstraint.active = YES;
-    _trailingViewCenteringConstraint.active = NO;
+    // `trailingView` is not aligned to the trailing anchor of the keyboard
+    // accessory because the close button occupies the trailing side.
     _trailingConstraint.active = NO;
 
     // In `kExpandButtonOnly` mode:

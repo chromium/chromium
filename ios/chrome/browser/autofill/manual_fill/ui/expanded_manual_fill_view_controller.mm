@@ -149,11 +149,14 @@ UIColor* GetCloseButtonForegroundColor() {
 }
 
 // Returns the constant to apply to the header view top constraint.
-CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
+CGFloat GetHeaderViewTopConstraintConstant(
+    bool is_compact_height,
+    id<UITraitEnvironment> trait_environment) {
   // Negative top padding should be applied only for iOS 26.0 - iOS 26.3.
   if (@available(iOS 26.0, *)) {
     if (!@available(iOS 26.4, *)) {
-      if (!is_compact_height && ![ManualFillUtil shouldUsePopover]) {
+      if (!is_compact_height &&
+          ![ManualFillUtil shouldUsePopover:trait_environment]) {
         return kIOS26HeaderViewTopPadding;
       }
     }
@@ -169,9 +172,10 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
 // On iOS 18 and iPad, the two insets are identical.
 // This function takes into account the additional inset and returns a value
 // that can be used to align other UI elements with the cells.
-CGFloat GetUpdatedHorizontalInset(CGFloat inset) {
+CGFloat GetUpdatedHorizontalInset(CGFloat inset,
+                                  id<UITraitEnvironment> trait_environment) {
   if (@available(iOS 26, *)) {
-    if (![ManualFillUtil shouldUsePopover]) {
+    if (![ManualFillUtil shouldUsePopover:trait_environment]) {
       return inset + kIOS26TableViewCellExtraHorizontalInset;
     }
   }
@@ -179,9 +183,11 @@ CGFloat GetUpdatedHorizontalInset(CGFloat inset) {
 }
 
 // Returns the horizontal inset of the cells of a UITableView.
-CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
+CGFloat GetTableViewCellHorizontalInset(
+    UITableView* tableView,
+    id<UITraitEnvironment> trait_environment) {
   return GetUpdatedHorizontalInset(
-      tableView.visibleCells.firstObject.layoutMargins.left);
+      tableView.visibleCells.firstObject.layoutMargins.left, trait_environment);
 }
 
 }  // namespace
@@ -296,11 +302,11 @@ CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
   _headerViewLeadingConstraint = [_headerView.leadingAnchor
       constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
                      constant:GetUpdatedHorizontalInset(
-                                  kHeaderViewHorizontalPadding)];
+                                  kHeaderViewHorizontalPadding, self)];
   _headerViewTrailingConstraint = [_headerView.trailingAnchor
       constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                      constant:-GetUpdatedHorizontalInset(
-                                  kHeaderViewHorizontalPadding)];
+                                  kHeaderViewHorizontalPadding, self)];
   _headerViewPopoverTopConstraint = [_headerView.topAnchor
       constraintEqualToAnchor:self.view.topAnchor
                      constant:kHeaderViewPopoverTopPadding];
@@ -348,7 +354,7 @@ CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
   UITableView* tableView = self.childViewController.tableView;
   UITableViewStyle style = tableView.style;
   CGFloat tableViewCellHorizontalInset =
-      GetTableViewCellHorizontalInset(tableView);
+      GetTableViewCellHorizontalInset(tableView, self);
 
   // If needed, update the horizontal contraints of the header view so that it
   // is horizontally aligned with the table view cells.
@@ -396,6 +402,16 @@ CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
 // Adjusts the top padding so that it takes into account the arrow of the
 // popover view if the arrow is at the top of the view.
 - (void)adjustTopHeaderViewConstraint {
+  _headerViewTopConstraint.constant =
+      GetHeaderViewTopConstraintConstant(IsCompactHeight(self), self);
+  if (!_tableViewCellHorizontalInset) {
+    [self
+        updateHeaderViewHorizontalConstraints:_headerViewLeadingConstraint
+                           trailingConstraint:_headerViewTrailingConstraint
+                                     constant:GetUpdatedHorizontalInset(
+                                                  kHeaderViewHorizontalPadding,
+                                                  self)];
+  }
   BOOL isPopoverUpArrow = self.popoverPresentationController.arrowDirection ==
                           UIPopoverArrowDirectionUp;
   _headerViewTopConstraint.active = !isPopoverUpArrow;
@@ -532,7 +548,7 @@ CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
   // apply the narrow layout.
   bool isCompactHeight = IsCompactHeight(self);
   _headerViewTopConstraint.constant =
-      GetHeaderViewTopConstraintConstant(isCompactHeight);
+      GetHeaderViewTopConstraintConstant(isCompactHeight, self);
   if (isCompactHeight) {
     [headerView addSubview:chromeLogo];
     [headerView addSubview:closeButton];
