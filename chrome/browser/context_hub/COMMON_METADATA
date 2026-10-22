@@ -5,4 +5,28 @@ buganizer {
 team_email: "chrome-pcontext-exploration-eng@google.com"
 
 # Opt-in to the Chromium AI Code Review Agent
-agentic_review {}
+agentic_review {
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.mojom"
+    rules: "chrome/browser/context_hub/knowledge_base/mojo-runtime-feature-gating.md"
+  }
+  capability_groups {
+    path_expression: "chrome/browser/ui/webui/context_hub/.*\\.(?:h|cc)"
+    rules: "chrome/browser/context_hub/knowledge_base/invoke-mojo-callbacks-on-early-return.md"
+  }
+  capability_groups {
+    path_expression: "chrome/browser/context_hub/storage/.*\\.(?:h|cc)"
+    rules: "chrome/browser/context_hub/knowledge_base/sqlite-async-dispatch-and-sequence-check.md"
+    rules: "chrome/browser/context_hub/knowledge_base/sqlite-parameterized-statements.md"
+  }
+  capability_groups {
+    path_expression: "chrome/browser/resources/context_hub/.*\\.ts"
+    path_expression_exclusion: ".*\\.html\\.ts"
+    rules: "chrome/browser/context_hub/knowledge_base/webui-lit-three-file-split.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*_(?:unit|browser)test\\.cc"
+    content_patterns: "\\bRunLoop\\b"
+    rules: "chrome/browser/context_hub/knowledge_base/prefer-test-future-over-run-loop.md"
+  }
+}
