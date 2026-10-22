@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "components/omnibox/browser/omnibox_pref_names.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -14,8 +15,21 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 
 namespace {
+using ::chrome_test_util::NTPCollectionView;
 using ::chrome_test_util::PrimaryToolbar;
 using ::chrome_test_util::SecondaryToolbar;
+using ::chrome_test_util::WebStateScrollViewMatcher;
+
+// User action names for back/forward edge swipe navigations.
+NSString* const kBackUserAction = @"Back";
+NSString* const kForwardUserAction = @"Forward";
+NSString* const kEdgeSwipeBackUserAction = @"MobileEdgeSwipeBack";
+NSString* const kEdgeSwipeForwardUserAction = @"MobileEdgeSwipeForward";
+
+// Normalized X start positions for left and right edge swipes.
+const CGFloat kLeftEdgeSwipeStartX = 0.01;
+const CGFloat kRightEdgeSwipeStartX = 0.99;
+const CGFloat kEdgeSwipeStartY = 0.5;
 }  // namespace
 
 // Integration tests for side swipe.
@@ -51,6 +65,48 @@ using ::chrome_test_util::SecondaryToolbar;
 // Tests that swiping horizontally on the top toolbar is changing tab.
 - (void)testSideSwipeTopToolbar {
   [self checkSideSwipeOnToolbarMatcher:PrimaryToolbar()];
+}
+
+// Tests that edge swiping back and forward records the expected user actions.
+- (void)testEdgeSwipeNavigation {
+  net::test_server::RegisterDefaultHandlers(self.testServer);
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupUserActionTester]);
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  // Edge swipe back to the NTP.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_swipeFastInDirectionWithStartPoint(
+                        kGREYDirectionRight, kLeftEdgeSwipeStartX,
+                        kEdgeSwipeStartY)];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
+      assertWithMatcher:grey_notNil()];
+
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+        expectCount:1
+      forUserAction:kEdgeSwipeBackUserAction]);
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectCount:1 forUserAction:kBackUserAction]);
+
+  // Edge swipe forward to the web page.
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
+      performAction:grey_swipeFastInDirectionWithStartPoint(
+                        kGREYDirectionLeft, kRightEdgeSwipeStartX,
+                        kEdgeSwipeStartY)];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+        expectCount:1
+      forUserAction:kEdgeSwipeForwardUserAction]);
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectCount:1 forUserAction:kForwardUserAction]);
+
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseUserActionTester]);
 }
 
 #pragma mark - Helpers

@@ -20236,6 +20236,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileEdgeSwipeBack">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <description>
+    User navigated back in history by swiping from the leading edge of the
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileEdgeSwipeForward">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <description>
+    User navigated forward in history by swiping from the trailing edge of the
+    screen. iOS only.
+  </description>
+</action>
+
 <action name="MobileEnteredBackground">
   <owner>bling-fundamentals@google.com</owner>
   <description>Reported when an app entered the background.</description>
