@@ -41,6 +41,7 @@
     { "name": "gmail", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "google", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "hangout", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
+    { "name": "here", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "insurance", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "meet", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "new", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
