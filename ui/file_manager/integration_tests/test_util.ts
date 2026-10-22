@@ -47,7 +47,7 @@ export function wait(time: number): Promise<void> {
 }
 
 /** Interval milliseconds between checks of repeatUntil. */
-export const REPEAT_UNTIL_INTERVAL = 200;
+export const REPEAT_UNTIL_INTERVAL = 20;
 
 /** Interval milliseconds between log output of repeatUntil. */
 export const LOG_INTERVAL = 3000;
