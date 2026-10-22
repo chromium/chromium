@@ -102,12 +102,15 @@ source_set("setup_lib") {
     "registry_util.h",
     "service_util.cc",
     "service_util.h",
+    "setup_work_items.cc",
+    "setup_work_items.h",
   ]
 
   public_deps = [
     ":payload_files_header",
     "//base",
     "//build:branding_buildflags",
+    "//chrome/installer/util:work_item",
     "//remoting/base",
     "//remoting/base:remoting_base_version",
   ]
@@ -127,6 +130,7 @@ source_set("unit_tests") {
     "installer_constants_unittest.cc",
     "registry_util_unittest.cc",
     "service_util_unittest.cc",
+    "setup_work_items_unittest.cc",
   ]
 
   deps = [
