@@ -4,10 +4,12 @@
 
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/reporting_util.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
@@ -86,6 +89,13 @@ CloudProfileReportingService::CloudProfileReportingService(Profile* profile)
 CloudProfileReportingService::~CloudProfileReportingService() = default;
 
 void CloudProfileReportingService::CreateReportScheduler() {
+  // Always tear down any existing client and schedulers first. If the previous
+  // user signed out while `CloudPolicyCore` was offline (`core->client()` was
+  // null), `OnCoreDisconnecting()` was skipped and the old user's registered
+  // `cloud_policy_client_` is still alive.
+  ResetReportScheduler();
+  active_dm_token_ = reporting::GetUserDmToken(profile_);
+
   std::string profile_id = "";
   if (enterprise::ProfileIdServiceFactory::GetForProfile(profile_)) {
     profile_id = enterprise::ProfileIdServiceFactory::GetForProfile(profile_)
@@ -127,7 +137,11 @@ void CloudProfileReportingService::CreateReportScheduler() {
   }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(kBrowserLaunchMetadataReporting)) {
+  // Launch metadata should only be collected and uploaded once per browser
+  // session, so do not recreate `browser_launch_controller_` if policy
+  // reconnects mid-session.
+  if (!browser_launch_controller_ &&
+      base::FeatureList::IsEnabled(kBrowserLaunchMetadataReporting)) {
     browser_launch_controller_ =
         BrowserLaunchEventControllerFactoryDesktop::CreateForProfile(profile_);
     if (browser_launch_controller_) {
@@ -137,21 +151,56 @@ void CloudProfileReportingService::CreateReportScheduler() {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 }
 
+void CloudProfileReportingService::Shutdown() {
+  core_observation_.Reset();
+  browser_launch_controller_.reset();
+  ResetReportScheduler();
+}
+
 void CloudProfileReportingService::OnCoreConnected(
     policy::CloudPolicyCore* core) {
+  // When a managed profile starts up with cached policies on disk, `Init()`'s
+  // `BEST_EFFORT` task may have already created `report_scheduler_` for this
+  // user before `CloudPolicyCore` finishes connecting online. Skip recreating
+  // the scheduler when the DMToken matches to avoid aborting or duplicating
+  // startup uploads, while still resetting whenever a different user signs in.
+  if (report_scheduler_ && active_dm_token_.has_value() &&
+      active_dm_token_ == reporting::GetUserDmToken(profile_)) {
+    return;
+  }
   CreateReportScheduler();
-  core_observation_.Reset();
 }
+
 void CloudProfileReportingService::OnRefreshSchedulerStarted(
     policy::CloudPolicyCore* core) {}
+
 void CloudProfileReportingService::OnCoreDisconnecting(
-    policy::CloudPolicyCore* core) {}
+    policy::CloudPolicyCore* core) {
+  // Keep `core_observation_` registered so subsequent sign-ins on the same
+  // `Profile` (e.g. on Android) trigger `OnCoreConnected()`.
+  ResetReportScheduler();
+}
+
+void CloudProfileReportingService::OnCoreDestruction(
+    policy::CloudPolicyCore* core) {
+  core_observation_.Reset();
+  ResetReportScheduler();
+}
 
 void CloudProfileReportingService::InitForTesting() {
   Init();
 }
 
 void CloudProfileReportingService::Init() {
+  // Always keep observing `CloudPolicyCore` across the `Profile` lifetime—even
+  // if the profile already has cached `CLOUD` management authority at startup—
+  // so sign-outs and account switches on single-`Profile` platforms (Android)
+  // tear down and recreate the reporting client with the new user's DMToken.
+  // Check `IsObserving()` so `InitForTesting()` can safely re-run `Init()`.
+  if (!core_observation_.IsObserving() && profile_->GetCloudPolicyManager()) {
+    core_observation_.Observe(profile_->GetCloudPolicyManager()->core());
+  }
+
   // Only create ReportScheduler when profile is managed.
   if (policy::ManagementServiceFactory::GetForProfile(profile_)
           ->HasManagementAuthority(
@@ -161,12 +210,22 @@ void CloudProfileReportingService::Init() {
             FROM_HERE,
             base::BindOnce(&CloudProfileReportingService::CreateReportScheduler,
                            weak_factory_.GetWeakPtr()));
-    return;
   }
-  // Otherwise, wait for profile being signed in.
-  if (profile_->GetCloudPolicyManager()) {
-    core_observation_.Observe(profile_->GetCloudPolicyManager()->core());
-  }
+}
+
+void CloudProfileReportingService::ResetReportScheduler() {
+  // Cancel any pending `BEST_EFFORT` `CreateReportScheduler()` task posted by
+  // `Init()` so it cannot recreate schedulers after disconnect or overwrite one
+  // already created synchronously in `OnCoreConnected()`.
+  weak_factory_.InvalidateWeakPtrs();
+  active_dm_token_.reset();
+  saas_usage_report_scheduler_.reset();
+  // Destroy `report_scheduler_` before `cloud_policy_client_` because
+  // `ReportScheduler` holds a raw pointer to `cloud_policy_client_`.
+  // Intentionally keep `browser_launch_controller_` so launch metadata uploads
+  // only once per session.
+  report_scheduler_.reset();
+  cloud_policy_client_.reset();
 }
 
 }  // namespace enterprise_reporting
