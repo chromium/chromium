@@ -12,7 +12,6 @@
     "target_os": "ios",
     "target_platform": "tvos",
     "use_blink": true,
-    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
   }

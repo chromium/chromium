@@ -10,7 +10,6 @@
     "target_cpu": "arm64",
     "target_os": "android",
     "use_mold": false,
-    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
   }

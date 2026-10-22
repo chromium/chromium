@@ -31,7 +31,6 @@
         "target_os": "ios",
         "target_platform": "iphoneos",
         "use_official_google_api_keys": false,
-        "use_reclient": false,
         "use_remoteexec": true,
         "use_siso": true
       }
@@ -50,7 +49,6 @@
         "target_platform": "iphoneos",
         "use_clang_modules": false,
         "use_official_google_api_keys": false,
-        "use_reclient": false,
         "use_remoteexec": true,
         "use_siso": true
       }

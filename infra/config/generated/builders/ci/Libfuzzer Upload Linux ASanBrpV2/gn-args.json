@@ -15,7 +15,6 @@
     "tint_build_mesa": true,
     "use_asan_backup_ref_ptr_v2": true,
     "use_libfuzzer": true,
-    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
   }

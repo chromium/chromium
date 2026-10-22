@@ -1069,13 +1069,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "no_reclient",
-    args = {
-        "use_reclient": False,
-    },
-)
-
-gn_args.config(
     name = "no_remoteexec",
     args = {
         "use_remoteexec": False,
