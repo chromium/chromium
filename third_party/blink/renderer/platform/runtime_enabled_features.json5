@@ -2979,6 +2979,10 @@
       status: "stable",
     },
     {
+      name: "FastPlainTextRangeCreateRange",
+      status: "stable",
+    },
+    {
       name: "FastPositionIterator",
       // Not enabled due to a RTL issue. crbug.com/1421016.
     },

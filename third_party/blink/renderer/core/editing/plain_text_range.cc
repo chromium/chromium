@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -112,18 +113,33 @@ EphemeralRange PlainTextRange::CreateRangeFor(
   Position result_start = Position(&scope.GetDocument(), 0);
   Position result_end = result_start;
 
+  const bool skip_runs_before_start =
+      RuntimeEnabledFeatures::FastPlainTextRangeCreateRangeEnabled();
+
   for (; !it.AtEnd(); it.Advance()) {
     const int len = it.length();
-
-    text_run_start_position =
-        it.StartPositionInCurrentContainer().ToOffsetInAnchor();
-    text_run_end_position =
-        it.EndPositionInCurrentContainer().ToOffsetInAnchor();
 
     const bool found_start =
         Start() >= doc_text_position && Start() <= doc_text_position + len;
     const bool found_end =
         End() >= doc_text_position && End() <= doc_text_position + len;
+
+    // Only the runs from the one containing Start() onwards use their
+    // positions; a run containing End() can't come before it. Skip computing
+    // the positions of the earlier runs, as that can be slow. For example, the
+    // position of the newline emitted for a <br> is its index in its parent,
+    // found by counting its previous siblings. A <textarea> has a <br> for
+    // every line break, so computing them all would make this function
+    // quadratic in the number of lines before the range.
+    if (skip_runs_before_start && !found_start && !start_range_found) {
+      doc_text_position += len;
+      continue;
+    }
+
+    text_run_start_position =
+        it.StartPositionInCurrentContainer().ToOffsetInAnchor();
+    text_run_end_position =
+        it.EndPositionInCurrentContainer().ToOffsetInAnchor();
 
     // Fix textRunRange->endPosition(), but only if foundStart || foundEnd,
     // because it is only in those cases that textRunRange is used.
