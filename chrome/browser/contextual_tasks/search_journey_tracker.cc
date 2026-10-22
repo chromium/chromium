@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -13,10 +14,18 @@
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/search/search.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace contextual_tasks {
+
+JourneyState::JourneyState() = default;
+JourneyState::JourneyState(const JourneyState&) = default;
+JourneyState& JourneyState::operator=(const JourneyState&) = default;
+JourneyState::~JourneyState() = default;
 
 SearchJourneyTracker::SearchJourneyTracker(
     TemplateURLService* template_url_service)
@@ -90,35 +99,88 @@ void SearchJourneyTracker::OnCopyRecorded(SessionID source_tab_id,
   }
 }
 
+void SearchJourneyTracker::OnTabDeactivated(SessionID tab_id,
+                                            int nav_entry_id,
+                                            const GURL& url,
+                                            SessionID opener_tab_id) {
+  if (active_tab_id_ == tab_id) {
+    active_tab_id_ = SessionID::InvalidValue();
+  }
+  if (!search::DefaultSearchProviderIsGoogle(template_url_service_) ||
+      !tab_id.is_valid()) {
+    return;
+  }
+  if (!url.SchemeIs(url::kHttpsScheme) || google_util::IsGoogleSearchUrl(url)) {
+    // The user left `tab_id` from a page that can't be Tab A.
+    if (source_tab_ && source_tab_->tab_id == tab_id) {
+      source_tab_.reset();
+    }
+    return;
+  }
+  source_tab_ = SourceTab{.tab_id = tab_id,
+                          .nav_entry_id = nav_entry_id,
+                          .opener_tab_id = opener_tab_id,
+                          .left_time = base::TimeTicks::Now()};
+}
+
+bool SearchJourneyTracker::OnTabActivated(SessionID tab_id, int nav_entry_id) {
+  if (!tab_id.is_valid()) {
+    return false;
+  }
+  active_tab_id_ = tab_id;
+
+  EvictExpiredRecords();
+
+  const bool allow_intermediate_tabs =
+      ShouldAllowABASearchJourneysIntermediateTabs();
+  bool returned = false;
+  std::erase_if(active_journeys_, [&](const auto& pair) {
+    const auto& [source_tab_id, journey] = pair;
+    if (source_tab_id == tab_id) {
+      // Only a return to the page the user left counts.
+      returned = journey.source_nav_entry_id == nav_entry_id;
+      return !returned;
+    }
+    if (journey.search_tab_id == tab_id) {
+      return false;
+    }
+    // Any other tab is an intermediate tab, as in A -> B -> C -> A.
+    return !allow_intermediate_tabs;
+  });
+  return returned;
+}
+
 void SearchJourneyTracker::OnSearchNavigationCommitted(
     SessionID search_tab_id,
     std::u16string_view search_terms) {
   if (!search::DefaultSearchProviderIsGoogle(template_url_service_) ||
-      !search_tab_id.is_valid()) {
-    return;
-  }
-  std::optional<size_t> query_hash = NormalizeForJourneyMatch(search_terms);
-  if (!query_hash.has_value()) {
+      !search_tab_id.is_valid() || search_terms.empty()) {
     return;
   }
 
   EvictExpiredRecords();
 
-  for (auto it = ring_buffer_.rbegin(); it != ring_buffer_.rend(); ++it) {
-    if (it->normalized_query_hash != *query_hash) {
-      continue;
-    }
-    if (it->source_tab_id == search_tab_id) {
-      continue;
-    }
+  // A new search in Tab B replaces the journey tied to its previous search.
+  std::erase_if(active_journeys_, [search_tab_id](const auto& pair) {
+    return pair.second.search_tab_id == search_tab_id;
+  });
 
-    JourneyState journey;
-    journey.copy_record = *it;
-    journey.search_tab_id = search_tab_id;
-    journey.search_committed_time = base::TimeTicks::Now();
-    active_journeys_[it->source_tab_id] = std::move(journey);
-    break;
+  // Only a search in the tab the user is looking at, after they left a
+  // candidate Tab A, starts a journey. A tab opened from Tab B is never Tab A,
+  // so opening a search result never counts as a return.
+  if (search_tab_id != active_tab_id_ || !source_tab_ ||
+      source_tab_->tab_id == search_tab_id ||
+      source_tab_->opener_tab_id == search_tab_id) {
+    return;
   }
+
+  JourneyState journey;
+  journey.source_nav_entry_id = source_tab_->nav_entry_id;
+  journey.search_tab_id = search_tab_id;
+  journey.search_terms = std::u16string(search_terms);
+  journey.search_committed_time = base::TimeTicks::Now();
+  journey.matched_copy = MatchesCopyFromTab(source_tab_->tab_id, search_terms);
+  active_journeys_.insert_or_assign(source_tab_->tab_id, std::move(journey));
 }
 
 void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
@@ -126,13 +188,22 @@ void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
     return record.source_tab_id == tab_id;
   });
   active_journeys_.erase(tab_id);
-  std::erase_if(active_journeys_, [tab_id](const auto& pair) {
-    return pair.second.search_tab_id == tab_id;
-  });
+  for (auto& [source_tab_id, journey] : active_journeys_) {
+    if (journey.search_tab_id == tab_id) {
+      journey.search_tab_closed = true;
+    }
+  }
+  if (source_tab_ && source_tab_->tab_id == tab_id) {
+    source_tab_.reset();
+  }
+  if (active_tab_id_ == tab_id) {
+    active_tab_id_ = SessionID::InvalidValue();
+  }
 }
 
 void SearchJourneyTracker::ClearState() {
   ring_buffer_.clear();
+  source_tab_.reset();
   active_journeys_.clear();
 }
 
@@ -142,8 +213,25 @@ void SearchJourneyTracker::EvictExpiredRecords() {
   while (!ring_buffer_.empty() && now - ring_buffer_.front().timestamp > ttl) {
     ring_buffer_.pop_front();
   }
+  if (source_tab_ && now - source_tab_->left_time > ttl) {
+    source_tab_.reset();
+  }
   std::erase_if(active_journeys_, [now, ttl](const auto& pair) {
-    return now - pair.second.copy_record.timestamp > ttl;
+    return now - pair.second.search_committed_time > ttl;
+  });
+}
+
+bool SearchJourneyTracker::MatchesCopyFromTab(
+    SessionID tab_id,
+    std::u16string_view search_terms) const {
+  const std::optional<size_t> query_hash =
+      NormalizeForJourneyMatch(search_terms);
+  if (!query_hash.has_value()) {
+    return false;
+  }
+  return std::ranges::any_of(ring_buffer_, [&](const CopyRecord& record) {
+    return record.source_tab_id == tab_id &&
+           record.normalized_query_hash == *query_hash;
   });
 }
 

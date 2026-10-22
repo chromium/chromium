@@ -127,12 +127,24 @@ class SearchJourneyTabFeatureBrowserTest : public InProcessBrowserTest {
 
   TabListInterface* tab_list() { return TabListInterface::From(browser()); }
 
+  // Opens a Google search for `query` in a new foreground tab and returns it.
+  tabs::TabInterface* SearchInNewTab(const std::u16string& query) {
+    const GURL search_url =
+        template_url_service()->GenerateSearchURLForDefaultSearchProvider(
+            query);
+    EXPECT_TRUE(search_url.is_valid());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), search_url, WindowOpenDisposition::kNewForegroundTab,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    return tab_list()->GetActiveTab();
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
-                       RecordsCopyAndCorrelatesCrossTabSearchNavigation) {
+                       RecordsCopyAndArmsJourneyForCrossTabSearch) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
 
@@ -150,16 +162,8 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
   EXPECT_EQ(tracker()->GetRingBufferSizeForTesting(), 1u);
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
 
-  const GURL search_url =
-      template_url_service()->GenerateSearchURLForDefaultSearchProvider(
-          u"quantum entanglement physics");
-  ASSERT_TRUE(search_url.is_valid());
-
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), search_url, WindowOpenDisposition::kNewForegroundTab,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  tabs::TabInterface* search_tab = tab_list()->GetActiveTab();
+  tabs::TabInterface* search_tab =
+      SearchInNewTab(u"quantum entanglement physics");
   ASSERT_TRUE(search_tab);
   content::WebContents* search_contents = search_tab->GetContents();
   ASSERT_NE(search_contents, source_contents);
@@ -170,9 +174,56 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
   ASSERT_EQ(journeys.size(), 1u);
   auto it = journeys.find(source_tab_id);
   ASSERT_NE(it, journeys.end());
-  EXPECT_EQ(it->second.copy_record.source_tab_id, source_tab_id);
-  EXPECT_EQ(it->second.copy_record.source_nav_entry_id, source_nav_entry_id);
+  EXPECT_EQ(it->second.source_nav_entry_id, source_nav_entry_id);
   EXPECT_EQ(it->second.search_tab_id, search_tab_id);
+  EXPECT_EQ(it->second.search_terms, u"quantum entanglement physics");
+  EXPECT_TRUE(it->second.matched_copy);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
+                       ArmsJourneyWithoutCopy) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
+  tabs::TabInterface* source_tab = tab_list()->GetActiveTab();
+  ASSERT_TRUE(source_tab);
+  const SessionID source_tab_id =
+      sessions::SessionTabHelper::IdForTab(source_tab->GetContents());
+
+  ASSERT_TRUE(SearchInNewTab(u"how do tides work"));
+
+  const auto& journeys = tracker()->GetActiveJourneysForTesting();
+  ASSERT_EQ(journeys.size(), 1u);
+  auto it = journeys.find(source_tab_id);
+  ASSERT_NE(it, journeys.end());
+  EXPECT_EQ(it->second.search_terms, u"how do tides work");
+  EXPECT_FALSE(it->second.matched_copy);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
+                       ReturningToSourceTabKeepsJourney) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
+  tabs::TabInterface* source_tab = tab_list()->GetActiveTab();
+  ASSERT_TRUE(source_tab);
+  ASSERT_TRUE(SearchInNewTab(u"how do tides work"));
+  ASSERT_EQ(tracker()->GetActiveJourneysForTesting().size(), 1u);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  EXPECT_EQ(tracker()->GetActiveJourneysForTesting().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
+                       VisitingAnotherTabDropsJourney) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
+  ASSERT_TRUE(SearchInNewTab(u"how do tides work"));
+  ASSERT_EQ(tracker()->GetActiveJourneysForTesting().size(), 1u);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://example.com/other"),
+      WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
@@ -214,27 +265,36 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
-                       ClearsStateWhenTabClosed) {
+                       KeepsJourneyWhenSearchTabClosed) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
-
   tabs::TabInterface* source_tab = tab_list()->GetActiveTab();
   ASSERT_TRUE(source_tab);
-  CopyTextToClipboard(source_tab->GetContents(),
-                      "quantum entanglement physics");
+  const SessionID source_tab_id =
+      sessions::SessionTabHelper::IdForTab(source_tab->GetContents());
 
-  const GURL search_url =
-      template_url_service()->GenerateSearchURLForDefaultSearchProvider(
-          u"quantum entanglement physics");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), search_url, WindowOpenDisposition::kNewForegroundTab,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
+  tabs::TabInterface* search_tab = SearchInNewTab(u"how do tides work");
+  ASSERT_TRUE(search_tab);
   ASSERT_EQ(tracker()->GetActiveJourneysForTesting().size(), 1u);
 
-  tabs::TabInterface* search_tab = tab_list()->GetActiveTab();
-  ASSERT_TRUE(search_tab);
   tab_list()->CloseTab(search_tab->GetHandle());
+  const auto& journeys = tracker()->GetActiveJourneysForTesting();
+  ASSERT_EQ(journeys.size(), 1u);
+  auto it = journeys.find(source_tab_id);
+  ASSERT_NE(it, journeys.end());
+  EXPECT_TRUE(it->second.search_tab_closed);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
+                       ClearsJourneyWhenSourceTabClosed) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
+  tabs::TabInterface* source_tab = tab_list()->GetActiveTab();
+  ASSERT_TRUE(source_tab);
+  ASSERT_TRUE(SearchInNewTab(u"how do tides work"));
+  ASSERT_EQ(tracker()->GetActiveJourneysForTesting().size(), 1u);
+
+  tab_list()->CloseTab(source_tab->GetHandle());
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
 }
 

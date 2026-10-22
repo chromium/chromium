@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -22,6 +23,7 @@
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -30,8 +32,10 @@ namespace {
 constexpr SessionID kSourceTab1 = SessionID::FromSerializedValue(1);
 constexpr SessionID kSourceTab2 = SessionID::FromSerializedValue(2);
 constexpr SessionID kSearchTab1 = SessionID::FromSerializedValue(10);
-constexpr SessionID kSearchTab2 = SessionID::FromSerializedValue(11);
+constexpr SessionID kOtherTab = SessionID::FromSerializedValue(20);
 constexpr int kNavEntryId = 42;
+constexpr int kOtherNavEntryId = 43;
+constexpr char kSourceUrl[] = "https://example.com/doc";
 
 void SetNonGoogleDefaultSearchProvider(
     TemplateURLService* template_url_service) {
@@ -50,6 +54,23 @@ class SearchJourneyTrackerTest : public testing::Test {
  protected:
   void SetUp() override {
     search_engines_test_environment_.template_url_service()->Load();
+  }
+
+  // Simulates the user leaving `source_tab` for `search_tab` and searching for
+  // `query` there.
+  void StartJourney(SessionID source_tab,
+                    SessionID search_tab,
+                    std::u16string_view query) {
+    tracker_.OnTabDeactivated(source_tab, kNavEntryId, GURL(kSourceUrl),
+                              SessionID::InvalidValue());
+    tracker_.OnTabActivated(search_tab, /*nav_entry_id=*/0);
+    tracker_.OnSearchNavigationCommitted(search_tab, query);
+  }
+
+  const JourneyState* GetJourney(SessionID source_tab) const {
+    const auto& journeys = tracker_.GetActiveJourneysForTesting();
+    auto it = journeys.find(source_tab);
+    return it == journeys.end() ? nullptr : &it->second;
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -117,45 +138,221 @@ TEST_F(SearchJourneyTrackerTest, NormalizeForJourneyMatchShortStrings) {
       SearchJourneyTracker::NormalizeForJourneyMatch(u"abcdefgh").has_value());
 }
 
-TEST_F(SearchJourneyTrackerTest, StandardCrossTabCorrelation) {
+TEST_F(SearchJourneyTrackerTest, ArmsJourneyForCrossTabSearch) {
+  StartJourney(kSourceTab1, kSearchTab1, u"how do plants make food");
+
+  ASSERT_EQ(tracker_.GetActiveJourneysForTesting().size(), 1u);
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_EQ(journey->source_nav_entry_id, kNavEntryId);
+  EXPECT_EQ(journey->search_tab_id, kSearchTab1);
+  EXPECT_EQ(journey->search_terms, u"how do plants make food");
+  EXPECT_EQ(journey->search_committed_time, base::TimeTicks::Now());
+  EXPECT_FALSE(journey->matched_copy);
+  EXPECT_FALSE(journey->search_tab_closed);
+}
+
+TEST_F(SearchJourneyTrackerTest, ShortQueryArmsJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"tax");
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_EQ(journey->search_terms, u"tax");
+  EXPECT_FALSE(journey->matched_copy);
+}
+
+TEST_F(SearchJourneyTrackerTest, CopyFromSourceTabLabelsJourney) {
   const std::u16string kQuery = u"quantum computing basics";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
   EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(), 1u);
 
-  tracker_.OnSearchNavigationCommitted(kSearchTab1, kQuery);
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
 
-  const auto& journeys = tracker_.GetActiveJourneysForTesting();
-  auto it = journeys.find(kSourceTab1);
-  ASSERT_NE(it, journeys.end());
-  EXPECT_EQ(it->second.copy_record.source_tab_id, kSourceTab1);
-  EXPECT_EQ(it->second.copy_record.source_nav_entry_id, kNavEntryId);
-  EXPECT_EQ(it->second.search_tab_id, kSearchTab1);
-  EXPECT_EQ(it->second.copy_record.normalized_query_hash,
-            *SearchJourneyTracker::NormalizeForJourneyMatch(kQuery));
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_TRUE(journey->matched_copy);
+}
+
+TEST_F(SearchJourneyTrackerTest, CopyFromOtherTabDoesNotLabelJourney) {
+  const std::u16string kQuery = u"quantum computing basics";
+  tracker_.OnCopyRecorded(kSourceTab2, kNavEntryId, kQuery);
+
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_FALSE(journey->matched_copy);
 }
 
 TEST_F(SearchJourneyTrackerTest, SameTabSearchIgnored) {
-  const std::u16string kQuery = u"quantum computing basics";
-  tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
-  tracker_.OnSearchNavigationCommitted(kSourceTab1, kQuery);
+  tracker_.OnTabDeactivated(kSourceTab1, kNavEntryId, GURL(kSourceUrl),
+                            SessionID::InvalidValue());
+  tracker_.OnTabActivated(kSourceTab1, kNavEntryId);
+  tracker_.OnSearchNavigationCommitted(kSourceTab1, u"quantum computing");
 
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
 }
 
-TEST_F(SearchJourneyTrackerTest, NewestMatchingCopyWins) {
-  const std::u16string kQuery = u"shared query text";
+TEST_F(SearchJourneyTrackerTest, SearchInBackgroundTabIgnored) {
+  tracker_.OnTabDeactivated(kSourceTab1, kNavEntryId, GURL(kSourceUrl),
+                            SessionID::InvalidValue());
+  tracker_.OnTabActivated(kOtherTab, kNavEntryId);
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"quantum computing");
+
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+}
+
+TEST_F(SearchJourneyTrackerTest, IneligibleSourceTabIgnored) {
+  for (const char* url :
+       {"http://example.com/doc", "https://www.google.com/search?q=quantum",
+        "chrome://newtab/"}) {
+    tracker_.OnTabDeactivated(kSourceTab1, kNavEntryId, GURL(url),
+                              SessionID::InvalidValue());
+    tracker_.OnTabActivated(kSearchTab1, /*nav_entry_id=*/0);
+    tracker_.OnSearchNavigationCommitted(kSearchTab1, u"quantum computing");
+    EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty()) << url;
+  }
+}
+
+TEST_F(SearchJourneyTrackerTest, IneligibleTabKeepsEarlierSourceTab) {
+  tracker_.OnTabDeactivated(kSourceTab1, kNavEntryId, GURL(kSourceUrl),
+                            SessionID::InvalidValue());
+  tracker_.OnTabActivated(kOtherTab, kNavEntryId);
+  tracker_.OnTabDeactivated(kOtherTab, kNavEntryId, GURL("chrome://newtab/"),
+                            SessionID::InvalidValue());
+  tracker_.OnTabActivated(kSearchTab1, /*nav_entry_id=*/0);
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"quantum computing");
+
+  EXPECT_TRUE(GetJourney(kSourceTab1));
+}
+
+TEST_F(SearchJourneyTrackerTest, LeavingSourceTabFromIneligiblePageClearsIt) {
+  tracker_.OnTabDeactivated(kSourceTab1, kNavEntryId, GURL(kSourceUrl),
+                            SessionID::InvalidValue());
+  tracker_.OnTabActivated(kSourceTab1, kNavEntryId);
+  tracker_.OnTabDeactivated(kSourceTab1, kOtherNavEntryId,
+                            GURL("chrome://settings/"),
+                            SessionID::InvalidValue());
+  tracker_.OnTabActivated(kSearchTab1, /*nav_entry_id=*/0);
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"quantum computing");
+
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+}
+
+TEST_F(SearchJourneyTrackerTest, TabOpenedFromSearchTabIsNeverSourceTab) {
+  tracker_.OnTabDeactivated(kSourceTab1, kNavEntryId,
+                            GURL("https://example.com/result"),
+                            /*opener_tab_id=*/kSearchTab1);
+  tracker_.OnTabActivated(kSearchTab1, /*nav_entry_id=*/0);
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"quantum computing");
+
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+}
+
+TEST_F(SearchJourneyTrackerTest, NewSearchInSearchTabReplacesJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"first query");
+  task_environment_.AdvanceClock(base::Minutes(1));
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"second query");
+
+  ASSERT_EQ(tracker_.GetActiveJourneysForTesting().size(), 1u);
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_EQ(journey->search_terms, u"second query");
+  EXPECT_EQ(journey->search_committed_time, base::TimeTicks::Now());
+}
+
+TEST_F(SearchJourneyTrackerTest, ReturnToSourceTab) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  tracker_.OnTabDeactivated(kSearchTab1, /*nav_entry_id=*/0,
+                            GURL("https://www.google.com/search?q=quantum"),
+                            SessionID::InvalidValue());
+
+  EXPECT_TRUE(tracker_.OnTabActivated(kSourceTab1, kNavEntryId));
+  EXPECT_TRUE(GetJourney(kSourceTab1));
+}
+
+TEST_F(SearchJourneyTrackerTest, ReturnToSourceTabOnOtherEntryDropsJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+
+  EXPECT_FALSE(tracker_.OnTabActivated(kSourceTab1, kOtherNavEntryId));
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+}
+
+TEST_F(SearchJourneyTrackerTest, ActivatingSearchTabKeepsJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+
+  EXPECT_FALSE(tracker_.OnTabActivated(kSearchTab1, /*nav_entry_id=*/0));
+  EXPECT_TRUE(GetJourney(kSourceTab1));
+}
+
+TEST_F(SearchJourneyTrackerTest, IntermediateTabDropsJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+
+  EXPECT_FALSE(tracker_.OnTabActivated(kOtherTab, kNavEntryId));
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+  EXPECT_FALSE(tracker_.OnTabActivated(kSourceTab1, kNavEntryId));
+}
+
+TEST_F(SearchJourneyTrackerTest, IntermediateTabKeepsJourneyWhenAllowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kABASearchJourneys,
+      {{"aba_search_journeys_allow_intermediate_tabs", "true"}});
+  EXPECT_TRUE(ShouldAllowABASearchJourneysIntermediateTabs());
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+
+  EXPECT_FALSE(tracker_.OnTabActivated(kOtherTab, kNavEntryId));
+  EXPECT_TRUE(tracker_.OnTabActivated(kSourceTab1, kNavEntryId));
+}
+
+TEST_F(SearchJourneyTrackerTest, ClosingSearchTabCountsAsReturn) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  tracker_.OnTabDestroyed(kSearchTab1);
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_TRUE(journey->search_tab_closed);
+  EXPECT_TRUE(tracker_.OnTabActivated(kSourceTab1, kNavEntryId));
+}
+
+TEST_F(SearchJourneyTrackerTest, ClosingSourceTabClearsJourney) {
+  const std::u16string kQuery = u"quantum computing basics";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
-  task_environment_.AdvanceClock(base::Seconds(5));
-  tracker_.OnCopyRecorded(kSourceTab2, kNavEntryId, kQuery);
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
+  ASSERT_TRUE(GetJourney(kSourceTab1));
 
-  tracker_.OnSearchNavigationCommitted(kSearchTab1, kQuery);
+  tracker_.OnTabDestroyed(kSourceTab1);
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+  EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(), 0u);
 
-  const auto& journeys = tracker_.GetActiveJourneysForTesting();
-  EXPECT_FALSE(journeys.contains(kSourceTab1));
-  auto it = journeys.find(kSourceTab2);
-  ASSERT_NE(it, journeys.end());
-  EXPECT_EQ(it->second.copy_record.source_tab_id, kSourceTab2);
-  EXPECT_EQ(it->second.search_tab_id, kSearchTab1);
+  // The closed tab is no longer a candidate Tab A for a new search.
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"another query");
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+}
+
+TEST_F(SearchJourneyTrackerTest, JourneyTtlExpiry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kABASearchJourneys, {{"aba_search_journeys_ttl", "5m"}});
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  ASSERT_TRUE(GetJourney(kSourceTab1));
+
+  task_environment_.AdvanceClock(base::Minutes(6));
+  EXPECT_FALSE(tracker_.OnTabActivated(kSourceTab1, kNavEntryId));
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+}
+
+TEST_F(SearchJourneyTrackerTest, SourceTabTtlExpiry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kABASearchJourneys, {{"aba_search_journeys_ttl", "5m"}});
+  tracker_.OnTabDeactivated(kSourceTab1, kNavEntryId, GURL(kSourceUrl),
+                            SessionID::InvalidValue());
+  tracker_.OnTabActivated(kSearchTab1, /*nav_entry_id=*/0);
+
+  task_environment_.AdvanceClock(base::Minutes(6));
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"quantum computing");
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
 }
 
 TEST_F(SearchJourneyTrackerTest, RingBufferBoundedCapacity) {
@@ -174,11 +371,13 @@ TEST_F(SearchJourneyTrackerTest, RingBufferBoundedCapacity) {
             GetABASearchJourneysMaxRingBufferSize());
 
   // Entry 0 was evicted; entry 3 is still present.
-  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"copied query number 0");
-  EXPECT_FALSE(tracker_.GetActiveJourneysForTesting().contains(kSourceTab1));
+  StartJourney(kSourceTab1, kSearchTab1, u"copied query number 0");
+  ASSERT_TRUE(GetJourney(kSourceTab1));
+  EXPECT_FALSE(GetJourney(kSourceTab1)->matched_copy);
 
   tracker_.OnSearchNavigationCommitted(kSearchTab1, u"copied query number 3");
-  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().contains(kSourceTab1));
+  ASSERT_TRUE(GetJourney(kSourceTab1));
+  EXPECT_TRUE(GetJourney(kSourceTab1)->matched_copy);
 }
 
 TEST_F(SearchJourneyTrackerTest, RingBufferTtlExpiry) {
@@ -191,8 +390,9 @@ TEST_F(SearchJourneyTrackerTest, RingBufferTtlExpiry) {
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
 
   task_environment_.AdvanceClock(base::Minutes(6));
-  tracker_.OnSearchNavigationCommitted(kSearchTab1, kQuery);
-  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
+  ASSERT_TRUE(GetJourney(kSourceTab1));
+  EXPECT_FALSE(GetJourney(kSourceTab1)->matched_copy);
   EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(), 0u);
 }
 
@@ -202,11 +402,12 @@ TEST_F(SearchJourneyTrackerTest, FeatureParamsZeroWhenFeatureDisabled) {
   EXPECT_EQ(GetABASearchJourneysTtl(), base::TimeDelta());
   EXPECT_EQ(GetABASearchJourneysMaxRingBufferSize(), 0u);
   EXPECT_EQ(GetABASearchJourneysMinQueryMatchLength(), 0u);
+  EXPECT_FALSE(ShouldAllowABASearchJourneysIntermediateTabs());
   EXPECT_FALSE(SearchJourneyTracker::NormalizeForJourneyMatch(u"valid query")
                    .has_value());
 }
 
-TEST_F(SearchJourneyTrackerTest, NonGoogleDseDoesNotRecordOrCorrelate) {
+TEST_F(SearchJourneyTrackerTest, NonGoogleDseDoesNotRecordOrArm) {
   SetNonGoogleDefaultSearchProvider(
       search_engines_test_environment_.template_url_service());
 
@@ -214,14 +415,14 @@ TEST_F(SearchJourneyTrackerTest, NonGoogleDseDoesNotRecordOrCorrelate) {
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
   EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(), 0u);
 
-  tracker_.OnSearchNavigationCommitted(kSearchTab1, kQuery);
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
 }
 
 TEST_F(SearchJourneyTrackerTest, SwitchingToNonGoogleDseClearsTrackedState) {
   const std::u16string kQuery = u"query before dse switch";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
-  tracker_.OnSearchNavigationCommitted(kSearchTab1, kQuery);
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
   ASSERT_EQ(tracker_.GetRingBufferSizeForTesting(), 1u);
   ASSERT_EQ(tracker_.GetActiveJourneysForTesting().size(), 1u);
 
@@ -232,32 +433,10 @@ TEST_F(SearchJourneyTrackerTest, SwitchingToNonGoogleDseClearsTrackedState) {
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
 }
 
-TEST_F(SearchJourneyTrackerTest, TabDestructionCleansUpSourceAndSearchTab) {
-  const std::u16string kQuery1 = u"first copied query";
-  const std::u16string kQuery2 = u"second copied query";
-
-  tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery1);
-  tracker_.OnCopyRecorded(kSourceTab2, kNavEntryId, kQuery2);
-  tracker_.OnSearchNavigationCommitted(kSearchTab1, kQuery1);
-  tracker_.OnSearchNavigationCommitted(kSearchTab2, kQuery2);
-
-  ASSERT_EQ(tracker_.GetActiveJourneysForTesting().size(), 2u);
-
-  // Destroying the source tab removes both its armed journey and its ring
-  // buffer entries.
-  tracker_.OnTabDestroyed(kSourceTab1);
-  EXPECT_FALSE(tracker_.GetActiveJourneysForTesting().contains(kSourceTab1));
-  EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(), 1u);
-
-  // Destroying the search tab removes the journey associated with it.
-  tracker_.OnTabDestroyed(kSearchTab2);
-  EXPECT_FALSE(tracker_.GetActiveJourneysForTesting().contains(kSourceTab2));
-}
-
 TEST_F(SearchJourneyTrackerTest, ShutdownClearsAllState) {
   const std::u16string kQuery = u"query before shutdown";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
-  tracker_.OnSearchNavigationCommitted(kSearchTab1, kQuery);
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
   ASSERT_FALSE(tracker_.GetActiveJourneysForTesting().empty());
 
   tracker_.Shutdown();

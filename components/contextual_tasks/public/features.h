@@ -202,12 +202,18 @@ BASE_DECLARE_FEATURE(kABASearchJourneys);
 extern const base::FeatureParam<base::TimeDelta> kABASearchJourneysTtl;
 extern const base::FeatureParam<size_t> kABASearchJourneysMaxRingBufferSize;
 extern const base::FeatureParam<size_t> kABASearchJourneysMinQueryMatchLength;
+extern const base::FeatureParam<bool> kABASearchJourneysAllowIntermediateTabs;
 
 bool IsABASearchJourneysEnabled();
 
 base::TimeDelta GetABASearchJourneysTtl();
 size_t GetABASearchJourneysMaxRingBufferSize();
 size_t GetABASearchJourneysMinQueryMatchLength();
+
+// Returns whether visiting other tabs between the search tab and the return to
+// the source tab (A -> B -> C -> A) keeps the journey. Off by default, so only
+// A -> B -> A counts.
+bool ShouldAllowABASearchJourneysIntermediateTabs();
 
 BASE_DECLARE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout);
 

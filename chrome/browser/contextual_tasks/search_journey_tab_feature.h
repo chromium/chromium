@@ -28,9 +28,9 @@ namespace contextual_tasks {
 
 class SearchJourneyTracker;
 
-// Per-tab observer that forwards clipboard copy events, committed default
-// search provider navigations, and tab destruction/discard events to the
-// profile's `SearchJourneyTracker`.
+// Per-tab observer that forwards clipboard copy events, tab activation changes,
+// committed default search provider navigations, and tab destruction/discard
+// events to the profile's `SearchJourneyTracker`.
 class SearchJourneyTabFeature : public content::WebContentsObserver {
  public:
   DECLARE_USER_DATA(SearchJourneyTabFeature);
@@ -49,6 +49,8 @@ class SearchJourneyTabFeature : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
  private:
+  void OnTabDidActivate(tabs::TabInterface* tab);
+  void OnTabWillDeactivate(tabs::TabInterface* tab);
   void OnWillDiscardContents(tabs::TabInterface* tab,
                              content::WebContents* old_contents,
                              content::WebContents* new_contents);
@@ -57,6 +59,8 @@ class SearchJourneyTabFeature : public content::WebContentsObserver {
   raw_ptr<SearchJourneyTracker> tracker_ = nullptr;
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   base::CallbackListSubscription will_discard_contents_subscription_;
+  base::CallbackListSubscription did_activate_subscription_;
+  base::CallbackListSubscription will_deactivate_subscription_;
   ui::ScopedUnownedUserData<SearchJourneyTabFeature> scoped_unowned_user_data_;
 };
 

@@ -5266,8 +5266,9 @@ class ABASearchJourneysContextMenuBrowserTest : public ContextMenuBrowserTest {
 // `AutocompleteInput::kInvalidChars`.
 IN_PROC_BROWSER_TEST_F(ABASearchJourneysContextMenuBrowserTest,
                        SearchWebForRecordsCopyMatchingCommittedSrpQuery) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL source_url = embedded_test_server()->GetURL("/title1.html");
+  // Only HTTPS pages can be the source tab of a journey.
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL source_url = embedded_https_test_server().GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), source_url));
 
   content::WebContents* source_web_contents =
@@ -5307,7 +5308,7 @@ IN_PROC_BROWSER_TEST_F(ABASearchJourneysContextMenuBrowserTest,
 
   // Extract the search terms from the SRP URL opened by the context menu and
   // verify that its normalized hash agrees with the recorded selection and
-  // correlates the journey.
+  // labels the journey as a copy match.
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(template_url_service);
@@ -5328,9 +5329,9 @@ IN_PROC_BROWSER_TEST_F(ABASearchJourneysContextMenuBrowserTest,
   const auto& journeys = tracker()->GetActiveJourneysForTesting();
   auto it = journeys.find(source_tab_id);
   ASSERT_NE(it, journeys.end());
-  EXPECT_EQ(source_tab_id, it->second.copy_record.source_tab_id);
-  EXPECT_EQ(source_nav_entry_id, it->second.copy_record.source_nav_entry_id);
+  EXPECT_EQ(source_nav_entry_id, it->second.source_nav_entry_id);
   EXPECT_EQ(search_tab_id, it->second.search_tab_id);
+  EXPECT_TRUE(it->second.matched_copy);
 }
 
 // Verifies that if Enterprise Data Controls cancels the context-menu search,

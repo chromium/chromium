@@ -11,6 +11,8 @@
 #include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/google/core/common/google_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -24,12 +26,28 @@
 
 namespace contextual_tasks {
 
+namespace {
+
+int GetLastCommittedEntryId(content::WebContents* contents) {
+  content::NavigationEntry* entry =
+      contents->GetController().GetLastCommittedEntry();
+  return entry ? entry->GetUniqueID() : 0;
+}
+
+}  // namespace
+
 DEFINE_USER_DATA(SearchJourneyTabFeature);
 
 SearchJourneyTabFeature::SearchJourneyTabFeature(tabs::TabInterface& tab)
     : content::WebContentsObserver(tab.GetContents()),
       will_discard_contents_subscription_(tab.RegisterWillDiscardContents(
           base::BindRepeating(&SearchJourneyTabFeature::OnWillDiscardContents,
+                              base::Unretained(this)))),
+      did_activate_subscription_(tab.RegisterDidActivate(
+          base::BindRepeating(&SearchJourneyTabFeature::OnTabDidActivate,
+                              base::Unretained(this)))),
+      will_deactivate_subscription_(tab.RegisterWillDeactivate(
+          base::BindRepeating(&SearchJourneyTabFeature::OnTabWillDeactivate,
                               base::Unretained(this)))),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   if (content::WebContents* contents = tab.GetContents()) {
@@ -87,6 +105,34 @@ void SearchJourneyTabFeature::DidFinishNavigation(
 
   tracker_->OnSearchNavigationCommitted(
       sessions::SessionTabHelper::IdForTab(web_contents()), search_terms);
+}
+
+void SearchJourneyTabFeature::OnTabDidActivate(tabs::TabInterface* tab) {
+  if (!tracker_ || !web_contents()) {
+    return;
+  }
+  tracker_->OnTabActivated(sessions::SessionTabHelper::IdForTab(web_contents()),
+                           GetLastCommittedEntryId(web_contents()));
+}
+
+void SearchJourneyTabFeature::OnTabWillDeactivate(tabs::TabInterface* tab) {
+  if (!tracker_ || !web_contents()) {
+    return;
+  }
+  SessionID opener_tab_id = SessionID::InvalidValue();
+  if (BrowserWindowInterface* window = tab->GetBrowserWindowInterface()) {
+    if (TabListInterface* tab_list = TabListInterface::From(window)) {
+      if (tabs::TabInterface* opener =
+              tab_list->GetOpenerForTab(tab->GetHandle())) {
+        opener_tab_id =
+            sessions::SessionTabHelper::IdForTab(opener->GetContents());
+      }
+    }
+  }
+  tracker_->OnTabDeactivated(
+      sessions::SessionTabHelper::IdForTab(web_contents()),
+      GetLastCommittedEntryId(web_contents()),
+      web_contents()->GetLastCommittedURL(), opener_tab_id);
 }
 
 void SearchJourneyTabFeature::OnWillDiscardContents(
