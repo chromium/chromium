@@ -74,6 +74,12 @@ extern const base::FeatureParam<AddContextButtonVariant>
 extern const base::FeatureParam<bool> kHideClassicContextButton;
 BASE_DECLARE_FEATURE(kAiModeEntryPointAlwaysNavigates);
 BASE_DECLARE_FEATURE(kOmniboxEverywhereFre);
+extern const base::FeatureParam<int>
+    kOmniboxEverywhereFreMaxIntroImpressionsParam;
+extern const base::FeatureParam<int>
+    kOmniboxEverywhereFreMaxShortcutSetupImpressionsParam;
+extern const base::FeatureParam<int>
+    kOmniboxEverywhereFreMaxShortcutReminderImpressionsParam;
 BASE_DECLARE_FEATURE(kAiModeSpaceDoesNotActivate);
 BASE_DECLARE_FEATURE(kWebUIOmniboxDisableCaretColorAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);

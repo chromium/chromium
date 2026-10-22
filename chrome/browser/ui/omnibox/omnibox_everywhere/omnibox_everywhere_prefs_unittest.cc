@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/enterprise/enterprise_shortcuts_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -425,6 +427,39 @@ TEST_F(OmniboxEverywherePrefsTest,
   // Transitions directly to Stage 3 (ShortcutReminderChin), skipping Stage 2.
   EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
             FreStage::kShortcutReminderChin);
+}
+
+TEST_F(OmniboxEverywherePrefsTest,
+       FreStagesProgression_CustomFinchImpressionCaps) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxEverywhereFre,
+      {{omnibox::kOmniboxEverywhereFreMaxIntroImpressionsParam.name, "1"},
+       {omnibox::kOmniboxEverywhereFreMaxShortcutSetupImpressionsParam.name,
+        "2"},
+       {omnibox::kOmniboxEverywhereFreMaxShortcutReminderImpressionsParam.name,
+        "1"}});
+
+  // Stage 1: Custom cap of 1 impression.
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kIntroModal);
+  IncrementFreImpression(&profile_, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutSetupChin);
+
+  // Stage 2: Custom cap of 2 impressions after hotkey is set.
+  SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
+  IncrementFreImpression(&profile_, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutSetupChin);
+  IncrementFreImpression(&profile_, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutReminderChin);
+
+  // Stage 3: Custom cap of 1 impression.
+  IncrementFreImpression(&profile_, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_), FreStage::kNone);
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(kFreDismissed));
 }
 
 TEST_F(OmniboxEverywherePrefsTest, HotkeyPresetsAndTokens) {

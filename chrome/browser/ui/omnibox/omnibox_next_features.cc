@@ -109,6 +109,20 @@ const base::FeatureParam<bool> kHideClassicContextButton{
 // (`omnibox::internal::kWebUIOmniboxAimPopup`).
 BASE_FEATURE(kAiModeEntryPointAlwaysNavigates, DISABLED);
 BASE_FEATURE(kOmniboxEverywhereFre, ENABLED);
+// Controls the maximum number of impressions for Stage 1 (Intro Modal) of the
+// Omnibox Everywhere First Run Experience.
+const base::FeatureParam<int> kOmniboxEverywhereFreMaxIntroImpressionsParam{
+    &kOmniboxEverywhereFre, "MaxIntroImpressions", 2};
+// Controls the maximum number of impressions for Stage 2 (Shortcut Setup Chin)
+// of the Omnibox Everywhere First Run Experience once a hotkey is configured.
+const base::FeatureParam<int>
+    kOmniboxEverywhereFreMaxShortcutSetupImpressionsParam{
+        &kOmniboxEverywhereFre, "MaxShortcutSetupImpressions", 1};
+// Controls the maximum number of impressions for Stage 3 (Shortcut Reminder
+// Chin) of the Omnibox Everywhere First Run Experience.
+const base::FeatureParam<int>
+    kOmniboxEverywhereFreMaxShortcutReminderImpressionsParam{
+        &kOmniboxEverywhereFre, "MaxShortcutReminderImpressions", 3};
 // If enabled, pressing space when the AI mode button has fake focus will
 // insert a space into the omnibox and restore focus to the omnibox instead of
 // interacting with the button.

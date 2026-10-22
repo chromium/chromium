@@ -106,26 +106,18 @@ inline constexpr char kFreIntroDismissed[] =
     "omnibox_everywhere.fre_intro_dismissed";
 inline constexpr char kFreIntroImpressionCount[] =
     "omnibox_everywhere.fre_intro_impression_count";
-inline constexpr int kMaxFreIntroImpressions = 2;
 
 // Preferences for Stage 2: Shortcut Setup Chin.
 inline constexpr char kFreShortcutSetupDismissed[] =
     "omnibox_everywhere.fre_shortcut_setup_dismissed";
 inline constexpr char kFreShortcutSetupImpressionCount[] =
     "omnibox_everywhere.fre_shortcut_setup_impression_count";
-// TODO(crbug.com/563029405): Make FRE impression caps configurable via Finch
-// parameters.
-inline constexpr int kMaxFreShortcutSetupImpressions = 1;
 
 // Preferences for Stage 3: Shortcut Reminder Chin.
 inline constexpr char kFreShortcutReminderDismissed[] =
     "omnibox_everywhere.fre_shortcut_reminder_dismissed";
 inline constexpr char kFreShortcutReminderImpressionCount[] =
     "omnibox_everywhere.fre_shortcut_reminder_impression_count";
-inline constexpr int kMaxFreShortcutReminderImpressions = 3;
-
-// Legacy maximum number of impressions.
-inline constexpr int kMaxFreImpressions = 3;
 
 // Boolean preference specifying whether the user has accepted the screenshot
 // sharing disclosure dialog in Omnibox Everywhere.
