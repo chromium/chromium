@@ -613,6 +613,8 @@ public class CustomTabActivityIncognitoTest {
         Intent intent = createTestCustomTabIntent();
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         int initialTabId = activity.getActivityTab().getId();
+        Profile initialProfile =
+                ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab().getProfile());
 
         mCustomTabActivityTestRule.recreateActivity();
         mCustomTabActivityTestRule.waitForActivityCompletelyLoaded();
@@ -631,6 +633,10 @@ public class CustomTabActivityIncognitoTest {
                 ChromeTabUtils.getUrlStringOnUiThread(recreatedActivity.getActivityTab()));
         assertTrue(recreatedActivity.getActivityTab().isIncognito());
         assertProfileUsedIsNonPrimary();
+        Profile recreatedProfile =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> recreatedActivity.getActivityTab().getProfile());
+        assertEquals(initialProfile, recreatedProfile);
         assertEquals(getIncognitoThemeColor(recreatedActivity), getToolbarColor(recreatedActivity));
         onView(withId(R.id.incognito_cct_logo_image_view)).check(matches(isDisplayed()));
     }

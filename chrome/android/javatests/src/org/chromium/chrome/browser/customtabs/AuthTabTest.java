@@ -117,6 +117,13 @@ public class AuthTabTest {
     private void doTestActivityRecreation(boolean ephemeral) throws TimeoutException {
         launchAuthTab(ephemeral);
         int initialTabId = mCustomTabActivityTestRule.getActivity().getActivityTab().getId();
+        Profile initialProfile =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mCustomTabActivityTestRule
+                                        .getActivity()
+                                        .getActivityTab()
+                                        .getProfile());
 
         mCustomTabActivityTestRule.recreateActivity();
         mCustomTabActivityTestRule.waitForActivityCompletelyLoaded();
@@ -137,6 +144,7 @@ public class AuthTabTest {
         Profile profile =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> recreatedActivity.getActivityTab().getProfile());
+        assertEquals(initialProfile, profile);
         assertEquals(ephemeral, profile.isOffTheRecord());
         if (ephemeral) {
             assertFalse(profile.isIncognitoBranded());

@@ -163,6 +163,7 @@ import java.util.function.Supplier;
 public abstract class BaseCustomTabActivity extends ChromeActivity {
     private static final String KEY_CUSTOM_TAB_INTENT_DATA_HOLDER =
             "CustomTabActivity.custom_tab_intent_data_holder";
+    private static final String KEY_OTR_PROFILE_ID = "CustomTabActivity.otr_profile_id";
 
     /**
      * Prevents Tapjacking on T-. See crbug.com/40063907.
@@ -175,6 +176,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
 
     private final CipherFactory mCipherFactory = new CipherFactory();
+    private @Nullable OtrProfileId mOtrProfileId;
 
     private @MonotonicNonNull BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
     private @MonotonicNonNull BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -517,6 +519,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
             @Override
             protected @Nullable OtrProfileId createOffTheRecordProfileId() {
+                if (mOtrProfileId != null) return mOtrProfileId;
+
                 assumeNonNull(mIntentDataProvider);
                 switch (mIntentDataProvider.getCustomTabMode()) {
                     case CustomTabProfileType.INCOGNITO:
@@ -530,9 +534,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                             }
                             return null;
                         }
-                        return OtrProfileId.createUniqueIncognitoCctId();
+                        mOtrProfileId = OtrProfileId.createUniqueIncognitoCctId();
+                        return mOtrProfileId;
                     case CustomTabProfileType.EPHEMERAL:
-                        return OtrProfileId.createUnique("CCT:Ephemeral");
+                        mOtrProfileId = OtrProfileId.createUnique("CCT:Ephemeral");
+                        return mOtrProfileId;
                     default:
                         throw new IllegalStateException(
                                 "Attempting to create an OTR profile in a non-OTR session");
@@ -686,11 +692,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         // Note that color scheme is fixed for the lifetime of Activity: if the system setting
         // changes, we recreate the activity.
         Bundle savedInstanceState = getSavedInstanceState();
-        CustomTabIntentDataHolder dataHolder =
-                savedInstanceState != null
-                        ? IntentUtils.safeGetParcelable(
-                                savedInstanceState, KEY_CUSTOM_TAB_INTENT_DATA_HOLDER)
-                        : null;
+        CustomTabIntentDataHolder dataHolder = null;
+        if (savedInstanceState != null) {
+            dataHolder =
+                    IntentUtils.safeGetParcelable(
+                            savedInstanceState, KEY_CUSTOM_TAB_INTENT_DATA_HOLDER);
+            mOtrProfileId =
+                    OtrProfileId.deserializeWithoutVerify(
+                            IntentUtils.safeGetString(savedInstanceState, KEY_OTR_PROFILE_ID));
+        }
         var intentDataProvider = buildIntentDataProvider(getIntent(), getColorScheme(), dataHolder);
 
         if (intentDataProvider == null) {
@@ -1585,6 +1595,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mCipherFactory.saveToBundle(outState);
+        if (mOtrProfileId != null) {
+            outState.putString(KEY_OTR_PROFILE_ID, OtrProfileId.serialize(mOtrProfileId));
+        }
         if (mIntentDataProvider != null) {
             CustomTabIntentDataHolder dataHolder =
                     mIntentDataProvider.getCustomTabIntentDataHolder();
