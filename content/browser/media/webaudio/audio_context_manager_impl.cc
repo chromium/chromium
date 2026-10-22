@@ -36,19 +36,22 @@ void AudioContextManagerImpl::Create(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new AudioContextManagerImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<AudioContextManagerImpl>(*render_frame_host,
+                                                  std::move(receiver));
 }
 
 AudioContextManagerImpl& AudioContextManagerImpl::CreateForTesting(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver) {
-  return *new AudioContextManagerImpl(render_frame_host, std::move(receiver));
+  return *base::MakeSelfDeleting<AudioContextManagerImpl>(render_frame_host,
+                                                          std::move(receiver));
 }
 
 AudioContextManagerImpl::AudioContextManagerImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       clock_(base::DefaultTickClock::GetInstance()) {}
 
 AudioContextManagerImpl::~AudioContextManagerImpl() {

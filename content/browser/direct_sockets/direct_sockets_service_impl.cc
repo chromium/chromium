@@ -333,14 +333,13 @@ class DocumentHelper
   DocumentHelper(
       std::unique_ptr<DirectSocketsServiceImpl> service,
       RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver)
-      : DocumentService(*render_frame_host, std::move(receiver)),
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver,
+      base::SelfDeletingPassKey key)
+      : DocumentService(*render_frame_host, std::move(receiver), key),
         service_(std::move(service)) {}
 
   DocumentHelper(const DocumentHelper&) = delete;
   DocumentHelper& operator=(const DocumentHelper&) = delete;
-
-  ~DocumentHelper() override = default;
 
   // blink::mojom::DirectSocketsService:
   void OpenTCPSocket(
@@ -376,6 +375,8 @@ class DocumentHelper
   }
 
  private:
+  ~DocumentHelper() override = default;
+
   const std::unique_ptr<DirectSocketsServiceImpl> service_;
 };
 
@@ -414,7 +415,7 @@ void DirectSocketsServiceImpl::CreateForFrame(
     return;
   }
 
-  new DocumentHelper(
+  base::MakeSelfDeleting<DocumentHelper>(
       base::WrapUnique(new DirectSocketsServiceImpl(render_frame_host)),
       render_frame_host, std::move(receiver));
 }

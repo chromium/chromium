@@ -24,12 +24,16 @@ class RenderFrameHost;
 class CONTENT_EXPORT OriginTrialStateHostImpl
     : public DocumentService<blink::mojom::OriginTrialStateHost> {
  public:
-  OriginTrialStateHostImpl(const OriginTrialStateHostImpl&) = delete;
-  OriginTrialStateHostImpl& operator=(const OriginTrialStateHostImpl&) = delete;
-
   static void Create(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::OriginTrialStateHost> receiver);
+
+  OriginTrialStateHostImpl(
+      RenderFrameHost& host,
+      mojo::PendingReceiver<blink::mojom::OriginTrialStateHost> receiver,
+      base::SelfDeletingPassKey key);
+  OriginTrialStateHostImpl(const OriginTrialStateHostImpl&) = delete;
+  OriginTrialStateHostImpl& operator=(const OriginTrialStateHostImpl&) = delete;
 
   // mojom::OriginTrialStateHost methods
   void ApplyFeatureDiffForOriginTrial(
@@ -41,10 +45,6 @@ class CONTENT_EXPORT OriginTrialStateHostImpl
       const std::vector<url::Origin>& script_origins) override;
 
  private:
-  explicit OriginTrialStateHostImpl(
-      RenderFrameHost& host,
-      mojo::PendingReceiver<blink::mojom::OriginTrialStateHost> receiver);
-
   // `this` can only be destructed as a DocumentService.
   ~OriginTrialStateHostImpl() override;
 };

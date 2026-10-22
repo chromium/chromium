@@ -27,8 +27,9 @@ namespace content {
 
 RTCLoggingDispatcherImpl::RTCLoggingDispatcherImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::RTCLoggingDispatcher> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::RTCLoggingDispatcher> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {}
 
 RTCLoggingDispatcherImpl::~RTCLoggingDispatcherImpl() = default;
 
@@ -36,7 +37,8 @@ void RTCLoggingDispatcherImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::RTCLoggingDispatcher> receiver) {
   CHECK(render_frame_host);
-  new RTCLoggingDispatcherImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<RTCLoggingDispatcherImpl>(*render_frame_host,
+                                                   std::move(receiver));
 }
 
 void RTCLoggingDispatcherImpl::StartDiagnosticLogging(

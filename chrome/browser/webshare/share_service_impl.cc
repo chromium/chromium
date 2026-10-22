@@ -49,9 +49,11 @@
 
 ShareServiceImpl::ShareServiceImpl(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::ShareService> receiver)
+    mojo::PendingReceiver<blink::mojom::ShareService> receiver,
+    base::SelfDeletingPassKey key)
     : content::DocumentService<blink::mojom::ShareService>(render_frame_host,
-                                                           std::move(receiver))
+                                                           std::move(receiver),
+                                                           key)
 #if BUILDFLAG(IS_CHROMEOS)
       ,
       sharesheet_client_(
@@ -79,7 +81,8 @@ void ShareServiceImpl::Create(
     return;
   }
 
-  new ShareServiceImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<ShareServiceImpl>(*render_frame_host,
+                                           std::move(receiver));
 }
 
 // static

@@ -405,7 +405,8 @@ DigitalIdentityRequestImpl::CreateInstance(
   // interface error occurs, the RenderFrameHost is deleted, or the
   // RenderFrameHost navigates to a new document.
   DigitalIdentityRequestImpl* instance =
-      new DigitalIdentityRequestImpl(host, std::move(receiver));
+      base::MakeSelfDeleting<DigitalIdentityRequestImpl>(host,
+                                                         std::move(receiver));
   return instance->weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -445,8 +446,9 @@ DigitalIdentityRequestImpl::ComputeInterstitialType(
 
 DigitalIdentityRequestImpl::DigitalIdentityRequestImpl(
     RenderFrameHost& host,
-    mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest> receiver)
-    : DocumentService(host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(host, std::move(receiver), key) {}
 
 DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 

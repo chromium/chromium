@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/self_deleting.h"
 #include "content/public/browser/document_service.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -39,10 +40,13 @@ class PdfHelpBubbleHandlerFactory
   static void Create(content::RenderFrameHost* render_frame_host,
                      HelpFactoryPendingReceiver receiver);
 
+  PdfHelpBubbleHandlerFactory(content::RenderFrameHost* render_frame_host,
+                              HelpFactoryPendingReceiver receiver,
+                              base::SelfDeletingPassKey key);
+
   PdfHelpBubbleHandlerFactory(const PdfHelpBubbleHandlerFactory&) = delete;
   PdfHelpBubbleHandlerFactory& operator=(const PdfHelpBubbleHandlerFactory&) =
       delete;
-  ~PdfHelpBubbleHandlerFactory() override;
 
   // help_bubble::mojom::PdfHelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(
@@ -53,8 +57,7 @@ class PdfHelpBubbleHandlerFactory
           tracked_element_handler) override;
 
  private:
-  PdfHelpBubbleHandlerFactory(content::RenderFrameHost* render_frame_host,
-                              HelpFactoryPendingReceiver receiver);
+  ~PdfHelpBubbleHandlerFactory() override;
 
   // help_bubble_handler holds a reference to the tracked_element_handler, so
   // it must be destroyed first (last in this list).

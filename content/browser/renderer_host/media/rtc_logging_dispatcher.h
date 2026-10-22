@@ -20,14 +20,16 @@ namespace content {
 class CONTENT_EXPORT RTCLoggingDispatcherImpl
     : public DocumentService<blink::mojom::RTCLoggingDispatcher> {
  public:
-  RTCLoggingDispatcherImpl(const RTCLoggingDispatcherImpl&) = delete;
-  RTCLoggingDispatcherImpl& operator=(const RTCLoggingDispatcherImpl&) = delete;
-
-  ~RTCLoggingDispatcherImpl() override;
-
   static void Create(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::RTCLoggingDispatcher> receiver);
+
+  RTCLoggingDispatcherImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::RTCLoggingDispatcher> receiver,
+      base::SelfDeletingPassKey key);
+  RTCLoggingDispatcherImpl(const RTCLoggingDispatcherImpl&) = delete;
+  RTCLoggingDispatcherImpl& operator=(const RTCLoggingDispatcherImpl&) = delete;
 
   // blink::mojom::RTCLoggingDispatcher
   void StartDiagnosticLogging(
@@ -42,9 +44,7 @@ class CONTENT_EXPORT RTCLoggingDispatcherImpl
       CancelDiagnosticLoggingCallback callback) override;
 
  private:
-  RTCLoggingDispatcherImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::RTCLoggingDispatcher> receiver);
+  ~RTCLoggingDispatcherImpl() override;
 
   base::WeakPtrFactory<RTCLoggingDispatcherImpl> weak_ptr_factory_{this};
 };

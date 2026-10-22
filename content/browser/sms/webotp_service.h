@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/self_deleting.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -53,10 +54,14 @@ class CONTENT_EXPORT WebOTPService
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::WebOTPService>);
 
+  WebOTPService(SmsFetcher*,
+                OriginList,
+                RenderFrameHost&,
+                mojo::PendingReceiver<blink::mojom::WebOTPService>,
+                base::SelfDeletingPassKey key);
+
   WebOTPService(const WebOTPService&) = delete;
   WebOTPService& operator=(const WebOTPService&) = delete;
-
-  ~WebOTPService() override;
 
   // content::DocumentService:
   void WillBeDestroyed(DocumentServiceDestructionReason) override;
@@ -83,10 +88,7 @@ class CONTENT_EXPORT WebOTPService
   void OnUserConsentComplete(UserConsentResult);
 
  private:
-  WebOTPService(SmsFetcher*,
-                OriginList,
-                RenderFrameHost&,
-                mojo::PendingReceiver<blink::mojom::WebOTPService>);
+  ~WebOTPService() override;
 
   void CleanUp();
   UserConsentHandler* CreateConsentHandler(UserConsent);

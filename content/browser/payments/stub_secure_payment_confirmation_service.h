@@ -34,10 +34,14 @@ class StubSecurePaymentConfirmationService
           receiver);
 
   StubSecurePaymentConfirmationService(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
+          receiver,
+      base::SelfDeletingPassKey key);
+  StubSecurePaymentConfirmationService(
       const StubSecurePaymentConfirmationService&) = delete;
   StubSecurePaymentConfirmationService& operator=(
       const StubSecurePaymentConfirmationService&) = delete;
-  ~StubSecurePaymentConfirmationService() override;
 
   // mojom::SecurePaymentConfirmationService:
   void SecurePaymentConfirmationAvailability(
@@ -59,10 +63,7 @@ class StubSecurePaymentConfirmationService
       MakePaymentCredentialCallback callback) override;
 
  private:
-  StubSecurePaymentConfirmationService(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
-          receiver);
+  ~StubSecurePaymentConfirmationService() override;
 
   std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl_;
 };

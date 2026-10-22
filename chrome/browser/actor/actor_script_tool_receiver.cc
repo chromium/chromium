@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/actor_script_tool_receiver.h"
 
+#include "base/memory/self_deleting.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "content/public/browser/render_frame_host.h"
@@ -15,13 +16,17 @@ namespace actor {
 void ActorScriptToolReceiver::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ScriptToolHost> receiver) {
-  new ActorScriptToolReceiver(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<ActorScriptToolReceiver>(*render_frame_host,
+                                                  std::move(receiver));
 }
 
 ActorScriptToolReceiver::ActorScriptToolReceiver(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::ScriptToolHost> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::ScriptToolHost> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {}
+
+ActorScriptToolReceiver::~ActorScriptToolReceiver() = default;
 
 void ActorScriptToolReceiver::PauseExecution() {
   auto* web_contents =

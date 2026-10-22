@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/self_deleting.h"
 #include "chrome/browser/media/output_protection_proxy.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,13 +27,15 @@ void OutputProtectionImpl::Create(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new OutputProtectionImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<OutputProtectionImpl>(*render_frame_host,
+                                               std::move(receiver));
 }
 
 OutputProtectionImpl::OutputProtectionImpl(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<media::mojom::OutputProtection> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    mojo::PendingReceiver<media::mojom::OutputProtection> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       render_process_id_(render_frame_host.GetProcess()->GetDeprecatedID()),
       render_frame_id_(render_frame_host.GetRoutingID()) {}
 

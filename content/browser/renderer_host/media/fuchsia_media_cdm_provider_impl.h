@@ -17,7 +17,10 @@ namespace content {
 class FuchsiaMediaCdmProviderImpl final
     : public DocumentService<media::mojom::FuchsiaMediaCdmProvider> {
  public:
-  ~FuchsiaMediaCdmProviderImpl() override;
+  FuchsiaMediaCdmProviderImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<media::mojom::FuchsiaMediaCdmProvider> receiver,
+      base::SelfDeletingPassKey key);
 
   FuchsiaMediaCdmProviderImpl(const FuchsiaMediaCdmProviderImpl&) = delete;
   FuchsiaMediaCdmProviderImpl& operator=(const FuchsiaMediaCdmProviderImpl&) =
@@ -29,9 +32,7 @@ class FuchsiaMediaCdmProviderImpl final
       mojo::PendingReceiver<media::mojom::FuchsiaMediaCdmProvider> receiver);
 
  private:
-  FuchsiaMediaCdmProviderImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<media::mojom::FuchsiaMediaCdmProvider> receiver);
+  ~FuchsiaMediaCdmProviderImpl() override;
 
   // media::mojom::FuchsiaMediaCdmProvider implementation.
   void CreateCdm(

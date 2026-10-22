@@ -7,6 +7,7 @@
 
 #include <lib/fidl/cpp/interface_handle.h>
 
+#include "base/memory/self_deleting.h"
 #include "content/public/browser/document_service.h"
 #include "fuchsia_web/webengine/mojom/web_engine_media_resource_provider.mojom.h"
 
@@ -17,7 +18,10 @@ class RenderFrameHost;
 class WebEngineMediaResourceProviderImpl final
     : public content::DocumentService<mojom::WebEngineMediaResourceProvider> {
  public:
-  ~WebEngineMediaResourceProviderImpl() override;
+  WebEngineMediaResourceProviderImpl(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver,
+      base::SelfDeletingPassKey key);
 
   WebEngineMediaResourceProviderImpl(
       const WebEngineMediaResourceProviderImpl&) = delete;
@@ -33,9 +37,7 @@ class WebEngineMediaResourceProviderImpl final
       mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver);
 
  private:
-  WebEngineMediaResourceProviderImpl(
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver);
+  ~WebEngineMediaResourceProviderImpl() override;
 
   // mojom::WebEngineMediaResourceProvider:
   void ShouldUseAudioConsumer(ShouldUseAudioConsumerCallback callback) override;

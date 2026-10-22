@@ -42,6 +42,10 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
       RenderFrameHost*,
       mojo::PendingReceiver<blink::mojom::PictureInPictureService>);
 
+  PictureInPictureServiceImpl(
+      RenderFrameHost&,
+      mojo::PendingReceiver<blink::mojom::PictureInPictureService>,
+      base::SelfDeletingPassKey key);
   PictureInPictureServiceImpl(const PictureInPictureServiceImpl&) = delete;
   PictureInPictureServiceImpl& operator=(const PictureInPictureServiceImpl&) =
       delete;
@@ -64,9 +68,6 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
 
   struct PendingSession;
 
-  PictureInPictureServiceImpl(
-      RenderFrameHost&,
-      mojo::PendingReceiver<blink::mojom::PictureInPictureService>);
   ~PictureInPictureServiceImpl() override;
 
   VideoPictureInPictureWindowControllerImpl& GetController();

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_DOCUMENT_SERVICE_ECHO_IMPL_H_
 
 #include "base/functional/bind.h"
+#include "base/memory/self_deleting.h"
 #include "content/public/browser/document_service.h"
 #include "content/test/echo.test-mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,13 +20,15 @@ class DocumentServiceEchoImpl final : public DocumentService<mojom::Echo> {
  public:
   DocumentServiceEchoImpl(RenderFrameHost& render_frame_host,
                           mojo::PendingReceiver<mojom::Echo> receiver,
-                          base::OnceClosure destruction_cb);
-  ~DocumentServiceEchoImpl() final;
+                          base::OnceClosure destruction_cb,
+                          base::SelfDeletingPassKey key);
 
   // mojom::Echo implementation
   void EchoString(const std::string& input, EchoStringCallback callback) final;
 
  private:
+  ~DocumentServiceEchoImpl() final;
+
   base::OnceClosure destruction_cb_;
 };
 

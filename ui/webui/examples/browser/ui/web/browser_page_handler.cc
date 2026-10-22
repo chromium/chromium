@@ -22,8 +22,8 @@ BrowserPageHandler* BrowserPageHandler::Create(
     content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver) {
   // The RenderFrameHost takes ownership of this object via the DocumentService.
-  return new BrowserPageHandler(webui_controller, render_frame_host,
-                                std::move(receiver));
+  return base::MakeSelfDeleting<BrowserPageHandler>(
+      webui_controller, render_frame_host, std::move(receiver));
 }
 
 void BrowserPageHandler::Navigate(
@@ -59,10 +59,12 @@ void BrowserPageHandler::WebUIControllerDestroyed() {
 BrowserPageHandler::BrowserPageHandler(
     Browser* webui_controller,
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver)
+    mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver,
+    base::SelfDeletingPassKey key)
     : content::DocumentService<webui_examples::mojom::PageHandler>(
           render_frame_host,
-          std::move(receiver)),
+          std::move(receiver),
+          key),
       webui_controller_(webui_controller) {}
 
 }  // namespace webui_examples

@@ -24,7 +24,7 @@ void AuthenticatorImpl::Create(
   }
   // AuthenticatorImpl owns itself. It self-destructs when the RenderFrameHost
   // navigates or is deleted. See DocumentService for details.
-  new AuthenticatorImpl(
+  base::MakeSelfDeleting<AuthenticatorImpl>(
       *render_frame_host, std::move(receiver),
       std::make_unique<AuthenticatorCommonImpl>(
           render_frame_host,
@@ -35,8 +35,9 @@ void AuthenticatorImpl::CreateForTesting(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
     std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl) {
-  new AuthenticatorImpl(render_frame_host, std::move(receiver),
-                        std::move(authenticator_common_impl));
+  base::MakeSelfDeleting<AuthenticatorImpl>(
+      render_frame_host, std::move(receiver),
+      std::move(authenticator_common_impl));
 }
 
 // static
@@ -54,8 +55,9 @@ blink::mojom::GetCredentialResponsePtr AuthenticatorImpl::MakeGetAssertionRespon
 AuthenticatorImpl::AuthenticatorImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
-    std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       authenticator_common_impl_(std::move(authenticator_common_impl)) {
   authenticator_common_impl_->EnableRequestProxyExtensionsAPISupport();
   CHECK(authenticator_common_impl_, base::NotFatalUntil::M160);

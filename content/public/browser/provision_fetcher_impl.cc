@@ -21,7 +21,7 @@ void ProvisionFetcherImpl::Create(
   DCHECK(url_loader_factory);
   // The created ProvisionFetcherImpl is bound to (and owned by) `receiver` and
   // the document associated with `render_frame_host`.
-  new ProvisionFetcherImpl(
+  base::MakeSelfDeleting<ProvisionFetcherImpl>(
       *render_frame_host, std::move(receiver),
       CreateProvisionFetcher(std::move(url_loader_factory)));
 }
@@ -29,8 +29,9 @@ void ProvisionFetcherImpl::Create(
 ProvisionFetcherImpl::ProvisionFetcherImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver,
-    std::unique_ptr<media::ProvisionFetcher> provision_fetcher)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    std::unique_ptr<media::ProvisionFetcher> provision_fetcher,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       provision_fetcher_(std::move(provision_fetcher)) {
   DVLOG(1) << __FUNCTION__;
 }

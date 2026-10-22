@@ -27,10 +27,13 @@ class CONTENT_EXPORT ContactsManagerImpl
       mojo::PendingReceiver<blink::mojom::ContactsManager> receiver,
       std::unique_ptr<ContactsProvider> provider);
 
+  ContactsManagerImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver,
+      std::unique_ptr<ContactsProvider> provider,
+      base::SelfDeletingPassKey key);
   ContactsManagerImpl(const ContactsManagerImpl&) = delete;
   ContactsManagerImpl& operator=(const ContactsManagerImpl&) = delete;
-
-  ~ContactsManagerImpl() override;
 
   void Select(bool multiple,
               bool include_names,
@@ -41,10 +44,7 @@ class CONTENT_EXPORT ContactsManagerImpl
               SelectCallback mojom_callback) override;
 
  private:
-  explicit ContactsManagerImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver,
-      std::unique_ptr<ContactsProvider> provider);
+  ~ContactsManagerImpl() override;
 
   std::unique_ptr<ContactsProvider> contacts_provider_;
 

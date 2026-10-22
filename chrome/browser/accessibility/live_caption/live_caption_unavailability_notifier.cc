@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
@@ -36,16 +37,19 @@ void LiveCaptionUnavailabilityNotifier::Create(
   CHECK(frame_host);
   // The object is bound to the lifetime of |frame_host| and the mojo
   // connection. See DocumentService for details.
-  new LiveCaptionUnavailabilityNotifier(*frame_host, std::move(receiver));
+  base::MakeSelfDeleting<LiveCaptionUnavailabilityNotifier>(
+      *frame_host, std::move(receiver));
 }
 
 LiveCaptionUnavailabilityNotifier::LiveCaptionUnavailabilityNotifier(
     content::RenderFrameHost& frame_host,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
-        receiver)
+        receiver,
+    base::SelfDeletingPassKey key)
     : DocumentService<media::mojom::MediaFoundationRendererNotifier>(
           frame_host,
-          std::move(receiver)) {
+          std::move(receiver),
+          key) {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return;

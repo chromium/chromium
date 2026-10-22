@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/self_deleting.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -47,6 +48,10 @@ class NavigationPredictor
     kEighteenOrGreater = 3,
   };
 
+  NavigationPredictor(content::RenderFrameHost& render_frame_host,
+                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver,
+                      base::SelfDeletingPassKey key);
+
   NavigationPredictor(const NavigationPredictor&) = delete;
   NavigationPredictor& operator=(const NavigationPredictor&) = delete;
 
@@ -61,8 +66,6 @@ class NavigationPredictor
   using AnchorId = base::StrongAlias<class AnchorId, uint32_t>;
   struct AnchorElementData;
 
-  NavigationPredictor(content::RenderFrameHost& render_frame_host,
-                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
   ~NavigationPredictor() override;
 
   // blink::mojom::AnchorElementMetricsHost:

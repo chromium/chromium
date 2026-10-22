@@ -41,7 +41,8 @@ class SecurePaymentConfirmationControllerTest
     // PaymentRequest deletes itself through a callback after the controller is
     // done with it so a raw pointer is used here instead of a unique_ptr.
     raw_ptr<PaymentRequest> payment_request =
-        new PaymentRequest(std::move(delegate), std::move(receiver));
+        base::MakeSelfDeleting<PaymentRequest>(std::move(delegate),
+                                               std::move(receiver));
     payment_request->set_observer_for_test(GetWeakPtr());
 
     controller_ = std::make_unique<SecurePaymentConfirmationController>(

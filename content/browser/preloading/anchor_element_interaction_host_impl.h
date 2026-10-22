@@ -23,11 +23,15 @@ class CONTENT_EXPORT AnchorElementInteractionHostImpl
       mojo::PendingReceiver<blink::mojom::AnchorElementInteractionHost>
           receiver);
 
- private:
   AnchorElementInteractionHostImpl(
       RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::AnchorElementInteractionHost>
-          receiver);
+          receiver,
+      base::SelfDeletingPassKey key);
+
+ private:
+  ~AnchorElementInteractionHostImpl() override;
+
   // blink::mojom::AnchorElementInteractionHost:
   void OnPointerDown(const GURL& target, bool renderer_enacted) override;
   void OnPointerHoverEager(const GURL& target,

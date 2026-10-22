@@ -593,7 +593,8 @@ void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
   delegate->OverrideBrowserWindowActive(is_browser_window_active_);
   delegate_ = delegate->GetWeakPtr();
 
-  auto* request = new PaymentRequest(std::move(delegate), std::move(receiver));
+  auto* request = base::MakeSelfDeleting<PaymentRequest>(std::move(delegate),
+                                                         std::move(receiver));
   request->set_observer_for_test(GetWeakPtr());
   request->set_window_size_check_enabled_for_test(
       is_browser_window_size_check_enabled_);

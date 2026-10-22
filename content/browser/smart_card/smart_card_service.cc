@@ -31,8 +31,9 @@ SmartCardDelegate& GetSmartCardDelegate() {
 SmartCardService::SmartCardService(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::SmartCardService> receiver,
-    mojo::PendingRemote<device::mojom::SmartCardContextFactory> context_factory)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    mojo::PendingRemote<device::mojom::SmartCardContextFactory> context_factory,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       context_factory_(std::move(context_factory)) {
   // base::Unretained is safe in below cases, as receiver sets, being members,
   // are bound to the lifetime of this object.
@@ -78,7 +79,7 @@ void SmartCardService::Create(
     return;
   }
 
-  new SmartCardService(
+  base::MakeSelfDeleting<SmartCardService>(
       *render_frame_host, std::move(receiver),
       delegate->GetSmartCardContextFactory(*render_frame_host));
 }

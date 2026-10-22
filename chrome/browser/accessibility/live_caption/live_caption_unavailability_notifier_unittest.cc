@@ -5,6 +5,7 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_unavailability_notifier.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/self_deleting.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -50,8 +51,8 @@ class LiveCaptionUnavailabilityNotifierTest
 
     // The LiveCaptionUnavailabilityNotifier is self-owned and is reset upon the
     // destruction of the mojo connection.
-    notifier_ =
-        new LiveCaptionUnavailabilityNotifier(*main_rfh(), std::move(receiver));
+    notifier_ = base::MakeSelfDeleting<LiveCaptionUnavailabilityNotifier>(
+        *main_rfh(), std::move(receiver));
   }
 
   void TearDown() override {

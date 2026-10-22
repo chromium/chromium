@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/self_deleting.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -248,13 +249,15 @@ void CdmDocumentServiceImpl::Create(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new CdmDocumentServiceImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<CdmDocumentServiceImpl>(*render_frame_host,
+                                                 std::move(receiver));
 }
 
 CdmDocumentServiceImpl::CdmDocumentServiceImpl(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<media::mojom::CdmDocumentService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<media::mojom::CdmDocumentService> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {}
 
 CdmDocumentServiceImpl::~CdmDocumentServiceImpl() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);

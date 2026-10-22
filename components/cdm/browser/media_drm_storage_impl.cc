@@ -691,8 +691,9 @@ MediaDrmStorageImpl::MediaDrmStorageImpl(
     content::RenderFrameHost& render_frame_host,
     PrefService* pref_service,
     GetOriginIdCB get_origin_id_cb,
-    mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       pref_service_(pref_service),
       get_origin_id_cb_(get_origin_id_cb) {
   DVLOG(1) << __func__ << ": origin = " << origin();
@@ -705,12 +706,14 @@ MediaDrmStorageImpl::MediaDrmStorageImpl(
 MediaDrmStorageImpl::MediaDrmStorageImpl(
     content::RenderFrameHost& render_frame_host,
     GetOriginIdCB get_origin_id_cb,
-    mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver)
+    mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver,
+    base::SelfDeletingPassKey key)
     : MediaDrmStorageImpl(
           render_frame_host,
           user_prefs::UserPrefs::Get(render_frame_host.GetBrowserContext()),
           get_origin_id_cb,
-          std::move(receiver)) {}
+          std::move(receiver),
+          key) {}
 
 MediaDrmStorageImpl::~MediaDrmStorageImpl() {
   DVLOG(1) << __func__;

@@ -115,8 +115,8 @@ TEST_P(PaymentRequestValidationTest, SecurePaymentConfirmationExclusivity) {
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<mojom::PaymentRequest> payment_request;
-  new PaymentRequest(CreateMockDelegate(),
-                     payment_request.BindNewPipeAndPassReceiver());
+  base::MakeSelfDeleting<PaymentRequest>(
+      CreateMockDelegate(), payment_request.BindNewPipeAndPassReceiver());
 
   mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
   auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
@@ -168,8 +168,8 @@ TEST_P(PaymentRequestValidationTest,
     mojo::test::BadMessageObserver bad_message_observer;
 
     mojo::Remote<mojom::PaymentRequest> payment_request;
-    new PaymentRequest(CreateMockDelegate(),
-                       payment_request.BindNewPipeAndPassReceiver());
+    base::MakeSelfDeleting<PaymentRequest>(
+        CreateMockDelegate(), payment_request.BindNewPipeAndPassReceiver());
 
     mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
     auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
@@ -207,8 +207,8 @@ TEST_P(PaymentRequestValidationTest,
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<mojom::PaymentRequest> payment_request;
-  new PaymentRequest(CreateMockDelegate(),
-                     payment_request.BindNewPipeAndPassReceiver());
+  base::MakeSelfDeleting<PaymentRequest>(
+      CreateMockDelegate(), payment_request.BindNewPipeAndPassReceiver());
 
   mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
   auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
@@ -241,8 +241,8 @@ TEST_P(PaymentRequestValidationTest,
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<mojom::PaymentRequest> payment_request;
-  new PaymentRequest(CreateMockDelegate(),
-                     payment_request.BindNewPipeAndPassReceiver());
+  base::MakeSelfDeleting<PaymentRequest>(
+      CreateMockDelegate(), payment_request.BindNewPipeAndPassReceiver());
 
   mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
   auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
@@ -299,7 +299,7 @@ TEST_P(PaymentRequestValidationTest,
   auto* delegate_ptr = delegate.get();
 
   mojo::Remote<mojom::PaymentRequest> payment_request;
-  PaymentRequest* request = new PaymentRequest(
+  PaymentRequest* request = base::MakeSelfDeleting<PaymentRequest>(
       std::move(delegate), payment_request.BindNewPipeAndPassReceiver());
   base::WeakPtr<PaymentRequest> weak_request = request->GetWeakPtr();
 

@@ -19,6 +19,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/self_deleting.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -7444,12 +7445,16 @@ class DestructorLifetimeDocumentService
   DestructorLifetimeDocumentService(
       RenderFrameHostImpl& render_frame_host,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver,
-      bool& was_destroyed)
-      : DocumentService(render_frame_host, std::move(receiver)),
+      bool& was_destroyed,
+      base::SelfDeletingPassKey key)
+      : DocumentService(render_frame_host, std::move(receiver), key),
         render_frame_host_(render_frame_host.GetWeakPtr()),
         page_(render_frame_host.GetPage().GetWeakPtr()),
         was_destroyed_(was_destroyed) {}
 
+  void GetInterface(mojo::GenericPendingReceiver pending_receiver) override {}
+
+ private:
   ~DestructorLifetimeDocumentService() override {
     *was_destroyed_ = true;
     // The destructor should run before SafeRef<RenderFrameHost> is invalidated.
@@ -7457,9 +7462,6 @@ class DestructorLifetimeDocumentService
     EXPECT_TRUE(page_);
   }
 
-  void GetInterface(mojo::GenericPendingReceiver pending_receiver) override {}
-
- private:
   // This should be a SafeRef but that is not yet exposed publicly.
   const base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   const base::WeakPtr<Page> page_;
@@ -7515,10 +7517,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
-  // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(*main_frame,
-                                        remote.BindNewPipeAndPassReceiver(),
-                                        document_service_was_destroyed);
+  base::MakeSelfDeleting<DestructorLifetimeDocumentService>(
+      *main_frame, remote.BindNewPipeAndPassReceiver(),
+      document_service_was_destroyed);
 
   bool document_user_data_was_destroyed = false;
   DestructorLifetimeDocumentUserData::CreateForCurrentDocument(
@@ -7564,10 +7565,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
-  // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(*main_frame,
-                                        remote.BindNewPipeAndPassReceiver(),
-                                        document_service_was_destroyed);
+  base::MakeSelfDeleting<DestructorLifetimeDocumentService>(
+      *main_frame, remote.BindNewPipeAndPassReceiver(),
+      document_service_was_destroyed);
 
   bool document_user_data_was_destroyed = false;
   DestructorLifetimeDocumentUserData::CreateForCurrentDocument(
@@ -7604,10 +7604,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
-  // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(*child_frame,
-                                        remote.BindNewPipeAndPassReceiver(),
-                                        document_service_was_destroyed);
+  base::MakeSelfDeleting<DestructorLifetimeDocumentService>(
+      *child_frame, remote.BindNewPipeAndPassReceiver(),
+      document_service_was_destroyed);
 
   bool document_user_data_was_destroyed = false;
   DestructorLifetimeDocumentUserData::CreateForCurrentDocument(
@@ -7651,10 +7650,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
-  // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(*child_frame,
-                                        remote.BindNewPipeAndPassReceiver(),
-                                        document_service_was_destroyed);
+  base::MakeSelfDeleting<DestructorLifetimeDocumentService>(
+      *child_frame, remote.BindNewPipeAndPassReceiver(),
+      document_service_was_destroyed);
 
   bool document_user_data_was_destroyed = false;
   DestructorLifetimeDocumentUserData::CreateForCurrentDocument(
@@ -7689,10 +7687,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
-  // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(*child_frame,
-                                        remote.BindNewPipeAndPassReceiver(),
-                                        document_service_was_destroyed);
+  base::MakeSelfDeleting<DestructorLifetimeDocumentService>(
+      *child_frame, remote.BindNewPipeAndPassReceiver(),
+      document_service_was_destroyed);
 
   bool document_user_data_was_destroyed = false;
   DestructorLifetimeDocumentUserData::CreateForCurrentDocument(

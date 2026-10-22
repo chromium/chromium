@@ -43,12 +43,12 @@ class DocumentHelper
  public:
   DocumentHelper(std::unique_ptr<HidService> parent,
                  RenderFrameHost& render_frame_host,
-                 mojo::PendingReceiver<blink::mojom::HidService> receiver)
-      : DocumentService(render_frame_host, std::move(receiver)),
+                 mojo::PendingReceiver<blink::mojom::HidService> receiver,
+                 base::SelfDeletingPassKey key)
+      : DocumentService(render_frame_host, std::move(receiver), key),
         parent_(std::move(parent)) {
     CHECK(parent_, base::NotFatalUntil::M159);
   }
-  ~DocumentHelper() override = default;
 
   // blink::mojom::HidService:
   void RegisterClient(
@@ -77,6 +77,8 @@ class DocumentHelper
   }
 
  private:
+  ~DocumentHelper() override = default;
+
   const std::unique_ptr<HidService> parent_;
 };
 
@@ -207,8 +209,9 @@ void HidService::Create(
   // `render_frame_host` and destroys the HidService when the Mojo connection is
   // disconnected, RenderFrameHost is deleted, or the RenderFrameHost commits a
   // cross-document navigation. It forwards its Mojo interface to HidService.
-  new DocumentHelper(std::make_unique<HidService>(render_frame_host),
-                     *render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<DocumentHelper>(
+      std::make_unique<HidService>(render_frame_host), *render_frame_host,
+      std::move(receiver));
 }
 
 // static

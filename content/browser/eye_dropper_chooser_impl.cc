@@ -68,13 +68,15 @@ void EyeDropperChooserImpl::Create(
     return;
   }
 
-  new EyeDropperChooserImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<EyeDropperChooserImpl>(*render_frame_host,
+                                                std::move(receiver));
 }
 
 EyeDropperChooserImpl::EyeDropperChooserImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::EyeDropperChooser> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::EyeDropperChooser> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {}
 
 EyeDropperChooserImpl::~EyeDropperChooserImpl() {
   ClearActiveEyeDropper();

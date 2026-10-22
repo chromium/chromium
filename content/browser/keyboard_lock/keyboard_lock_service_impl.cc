@@ -40,8 +40,9 @@ void LogKeyboardLockMethodCalled(KeyboardLockMethods method) {
 
 KeyboardLockServiceImpl::KeyboardLockServiceImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {}
 
 // static
 void KeyboardLockServiceImpl::CreateMojoService(
@@ -51,7 +52,8 @@ void KeyboardLockServiceImpl::CreateMojoService(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new KeyboardLockServiceImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<KeyboardLockServiceImpl>(*render_frame_host,
+                                                  std::move(receiver));
 }
 
 void KeyboardLockServiceImpl::RequestKeyboardLock(

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_HOST_H_
 #define CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_HOST_H_
 
+#include "base/memory/self_deleting.h"
 #include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -22,6 +23,12 @@ class LCPCriticalPathPredictorHost
     : public content::DocumentService<
           blink::mojom::LCPCriticalPathPredictorHost> {
  public:
+  LCPCriticalPathPredictorHost(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::LCPCriticalPathPredictorHost>
+          receiver,
+      base::SelfDeletingPassKey key);
+
   LCPCriticalPathPredictorHost(const LCPCriticalPathPredictorHost&) = delete;
   LCPCriticalPathPredictorHost& operator=(const LCPCriticalPathPredictorHost&) =
       delete;
@@ -33,11 +40,6 @@ class LCPCriticalPathPredictorHost
           receiver);
 
  private:
-  LCPCriticalPathPredictorHost(
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::LCPCriticalPathPredictorHost>
-          receiver);
-
   ~LCPCriticalPathPredictorHost() override;
 
   LcpCriticalPathPredictorPageLoadMetricsObserver*

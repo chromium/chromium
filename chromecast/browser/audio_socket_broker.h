@@ -40,17 +40,19 @@ class AudioSocketBroker
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
       const std::string& audio_output_service_path);
+  AudioSocketBroker(content::RenderFrameHost& render_frame_host,
+                    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
+                    base::SelfDeletingPassKey key);
+  AudioSocketBroker(content::RenderFrameHost& render_frame_host,
+                    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
+                    const std::string& audio_output_service_path,
+                    base::SelfDeletingPassKey key);
   AudioSocketBroker(const AudioSocketBroker&) = delete;
   AudioSocketBroker& operator=(const AudioSocketBroker&) = delete;
 
  private:
   class SocketFdConnection;
 
-  AudioSocketBroker(content::RenderFrameHost& render_frame_host,
-                    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver);
-  AudioSocketBroker(content::RenderFrameHost& render_frame_host,
-                    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
-                    const std::string& audio_output_service_path);
   ~AudioSocketBroker() override;
 
   // Helper struct which holds the information regarding a socket pair

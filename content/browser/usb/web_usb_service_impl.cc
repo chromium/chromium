@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/self_deleting.h"
 #include "build/android_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -39,16 +40,15 @@ class DocumentHelper : public DocumentService<blink::mojom::WebUsbService> {
  public:
   DocumentHelper(std::unique_ptr<WebUsbServiceImpl> service,
                  RenderFrameHostImpl& render_frame_host,
-                 mojo::PendingReceiver<blink::mojom::WebUsbService> receiver)
-      : DocumentService(render_frame_host, std::move(receiver)),
+                 mojo::PendingReceiver<blink::mojom::WebUsbService> receiver,
+                 base::SelfDeletingPassKey key)
+      : DocumentService(render_frame_host, std::move(receiver), key),
         service_(std::move(service)) {
     CHECK(service_, base::NotFatalUntil::M158);
   }
 
   DocumentHelper(const DocumentHelper&) = delete;
   DocumentHelper& operator=(const DocumentHelper&) = delete;
-
-  ~DocumentHelper() override = default;
 
   // blink::mojom::WebUsbService:
   void GetDevices(GetDevicesCallback callback) override {
@@ -76,6 +76,8 @@ class DocumentHelper : public DocumentService<blink::mojom::WebUsbService> {
   }
 
  private:
+  ~DocumentHelper() override = default;
+
   const std::unique_ptr<WebUsbServiceImpl> service_;
 };
 
@@ -202,7 +204,7 @@ void WebUsbServiceImpl::Create(
   // is disconnected, RenderFrameHost is deleted, or the RenderFrameHost commits
   // a cross-document navigation. It forwards its Mojo interface to
   // WebUsbServiceImpl.
-  new DocumentHelper(
+  base::MakeSelfDeleting<DocumentHelper>(
       std::make_unique<WebUsbServiceImpl>(
           &render_frame_host,
           /*service_worker_version=*/nullptr,

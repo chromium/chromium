@@ -206,10 +206,12 @@ void EmitInstallTypeUma(bool triggered_from_element,
 
 WebInstallServiceImpl::WebInstallServiceImpl(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::WebInstallService> receiver)
+    mojo::PendingReceiver<blink::mojom::WebInstallService> receiver,
+    base::SelfDeletingPassKey key)
     : content::DocumentService<blink::mojom::WebInstallService>(
           render_frame_host,
-          std::move(receiver)),
+          std::move(receiver),
+          key),
       content::WebContentsObserver(
           content::WebContents::FromRenderFrameHost(&render_frame_host)),
       frame_routing_id_(render_frame_host.GetGlobalId()),
@@ -252,7 +254,8 @@ void WebInstallServiceImpl::CreateIfAllowed(
     return;
   }
 
-  new WebInstallServiceImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<WebInstallServiceImpl>(*render_frame_host,
+                                                std::move(receiver));
 }
 
 // static

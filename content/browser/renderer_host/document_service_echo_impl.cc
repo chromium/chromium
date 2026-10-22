@@ -9,8 +9,9 @@ namespace content {
 DocumentServiceEchoImpl::DocumentServiceEchoImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::Echo> receiver,
-    base::OnceClosure destruction_cb)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    base::OnceClosure destruction_cb,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       destruction_cb_(std::move(destruction_cb)) {}
 
 DocumentServiceEchoImpl::~DocumentServiceEchoImpl() {

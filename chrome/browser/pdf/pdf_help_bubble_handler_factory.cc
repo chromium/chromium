@@ -10,6 +10,7 @@
 
 #include "base/features.h"
 #include "base/functional/bind.h"
+#include "base/memory/self_deleting.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -55,13 +56,15 @@ void PdfHelpBubbleHandlerFactory::Create(
 
   // This class inherits from content::DocumentService<>, so its lifetime is
   // bound to the associated `render_frame_host`.
-  new PdfHelpBubbleHandlerFactory(render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<PdfHelpBubbleHandlerFactory>(render_frame_host,
+                                                      std::move(receiver));
 }
 
 PdfHelpBubbleHandlerFactory::PdfHelpBubbleHandlerFactory(
     content::RenderFrameHost* render_frame_host,
-    HelpFactoryPendingReceiver receiver)
-    : DocumentService(*render_frame_host, std::move(receiver)) {}
+    HelpFactoryPendingReceiver receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(*render_frame_host, std::move(receiver), key) {}
 
 PdfHelpBubbleHandlerFactory::~PdfHelpBubbleHandlerFactory() = default;
 

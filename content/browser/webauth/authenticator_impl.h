@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/self_deleting.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,6 +34,12 @@ class CONTENT_EXPORT AuthenticatorImpl
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
       std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl);
 
+  AuthenticatorImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
+      std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl,
+      base::SelfDeletingPassKey key);
+
   AuthenticatorImpl(const AuthenticatorImpl&) = delete;
   AuthenticatorImpl& operator=(const AuthenticatorImpl&) = delete;
 
@@ -45,10 +52,6 @@ class CONTENT_EXPORT AuthenticatorImpl
   friend class AuthenticatorImplTest;
   friend class AuthenticatorImplRequestDelegateTest;
 
-  AuthenticatorImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
-      std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl);
   ~AuthenticatorImpl() override;
 
   // mojom::Authenticator

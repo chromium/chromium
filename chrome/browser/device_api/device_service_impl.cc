@@ -11,6 +11,7 @@
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/self_deleting.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -180,8 +181,9 @@ bool IsAllowedByContentSettings(content::RenderFrameHost& host,
 DeviceServiceImpl::DeviceServiceImpl(
     content::RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
-    std::unique_ptr<DeviceAttributeApi> device_attribute_api)
-    : DocumentService(host, std::move(receiver)),
+    std::unique_ptr<DeviceAttributeApi> device_attribute_api,
+    base::SelfDeletingPassKey key)
+    : DocumentService(host, std::move(receiver), key),
       device_attribute_api_(std::move(device_attribute_api)) {
   Profile* const profile = GetProfile(host);
   pref_change_registrar_.Init(profile->GetPrefs());
@@ -232,8 +234,8 @@ void DeviceServiceImpl::Create(
   }
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See DocumentService for details.
-  new DeviceServiceImpl(*host, std::move(receiver),
-                        std::move(device_attribute_api));
+  base::MakeSelfDeleting<DeviceServiceImpl>(*host, std::move(receiver),
+                                            std::move(device_attribute_api));
 }
 
 // static

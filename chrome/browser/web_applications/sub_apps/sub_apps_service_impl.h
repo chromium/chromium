@@ -74,9 +74,12 @@ class SubAppsServiceImpl
   static constexpr char kSubAppsUninstallNotificationId[] =
       "sub_apps_uninstall_notification";
 
+  SubAppsServiceImpl(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::SubAppsService> receiver,
+      base::SelfDeletingPassKey key);
   SubAppsServiceImpl(const SubAppsServiceImpl&) = delete;
   SubAppsServiceImpl& operator=(const SubAppsServiceImpl&) = delete;
-  ~SubAppsServiceImpl() override;
 
   // We only want to create this object when the Browser* associated with the
   // WebContents is an Isolated Web App and when the RFH is the main frame.
@@ -140,9 +143,7 @@ class SubAppsServiceImpl
 
   WebAppProvider& provider() const;
 
-  SubAppsServiceImpl(
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::SubAppsService> receiver);
+  ~SubAppsServiceImpl() override;
 
   int next_add_call_id_ = 0;
   std::map<int, AddCallInfo> add_call_info_;

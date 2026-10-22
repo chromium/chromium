@@ -22,15 +22,16 @@ void StubSecurePaymentConfirmationService::Create(
   // StubSecurePaymentConfirmationService owns itself. It self-destructs when
   // the RenderFrameHost navigates or is deleted. See DocumentService for
   // details.
-  new StubSecurePaymentConfirmationService(*render_frame_host,
-                                           std::move(receiver));
+  base::MakeSelfDeleting<StubSecurePaymentConfirmationService>(
+      *render_frame_host, std::move(receiver));
 }
 
 StubSecurePaymentConfirmationService::StubSecurePaymentConfirmationService(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
-        receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
+        receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       authenticator_common_impl_(std::make_unique<AuthenticatorCommonImpl>(
           &render_frame_host,
           // The real SecurePaymentConfirmationService uses an

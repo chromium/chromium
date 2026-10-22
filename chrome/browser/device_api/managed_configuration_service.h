@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/self_deleting.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -28,11 +29,15 @@ class ManagedConfigurationServiceImpl
       mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
           receiver);
 
+  ManagedConfigurationServiceImpl(
+      content::RenderFrameHost& host,
+      mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver,
+      base::SelfDeletingPassKey key);
+
   ManagedConfigurationServiceImpl(const ManagedConfigurationServiceImpl&) =
       delete;
   ManagedConfigurationServiceImpl& operator=(
       const ManagedConfigurationServiceImpl&) = delete;
-  ~ManagedConfigurationServiceImpl() override;
 
   // blink::mojom::ManagedConfigurationService:
   void GetManagedConfiguration(
@@ -46,10 +51,7 @@ class ManagedConfigurationServiceImpl
   void OnManagedConfigurationChanged() override;
 
  private:
-  ManagedConfigurationServiceImpl(
-      content::RenderFrameHost& host,
-      mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
-          receiver);
+  ~ManagedConfigurationServiceImpl() override;
 
   ManagedConfigurationAPI* managed_configuration_api();
 

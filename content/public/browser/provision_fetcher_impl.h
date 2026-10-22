@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
@@ -32,6 +33,12 @@ class CONTENT_EXPORT ProvisionFetcherImpl final
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver);
 
+  ProvisionFetcherImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver,
+      std::unique_ptr<media::ProvisionFetcher> provision_fetcher,
+      base::SelfDeletingPassKey key);
+
   ProvisionFetcherImpl(const ProvisionFetcherImpl&) = delete;
   ProvisionFetcherImpl& operator=(const ProvisionFetcherImpl&) = delete;
 
@@ -41,10 +48,6 @@ class CONTENT_EXPORT ProvisionFetcherImpl final
                 RetrieveCallback callback) final;
 
  private:
-  ProvisionFetcherImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver,
-      std::unique_ptr<media::ProvisionFetcher> provision_fetcher);
   ~ProvisionFetcherImpl() override;
 
   // Callback for media::ProvisionFetcher::Retrieve().

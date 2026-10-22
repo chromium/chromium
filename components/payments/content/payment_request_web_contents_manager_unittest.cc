@@ -44,7 +44,8 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
 
     // PaymentRequest is a DocumentService, whose lifetime is managed by the
     // RenderFrameHost passed into the delegate.
-    return new PaymentRequest(std::move(delegate), std::move(receiver));
+    return base::MakeSelfDeleting<PaymentRequest>(std::move(delegate),
+                                                  std::move(receiver));
   }
 
   // The PaymentRequestWebContentsManager under test.

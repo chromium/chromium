@@ -69,9 +69,9 @@ void CreateMediaDrmStorage(
 
   // The object will be deleted on connection error, or when the frame navigates
   // away.
-  new cdm::MediaDrmStorageImpl(*render_frame_host, pref_service,
-                               base::BindRepeating(&CreateOriginId),
-                               std::move(receiver));
+  base::MakeSelfDeleting<cdm::MediaDrmStorageImpl>(
+      *render_frame_host, pref_service, base::BindRepeating(&CreateOriginId),
+      std::move(receiver));
 }
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 

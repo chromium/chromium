@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -55,9 +56,22 @@ class TextDetectionImpl
       scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr,
       mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver);
 
+  TextDetectionImpl(
+      content::RenderFrameHost& render_frame_host,
+      Profile* profile,
+      mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver,
+      base::SelfDeletingPassKey key);
+
+  // Used only in tests via CreateForTesting() to inject a fake
+  // OpticalCharacterRecognizer.
+  TextDetectionImpl(
+      content::RenderFrameHost& render_frame_host,
+      scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr,
+      mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver,
+      base::SelfDeletingPassKey key);
+
   TextDetectionImpl(const TextDetectionImpl&) = delete;
   TextDetectionImpl& operator=(const TextDetectionImpl&) = delete;
-  ~TextDetectionImpl() override;
 
   // shape_detection::mojom::TextDetection:
   void Detect(const SkBitmap& bitmap, DetectCallback callback) override;
@@ -66,17 +80,7 @@ class TextDetectionImpl
   void SimulateOcrInitializationForTesting(bool successful);
 
  private:
-  TextDetectionImpl(
-      content::RenderFrameHost& render_frame_host,
-      Profile* profile,
-      mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver);
-
-  // Used only in tests via CreateForTesting() to inject a fake
-  // OpticalCharacterRecognizer.
-  TextDetectionImpl(
-      content::RenderFrameHost& render_frame_host,
-      scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr,
-      mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver);
+  ~TextDetectionImpl() override;
 
   void DispatchOcrRequest(const SkBitmap& bitmap, DetectCallback callback);
   void OnOcrInitialized(bool successful);

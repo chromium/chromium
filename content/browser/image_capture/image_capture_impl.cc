@@ -92,8 +92,9 @@ void ImageCaptureImpl::Create(
   // ImageCaptureImpl owns itself. It will self-destruct when a Mojo interface
   // error occurs, the RenderFrameHost is deleted, or the RenderFrameHost
   // navigates to a new document.
-  new ImageCaptureImpl(*render_frame_host, std::move(receiver),
-                       skip_connecting_to_media_stream_manager_for_testing);
+  base::MakeSelfDeleting<ImageCaptureImpl>(
+      *render_frame_host, std::move(receiver),
+      skip_connecting_to_media_stream_manager_for_testing);
 }
 
 void ImageCaptureImpl::GetPhotoState(const std::string& source_id,
@@ -163,8 +164,9 @@ void ImageCaptureImpl::TakePhoto(const std::string& source_id,
 ImageCaptureImpl::ImageCaptureImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<media::mojom::ImageCapture> receiver,
-    bool skip_connecting_to_media_stream_manager_for_testing)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    bool skip_connecting_to_media_stream_manager_for_testing,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       skip_connecting_to_media_stream_manager_for_testing_(
           skip_connecting_to_media_stream_manager_for_testing) {}
 

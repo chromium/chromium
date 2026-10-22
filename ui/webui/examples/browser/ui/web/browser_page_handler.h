@@ -6,6 +6,7 @@
 #define UI_WEBUI_EXAMPLES_BROWSER_UI_WEB_BROWSER_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/self_deleting.h"
 #include "base/values.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -18,14 +19,19 @@ class Browser;
 class BrowserPageHandler
     : public content::DocumentService<webui_examples::mojom::PageHandler> {
  public:
-  BrowserPageHandler(const BrowserPageHandler&) = delete;
-  BrowserPageHandler& operator=(const BrowserPageHandler&) = delete;
-  ~BrowserPageHandler() override;
-
   static BrowserPageHandler* Create(
       Browser* webui_controller,
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver);
+
+  BrowserPageHandler(
+      Browser* webui_controller,
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver,
+      base::SelfDeletingPassKey key);
+
+  BrowserPageHandler(const BrowserPageHandler&) = delete;
+  BrowserPageHandler& operator=(const BrowserPageHandler&) = delete;
 
   // webui_examples::mojom::PageHandler
   void Navigate(const base::UnguessableToken& guest_instance_id,
@@ -38,10 +44,7 @@ class BrowserPageHandler
   void WebUIControllerDestroyed();
 
  private:
-  BrowserPageHandler(
-      Browser* webui_controller,
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver);
+  ~BrowserPageHandler() override;
 
   Browser* webui_controller() { return webui_controller_; }
 

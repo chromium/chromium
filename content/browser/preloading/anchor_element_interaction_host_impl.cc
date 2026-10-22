@@ -125,8 +125,11 @@ void MaybeWarmUpServiceWorkerOnPointerHover(
 
 AnchorElementInteractionHostImpl::AnchorElementInteractionHostImpl(
     RenderFrameHost& frame_host,
-    mojo::PendingReceiver<blink::mojom::AnchorElementInteractionHost> receiver)
-    : DocumentService(frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::AnchorElementInteractionHost> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(frame_host, std::move(receiver), key) {}
+
+AnchorElementInteractionHostImpl::~AnchorElementInteractionHostImpl() = default;
 
 // static
 void AnchorElementInteractionHostImpl::Create(
@@ -135,7 +138,8 @@ void AnchorElementInteractionHostImpl::Create(
         receiver) {
   CHECK(frame_host);
 
-  new AnchorElementInteractionHostImpl(*frame_host, std::move(receiver));
+  base::MakeSelfDeleting<AnchorElementInteractionHostImpl>(*frame_host,
+                                                           std::move(receiver));
 }
 
 void AnchorElementInteractionHostImpl::OnPointerDown(const GURL& url,

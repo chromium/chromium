@@ -46,8 +46,9 @@ std::unique_ptr<NativeWinAppFetcher> CreateNativeWinAppFetcher() {
 
 InstalledAppProviderImpl::InstalledAppProviderImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::InstalledAppProvider> pending_receiver)
-    : DocumentService(render_frame_host, std::move(pending_receiver)) {
+    mojo::PendingReceiver<blink::mojom::InstalledAppProvider> pending_receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(pending_receiver), key) {
 #if BUILDFLAG(IS_WIN)
   native_win_app_fetcher_factory_ =
       base::BindRepeating(&CreateNativeWinAppFetcher);
@@ -180,7 +181,7 @@ void InstalledAppProviderImpl::Create(
 
   // The object is bound to the lifetime of |host|'s current document and the
   // mojo connection. See DocumentService for details.
-  new InstalledAppProviderImpl(host, std::move(receiver));
+  base::MakeSelfDeleting<InstalledAppProviderImpl>(host, std::move(receiver));
 }
 
 // static
@@ -188,7 +189,8 @@ InstalledAppProviderImpl* InstalledAppProviderImpl::CreateForTesting(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver) {
   CHECK_IS_TEST();
-  return new InstalledAppProviderImpl(render_frame_host, std::move(receiver));
+  return base::MakeSelfDeleting<InstalledAppProviderImpl>(render_frame_host,
+                                                          std::move(receiver));
 }
 
 }  // namespace content

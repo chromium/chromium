@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/self_deleting.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
@@ -32,13 +33,15 @@ ManagedConfigurationServiceImpl* ManagedConfigurationServiceImpl::Create(
 
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See DocumentService for details.
-  return new ManagedConfigurationServiceImpl(*host, std::move(receiver));
+  return base::MakeSelfDeleting<ManagedConfigurationServiceImpl>(
+      *host, std::move(receiver));
 }
 
 ManagedConfigurationServiceImpl::ManagedConfigurationServiceImpl(
     content::RenderFrameHost& host,
-    mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver)
-    : DocumentService(host, std::move(receiver)) {
+    mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(host, std::move(receiver), key) {
   managed_configuration_api()->AddObserver(this);
 }
 

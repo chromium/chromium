@@ -129,8 +129,9 @@ WebOTPService::WebOTPService(
     SmsFetcher* fetcher,
     OriginList origin_list,
     RenderFrameHost& host,
-    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
-    : DocumentService(host, std::move(receiver)),
+    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(host, std::move(receiver), key),
       fetcher_(fetcher),
       origin_list_(std::move(origin_list)),
       timeout_timer_(FROM_HERE,
@@ -158,8 +159,8 @@ bool WebOTPService::Create(
   // WebOTPService owns itself. It will self-destruct when a mojo interface
   // error occurs, the RenderFrameHost is deleted, or the RenderFrameHost
   // navigates to a new document.
-  new WebOTPService(fetcher, std::move(origin_list), *host,
-                    std::move(receiver));
+  base::MakeSelfDeleting<WebOTPService>(fetcher, std::move(origin_list), *host,
+                                        std::move(receiver));
   static_cast<RenderFrameHostImpl*>(host)
       ->OnBackForwardCacheDisablingStickyFeatureUsed(
           blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService);
@@ -172,8 +173,8 @@ WebOTPService& WebOTPService::CreateForTesting(
     OriginList origins,
     RenderFrameHost& frame_host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
-  return *new WebOTPService(fetcher, std::move(origins), frame_host,
-                            std::move(receiver));
+  return *base::MakeSelfDeleting<WebOTPService>(
+      fetcher, std::move(origins), frame_host, std::move(receiver));
 }
 
 void WebOTPService::WillBeDestroyed(DocumentServiceDestructionReason) {

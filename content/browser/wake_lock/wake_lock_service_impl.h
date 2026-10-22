@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WAKE_LOCK_WAKE_LOCK_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_WAKE_LOCK_WAKE_LOCK_SERVICE_IMPL_H_
 
+#include "base/memory/self_deleting.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -18,6 +19,10 @@ class CONTENT_EXPORT WakeLockServiceImpl final
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::WakeLockService>);
 
+  WakeLockServiceImpl(RenderFrameHost&,
+                      mojo::PendingReceiver<blink::mojom::WakeLockService>,
+                      base::SelfDeletingPassKey key);
+
   WakeLockServiceImpl(const WakeLockServiceImpl&) = delete;
   WakeLockServiceImpl& operator=(const WakeLockServiceImpl&) = delete;
 
@@ -28,8 +33,7 @@ class CONTENT_EXPORT WakeLockServiceImpl final
                    mojo::PendingReceiver<device::mojom::WakeLock>) final;
 
  private:
-  WakeLockServiceImpl(RenderFrameHost&,
-                      mojo::PendingReceiver<blink::mojom::WakeLockService>);
+  ~WakeLockServiceImpl() override = default;
 };
 
 }  // namespace content

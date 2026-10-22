@@ -24,6 +24,11 @@ class KeyboardLockServiceImpl final
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver);
 
+  KeyboardLockServiceImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver,
+      base::SelfDeletingPassKey key);
+
   // blink::mojom::KeyboardLockService implementation.
   void RequestKeyboardLock(const std::vector<std::string>& key_codes,
                            RequestKeyboardLockCallback callback) override;
@@ -31,10 +36,6 @@ class KeyboardLockServiceImpl final
   void GetKeyboardLayoutMap(GetKeyboardLayoutMapCallback callback) override;
 
  private:
-  KeyboardLockServiceImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver);
-
   // |this| can only be destroyed by DocumentService.
   ~KeyboardLockServiceImpl() override;
 

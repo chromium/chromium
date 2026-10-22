@@ -16,7 +16,8 @@ void WakeLockServiceImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::WakeLockService> receiver) {
   CHECK(render_frame_host);
-  new WakeLockServiceImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<WakeLockServiceImpl>(*render_frame_host,
+                                              std::move(receiver));
 }
 
 void WakeLockServiceImpl::GetWakeLock(
@@ -51,7 +52,8 @@ void WakeLockServiceImpl::GetWakeLock(
 
 WakeLockServiceImpl::WakeLockServiceImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::WakeLockService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::WakeLockService> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {}
 
 }  // namespace content

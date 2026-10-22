@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "content/public/browser/document_service.h"
@@ -45,16 +46,18 @@ class LiveCaptionUnavailabilityNotifier
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
           receiver);
 
+  LiveCaptionUnavailabilityNotifier(
+      content::RenderFrameHost& frame_host,
+      mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
+          pending_receiver,
+      base::SelfDeletingPassKey key);
+
   // media::mojom::MediaFoundationRendererNotifier:
   void MediaFoundationRendererCreated(
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererObserver>
           observer) override;
 
  private:
-  LiveCaptionUnavailabilityNotifier(
-      content::RenderFrameHost& frame_host,
-      mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
-          pending_receiver);
   ~LiveCaptionUnavailabilityNotifier() override;
 
   friend class LiveCaptionUnavailabilityNotifierTest;

@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/self_deleting.h"
 #include "content/browser/smart_card/smart_card_histograms.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
@@ -32,16 +33,16 @@ class CONTENT_EXPORT SmartCardService
       public device::mojom::SmartCardConnectionWatcher,
       public SmartCardDelegate::PermissionObserver {
  public:
-  explicit SmartCardService(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::SmartCardService> receiver,
-      mojo::PendingRemote<device::mojom::SmartCardContextFactory>
-          context_factory);
-  ~SmartCardService() override;
-
   // Use this when creating from a document.
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::SmartCardService>);
+
+  SmartCardService(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::SmartCardService> receiver,
+      mojo::PendingRemote<device::mojom::SmartCardContextFactory>
+          context_factory,
+      base::SelfDeletingPassKey key);
 
   // blink::mojom::SmartCardService overrides:
   void CreateContext(CreateContextCallback callback) override;
@@ -65,6 +66,7 @@ class CONTENT_EXPORT SmartCardService
   void OnPermissionRevoked(const url::Origin& origin) override;
 
  private:
+  ~SmartCardService() override;
   void OnContextCreated(CreateContextCallback callback,
                         ::device::mojom::SmartCardCreateContextResultPtr);
   void OnReaderPermissionResult(

@@ -65,7 +65,8 @@ void HapticsServiceImpl::Create(
     return;
   }
 
-  new HapticsServiceImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<HapticsServiceImpl>(*render_frame_host,
+                                             std::move(receiver));
 }
 
 // static
@@ -76,8 +77,9 @@ void HapticsServiceImpl::SetHapticsManagerFactoryForTesting(
 
 HapticsServiceImpl::HapticsServiceImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::HapticsService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    mojo::PendingReceiver<blink::mojom::HapticsService> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       haptics_manager_(CreateHapticsManager()) {}
 
 HapticsServiceImpl::~HapticsServiceImpl() = default;

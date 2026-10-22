@@ -62,8 +62,9 @@ void ContactsManagerImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ContactsManager> receiver) {
   CHECK(render_frame_host);
-  new ContactsManagerImpl(*render_frame_host, std::move(receiver),
-                          CreateProvider(*render_frame_host));
+  base::MakeSelfDeleting<ContactsManagerImpl>(
+      *render_frame_host, std::move(receiver),
+      CreateProvider(*render_frame_host));
 }
 
 // static
@@ -72,15 +73,16 @@ ContactsManagerImpl* ContactsManagerImpl::CreateForTesting(
     mojo::PendingReceiver<blink::mojom::ContactsManager> receiver,
     std::unique_ptr<ContactsProvider> provider) {
   CHECK(render_frame_host);
-  return new ContactsManagerImpl(*render_frame_host, std::move(receiver),
-                                 std::move(provider));
+  return base::MakeSelfDeleting<ContactsManagerImpl>(
+      *render_frame_host, std::move(receiver), std::move(provider));
 }
 
 ContactsManagerImpl::ContactsManagerImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::ContactsManager> receiver,
-    std::unique_ptr<ContactsProvider> provider)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    std::unique_ptr<ContactsProvider> provider,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       contacts_provider_(std::move(provider)) {
   CHECK(!render_frame_host.IsInLifecycleState(
       RenderFrameHost::LifecycleState::kPrerendering));

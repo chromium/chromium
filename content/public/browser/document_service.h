@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/memory/self_deleting.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/document_service_internal.h"
@@ -67,34 +68,13 @@ enum class DocumentServiceDestructionReason : int {
 // There are very few circumstances where a Mojo interface needs to be reused
 // after a cross-document navigation.
 template <typename Interface>
-class DocumentService : public Interface, public internal::DocumentServiceBase {
+class DocumentService : public Interface,
+                        public internal::DocumentServiceBase,
+                        public base::SelfDeleting {
  public:
-  DocumentService(RenderFrameHost& render_frame_host,
-                  mojo::PendingReceiver<Interface> pending_receiver)
-      : DocumentServiceBase(render_frame_host),
-        receiver_(this, std::move(pending_receiver)) {
-    // This is a developer error; it does not make sense to bind a
-    // DocumentService with a null PendingReceiver.
-    DUMP_WILL_BE_CHECK(receiver_.is_bound());
-    // |this| owns |receiver_|, so base::Unretained is safe.
-    receiver_.set_disconnect_handler(base::BindOnce(
-        [](DocumentService* document_service) {
-          document_service->WillBeDestroyed(
-              DocumentServiceDestructionReason::kConnectionTerminated);
-          document_service->ResetAndDeleteThis();
-        },
-        base::Unretained(this)));
-  }
-
-  ~DocumentService() override {
-    // To avoid potential destruction order issues, subclasses must use one of
-    // the *AndDeleteThis() methods below instead of using `delete this`.
-    DUMP_WILL_BE_CHECK(!receiver_.is_bound());
-  }
-
   // Subclasses may end their lifetime early by calling this method; `delete
   // this` is not permitted for a `DocumentService` and will trigger the
-  // `DCHECK` in the destructor above.
+  // `DCHECK` in the destructor below.
   //
   // If there is a specific reason for self-deletion, one of the following may
   // be more appropriate instead:
@@ -123,6 +103,31 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
   }
 
  protected:
+  DocumentService(RenderFrameHost& render_frame_host,
+                  mojo::PendingReceiver<Interface> pending_receiver,
+                  base::SelfDeletingPassKey key)
+      : DocumentServiceBase(render_frame_host),
+        base::SelfDeleting(key),
+        receiver_(this, std::move(pending_receiver)) {
+    // This is a developer error; it does not make sense to bind a
+    // DocumentService with a null PendingReceiver.
+    DUMP_WILL_BE_CHECK(receiver_.is_bound());
+    // `this` owns `receiver_`, so base::Unretained is safe.
+    receiver_.set_disconnect_handler(base::BindOnce(
+        [](DocumentService* document_service) {
+          document_service->WillBeDestroyed(
+              DocumentServiceDestructionReason::kConnectionTerminated);
+          document_service->ResetAndDeleteThis();
+        },
+        base::Unretained(this)));
+  }
+
+  ~DocumentService() override {
+    // To avoid potential destruction order issues, subclasses must use one of
+    // the *AndDeleteThis() methods above instead of using `delete this`.
+    DUMP_WILL_BE_CHECK(!receiver_.is_bound());
+  }
+
   // `this` is promptly deleted if `render_frame_host_` commits a cross-document
   // navigation, so it is always safe to simply call `GetLastCommittedOrigin()`
   // and `GetLastCommittedURL()` directly.

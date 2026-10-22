@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_STORAGE_ACCESS_STORAGE_ACCESS_HANDLE_H_
 #define CONTENT_BROWSER_STORAGE_ACCESS_STORAGE_ACCESS_HANDLE_H_
 
+#include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -30,6 +31,11 @@ class StorageAccessHandle
       RenderFrameHost* host,
       mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver);
 
+  StorageAccessHandle(
+      RenderFrameHost& host,
+      mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver,
+      base::SelfDeletingPassKey key);
+
   StorageAccessHandle(const StorageAccessHandle&) = delete;
   StorageAccessHandle& operator=(const StorageAccessHandle&) = delete;
 
@@ -52,9 +58,6 @@ class StorageAccessHandle
       override;
 
  private:
-  StorageAccessHandle(
-      RenderFrameHost& host,
-      mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver);
   ~StorageAccessHandle() override;
 
   void EstimateImpl(

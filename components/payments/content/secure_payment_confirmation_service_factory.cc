@@ -54,7 +54,7 @@ void CreateSecurePaymentConfirmationService(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new SecurePaymentConfirmationService(
+  base::MakeSelfDeleting<SecurePaymentConfirmationService>(
       *render_frame_host, std::move(receiver),
       webdata_services::WebDataServiceWrapperFactory::
           GetWebPaymentsWebDataServiceForBrowserContext(

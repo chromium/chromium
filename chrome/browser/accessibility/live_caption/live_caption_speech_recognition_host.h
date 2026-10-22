@@ -12,6 +12,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -59,6 +60,12 @@ class LiveCaptionSpeechRecognitionHost
       mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
           receiver);
 
+  LiveCaptionSpeechRecognitionHost(
+      content::RenderFrameHost& frame_host,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
+          pending_receiver,
+      base::SelfDeletingPassKey key);
+
   // media::mojom::SpeechRecognitionRecognizerClient:
   void OnSpeechRecognitionRecognitionEvent(
       const media::SpeechRecognitionResult& result,
@@ -77,10 +84,6 @@ class LiveCaptionSpeechRecognitionHost
 #endif
 
  private:
-  LiveCaptionSpeechRecognitionHost(
-      content::RenderFrameHost& frame_host,
-      mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
-          pending_receiver);
   ~LiveCaptionSpeechRecognitionHost() override;
   void OnTranslationCallback(const std::string& cached_translation,
                              const std::string& original_transcription,

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/self_deleting.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/document_service.h"
@@ -37,6 +38,11 @@ class CdmDocumentServiceImpl final
   static void Create(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<media::mojom::CdmDocumentService> receiver);
+
+  CdmDocumentServiceImpl(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<media::mojom::CdmDocumentService> receiver,
+      base::SelfDeletingPassKey key);
 
   // media::mojom::CdmDocumentService implementation.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -69,10 +75,6 @@ class CdmDocumentServiceImpl final
 #endif  // BUILDFLAG(IS_WIN)
 
  private:
-  CdmDocumentServiceImpl(
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<media::mojom::CdmDocumentService> receiver);
-
   // |this| can only be destructed as a DocumentService.
   ~CdmDocumentServiceImpl() final;
 

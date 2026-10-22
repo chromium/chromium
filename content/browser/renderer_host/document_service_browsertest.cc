@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(DocumentServicePrerenderingBrowserTest,
 
   mojo::Remote<mojom::Echo> echo_remote;
   bool echo_deleted = false;
-  new DocumentServiceEchoImpl(
+  base::MakeSelfDeleting<DocumentServiceEchoImpl>(
       *prerendered_frame_host, echo_remote.BindNewPipeAndPassReceiver(),
       base::BindOnce([](bool* deleted) { *deleted = true; }, &echo_deleted));
 
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(DocumentServiceBFCacheBrowserTest, DocumentService) {
 
   mojo::Remote<mojom::Echo> echo_remote;
   bool echo_deleted = false;
-  new DocumentServiceEchoImpl(
+  base::MakeSelfDeleting<DocumentServiceEchoImpl>(
       *rfh_a, echo_remote.BindNewPipeAndPassReceiver(),
       base::BindOnce([](bool* deleted) { *deleted = true; }, &echo_deleted));
 

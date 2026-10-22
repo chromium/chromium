@@ -15,6 +15,7 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
+#include "base/memory/self_deleting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -131,16 +132,19 @@ void LiveCaptionSpeechRecognitionHost::Create(
   CHECK(frame_host);
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See DocumentService for details.
-  new LiveCaptionSpeechRecognitionHost(*frame_host, std::move(receiver));
+  base::MakeSelfDeleting<LiveCaptionSpeechRecognitionHost>(*frame_host,
+                                                           std::move(receiver));
 }
 
 LiveCaptionSpeechRecognitionHost::LiveCaptionSpeechRecognitionHost(
     content::RenderFrameHost& frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
-        receiver)
+        receiver,
+    base::SelfDeletingPassKey key)
     : DocumentService<media::mojom::SpeechRecognitionRecognizerClient>(
           frame_host,
-          std::move(receiver)) {
+          std::move(receiver),
+          key) {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return;

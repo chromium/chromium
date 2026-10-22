@@ -54,8 +54,8 @@ class SecurePaymentConfirmationService
       mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver,
       scoped_refptr<WebPaymentsWebDataService> web_data_service,
       std::unique_ptr<webauthn::InternalAuthenticator> authenticator,
-      std::string browser_bound_key_store_keychain_access_group);
-  ~SecurePaymentConfirmationService() override;
+      std::string browser_bound_key_store_keychain_access_group,
+      base::SelfDeletingPassKey key);
 
   SecurePaymentConfirmationService(const SecurePaymentConfirmationService&) =
       delete;
@@ -88,6 +88,8 @@ class SecurePaymentConfirmationService
       scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store);
 
  private:
+  ~SecurePaymentConfirmationService() override;
+
   // Called after the RpId check has been completed, to continue the process of
   // storing the payment credential.
   void ContinueStorePaymentCredentialAfterRpIdCheck(

@@ -26,6 +26,9 @@ class CONTENT_EXPORT EyeDropperChooserImpl final
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::EyeDropperChooser>);
 
+  EyeDropperChooserImpl(RenderFrameHost&,
+                        mojo::PendingReceiver<blink::mojom::EyeDropperChooser>,
+                        base::SelfDeletingPassKey key);
   EyeDropperChooserImpl(const EyeDropperChooserImpl&) = delete;
   EyeDropperChooserImpl& operator=(const EyeDropperChooserImpl&) = delete;
 
@@ -37,9 +40,6 @@ class CONTENT_EXPORT EyeDropperChooserImpl final
   void ColorSelectionCanceled() override;
 
  private:
-  EyeDropperChooserImpl(RenderFrameHost&,
-                        mojo::PendingReceiver<blink::mojom::EyeDropperChooser>);
-
   ~EyeDropperChooserImpl() override;
 
   // Clears this instance as its WebContents' active eye dropper, if it is the

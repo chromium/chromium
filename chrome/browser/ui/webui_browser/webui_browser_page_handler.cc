@@ -52,17 +52,20 @@ class WebUIBrowserGuestHandler
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<webui_browser::mojom::GuestHandler> receiver,
       content::WebContents* web_contents,
-      WebUIBrowserWindow* window)
+      WebUIBrowserWindow* window,
+      base::SelfDeletingPassKey key)
       : content::DocumentService<webui_browser::mojom::GuestHandler>(
             render_frame_host,
-            std::move(receiver)),
+            std::move(receiver),
+            key),
         window_(window),
         web_contents_(web_contents->GetWeakPtr()) {}
   WebUIBrowserGuestHandler(const WebUIBrowserGuestHandler&) = delete;
   WebUIBrowserGuestHandler& operator=(const WebUIBrowserGuestHandler&) = delete;
-  ~WebUIBrowserGuestHandler() override = default;
 
  private:
+  ~WebUIBrowserGuestHandler() override = default;
+
   // webui_browser::mojom::GuestHandler
   void Navigate(const GURL& src) override {
     content::NavigationController::LoadURLParams load_url_params(src);
@@ -181,8 +184,8 @@ void WebUIBrowserPageHandler::CreateForRenderFrameHost(
     mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver,
     WebUIBrowserUI* controller) {
   // The RenderFrameHost takes ownership of this object via the DocumentService.
-  new WebUIBrowserPageHandler(render_frame_host, std::move(receiver),
-                              controller);
+  base::MakeSelfDeleting<WebUIBrowserPageHandler>(
+      render_frame_host, std::move(receiver), controller);
 }
 
 void WebUIBrowserPageHandler::GetGuestIdForTabId(
@@ -206,8 +209,9 @@ void WebUIBrowserPageHandler::GetGuestIdForTabId(
   }
 
   // The RenderFrameHost takes ownership of this object via the DocumentService.
-  new WebUIBrowserGuestHandler(render_frame_host(), std::move(receiver),
-                               tab_contents, GetBrowserWindow());
+  base::MakeSelfDeleting<WebUIBrowserGuestHandler>(
+      render_frame_host(), std::move(receiver), tab_contents,
+      GetBrowserWindow());
 
   surface_embed::SurfaceEmbedHandle::CreateForWebContents(tab_contents);
   auto* embedded_handle =
@@ -337,10 +341,12 @@ void WebUIBrowserPageHandler::GetTabStripInset(
 WebUIBrowserPageHandler::WebUIBrowserPageHandler(
     content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver,
-    WebUIBrowserUI* controller)
+    WebUIBrowserUI* controller,
+    base::SelfDeletingPassKey key)
     : content::DocumentService<webui_browser::mojom::PageHandler>(
           render_frame_host,
-          std::move(receiver)),
+          std::move(receiver),
+          key),
       controller_(controller->GetWeakPtr()) {}
 
 BrowserWindowInterface* WebUIBrowserPageHandler::GetBrowser() {

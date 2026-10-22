@@ -30,15 +30,19 @@ class RenderFrameHost;
 class CONTENT_EXPORT AudioContextManagerImpl final
     : public content::DocumentService<blink::mojom::AudioContextManager> {
  public:
-  AudioContextManagerImpl(const AudioContextManagerImpl&) = delete;
-  AudioContextManagerImpl& operator=(const AudioContextManagerImpl&) = delete;
-
   static void Create(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
   static AudioContextManagerImpl& CreateForTesting(
       RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
+
+  AudioContextManagerImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver,
+      base::SelfDeletingPassKey key);
+  AudioContextManagerImpl(const AudioContextManagerImpl&) = delete;
+  AudioContextManagerImpl& operator=(const AudioContextManagerImpl&) = delete;
 
   // blink::mojom::AudioContextManager implementations.
   // Notify observers that audible audio started/stopped playing from an
@@ -54,9 +58,6 @@ class CONTENT_EXPORT AudioContextManagerImpl final
   void set_clock_for_testing(base::TickClock* clock) { clock_ = clock; }
 
  private:
-  explicit AudioContextManagerImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
   ~AudioContextManagerImpl() override;
 
   FRIEND_TEST_ALL_PREFIXES(AudioContextManagerImplTest,

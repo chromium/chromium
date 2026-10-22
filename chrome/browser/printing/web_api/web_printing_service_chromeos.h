@@ -44,8 +44,8 @@ class WebPrintingServiceChromeOS
   WebPrintingServiceChromeOS(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver,
-      const std::string& app_id);
-  ~WebPrintingServiceChromeOS() override;
+      const std::string& app_id,
+      base::SelfDeletingPassKey key);
 
   // blink::mojom::WebPrintingService:
   void GetPrinters(GetPrintersCallback callback) override;
@@ -58,6 +58,8 @@ class WebPrintingServiceChromeOS
 
  private:
   using PrinterId = base::StrongAlias<class PrinterId, std::string>;
+
+  ~WebPrintingServiceChromeOS() override;
 
   void OnPermissionDecidedForGetPrinters(
       GetPrintersCallback,

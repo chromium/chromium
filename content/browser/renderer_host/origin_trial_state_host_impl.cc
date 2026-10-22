@@ -18,8 +18,9 @@ namespace content {
 
 OriginTrialStateHostImpl::OriginTrialStateHostImpl(
     RenderFrameHost& host,
-    mojo::PendingReceiver<blink::mojom::OriginTrialStateHost> receiver)
-    : DocumentService(host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::OriginTrialStateHost> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(host, std::move(receiver), key) {}
 
 OriginTrialStateHostImpl::~OriginTrialStateHostImpl() = default;
 
@@ -30,7 +31,7 @@ void OriginTrialStateHostImpl::Create(
   CHECK(host);
   // The object is bound to the lifetime of `render_frame_host` and the mojo
   // connection. See DocumentService for details.
-  new OriginTrialStateHostImpl(*host, std::move(receiver));
+  base::MakeSelfDeleting<OriginTrialStateHostImpl>(*host, std::move(receiver));
 }
 
 void OriginTrialStateHostImpl::ApplyFeatureDiffForOriginTrial(

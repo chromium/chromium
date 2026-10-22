@@ -35,9 +35,9 @@ void ApplicationMediaInfoManager::Create(
   // The created ApplicationMediaInfoManager will be deleted on connection
   // error, or when the frame navigates away. See DocumentService for
   // details.
-  new ApplicationMediaInfoManager(*render_frame_host, std::move(receiver),
-                                  std::move(application_session_id),
-                                  mixer_audio_enabled);
+  base::MakeSelfDeleting<ApplicationMediaInfoManager>(
+      *render_frame_host, std::move(receiver),
+      std::move(application_session_id), mixer_audio_enabled);
 }
 
 ApplicationMediaInfoManager& ApplicationMediaInfoManager::CreateForTesting(
@@ -46,7 +46,7 @@ ApplicationMediaInfoManager& ApplicationMediaInfoManager::CreateForTesting(
     bool mixer_audio_enabled,
     mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
         receiver) {
-  return *new ApplicationMediaInfoManager(
+  return *base::MakeSelfDeleting<ApplicationMediaInfoManager>(
       render_frame_host, std::move(receiver), std::move(application_session_id),
       mixer_audio_enabled);
 }
@@ -56,8 +56,9 @@ ApplicationMediaInfoManager::ApplicationMediaInfoManager(
     mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
         receiver,
     std::string application_session_id,
-    bool mixer_audio_enabled)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    bool mixer_audio_enabled,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       application_session_id_(std::move(application_session_id)),
       mixer_audio_enabled_(mixer_audio_enabled),
       renderer_blocked_(false) {

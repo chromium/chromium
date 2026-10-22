@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/hash/hash.h"
+#include "base/memory/self_deleting.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
@@ -141,10 +142,12 @@ NavigationPredictor::AnchorElementData::~AnchorElementData() = default;
 
 NavigationPredictor::NavigationPredictor(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<AnchorElementMetricsHost> receiver)
+    mojo::PendingReceiver<AnchorElementMetricsHost> receiver,
+    base::SelfDeletingPassKey key)
     : content::DocumentService<blink::mojom::AnchorElementMetricsHost>(
           render_frame_host,
-          std::move(receiver)) {
+          std::move(receiver),
+          key) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   // When using content::Page::IsPrimary, bfcache can cause returning a false in
   // the back/forward navigation. So, DCHECK only checks if current page is
@@ -188,7 +191,8 @@ void NavigationPredictor::Create(
 
   // The object is bound to the lifetime of the |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new NavigationPredictor(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<NavigationPredictor>(*render_frame_host,
+                                              std::move(receiver));
 }
 
 NavigationPredictorMetricsDocumentData&

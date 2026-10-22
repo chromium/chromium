@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_OUTPUT_PROTECTION_IMPL_H_
 #define CHROME_BROWSER_MEDIA_OUTPUT_PROTECTION_IMPL_H_
 
+#include "base/memory/self_deleting.h"
 #include "content/public/browser/document_service.h"
 #include "media/mojo/mojom/output_protection.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,16 +26,17 @@ class OutputProtectionImpl final
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<media::mojom::OutputProtection> receiver);
 
+  OutputProtectionImpl(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<media::mojom::OutputProtection> receiver,
+      base::SelfDeletingPassKey key);
+
   // media::mojom::OutputProtection implementation.
   void QueryStatus(QueryStatusCallback callback) final;
   void EnableProtection(uint32_t desired_protection_mask,
                         EnableProtectionCallback callback) final;
 
  private:
-  OutputProtectionImpl(
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<media::mojom::OutputProtection> receiver);
-
   // |this| can only be destructed as a DocumentService.
   ~OutputProtectionImpl() final;
 

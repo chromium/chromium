@@ -17,8 +17,9 @@ namespace content {
 
 LockScreenServiceImpl::LockScreenServiceImpl(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::LockScreenService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    mojo::PendingReceiver<blink::mojom::LockScreenService> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       lock_screen_storage_(LockScreenStorageImpl::GetInstance()) {}
 
 LockScreenServiceImpl::~LockScreenServiceImpl() = default;
@@ -30,7 +31,8 @@ void LockScreenServiceImpl::Create(
   CHECK(render_frame_host);
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new LockScreenServiceImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<LockScreenServiceImpl>(*render_frame_host,
+                                                std::move(receiver));
 }
 
 void LockScreenServiceImpl::GetKeys(GetKeysCallback callback) {

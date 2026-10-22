@@ -34,7 +34,15 @@ class CONTENT_EXPORT InstalledAppProviderImpl
       RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver);
 
+  InstalledAppProviderImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::InstalledAppProvider>
+          pending_receiver,
+      base::SelfDeletingPassKey key);
+
  private:
+  ~InstalledAppProviderImpl() override;
+
   // InstalledAppProvider overrides:
   void FilterInstalledApps(
       std::vector<blink::mojom::RelatedApplicationPtr> related_apps,
@@ -55,12 +63,6 @@ class CONTENT_EXPORT InstalledAppProviderImpl
   void SetNativeWinAppFetcherFactoryForTesting(
       base::RepeatingCallback<std::unique_ptr<NativeWinAppFetcher>()> factory);
 #endif  // BUILDFLAG(IS_WIN)
-
-  explicit InstalledAppProviderImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::InstalledAppProvider>
-          pending_receiver);
-  ~InstalledAppProviderImpl() override;
 
   // Used to test the class directly, be careful to destroy object on tear down.
   static InstalledAppProviderImpl* CreateForTesting(

@@ -245,10 +245,10 @@ class ClipboardHostDocumentHelper
  public:
   ClipboardHostDocumentHelper(
       RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
-      : DocumentService(render_frame_host, std::move(receiver)),
+      mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver,
+      base::SelfDeletingPassKey key)
+      : DocumentService(render_frame_host, std::move(receiver), key),
         impl_(new ClipboardHostImpl(render_frame_host)) {}
-  ~ClipboardHostDocumentHelper() override = default;
 
   void RegisterClipboardListener(
       mojo::PendingRemote<blink::mojom::ClipboardListener> listener) override {
@@ -344,6 +344,8 @@ class ClipboardHostDocumentHelper
 #endif
 
  private:
+  ~ClipboardHostDocumentHelper() override = default;
+
   std::unique_ptr<ClipboardHostImpl> impl_;
 };
 
@@ -368,7 +370,8 @@ void ClipboardHostImpl::Create(
   CHECK(render_frame_host);
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new ClipboardHostDocumentHelper(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<ClipboardHostDocumentHelper>(*render_frame_host,
+                                                      std::move(receiver));
 }
 
 ClipboardHostImpl::~ClipboardHostImpl() {

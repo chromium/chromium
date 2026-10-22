@@ -88,7 +88,8 @@ void CreatePaymentRequest(
   // RenderFrameHost passed in here.
   auto delegate =
       std::make_unique<ChromePaymentRequestDelegate>(render_frame_host);
-  new PaymentRequest(std::move(delegate), std::move(receiver));
+  base::MakeSelfDeleting<PaymentRequest>(std::move(delegate),
+                                         std::move(receiver));
 }
 
 void SetPaymentRequestFactoryForTesting(

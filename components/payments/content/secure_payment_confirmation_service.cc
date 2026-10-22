@@ -66,8 +66,9 @@ SecurePaymentConfirmationService::SecurePaymentConfirmationService(
     mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver,
     scoped_refptr<WebPaymentsWebDataService> web_data_service,
     std::unique_ptr<webauthn::InternalAuthenticator> authenticator,
-    std::string browser_bound_key_store_keychain_access_group)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    std::string browser_bound_key_store_keychain_access_group,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       web_data_service_(web_data_service),
       authenticator_(std::move(authenticator)),
       browser_bound_key_store_keychain_access_group_(

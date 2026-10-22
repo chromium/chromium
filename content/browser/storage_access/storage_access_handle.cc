@@ -58,7 +58,7 @@ void StorageAccessHandle::Create(
         "an unrestricted frame context.");
     return;
   }
-  new StorageAccessHandle(*host, std::move(receiver));
+  base::MakeSelfDeleting<StorageAccessHandle>(*host, std::move(receiver));
 }
 
 void StorageAccessHandle::BindIndexedDB(
@@ -221,8 +221,9 @@ void StorageAccessHandle::BindSharedWorker(
 
 StorageAccessHandle::StorageAccessHandle(
     RenderFrameHost& host,
-    mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver)
-    : DocumentService(host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(host, std::move(receiver), key) {}
 
 StorageAccessHandle::~StorageAccessHandle() = default;
 

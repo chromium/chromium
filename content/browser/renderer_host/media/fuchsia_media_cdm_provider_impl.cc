@@ -21,13 +21,15 @@ void FuchsiaMediaCdmProviderImpl::Bind(
     mojo::PendingReceiver<media::mojom::FuchsiaMediaCdmProvider> receiver) {
   CHECK(frame_host);
   // The object will delete itself when connection to the frame is broken.
-  new FuchsiaMediaCdmProviderImpl(*frame_host, std::move(receiver));
+  base::MakeSelfDeleting<FuchsiaMediaCdmProviderImpl>(*frame_host,
+                                                      std::move(receiver));
 }
 
 FuchsiaMediaCdmProviderImpl::FuchsiaMediaCdmProviderImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<media::mojom::FuchsiaMediaCdmProvider> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<media::mojom::FuchsiaMediaCdmProvider> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {}
 FuchsiaMediaCdmProviderImpl::~FuchsiaMediaCdmProviderImpl() = default;
 
 void FuchsiaMediaCdmProviderImpl::CreateCdm(

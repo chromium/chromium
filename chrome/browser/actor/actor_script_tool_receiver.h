@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_SCRIPT_TOOL_RECEIVER_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_SCRIPT_TOOL_RECEIVER_H_
 
+#include "base/memory/self_deleting.h"
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom.h"
 
@@ -21,6 +22,11 @@ class ActorScriptToolReceiver
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ScriptToolHost> receiver);
 
+  ActorScriptToolReceiver(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::ScriptToolHost> receiver,
+      base::SelfDeletingPassKey key);
+
   ActorScriptToolReceiver(const ActorScriptToolReceiver&) = delete;
   ActorScriptToolReceiver& operator=(const ActorScriptToolReceiver&) = delete;
   ActorScriptToolReceiver(ActorScriptToolReceiver&&) = delete;
@@ -30,9 +36,7 @@ class ActorScriptToolReceiver
   void PauseExecution() override;
 
  private:
-  ActorScriptToolReceiver(
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ScriptToolHost> receiver);
+  ~ActorScriptToolReceiver() override;
 };
 
 }  // namespace actor

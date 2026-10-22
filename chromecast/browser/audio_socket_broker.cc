@@ -115,30 +115,34 @@ void AudioSocketBroker::Create(
     mojo::PendingReceiver<mojom::AudioSocketBroker> receiver) {
   CHECK(render_frame_host);
   // Lifecycle managed by content::DocumentService.
-  new AudioSocketBroker(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<AudioSocketBroker>(*render_frame_host,
+                                            std::move(receiver));
 }
 
 AudioSocketBroker& AudioSocketBroker::CreateForTesting(
     content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
     const std::string& audio_output_service_path) {
-  return *new AudioSocketBroker(render_frame_host, std::move(receiver),
-                                audio_output_service_path);
+  return *base::MakeSelfDeleting<AudioSocketBroker>(
+      render_frame_host, std::move(receiver), audio_output_service_path);
 }
 
 AudioSocketBroker::AudioSocketBroker(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver)
-    : AudioSocketBroker(render_frame_host,
-                        std::move(receiver),
-                        audio_output_service::
-                            kDefaultAudioOutputServiceUnixDomainSocketPath) {}
+    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
+    base::SelfDeletingPassKey key)
+    : AudioSocketBroker(
+          render_frame_host,
+          std::move(receiver),
+          audio_output_service::kDefaultAudioOutputServiceUnixDomainSocketPath,
+          key) {}
 
 AudioSocketBroker::AudioSocketBroker(
     content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
-    const std::string& audio_output_service_path)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    const std::string& audio_output_service_path,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       audio_output_service_path_(audio_output_service_path),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 

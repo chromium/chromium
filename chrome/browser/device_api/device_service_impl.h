@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/self_deleting.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
@@ -45,9 +46,14 @@ class DeviceServiceImpl final
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
       std::unique_ptr<DeviceAttributeApi> device_attribute_api);
 
+  DeviceServiceImpl(
+      content::RenderFrameHost& host,
+      mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
+      std::unique_ptr<DeviceAttributeApi> device_attribute_api,
+      base::SelfDeletingPassKey key);
+
   DeviceServiceImpl(const DeviceServiceImpl&) = delete;
   DeviceServiceImpl& operator=(const DeviceServiceImpl&) = delete;
-  ~DeviceServiceImpl() override;
 
   // blink::mojom::DeviceAPIService:
   void GetDirectoryId(GetDirectoryIdCallback callback) override;
@@ -62,10 +68,7 @@ class DeviceServiceImpl final
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
       std::unique_ptr<DeviceAttributeApi> device_attribute_api);
 
-  DeviceServiceImpl(
-      content::RenderFrameHost& host,
-      mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
-      std::unique_ptr<DeviceAttributeApi> device_attribute_api);
+  ~DeviceServiceImpl() override;
 
   void GetDeviceAttribute(
       void (DeviceAttributeApi::*method)(DeviceAttributeCallback callback),

@@ -24,15 +24,16 @@ class CONTENT_EXPORT SpeculationHostImpl final
       RenderFrameHost* frame_host,
       mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver);
 
+  SpeculationHostImpl(
+      RenderFrameHost& frame_host,
+      mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver,
+      base::SelfDeletingPassKey key);
   SpeculationHostImpl(const SpeculationHostImpl&) = delete;
   SpeculationHostImpl& operator=(const SpeculationHostImpl&) = delete;
   SpeculationHostImpl(SpeculationHostImpl&&) = delete;
   SpeculationHostImpl& operator=(SpeculationHostImpl&&) = delete;
 
  private:
-  SpeculationHostImpl(
-      RenderFrameHost& frame_host,
-      mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver);
   ~SpeculationHostImpl() override;
 
   bool ValidateFrameState();

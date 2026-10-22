@@ -202,8 +202,9 @@ void InvokeFetchAttributesCallback(
 WebPrintingServiceChromeOS::WebPrintingServiceChromeOS(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver,
-    const std::string& app_id)
-    : DocumentService(*render_frame_host, std::move(receiver)),
+    const std::string& app_id,
+    base::SelfDeletingPassKey key)
+    : DocumentService(*render_frame_host, std::move(receiver), key),
       app_id_(app_id),
       cups_wrapper_(chromeos::CupsWrapper::Create()),
       pdf_flattener_(std::make_unique<PdfBlobDataFlattener>(

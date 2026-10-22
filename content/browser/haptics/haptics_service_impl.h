@@ -41,18 +41,18 @@ class CONTENT_EXPORT HapticsServiceImpl final
 
   static void SetHapticsManagerFactoryForTesting(HapticsManagerFactory factory);
 
+  HapticsServiceImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::HapticsService> receiver,
+      base::SelfDeletingPassKey key);
   HapticsServiceImpl(const HapticsServiceImpl&) = delete;
   HapticsServiceImpl& operator=(const HapticsServiceImpl&) = delete;
-
-  ~HapticsServiceImpl() override;
 
   // blink::mojom::HapticsService:
   void PlayHaptics(blink::mojom::HapticEffect effect, double intensity) final;
 
  private:
-  HapticsServiceImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::HapticsService> receiver);
+  ~HapticsServiceImpl() override;
 
   std::unique_ptr<HapticsManager> haptics_manager_;
 };

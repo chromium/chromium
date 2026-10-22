@@ -5,6 +5,7 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.h"
 
 #include "base/feature_list.h"
+#include "base/memory/self_deleting.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
@@ -21,10 +22,12 @@ namespace predictors {
 
 LCPCriticalPathPredictorHost::LCPCriticalPathPredictorHost(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::LCPCriticalPathPredictorHost> receiver)
+    mojo::PendingReceiver<blink::mojom::LCPCriticalPathPredictorHost> receiver,
+    base::SelfDeletingPassKey key)
     : content::DocumentService<blink::mojom::LCPCriticalPathPredictorHost>(
           render_frame_host,
-          std::move(receiver)) {}
+          std::move(receiver),
+          key) {}
 
 void LCPCriticalPathPredictorHost::Create(
     content::RenderFrameHost* render_frame_host,
@@ -37,7 +40,8 @@ void LCPCriticalPathPredictorHost::Create(
 
   // The object is bound to the lifetime of the |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new LCPCriticalPathPredictorHost(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<LCPCriticalPathPredictorHost>(*render_frame_host,
+                                                       std::move(receiver));
 }
 
 LCPCriticalPathPredictorHost::~LCPCriticalPathPredictorHost() = default;

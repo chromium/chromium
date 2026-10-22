@@ -22,13 +22,15 @@ void WebEngineMediaResourceProviderImpl::Bind(
     mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver) {
   CHECK(frame_host);
   // The object will delete itself when connection to the frame is broken.
-  new WebEngineMediaResourceProviderImpl(*frame_host, std::move(receiver));
+  base::MakeSelfDeleting<WebEngineMediaResourceProviderImpl>(
+      *frame_host, std::move(receiver));
 }
 
 WebEngineMediaResourceProviderImpl::WebEngineMediaResourceProviderImpl(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {}
 
 WebEngineMediaResourceProviderImpl::~WebEngineMediaResourceProviderImpl() =
     default;

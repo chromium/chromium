@@ -131,6 +131,6 @@ void CreateMediaDrmStorage(
 
   // The object will be deleted on connection error, or when the frame navigates
   // away. See DocumentService for details.
-  new cdm::MediaDrmStorageImpl(*render_frame_host, pref_service,
-                               get_origin_id_cb, std::move(receiver));
+  base::MakeSelfDeleting<cdm::MediaDrmStorageImpl>(
+      *render_frame_host, pref_service, get_origin_id_cb, std::move(receiver));
 }

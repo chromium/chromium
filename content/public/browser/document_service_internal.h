@@ -27,8 +27,6 @@ class CONTENT_EXPORT DocumentServiceBase {
   DocumentServiceBase(const DocumentServiceBase&) = delete;
   DocumentServiceBase& operator=(const DocumentServiceBase&) = delete;
 
-  virtual ~DocumentServiceBase();
-
   // To be called just before the destructor, when the object does not
   // self-destroy via one of the *AndDeleteThis() helpers. `reason` provides
   // context on why `this` is being destroyed (i.e. the document is deleted or
@@ -49,6 +47,7 @@ class CONTENT_EXPORT DocumentServiceBase {
 
  protected:
   explicit DocumentServiceBase(RenderFrameHost& render_frame_host);
+  virtual ~DocumentServiceBase();
 
   RenderFrameHost& render_frame_host() const { return *render_frame_host_; }
 

@@ -67,8 +67,8 @@ void CreateWebPrintingServiceForFrame(
   }
   // This class inherits from content::DocumentService<> -- its lifetime is
   // bound to the associated `render_frame_host`.
-  new WebPrintingServiceChromeOS(render_frame_host, std::move(receiver),
-                                 *app_id);
+  base::MakeSelfDeleting<WebPrintingServiceChromeOS>(
+      render_frame_host, std::move(receiver), *app_id);
 #else
   mojo::ReportBadMessage(
       "WebPrinting API is currently supported only on ChromeOS with CUPS "

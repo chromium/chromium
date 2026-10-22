@@ -99,14 +99,16 @@ class MediaDrmStorageImpl final
       content::RenderFrameHost& render_frame_host,
       PrefService* pref_service,
       GetOriginIdCB get_origin_id_cb,
-      mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver);
+      mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver,
+      base::SelfDeletingPassKey key);
 
   // As above, but derives the PrefService from |render_frame_host|.
   // TODO(estade): make this the only constructor.
   MediaDrmStorageImpl(
       content::RenderFrameHost& render_frame_host,
       GetOriginIdCB get_origin_id_cb,
-      mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver);
+      mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver,
+      base::SelfDeletingPassKey key);
 
   // media::mojom::MediaDrmStorage implementation.
   void Initialize(InitializeCallback callback) final;

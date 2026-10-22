@@ -137,8 +137,11 @@ constexpr char kTimeToCheckoutShowToCompleteSuccessfullyHistogramName[] =
 
 PaymentRequest::PaymentRequest(
     std::unique_ptr<ContentPaymentRequestDelegate> delegate,
-    mojo::PendingReceiver<mojom::PaymentRequest> receiver)
-    : DocumentService(*delegate->GetRenderFrameHost(), std::move(receiver)),
+    mojo::PendingReceiver<mojom::PaymentRequest> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(*delegate->GetRenderFrameHost(),
+                      std::move(receiver),
+                      key),
       WebContentsObserver(content::WebContents::FromRenderFrameHost(
           delegate->GetRenderFrameHost())),
       log_(web_contents()),

@@ -21,6 +21,10 @@ class CONTENT_EXPORT ImageCaptureImpl final
       mojo::PendingReceiver<media::mojom::ImageCapture> receiver,
       bool skip_connecting_to_media_stream_manager_for_testing = false);
 
+  ImageCaptureImpl(RenderFrameHost& render_frame_host,
+                   mojo::PendingReceiver<media::mojom::ImageCapture> receiver,
+                   bool skip_connecting_to_media_stream_manager_for_testing,
+                   base::SelfDeletingPassKey key);
   ImageCaptureImpl(const ImageCaptureImpl&) = delete;
   ImageCaptureImpl& operator=(const ImageCaptureImpl&) = delete;
 
@@ -35,10 +39,6 @@ class CONTENT_EXPORT ImageCaptureImpl final
                  TakePhotoCallback callback) override;
 
  private:
-  ImageCaptureImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<media::mojom::ImageCapture> receiver,
-      bool skip_connecting_to_media_stream_manager_for_testing = false);
   ~ImageCaptureImpl() override;
 
   void OnGetPhotoState(GetPhotoStateCallback callback,

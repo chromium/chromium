@@ -55,7 +55,8 @@ void PictureInPictureServiceImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver) {
   CHECK(render_frame_host);
-  new PictureInPictureServiceImpl(*render_frame_host, std::move(receiver));
+  base::MakeSelfDeleting<PictureInPictureServiceImpl>(*render_frame_host,
+                                                      std::move(receiver));
 }
 
 // static
@@ -63,8 +64,8 @@ PictureInPictureServiceImpl* PictureInPictureServiceImpl::CreateForTesting(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver) {
   CHECK(render_frame_host);
-  return new PictureInPictureServiceImpl(*render_frame_host,
-                                         std::move(receiver));
+  return base::MakeSelfDeleting<PictureInPictureServiceImpl>(
+      *render_frame_host, std::move(receiver));
 }
 
 void PictureInPictureServiceImpl::StartSession(
@@ -218,8 +219,9 @@ PictureInPictureServiceImpl::PendingSession::~PendingSession() = default;
 
 PictureInPictureServiceImpl::PictureInPictureServiceImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {}
 
 PictureInPictureServiceImpl::~PictureInPictureServiceImpl() {
   // If the service is destroyed because the frame was destroyed, the session

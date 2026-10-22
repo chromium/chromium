@@ -93,8 +93,9 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
         std::move(pending_media_drm_storage));
 
     // The created object will be destroyed on connection error.
-    new MediaDrmStorageImpl(*rfh, pref_service_.get(),
-                            std::move(get_origin_id_cb), std::move(receiver));
+    base::MakeSelfDeleting<MediaDrmStorageImpl>(*rfh, pref_service_.get(),
+                                                std::move(get_origin_id_cb),
+                                                std::move(receiver));
 
     return std::move(media_drm_storage);
   }

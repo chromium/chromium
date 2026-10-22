@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/self_deleting.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,7 +40,8 @@ void TextDetectionImpl::Create(
   }
   // The object is bound to the lifetime of `frame_host`'s current document
   // and the Mojo connection via `content::DocumentService`.
-  new TextDetectionImpl(*frame_host, profile, std::move(receiver));
+  base::MakeSelfDeleting<TextDetectionImpl>(*frame_host, profile,
+                                            std::move(receiver));
 }
 
 // static
@@ -47,15 +49,16 @@ TextDetectionImpl* TextDetectionImpl::CreateForTesting(
     content::RenderFrameHost* frame_host,
     scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr,
     mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver) {
-  return new TextDetectionImpl(*frame_host, std::move(ocr),
-                               std::move(receiver));
+  return base::MakeSelfDeleting<TextDetectionImpl>(*frame_host, std::move(ocr),
+                                                   std::move(receiver));
 }
 
 TextDetectionImpl::TextDetectionImpl(
     content::RenderFrameHost& render_frame_host,
     Profile* profile,
-    mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {
+    mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key) {
   ocr_ = screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
       profile, screen_ai::mojom::OcrClientType::kTextDetectionApi,
       base::BindOnce(&TextDetectionImpl::OnOcrInitialized,
@@ -66,8 +69,9 @@ TextDetectionImpl::TextDetectionImpl(
 TextDetectionImpl::TextDetectionImpl(
     content::RenderFrameHost& render_frame_host,
     scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr,
-    mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
+    mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver,
+    base::SelfDeletingPassKey key)
+    : DocumentService(render_frame_host, std::move(receiver), key),
       ocr_(std::move(ocr)) {
   CHECK(ocr_);
   if (ocr_->StatusAvailableForTesting()) {

@@ -30,9 +30,13 @@ class WebUIBrowserUI;
 class WebUIBrowserPageHandler
     : public content::DocumentService<webui_browser::mojom::PageHandler> {
  public:
+  WebUIBrowserPageHandler(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver,
+      WebUIBrowserUI* controller,
+      base::SelfDeletingPassKey key);
   WebUIBrowserPageHandler(const WebUIBrowserPageHandler&) = delete;
   WebUIBrowserPageHandler& operator=(const WebUIBrowserPageHandler&) = delete;
-  ~WebUIBrowserPageHandler() override;
 
   static void CreateForRenderFrameHost(
       content::RenderFrameHost& render_frame_host,
@@ -60,10 +64,7 @@ class WebUIBrowserPageHandler
   static int GetTabStripInsetWidth();
 
  private:
-  WebUIBrowserPageHandler(
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver,
-      WebUIBrowserUI* controller);
+  ~WebUIBrowserPageHandler() override;
 
   BrowserWindowInterface* GetBrowser();
   WebUIBrowserWindow* GetBrowserWindow();

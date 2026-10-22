@@ -49,11 +49,13 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       const std::vector<blink::mojom::DigitalCredentialGetRequestPtr>&
           digital_credential_requests);
 
+  DigitalIdentityRequestImpl(
+      RenderFrameHost&,
+      mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>,
+      base::SelfDeletingPassKey key);
   DigitalIdentityRequestImpl(const DigitalIdentityRequestImpl&) = delete;
   DigitalIdentityRequestImpl& operator=(const DigitalIdentityRequestImpl&) =
       delete;
-
-  ~DigitalIdentityRequestImpl() override;
 
   // blink::mojom::DigitalIdentityRequest:
   void Get(std::vector<blink::mojom::DigitalCredentialGetRequestPtr>
@@ -67,9 +69,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   void Abort() override;
 
  private:
-  DigitalIdentityRequestImpl(
-      RenderFrameHost&,
-      mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
+  ~DigitalIdentityRequestImpl() override;
 
   // Returns the active virtual wallet action for this frame, or
   // std::nullopt if none is configured (request should proceed normally).

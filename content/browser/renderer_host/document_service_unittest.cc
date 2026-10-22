@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/self_deleting.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/document_service_echo_impl.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -65,7 +66,7 @@ class DocumentServiceTest : public RenderViewHostTestHarness {
 
   void CreateEchoImpl(RenderFrameHost& rfh) {
     DCHECK(!is_echo_impl_alive_);
-    new DocumentServiceEchoImpl(
+    base::MakeSelfDeleting<DocumentServiceEchoImpl>(
         rfh, echo_remote_.BindNewPipeAndPassReceiver(),
         base::BindOnce(&DocumentServiceTest::OnEchoImplDestructed,
                        base::Unretained(this)));

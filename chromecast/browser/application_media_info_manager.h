@@ -39,6 +39,13 @@ class ApplicationMediaInfoManager final
       mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
           receiver);
 
+  ApplicationMediaInfoManager(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
+          receiver,
+      std::string application_session_id,
+      bool mixer_audio_enabled,
+      base::SelfDeletingPassKey key);
   ApplicationMediaInfoManager(const ApplicationMediaInfoManager&) = delete;
   ApplicationMediaInfoManager& operator=(const ApplicationMediaInfoManager&) =
       delete;
@@ -48,12 +55,6 @@ class ApplicationMediaInfoManager final
  private:
   friend ApplicationMediaInfoManagerTest;
 
-  ApplicationMediaInfoManager(
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
-          receiver,
-      std::string application_session_id,
-      bool mixer_audio_enabled);
   ~ApplicationMediaInfoManager() override;
 
   // ::media::mojom::CastApplicationMediaInfoManager implementation:

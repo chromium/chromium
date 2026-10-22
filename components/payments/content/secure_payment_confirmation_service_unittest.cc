@@ -93,7 +93,7 @@ class SecurePaymentConfirmationServiceTestBase {
     // during RunLoop execution.
     spc_service_ = std::unique_ptr<SecurePaymentConfirmationService,
                                    SecurePaymentConfirmationServiceDeleter>(
-        new SecurePaymentConfirmationService(
+        base::MakeSelfDeleting<SecurePaymentConfirmationService>(
             *web_contents_->GetPrimaryMainFrame(),
             /*receiver=*/std::move(receiver), mock_web_data_service_,
             with_authenticator ? CreateMockInternalAuthenticator() : nullptr,
@@ -228,7 +228,7 @@ TEST_F(
       remote.InitWithNewPipeAndPassReceiver();
   spc_service_ = std::unique_ptr<SecurePaymentConfirmationService,
                                  SecurePaymentConfirmationServiceDeleter>(
-      new SecurePaymentConfirmationService(
+      base::MakeSelfDeleting<SecurePaymentConfirmationService>(
           *web_contents_->GetPrimaryMainFrame(),
           /*receiver=*/std::move(receiver), mock_web_data_service_,
           CreateMockInternalAuthenticator(),
@@ -499,7 +499,7 @@ TEST_P(SecurePaymentConfirmationServiceCredentialTest,
       remote.InitWithNewPipeAndPassReceiver();
   spc_service_ = std::unique_ptr<SecurePaymentConfirmationService,
                                  SecurePaymentConfirmationServiceDeleter>(
-      new SecurePaymentConfirmationService(
+      base::MakeSelfDeleting<SecurePaymentConfirmationService>(
           *web_contents_->GetPrimaryMainFrame(),
           /*receiver=*/std::move(receiver), mock_web_data_service_,
           CreateMockInternalAuthenticator(),

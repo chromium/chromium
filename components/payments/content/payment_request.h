@@ -78,12 +78,11 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   };
 
   PaymentRequest(std::unique_ptr<ContentPaymentRequestDelegate> delegate,
-                 mojo::PendingReceiver<mojom::PaymentRequest> receiver);
+                 mojo::PendingReceiver<mojom::PaymentRequest> receiver,
+                 base::SelfDeletingPassKey key);
 
   PaymentRequest(const PaymentRequest&) = delete;
   PaymentRequest& operator=(const PaymentRequest&) = delete;
-
-  ~PaymentRequest() override;
 
   // mojom::PaymentRequest
   void Init(mojo::PendingRemote<mojom::PaymentRequestClient> client,
@@ -183,6 +182,8 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   }
 
  private:
+  ~PaymentRequest() override;
+
   // CSPChecker.
   void AllowConnectToSource(
       const GURL& url,

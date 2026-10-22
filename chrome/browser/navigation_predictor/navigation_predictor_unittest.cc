@@ -532,9 +532,14 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
       mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver) {
     // The object is bound to the lifetime of the |render_frame_host| and the
     // mojo connection. See DocumentService for details.
-    return new MockNavigationPredictorForTesting(*render_frame_host,
-                                                 std::move(receiver));
+    return base::MakeSelfDeleting<MockNavigationPredictorForTesting>(
+        *render_frame_host, std::move(receiver));
   }
+  MockNavigationPredictorForTesting(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver,
+      base::SelfDeletingPassKey key)
+      : NavigationPredictor(render_frame_host, std::move(receiver), key) {}
   void RecordUserInteractionMetrics() {
     auto& data = GetNavigationPredictorMetricsDocumentData();
     data.RecordUserInteractionsData(ukm_source_id_);
@@ -565,10 +570,7 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
   size_t NumAnchorElementData() const { return anchors_.size(); }
 
  private:
-  MockNavigationPredictorForTesting(
-      content::RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver)
-      : NavigationPredictor(render_frame_host, std::move(receiver)) {}
+  ~MockNavigationPredictorForTesting() override = default;
 };
 
 class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
