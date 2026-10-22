@@ -456,11 +456,6 @@ if (enable_scrambled_message_ids) {
 #               "Clone", "PartialEq", "Eq", "PartialOrd", "Ord", "Hash"
 #             Note that the mapped Rust type must always implement `Debug`.
 #
-#         force_serialize (optional)
-#             A boolean value (default false) which disables lazy serialization
-#             of the typemapped type if lazy serialization is enabled for the
-#             mojom target applying this typemap.
-#
 #         forward_declaration (optional)
 #             A forward declaration of the C++ type, which bindings that don't
 #             need the full type definition can use to reduce the size of

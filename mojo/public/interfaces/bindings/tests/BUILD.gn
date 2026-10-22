@@ -367,7 +367,6 @@ mojom("test_struct_traits_interfaces") {
         {
           mojom = "mojo.test.StructForceSerialize"
           cpp = "::mojo::test::StructForceSerializeImpl"
-          force_serialize = true
         },
         {
           mojom = "mojo.test.StructNestedForceSerialize"

@@ -233,7 +233,6 @@ mojom_component("base") {
           cpp = "::base::File"
           move_only = true
           nullable_is_same_type = true
-          force_serialize = true
         },
       ]
       traits_headers =
@@ -281,7 +280,6 @@ mojom_component("base") {
           mojom = "mojo_base.mojom.ReadOnlyBuffer"
           cpp = "::base::span<const ::uint8_t>"
           copyable_pass_by_value = true
-          force_serialize = true
         },
       ]
       traits_headers =
@@ -721,13 +719,11 @@ mojom_component("base") {
           mojom = "mojo_base.mojom.BigString16"
           cpp = "::blink::String"
           nullable_is_same_type = true
-          force_serialize = true
         },
         {
           mojom = "mojo_base.mojom.String16"
           cpp = "::blink::String"
           nullable_is_same_type = true
-          force_serialize = true
         },
       ]
       traits_headers = [

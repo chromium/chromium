@@ -267,7 +267,6 @@ class Generator(CppGenerator):
       "is_integral_kind": mojom.IsIntegralKind,
       "is_nullable_value_kind_packed_field": pack.IsNullableValueKindPackedField,
       "is_primary_nullable_value_kind_packed_field": pack.IsPrimaryNullableValueKindPackedField,
-      "is_receiver_kind": self._IsReceiverKind,
       "is_pending_associated_receiver_kind": mojom.IsPendingAssociatedReceiverKind,
       "is_pending_receiver_kind": mojom.IsPendingReceiverKind,
       "is_pending_associated_remote_kind": mojom.IsPendingAssociatedRemoteKind,

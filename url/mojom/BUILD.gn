@@ -32,7 +32,6 @@ mojom("url_mojom_gurl") {
         {
           mojom = "url.mojom.Url"
           cpp = "::blink::KURL"
-          force_serialize = true
         },
       ]
       traits_headers = [

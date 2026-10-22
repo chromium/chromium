@@ -254,7 +254,6 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 {%-   set params_struct = method.param_struct %}
 {%-   set params_description =
           "%s.%s request"|format(interface.name, method.name) %}
-{%-   set message_typename = "%s_%s_Message"|format(proxy_name, method.name) %}
 {%-   set send_validation = method.send_validation %}
 
 {%-   if method.sync %}
@@ -375,8 +374,6 @@ void {{proxy_name}}::{{method.name}}(
 {%-     set response_params_struct = method.response_param_struct %}
 {%-     set params_description =
             "%s.%s response"|format(interface.name, method.name) %}
-{%-     set response_message_typename =
-            "%s_%s_Response_Message"|format(interface.name, method.name) %}
 class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
  public:
 {%-      if method.result_response != None -%}
