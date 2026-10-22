@@ -20,10 +20,10 @@ class WaylandWindow;
 // Wraps a wl_surface with a wl_subsurface role assigned. It is used to submit a
 // buffer as a sub region of WaylandWindow.
 //
-// Inherits base::LinkNode<> s.t. it's location in the subsurface stack can be
-// tracked and prevent us from sending excessive wl_subsurface.place_below/above
-// requests.
-class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
+// Inherits base::UnsafeLinkNode<> s.t. it's location in the subsurface stack
+// can be tracked and prevent us from sending excessive
+// wl_subsurface.place_below/above requests.
+class WaylandSubsurface : public base::UnsafeLinkNode<WaylandSubsurface> {
  public:
   WaylandSubsurface(WaylandConnection* connection, WaylandWindow* parent);
   WaylandSubsurface(const WaylandSubsurface&) = delete;

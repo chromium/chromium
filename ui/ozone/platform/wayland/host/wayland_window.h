@@ -110,7 +110,7 @@ class WaylandWindow : public PlatformWindow,
   const WidgetSubsurfaceSet& wayland_subsurfaces() const {
     return wayland_subsurfaces_;
   }
-  base::LinkedList<WaylandSubsurface>* subsurface_stack_committed() {
+  base::UnsafeLinkedList<WaylandSubsurface>* subsurface_stack_committed() {
     return &subsurface_stack_committed_;
   }
 
@@ -627,7 +627,7 @@ class WaylandWindow : public PlatformWindow,
 
   // The stack of sub-surfaces currently committed. This list is altered when
   // the subsurface arrangement are played back by WaylandFrameManager.
-  base::LinkedList<WaylandSubsurface> subsurface_stack_committed_;
+  base::UnsafeLinkedList<WaylandSubsurface> subsurface_stack_committed_;
 
   // The current asynchronously loaded cursor (Linux specific).
   scoped_refptr<WaylandAsyncCursor> async_cursor_;
