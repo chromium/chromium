@@ -28,13 +28,22 @@ def _find_deps():
     return list(ret)
 
 
-def compute(extra_paths=None):
-    """Compute a hash of loaded Python modules and given |extra_paths|."""
+def compute(extra_paths=None, extra_strings=None):
+    """Compute a hash of loaded Python modules and given |extra_paths|.
+
+    Args:
+      extra_paths: Additional files to hash.
+      extra_strings: Additional strings to hash (e.g. versions of tools).
+    """
     all_paths = _find_deps() + (extra_paths or [])
     all_paths = sorted({os.path.relpath(p, _SRC_ROOT) for p in all_paths})
     md5 = hashlib.md5()
     for path in all_paths:
         md5.update((_SRC_ROOT / path).read_bytes())
         md5.update(path.encode('utf-8'))
+    for value in extra_strings or []:
+        md5.update(value.encode('utf-8'))
     logging.info('Script hash from: \n%s\n', '\n'.join(all_paths))
+    if extra_strings:
+        logging.info('And from strings: %s', extra_strings)
     return md5.hexdigest()[:10]

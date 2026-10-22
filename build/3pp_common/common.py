@@ -222,6 +222,7 @@ def main(
     runtime_deps=(),
     version_deps=None,
     include_deps_hash=True,
+    version_strings_func=None,
 ):
     """Entry point for 3pp.py scripts.
 
@@ -236,6 +237,9 @@ def main(
           causes a new package to be built. Must be specified if runtime_deps
           is specified.
       include_deps_hash: Whether to append the hash to the version.
+      version_strings_func: Called by "latest" to return a list of strings to
+          hash into the version (along with version_deps). E.g. used to
+          rebuild packages when the version of a build tool changes.
     """
     # Prevent subprocess output from being out-of-order when stdout is piped.
     # Python 3.6 inside the 3pp docker container lacks sys.stdout.reconfigure.
@@ -283,7 +287,12 @@ def main(
             extra_paths = []
             for p in version_deps or []:
                 extra_paths += _all_files(_resolve_dep_path(p))
-            deps_hash = scripthash.compute(extra_paths=extra_paths)
+            extra_strings = (
+                version_strings_func() if version_strings_func else None
+            )
+            deps_hash = scripthash.compute(
+                extra_paths=extra_paths, extra_strings=extra_strings
+            )
             version = f'{version}.{deps_hash}'
         print(version)
         return

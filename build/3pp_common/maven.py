@@ -136,6 +136,7 @@ def main(
     version_override=None,
     runtime_deps=(),
     version_deps=None,
+    version_strings_func=None,
 ):
     """3pp entry point for fetch.py.
 
@@ -148,6 +149,7 @@ def main(
       runtime_deps: Extra paths to copy into the checkout for use by
           post_process_func. See common.main().
       version_deps: Extra paths to hash into the version. See common.main().
+      version_strings_func: See common.main().
     """
 
     def do_latest():
@@ -171,4 +173,5 @@ def main(
         # common.main() requires version_deps whenever runtime_deps is set
         # (the JDK is always a runtime dep here, but is not part of the version).
         version_deps=list(version_deps or []),
+        version_strings_func=version_strings_func,
     )

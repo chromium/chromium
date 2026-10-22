@@ -162,6 +162,11 @@ def do_install(args):
         jar_path,
         os.path.join(args.output_prefix, 'google-java-format'),
         tracing_args_list=[['--aosp', sample_java]],
+        # Formatting JDK sources is used as a representative workload for
+        # profile-guided optimizations.
+        pgo_args_list=[['--aosp', '--dry-run'] +
+                       graalvm.extract_jdk_sources(os.path.abspath('pgo_src'))
+                       ],
     )
 
 
@@ -169,6 +174,7 @@ def main():
     common.main(
         do_latest=do_latest,
         do_install=do_install,
+        version_strings_func=graalvm.version_strings,
     )
 
 

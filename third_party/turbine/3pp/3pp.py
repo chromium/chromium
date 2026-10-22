@@ -61,6 +61,24 @@ def do_install(args):
     jar_path = os.path.join(args.output_prefix, 'turbine.jar')
     shutil.copy(str(built_jar), jar_path)
 
+    # Compiling turbine's own sources is used as a representative workload for
+    # profile-guided optimizations. Its compile classpath includes
+    # compile-only deps (e.g. AutoValue annotations).
+    classpath_txt = os.path.abspath('turbine_classpath.txt')
+    common.run_cmd(
+        [
+            'mvn', 'dependency:build-classpath', '-q', '-f', 'pom.xml',
+            f'-Dmdep.outputFile={classpath_txt}'
+        ],
+        cwd=str(src_dir),
+        env=env,
+    )
+    pgo_classpath = pathlib.Path(classpath_txt).read_text(
+        encoding='utf-8').strip().split(os.pathsep)
+    turbine_sources = sorted(
+        str(p.resolve()) for d in ('java', 'target/generated-sources')
+        for p in (src_dir / d).glob('**/*.java'))
+
     sample_java = os.path.abspath('Sample.java')
     pathlib.Path(sample_java).write_text(
         'package foo;\npublic class Sample {}\n', encoding='utf-8')
@@ -79,6 +97,11 @@ def do_install(args):
             '21',
             '--',
         ]],
+        pgo_args_list=[
+            ['--output', 'pgo_out.jar', '--classpath'] + pgo_classpath +
+            ['--sources'] + turbine_sources +
+            ['--javacopts', '--release', '21', '--'],
+        ],
     )
 
 
@@ -86,6 +109,7 @@ def main():
     common.main(
         do_latest=do_latest,
         do_install=do_install,
+        version_strings_func=graalvm.version_strings,
     )
 
 

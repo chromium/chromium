@@ -75,7 +75,7 @@ def do_install(args):
         '<suppressions><suppress checks="Foo" files="Bar"/></suppressions>\n',
         encoding='utf-8',
     )
-  
+
     sample_java = os.path.abspath('Sample.java')
     pathlib.Path(sample_java).write_text(
         'package foo;\nimport java.util.List;\npublic class Sample {}\n',
@@ -88,6 +88,11 @@ def do_install(args):
         output_bin,
         tracing_args_list=[['-c', style_xml, '-f', 'xml', sample_java]],
         extra_reachability_metadata=_extract_checkstyle_metadata(jar_path),
+        # Checking JDK sources is used as a representative workload for
+        # profile-guided optimizations.
+        pgo_args_list=[['-c', style_xml, '-f', 'xml', '-o', 'pgo_out.xml'] +
+                       graalvm.extract_jdk_sources(os.path.abspath('pgo_src'))
+                       ],
     )
 
     # Validate the compiled binary against Chromium's checkstyle config.
@@ -107,7 +112,8 @@ def main():
         do_latest=do_latest,
         do_install=do_install,
         runtime_deps=[style_xml],
-        version_deps=[style_xml]
+        version_deps=[style_xml],
+        version_strings_func=graalvm.version_strings,
     )
 
 

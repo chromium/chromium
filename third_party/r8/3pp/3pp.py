@@ -352,6 +352,30 @@ def _build_native_custom_d8(r8_jar, output_path):
                                           encoding='utf-8')
 
     os.makedirs(os.path.dirname(output_path))
+    # Dexing R8 itself is used as a representative workload for profile-guided
+    # optimizations.
+    pgo_out = os.path.abspath('pgo_out')
+    os.makedirs(pgo_out)
+    pgo_common_args = ['--min-api', '24', '--lib', graal_home]
+    pgo_args_list = [
+        pgo_common_args + [
+            '--intermediate',
+            '--ignore-globals',
+            '--file-per-class-file',
+            '--desugar-dependencies',
+            os.path.join(pgo_out, 'desugar_deps.txt'),
+            '--jar-input',
+            r8_jar,
+            '--output',
+            os.path.join(pgo_out, 'intermediate.jar'),
+        ],
+        pgo_common_args + [
+            '--release',
+            '--output',
+            os.path.join(pgo_out, 'merged.jar'),
+            os.path.join(pgo_out, 'intermediate.jar'),
+        ],
+    ]
     graalvm.build_native_image(
         r8_jar,
         output_path,
@@ -360,6 +384,7 @@ def _build_native_custom_d8(r8_jar, output_path):
         tracing_args_list=_sample_d8_args(os.path.abspath('tracing_out'),
                                           graal_home, iface_jar, program_jar,
                                           program_entries[0], service_file),
+        pgo_args_list=pgo_args_list,
         extra_native_image_args=[
             '-H:+UnlockExperimentalVMOptions',
             # R8 reads the JDK passed via --lib using the jrt:/ filesystem.
@@ -396,7 +421,8 @@ def main():
                 do_install=do_install,
                 runtime_deps=[('//' + _CUSTOM_D8_SRC,
                                _CUSTOM_D8_CHECKOUT_SUBPATH)],
-                version_deps=['//' + _CUSTOM_D8_SRC])
+                version_deps=['//' + _CUSTOM_D8_SRC],
+                version_strings_func=graalvm.version_strings)
 
 
 if __name__ == '__main__':

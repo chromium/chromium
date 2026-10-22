@@ -65,7 +65,7 @@ def do_install(args):
     lib_dir = os.path.join(args.output_prefix, 'lib')
     abi_jar = os.path.join(lib_dir, 'jvm-abi-gen.jar')
 
-    def sample_args(out_dir):
+    def sample_args(out_dir, sources=('Sample.kt', 'JavaSample.java')):
         return [
             '-kotlin-home',
             args.output_prefix,
@@ -80,9 +80,26 @@ def do_install(args):
             f'-Xplugin={abi_jar}',
             '-P',
             f'plugin:org.jetbrains.kotlin.jvm.abi:outputDir={out_dir}/abi',
-            'Sample.kt',
-            'JavaSample.java',
-        ]
+        ] + list(sources)
+
+    # Compiling kotlin-metadata-jvm is used as a representative workload for
+    # profile-guided optimizations.
+    pgo_src_dir = pathlib.Path('pgo_src').resolve()
+    common.run_cmd([
+        'unzip', '-q',
+        os.path.join(lib_dir, 'kotlin-metadata-jvm-sources.jar'), '-d',
+        str(pgo_src_dir)
+    ])
+    pgo_sources = sorted(
+        str(p) for p in pgo_src_dir.glob('**/*')
+        if p.suffix in ('.kt', '.java'))
+    pgo_args = [
+        # These sources are part of the "kotlin" package.
+        '-Xallow-kotlin-package',
+        '-XXLanguage:+NameBasedDestructuring',
+        '-cp',
+        os.path.join(lib_dir, 'kotlin-compiler.jar'),
+    ] + sample_args('pgo_out', pgo_sources)
 
     output_path = os.path.join(args.output_prefix, 'bin', 'kotlinc-graalvm')
     graalvm.build_native_image(
@@ -96,6 +113,7 @@ def do_install(args):
             os.path.join(lib_dir, 'compose-compiler-plugin.jar')
         ],
         tracing_args_list=[sample_args('tracing_out')],
+        pgo_args_list=[pgo_args],
         # Register all compiler argument methods for reflection (as upstream
         # JetBrains does) so CLI flags are supported without retracing.
         extra_reachability_metadata={
@@ -154,6 +172,7 @@ def main():
     common.main(
         do_latest=do_latest,
         do_install=do_install,
+        version_strings_func=graalvm.version_strings,
     )
 
 

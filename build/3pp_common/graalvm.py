@@ -9,13 +9,24 @@ import os
 import pathlib
 import shutil
 import tempfile
+import urllib.request
 import zipfile
 
 import common
-import fetch_github_release
 
-_GRAALVM_PROJECT = 'graalvm/graalvm-ce-builds'
-_GRAALVM_ARTIFACT_REGEX = r'graalvm-community-jdk-.*_linux-x64_bin\.tar\.gz$'
+# Oracle GraalVM (rather than GraalVM Community Edition) is used because it
+# supports profile-guided optimizations (PGO), which significantly improve the
+# runtime performance of the generated binaries. It is distributed under the
+# GraalVM Free Terms and Conditions (GFTC) license.
+#
+# Uses the latest release of this major version. Packages that use this module
+# should pass version_strings_func=graalvm.version_strings to common.main() so
+# that they are rebuilt when a new release comes out.
+_GRAALVM_MAJOR_VERSION = 25
+_GRAALVM_URL = (
+    'https://download.oracle.com/graalvm/{v}/latest/'
+    'graalvm-jdk-{v}_linux-x64_bin.tar.gz'
+).format(v=_GRAALVM_MAJOR_VERSION)
 
 # Without this wrapper, JAVA_HOME is not respected. The wrapper could be
 # omitted if -Djava.home= is always set via command-line.
@@ -26,13 +37,29 @@ _WRAPPER_TEMPLATE = """\
 public class GraalVmWrapper {{
   public static void main(String[] args) throws Exception {{
     if (System.getProperty("java.home") == null) {{
-      String javaHome = System.getenv("JAVA_HOME");
-      System.setProperty("java.home", javaHome != null ? javaHome : ".");
+      System.setProperty("java.home", {java_home_expr});
     }}
     {main_class}.main(args);
   }}
 }}
 """
+
+# Resolves a path relative to the directory containing the executable.
+_EXE_RELATIVE_JAVA_HOME_TEMPLATE = (
+    'java.nio.file.Paths.get("/proc/self/exe").toRealPath().getParent()'
+    '.resolve("{path}").normalize().toString()'
+)
+
+
+def version_strings():
+    """Returns strings that identify the GraalVM release that will be used.
+
+    For use as common.main()'s version_strings_func.
+    """
+    # Oracle does not publish version numbers for "latest", but it does publish
+    # the checksum of the archive.
+    with urllib.request.urlopen(_GRAALVM_URL + '.sha256') as r:
+        return [_GRAALVM_URL, r.read().decode('utf-8').split()[0]]
 
 
 def _find_native_image(root):
@@ -59,17 +86,11 @@ def ensure_graalvm():
     if found:
         return found
 
-    version = fetch_github_release.latest_release(
-        _GRAALVM_PROJECT, artifact_regex=_GRAALVM_ARTIFACT_REGEX
-    )
-    url = fetch_github_release.get_release_url(
-        _GRAALVM_PROJECT, version, artifact_regex=_GRAALVM_ARTIFACT_REGEX
-    )
-    filename = url.rsplit('/', 1)[-1]
+    filename = _GRAALVM_URL.rsplit('/', 1)[-1]
     cache_tar = os.path.join(tempfile.gettempdir(), filename)
     if not os.path.exists(cache_tar):
         tmp_tar = f'{cache_tar}.tmp.{os.getpid()}'
-        common.download_file(url, tmp_tar)
+        common.download_file(_GRAALVM_URL, tmp_tar)
         os.replace(tmp_tar, cache_tar)
 
     os.makedirs(extract_root, exist_ok=True)
@@ -127,6 +148,28 @@ def _format_export(exp):
     return exp if '=' in exp else f'{exp}=ALL-UNNAMED'
 
 
+def extract_jdk_sources(dest_dir, prefix='java.base/java/util/'):
+    """Extracts .java files from GraalVM's src.zip (e.g. for PGO workloads).
+
+    Args:
+      dest_dir: Directory to extract to.
+      prefix: Path prefix within src.zip of files to extract (non-recursive).
+    Returns:
+      Sorted list of absolute paths to the extracted files.
+    """
+    src_zip = os.path.join(ensure_graalvm(), 'lib', 'src.zip')
+    ret = []
+    with zipfile.ZipFile(src_zip) as z:
+        for name in z.namelist():
+            if (
+                name.startswith(prefix)
+                and name.endswith('.java')
+                and '/' not in name[len(prefix) :]
+            ):
+                ret.append(os.path.abspath(z.extract(name, dest_dir)))
+    return sorted(ret)
+
+
 def build_native_image(
     jar_path,
     output_path,
@@ -137,11 +180,14 @@ def build_native_image(
     tracing_args_list=None,
     extra_reachability_metadata=None,
     extra_native_image_args=None,
+    pgo_args_list=None,
+    java_home_relative_to_executable=None,
 ):
     """Builds a GraalVM native-image binary from a jar file.
 
     Args:
-      jar_path: Path to the main .jar file.
+      jar_path: Path to the main .jar file. May be None when main_class is
+          set (e.g. for main classes that are part of the JDK).
       output_path: Destination path for the compiled executable.
       main_class: Main class name. If None, read from MANIFEST.MF.
       extra_cp: Optional list of .jar paths to prepend to the classpath.
@@ -152,18 +198,26 @@ def build_native_image(
           'resources' lists to merge into reachability-metadata.json.
       extra_native_image_args: Optional list of extra flags for native-image.
           Unless this contains a -march= flag, -march=compatibility is used.
+      pgo_args_list: Optional list of argv lists to run an instrumented binary
+          with in order to collect profiles for profile-guided optimizations.
+          These should be representative of real workloads.
+      java_home_relative_to_executable: When set, java.home defaults to this
+          path relative to the directory containing the executable (rather
+          than to $JAVA_HOME or "."), like the JDK's own launchers do.
     """
     graal_home = ensure_graalvm()
     java_bin = os.path.join(graal_home, 'bin', 'java')
     javac_bin = os.path.join(graal_home, 'bin', 'javac')
     native_image_bin = os.path.join(graal_home, 'bin', 'native-image')
 
-    jar_path = os.path.abspath(jar_path)
     output_path = os.path.abspath(output_path)
 
-    manifest_main, manifest_exports = _parse_manifest(jar_path)
-    if not main_class:
-        main_class = manifest_main
+    manifest_exports = []
+    if jar_path:
+        jar_path = os.path.abspath(jar_path)
+        manifest_main, manifest_exports = _parse_manifest(jar_path)
+        if not main_class:
+            main_class = manifest_main
     if not main_class:
         raise ValueError(f'No main_class specified or found in {jar_path}')
 
@@ -173,7 +227,9 @@ def build_native_image(
         if formatted not in all_exports:
             all_exports.append(formatted)
 
-    cp_entries = [os.path.abspath(p) for p in (extra_cp or [])] + [jar_path]
+    cp_entries = [os.path.abspath(p) for p in (extra_cp or [])]
+    if jar_path:
+        cp_entries.append(jar_path)
     classpath = os.pathsep.join(cp_entries)
 
     with tempfile.TemporaryDirectory(
@@ -190,7 +246,9 @@ def build_native_image(
             agent_cmd = [java_bin, agent_flag]
             for exp in all_exports:
                 agent_cmd.append(f'--add-exports={exp}')
-            agent_cmd.extend(['-cp', classpath, main_class])
+            if classpath:
+                agent_cmd.extend(['-cp', classpath])
+            agent_cmd.append(main_class)
             agent_cmd.extend(tracing_args)
             # Tracing runs may intentionally exit non-zero (e.g. checkstyle).
             common.run_cmd(agent_cmd, check=False)
@@ -209,40 +267,91 @@ def build_native_image(
         wrapper_dir = os.path.join(work_dir, 'wrapper')
         os.makedirs(wrapper_dir, exist_ok=True)
         wrapper_java = os.path.join(wrapper_dir, 'GraalVmWrapper.java')
+        if java_home_relative_to_executable:
+            java_home_expr = _EXE_RELATIVE_JAVA_HOME_TEMPLATE.format(
+                path=java_home_relative_to_executable
+            )
+        else:
+            java_home_expr = (
+                'System.getenv("JAVA_HOME") != null'
+                ' ? System.getenv("JAVA_HOME") : "."'
+            )
         pathlib.Path(wrapper_java).write_text(
-            _WRAPPER_TEMPLATE.format(main_class=main_class), encoding='utf-8'
+            _WRAPPER_TEMPLATE.format(
+                main_class=main_class, java_home_expr=java_home_expr
+            ),
+            encoding='utf-8',
         )
 
         javac_cmd = [javac_bin]
         for exp in all_exports:
             javac_cmd.append(f'--add-exports={exp}')
-        javac_cmd.extend(['-cp', classpath, '-d', wrapper_dir, wrapper_java])
+        if classpath:
+            javac_cmd.extend(['-cp', classpath])
+        javac_cmd.extend(['-d', wrapper_dir, wrapper_java])
         common.run_cmd(javac_cmd)
 
         # 3. Build the native image into work_dir, then copy only the executable
         # to output_path so any unused auxiliary JDK .so files (libjsound.so)
         # do not pollute output_prefix.
+        full_cp = os.pathsep.join([os.path.abspath(wrapper_dir)] + cp_entries)
+
+        extra_native_image_args = extra_native_image_args or []
+
+        def run_native_image(output, extra_args):
+            ni_cmd = [
+                native_image_bin,
+                '-cp',
+                full_cp,
+                f'-H:ConfigurationFileDirectories={config_dir}',
+                '-o',
+                output,
+            ]
+            for exp in all_exports:
+                ni_cmd.append(f'-J--add-exports={exp}')
+            # native-image defaults to -march=x86-64-v3 (AVX2), which fails to
+            # start on older hosts. Some intrinsics still use AVX and AVX2 when
+            # available via -H:RuntimeCheckedCPUFeatures (default: AVX,AVX2).
+            if not any(
+                a.startswith('-march=') for a in extra_native_image_args
+            ):
+                ni_cmd.append('-march=compatibility')
+            ni_cmd.extend(extra_native_image_args)
+            ni_cmd.extend(extra_args)
+            ni_cmd.append('GraalVmWrapper')
+            common.run_cmd(ni_cmd)
+
+        final_args = []
+        if pgo_args_list:
+            # 3a. Build an instrumented binary and collect profiles with it.
+            instrumented = os.path.abspath(
+                os.path.join(work_dir, 'instrumented')
+            )
+            run_native_image(instrumented, ['--pgo-instrument'])
+            profiles = []
+            for i, pgo_args in enumerate(pgo_args_list):
+                profile = os.path.abspath(
+                    os.path.join(work_dir, f'profile{i}.iprof')
+                )
+                # Like tracing runs, training runs may exit non-zero.
+                common.run_cmd(
+                    [
+                        instrumented,
+                        f'-XX:ProfilesDumpFile={profile}',
+                        f'-Djava.home={graal_home}',
+                    ]
+                    + pgo_args,
+                    check=False,
+                )
+                if not os.path.exists(profile):
+                    raise RuntimeError(
+                        f'PGO training run did not write {profile}'
+                    )
+                profiles.append(profile)
+            final_args = ['-O3', '--pgo=' + ','.join(profiles)]
+
         temp_output = os.path.abspath(
             os.path.join(work_dir, os.path.basename(output_path))
         )
-        full_cp = os.pathsep.join([os.path.abspath(wrapper_dir)] + cp_entries)
-        ni_cmd = [
-            native_image_bin,
-            '-cp',
-            full_cp,
-            f'-H:ConfigurationFileDirectories={config_dir}',
-            '-o',
-            temp_output,
-        ]
-        for exp in all_exports:
-            ni_cmd.append(f'-J--add-exports={exp}')
-        # native-image defaults to -march=x86-64-v3 (AVX2), which fails to
-        # start on older hosts. Some intrinsics still use AVX and AVX2 when
-        # available via -H:RuntimeCheckedCPUFeatures (default: AVX,AVX2).
-        extra_native_image_args = extra_native_image_args or []
-        if not any(a.startswith('-march=') for a in extra_native_image_args):
-            ni_cmd.append('-march=compatibility')
-        ni_cmd.extend(extra_native_image_args)
-        ni_cmd.append('GraalVmWrapper')
-        common.run_cmd(ni_cmd)
+        run_native_image(temp_output, final_args)
         shutil.copy(temp_output, output_path)
