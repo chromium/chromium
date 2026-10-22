@@ -1976,6 +1976,7 @@ test("content_browsertests") {
     "//media:test_support",
     "//media/capture:test_support",
     "//media/midi",
+    "//media/mojo/mojom",
     "//media/webrtc",
     "//mojo/core/embedder",
     "//mojo/core/test:test_support",

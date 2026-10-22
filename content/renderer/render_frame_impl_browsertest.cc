@@ -42,6 +42,7 @@
 #include "content/renderer/navigation_state.h"
 #include "content/test/frame_host_test_interface.mojom.h"
 #include "content/test/test_render_frame.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -73,6 +74,14 @@
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/native_theme/native_theme.h"
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#include "base/test/test_future.h"
+#include "content/public/renderer/key_system_support.h"
+#include "media/base/cdm_capability.h"
+#include "media/base/key_system_capability.h"
+#include "media/mojo/mojom/key_system_support.mojom.h"
+#endif
 
 using blink::WebURLRequest;
 
@@ -1395,6 +1404,75 @@ TEST_F(RenderFrameImplTest, SubframeMojoJSEnabled) {
       blink::WebV8Features::IsMojoJSEnabledForTesting(child_context));
 }
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+namespace {
+
+// Sends `capabilities` when the observer is set, as the browser does.
+class FakeKeySystemSupport : public media::mojom::KeySystemSupport {
+ public:
+  explicit FakeKeySystemSupport(KeySystemCapabilities capabilities)
+      : capabilities_(std::move(capabilities)) {}
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(mojo::PendingReceiver<media::mojom::KeySystemSupport>(
+        std::move(handle)));
+  }
+
+  // Closes both connections, as the browser does when the document changes.
+  void Disconnect() {
+    receiver_.reset();
+    observer_.reset();
+  }
+
+  // media::mojom::KeySystemSupport
+  void SetObserver(mojo::PendingRemote<media::mojom::KeySystemSupportObserver>
+                       observer) override {
+    observer_.Bind(std::move(observer));
+    observer_->OnKeySystemSupportUpdated(capabilities_);
+  }
+
+ private:
+  const KeySystemCapabilities capabilities_;
+  mojo::Receiver<media::mojom::KeySystemSupport> receiver_{this};
+  mojo::Remote<media::mojom::KeySystemSupportObserver> observer_;
+};
+
+}  // namespace
+
+// Pending capabilities are reported as unsupported once the connection to the
+// browser closes, so that queries waiting for them don't hang.
+TEST_F(RenderFrameImplTest, KeySystemSupportDisconnectResolvesPending) {
+  constexpr char kKeySystem[] = "com.example.foo";
+  KeySystemCapabilities capabilities;
+  capabilities.emplace(
+      kKeySystem,
+      media::KeySystemCapability(
+          media::CdmCapability(),
+          base::unexpected(media::CdmCapabilityQueryStatus::kPending)));
+  FakeKeySystemSupport key_system_support(std::move(capabilities));
+  GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      media::mojom::KeySystemSupport::Name_,
+      base::BindRepeating(&FakeKeySystemSupport::Bind,
+                          base::Unretained(&key_system_support)));
+
+  base::test::TestFuture<KeySystemCapabilities> update;
+  std::unique_ptr<media::KeySystemSupportRegistration> registration =
+      ObserveKeySystemSupportUpdate(GetMainRenderFrame(),
+                                    update.GetRepeatingCallback());
+  EXPECT_TRUE(update.Take().at(kKeySystem).IsPending());
+
+  key_system_support.Disconnect();
+  const media::KeySystemCapability capability = update.Take().at(kKeySystem);
+  EXPECT_TRUE(capability.sw_cdm_capability_or_status.has_value());
+  ASSERT_FALSE(capability.hw_cdm_capability_or_status.has_value());
+  EXPECT_EQ(capability.hw_cdm_capability_or_status.error(),
+            media::CdmCapabilityQueryStatus::kDisconnectionError);
+
+  GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      media::mojom::KeySystemSupport::Name_, {});
+}
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 
 class RenderFrameImplMojoJsTest : public RenderViewTest {
  public:

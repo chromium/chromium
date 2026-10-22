@@ -22,7 +22,8 @@ using KeySystemSupportCB = base::RepeatingCallback<void(KeySystemCapabilities)>;
 
 // Observes key system support updates. The callback `cb` will be called with
 // the current key system support, then called every time the key system support
-// changes.
+// changes. If the connection to the browser closes, `cb` is called one last
+// time with pending capabilities reported as unsupported.
 CONTENT_EXPORT std::unique_ptr<media::KeySystemSupportRegistration>
 ObserveKeySystemSupportUpdate(content::RenderFrame* render_frame,
                               media::KeySystemSupportCB cb);
