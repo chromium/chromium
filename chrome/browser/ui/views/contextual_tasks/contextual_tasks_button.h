@@ -92,6 +92,7 @@ class ContextualTasksButton
   void ExecuteCommand(int command_id, int event_flags) override;
 
  protected:
+  bool ShouldShowMenu() override;
   void UpdateColorsAndInsets() override;
 
  private:
@@ -99,6 +100,8 @@ class ContextualTasksButton
   void OnShouldUpdatePosition();
   void OnShouldUpdateVisibility(bool should_show);
   void OnEligibilityChange(bool is_eligible);
+  bool IsPinningEligible() const;
+  void UpdateContextMenu();
   void MaybeUpdateVisibility();
   void UpdateHighlight();
   void UpdateTooltipText();
