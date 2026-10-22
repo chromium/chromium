@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-toolbar.top-chrome/app.js';
+import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {OmniboxTextColor, SearchboxBrowserProxy, SecurityChipRole} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {LocationBarElement, LocationBarState} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {OmniboxTextColor, SearchboxBrowserProxy, SecurityChipRole} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {LocationBarElement, LocationBarState} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('LocationBar', function() {
   let locationBar: LocationBarElement;

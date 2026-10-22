@@ -23,179 +23,24 @@ import './icons.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
-import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IconTable} from '/shared/icon_table.js';
 import {HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
+import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
+import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, SplitTabActiveLocation} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl, EventDispositionFlag, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE, INVALID_TOOLBAR_STATE_LISTENER_HANDLE} from './browser_proxy.js';
-import type {BrowserProxy, FocusRequestHandle, FocusRequestListener, IconUpdate, ShowSplitTabsContextMenuHandle, ShowSplitTabsContextMenuListener, ToolbarState, ToolbarStateListener, ToolbarStateListenerHandle} from './browser_proxy.js';
+import {BrowserProxyImpl, INVALID_TOOLBAR_STATE_LISTENER_HANDLE} from './browser_proxy.js';
+import type {BrowserProxy, IconUpdate, ToolbarState, ToolbarStateListenerHandle} from './browser_proxy.js';
+import type {ExtensionsElement} from './extensions.js';
+import {createDefaultLocationBarState} from './location_bar.js';
+import type {LocationBarElement} from './location_bar.js';
 import type {OverflowButtonElement} from './overflow_button.js';
 import type {ResponsiveControl} from './responsive_control.js';
-
-// clang-format off
-// Helper so tests can find what they needed when optimization is on.
-// Exporting from this file, the rollup file, ensures that we test the
-// same code that we ship in optimized builds.
-import type {BrowserControlsServiceInterface} from '/shared/browser_controls_api.mojom-webui.js';
-import type {IconFromTableElement} from '/shared/icon_from_table.js';
-import {
-  AppMenuIconType,
-  AppMenuSeverity,
-  AvatarToolbarButtonState,
-  ContentSettingImageType,
-  ContextMenuType,
-  FocusRequestTarget,
-  LhsChipIdentifier,
-  SecurityChipRole,
-  OmniboxTextColor,
-  PageActionAnimationStyle,
-  PageActionId,
-  PageActionTrigger,
-  PermissionAction,
-  PermissionChipTheme,
-  PermissionPromptStyle,
-  PinnedToolbarAction,
-  SplitTabActiveLocation,
-} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import {IconType} from '/shared/icon_handle.mojom-webui.js';
-import type {GlicButtonState, OmniboxAction, LocationBarState, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import type {AdjustOmniboxTextForCopyResult, InitialState, OverflowMenuItem, ToolbarUIServiceInterface} from '/shared/toolbar_ui_api.mojom-webui.js';
-import {PermissionChipElement} from '/shared/permission_chip.js';
-import type {PermissionDashboardElement} from '/shared/permission_dashboard.js';
-import {getClickSourceType, getContextMenuSourceType, PressHandler} from '/shared/toolbar_button.js';
-
-import {INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
-import {AppMenuButtonElement} from './app_menu_button.js';
-import {BatterySaverButtonElement} from './battery_saver_button.js';
-import {GlicButtonElement} from './glic_button.js';
-import {ContentSettingIconElement} from './content_setting_icon.js';
-import {ContentSettingsIconsElement} from './content_settings_icons.js';
-import type {ExtensionsElement} from './extensions.js';
-import {createDefaultLocationBarState, LocationBarElement} from './location_bar.js';
-import {LocationIconElement} from './location_icon.js';
-import {MediaButtonElement} from './media_button.js';
-import {PageActionIconElement} from './page_action_icon.js';
-import {PageActionIconsElement} from './page_action_icons.js';
-import type {PinnedToolbarActionElement} from './pinned_toolbar_action.js';
-import type {PinnedToolbarActionsElement} from './pinned_toolbar_actions.js';
-import {PointerProxyImpl} from './pointer_proxy.js';
-import type {PointerProxy} from './pointer_proxy.js';
-import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
-
-import {AnimationTracker} from '/shared/animation_tracker.js';
-
-import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
-import type {KeyedActionState, ToolbarActionContainerMixinInterface} from './toolbar_action_container_mixin.js';
-import {ToolbarActionMixin} from './toolbar_action_mixin.js';
-import type {ToolbarActionMixinInterface} from './toolbar_action_mixin.js';
-import {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_action_container_mixin.js';
-import type {OverflowableToolbarActionContainer} from './overflowable_toolbar_action_container_mixin.js';
-import {OverflowableToolbarActionMixin} from './overflowable_toolbar_action_mixin.js';
-import type {OverflowableToolbarActionElement, OverflowableToolbarActionMixinInterface} from './overflowable_toolbar_action_mixin.js';
-import {ToolbarChipButtonElement} from './toolbar_chip_button.js';
-
-import {CrLazyIconset} from '/shared/cr_lazy_iconset.js';
-import {IconsetMap} from '//resources/cr_elements/cr_icon/iconset_map.js';
-import {getTrustedHTML} from '//resources/js/static_types.js';
-
-// TODO(crbug.com/535392412): do not export these from app.ts, find a better place for them instead.
-export {
-  AnimationTracker,
-  AppMenuButtonElement,
-  AppMenuIconType,
-  AppMenuSeverity,
-  AvatarToolbarButtonState,
-  BatterySaverButtonElement,
-  BrowserProxyImpl,
-  ContextMenuType,
-  ContentSettingIconElement,
-  ContentSettingImageType,
-  ContentSettingsIconsElement,
-  createDefaultLocationBarState,
-  CrLazyIconset,
-  EventDispositionFlag,
-  FocusRequestTarget,
-  GlicButtonElement,
-  getClickSourceType,
-  getContextMenuSourceType,
-  getTrustedHTML,
-  getTypedBoolean,
-  getTypedInteger,
-  hasInitialStateKey,
-  HighlightTracker,
-  IconTable,
-  IconType,
-  IconsetMap,
-  INVALID_FOCUS_REQUEST_HANDLE,
-  INVALID_TOOLBAR_STATE_LISTENER_HANDLE,
-  INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE,
-  LhsChipIdentifier,
-  LocationBarElement,
-  LocationIconElement,
-  MediaButtonElement,
-  OmniboxTextColor,
-  PageActionAnimationStyle,
-  PageActionIconElement,
-  PageActionIconsElement,
-  PageActionId,
-  PageActionTrigger,
-  PermissionAction,
-  PermissionChipElement,
-  PermissionChipTheme,
-  PermissionPromptStyle,
-  PinnedToolbarAction,
-  PointerProxyImpl,
-  PressHandler,
-  ReadonlyOmniboxElement,
-  resetInitialStateForTesting,
-  OverflowableToolbarActionContainerMixin,
-  OverflowableToolbarActionMixin,
-  SecurityChipRole,
-  ToolbarActionContainerMixin,
-  ToolbarActionMixin,
-  ToolbarChipButtonElement,
-  TrackedElementManager,
-};
-export type {
-  AdjustOmniboxTextForCopyResult,
-  BrowserControlsServiceInterface,
-  BrowserProxy,
-  ExtensionsElement,
-  FocusRequestHandle,
-  FocusRequestListener,
-  GlicButtonState,
-  IconFromTableElement,
-  InitialState,
-  KeyedActionState,
-  LocationBarState,
-  ToolbarStateListener,
-  ToolbarStateListenerHandle,
-  OmniboxAction,
-  OverflowableToolbarActionContainer,
-  OverflowableToolbarActionElement,
-  OverflowableToolbarActionMixinInterface,
-  PageActionState,
-  PermissionChipState,
-  PermissionDashboardElement,
-  PermissionDashboardState,
-  PinnedToolbarActionElement,
-  PinnedToolbarActionsElement,
-  PointerProxy,
-  ShowSplitTabsContextMenuHandle,
-  ShowSplitTabsContextMenuListener,
-  ToolbarActionContainerMixinInterface,
-  ToolbarActionMixinInterface,
-  ToolbarFlatStateSchema,
-  ToolbarUIServiceInterface,
-};
-export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
-// clang-format on
 
 // LINT.IfChange(InitialWebUIRendererMilestones)
 const MARK_JS_RESOURCES_LOADED = 'JsResourcesLoaded';
@@ -291,7 +136,7 @@ function hasInitialStateKey(key: ToolbarStateKey): boolean {
 /**
  * Resets the cached initial toolbar state to `null` for testing purposes.
  */
-function resetInitialStateForTesting(): void {
+export function resetInitialStateForTesting(): void {
   parsedInitialState = null;
 }
 

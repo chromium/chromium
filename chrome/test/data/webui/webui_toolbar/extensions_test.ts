@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-toolbar.top-chrome/app.js';
+import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {AnimationTracker, BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {ExtensionsElement} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {ExtensionActionInfo} from 'chrome://webui-toolbar.top-chrome/shared/extensions_bar_data_model.mojom-webui.js';
+import {AnimationTracker, BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {ExtensionActionInfo, ExtensionsElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('Extensions', function() {
   let container: ExtensionsElement;

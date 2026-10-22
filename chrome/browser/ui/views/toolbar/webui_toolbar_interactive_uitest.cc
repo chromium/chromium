@@ -2964,7 +2964,7 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
     return content::EvalJs(GetWebUIWebContents(), R"(
       (async () => {
         const {AnimationTracker} =
-            await import('chrome://webui-toolbar.top-chrome/app.js');
+            await import('chrome://webui-toolbar.top-chrome/webui_toolbar.js');
         AnimationTracker.showAnimations = false;
         return true;
       })()

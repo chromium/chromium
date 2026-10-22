@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-toolbar.top-chrome/app.js';
+import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {PermissionAction, PermissionChipTheme, PermissionPromptStyle} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {PermissionChipState, PermissionDashboardElement, PermissionDashboardState} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {PermissionAction, PermissionChipTheme, PermissionPromptStyle} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {PermissionChipState, PermissionDashboardElement, PermissionDashboardState} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('PermissionDashboardTest', function() {
   let dashboard: PermissionDashboardElement;

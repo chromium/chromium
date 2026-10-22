@@ -4,7 +4,7 @@
 
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {AppMenuIconType, AppMenuSeverity, IconTable, IconType} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {AppMenuIconType, AppMenuSeverity, IconTable, IconType} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('IPH', function() {
   // Distinct fake colors so that the normal and IPH icon colors can be told

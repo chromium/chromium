@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-toolbar.top-chrome/app.js';
+import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {IconTable, IconType} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {IconFromTableElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {IconTable, IconType} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {IconFromTableElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('IconFromTableTest', function() {
   let iconFromTable: IconFromTableElement;

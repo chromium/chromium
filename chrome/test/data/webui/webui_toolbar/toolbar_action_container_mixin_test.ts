@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-toolbar.top-chrome/app.js';
+import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {AnimationTracker, ToolbarActionContainerMixin} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {KeyedActionState, ToolbarActionContainerMixinInterface} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {AnimationTracker, ToolbarActionContainerMixin} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {KeyedActionState, ToolbarActionContainerMixinInterface} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 interface TestState {
   id: string;

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {CrLazyIconset, getTrustedHTML, IconsetMap} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {CrLazyIconset, getTrustedHTML, IconsetMap} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('CrLazyIconsetTest', function() {
   let lazyIconset: CrLazyIconset;

@@ -1198,8 +1198,8 @@ const char kGetAllAnimationsJS[] = R"(
   // WebUI-side suppression (HighlightTracker in toolbar_button.ts). Import the
   // setter via the page's entry module (which re-exports it) rather than
   // '/shared/toolbar_button.js' directly: in optimized builds the shared module
-  // is bundled into app.js, so importing it by its own URL would create a
-  // second module instance that the toolbar's buttons don't use.
+  // is bundled into webui_toolbar.js, so importing it by its own URL would
+  // create a second module instance that the toolbar's buttons don't use.
   content::WebContents* web_contents =
       toolbar->GetWebViewForTesting()->web_contents();
   if (!web_contents) {
@@ -1210,7 +1210,8 @@ const char kGetAllAnimationsJS[] = R"(
   }
   return content::ExecJs(
       web_contents,
-      content::JsReplace("import('/app.js').then(m => m.HighlightTracker"
-                         ".setClickSuppressionThresholdForTesting($1))",
+      content::JsReplace(
+          "import('/webui_toolbar.js').then(m => "
+          "m.HighlightTracker.setClickSuppressionThresholdForTesting($1))",
                          threshold.InMillisecondsF()));
 }

@@ -77,6 +77,7 @@ build_webui("build") {
     "toolbar_chip_button.ts",
     "toolbar_divider.html.ts",
     "toolbar_divider.ts",
+    "webui_toolbar.ts",
   ]
 
   if (is_chrome_branded) {
@@ -115,7 +116,7 @@ build_webui("build") {
   generate_code_cache = enable_webui_generate_code_cache
   if (optimize) {
     optimize_webui_host = "webui-toolbar.top-chrome"
-    optimize_webui_in_files = [ "app.js" ]
+    optimize_webui_in_files = [ "webui_toolbar.js" ]
     optimize_webui_external_paths = [
       "chrome://webui-toolbar.top-chrome|" +
           rebase_path(
