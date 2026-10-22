@@ -40,6 +40,7 @@ UIImage* ImageForIconResourceId(omnibox::IconResourceIds icon_id,
     case omnibox::IconResourceIds::LENS_CAMERA:
       return SymbolWithPointSize(SymbolCameraLens, point_size);
     case omnibox::IconResourceIds::BANANA:
+    case omnibox::IconResourceIds::IMAGE_CREATE:
       return SymbolWithPointSize(SymbolImageCreate, point_size);
     case omnibox::IconResourceIds::CHECK_SMALL:
       return SymbolWithPointSize(SymbolCheckmark, point_size);
