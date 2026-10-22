@@ -147,9 +147,16 @@ class ChromeTranslateClient::ReadAnythingObserver
   ~ReadAnythingObserver() override = default;
 
   void OnWillClose(ReadAnythingCloseReason reason) override {
-    if (reason != ReadAnythingCloseReason::kTabSwitched) {
-      client_->OnSidePanelClosed();
+    // Reading Mode stays open when switching tabs (it's shown again when
+    // switching back) or when switching between the side panel and the
+    // immersive overlay, so do not clear the client's state or stop observing:
+    // a PDF translation must only be reverted or cancelled when it's actually
+    // closed.
+    if (reason == ReadAnythingCloseReason::kTabSwitched ||
+        reason == ReadAnythingCloseReason::kToggledPresentation) {
+      return;
     }
+    client_->OnSidePanelClosed();
     if (client_->web_contents()) {
       tabs::TabInterface* tab =
           tabs::TabInterface::MaybeGetFromContents(client_->web_contents());
@@ -181,6 +188,10 @@ void ChromeTranslateClient::TriggerPdfTranslation() {
         read_anything_observer_ =
             std::make_unique<ReadAnythingObserver>(this);
       }
+      // The observer may still be observing, e.g. if a translation was already
+      // requested while Reading Mode is open, and observers can't be added
+      // twice.
+      controller->RemoveObserver(read_anything_observer_.get());
       controller->AddObserver(read_anything_observer_.get());
     }
   }
