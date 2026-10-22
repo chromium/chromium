@@ -31,10 +31,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
-#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -137,16 +134,13 @@ class LiveSignInTestBase : public LiveTest {
       }));
 };
 
-class LiveSignInTest : public LiveSignInTestBase,
-                       public testing::WithParamInterface<bool> {
+class LiveSignInTest : public LiveSignInTestBase {
  public:
-  LiveSignInTest() {
-    feature_list_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSignInPromos, GetParam());
-  }
+  LiveSignInTest() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
@@ -156,7 +150,7 @@ class LiveSignInTest : public LiveSignInTestBase,
 // through the Sync confirmation dialog.
 // Then, signs out from Chrome and checks that the account and cookies are
 // removed from Chrome and there is no longer any primary account.
-IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_ChromeSigninAndSignout) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_ChromeSigninAndSignout) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -195,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_ChromeSigninAndSignout) {
 // Signs in an account through the settings page and enables Sync/History Sync.
 // Then, signs out on the web and checks that the account is removed from
 // cookies and Sync paused / Signin pending error is displayed.
-IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignOut) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -203,13 +197,11 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignOut) {
       *test_account, 0,
       SignInFunctions::SyncChoice::kAcceptAllOptionalDataTypesSync);
 
-  signin::ConsentLevel consent_level =
-      GetParam() ? signin::ConsentLevel::kSignin : signin::ConsentLevel::kSync;
   const CoreAccountInfo& primary_account =
-      identity_manager()->GetPrimaryAccountInfo(consent_level);
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   EXPECT_FALSE(primary_account.IsEmpty());
   EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, primary_account.email));
-  EXPECT_EQ(sync_service()->IsSyncFeatureEnabled(), !GetParam());
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
   sign_in_functions.SignOutFromWeb();
 
@@ -226,8 +218,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignOut) {
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
   EXPECT_EQ(signin_util::GetSignedInState(identity_manager()),
-            GetParam() ? signin_util::SignedInState::kSignInPending
-                       : signin_util::SignedInState::kSyncPaused);
+            signin_util::SignedInState::kSignInPending);
 #if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(sync_service()->GetUserActionableError(),
             syncer::SyncService::UserActionableError::kSignInNeedsUpdate);
@@ -239,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignOut) {
 // Sings in two accounts on the web and checks that cookies and refresh tokens
 // are added to Chrome. Sync should be disabled.
 // Then, signs out on the web and checks that accounts are removed from Chrome.
-IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -296,7 +287,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
 // In "Sync paused" or "Signin pending" state, when the primary account is
 // invalid, signs out of Chrome from settings. Checks that the account is
 // removed from Chrome. Regression test for https://crbug.com/40710922
-IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_ChromeSignOutWhenPending) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_ChromeSignOutWhenPending) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -307,35 +298,18 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_ChromeSignOutWhenPending) {
   // Get in sync paused or signin pending state.
   sign_in_functions.SignOutFromWeb();
 
-  signin::ConsentLevel consent_level =
-      GetParam() ? signin::ConsentLevel::kSignin : signin::ConsentLevel::kSync;
   const CoreAccountInfo& primary_account =
-      identity_manager()->GetPrimaryAccountInfo(consent_level);
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   EXPECT_FALSE(primary_account.IsEmpty());
   EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, primary_account.email));
-  EXPECT_EQ(sync_service()->IsSyncFeatureEnabled(), !GetParam());
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
   EXPECT_EQ(signin_util::GetSignedInState(identity_manager()),
-            GetParam() ? signin_util::SignedInState::kSignInPending
-                       : signin_util::SignedInState::kSyncPaused);
+            signin_util::SignedInState::kSignInPending);
 
-  if (GetParam()) {
-    sign_in_functions.SignOut();
-  } else {
-    GURL settings_url("chrome://settings");
-    ASSERT_TRUE(AddTabAtIndex(0, settings_url,
-                              ui::PageTransition::PAGE_TRANSITION_TYPED));
-    SignInTestObserver observer(identity_manager(), account_reconcilor());
-    auto* settings_tab = browser()->GetTabStripModel()->GetActiveWebContents();
-    EXPECT_TRUE(content::ExecJs(
-        settings_tab,
-        base::StringPrintf(
-            kSettingsScriptWrapperFormat,
-            "settings.SyncBrowserProxyImpl.getInstance().signOut(false)")));
-    observer.WaitForAccountChanges(0, PrimaryAccountWait::kWaitForCleared);
-  }
+  sign_in_functions.SignOut();
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
@@ -350,19 +324,14 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_ChromeSignOutWhenPending) {
 // Starts the sign in flow from the settings page, enters credentials on the
 // login page but cancels the Sync confirmation dialog. Checks that Sync is
 // disabled but the account is still signed in to Chrome.
-IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_CancelSync) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSync) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
   sign_in_functions.SignInFromSettings(*test_account, 0);
 
-  if (GetParam()) {
-    EXPECT_TRUE(login_ui_test_utils::RejectHistorySyncOptinDialog(
-        browser(), kDialogTimeout));
-  } else {
-    EXPECT_TRUE(login_ui_test_utils::CancelSyncConfirmationDialog(
-        browser(), kDialogTimeout));
-  }
+  EXPECT_TRUE(login_ui_test_utils::RejectHistorySyncOptinDialog(
+      browser(), kDialogTimeout));
   // The account is still signed in, but not syncing.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -383,8 +352,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_CancelSync) {
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 }
 
-
-IN_PROC_BROWSER_TEST_P(LiveSignInTest,
+IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_AccountCapabilities_FetchedOnSignIn) {
   // Test primary adult account.
   {
@@ -438,7 +406,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest,
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_CreateSignedInProfile) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
   base::HistogramTester histogram_tester;
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
@@ -478,45 +446,31 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_CreateSignedInProfile) {
            signin::ConsentLevel::kSignin;
   });
 
-  // Confirm Sync or History Sync Opt-in.
+  // Confirm History Sync Opt-in.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  if (GetParam()) {
-    GURL history_sync_optin_url =
-        HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
-            GURL(chrome::kChromeUIHistorySyncOptinURL),
-            HistorySyncOptinLaunchContext::kWindow);
-    profiles::testing::WaitForPickerLoadStop(history_sync_optin_url);
+  GURL history_sync_optin_url =
+      HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
+          GURL(chrome::kChromeUIHistorySyncOptinURL),
+          HistorySyncOptinLaunchContext::kWindow);
+  profiles::testing::WaitForPickerLoadStop(history_sync_optin_url);
 
-    EXPECT_TRUE(base::test::RunUntil([picker_contents]() {
-      return content::EvalJs(picker_contents,
-                             profiles::testing::GetAcceptHistoryOptinScript())
-          .ExtractBool();
-    }));
-  } else {
-    GURL sync_confirmation_url =
-        AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
-                                          SyncConfirmationStyle::kWindow, true);
-    profiles::testing::WaitForPickerLoadStop(sync_confirmation_url);
-    LoginUIServiceFactory::GetForProfile(new_profile)
-        ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-  }
+  EXPECT_TRUE(base::test::RunUntil([picker_contents]() {
+    return content::EvalJs(picker_contents,
+                           profiles::testing::GetAcceptHistoryOptinScript())
+        .ExtractBool();
+  }));
 
   // Wait for browser to open.
   profiles::testing::WaitForPickerClosed();
   BrowserWindowInterface* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(new_browser->GetProfile(), new_profile);
-  if (GetParam()) {
-    EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
-              signin::ConsentLevel::kSignin);
-    syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(new_profile);
-    EXPECT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().HasAll(
-        {syncer::UserSelectableType::kHistory,
-         syncer::UserSelectableType::kTabs}));
-  } else {
-    EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
-              signin::ConsentLevel::kSync);
-  }
+  EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
+            signin::ConsentLevel::kSignin);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(new_profile);
+  EXPECT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().HasAll(
+      {syncer::UserSelectableType::kHistory,
+       syncer::UserSelectableType::kTabs}));
 
   // Both LST and Sync Header are received so their time difference must be
   // recorded.
@@ -531,7 +485,7 @@ class LiveSignInGaiaIntegrationTest : public LiveSignInTest {};
 // a browser signin, does not sign in the user in the browser.
 // TODO(crbug.com/467170772): Remove the logging once flakiness reason is
 // identified.
-IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
+IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
                        MANUAL_WebSignInFromExistingChromeSignInTab) {
   base::HistogramTester histogram_tester;
   std::optional<TestAccountSigninCredentials> test_account =
@@ -859,14 +813,6 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionsLiveSignInTest,
   EXPECT_THAT(cookies_after_refresh, HasSubstr("__Secure-1PSIDRTS"));
 }
 
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-INSTANTIATE_TEST_SUITE_P(All, LiveSignInTest, testing::Values(true));
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-INSTANTIATE_TEST_SUITE_P(All,
-                         LiveSignInGaiaIntegrationTest,
-                         testing::Values(true));
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace

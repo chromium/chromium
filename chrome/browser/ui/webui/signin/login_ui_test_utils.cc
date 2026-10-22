@@ -550,7 +550,6 @@ bool DismissSyncConfirmationDialog(BrowserWindowInterface* browser,
 class SiginInModalDialogObserver : public SigninViewController::Observer {
  public:
   explicit SiginInModalDialogObserver(BrowserWindowInterface* browser) {
-    CHECK(SigninViewControllerTestUtil::ShowsModalDialog(browser));
     signin_view_controller_observation_.Observe(
         SigninViewController::From(browser));
   }
