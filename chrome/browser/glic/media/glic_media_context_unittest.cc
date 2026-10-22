@@ -376,12 +376,38 @@ TEST_F(GlicMediaContextTest, OnResult_MultipleFinalResultsWithoutTiming) {
 }
 
 TEST_F(GlicMediaContextTest, OnResult_NonFinalResult) {
-  media::SpeechRecognitionResult result =
-      CreateSpeechRecognitionResult("non-final text", false);  // Not final
-
-  EXPECT_TRUE(context()->OnResult(result));
-  // No transcripts are returned if we don't have any final chunks.
+  // A non-final result of 100 characters or fewer is not returned if we don't
+  // have any final chunks.
+  media::SpeechRecognitionResult short_result =
+      CreateSpeechRecognitionResult(std::string(100, 'a'), false);
+  EXPECT_TRUE(context()->OnResult(short_result));
+  EXPECT_FALSE(context()->HasTranscriptChunks());
   EXPECT_EQ(GetTranscriptText(context()), "");
+
+  // A non-final result of more than 100 characters is returned even without any
+  // final chunks.
+  const std::string long_text(101, 'b');
+  media::SpeechRecognitionResult long_result =
+      CreateSpeechRecognitionResult(long_text, false);
+  EXPECT_TRUE(context()->OnResult(long_result));
+  EXPECT_TRUE(context()->HasTranscriptChunks());
+  EXPECT_EQ(GetTranscriptText(context()), long_text);
+}
+
+TEST_F(GlicMediaContextTest,
+       OnResult_NonFinalResultUpdatedInPlaceExceedingThreshold) {
+  const media::MediaTimestampRange time_range(base::Seconds(0),
+                                              base::Seconds(1));
+  EXPECT_TRUE(context()->OnResult(CreateSpeechRecognitionResult(
+      std::string(50, 'a'), false, {time_range})));
+  EXPECT_FALSE(context()->HasTranscriptChunks());
+  EXPECT_EQ(GetTranscriptText(context()), "");
+
+  const std::string long_text(101, 'a');
+  EXPECT_TRUE(context()->OnResult(
+      CreateSpeechRecognitionResult(long_text, false, {time_range})));
+  EXPECT_TRUE(context()->HasTranscriptChunks());
+  EXPECT_EQ(GetTranscriptText(context()), long_text);
 }
 
 TEST_F(GlicMediaContextTest, OnResult_FinalResultClearsNonFinal) {
@@ -519,7 +545,7 @@ TEST_F(GlicMediaContextTest, HasTranscriptChunks) {
   // Initially false.
   EXPECT_FALSE(context()->HasTranscriptChunks());
 
-  // Non-final result doesn't make it true.
+  // Short non-final result doesn't make it true.
   context()->OnResult(CreateSpeechRecognitionResult("Non-final one. ", false));
   EXPECT_FALSE(context()->HasTranscriptChunks());
 
@@ -548,7 +574,8 @@ TEST_F(GlicMediaContextTest, HasTranscriptChunks) {
 
 TEST_F(GlicMediaContextTest, GetTranscriptChunks) {
   context()->OnResult(CreateSpeechRecognitionResult("Non-final one. ", false));
-  // No transcripts are returned if we don't have any final chunks.
+  // No transcripts are returned if we don't have any final chunks and the
+  // non-final chunk is not over 100 characters.
   auto chunks = context()->GetTranscriptChunks();
   EXPECT_EQ(chunks.size(), 0u);
 
@@ -688,12 +715,40 @@ TEST_F(GlicMediaContextTest, GetMediaSessionIfExists_FiltersByRoutedFrame) {
 TEST_F(GlicMediaContextTest, OnResult_NotifiesTranscriptProvider) {
   auto mock_provider =
       std::make_unique<optimization_guide::MockMediaTranscriptProvider>();
-  EXPECT_CALL(*mock_provider, OnTranscriptionBeginForFrame(rfh()));
+  EXPECT_CALL(*mock_provider, OnTranscriptionBeginForFrame(rfh())).Times(1);
   optimization_guide::MediaTranscriptProvider::SetFor(web_contents(),
                                                       std::move(mock_provider));
 
   // The first final result should trigger the notification.
   EXPECT_TRUE(context()->OnResult(CreateSpeechRecognitionResult("test", true)));
+  // Subsequent results should not trigger it again.
+  EXPECT_TRUE(
+      context()->OnResult(CreateSpeechRecognitionResult("test 2", true)));
+}
+
+TEST_F(GlicMediaContextTest,
+       OnResult_LongNonFinalResultNotifiesTranscriptProviderOnce) {
+  auto mock_provider =
+      std::make_unique<optimization_guide::MockMediaTranscriptProvider>();
+  auto* mock_provider_ptr = mock_provider.get();
+  optimization_guide::MediaTranscriptProvider::SetFor(web_contents(),
+                                                      std::move(mock_provider));
+
+  // A short non-final result should not trigger the notification.
+  EXPECT_CALL(*mock_provider_ptr, OnTranscriptionBeginForFrame(rfh())).Times(0);
+  EXPECT_TRUE(context()->OnResult(
+      CreateSpeechRecognitionResult(std::string(100, 'a'), false)));
+  testing::Mock::VerifyAndClearExpectations(mock_provider_ptr);
+
+  // A non-final result > 100 chars should trigger the notification once.
+  EXPECT_CALL(*mock_provider_ptr, OnTranscriptionBeginForFrame(rfh())).Times(1);
+  EXPECT_TRUE(context()->OnResult(
+      CreateSpeechRecognitionResult(std::string(101, 'a'), false)));
+  // Subsequent long non-final or final results should not trigger it again.
+  EXPECT_TRUE(context()->OnResult(
+      CreateSpeechRecognitionResult(std::string(150, 'a'), false)));
+  EXPECT_TRUE(context()->OnResult(
+      CreateSpeechRecognitionResult(std::string(150, 'a'), true)));
 }
 
 TEST_F(GlicMediaContextTest, PrefBlocksTranscription) {
@@ -734,11 +789,22 @@ TEST_F(GlicMediaContextTest, RecordsUkmOnDestruction) {
   ukm_recorder.ExpectEntryMetric(entries[0], "HasTranscript", 1);
 
   test_context = std::make_unique<TestGlicMediaContext>(rfh());
+  test_context->SetMediaSession(&mock_media_session());
+  test_context->OnResult(
+      CreateSpeechRecognitionResult(std::string(101, 'a'), false));
+  EXPECT_TRUE(test_context->HasTranscriptChunks());
   test_context.reset();
 
   entries = ukm_recorder.GetEntriesByName("Glic.MediaContext");
   ASSERT_EQ(entries.size(), 2u);
-  ukm_recorder.ExpectEntryMetric(entries[1], "HasTranscript", 0);
+  ukm_recorder.ExpectEntryMetric(entries[1], "HasTranscript", 1);
+
+  test_context = std::make_unique<TestGlicMediaContext>(rfh());
+  test_context.reset();
+
+  entries = ukm_recorder.GetEntriesByName("Glic.MediaContext");
+  ASSERT_EQ(entries.size(), 3u);
+  ukm_recorder.ExpectEntryMetric(entries[2], "HasTranscript", 0);
 }
 
 TEST_F(GlicMediaContextTest, SharedContextLengthMetric) {
@@ -748,7 +814,16 @@ TEST_F(GlicMediaContextTest, SharedContextLengthMetric) {
   context()->GetTranscriptChunks();
   histogram_tester.ExpectTotalCount("Glic.Media.SharedContextLength", 0);
 
-  // Add a final result.
+  // Add a long non-final result (> 100 chars).
+  const std::string long_nonfinal(105, 'A');
+  context()->OnResult(
+      media::SpeechRecognitionResult(long_nonfinal, /*is_final=*/false));
+  context()->GetTranscriptChunks();
+  histogram_tester.ExpectUniqueSample("Glic.Media.SharedContextLength",
+                                      long_nonfinal.length(), 1);
+
+  // Clear and test with a final result.
+  context()->ClearAllTranscripts();
   const std::string test_cap = "Hello World";
   context()->OnResult(
       media::SpeechRecognitionResult(test_cap, /*is_final=*/true));
@@ -756,13 +831,14 @@ TEST_F(GlicMediaContextTest, SharedContextLengthMetric) {
   // Request the transcript.
   context()->GetTranscriptChunks();
 
-  // Metric should be recorded once with the correct length.
-  histogram_tester.ExpectUniqueSample("Glic.Media.SharedContextLength",
-                                      test_cap.length(), 1);
+  // Metric should be recorded again with the final chunk length.
+  histogram_tester.ExpectBucketCount("Glic.Media.SharedContextLength",
+                                     test_cap.length(), 1);
+  histogram_tester.ExpectTotalCount("Glic.Media.SharedContextLength", 2);
 
   // Request again, should record again.
   context()->GetTranscriptChunks();
-  histogram_tester.ExpectTotalCount("Glic.Media.SharedContextLength", 2);
+  histogram_tester.ExpectTotalCount("Glic.Media.SharedContextLength", 3);
 }
 
 }  // namespace glic

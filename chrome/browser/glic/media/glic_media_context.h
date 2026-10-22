@@ -78,7 +78,8 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
   // Returns a copy of the transcript chunks.
   std::list<TranscriptChunk> GetTranscriptChunks() const;
 
-  // Returns whether there are any final transcript chunks.
+  // Returns whether there are any final transcript chunks or a sufficiently
+  // long non-final transcript chunk.
   bool HasTranscriptChunks() const;
 
   // Clears all stored transcripts.
@@ -95,6 +96,8 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
     ~Transcript();
     Transcript(const Transcript&) = delete;
     Transcript& operator=(const Transcript&) = delete;
+
+    bool HasTranscriptChunks() const;
 
     // Stores transcript chunks in timestamp order.
     std::list<TranscriptChunk> transcript_chunks_;
@@ -123,6 +126,10 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
   // trimming the transcript.
   void HandleFinalResult(Transcript* transcript, TranscriptChunk new_chunk);
 
+  // Notifies the `MediaTranscriptProvider` that transcription has begun for
+  // this frame, if not already notified.
+  void MaybeNotifyTranscriptionBegin();
+
   // Trims the transcript to a maximum size by removing the oldest chunks until
   // the total size is within the limit.
   void TrimTranscript(Transcript* transcript);
@@ -147,8 +154,9 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
 
   size_t num_peer_connections_ = 0;
 
-  // Set to true if any final transcript chunk was recorded for any title.
-  bool has_recorded_any_final_chunk_ = false;
+  // Set to true once `MediaTranscriptProvider::OnTranscriptionBeginForFrame`
+  // has been called for this frame.
+  bool has_notified_transcription_begin_ = false;
 };
 
 }  // namespace glic
