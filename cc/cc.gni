@@ -5,10 +5,7 @@
 import("//testing/test.gni")
 
 cc_remove_configs = []
-cc_add_configs = [
-  "//build/config:precompiled_headers",
-  "//build/config/compiler:wexit_time_destructors",
-]
+cc_add_configs = [ "//build/config:precompiled_headers" ]
 
 if (!is_debug) {
   cc_remove_configs += [ "//build/config/compiler:default_optimization" ]
@@ -35,9 +32,6 @@ template("cc_test_static_library") {
     configs -= cc_remove_configs
     configs += cc_add_configs
 
-    # Not needed in test code.
-    configs -= [ "//build/config/compiler:wexit_time_destructors" ]
-
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
@@ -52,9 +46,6 @@ template("cc_test") {
     }
     configs -= cc_remove_configs
     configs += cc_add_configs
-
-    # Not needed in test code.
-    configs -= [ "//build/config/compiler:wexit_time_destructors" ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
