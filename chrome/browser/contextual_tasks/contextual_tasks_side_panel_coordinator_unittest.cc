@@ -33,7 +33,9 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/host_override.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -42,10 +44,12 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,6 +58,8 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -65,7 +71,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "ui/actions/actions.h"
+#include "ui/native_theme/native_theme.h"
 #endif
 
 using testing::_;
@@ -80,14 +90,15 @@ namespace {
 
 class MockContextualTasksUiService : public ContextualTasksUiService {
  public:
-  explicit MockContextualTasksUiService(ContextualTasksService* controller)
+  MockContextualTasksUiService(ContextualTasksService* controller,
+                               AimEligibilityService* aim_eligibility_service)
       : ContextualTasksUiService(
             nullptr,
             std::make_unique<
                 testing::NiceMock<MockContextualTasksUiServiceDelegate>>(),
             controller,
             nullptr,
-            nullptr,
+            aim_eligibility_service,
             /*eligibility_manager=*/nullptr,
             /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
@@ -164,15 +175,48 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
                                 CreateMockContextController,
                             base::Unretained(this)));
 
+    aim_eligibility_response_.add_interception_allowed_hosts("*.google.com");
+    aim_eligibility_response_.add_interception_allowed_hosts("*.google.co.uk");
+    aim_eligibility_response_.add_interception_allowed_paths("/search");
+    auto* aim_rule = aim_eligibility_response_.add_aim_detection_url_rule();
+    auto* udm_param = aim_rule->add_required_params();
+    udm_param->set_key("udm");
+    udm_param->set_value("50");
+    aim_eligibility_service_ =
+        std::make_unique<NiceMock<MockAimEligibilityService>>(
+            *profile_->GetPrefs(), nullptr, nullptr, nullptr);
+    ON_CALL(*aim_eligibility_service_, GetMostRecentResponse())
+        .WillByDefault(ReturnRef(aim_eligibility_response_));
+    ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+        .WillByDefault(
+            [this](const GURL& url, std::optional<HostOverride> host_override) {
+              return aim_eligibility_service_->AimEligibilityService::IsAimUrl(
+                  url, host_override);
+            });
+    ON_CALL(*aim_eligibility_service_, IsAimHost(_, _))
+        .WillByDefault(
+            [this](const GURL& url, std::optional<HostOverride> host_override) {
+              return aim_eligibility_service_->AimEligibilityService::IsAimHost(
+                  url, host_override);
+            });
+    ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+        .WillByDefault([this](const GURL& url) {
+          return aim_eligibility_service_
+              ->AimEligibilityService::HasAimUrlParams(url);
+        });
+
     ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
         profile_.get(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
-          auto* controller = ContextualTasksServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(context));
-          return std::make_unique<NiceMock<MockContextualTasksUiService>>(
-              controller);
-        }));
+        base::BindRepeating(
+            [](AimEligibilityService* aim_eligibility_service,
+               content::BrowserContext* context)
+                -> std::unique_ptr<KeyedService> {
+              auto* controller = ContextualTasksServiceFactory::GetForProfile(
+                  Profile::FromBrowserContext(context));
+              return std::make_unique<NiceMock<MockContextualTasksUiService>>(
+                  controller, aim_eligibility_service);
+            },
+            aim_eligibility_service_.get()));
     // Eagerly instantiate the MockContextualTasksUiService (as is done in
     // production) so it exists when retrieved by the coordinator via
     // GetForBrowserContextIfExists.
@@ -252,6 +296,7 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     mock_tab_user_data_hosts_.clear();
 
     profile_.reset();
+    aim_eligibility_service_.reset();
 #if !BUILDFLAG(IS_ANDROID)
     actions::ActionIdMap::ResetMapsForTesting();
 #endif
@@ -385,6 +430,8 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
 #endif
+  omnibox::AimEligibilityResponse aim_eligibility_response_;
+  std::unique_ptr<NiceMock<MockAimEligibilityService>> aim_eligibility_service_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<NiceMock<MockBrowserWindowInterface>> browser_window_;
   ui::UnownedUserDataHost unowned_user_data_host_;
@@ -2311,6 +2358,218 @@ TEST_F(
           DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
   EXPECT_EQ(coordinator_->GetActiveEntrySource(),
             ContextualTasksPanelController::EntrySource::kAskGoogle);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ThemeChangesRefreshAllCachedSidePanelWebContents) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksForceEntryPointEligibility,
+       kContextualTasksSidePanelRearchitecture},
+      {});
+
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(theme_service, nullptr);
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+
+  const base::Uuid active_task_id = base::Uuid::GenerateRandomV4();
+  const base::Uuid zero_state_task_id = base::Uuid::GenerateRandomV4();
+  const base::Uuid background_task_id = base::Uuid::GenerateRandomV4();
+  const base::Uuid waiting_task_id = base::Uuid::GenerateRandomV4();
+  const base::Uuid signin_task_id = base::Uuid::GenerateRandomV4();
+  const base::Uuid captcha_task_id = base::Uuid::GenerateRandomV4();
+
+  CreateCachedWebContentsForTesting(active_task_id, /*is_open=*/true);
+  CreateCachedWebContentsForTesting(zero_state_task_id, /*is_open=*/false);
+  CreateCachedWebContentsForTesting(background_task_id, /*is_open=*/false);
+  CreateCachedWebContentsForTesting(waiting_task_id, /*is_open=*/true);
+  CreateCachedWebContentsForTesting(signin_task_id, /*is_open=*/false);
+  CreateCachedWebContentsForTesting(captcha_task_id, /*is_open=*/false);
+
+  content::WebContents* active_wc =
+      GetWebContentsForTaskForTesting(active_task_id);
+  content::WebContents* zero_state_wc =
+      GetWebContentsForTaskForTesting(zero_state_task_id);
+  content::WebContents* background_wc =
+      GetWebContentsForTaskForTesting(background_task_id);
+  content::WebContents* waiting_wc =
+      GetWebContentsForTaskForTesting(waiting_task_id);
+  content::WebContents* signin_wc =
+      GetWebContentsForTaskForTesting(signin_task_id);
+  content::WebContents* captcha_wc =
+      GetWebContentsForTaskForTesting(captcha_task_id);
+
+  const GURL signin_url("https://login.corp.google.com/request");
+  const GURL captcha_url(
+      "https://www.google.com/sorry/index?continue=https://www.google.com/"
+      "search");
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      active_wc, ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+                     GURL("https://www.google.com/search?udm=50&q=hello"
+                          "&mstk=turn1&mtid=thread1"),
+                     active_wc));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      zero_state_wc,
+      ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+          GURL("https://www.google.com/search?udm=50"), zero_state_wc));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      background_wc,
+      ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+          GURL("https://www.google.co.uk/search?q=bg&gl=uk"), background_wc));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      waiting_wc, GURL("about:blank"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(signin_wc,
+                                                             signin_url);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(captcha_wc,
+                                                             captcha_url);
+
+  // When side panel rearchitecture is disabled, theme changes return early
+  // without mutating state or reloading cached `WebContents`.
+  {
+    base::test::ScopedFeatureList disabled_rearch;
+    disabled_rearch.InitAndDisableFeature(
+        kContextualTasksSidePanelRearchitecture);
+    theme_service->SetBrowserColorScheme(
+        ThemeService::BrowserColorScheme::kDark);
+    EXPECT_EQ(active_wc->GetController().GetPendingEntry(), nullptr);
+    theme_service->SetBrowserColorScheme(
+        ThemeService::BrowserColorScheme::kLight);
+  }
+
+  // Switching Light -> Dark immediately reloads both active AIM and cached
+  // background ccTLD SRP `WebContents` with `cs=1` while keeping query params
+  // intact, and skips `about:blank`, sign-in, and CAPTCHA URLs.
+  theme_service->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+
+  ASSERT_NE(active_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      active_wc->GetController().GetPendingEntry()->GetTransitionType(),
+      ui::PAGE_TRANSITION_RELOAD));
+  std::string cs_param;
+  std::string q_param;
+  std::string mstk_param;
+  std::string mtid_param;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(active_wc->GetVisibleURL(), "cs", &cs_param));
+  EXPECT_EQ("1", cs_param);
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(active_wc->GetVisibleURL(), "q", &q_param));
+  EXPECT_EQ("hello", q_param);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(active_wc->GetVisibleURL(), "mstk",
+                                         &mstk_param));
+  EXPECT_EQ("turn1", mstk_param);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(active_wc->GetVisibleURL(), "mtid",
+                                         &mtid_param));
+  EXPECT_EQ("thread1", mtid_param);
+
+  ASSERT_NE(zero_state_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(zero_state_wc->GetVisibleURL(), "cs",
+                                         &cs_param));
+  EXPECT_EQ("1", cs_param);
+
+  ASSERT_NE(background_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(background_wc->GetVisibleURL(), "cs",
+                                         &cs_param));
+  EXPECT_EQ("1", cs_param);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(background_wc->GetVisibleURL(), "q",
+                                         &q_param));
+  EXPECT_EQ("bg", q_param);
+
+  EXPECT_EQ(waiting_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_TRUE(waiting_wc->GetLastCommittedURL().IsAboutBlank());
+  EXPECT_EQ(signin_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_EQ(signin_wc->GetLastCommittedURL(), signin_url);
+  EXPECT_EQ(captcha_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_EQ(captcha_wc->GetLastCommittedURL(), captcha_url);
+  EXPECT_EQ(active_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ(zero_state_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ(background_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ(waiting_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ(signin_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ(captcha_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+
+  const int active_dark_pending_id =
+      active_wc->GetController().GetPendingEntry()->GetUniqueID();
+  const int zero_state_dark_pending_id =
+      zero_state_wc->GetController().GetPendingEntry()->GetUniqueID();
+  const int background_dark_pending_id =
+      background_wc->GetController().GetPendingEntry()->GetUniqueID();
+
+  // Switching Dark -> Light reloads with `cs=0`.
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  ASSERT_NE(active_wc->GetController().GetPendingEntry(), nullptr);
+  const int active_light_pending_id =
+      active_wc->GetController().GetPendingEntry()->GetUniqueID();
+  EXPECT_NE(active_light_pending_id, active_dark_pending_id);
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(active_wc->GetVisibleURL(), "cs", &cs_param));
+  EXPECT_EQ("0", cs_param);
+  ASSERT_NE(zero_state_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_NE(zero_state_wc->GetController().GetPendingEntry()->GetUniqueID(),
+            zero_state_dark_pending_id);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(zero_state_wc->GetVisibleURL(), "cs",
+                                         &cs_param));
+  EXPECT_EQ("0", cs_param);
+  ASSERT_NE(background_wc->GetController().GetPendingEntry(), nullptr);
+  const int background_light_pending_id =
+      background_wc->GetController().GetPendingEntry()->GetUniqueID();
+  EXPECT_NE(background_light_pending_id, background_dark_pending_id);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(background_wc->GetVisibleURL(), "cs",
+                                         &cs_param));
+  EXPECT_EQ("0", cs_param);
+  EXPECT_EQ(active_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kLight);
+
+  // Theme notifications that do not change effective dark mode must not reload.
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  const ui::NativeTheme::PreferredColorScheme original_scheme =
+      native_theme->preferred_color_scheme();
+  absl::Cleanup restore_native_theme = [native_theme, original_scheme] {
+    native_theme->set_preferred_color_scheme(original_scheme);
+    native_theme->NotifyOnNativeThemeUpdated();
+  };
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
+  native_theme->NotifyOnNativeThemeUpdated();
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kSystem);
+  ASSERT_NE(active_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_EQ(active_wc->GetController().GetPendingEntry()->GetUniqueID(),
+            active_light_pending_id);
+  ASSERT_NE(background_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_EQ(background_wc->GetController().GetPendingEntry()->GetUniqueID(),
+            background_light_pending_id);
+
+  // Flipping OS `NativeTheme` from Light -> Dark under `kSystem` dispatches via
+  // `native_theme_observation_` and reloads with `cs=1`.
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
+  native_theme->NotifyOnNativeThemeUpdated();
+
+  ASSERT_NE(active_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_NE(active_wc->GetController().GetPendingEntry()->GetUniqueID(),
+            active_light_pending_id);
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(active_wc->GetVisibleURL(), "cs", &cs_param));
+  EXPECT_EQ("1", cs_param);
+  ASSERT_NE(background_wc->GetController().GetPendingEntry(), nullptr);
+  EXPECT_NE(background_wc->GetController().GetPendingEntry()->GetUniqueID(),
+            background_light_pending_id);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(background_wc->GetVisibleURL(), "cs",
+                                         &cs_param));
+  EXPECT_EQ("1", cs_param);
+  EXPECT_EQ(active_wc->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
 }
 #endif
 

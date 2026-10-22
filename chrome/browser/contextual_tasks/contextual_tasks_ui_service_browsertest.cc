@@ -813,7 +813,8 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* panel_contents = controller->GetActiveWebContents();
   ASSERT_TRUE(panel_contents);
 
-  GURL url("https://www.google.com/search?q=aim_test&gsc=2&hl=en&cs=0");
+  GURL url("https://www.google.com/search?q=aim_test&gsc=2&hl=en&cs=" +
+           GetExpectedCs());
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
@@ -897,7 +898,8 @@ IN_PROC_BROWSER_TEST_F(
   contextual_tasks::SetForcedEmbeddedPageHostOverride(
       contextual_tasks::HostOverride{"test.google.com"});
 
-  GURL url("https://www.google.com/search?q=host_test&gsc=2&hl=en&cs=0");
+  GURL url("https://www.google.com/search?q=host_test&gsc=2&hl=en&cs=" +
+           GetExpectedCs());
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);

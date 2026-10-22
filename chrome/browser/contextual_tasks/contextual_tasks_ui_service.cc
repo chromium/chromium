@@ -1560,8 +1560,12 @@ bool ContextualTasksUiService::ShouldAddRequiredSidePanelUrlChanges(
   auto expected_params =
       GetCommonSearchParamsMapForContextualTasks(source_contents);
 
-  // Check if any expected parameter is missing, or if 'cs' (dark mode) or
-  // 'gsc' (side panel) is out of sync.
+  // TODO(crbug.com/536100150): Sync `cs` on Android once
+  // `GetCommonSearchParamsMapForContextualTasks()` supports dark mode there.
+  constexpr bool kSyncDarkModeParam = !BUILDFLAG(IS_ANDROID);
+
+  // Check if any expected parameter is missing, or if `cs` (dark mode) or
+  // `gsc` (side panel) is out of sync.
   for (const auto& [key, value] : expected_params) {
     std::string current_val;
     bool has_key = net::GetValueForKeyInQuery(url, key, &current_val);
@@ -1570,7 +1574,9 @@ bool ContextualTasksUiService::ShouldAddRequiredSidePanelUrlChanges(
           << "ShouldAddRequiredSidePanelUrlChanges: missing param " << key;
       return true;  // Missing parameter -> needs handling.
     }
-    if (key == lens::kChromeSidePanelParameterKey && current_val != value) {
+    if ((key == lens::kChromeSidePanelParameterKey ||
+         (kSyncDarkModeParam && key == "cs")) &&
+        current_val != value) {
       OMNIBOX_LOG("nav_trace")
           << "ShouldAddRequiredSidePanelUrlChanges: " << key
           << " value mismatch";
@@ -1619,18 +1625,26 @@ bool ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
 GURL ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
     const GURL& url,
     content::WebContents* source_contents) {
-  if (!source_contents || !url.SchemeIsHTTPOrHTTPS()) {
+  if (!source_contents || !url.SchemeIsHTTPOrHTTPS() || IsSignInDomain(url) ||
+      GaiaUrls::GetInstance()->gaia_origin().IsSameOriginWith(url) ||
+      net::IsSubdomainOf(url.host(), "accounts.google.com") ||
+      base::StartsWith(url.path(), "/sorry/")) {
     return url;
   }
 
   auto common_params =
       GetCommonSearchParamsMapForContextualTasks(source_contents);
 
+  // TODO(crbug.com/536100150): Sync `cs` on Android once
+  // `GetCommonSearchParamsMapForContextualTasks()` supports dark mode there.
+  constexpr bool kSyncDarkModeParam = !BUILDFLAG(IS_ANDROID);
+
   GURL new_url = url;
   for (const auto& [key, value] : common_params) {
     std::string current_val;
-    // Skip existing keys except 'gsc'.
+    // Skip existing keys except `gsc` and (on desktop) `cs`.
     if (key != lens::kChromeSidePanelParameterKey &&
+        (!kSyncDarkModeParam || key != "cs") &&
         net::GetValueForKeyInQuery(new_url, key, &current_val)) {
       continue;
     }

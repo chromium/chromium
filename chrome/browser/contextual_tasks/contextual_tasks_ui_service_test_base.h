@@ -171,6 +171,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
   using ContextualTasksUiService::HandleSidePanelExternalNavigation;
   using ContextualTasksUiService::IsAllowedSidePanelUrl;
   using ContextualTasksUiService::IsWebContentsInSidePanel;
+  using ContextualTasksUiService::ShouldAddRequiredSidePanelUrlChanges;
   using ContextualTasksUiService::ShouldHandleCitationClick;
   using ContextualTasksUiService::ShouldHandleLensNavigation;
   using ContextualTasksUiService::ShouldHandleSidePanelExternalNavigation;

@@ -24,12 +24,18 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/scoped_observation.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #endif
 
 class BrowserWindowInterface;
 class PrefService;
+#if !BUILDFLAG(IS_ANDROID)
+class ThemeService;
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 namespace contextual_tasks {
@@ -73,7 +79,13 @@ class ContextualTasksSidePanelCoordinator
     : public ContextualTasksPanelController,
       public ContextualTasksPanelHost::Observer,
       public TabListInterfaceObserver,
-      content::WebContentsObserver {
+      content::WebContentsObserver
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+      public ThemeServiceObserver,
+      public ui::NativeThemeObserver
+#endif
+{
  public:
   using PaintCallback = base::OnceCallback<void(content::WebContents*)>;
 
@@ -224,6 +236,14 @@ class ContextualTasksSidePanelCoordinator
   void OnTabRemoved(TabListInterface& tab_list,
                     tabs::TabInterface* tab,
                     TabRemovedReason removed_reason) override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // ThemeServiceObserver:
+  void OnThemeChanged() override;
+
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+#endif
 
   // Get the WebContentsCacheItem for web_contents, return nullptr if not found.
   ContextualTasksSidePanelCoordinator::WebContentsCacheItem*
@@ -402,9 +422,7 @@ class ContextualTasksSidePanelCoordinator
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/536100150): Support this on Android Desktop
   WebUIBubbleReopenSuppressor page_info_bubble_suppressor_;
-#endif
 
-#if !BUILDFLAG(IS_ANDROID)
   // Returns an anchor for the side panel toolbar's super G button, or a null
   // anchor if that element is not currently available. The underlying
   // `ui::TrackedElement` is owned by the side panel WebUI document and dies
@@ -419,6 +437,18 @@ class ContextualTasksSidePanelCoordinator
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
   void OnSeeExtensionsClicked();
   std::unique_ptr<ContextualTasksExtensionsContainer> extensions_container_;
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Refreshes cached side panel `WebContents` when the profile's effective dark
+  // mode changes so embedded pages stay in sync with the shared toolbar.
+  void MaybeRefreshWebContentsForDarkModeChange();
+
+  bool is_dark_mode_ = false;
+  base::ScopedObservation<ThemeService, ThemeServiceObserver>
+      theme_service_observation_{this};
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
 #endif
 
   base::WeakPtrFactory<ContextualTasksSidePanelCoordinator> weak_ptr_factory_{

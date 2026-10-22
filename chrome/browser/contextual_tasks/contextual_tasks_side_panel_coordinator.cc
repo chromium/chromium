@@ -52,6 +52,8 @@
 #include "net/base/url_util.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -60,6 +62,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_extensions_container.h"
 #endif
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
@@ -347,6 +350,20 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
   TabListInterface::From(browser_window_)->AddTabListInterfaceObserver(this);
   contextual_tasks_panel_host_->AddObserver(this);
 
+#if !BUILDFLAG(IS_ANDROID)
+  if (Profile* profile = browser_window_->GetProfile()) {
+    is_dark_mode_ = contextual_tasks::ShouldUseDarkMode(profile);
+    if (ThemeService* theme_service =
+            ThemeServiceFactory::GetForProfile(profile)) {
+      theme_service_observation_.Observe(theme_service);
+    }
+  }
+  if (ui::NativeTheme* native_theme =
+          ui::NativeTheme::GetInstanceForNativeUi()) {
+    native_theme_observation_.Observe(native_theme);
+  }
+#endif
+
   if (eligibility_manager) {
     eligibility_change_subscription_ =
         eligibility_manager->RegisterOnEntryPointEligibilityChanged(
@@ -357,6 +374,10 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
 }
 
 ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() {
+#if !BUILDFLAG(IS_ANDROID)
+  theme_service_observation_.Reset();
+  native_theme_observation_.Reset();
+#endif
   for (auto& observer : observers_) {
     observer.OnControllerDestroyed();
   }
@@ -1231,6 +1252,17 @@ void ContextualTasksSidePanelCoordinator::OnTabRemoved(
   }
   tabs_with_closed_panel_.erase(tab->GetHandle());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualTasksSidePanelCoordinator::OnThemeChanged() {
+  MaybeRefreshWebContentsForDarkModeChange();
+}
+
+void ContextualTasksSidePanelCoordinator::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
+  MaybeRefreshWebContentsForDarkModeChange();
+}
+#endif
 
 std::optional<ContextualTask>
 ContextualTasksSidePanelCoordinator::GetCurrentTask() {
@@ -2300,5 +2332,51 @@ void ContextualTasksSidePanelCoordinator::OnLogoPointerDown() {
   page_info_bubble_suppressor_.OnMousePressed();
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualTasksSidePanelCoordinator::
+    MaybeRefreshWebContentsForDarkModeChange() {
+  if (!IsContextualTasksSidePanelRearchitectureEnabled()) {
+    return;
+  }
+
+  Profile* profile = browser_window_->GetProfile();
+  const bool dark_mode = contextual_tasks::ShouldUseDarkMode(profile);
+  if (dark_mode == is_dark_mode_) {
+    return;
+  }
+  is_dark_mode_ = dark_mode;
+
+  std::vector<base::WeakPtr<content::WebContents>> web_contents_to_refresh;
+  web_contents_to_refresh.reserve(task_id_to_web_contents_cache_.size());
+  for (auto& [task_id, cache_item] : task_id_to_web_contents_cache_) {
+    if (cache_item && cache_item->web_contents) {
+      web_contents_to_refresh.push_back(cache_item->web_contents->GetWeakPtr());
+    }
+  }
+
+  for (const base::WeakPtr<content::WebContents>& weak_wc :
+       web_contents_to_refresh) {
+    content::WebContents* wc = weak_wc.get();
+    if (!wc) {
+      continue;
+    }
+    GURL url = wc->GetVisibleURL();
+    if (url.is_empty()) {
+      url = wc->GetLastCommittedURL();
+    }
+    const GURL updated_url =
+        ContextualTasksUiService::AddRequiredSidePanelUrlChanges(url, wc);
+    if (updated_url != url) {
+      wc->GetController().LoadURL(updated_url, content::Referrer(),
+                                  ui::PAGE_TRANSITION_RELOAD, std::string());
+    }
+    if (weak_wc) {
+      ContextualTasksWebView::ConfigureWebContentsBackground(weak_wc.get(),
+                                                             profile);
+    }
+  }
+}
+#endif
 
 }  // namespace contextual_tasks

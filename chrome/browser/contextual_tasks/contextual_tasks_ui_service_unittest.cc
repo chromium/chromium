@@ -77,6 +77,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #else
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
@@ -5456,5 +5458,62 @@ TEST_F(ContextualTasksUiServiceTest,
 
   real_service_->DestroyClosedSidePanel(&mock_browser_window);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksUiServiceTest, SidePanelUrlChangesSyncStaleCsParam) {
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(theme_service, nullptr);
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(true));
+
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  const GURL stale_light_url = service_for_nav_->AddRequiredSidePanelUrlChanges(
+      GURL("https://www.google.com/search?udm=50&q=test"),
+      panel_contents.get());
+  std::string cs_value;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(stale_light_url, "cs", &cs_value));
+  ASSERT_EQ(cs_value, "0");
+  EXPECT_FALSE(service_for_nav_->ShouldAddRequiredSidePanelUrlChanges(
+      CreateOpenUrlParams(stale_light_url, /*is_renderer_initiated=*/true),
+      panel_contents.get()));
+
+  theme_service->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+  EXPECT_TRUE(service_for_nav_->ShouldAddRequiredSidePanelUrlChanges(
+      CreateOpenUrlParams(stale_light_url, /*is_renderer_initiated=*/true),
+      panel_contents.get()));
+  GURL updated_dark = service_for_nav_->AddRequiredSidePanelUrlChanges(
+      stale_light_url, panel_contents.get());
+  EXPECT_TRUE(net::GetValueForKeyInQuery(updated_dark, "cs", &cs_value));
+  EXPECT_EQ(cs_value, "1");
+  EXPECT_FALSE(service_for_nav_->ShouldAddRequiredSidePanelUrlChanges(
+      CreateOpenUrlParams(updated_dark, /*is_renderer_initiated=*/true),
+      panel_contents.get()));
+
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  EXPECT_TRUE(service_for_nav_->ShouldAddRequiredSidePanelUrlChanges(
+      CreateOpenUrlParams(updated_dark, /*is_renderer_initiated=*/true),
+      panel_contents.get()));
+  GURL updated_light = service_for_nav_->AddRequiredSidePanelUrlChanges(
+      updated_dark, panel_contents.get());
+  EXPECT_TRUE(net::GetValueForKeyInQuery(updated_light, "cs", &cs_value));
+  EXPECT_EQ(cs_value, "0");
+
+  const GURL signin_url("https://login.corp.google.com/request");
+  EXPECT_EQ(signin_url, service_for_nav_->AddRequiredSidePanelUrlChanges(
+                            signin_url, panel_contents.get()));
+  const GURL captcha_url(
+      "https://www.google.com/sorry/index?continue=https://www.google.com/"
+      "search");
+  EXPECT_EQ(captcha_url, service_for_nav_->AddRequiredSidePanelUrlChanges(
+                             captcha_url, panel_contents.get()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace contextual_tasks
