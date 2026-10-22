@@ -6,7 +6,6 @@
 #define COMPONENTS_DOM_DISTILLER_CORE_FAKE_DISTILLER_PAGE_H_
 
 #include "components/dom_distiller/core/distiller_page.h"
-#include "components/dom_distiller/core/dom_distiller_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace dom_distiller {
@@ -31,7 +30,6 @@ class MockDistillerPage : public DistillerPage {
  public:
   MockDistillerPage();
   ~MockDistillerPage() override;
-  MOCK_METHOD0(GetDistillerType, DistillerType());
   MOCK_METHOD2(DistillPageImpl,
                void(const GURL& gurl, const std::string& script));
 };

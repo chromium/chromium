@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "components/dom_distiller/core/proto/distilled_page.pb.h"
 #include "components/dom_distiller/core/readability_options.h"
-#include "third_party/dom_distiller_js/dom_distiller.pb.h"
 
 namespace base {
 class Value;
@@ -16,14 +16,19 @@ class Value;
 
 namespace dom_distiller {
 
+// Keys for fields in the dictionary returned by the JavaScript distiller.
+inline constexpr char kDistilledTitleKey[] = "title";
+inline constexpr char kDistilledContentKey[] = "content";
+inline constexpr char kDistilledTextDirectionKey[] = "dir";
+inline constexpr char kDistilledTextContentKey[] = "textContent";
+
 // Counts the number of words in the text_content portion.
 int CountWords(const std::string& text_content);
 
 // Converts the JS object returned by the readability distiller into the
-// DomDistillerResult expected by the distillation infra.
-bool ReadabilityDistillerResultToDomDistillerResult(
-    const base::Value& value,
-    proto::DomDistillerResult* result);
+// DistilledPageProto expected by the distillation infra.
+bool ReadabilityDistillerResultToDistilledPageProto(const base::Value& value,
+                                                    DistilledPageProto* result);
 
 // Returns the Readability JavaScript web page distillation script with the
 // given options.

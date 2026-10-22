@@ -39,7 +39,6 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using content::ContentBrowserTest;
@@ -117,7 +116,7 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
 
   void OnPageDistillationFinished(
       base::OnceClosure quit_closure,
-      std::unique_ptr<proto::DomDistillerResult> distiller_result,
+      std::unique_ptr<DistilledPageProto> distiller_result,
       DistillationParseResult /*result*/) {
     distiller_result_ = std::move(distiller_result);
     std::move(quit_closure).Run();
@@ -129,7 +128,7 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
                                     bool wait_for_document_loaded);
 
   raw_ptr<DistillerPageWebContents, DanglingUntriaged> distiller_page_;
-  std::unique_ptr<proto::DomDistillerResult> distiller_result_;
+  std::unique_ptr<DistilledPageProto> distiller_result_;
 };
 
 // Use this class to be able to leak the WebContents, which is needed for when
@@ -179,9 +178,8 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   run_loop.Run();
 
   EXPECT_EQ("Test Page Title", distiller_result_->title());
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
-              HasSubstr("Lorem ipsum"));
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
+  EXPECT_THAT(distiller_result_->html(), HasSubstr("Lorem ipsum"));
+  EXPECT_THAT(distiller_result_->html(),
               Not(HasSubstr("questionable content")));
   EXPECT_EQ("", distiller_result_->pagination_info().next_page());
   EXPECT_EQ("", distiller_result_->pagination_info().prev_page());
@@ -205,9 +203,9 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   run_loop.Run();
 
   // A relative link should've been updated.
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
+  EXPECT_THAT(distiller_result_->html(),
               ContainsRegex("href=\"http://127.0.0.1:.*/relativelink.html\""));
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
+  EXPECT_THAT(distiller_result_->html(),
               HasSubstr("href=\"http://www.google.com/absolutelink.html\""));
 }
 
@@ -229,9 +227,9 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   run_loop.Run();
 
   // A relative link should've been updated.
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
+  EXPECT_THAT(distiller_result_->html(),
               ContainsRegex("src=\"http://127.0.0.1:.*/relativeimage.png\""));
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
+  EXPECT_THAT(distiller_result_->html(),
               HasSubstr("src=\"http://www.google.com/absoluteimage.png\""));
 }
 
@@ -253,9 +251,9 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   run_loop.Run();
 
   // A relative source should've been updated.
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
+  EXPECT_THAT(distiller_result_->html(),
               ContainsRegex("src=\"http://127.0.0.1:.*/relative_video.webm\""));
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
+  EXPECT_THAT(distiller_result_->html(),
               HasSubstr("src=\"http://www.google.com/absolute_video.ogg\""));
 }
 
@@ -279,16 +277,14 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
     base::RunLoop run_loop;
     DistillPage(run_loop.QuitClosure(), "/visible_style.html");
     run_loop.Run();
-    EXPECT_THAT(distiller_result_->distilled_content().html(),
-                HasSubstr("Lorem ipsum"));
+    EXPECT_THAT(distiller_result_->html(), HasSubstr("Lorem ipsum"));
   }
 
   {
     base::RunLoop run_loop;
     DistillPage(run_loop.QuitClosure(), "/invisible_style.html");
     run_loop.Run();
-    EXPECT_THAT(distiller_result_->distilled_content().html(),
-                Not(HasSubstr("Lorem ipsum")));
+    EXPECT_THAT(distiller_result_->html(), Not(HasSubstr("Lorem ipsum")));
   }
 }
 
@@ -303,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest, HandlesShadowDOM) {
   DistillPage(run_loop.QuitClosure(), kShadowDomArticlePath);
   run_loop.Run();
 
-  const std::string& html = distiller_result_->distilled_content().html();
+  const std::string& html = distiller_result_->html();
 
   EXPECT_EQ("Shadow DOM Test Page Title", distiller_result_->title());
 

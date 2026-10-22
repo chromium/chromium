@@ -7,13 +7,6 @@
 
 namespace dom_distiller {
 
-// The distillation technique used for distilling web page content.
-enum class DistillerType {
-  kReadability = 0,
-  kDOMDistiller = 1,
-  kMaxValue = kDOMDistiller,
-};
-
 extern const char kChromeUIDomDistillerURL[];
 extern const char kChromeUIDomDistillerHost[];
 

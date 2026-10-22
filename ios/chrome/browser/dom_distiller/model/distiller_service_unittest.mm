@@ -35,9 +35,6 @@ class TestDistillerPage : public dom_distiller::DistillerPage {
     base::Value empty_result;
     OnDistillationDone(url, &empty_result);
   }
-  dom_distiller::DistillerType GetDistillerType() override {
-    return dom_distiller::DistillerType::kDOMDistiller;
-  }
 };
 
 }  //  namespace

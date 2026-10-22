@@ -46,10 +46,6 @@ void ReaderModeDistillerPage::DistillPageImpl(const GURL& url,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }
 
-dom_distiller::DistillerType ReaderModeDistillerPage::GetDistillerType() {
-  return dom_distiller::DistillerType::kReadability;
-}
-
 void ReaderModeDistillerPage::HandleJavaScriptResult(
     const GURL& url,
     const base::Value* result) {

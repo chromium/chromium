@@ -106,12 +106,8 @@ class DistillerImpl : public Distiller {
   void OnPageDistillationFinished(
       int page_num,
       const GURL& page_url,
-      std::unique_ptr<proto::DomDistillerResult> distilled_page,
+      std::unique_ptr<DistilledPageProto> distilled_page,
       DistillationParseResult result);
-
-  virtual void MaybeFetchImage(int page_num,
-                               const std::string& image_id,
-                               const std::string& image_url);
 
   // Distills the next page.
   void DistillNextPage();

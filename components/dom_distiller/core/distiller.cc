@@ -129,7 +129,7 @@ void DistillerImpl::DistillNextPage() {
 void DistillerImpl::OnPageDistillationFinished(
     int page_num,
     const GURL& page_url,
-    std::unique_ptr<proto::DomDistillerResult> distiller_result,
+    std::unique_ptr<DistilledPageProto> distilled_page,
     DistillationParseResult result) {
   DCHECK(started_pages_index_.find(page_num) != started_pages_index_.end());
   if (result != DistillationParseResult::kSuccess) {
@@ -139,7 +139,7 @@ void DistillerImpl::OnPageDistillationFinished(
     return;
   }
 
-  DCHECK(distiller_result);
+  DCHECK(distilled_page);
   CHECK_LT(started_pages_index_[page_num], pages_.size())
       << "started_pages_index_[" << page_num
       << "] (=" << started_pages_index_[page_num] << ") is out of range.";
@@ -148,107 +148,17 @@ void DistillerImpl::OnPageDistillationFinished(
                    << "] (=" << started_pages_index_[page_num]
                    << ")) returns nullptr. pages_.size() = " << pages_.size()
                    << ".";
+  distilled_page->set_url(page_url.spec());
+  DCHECK(distilled_page->has_word_count());
+  base::UmaHistogramCounts100000("DomDistiller.WordCount",
+                                 distilled_page->word_count());
   page_data->distilled_page_proto =
       new base::RefCountedData<DistilledPageProto>();
+  page_data->distilled_page_proto->data = std::move(*distilled_page);
   page_data->page_num = page_num;
-  if (distiller_result->has_title()) {
-    page_data->distilled_page_proto->data.set_title(distiller_result->title());
-  }
-  page_data->distilled_page_proto->data.set_url(page_url.spec());
-  bool content_empty = true;
-  if (distiller_result->has_distilled_content() &&
-      distiller_result->distilled_content().has_html()) {
-    page_data->distilled_page_proto->data.set_html(
-        distiller_result->distilled_content().html());
-    if (!distiller_result->distilled_content().html().empty()) {
-      content_empty = false;
-    }
-  }
-
-  if (distiller_result->has_text_content()) {
-    page_data->distilled_page_proto->data.set_text_content(
-        distiller_result->text_content());
-  }
-
-  if (distiller_result->has_debug_info() &&
-      distiller_result->debug_info().has_log()) {
-    page_data->distilled_page_proto->data.mutable_debug_info()->set_log(
-        distiller_result->debug_info().log());
-  }
-
-  if (distiller_result->has_text_direction()) {
-    page_data->distilled_page_proto->data.set_text_direction(
-        distiller_result->text_direction());
-  } else {
-    page_data->distilled_page_proto->data.set_text_direction("auto");
-  }
-
-  if (distiller_result->has_pagination_info()) {
-    const proto::PaginationInfo& pagination_info =
-        distiller_result->pagination_info();
-    // Skip the next page if the first page is empty.
-    if (pagination_info.has_next_page() && (page_num != 0 || !content_empty)) {
-      GURL next_page_url(pagination_info.next_page());
-      if (next_page_url.is_valid()) {
-        // The pages should be in same origin.
-        if (next_page_url.DeprecatedGetOriginAsURL() ==
-            page_url.DeprecatedGetOriginAsURL()) {
-          AddToDistillationQueue(page_num + 1, next_page_url);
-          page_data->distilled_page_proto->data.mutable_pagination_info()
-              ->set_next_page(next_page_url.spec());
-        }
-      }
-    }
-
-    if (pagination_info.has_prev_page()) {
-      GURL prev_page_url(pagination_info.prev_page());
-      if (prev_page_url.is_valid()) {
-        if (prev_page_url.DeprecatedGetOriginAsURL() ==
-            page_url.DeprecatedGetOriginAsURL()) {
-          AddToDistillationQueue(page_num - 1, prev_page_url);
-          page_data->distilled_page_proto->data.mutable_pagination_info()
-              ->set_prev_page(prev_page_url.spec());
-        }
-      }
-    }
-
-    if (pagination_info.has_canonical_page()) {
-      GURL canonical_page_url(pagination_info.canonical_page());
-      if (canonical_page_url.is_valid()) {
-        page_data->distilled_page_proto->data.mutable_pagination_info()
-            ->set_canonical_page(canonical_page_url.spec());
-      }
-    }
-  }
-
-  for (int img_num = 0; img_num < distiller_result->content_images_size();
-       ++img_num) {
-    std::string image_id = base::NumberToString(page_num + 1) + "_" +
-                           base::NumberToString(img_num);
-    MaybeFetchImage(page_num, image_id,
-                    distiller_result->content_images(img_num).url());
-  }
-
-  base::UmaHistogramCounts100000(
-      "DomDistiller.WordCount",
-      distiller_result->statistics_info().word_count());
 
   AddPageIfDone(page_num);
   DistillNextPage();
-}
-
-void DistillerImpl::MaybeFetchImage(int page_num,
-                                    const std::string& image_id,
-                                    const std::string& image_url) {
-  if (!GURL(image_url).is_valid())
-    return;
-  DCHECK(started_pages_index_.find(page_num) != started_pages_index_.end());
-  DistilledPageData* page_data = GetPageAtIndex(started_pages_index_[page_num]);
-
-  DistilledPageProto_Image* image =
-      page_data->distilled_page_proto->data.add_image();
-  image->set_name(image_id);
-  image->set_url(image_url);
 }
 
 void DistillerImpl::AddPageIfDone(int page_num) {

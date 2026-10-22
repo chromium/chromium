@@ -126,10 +126,6 @@ DistillerPageWebContents::DistillerPageWebContents(
 
 DistillerPageWebContents::~DistillerPageWebContents() = default;
 
-DistillerType DistillerPageWebContents::GetDistillerType() {
-  return DistillerType::kReadability;
-}
-
 void DistillerPageWebContents::DistillPageImpl(const GURL& url,
                                                const std::string& script) {
   DCHECK(browser_context_);

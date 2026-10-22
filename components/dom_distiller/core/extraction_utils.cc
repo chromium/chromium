@@ -14,9 +14,9 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
+#include "components/dom_distiller/core/proto/distilled_page.pb.h"
 #include "components/dom_distiller/core/readability_options.h"
 #include "components/grit/components_resources.h"
-#include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace dom_distiller {
@@ -85,35 +85,35 @@ int CountWords(const std::string& text_content) {
   return result + 1;
 }
 
-bool ReadabilityDistillerResultToDomDistillerResult(
+bool ReadabilityDistillerResultToDistilledPageProto(
     const base::Value& value,
-    proto::DomDistillerResult* result) {
+    DistilledPageProto* result) {
   if (!value.is_dict()) {
     return false;
   }
 
   const base::DictValue* dict_value = value.GetIfDict();
 
-  if (auto* title = dict_value->FindString("title")) {
+  if (const std::string* title = dict_value->FindString(kDistilledTitleKey)) {
     result->set_title(*title);
   }
-  if (auto* content = dict_value->FindString("content")) {
-    auto* distilled_content = new proto::DistilledContent();
-    distilled_content->set_html(*content);
-    result->set_allocated_distilled_content(std::move(distilled_content));
+  if (const std::string* content =
+          dict_value->FindString(kDistilledContentKey)) {
+    result->set_html(*content);
   }
 
-  if (auto* dir = dict_value->FindString("dir")) {
+  if (const std::string* dir =
+          dict_value->FindString(kDistilledTextDirectionKey);
+      dir && !dir->empty()) {
     result->set_text_direction(*dir);
   } else {
     result->set_text_direction("auto");
   }
 
-  if (auto* text_content = dict_value->FindString("textContent")) {
+  if (const std::string* text_content =
+          dict_value->FindString(kDistilledTextContentKey)) {
     result->set_text_content(*text_content);
-    auto* statistics_info = new proto::StatisticsInfo();
-    statistics_info->set_word_count(CountWords(*text_content));
-    result->set_allocated_statistics_info(statistics_info);
+    result->set_word_count(CountWords(*text_content));
   }
 
   return true;

@@ -88,7 +88,6 @@ static_library("core") {
     "//components/dom_distiller/core:dom_distiller_features",
     "//components/dom_distiller/core/proto",
     "//net",
-    "//third_party/dom_distiller_js:proto",
   ]
   deps = [
     ":dom_distiller_viewer_js",

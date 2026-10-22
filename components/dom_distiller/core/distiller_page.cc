@@ -25,8 +25,6 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/extraction_utils.h"
 #include "components/grit/components_resources.h"
-#include "third_party/dom_distiller_js/dom_distiller.pb.h"
-#include "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
@@ -68,51 +66,21 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
   DCHECK(!ready_);
   ready_ = true;
 
-  std::unique_ptr<dom_distiller::proto::DomDistillerResult> distiller_result(
-      new dom_distiller::proto::DomDistillerResult());
-
+  auto distilled_page = std::make_unique<DistilledPageProto>();
   DistillationParseResult result = DistillationParseResult::kParseFailure;
 
   if (!value || value->is_none()) {
     result = DistillationParseResult::kNoData;
+  } else if (ReadabilityDistillerResultToDistilledPageProto(
+                 *value, distilled_page.get())) {
+    result = DistillationParseResult::kSuccess;
+    if (distilled_page->has_word_count() &&
+        distilled_page->word_count() <
+            GetMinimumAllowableDistilledContentLength()) {
+      result = DistillationParseResult::kContentTooShort;
+    }
   } else {
-    bool parsed_successfully = false;
-    switch (GetDistillerType()) {
-      case DistillerType::kReadability:
-        parsed_successfully = ReadabilityDistillerResultToDomDistillerResult(
-            *value, distiller_result.get());
-        break;
-      case DistillerType::kDOMDistiller:
-        parsed_successfully =
-            dom_distiller::proto::json::DomDistillerResult::ReadFromValue(
-                *value, distiller_result.get());
-        break;
-    }
-
-    if (parsed_successfully) {
-      // Assume success unless a specific validation check fails.
-      result = DistillationParseResult::kSuccess;
-
-      // Apply a content length check specifically for the Readability
-      // distiller.
-      if (GetDistillerType() == DistillerType::kReadability) {
-        bool content_is_long_enough = true;
-        if (distiller_result->has_statistics_info() &&
-            distiller_result->statistics_info().has_word_count()) {
-          content_is_long_enough =
-              distiller_result->statistics_info().word_count() >=
-              GetMinimumAllowableDistilledContentLength();
-        }
-
-        // If content is too short, update the result state.
-        if (!content_is_long_enough) {
-          result = DistillationParseResult::kContentTooShort;
-        }
-      }
-    } else {
-      // Parsing failed, the default state is already kParseFailure.
-      DVLOG(1) << "Unable to parse DomDistillerResult.";
-    }
+    DVLOG(1) << "Unable to parse DistilledPageProto.";
   }
 
   // Record result for page distillation
@@ -120,7 +88,7 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(distiller_page_callback_),
-                                std::move(distiller_result), result));
+                                std::move(distilled_page), result));
 }
 
 }  // namespace dom_distiller

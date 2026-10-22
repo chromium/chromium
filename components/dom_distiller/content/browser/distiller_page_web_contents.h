@@ -67,9 +67,6 @@ class DistillerPageWebContents : public DistillerPage,
                                optional_web_contents_handle);
   ~DistillerPageWebContents() override;
 
-  // DistillerPage implementation.
-  DistillerType GetDistillerType() override;
-
   // content::WebContentsDelegate implementation.
   gfx::Size GetSizeForNewRenderView(
       content::WebContents* web_contents) override;
