@@ -177,8 +177,9 @@ CastMediaRouteProvider::~CastMediaRouteProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!sink_queries_.empty()) {
     CHECK_EQ(sink_queries_.size(), 1u, base::NotFatalUntil::M161);
-    CHECK_EQ(sink_queries_.begin()->first, MediaSource::ForAnyTab().id(),
-             base::NotFatalUntil::M161);
+    // TODO(crbug.com/575407917): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(sink_queries_.begin()->first, MediaSource::ForAnyTab().id());
   }
 }
 
