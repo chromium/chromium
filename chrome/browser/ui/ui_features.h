@@ -34,6 +34,8 @@ BASE_DECLARE_FEATURE(kFeedbackDisabledDialog);
 BASE_DECLARE_FEATURE(kLegacySearchIntegrityCheck);
 #endif
 
+BASE_DECLARE_FEATURE(kFedCmPermissionUiWithContainer);
+
 BASE_DECLARE_FEATURE(kImportExportFlags);
 
 // Shows a "+N" count pill in the bottom-most infobar while lower-priority

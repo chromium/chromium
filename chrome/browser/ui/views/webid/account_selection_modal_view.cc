@@ -10,12 +10,14 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
@@ -50,6 +52,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -78,6 +81,15 @@ constexpr int kVerticalPadding = 8;
 constexpr int kDialogWidth = 448;
 // The margins of the modal dialog.
 constexpr int kDialogMargin = 20;
+// The corner radius of the disclosure container.
+constexpr int kDisclosureContainerCornerRadius = 12;
+// The padding between the disclosure container's edges and its contents.
+constexpr auto kDisclosureContainerInsets =
+    gfx::Insets::TLBR(/*top=*/12, /*left=*/16, /*bottom=*/16, /*right=*/16);
+// The size of the icon in the disclosure container.
+constexpr int kDisclosureContainerIconSize = 20;
+// The spacing between the icon and the text in the disclosure container.
+constexpr int kDisclosureContainerIconLabelSpacing = 8;
 
 class BackgroundImageView : public views::ImageView {
   METADATA_HEADER(BackgroundImageView, views::ImageView)
@@ -139,6 +151,51 @@ std::unique_ptr<views::View> CreateButtonContainer() {
                                            /*bottom=*/kDialogMargin,
                                            /*right=*/kDialogMargin));
   return button_container;
+}
+
+bool IsContainerUIEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmPermissionUiWithContainer);
+}
+
+// Creates a row with `icon` followed by `label`, on a rounded background.
+std::unique_ptr<views::View> CreateDisclosureContainerRow(
+    const gfx::VectorIcon& icon,
+    std::unique_ptr<views::StyledLabel> label) {
+  auto row = std::make_unique<views::BoxLayoutView>();
+  row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  row->SetInsideBorderInsets(kDisclosureContainerInsets);
+  row->SetBetweenChildSpacing(kDisclosureContainerIconLabelSpacing);
+  row->SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorSysSurface3, kDisclosureContainerCornerRadius));
+
+  auto* icon_view = row->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          icon, ui::kColorSysPrimary, kDisclosureContainerIconSize)));
+  icon_view->GetViewAccessibility().SetIsIgnored(true);
+
+  // The row's insets replace the label's top border.
+  label->SetBorder(nullptr);
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  label->SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle);
+  label->SetDisplayedOnBackgroundColor(ui::kColorSysSurface3);
+  row->SetFlexForView(row->AddChildView(std::move(label)), 1);
+  return row;
+}
+
+// Wraps `disclosure_label` in a container.
+std::unique_ptr<views::View> CreateDisclosureContainer(
+    std::unique_ptr<views::StyledLabel> disclosure_label) {
+  auto container = std::make_unique<views::BoxLayoutView>();
+  container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  container->SetProperty(views::kMarginsKey,
+                         gfx::Insets::TLBR(/*top=*/kVerticalSpacing, /*left=*/0,
+                                           /*bottom=*/0, /*right=*/0));
+  container->AddChildView(CreateDisclosureContainerRow(
+      features::IsRoundedIconsEnabled() ? kPersonFilledIcon
+                                        : kPersonFilledPaddedSmallOldIcon,
+      std::move(disclosure_label)));
+  return container;
 }
 }  // namespace
 
@@ -300,7 +357,9 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
             std::move(*continue_callback),
             l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE));
     continue_button_ = continue_button.get();
-    continue_button->SetStyle(ui::ButtonStyle::kProminent);
+    continue_button->SetStyle(IsContainerUIEnabled()
+                                  ? ui::ButtonStyle::kTonal
+                                  : ui::ButtonStyle::kProminent);
     continue_button->SetAppearDisabledInInactiveWidget(true);
     button_container->AddChildView(std::move(continue_button));
   }
@@ -714,17 +773,22 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
     // Add disclosure label.
     std::unique_ptr<views::StyledLabel> disclosure_label =
         CreateDisclosureLabel(account);
-    disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
-    disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        /*top=*/kVerticalSpacing, /*left=*/0, /*bottom=*/0,
-        /*right=*/0)));
     // Announce immediately if the view is showing.
     if (GetWidget()->IsVisible()) {
       GetViewAccessibility().AnnounceAlert(disclosure_label->GetText());
     } else {
       queued_announcement_ = disclosure_label->GetText();
     }
-    account_chooser_->AddChildView(std::move(disclosure_label));
+    disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
+    if (IsContainerUIEnabled()) {
+      account_chooser_->AddChildView(
+          CreateDisclosureContainer(std::move(disclosure_label)));
+    } else {
+      disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+          /*top=*/kVerticalSpacing, /*left=*/0, /*bottom=*/0,
+          /*right=*/0)));
+      account_chooser_->AddChildView(std::move(disclosure_label));
+    }
   }
   AddChildView(CreateButtonRow(
       base::BindRepeating(&AccountSelectionModalView::OnContinueButtonClicked,
@@ -746,11 +810,7 @@ void AccountSelectionModalView::OnContinueButtonClicked(
   }
 
   has_spinner_ = true;
-
-  ReplaceButtonWithSpinner(continue_button_,
-                           ui::kColorButtonForegroundProminent,
-                           ui::kColorButtonBackgroundProminent);
-
+  ReplaceButtonWithSpinner(continue_button_);
   owner_->OnAccountSelected(account, event);
 }
 
@@ -967,9 +1027,26 @@ AccountSelectionModalView::CreateCombinedIconsView() {
 }
 
 void AccountSelectionModalView::ReplaceButtonWithSpinner(
-    views::MdTextButton* button,
-    ui::ColorId spinner_color,
-    ui::ColorId button_color) {
+    views::MdTextButton* button) {
+  ui::ColorId spinner_color;
+  ui::ColorId button_color;
+  switch (button->GetStyle()) {
+    case ui::ButtonStyle::kProminent:
+      spinner_color = ui::kColorButtonForegroundProminent;
+      button_color = ui::kColorButtonBackgroundProminent;
+      break;
+    case ui::ButtonStyle::kTonal:
+      spinner_color = ui::kColorButtonForegroundTonal;
+      button_color = ui::kColorButtonBackgroundTonal;
+      break;
+    case ui::ButtonStyle::kDefault:
+    case ui::ButtonStyle::kText:
+      spinner_color = ui::kColorButtonForeground;
+      button_color = ui::kColorButtonBackground;
+      break;
+    default:
+      NOTREACHED();
+  }
   std::unique_ptr<views::Throbber> button_spinner =
       std::make_unique<views::Throbber>();
   button_spinner->SetPreferredSize(

@@ -37,6 +37,11 @@ BASE_FEATURE(kCtrlTabMru, base::FEATURE_ENABLED_BY_DEFAULT);
 // navigation. Kill switch for crbug.com/554464784.
 BASE_FEATURE(kFastFaviconDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the request permission UI with a container for the disclosure text
+// in the FedCM active mode modal dialog on desktop.
+BASE_FEATURE(kFedCmPermissionUiWithContainer,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kImportExportFlags, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInfoBarQueuedCountPill, base::FEATURE_DISABLED_BY_DEFAULT);

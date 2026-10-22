@@ -208,11 +208,9 @@ class AccountSelectionModalView : public views::BoxLayoutView,
   // the other sheets either hide `body_label_` or set their own text.
   std::u16string GetBodyText() const;
 
-  // Updates the button to have a spinner appear in the middle of it.
-  void ReplaceButtonWithSpinner(
-      views::MdTextButton* button,
-      ui::ColorId spinner_color = ui::kColorButtonForeground,
-      ui::ColorId button_color = ui::kColorButtonBackground);
+  // Updates the button to have a spinner appear in the middle of it. The
+  // spinner and background colors are based on the button's style.
+  void ReplaceButtonWithSpinner(views::MdTextButton* button);
 
   // Helper method to show the given accounts.
   void ShowAccounts(const std::vector<IdentityRequestAccountPtr>& accounts,
