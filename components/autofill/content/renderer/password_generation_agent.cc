@@ -91,7 +91,11 @@ void ClearPreviewedValue(WebInputElement& input_element) {
 // autofill state to `Autofilled`.
 void CopyElementValueToOtherInputElements(
     const blink::WebInputElement& element,
-    base::span<blink::WebInputElement> elements) {
+    base::span<blink::WebInputElement> elements,
+    SynchronousFormCache& form_cache) {
+  // `SetAutofillValue()` and `SetAutofillState()` called below dispatch
+  // synchronous events that may modify the DOM or invalidate cached forms.
+  form_cache.Invalidate();
   for (blink::WebInputElement& e : elements) {
     if (element != e) {
       e.SetAutofillValue(element.Value());
@@ -320,7 +324,7 @@ void PasswordGenerationAgent::OnFieldAutofilled(
       current_generation_item->generation_element == password_element) {
     password_generation::LogPasswordGenerationEvent(
         password_generation::PASSWORD_DELETED_BY_AUTOFILLING);
-    PasswordNoLongerGenerated();
+    PasswordNoLongerGenerated(/*form_cache=*/std::nullopt);
     current_generation_item->generation_element.SetShouldRevealPassword(false);
   }
 }
@@ -585,7 +589,7 @@ bool PasswordGenerationAgent::ShowPasswordGenerationSuggestions(
         current_generation_item->generation_element.Value().length();
     if (password_length < kMinimumLengthForEditedPassword) {
       // Password is too short to be considered generated.
-      PasswordNoLongerGenerated();
+      PasswordNoLongerGenerated(/*form_cache=*/std::nullopt);
       if (password_length == 0) {
         current_generation_item->generation_element.SetShouldRevealPassword(
             false);
@@ -633,7 +637,7 @@ void PasswordGenerationAgent::TextFieldCleared(
   if (current_generation_item &&
       current_generation_item->generation_element == element) {
     if (current_generation_item->password_is_generated) {
-      PasswordNoLongerGenerated();
+      PasswordNoLongerGenerated(/*form_cache=*/std::nullopt);
     }
     current_generation_item->password_revealed_after_editing = false;
     current_generation_item->generation_element.SetShouldRevealPassword(false);
@@ -642,7 +646,7 @@ void PasswordGenerationAgent::TextFieldCleared(
 
 bool PasswordGenerationAgent::TextDidChangeInTextField(
     const WebInputElement& element,
-    const SynchronousFormCache& form_cache) {
+    SynchronousFormCache& form_cache) {
   auto [current_generation_item, auto_protect] =
       current_generation_item_.GetAndProtect();
   if (!current_generation_item ||
@@ -658,7 +662,7 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
       if (generated_password.empty()) {
         // JS cleared the generated password in the meantime. Consider the user
         // left the generation state.
-        PasswordNoLongerGenerated();
+        PasswordNoLongerGenerated(form_cache);
       } else {
         std::optional<FormData> presaved_form_data = CreateFormDataToPresave(
             current_generation_item->generation_element, form_cache);
@@ -700,20 +704,16 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
       // Tell the browser that the state isn't "editing" anymore. The browser
       // should hide the editing prompt if it wasn't replaced above.
       current_generation_item->password_revealed_after_editing = true;
-      PasswordNoLongerGenerated();
+      PasswordNoLongerGenerated(form_cache);
     } else if (current_generation_item->password_is_generated) {
       current_generation_item->password_edited = true;
       base::AutoReset<bool> auto_reset_update_confirmation_password(
           &current_generation_item->updating_other_password_fields, true);
       // Mirror edits to any confirmation password fields.
       CopyElementValueToOtherInputElements(
-          element, current_generation_item->password_elements);
-      // Even though `form_cache` is available, we previously ran
-      // `CopyElementValueToOtherInputElements()` which triggers
-      // `WebFormControlElement::SetValue()`, dispatching events that might
-      // change the DOM. Therefore `form_cache` may be outdated.
+          element, current_generation_item->password_elements, form_cache);
       std::optional<FormData> presaved_form_data = CreateFormDataToPresave(
-          current_generation_item->generation_element, /*form_cache=*/{});
+          current_generation_item->generation_element, form_cache);
       std::u16string generated_password =
           current_generation_item->generation_element.Value().Utf16();
       if (auto* driver = unsafe_driver(); driver && presaved_form_data) {
@@ -727,14 +727,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
     // password fields.
     for (const blink::WebInputElement& password_element :
          current_generation_item->password_elements) {
-      // `PasswordNoLongerGenerated()` and
-      // `CopyElementValueToOtherInputElements()` both call
-      // `SetAutofillValue()`, dispatching events that might modify the DOM,
-      // making `form_cache` outdated, which is why it must not used in this
-      // call.
       password_agent_->autofill_agent().UpdateStateForTextChange(
-          password_element, FieldPropertiesFlags::kUserTyped,
-          /*form_cache=*/{});
+          password_element, FieldPropertiesFlags::kUserTyped, form_cache);
     }
   }
   return true;
@@ -814,7 +808,13 @@ void PasswordGenerationAgent::ShowEditingPopup(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void PasswordGenerationAgent::PasswordNoLongerGenerated() {
+void PasswordGenerationAgent::PasswordNoLongerGenerated(
+    base::optional_ref<SynchronousFormCache> form_cache) {
+  // `SetAutofillValue()` and `SetAutofillState()` called below dispatch
+  // synchronous events that may modify the DOM or invalidate cached forms.
+  if (form_cache) {
+    form_cache->Invalidate();
+  }
   auto [current_generation_item, auto_protect] =
       current_generation_item_.GetAndProtect();
   DCHECK(current_generation_item);
@@ -838,9 +838,6 @@ void PasswordGenerationAgent::PasswordNoLongerGenerated() {
     }
   }
 
-  // The above call to SetAutofillValue() dispatches events that may change the
-  // DOM. Therefore, any cached FormData may be outdated, and we must not use a
-  // form cache.
   std::optional<FormData> presaved_form_data = CreateFormDataToPresave(
       current_generation_item->generation_element, /*form_cache=*/{});
   if (auto* driver = unsafe_driver(); driver && presaved_form_data) {

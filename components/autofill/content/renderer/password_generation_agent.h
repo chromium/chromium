@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
@@ -75,7 +76,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // can be used to optimize form extractions occurring synchronously after this
   // function call.
   bool TextDidChangeInTextField(const blink::WebInputElement& element,
-                                const SynchronousFormCache& form_cache);
+                                SynchronousFormCache& form_cache);
 
   // Returns true if the newly focused node caused the generation UI to show.
   bool ShowPasswordGenerationSuggestions(
@@ -169,7 +170,8 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Stops treating a password as generated.
-  void PasswordNoLongerGenerated();
+  void PasswordNoLongerGenerated(
+      base::optional_ref<SynchronousFormCache> form_cache);
 
   // Creates |current_generation_item_| for |element| if |element| is a
   // generation enabled element. If |current_generation_item_| is already

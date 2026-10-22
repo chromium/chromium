@@ -30,6 +30,7 @@
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/content/renderer/form_cache_test_api.h"
 #include "components/autofill/content/renderer/test_util.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -179,7 +180,7 @@ class AutofillAgentTest : public test::AutofillRendererTest {
 
   size_t num_extracted_forms() {
     return std::ranges::count_if(
-        test_api(autofill_agent()).form_cache().extracted_forms_unsafe(),
+        test_api(test_api(autofill_agent()).form_cache()).extracted_forms(),
         [](const auto& id_and_form) {
           const auto& [id, form] = id_and_form;
           return form != nullptr;
@@ -1167,7 +1168,7 @@ TEST_F(AutofillAgentTest,
        DynamicElementNotificationFiltering_AddNonAutofillableElement) {
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
   const auto& extracted_forms =
-      test_api(autofill_agent()).form_cache().extracted_forms_unsafe();
+      test_api(test_api(autofill_agent()).form_cache()).extracted_forms();
   ASSERT_EQ(num_extracted_forms(), 1u);
   ASSERT_EQ(extracted_forms.rbegin()->second->fields().size(), 1u);
 
@@ -1201,7 +1202,7 @@ TEST_F(AutofillAgentTest,
        DynamicElementNotificationFiltering_AddAutofillableElement) {
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
   const auto& extracted_forms =
-      test_api(autofill_agent()).form_cache().extracted_forms_unsafe();
+      test_api(test_api(autofill_agent()).form_cache()).extracted_forms();
   ASSERT_EQ(num_extracted_forms(), 1u);
   ASSERT_EQ(extracted_forms.rbegin()->second->fields().size(), 1u);
 

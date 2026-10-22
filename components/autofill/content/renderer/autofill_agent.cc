@@ -630,10 +630,8 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
   ExtractFormsUnthrottled(/*callback=*/{},
                           GetCallTimerState(kDidDispatchDomContentLoadedEvent));
   if (password_autofill_agent_) {
-    // It is safe to call `extracted_forms_unsafe()` because the form_cache
-    // has just been initialized by `ExtractFormsUnthrottled()`.
     password_autofill_agent_->DispatchedDOMContentLoadedEvent(
-        SynchronousFormCache(form_cache_.extracted_forms_unsafe()));
+        SynchronousFormCache(form_cache_));
   }
 
   if (WebDocument document = GetDocument();
@@ -749,7 +747,7 @@ void AutofillAgent::FocusedElementChanged(
                   // TODO(crbug.com/40947729): Figure out why this happens and
                   // document the reason.
                   new_focused_element == GetDocument().FocusedElement()
-              ? SynchronousFormCache(*extracted_form)
+              ? SynchronousFormCache(std::move(*extracted_form))
               : SynchronousFormCache());
     }
   };
@@ -966,7 +964,7 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
 
 void AutofillAgent::OnTextFieldValueChanged(
     const WebFormControlElement& element,
-    const SynchronousFormCache& form_cache) {
+    SynchronousFormCache& form_cache) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   // TODO(crbug.com/40286232): Add throttling to avoid sending this event for
   // rapid changes.
@@ -1039,7 +1037,7 @@ void AutofillAgent::OnInactivityTimerFired(FieldRendererId field_id) {
 
 void AutofillAgent::OnSelectControlSelectionChanged(
     const WebFormControlElement& element,
-    const SynchronousFormCache& form_cache) {
+    SynchronousFormCache& form_cache) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   if (std::optional<form_util::FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
@@ -1132,11 +1130,12 @@ void AutofillAgent::BatchDataListOptionChange(FieldRendererId element_id) {
           ? password_autofill_agent_->CreateRequestForChangeInTextField(
                 input_element, /*form_cache=*/{})
           : std::nullopt;
+  SynchronousFormCache form_cache;
   ShowSuggestions(
       input_element,
       // TODO(crbug.com.477541273): Replace with more accurate source.
-      AutofillSuggestionTriggerSource::kTextFieldValueChanged,
-      /*form_cache=*/{}, password_request);
+      AutofillSuggestionTriggerSource::kTextFieldValueChanged, form_cache,
+      password_request);
 }
 
 void AutofillAgent::UserGestureObserved() {
@@ -2030,12 +2029,8 @@ void AutofillAgent::ExtractFormsAndNotifyPasswordAutofillAgent(
               [](PasswordAutofillAgent* password_autofill_agent,
                  FormCache* form_cache, bool success) {
                 if (success && password_autofill_agent) {
-                  // It is safe to call `extracted_forms_unsafe()` because the
-                  // form_cache has just been initialized by
-                  // `ExtractFormsUnthrottled()`.
                   password_autofill_agent->OnDynamicFormsSeen(
-                      SynchronousFormCache(
-                          form_cache->extracted_forms_unsafe()));
+                      SynchronousFormCache(*form_cache));
                 }
               },
               base::Unretained(password_autofill_agent_.get()),

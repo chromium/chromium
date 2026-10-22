@@ -300,9 +300,9 @@ void FormSubmissionTracker::FormControlDidChangeImpl(
   } else {
     UpdateLastInteractedElement(element);
   }
-  std::move(callback).Run(
-      element, SynchronousFormCache(form_util::GetFormRendererId(form),
-                                    provisionally_saved_form()));
+  SynchronousFormCache form_cache(form_util::GetFormRendererId(form),
+                                  provisionally_saved_form());
+  std::move(callback).Run(element, form_cache);
 }
 
 void FormSubmissionTracker::DidCommitProvisionalLoad(

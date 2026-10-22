@@ -272,10 +272,10 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // TODO(crbug.com/376628389): Remove.
   void OnTextFieldValueChanged(const blink::WebFormControlElement& element,
-                               const SynchronousFormCache& form_cache);
+                               SynchronousFormCache& form_cache);
   void OnSelectControlSelectionChanged(
       const blink::WebFormControlElement& element,
-      const SynchronousFormCache& form_cache);
+      SynchronousFormCache& form_cache);
 
   bool IsPrerendering() const;
 

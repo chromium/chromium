@@ -81,6 +81,7 @@ static_library("test_support") {
     "autofill_renderer_test.h",
     "focus_test_util.cc",
     "focus_test_util.h",
+    "form_cache_test_api.h",
     "form_submission_tracker_test_api.h",
     "javascript_autofill_tracker_test_api.h",
     "test_password_autofill_agent.cc",

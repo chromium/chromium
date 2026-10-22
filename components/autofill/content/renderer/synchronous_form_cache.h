@@ -6,10 +6,9 @@
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_SYNCHRONOUS_FORM_CACHE_H_
 
 #include <map>
-#include <memory>
+#include <optional>
 
-#include "base/compiler_specific.h"
-#include "base/types/optional_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -22,6 +21,7 @@ namespace autofill {
 
 struct CallTimerState;
 class FieldDataManager;
+class FormCache;
 
 // This class contains forms that have been previously extracted. The difference
 // between this class and `FormCache` is that objects of this class are meant to
@@ -38,16 +38,15 @@ class SynchronousFormCache {
   SynchronousFormCache(SynchronousFormCache&&) = delete;
   // The two constructors below create a singleton cache (or cache with a single
   // form).
-  explicit SynchronousFormCache(const FormData& form LIFETIME_BOUND);
-  SynchronousFormCache(FormRendererId form_id,
-                       base::optional_ref<const FormData> form);
-  explicit SynchronousFormCache(
-      const std::map<FormRendererId, std::unique_ptr<FormData>>& forms);
+  explicit SynchronousFormCache(FormData form);
+  SynchronousFormCache(FormRendererId form_id, std::optional<FormData> form);
+  // Creates a cache backed by `form_cache`.
+  explicit SynchronousFormCache(const FormCache& form_cache);
   ~SynchronousFormCache();
 
   // Tries to look for the extracted form corresponding to `form_id` in
-  // `cache_` and if successful returns it, otherwise extracts the form from
-  // scratch.
+  // `cache_` / `form_cache_` and if successful returns it, otherwise extracts
+  // the form from scratch.
   std::optional<FormData> GetOrExtractForm(
       const blink::WebDocument& document,
       FormRendererId form_id,
@@ -55,14 +54,19 @@ class SynchronousFormCache {
       const CallTimerState& timer_state,
       form_util::ButtonTitlesCache* button_titles_cache) const;
 
+  // Clears all cached forms. Must be called when the DOM may have been mutated
+  // (e.g., via `WebFormControlElement::SetAutofillValue()` dispatching
+  // synchronous JS events) while the cache is live.
+  void Invalidate();
+
  private:
   // Stores for a given FormRendererId the last result of trying to extract the
   // FormElement with the given ID. Note that this could be std::nullopt since
   // extraction might fail, and this would still be useful because knowing that
   // would allow avoiding a future failing attempt at extraction.
-  void Insert(FormRendererId form_id, const FormData* form);
+  std::map<FormRendererId, std::optional<FormData>> cache_;
 
-  std::map<FormRendererId, base::optional_ref<const FormData>> cache_;
+  base::WeakPtr<const FormCache> form_cache_;
 };
 
 }  // namespace autofill

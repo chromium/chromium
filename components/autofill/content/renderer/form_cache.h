@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
@@ -18,6 +20,7 @@
 namespace autofill {
 
 class AutofillAgent;
+class SynchronousFormCache;
 
 // Manages the forms in a single RenderFrame.
 class FormCache {
@@ -91,8 +94,13 @@ class FormCache {
   // in the `extracted_forms_` that was created by clearing the cache from a
   // null entry that was created because the form extraction failed.
   const std::map<FormRendererId, std::unique_ptr<FormData>>&
-  extracted_forms_unsafe() const {
+  extracted_forms_unsafe(base::PassKey<SynchronousFormCache> pass_key) const {
     return extracted_forms_;
+  }
+
+  base::WeakPtr<const FormCache> GetWeakPtr(
+      base::PassKey<SynchronousFormCache> pass_key) const {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -111,6 +119,8 @@ class FormCache {
   // the cache must be aware that it's not possible to distinguish null entries
   // from a failed extraction and null entries from a cleared cache.
   std::map<FormRendererId, std::unique_ptr<FormData>> extracted_forms_;
+
+  base::WeakPtrFactory<FormCache> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

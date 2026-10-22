@@ -32,6 +32,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_submission_tracker.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
+#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -3505,8 +3506,8 @@ TEST_F(PasswordAutofillAgentTest, CanShowSuggestionsAfterManualGeneration) {
 
   // Clear the password field value.
   password_element_.SetValue(WebString());
-  password_generation_->TextDidChangeInTextField(password_element_,
-                                                 /*form_cache=*/{});
+  SynchronousFormCache form_cache;
+  password_generation_->TextDidChangeInTextField(password_element_, form_cache);
 
   // Focus the password element again and verify that suggestions are shown to
   // the user.

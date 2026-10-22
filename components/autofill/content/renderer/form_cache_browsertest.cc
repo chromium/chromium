@@ -18,6 +18,7 @@
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/focus_test_util.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/content/renderer/form_cache_test_api.h"
 #include "components/autofill/content/renderer/test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
@@ -97,7 +98,7 @@ class FormCacheBrowserTest : public test::AutofillRendererTest {
   void ClearCache() { form_cache_->ClearCache(); }
 
   size_t num_extracted_forms() {
-    return std::ranges::count_if(form_cache_->extracted_forms_unsafe(),
+    return std::ranges::count_if(test_api(*form_cache_).extracted_forms(),
                                  [](const auto& id_and_form) {
                                    const auto& [id, form] = id_and_form;
                                    return form != nullptr;

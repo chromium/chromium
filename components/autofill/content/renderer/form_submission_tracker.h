@@ -42,7 +42,7 @@ class FormSubmissionTracker : public content::RenderFrameObserver,
  public:
   using ElementDidChangeCallback =
       base::OnceCallback<void(const blink::WebFormControlElement&,
-                              const SynchronousFormCache&)>;
+                              SynchronousFormCache&)>;
 
   explicit FormSubmissionTracker(
       content::RenderFrame* render_frame,

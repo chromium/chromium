@@ -1688,5 +1688,60 @@ TEST_F(PasswordGenerationAgentReentrantUafTest,
                "would detect a UAF in the previous statement.";
 }
 
+// Regression test for b/573263397: UAF in
+// SynchronousFormCache::GetOrExtractForm() when PasswordNoLongerGenerated()
+// clears a confirmation password field via SetAutofillValue(), synchronously
+// running a JS event listener that submits another form and resets
+// FormSubmissionTracker::last_interacted_.saved_state while
+// AutofillAgent::OnTextFieldValueChanged() holds a SynchronousFormCache
+// referencing it.
+TEST_F(PasswordGenerationAgentTest,
+       PasswordNoLongerGeneratedInvalidatesFormCacheOnReentrantSubmit) {
+  LoadHTMLWithUserGesture(R"(
+    <form id="signup" action="http://www.random.com/signup">
+      <input type="text" id="username">
+      <input type="password" id="first_password" autocomplete="new-password">
+      <input type="password" id="second_password" autocomplete="new-password">
+    </form>
+    <form id="empty" action="http://www.random.com/empty"></form>
+    <input type="button" id="dummy">)");
+
+  SetFoundFormEligibleForGeneration(password_generation_,
+                                    GetMainFrame()->GetDocument(),
+                                    /*new_password_id=*/"first_password",
+                                    /*confirm_password_id=*/"second_password");
+
+  ExpectAutomaticGenerationAvailable("first_password", kAvailable);
+  std::u16string password = u"random_password";
+  EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
+  password_generation_->GeneratedPasswordAccepted(password);
+
+  // Page JS clears the first password field and installs an `input` listener on
+  // the confirmation field that calls `requestSubmit()` on the empty form when
+  // PasswordNoLongerGenerated() clears the confirmation field.
+  ExecuteJavaScriptForTests(R"(
+      document.getElementById('empty').addEventListener('submit', function(e) {
+        e.preventDefault();
+      });
+      document.getElementById('first_password').value = '';
+      var ran = false;
+      document.getElementById('second_password').addEventListener(
+          'input', function() {
+            if (ran) return;
+            ran = true;
+            document.getElementById('empty').requestSubmit();
+          });)");
+
+  ExpectGenerationElementLostFocus("username");
+  EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated)
+      .WillOnce([](const FormData& form) {
+        const FormFieldData* second_password =
+            FindFieldById(form, "second_password");
+        ASSERT_NE(second_password, nullptr);
+        EXPECT_TRUE(second_password->value().empty());
+      });
+  SimulateUserTypingAsciiCharacter('a', /*flush_message_loop=*/true);
+}
+
 }  // namespace
 }  // namespace autofill
