@@ -144,6 +144,7 @@ class WebUIPermissionChip : public PermissionChipInterface {
       observers_;
   base::RepeatingClosureList visibility_callbacks_;
 
+  void OnAnchorElementShown(ui::TrackedElement* element);
   void RunPendingAnchorCallback();
 
   base::CallbackListSubscription element_shown_subscription_;

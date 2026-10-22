@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 
-#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
@@ -307,9 +306,9 @@ void WebUIPermissionChip::WaitForAnchor(base::OnceClosure callback) {
   // Look for the element in the same context `GetAnchor()` uses.
   const ui::ElementContext context = location_bar_->GetElementContext();
 
-  // 1. If there is no context to look in, or the element is already tracked,
-  // run the callback immediately and let `GetAnchor()` pick the anchor.
-  if (!context ||
+  // 1. If the element is already tracked, run the callback immediately and let
+  // `GetAnchor()` pick the anchor.
+  if (context &&
       ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
           element_id_, context)) {
     std::move(callback).Run();
@@ -317,18 +316,30 @@ void WebUIPermissionChip::WaitForAnchor(base::OnceClosure callback) {
   }
 
   // 2. Otherwise, subscribe to the ElementTracker and wait for the element to
-  // appear.
+  // appear. The context may not be available yet (e.g. the WebUI hasn't
+  // finished loading), so listen in all contexts and check the context once
+  // the element is shown.
   pending_anchor_callback_ = std::move(callback);
   element_shown_subscription_ =
-      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
-          element_id_, context,
-          base::IgnoreArgs<ui::TrackedElement*>(base::BindRepeating(
-              &WebUIPermissionChip::RunPendingAnchorCallback,
-              weak_factory_.GetWeakPtr())));
+      ui::ElementTracker::GetElementTracker()
+          ->AddElementShownInAnyContextCallback(
+              element_id_,
+              base::BindRepeating(&WebUIPermissionChip::OnAnchorElementShown,
+                                  weak_factory_.GetWeakPtr()));
   anchor_fallback_timer_.Start(
       FROM_HERE, kAnchorFallbackTimeout,
       base::BindOnce(&WebUIPermissionChip::RunPendingAnchorCallback,
                      weak_factory_.GetWeakPtr()));
+}
+
+void WebUIPermissionChip::OnAnchorElementShown(ui::TrackedElement* element) {
+  // Like `GetAnchor()`, only consider the element in the location bar's
+  // context, so that e.g. a chip with the same ID in another window doesn't
+  // count.
+  if (element->context() != location_bar_->GetElementContext()) {
+    return;
+  }
+  RunPendingAnchorCallback();
 }
 
 void WebUIPermissionChip::RunPendingAnchorCallback() {

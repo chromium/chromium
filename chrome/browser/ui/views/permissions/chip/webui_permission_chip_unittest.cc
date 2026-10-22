@@ -375,14 +375,45 @@ TEST_F(WebUIPermissionChipTest, WaitForAnchorIgnoresChipElementInOtherContext) {
   EXPECT_EQ(chip.GetAnchor().GetIfElement(), &chip_element);
 }
 
-// With no element context (e.g. the location bar isn't attached to a browser
-// or its WebUI isn't loaded), there is nothing to wait for.
-TEST_F(WebUIPermissionChipTest, WaitForAnchorRunsImmediatelyWithoutContext) {
+// The element context may not be available yet (e.g. the location bar isn't
+// attached to a browser or its WebUI isn't loaded), so `WaitForAnchor()` waits
+// for the chip element to be shown in the context the location bar has by then.
+TEST_F(WebUIPermissionChipTest, WaitForAnchorWaitsForContext) {
   WebUIPermissionChip chip(location_bar_.get(),
                            PermissionChipView::kPermissionRequestChipElementId);
 
   base::test::TestFuture<void> future;
   chip.WaitForAnchor(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  // The context becomes available, then the chip element is shown in it.
+  SetBrowser(&mock_browser_);
+  TestBrowserElements browser_elements(mock_browser_, kTestContext);
+  ui::test::TestElement chip_element(
+      PermissionChipView::kPermissionRequestChipElementId, kTestContext);
+  chip_element.Show();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(chip.GetAnchor().GetIfElement(), &chip_element);
+}
+
+// Without a context, a chip element shown in another context doesn't count, and
+// `WaitForAnchor()` still falls back after the timeout.
+TEST_F(WebUIPermissionChipTest,
+       WaitForAnchorWithoutContextFallsBackAfterTimeout) {
+  constexpr ui::ElementContext kOtherContext =
+      ui::ElementContext::CreateFakeContextForTesting(2);
+  WebUIPermissionChip chip(location_bar_.get(),
+                           PermissionChipView::kPermissionRequestChipElementId);
+
+  base::test::TestFuture<void> future;
+  chip.WaitForAnchor(future.GetCallback());
+  ui::test::TestElement other_context_chip_element(
+      PermissionChipView::kPermissionRequestChipElementId, kOtherContext);
+  other_context_chip_element.Show();
+  browser_threads_.FastForwardBy(kJustBeforeAnchorFallback);
+  EXPECT_FALSE(future.IsReady());
+
+  browser_threads_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(future.IsReady());
 }
 
