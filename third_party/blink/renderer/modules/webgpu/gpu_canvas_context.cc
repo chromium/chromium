@@ -1044,10 +1044,15 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
   // usually related to OffscreenCanvas; in cases where the image created from
   // this Snapshot will be sent eventually to the Display Compositor.
   // Additionally, this SharedImage will be written to via the WebGPU interface
-  // in CopyTextureToSharedImage() below and may subsequently be read by WebGPU.
+  // in CopyTextureToSharedImage() below and may subsequently be read by WebGPU,
+  // the raster interface, or GLES2 (via
+  // AcceleratedStaticBitmapImage::CopyToTexture()).
   auto shared_image_usages = swap_buffers_->GetSharedImageUsagesForDisplay() |
                              gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                             gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+                             gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+                             gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                             gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
@@ -1100,21 +1105,6 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
       format = viz::SinglePlaneFormat::kBGRA_8888;
     }
 #endif
-  }
-
-  // These SharedImages are both read and written by the raster interface
-  // (both occur, for example, when copying canvas resources between
-  // canvases). Additionally, these SharedImages can be put into
-  // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
-  // GL textures by WebGL (via
-  // AcceleratedStaticBitmapImage::CopyToTexture()).
-  shared_image_usages = shared_image_usages |
-                        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                        gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-  // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
-  if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
-    shared_image_usages |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
   auto client_si =
