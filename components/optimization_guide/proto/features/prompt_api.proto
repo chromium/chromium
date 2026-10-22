@@ -79,6 +79,10 @@ message PromptApiMetadata {
   // A list of custom presets for sampling configuration.
   repeated SamplingPreset sampling_presets = 4;
 
+  // A list of thinking token budgets, one per thinking effort level. Effort
+  // levels without a preset use the client default budgets.
+  repeated ThinkingPreset thinking_presets = 5;
+
   // Represents a custom sampling parameter mapping configuration.
   message SamplingPreset {
     string name = 1 [features = { field_presence: EXPLICIT }];
@@ -86,6 +90,17 @@ message PromptApiMetadata {
     uint32 top_k = 2 [features = { field_presence: EXPLICIT }];
 
     float temperature = 3 [features = { field_presence: EXPLICIT }];
+  }
+
+  // Represents a thinking token budget for a thinking effort level.
+  message ThinkingPreset {
+    // The thinking effort level.
+    PromptApiThinkingEffort effort = 1 [features = { field_presence: EXPLICIT }];
+
+    // The maximum number of thinking tokens at `effort`. If unset, the client
+    // default budget for `effort` applies. A value of 0 or below turns thinking
+    // off at `effort`.
+    int32 token_budget = 2 [features = { field_presence: EXPLICIT }];
   }
 
   reserved 2;
@@ -101,4 +116,16 @@ enum PromptApiRole {
   PROMPT_API_ROLE_ASSISTANT = 2;
 
   PROMPT_API_ROLE_USER = 3;
+}
+
+// A thinking effort level. Leaves out "none", which turns thinking off.
+// See https://github.com/webmachinelearning/prompt-api#thinking-mode
+enum PromptApiThinkingEffort {
+  PROMPT_API_THINKING_EFFORT_UNSPECIFIED = 0;
+
+  PROMPT_API_THINKING_EFFORT_LOW = 1;
+
+  PROMPT_API_THINKING_EFFORT_MEDIUM = 2;
+
+  PROMPT_API_THINKING_EFFORT_HIGH = 3;
 }

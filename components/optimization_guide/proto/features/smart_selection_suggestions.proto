@@ -114,6 +114,8 @@ message SmartSelectionSuggestion {
 //       |-- model_content_processing_ms  (multimodal tokenization)
 //       |-- model_prefill_queue_wait_ms  (prefill queue wait)
 //       |-- model_prefill_ms             (prompt prefill)
+//       |-- model_decode_queue_wait_ms   (prefill-to-decode queue + KV
+//       transfer)
 //       +-- model_decode_ms              (output token decoding)
 message SmartSelectionLatencyMetrics {
   int64 mes_total_ms = 1 [features = { field_presence: EXPLICIT }];
@@ -124,12 +126,13 @@ message SmartSelectionLatencyMetrics {
 
   int64 model_content_processing_ms = 4 [features = { field_presence: EXPLICIT }];
 
-  int64 model_prefill_queue_wait_ms = 5
-      [features = { field_presence: EXPLICIT }];
+  int64 model_prefill_queue_wait_ms = 5 [features = { field_presence: EXPLICIT }];
 
   int64 model_prefill_ms = 6 [features = { field_presence: EXPLICIT }];
 
   int64 model_decode_ms = 7 [features = { field_presence: EXPLICIT }];
+
+  int64 model_decode_queue_wait_ms = 8 [features = { field_presence: EXPLICIT }];
 }
 
 enum SmartSelectionToolId {
