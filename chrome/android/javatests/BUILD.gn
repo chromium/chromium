@@ -1888,7 +1888,6 @@ android_library("chrome_test_java_various") {
     "//base/test:leak_canary_java",
     "//chrome/browser/actor/android:java",
     "//chrome/browser/android/metrics:base_java",
-    "//chrome/browser/auxiliary_search:java",
     "//chrome/browser/educational_tip:java",
     "//chrome/browser/glic:public_java",
     "//chrome/browser/glic/android:java",

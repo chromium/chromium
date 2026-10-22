@@ -75,7 +75,6 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
 
     @Before
     public void setUp() {
-        when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
 
         var factory = AuxiliarySearchControllerFactory.getInstance();

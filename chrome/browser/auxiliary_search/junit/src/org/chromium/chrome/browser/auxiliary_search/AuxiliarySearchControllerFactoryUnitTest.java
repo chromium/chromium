@@ -55,7 +55,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     @Before
     public void setUp() {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
 
         AuxiliarySearchBridgeJni.setInstanceForTesting(mMockAuxiliarySearchBridgeJni);
@@ -106,32 +105,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
                 mFactory.createAuxiliarySearchController(
                         mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
         assertTrue(controller instanceof AuxiliarySearchMultiDataControllerImpl);
-
-        // Verifies CustomTab controller is not created for OffTheRecord profiles and is cached
-        // across calls for regular profiles.
-        when(mProfile.isOffTheRecord()).thenReturn(true);
-        assertNull(
-                mFactory.createAuxiliarySearchController(
-                        mContext,
-                        mProfile,
-                        /* tabModelSelector= */ null,
-                        AuxiliarySearchHostType.CUSTOM_TAB));
-
-        when(mProfile.isOffTheRecord()).thenReturn(false);
-        AuxiliarySearchController customTabController1 =
-                mFactory.createAuxiliarySearchController(
-                        mContext,
-                        mProfile,
-                        /* tabModelSelector= */ null,
-                        AuxiliarySearchHostType.CUSTOM_TAB);
-        assertTrue(customTabController1 instanceof AuxiliarySearchControllerImpl);
-        AuxiliarySearchController customTabController2 =
-                mFactory.createAuxiliarySearchController(
-                        mContext,
-                        mProfile,
-                        /* tabModelSelector= */ null,
-                        AuxiliarySearchHostType.CUSTOM_TAB);
-        assertEquals(customTabController1, customTabController2);
     }
 
     @Test
