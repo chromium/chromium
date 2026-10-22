@@ -11,8 +11,6 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
-  "+chrome/browser/extensions/mixin_based_extension_apitest.h",
-  "+chrome/browser/policy/extension_force_install_mixin.h",
   "+chrome/common",
 ]
 
@@ -20,5 +18,9 @@ specific_include_rules = {
   # Only tests need these //chrome dependencies.
   "login_screen_storage_api_ash_unittest\\.cc": [
     "+chrome/browser/extensions/extension_api_unittest.h",
+  ],
+  "login_screen_storage_apitest\\.cc": [
+    "+chrome/browser/extensions/mixin_based_extension_apitest.h",
+    "+chrome/browser/policy/extension_force_install_mixin.h",
   ],
 }
