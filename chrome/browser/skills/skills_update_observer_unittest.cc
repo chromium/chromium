@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -54,6 +55,7 @@ class SkillsUpdateObserverTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    scoped_glic_bypass_.emplace();
     feature_list_.InitWithFeatures(
         {optimization_guide::features::kOptimizationHints,
          features::kSkillsEnabled},
@@ -79,6 +81,7 @@ class SkillsUpdateObserverTest : public ChromeRenderViewHostTestHarness {
     observer_.reset();
     tab_interface_.reset();
     mock_optimization_guide_keyed_service_ = nullptr;
+    scoped_glic_bypass_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -125,6 +128,8 @@ class SkillsUpdateObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
   std::unique_ptr<tabs::MockTabInterface> tab_interface_;
   std::unique_ptr<skills::SkillsUpdateObserver> observer_;
   raw_ptr<MockOptimizationGuideKeyedService>
@@ -167,6 +172,27 @@ TEST_F(SkillsUpdateObserverTest, PrefDisabled) {
   EXPECT_NE(observer_->contextual_skills(), nullptr);
   EXPECT_EQ(observer_->contextual_skills()->skills_size(), 1);
   // But GetContextualSkillPreviews returns empty while pref is disabled.
+  EXPECT_TRUE(observer_->GetContextualSkillPreviews().empty());
+}
+
+// Test that GetContextualSkillPreviews returns empty when Glic is disabled for
+// the profile.
+TEST_F(SkillsUpdateObserverTest, GlicDisabled) {
+  scoped_glic_bypass_.reset();
+  GURL url("https://www.example.com");
+
+  skills::proto::SkillsList skills_list;
+  skills::proto::Skill* skill = skills_list.add_skills();
+  skill->set_id("test_skill");
+  skill->set_name("Test Skill");
+  skill->set_icon("test_icon");
+  ExpectOptimizationGuideDecision(
+      url, optimization_guide::OptimizationGuideDecision::kTrue, skills_list);
+
+  SimulateNavigation(url);
+
+  EXPECT_NE(observer_->contextual_skills(), nullptr);
+  EXPECT_EQ(observer_->contextual_skills()->skills_size(), 1);
   EXPECT_TRUE(observer_->GetContextualSkillPreviews().empty());
 }
 

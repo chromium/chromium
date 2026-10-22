@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skills_features.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_controller.h"
@@ -171,7 +172,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui)
       "isSkillsWebViewV2Enabled",
       base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled));
   source->AddBoolean("isSkillsEnabled",
-                     SkillsServiceFactory::IsSkillsEnabledForProfile(profile));
+                     skills::IsSkillsEnabled(profile->GetPrefs()));
 
   std::string application_locale = g_browser_process->GetApplicationLocale();
   std::string google_locale = google_util::GetGoogleLocale(application_locale);

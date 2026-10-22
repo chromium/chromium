@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/signin/mock_signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -111,6 +112,7 @@ class SkillsPageHandlerV2Test : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    scoped_glic_bypass_.emplace();
 
     SkillsServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
@@ -126,6 +128,7 @@ class SkillsPageHandlerV2Test : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     handler_.reset();
+    scoped_glic_bypass_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -135,6 +138,8 @@ class SkillsPageHandlerV2Test : public ChromeRenderViewHostTestHarness {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
   signin::IdentityTestEnvironment identity_test_env_;
   mojo::Remote<::skills::mojom::SkillsPageHandler> remote_handler_;
   std::unique_ptr<SkillsPageHandlerV2> handler_;
@@ -229,6 +234,26 @@ TEST_F(SkillsPageHandlerV2Test, SendPrompt_FromDialog) {
 
 TEST_F(SkillsPageHandlerV2Test, InvokeSkill_NoOpWhenDisabled) {
   profile()->GetPrefs()->SetBoolean(prefs::kChromeSkillsEnabled, false);
+  tabs::MockTabInterface mock_tab;
+  ::ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(user_data_host));
+
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  MockSkillsUiTabController mock_tab_controller(mock_tab);
+
+  EXPECT_CALL(mock_tab_controller,
+              InvokeSkill(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+
+  remote_handler_->InvokeSkill("test_skill_id", "test_name", "test_icon");
+  remote_handler_.FlushForTesting();
+}
+
+TEST_F(SkillsPageHandlerV2Test, InvokeSkill_NoOpWhenGlicDisabled) {
+  scoped_glic_bypass_.reset();
   tabs::MockTabInterface mock_tab;
   ::ui::UnownedUserDataHost user_data_host;
   EXPECT_CALL(mock_tab, GetUnownedUserDataHost())

@@ -11,9 +11,10 @@
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom-shared.h"
-#include "components/skills/public/skills_constants.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
+#include "components/skills/public/skills_constants.h"
+#include "components/skills/public/skills_features.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_prefs.h"
 #include "components/skills/public/skills_types.h"
@@ -345,8 +346,7 @@ void SkillsPageHandler::AppendProvidedSkills(
 }
 
 void SkillsPageHandler::OnSkillsEnabledPrefChanged() {
-  page_->SetSkillsEnabled(SkillsServiceFactory::IsSkillsEnabledForProfile(
-      base::to_address(profile_)));
+  page_->SetSkillsEnabled(skills::IsSkillsEnabled(profile_->GetPrefs()));
 }
 
 }  // namespace skills

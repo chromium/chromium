@@ -89,6 +89,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":skills",
+    "//chrome/browser/glic",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/signin:test_support",
     "//chrome/browser/skills",

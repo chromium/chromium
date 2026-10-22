@@ -2902,8 +2902,7 @@ void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
   const bool show_skills_and_extensions =
       profile()->IsRegularProfile() &&
       skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile()) &&
-      base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu) &&
-      glic::GlicEnabling::IsEnabledForProfile(profile());
+      base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu);
   if (auto* const action =
           FindAction(kActionSkillsAndExtensionsSubmenu, browser_)) {
     action->SetVisible(show_skills_and_extensions);

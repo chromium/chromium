@@ -383,8 +383,7 @@ const gfx::VectorIcon& GetLensOverlayHomeworkIcon(Profile* profile) {
 bool ShouldShowSkillsAndExtensions(Profile* profile) {
   return profile && profile->IsRegularProfile() &&
          skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile) &&
-         base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu) &&
-         glic::GlicEnabling::IsEnabledForProfile(profile);
+         base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu);
 }
 
 }  // namespace

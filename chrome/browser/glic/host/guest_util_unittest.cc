@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -346,6 +347,7 @@ TEST_F(GuestUtilMultiInstanceTest,
   feature_list.InitAndDisableFeature(features::kSkillsEnabled);
 
   TestingProfile* profile = CreateTestingProfile();
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
   profile->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, true);
 
   auto state = mojom::WebClientInitialState::New();
@@ -361,6 +363,7 @@ TEST_F(
   feature_list.InitAndEnableFeature(features::kSkillsEnabled);
 
   TestingProfile* profile = CreateTestingProfile();
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
   profile->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, true);
 
   auto state = mojom::WebClientInitialState::New();
@@ -375,7 +378,22 @@ TEST_F(GuestUtilMultiInstanceTest,
   feature_list.InitAndEnableFeature(features::kSkillsEnabled);
 
   TestingProfile* profile = CreateTestingProfile();
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
   profile->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, false);
+
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_FALSE(state->enable_skills);
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_SkillsDisabledWhenGlicDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSkillsEnabled);
+
+  TestingProfile* profile = CreateTestingProfile();
+  profile->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, true);
 
   auto state = mojom::WebClientInitialState::New();
   PopulateGlobalClientInitialState(state.get(), profile);

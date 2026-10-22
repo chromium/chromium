@@ -22,6 +22,7 @@ source_set("skills") {
   ]
 
   deps = [
+    "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",

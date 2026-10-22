@@ -18,6 +18,9 @@ class SkillsService;
 class SkillsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static SkillsService* GetForProfile(Profile* profile);
+
+  // True if the Skills pref is on and Glic is enabled for `profile`.
+  // chrome://skills checks skills::IsSkillsEnabled() directly; see SkillsUI.
   static bool IsSkillsEnabledForProfile(Profile* profile);
 
   static SkillsServiceFactory* GetInstance();
