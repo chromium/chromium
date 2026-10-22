@@ -25,10 +25,12 @@ namespace enterprise_reporting {
 UserSecuritySignalsService::UserSecuritySignalsService(
     PrefService* profile_prefs,
     Delegate* delegate,
-    policy::PolicyService* policy_service)
+    policy::PolicyService* policy_service,
+    bool is_isolated_profile)
     : profile_prefs_(profile_prefs),
       delegate_(delegate),
-      policy_service_(policy_service) {
+      policy_service_(policy_service),
+      can_upload_signals_(!is_isolated_profile) {
   CHECK(profile_prefs_);
   CHECK(delegate_);
   CHECK(policy_service_);
@@ -86,6 +88,10 @@ void UserSecuritySignalsService::OnCookieChange(
   // Only trigger a new upload if the cookie change could result in a new or
   // updated session.
   if (change.cause == net::CookieChangeCause::INSERTED) {
+    if (!can_upload_signals_) {
+      can_upload_signals_ = true;
+      StartPolicyObservation();
+    }
     TriggerReport(SecurityReportTrigger::kCookieChange);
   }
 }
@@ -137,11 +143,17 @@ void UserSecuritySignalsService::OnStatePolicyValueChanged(
     return;
   }
 
-  // Make sure that we are observing the policy service.
-  StartPolicyObservation();
-
   // Make sure that cookie observation is properly set-up, as needed.
   OnCookiePolicyValueChanged();
+
+  // In Isolated Mode, the profile opens without any login session. Ignore all
+  // startup/timer/policy triggers until the first account signs in via cookie.
+  if (!can_upload_signals_) {
+    return;
+  }
+
+  // Make sure that we are observing the policy service.
+  StartPolicyObservation();
 
   if (base::FeatureList::IsEnabled(kUploadReportOnProfileOpen) &&
       is_initialization) {

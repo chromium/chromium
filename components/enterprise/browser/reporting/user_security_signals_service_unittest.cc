@@ -96,19 +96,24 @@ class UserSecuritySignalsServiceTest : public testing::Test {
 
   void CreateAndRunSignalsService(bool expect_reporting_enabled = true,
                                   bool expect_using_cookie = false,
-                                  bool expect_remove_observer = true) {
+                                  bool expect_remove_observer = true,
+                                  bool is_isolated_profile = false) {
+    bool can_upload_signals = !is_isolated_profile;
+
     // Creation of the service with the pref value already enabled will trigger
-    // an upload unless kUploadReportOnProfileOpen is enabled.
+    // an upload unless kUploadReportOnProfileOpen is enabled or this is an
+    // isolated profile waiting for the first sign-in cookie.
     EXPECT_CALL(delegate_, OnReportEventTriggered(_))
-        .Times(expect_reporting_enabled ? ExpectedInitialTimerReportCount()
-                                        : 0);
+        .Times((expect_reporting_enabled && can_upload_signals)
+                   ? ExpectedInitialTimerReportCount()
+                   : 0);
 
     EXPECT_CALL(policy_service_, AddObserver)
-        .Times(expect_reporting_enabled ? 1 : 0);
+        .Times((expect_reporting_enabled && can_upload_signals) ? 1 : 0);
 
     if (expect_remove_observer) {
       EXPECT_CALL(policy_service_, RemoveObserver)
-          .Times(expect_reporting_enabled ? 1 : 0);
+          .Times((expect_reporting_enabled && can_upload_signals) ? 1 : 0);
     }
 
     if (expect_using_cookie) {
@@ -116,7 +121,7 @@ class UserSecuritySignalsServiceTest : public testing::Test {
     }
 
     service_ = std::make_unique<UserSecuritySignalsService>(
-        &testing_prefs_, &delegate_, &policy_service_);
+        &testing_prefs_, &delegate_, &policy_service_, is_isolated_profile);
     service_->Start();
     task_environment_.RunUntilIdle();
 
@@ -612,6 +617,37 @@ TEST_F(UserSecuritySignalsServiceTest,
 
   histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
                                        SecurityReportTrigger::kTimer, 1);
+}
+
+TEST_F(UserSecuritySignalsServiceTest,
+       IsolatedMode_NoReportUntilFirstCookieAdded) {
+  SetEnabledPolicy(true);
+  SetUseAuthPolicy(true);
+
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/true,
+                             /*expect_using_cookie=*/true,
+                             /*expect_remove_observer=*/false,
+                             /*is_isolated_profile=*/true);
+
+  // No report should be triggered before the first sign-in cookie is inserted.
+  FastForwardTimeToTrigger();
+  histogram_tester_.ExpectTotalCount(kReportTriggerMetricName, 0);
+
+  // First sign-in cookie triggers a report and starts policy/timer observation.
+  EXPECT_CALL(policy_service_, AddObserver).Times(1);
+  EXPECT_CALL(policy_service_, RemoveObserver).Times(1);
+  EXPECT_CALL(delegate_,
+              OnReportEventTriggered(SecurityReportTrigger::kCookieChange));
+  TriggerValidCookieInsert();
+  FlushForTesting();
+
+  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer));
+  FastForwardTimeToTrigger();
+
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kCookieChange, 1);
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kTimer, 1);
 }
 
 }  // namespace enterprise_reporting
