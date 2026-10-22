@@ -2205,6 +2205,10 @@ static_library("test_support") {
 test("blink_platform_unittests") {
   deps = [ ":blink_platform_unittests_sources" ]
 
+  if (enable_jxl_decoder) {
+    fuzztests = [ "JXLImageDecoderFuzzTest.FuzzJXLDecoder" ]
+  }
+
   if (enable_nocompile_tests) {
     deps += [ ":blink_platform_nocompile_tests" ]
   }

@@ -6,17 +6,24 @@
 
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
@@ -1561,4 +1568,106 @@ TEST_F(JXLImageDecoderTest, ParallelIncrementalDecode) {
   EXPECT_EQ(one_shot_hashes[0], HashBitmap(frame->Bitmap()));
 }
 
+void FuzzJXLDecoder(ImageDecoder::AlphaOption alpha_option,
+                    ImageDecoder::HighBitDepthDecodingOption hbd_option,
+                    ColorBehavior color_behavior,
+                    cc::AuxImage aux_image_type,
+                    uint32_t max_decoded_bytes,
+                    ImageDecoder::AnimationOption animation_option,
+                    base::span<const uint8_t> data) {
+  auto decoder = std::make_unique<JXLImageDecoder>(
+      alpha_option, hbd_option, color_behavior, aux_image_type,
+      max_decoded_bytes, animation_option);
+
+  auto buffer = SharedBuffer::Create(data);
+  const bool kAllDataReceived = true;
+  decoder->SetData(buffer.get(), kAllDataReceived);
+  for (wtf_size_t frame = 0; frame < decoder->FrameCount(); ++frame) {
+    decoder->DecodeFrameBufferAtIndex(frame);
+    if (decoder->Failed()) {
+      return;
+    }
+  }
+}
+
+// Floor max_decoded_bytes at 1 MiB so it can no longer land small enough for
+// the decoder to reject the image in SetSize() before any decoding runs,
+// which previously wasted fuzzer iterations.
+constexpr uint32_t kMinMaxDecodedBytes = 1024 * 1024;
+
+// FuzzTest aborts if any seed exceeds the domain's max size (default 5000), so
+// this must be at least the largest file in that directory (currently
+// ~4.3 MiB; progressive_ac.png).
+constexpr base::ByteSize kMaxInputSize = base::MiB(5);
+
+using JXLFuzzArgs = std::tuple<ImageDecoder::AlphaOption,
+                               ImageDecoder::HighBitDepthDecodingOption,
+                               ColorBehavior,
+                               cc::AuxImage,
+                               uint32_t,
+                               ImageDecoder::AnimationOption,
+                               std::vector<uint8_t>>;
+
+// Uses every file in the corpus directory as a seed. Because the corpus
+// files are the data to be fuzzed, we need to append the decoder settings
+// to each testcase. Returns a std::vector<std::tuple<JXLFuzzArgs>> containing
+// the decoder settings, along with the image file.
+std::vector<JXLFuzzArgs> GetJXLSeeds() {
+  base::FilePath corpus_dir;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &corpus_dir));
+  corpus_dir =
+      corpus_dir.AppendASCII("third_party/blink").AppendASCII(kJxlTestDir);
+  std::vector<std::vector<uint8_t>> files;
+
+// Test-level seeds are all replayed, with no time limit, every time the
+// FUZZ_TEST runs in unit-test mode, and decoding the whole directory takes
+// too long on sanitizer bots. So only use the whole directory in fuzzing
+// builds.
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  for (const auto& [contents] :
+       fuzztest::ReadFilesFromDirectory(corpus_dir.AsUTF8Unsafe())) {
+    files.push_back(base::ToVector<uint8_t>(contents));
+  }
+#else
+  std::optional<std::vector<uint8_t>> basic_file =
+      base::ReadFileToBytes(corpus_dir.AppendASCII("basic.jxl"));
+  CHECK(basic_file) << "JXL seed not found!";
+  files.push_back(*std::move(basic_file));
+#endif
+  CHECK(!files.empty()) << "JXL seed corpus not found!";
+
+  std::vector<JXLFuzzArgs> seeds;
+  for (auto& file : files) {
+    seeds.emplace_back(
+        ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
+        ColorBehavior::kTransformToSRGB, cc::AuxImage::kDefault,
+        std::numeric_limits<uint32_t>::max(),
+        ImageDecoder::AnimationOption::kUnspecified, std::move(file));
+  }
+  return seeds;
+}
+
+FUZZ_TEST(JXLImageDecoderFuzzTest, FuzzJXLDecoder)
+    .WithDomains(fuzztest::ElementOf<ImageDecoder::AlphaOption>(
+                     {ImageDecoder::kAlphaPremultiplied,
+                      ImageDecoder::kAlphaNotPremultiplied}),
+                 fuzztest::ElementOf<ImageDecoder::HighBitDepthDecodingOption>(
+                     {ImageDecoder::kDefaultBitDepth,
+                      ImageDecoder::kHighBitDepthToHalfFloat}),
+                 fuzztest::ElementOf<ColorBehavior>(
+                     {ColorBehavior::kIgnore, ColorBehavior::kTag,
+                      ColorBehavior::kTransformToSRGB}),
+                 fuzztest::ElementOf<cc::AuxImage>({cc::AuxImage::kDefault,
+                                                    cc::AuxImage::kGainmap}),
+                 fuzztest::InRange(kMinMaxDecodedBytes,
+                                   std::numeric_limits<uint32_t>::max()),
+                 fuzztest::ElementOf<ImageDecoder::AnimationOption>(
+                     {ImageDecoder::AnimationOption::kUnspecified,
+                      ImageDecoder::AnimationOption::kPreferAnimation,
+                      ImageDecoder::AnimationOption::kPreferStillImage}),
+                 // TODO(crbug.com/574556672): Switch to using WithSoftMaxSize
+                 // after performing FuzzTest benchmarking.
+                 fuzztest::Arbitrary<std::vector<uint8_t>>().WithMaxSize(
+                     kMaxInputSize.InBytes()))
+    .WithSeeds(&GetJXLSeeds);
 }  // namespace blink
