@@ -287,7 +287,9 @@ void PaymentLinkManager::Reset() {
   supported_ewallet_creation_options_.clear();
   ukm_source_id_ = ukm::kInvalidSourceId;
   initiate_payment_request_details_.reset();
-  ui_state_ = UiState::kHidden;
+  if (ui_state_ != UiState::kHidden) {
+    DismissPrompt();
+  }
   is_ewallet_available_ = false;
   is_payment_app_available_ = false;
   if (ewallet_account_linking_manager_) {
@@ -639,6 +641,7 @@ PaymentLinkManager::GetOrCreateStrikeDatabase() {
 
 void PaymentLinkManager::OnAccountLinkingResult(const GURL& payment_link_url,
                                                 AccountLinkingResult result) {
+  ewallet_account_linking_manager_.reset();
   client_->SetUiEventListener(base::BindRepeating(
       &PaymentLinkManager::OnUiScreenEvent, weak_ptr_factory_.GetWeakPtr()));
 
@@ -650,7 +653,6 @@ void PaymentLinkManager::OnAccountLinkingResult(const GURL& payment_link_url,
   if (!result.is_successful) {
     if (result.error_code == AccountLinkingResultCode::kResultError) {
       // Delegate to error screen for hard failures.
-      ewallet_account_linking_manager_.reset();
       ShowErrorScreen();
     } else {
       // Clean up the manager and UI state for soft cancellations, early exits,
@@ -659,6 +661,10 @@ void PaymentLinkManager::OnAccountLinkingResult(const GURL& payment_link_url,
     }
     return;
   }
+
+  // `EwalletAccountLinkingManager` leaves the progress screen open on
+  // `kResultOk` so the checkout phase can reuse the sheet.
+  ui_state_ = UiState::kProgressScreen;
 
   // Ewallet payment flow can't be completed in the landscape mode as the
   // Payments server doesn't support it yet.

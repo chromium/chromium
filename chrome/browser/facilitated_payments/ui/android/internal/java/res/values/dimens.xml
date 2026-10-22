@@ -13,6 +13,7 @@ found in the LICENSE file.
     <dimen name="ewallet_account_linking_prompt_illustration_height">114dp</dimen>
     <dimen name="ewallet_account_linking_prompt_illustration_margin_top">16dp</dimen>
     <dimen name="ewallet_account_linking_prompt_product_icon_height">32dp</dimen>
+    <dimen name="ewallet_account_linking_prompt_product_icon_margin_top">16dp</dimen>
     <dimen name="ewallet_account_linking_prompt_product_icon_vertical_padding">2dp</dimen>
     <dimen name="ewallet_account_linking_prompt_title_margin_top">16dp</dimen>
     <dimen name="facilitated_payments_additional_info_margin_vertical">20dp</dimen>

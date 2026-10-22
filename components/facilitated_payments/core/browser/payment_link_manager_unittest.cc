@@ -675,6 +675,9 @@ TEST_F(PaymentLinkManagerTest, OnAccountLinkingResult_LandscapeModeExitsFlow) {
       .Times(1)
       .WillOnce(testing::Return(true));
   EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
+  // `DismissPrompt` is called once when exiting in landscape mode, and again
+  // when the test fixture destroys `payment_link_manager_`.
+  EXPECT_CALL(client_, DismissPrompt).Times(2);
 
   test_api(*payment_link_manager_)
       .OnAccountLinkingResult(
@@ -713,6 +716,42 @@ TEST_F(PaymentLinkManagerTest, OnAccountLinkingResult_SuccessLoadsRiskData) {
           payment_link_url,
           AccountLinkingResult{true, 12345,
                                AccountLinkingResultCode::kResultOk});
+
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(),
+            UiState::kProgressScreen);
+}
+
+// Test that the progress screen left open by account linking is dismissed
+// after InvokePurchaseAction is triggered.
+TEST_F(
+    PaymentLinkManagerTest,
+    OnAccountLinkingResult_Success_DismissesProgressScreenAfterPurchaseAction) {
+  EXPECT_CALL(client_, LoadRiskData);
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          GURL(kShopeePayPaymentLink),
+          AccountLinkingResult{true, 12345,
+                               AccountLinkingResultCode::kResultOk});
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(),
+            UiState::kProgressScreen);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->secure_payload_ = CreateSecurePayload();
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
+  // `DismissPrompt` is called once when the progress screen timer fires, and
+  // again when the test fixture destroys `payment_link_manager_`.
+  EXPECT_CALL(client_, DismissPrompt).Times(2);
+
+  test_api(*payment_link_manager_)
+      .OnInitiatePaymentResponseReceived(
+          base::TimeTicks::Now() - base::Seconds(2),
+          autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+              kSuccess,
+          std::move(response_details));
+  FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
 }
 
 // Verify that the billing customer number carried in the instrument manager
