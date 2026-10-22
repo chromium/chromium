@@ -2324,6 +2324,9 @@ GraphBuilderCoreml::AddOperationForConv2d(
        {kParamDilations, Create1DTensorImmediateValue<int32_t>(dilations)},
        {kParamGroups, CreateScalarImmediateValue(
                           base::checked_cast<int32_t>(operation.groups))}});
+  const OperandInfo& output_operand_info =
+      GetOperandInfo(operation.output_operand_id);
+  std::optional<OperandId> non_constant_bias_operand_id;
   if (operation.bias_operand_id) {
     const mojom::Operand& bias_operand =
         GetOperand(operation.bias_operand_id.value());
@@ -2335,21 +2338,48 @@ GraphBuilderCoreml::AddOperationForConv2d(
           bias_operand.descriptor));
     }
 
-    // TODO(crbug.com/338529226): This param must be a constant tensor.
-    RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamBias,
-                                        operation.bias_operand_id.value()));
+    if (constant_operands_->contains(*operation.bias_operand_id)) {
+      RETURN_IF_ERROR(SetInputFromConstantOperand(
+          *op->mutable_inputs(), kOpParamBias,
+          operation.bias_operand_id.value()));
+    } else {
+      // CoreML conv and conv_transpose require `bias` to be a constant tensor
+      // (crbug.com/338529226); passing a non-constant `bias` causes
+      // out-of-bounds reads in Espresso/BNNS kernels. Decompose non-constant
+      // `bias` into a `reshape` (from [C_out] to [1, C_out, 1, 1]) + `add`.
+      non_constant_bias_operand_id = *operation.bias_operand_id;
+    }
   }
 
   if (operation.kind == mojom::Conv2d::Kind::kTransposed) {
     // Get the output shape from the output operand.
-    const OperandInfo& output_operand =
-        GetOperandInfo(operation.output_operand_id);
     SetInputWithValue(*op->mutable_inputs(), kParamOutputShape,
                       Create1DTensorImmediateValue<int32_t>(
-                          Ui32ToI32(output_operand.dimensions)));
+                          Ui32ToI32(output_operand_info.dimensions)));
   }
 
-  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  if (non_constant_bias_operand_id) {
+    ASSIGN_OR_RETURN(OperandId conv_output_operand_id,
+                     GenerateInternalOperandInfo(
+                         output_operand_info.mil_data_type,
+                         output_operand_info.dimensions));
+    PopulateNamedValueType(conv_output_operand_id, *op->add_outputs());
+
+    std::array<uint32_t, 4> reshaped_bias_dims = {
+        1, output_operand_info.dimensions[1], 1, 1};
+    ASSIGN_OR_RETURN(OperandId reshaped_bias_operand_id,
+                     GenerateInternalOperandInfo(
+                         output_operand_info.mil_data_type,
+                         reshaped_bias_dims));
+    RETURN_IF_ERROR(AddOperationForReshape(
+        *non_constant_bias_operand_id, reshaped_bias_operand_id, block));
+    RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+        conv_output_operand_id, reshaped_bias_operand_id,
+        operation.output_operand_id, mojom::ElementWiseBinary::Kind::kAdd,
+        block));
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
   return base::ok();
 }
 
