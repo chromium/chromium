@@ -2590,8 +2590,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncSetupIncompleteMigrationDecision"
-    enum="SyncSetupIncompleteMigrationDecision" expires_after="2026-11-28">
-  <owner>ankushkush@chromium.org</owner>
+    enum="SyncSetupIncompleteMigrationDecision" expires_after="2027-10-21">
+  <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     The decision whether to migrate the user from sync-setup-incomplete state to
