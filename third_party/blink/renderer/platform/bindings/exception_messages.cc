@@ -224,22 +224,22 @@ String ExceptionMessages::IncorrectPropertyType(const String& property,
 
 String ExceptionMessages::InvalidArity(const char* expected,
                                        unsigned provided) {
-  return StrCat({"Valid arities are: ", expected, ", but ",
-                 String::Number(provided), " arguments provided."});
+  return Format("Valid arities are: {}, but {} arguments provided.", expected,
+                provided);
 }
 
 String ExceptionMessages::ArgumentNullOrIncorrectType(
     int argument_index,
     const String& expected_type) {
-  return StrCat({"The ", OrdinalNumber(argument_index),
-                 " argument provided is either null, or an invalid ",
-                 expected_type, " object."});
+  return Format(
+      "The {} argument provided is either null, or an invalid {} object.",
+      OrdinalNumber(argument_index), expected_type);
 }
 
 String ExceptionMessages::ArgumentNotOfType(int argument_index,
                                             const char* expected_type) {
-  return StrCat({"parameter ", String::Number(argument_index + 1),
-                 " is not of type '", expected_type, "'."});
+  return Format("parameter {} is not of type '{}'.", argument_index + 1,
+                expected_type);
 }
 
 String ExceptionMessages::NotASequenceTypeProperty(
@@ -251,9 +251,8 @@ String ExceptionMessages::NotASequenceTypeProperty(
 
 String ExceptionMessages::NotEnoughArguments(unsigned expected,
                                              unsigned provided) {
-  return StrCat({String::Number(expected), " argument", expected > 1 ? "s" : "",
-                 " required, but only ", String::Number(provided),
-                 " present."});
+  return Format("{} argument{} required, but only {} present.", expected,
+                expected > 1 ? "s" : "", provided);
 }
 
 String ExceptionMessages::NotAFiniteNumber(double value, const char* name) {

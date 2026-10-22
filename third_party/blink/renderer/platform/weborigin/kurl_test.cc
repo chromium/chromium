@@ -28,9 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-#include <array>
-
 // Basic tests that verify our KURL's interface behaves the same as the
 // original KURL's.
 
@@ -38,6 +35,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/test/scoped_feature_list.h"
@@ -45,6 +43,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "url/gurl.h"
 #include "url/gurl_abstract_tests.h"
@@ -1225,7 +1224,7 @@ TEST_P(KURLPortTest, ConstructRelative) {
 
 TEST_P(KURLPortTest, SetPort) {
   const auto& param = GetParam();
-  KURL url(StrCat({"http://a:", String::Number(kNoopPort), "/"}));
+  KURL url(Format("http://a:{}/", kNoopPort));
   const bool set_port_result_actual = url.SetPort(param.input);
   EXPECT_EQ(set_port_result_actual, param.set_port_success);
   EXPECT_EQ(url.Port(), param.set_port_output);
@@ -1234,7 +1233,7 @@ TEST_P(KURLPortTest, SetPort) {
 
 TEST_P(KURLPortTest, SetHostAndPort) {
   const auto& param = GetParam();
-  KURL url(StrCat({"http://a:", String::Number(kNoopPort), "/"}));
+  KURL url(Format("http://a:{}/", kNoopPort));
   url.SetHostAndPort(String("a:") + param.input);
   switch (param.is_valid) {
     case PortIsValid::kAlways:

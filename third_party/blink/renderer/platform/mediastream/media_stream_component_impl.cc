@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -178,8 +178,8 @@ void MediaStreamComponentImpl::AddSink(
 }
 
 String MediaStreamComponentImpl::ToString() const {
-  return StrCat({"[id: ", Id(), ", unique_id: ", String::Number(UniqueId()),
-                 ", enabled: ", Enabled() ? "true" : "false", "]"});
+  return Format("[id: {}, unique_id: {}, enabled: {}]", Id(), UniqueId(),
+                Enabled());
 }
 
 void MediaStreamComponentImpl::Trace(Visitor* visitor) const {

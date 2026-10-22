@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -2494,8 +2495,7 @@ void ResourceFetcher::RecordPreconnect(const KURL& url,
   const String origin = SecurityOrigin::Create(url)->ToString();
   // Preconnects with distinct crossorigin values to the same origin are
   // reported separately.
-  const String key =
-      StrCat({origin, "|", String::Number(static_cast<int>(crossorigin))});
+  const String key = Format("{}|{}", origin, static_cast<int>(crossorigin));
   auto it = preconnect_records_.find(key);
   if (it == preconnect_records_.end()) {
     PreconnectInfo info;

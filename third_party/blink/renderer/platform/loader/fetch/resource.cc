@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -1097,9 +1098,9 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
 }
 
 String Resource::GetMemoryDumpName() const {
-  return StrCat({"web_cache/",
-                 ResourceTypeToString(GetType(), Options().initiator_info.name),
-                 "_resources/", String::Number(InspectorId())});
+  return Format("web_cache/{}_resources/{}",
+                ResourceTypeToString(GetType(), Options().initiator_info.name),
+                InspectorId());
 }
 
 void Resource::SetCachePolicyBypassingCache() {

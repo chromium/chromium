@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink::date_time_format {
@@ -61,8 +62,7 @@ class DateTimeFormatTest : public testing::Test {
           return builder.ToString();
         }
         default:
-          return StrCat({"Token(", String::Number(static_cast<int>(field_type)),
-                         ", ", String::Number(count), ")"});
+          return Format("Token({}, {})", static_cast<int>(field_type), count);
       }
     }
   };

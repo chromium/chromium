@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
@@ -23,7 +23,7 @@ const int kMaxStackLimit = 1000;
 using Error = JSONParseErrorType;
 
 String FormatErrorMessage(Error error, int line, int column) {
-  String text;
+  StringView text;
   switch (error) {
     case Error::kNoError:
       NOTREACHED();
@@ -48,8 +48,7 @@ String FormatErrorMessage(Error error, int line, int column) {
           "valid Unicode characters.";
       break;
   }
-  return StrCat({"Line: ", String::Number(line),
-                 ", column: ", String::Number(column), ", ", text});
+  return Format("Line: {}, column: {}, {}", line, column, text);
 }
 
 // Note: all parsing functions take a |cursor| parameter which is

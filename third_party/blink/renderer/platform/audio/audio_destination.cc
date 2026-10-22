@@ -466,10 +466,8 @@ void AudioDestination::SetDetectSilence(bool detect_silence) {
   DCHECK(IsMainThread());
   TRACE_EVENT1("webaudio", "AudioDestination::SetDetectSilence",
                "detect_silence", detect_silence);
-  SendLogMessage(
-      __func__,
-      StrCat({"({detect_silence=",
-              String::Number(static_cast<int>(detect_silence)), "})"}));
+  SendLogMessage(__func__, Format("({{detect_silence={}}})",
+                                  static_cast<int>(detect_silence)));
 
   web_audio_device_->SetDetectSilence(detect_silence);
 }
@@ -526,15 +524,11 @@ AudioDestination::AudioDestination(
   }
 
   SendLogMessage(__func__,
-                 StrCat({"({output_channels=",
-                         String::Number(number_of_output_channels), "})"}));
-  SendLogMessage(
-      __func__,
-      StrCat({"=> (FIFO size=", String::Number(fifo_->length()), " bytes)"}));
+                 Format("({{output_channels={}}})", number_of_output_channels));
+  SendLogMessage(__func__, Format("=> (FIFO size={} bytes)", fifo_->length()));
 
-  SendLogMessage(__func__,
-                 StrCat({"=> (device callback buffer size=",
-                         String::Number(callback_buffer_size_), " frames)"}));
+  SendLogMessage(__func__, Format("=> (device callback buffer size={} frames)",
+                                  callback_buffer_size_));
   SendLogMessage(__func__, Format("=> (device sample rate={:.0f} Hz)",
                                   web_audio_device_->SampleRate()));
   if (is_output_buffer_bypassed_) {
