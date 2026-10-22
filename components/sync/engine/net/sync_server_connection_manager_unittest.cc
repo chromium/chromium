@@ -125,8 +125,7 @@ class FailingHttpPostFactory : public HttpPostProviderFactory {
 class SyncServerConnectionManagerTest : public testing::Test {
  public:
   SyncServerConnectionManagerTest() {
-    feature_list_.InitWithFeatures({kSyncValidateAccessToken},
-                                   {kSyncUsePropagatedAccessToken});
+    feature_list_.InitAndDisableFeature(kSyncUsePropagatedAccessToken);
   }
 
  private:

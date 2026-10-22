@@ -148,7 +148,7 @@ class ServerConnectionManager {
   void ClearCachedAccessToken();
 
   // Returns true if `access_token_info` has a non-empty token and is not
-  // expired (unless token validation is disabled via kSyncValidateAccessToken).
+  // expired.
   static bool IsAccessTokenInfoValid(
       const signin::AccessTokenInfo& access_token_info);
 

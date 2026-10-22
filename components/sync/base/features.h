@@ -173,10 +173,6 @@ BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements);
 // on the "Review your synced data" (or equivalent) entrypoint in settings.
 BASE_DECLARE_FEATURE(kSyncEnableNewSyncDashboardUrl);
 
-// If enabled, validate the access token before sending the request to the
-// server.
-BASE_DECLARE_FEATURE(kSyncValidateAccessToken);
-
 // If enabled, use the access token propagated from SyncSchedulerImpl through
 // SyncCycle rather than reading from ServerConnectionManager's cache.
 BASE_DECLARE_FEATURE(kSyncUsePropagatedAccessToken);

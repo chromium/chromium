@@ -134,10 +134,8 @@ bool ServerConnectionManager::IsAccessTokenInfoValid(
     return false;
   }
 
-  // Assume the token is valid if the expiration time is not set or the
-  // validation feature is disabled.
-  if (access_token_info.expiration_time.is_null() ||
-      !base::FeatureList::IsEnabled(kSyncValidateAccessToken)) {
+  // Assume the token is valid if the expiration time is not set.
+  if (access_token_info.expiration_time.is_null()) {
     return true;
   }
 
