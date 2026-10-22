@@ -111,6 +111,28 @@ export function getHtml(this: MemoryBanksPaletteElement) {
                         @click="${this.onOpenSourceClick}">
                     </cr-icon-button>
                   ` : ''}
+                  <cr-icon-button
+                      class="copy-btn icon-copy-content"
+                      title="Copy text to clipboard"
+                      aria-label="Copy text to clipboard"
+                      data-index="${index}"
+                      @click="${this.onCopyClick}">
+                  </cr-icon-button>
+                  <cr-button
+                      class="attach-btn ${
+                          this.isItemAttached(item.id) ? 'attached' : ''}"
+                      title="${this.isItemAttached(item.id)
+                          ? 'Attached as file (Click to remove)'
+                          : `Attach as file (${
+                              this.getPasteShortcut()} in page to paste)`}"
+                      aria-label="${this.isItemAttached(item.id)
+                          ? 'Remove attached file'
+                          : 'Attach as file'}"
+                      aria-pressed="${this.isItemAttached(item.id)}"
+                      data-index="${index}"
+                      @click="${this.onAttachClick}">
+                    ${this.isItemAttached(item.id) ? '✓ Attached' : 'Attach'}
+                  </cr-button>
                 </div>
               </div>
 
@@ -155,6 +177,18 @@ export function getHtml(this: MemoryBanksPaletteElement) {
           `)}
         `}
       </div>
+
+      <cr-toast id="toast" .duration="${this.toastDuration}">
+        ${!this.toastIsError ? html`
+          <span class="toast-check" aria-hidden="true">✓</span>
+        ` : ''}
+        <div class="toast-content">
+          <div class="toast-title">${this.toastMessage}</div>
+          ${this.toastSubtitle ? html`
+            <div class="toast-subtitle">${this.toastSubtitle}</div>
+          ` : ''}
+        </div>
+      </cr-toast>
     </div>
   `;
 }

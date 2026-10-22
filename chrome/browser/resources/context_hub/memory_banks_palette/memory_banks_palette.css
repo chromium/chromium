@@ -5,7 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #scheme=relative
+ * #include=cr-icons-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -248,17 +250,41 @@
   gap: 4px;
 }
 
-.open-source-btn {
-  --cr-icon-button-color: var(--color-sys-on-surface-variant, #44474f);
+.open-source-btn,
+.copy-btn {
+  --cr-icon-button-fill-color: var(--color-sys-on-surface-variant, #44474f);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 26px;
   margin: 0;
   padding: 0;
-  transition: all 150ms ease;
 }
 
-.open-source-btn:hover {
-  --cr-icon-button-color: var(--color-sys-primary, #0b57d0);
+.open-source-btn:hover,
+.copy-btn:hover {
+  --cr-icon-button-fill-color: var(--color-sys-primary, #0b57d0);
+}
+
+.attach-btn {
+  --cr-button-background-color: var(--color-sys-primary, #0b57d0);
+  --cr-button-border-color: transparent;
+  --cr-button-height: 26px;
+  --cr-button-text-color: var(--color-sys-on-primary, #fff);
+  border-radius: 13px;
+  font-family: 'Google Sans Text', Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 0 14px;
+  transition: box-shadow 150ms ease;
+}
+
+.attach-btn:hover {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.attach-btn.attached {
+  --cr-button-background-color: var(--color-sys-primary-container, #d3e3fd);
+  --cr-button-border-color: var(--color-sys-primary, #0b57d0);
+  --cr-button-text-color: var(--color-sys-on-primary-container, #041e49);
 }
 
 .item-body {
@@ -408,6 +434,60 @@
   font-size: 12px;
   line-height: 1.45;
   max-width: 280px;
+}
+
+cr-toast {
+  --cr-toast-background: var(--color-sys-inverse-surface, #313033);
+  --cr-toast-text-color: var(--color-sys-inverse-on-surface, #f4eff4);
+  align-items: center;
+  border: 1px solid var(--color-sys-outline-variant,
+      rgba(255, 255, 255, 0.15));
+  border-radius: 20px;
+  bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  font-family: 'Google Sans Text', Roboto, sans-serif;
+  gap: 8px;
+  left: 50%;
+  margin: 0;
+  max-width: 380px;
+  min-height: auto;
+  min-width: auto;
+  padding: 8px 18px;
+  position: absolute;
+  right: auto;
+  transform: translate(-50%, 20px);
+  transition: opacity 200ms ease, transform 200ms ease,
+      visibility 200ms ease;
+  width: auto;
+  z-index: 100;
+}
+
+cr-toast[open] {
+  transform: translate(-50%, 0);
+}
+
+.toast-check {
+  color: var(--color-sys-inverse-primary, #a8c7fa);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.toast-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.toast-title {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.toast-subtitle {
+  font-size: 11px;
+  opacity: 0.8;
 }
 
 @media (prefers-color-scheme: dark) {
