@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <string_view>
 
 #include "base/containers/flat_map.h"
@@ -23,7 +24,15 @@ namespace password_manager {
 // Partial parsing i.e. missing fields will also yield a valid CSVPassword.
 class CSVPassword {
  public:
-  enum class Label { kOrigin, kUsername, kPassword, KNote };
+  enum class Label {
+    kOrigin,
+    kUsername,
+    kPassword,
+    kNote,
+
+    kMinValue = kOrigin,
+    kMaxValue = kNote,
+  };
   using ColumnMap = base::flat_map<size_t, Label>;
 
   // Status describes parsing errors.
@@ -56,16 +65,16 @@ class CSVPassword {
   // An exact equality comparison of all the fields - only used in tests.
   friend bool operator==(const CSVPassword&, const CSVPassword&) = default;
 
-  Status GetParseStatus() const;
+  Status GetParseStatus() const { return status_; }
 
-  const std::string& GetPassword() const;
+  const std::string& GetPassword() const { return password_; }
 
-  const std::string& GetUsername() const;
+  const std::string& GetUsername() const { return username_; }
 
-  const std::string& GetNote() const;
+  const std::string& GetNote() const { return note_; }
 
   // Returns the URL or the original raw url in case of an invalid GURL.
-  const base::expected<GURL, std::string>& GetURL() const;
+  const base::expected<GURL, std::string>& GetURL() const { return url_; }
 
  private:
   // Contains a valid GURL or the original raw url in case of an invalid GURL.

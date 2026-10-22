@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/import/csv_password_iterator.h"
 
+#include <stddef.h>
+
 #include <string_view>
 #include <utility>
 
@@ -34,22 +36,10 @@ CSVPasswordIterator::CSVPasswordIterator(const CSVPassword::ColumnMap& map,
   SeekToNextValidRow();
 }
 
-CSVPasswordIterator::CSVPasswordIterator(const CSVPasswordIterator& other) {
-  *this = other;
-}
+CSVPasswordIterator::CSVPasswordIterator(const CSVPasswordIterator&) = default;
 
 CSVPasswordIterator& CSVPasswordIterator::operator=(
-    const CSVPasswordIterator& other) {
-  map_ = other.map_;
-  csv_rest_ = other.csv_rest_;
-  csv_row_ = other.csv_row_;
-  if (map_) {
-    password_.emplace(*map_, csv_row_);
-  } else {
-    password_.reset();
-  }
-  return *this;
-}
+    const CSVPasswordIterator&) = default;
 
 CSVPasswordIterator::~CSVPasswordIterator() = default;
 

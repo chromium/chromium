@@ -4,13 +4,16 @@
 
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 
-#include <set>
+#include <stddef.h>
+
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
@@ -42,22 +45,19 @@ const CSVPassword::Label* NameToLabel(std::string_view name) {
           {"password", Label::kPassword},
           {"login_password", Label::kPassword},
 
-          {"note", Label::KNote},
-          {"notes", Label::KNote},
-          {"comment", Label::KNote},
-          {"comments", Label::KNote},
+          {"note", Label::kNote},
+          {"notes", Label::kNote},
+          {"comment", Label::kNote},
+          {"comments", Label::kNote},
       });
 
-  std::string trimmed_name;
-  // Trim leading/trailing whitespaces from |name|.
-  base::TrimWhitespaceASCII(name, base::TRIM_ALL, &trimmed_name);
-  auto it = kLabelMap.find(base::ToLowerASCII(trimmed_name));
+  auto it = kLabelMap.find(name);
   return it != kLabelMap.end() ? &it->second : nullptr;
 }
 
 // Given |name| of a note column, returns its priority.
 size_t GetNoteHeaderPriority(std::string_view name) {
-  DCHECK_EQ(*NameToLabel(name), CSVPassword::Label::KNote);
+  DCHECK_EQ(*NameToLabel(name), CSVPassword::Label::kNote);
   // Mapping names for note columns to their priorities.
   static constexpr auto kNoteLabelsPriority =
       base::MakeFixedFlatMap<std::string_view, size_t>({
@@ -70,10 +70,7 @@ size_t GetNoteHeaderPriority(std::string_view name) {
   // TODO(crbug.com/40246323): record a metric if there multiple "note" columns
   // in one file and which names are used.
 
-  std::string trimmed_name;
-  // Trim leading/trailing whitespaces from |name|.
-  base::TrimWhitespaceASCII(name, base::TRIM_ALL, &trimmed_name);
-  auto it = kNoteLabelsPriority.find(base::ToLowerASCII(trimmed_name));
+  auto it = kNoteLabelsPriority.find(name);
   CHECK(it != kNoteLabelsPriority.end());
   return it->second;
 }
@@ -98,16 +95,18 @@ CSVPasswordSequence::CSVPasswordSequence(std::string csv)
   size_t note_column_index, note_column_priority = kMaxPriority;
 
   for (CSVFieldParser parser(first); parser.HasMoreFields(); ++col_index) {
-    std::string_view name;
-    if (!parser.NextField(&name)) {
+    std::string_view raw_name;
+    if (!parser.NextField(&raw_name)) {
       result_ = CSVPassword::Status::kSyntaxError;
       return;
     }
 
+    std::string name =
+        base::ToLowerASCII(base::TrimWhitespaceASCII(raw_name, base::TRIM_ALL));
     if (const CSVPassword::Label* label = NameToLabel(name)) {
       // If there are multiple columns matching one of the accepted "note" field
       // names, the one with the lowest priority should be used.
-      if (*label == CSVPassword::Label::KNote) {
+      if (*label == CSVPassword::Label::kNote) {
         size_t note_priority = GetNoteHeaderPriority(name);
         if (note_column_priority > note_priority) {
           note_column_index = col_index;
@@ -120,22 +119,23 @@ CSVPasswordSequence::CSVPasswordSequence(std::string csv)
   }
 
   if (note_column_priority != kMaxPriority) {
-    map_[note_column_index] = CSVPassword::Label::KNote;
+    map_[note_column_index] = CSVPassword::Label::kNote;
   }
 
-  base::flat_set<CSVPassword::Label> all_labels;
-  for (const auto& kv : map_) {
-    if (!all_labels.insert(kv.second).second) {
+  base::EnumSet<CSVPassword::Label> all_labels;
+  for (const auto& [_, label] : map_) {
+    if (all_labels.Has(label)) {
       // Multiple columns share the same label.
       result_ = CSVPassword::Status::kSemanticError;
       return;
     }
+    all_labels.Put(label);
   }
 
   // Check that each of the required labels is assigned to a column.
-  if (!all_labels.contains(CSVPassword::Label::kOrigin) ||
-      !all_labels.contains(CSVPassword::Label::kUsername) ||
-      !all_labels.contains(CSVPassword::Label::kPassword)) {
+  if (!all_labels.HasAll({CSVPassword::Label::kOrigin,
+                          CSVPassword::Label::kUsername,
+                          CSVPassword::Label::kPassword})) {
     result_ = CSVPassword::Status::kSemanticError;
     return;
   }

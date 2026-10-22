@@ -128,7 +128,7 @@ INSTANTIATE_TEST_SUITE_P(
                 {0, Label::kOrigin},
                 {1, Label::kUsername},
                 {2, Label::kPassword},
-                {3, Label::KNote},
+                {3, Label::kNote},
             })
             .CSV("http://example.com,user,password,secret note")
             .Origin("http://example.com")

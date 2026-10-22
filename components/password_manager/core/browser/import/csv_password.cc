@@ -4,15 +4,14 @@
 
 #include "components/password_manager/core/browser/import/csv_password.h"
 
+#include <stddef.h>
+
+#include <string>
 #include <string_view>
 #include <utility>
 
-#include "base/check_op.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 #include "url/gurl.h"
 
@@ -20,10 +19,9 @@ namespace password_manager {
 
 namespace {
 
-// ConvertUTF8() unescapes a CSV field |str| and converts the result to a 8-bit
-// string. |str| is assumed to exclude the outer pair of quotation marks, if
-// originally present.
-std::string ConvertUTF8(std::string_view str) {
+// Unescapes a CSV field |str|. |str| is assumed to exclude the outer pair of
+// quotation marks, if originally present.
+std::string UnescapeCSVField(std::string_view str) {
   std::string str_copy(str);
   base::ReplaceSubstringsAfterOffset(&str_copy, 0, "\"\"", "\"");
   return str_copy;
@@ -79,20 +77,20 @@ CSVPassword::CSVPassword(const ColumnMap& map, std::string_view row) {
       case Label::kOrigin: {
         GURL gurl = GURL(field);
         if (!gurl.is_valid()) {
-          url_ = base::unexpected(ConvertUTF8(field));
+          url_ = base::unexpected(UnescapeCSVField(field));
         } else {
-          url_ = gurl;
+          url_ = std::move(gurl);
         }
         break;
       }
       case Label::kUsername:
-        username_ = ConvertUTF8(field);
+        username_ = UnescapeCSVField(field);
         break;
       case Label::kPassword:
-        password_ = ConvertUTF8(field);
+        password_ = UnescapeCSVField(field);
         break;
-      case Label::KNote:
-        note_ = ConvertUTF8(field);
+      case Label::kNote:
+        note_ = UnescapeCSVField(field);
         break;
     }
   }
@@ -103,25 +101,5 @@ CSVPassword::CSVPassword(CSVPassword&&) = default;
 CSVPassword& CSVPassword::operator=(const CSVPassword&) = default;
 CSVPassword& CSVPassword::operator=(CSVPassword&&) = default;
 CSVPassword::~CSVPassword() = default;
-
-CSVPassword::Status CSVPassword::GetParseStatus() const {
-  return status_;
-}
-
-const std::string& CSVPassword::GetPassword() const {
-  return password_;
-}
-
-const std::string& CSVPassword::GetUsername() const {
-  return username_;
-}
-
-const std::string& CSVPassword::GetNote() const {
-  return note_;
-}
-
-const base::expected<GURL, std::string>& CSVPassword::GetURL() const {
-  return url_;
-}
 
 }  // namespace password_manager

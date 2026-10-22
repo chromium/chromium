@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_IMPORT_CSV_PASSWORD_ITERATOR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_IMPORT_CSV_PASSWORD_ITERATOR_H_
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <iterator>
 #include <optional>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 

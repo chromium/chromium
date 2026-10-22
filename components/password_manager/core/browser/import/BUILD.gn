@@ -70,12 +70,6 @@ source_set("csv") {
   ]
   public_deps = [
     "//base",
-    "//components/password_manager/core/browser:password_form",
-  ]
-
-  deps = [
-    "//components/affiliations/core/browser:affiliations",
-    "//components/password_manager/core/browser/form_parsing",
     "//url",
   ]
 }
