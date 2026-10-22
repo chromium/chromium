@@ -332,6 +332,14 @@ void MediaCodecVideoDecoder::DestroyAsync(
     self->event_cb_registration_.reset();
     self->media_crypto_context_->SetMediaCryptoReadyCB(base::NullCallback());
     self->media_crypto_context_ = nullptr;
+
+    // Release `codec_` immediately and drop the decoder's own references to
+    // `media_crypto_` and `cdm_context_ref_` so that any in-flight
+    // CodecAllocator creation or release task owns the remaining reference
+    // until MediaCodec.release() finishes on the background runner.
+    self->ReleaseCodec();
+    self->media_crypto_.Reset();
+    self->cdm_context_ref_.reset();
   }
 
   // Mojo callbacks require that they're run before destruction.
@@ -467,6 +475,8 @@ void MediaCodecVideoDecoder::SetCdm(CdmContext* cdm_context, InitCB init_cb) {
   DCHECK(cdm_context->GetMediaCryptoContext());
 
   media_crypto_context_ = cdm_context->GetMediaCryptoContext();
+  cdm_context_ref_ = base::MakeRefCounted<CdmContextRefHolder>(
+      media_crypto_context_->GetCdmContextRef());
 
   // CdmContext will always post the registered callback back to this thread.
   event_cb_registration_ = cdm_context->RegisterEventCB(base::BindRepeating(
@@ -494,6 +504,7 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
   if (!media_crypto) {
     media_crypto_context_->SetMediaCryptoReadyCB(base::NullCallback());
     media_crypto_context_ = nullptr;
+    cdm_context_ref_.reset();
 
     if (decoder_config_.is_encrypted()) {
       LOG(ERROR) << "MediaCrypto is not available";
@@ -744,7 +755,8 @@ void MediaCodecVideoDecoder::CreateCodec() {
   codec_allocator_->CreateMediaCodecAsync(
       base::BindOnce(&MediaCodecVideoDecoder::OnCodecConfiguredInternal,
                      codec_allocator_weak_factory_.GetWeakPtr(),
-                     codec_allocator_, target_surface_bundle_),
+                     codec_allocator_, target_surface_bundle_, media_crypto_,
+                     cdm_context_ref_),
       std::move(config));
 }
 
@@ -753,15 +765,24 @@ void MediaCodecVideoDecoder::OnCodecConfiguredInternal(
     base::WeakPtr<MediaCodecVideoDecoder> weak_this,
     CodecAllocator* codec_allocator,
     scoped_refptr<CodecSurfaceBundle> surface_bundle,
+    base::android::ScopedJavaGlobalRef<jobject> media_crypto,
+    scoped_refptr<CdmContextRefHolder> cdm_context_ref,
     std::unique_ptr<MediaCodecBridge> codec) {
   if (!weak_this) {
     if (codec) {
       codec_allocator->ReleaseMediaCodec(
           std::move(codec),
           base::BindOnce(
-              &base::SequencedTaskRunner::ReleaseSoon<CodecSurfaceBundle>,
-              base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
-              std::move(surface_bundle)));
+              [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+                 scoped_refptr<CodecSurfaceBundle> surface_bundle,
+                 base::android::ScopedJavaGlobalRef<jobject> media_crypto,
+                 scoped_refptr<CdmContextRefHolder> cdm_context_ref) {
+                task_runner->ReleaseSoon(FROM_HERE, std::move(surface_bundle));
+                task_runner->ReleaseSoon(FROM_HERE, std::move(cdm_context_ref));
+              },
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              std::move(surface_bundle), std::move(media_crypto),
+              std::move(cdm_context_ref)));
     }
     return;
   }
@@ -1422,9 +1443,15 @@ void MediaCodecVideoDecoder::ReleaseCodec() {
   codec_allocator_->ReleaseMediaCodec(
       std::move(pair.first),
       base::BindOnce(
-          &base::SequencedTaskRunner::ReleaseSoon<CodecSurfaceBundle>,
-          base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
-          std::move(pair.second)));
+          [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+             scoped_refptr<CodecSurfaceBundle> surface_bundle,
+             base::android::ScopedJavaGlobalRef<jobject> media_crypto,
+             scoped_refptr<CdmContextRefHolder> cdm_context_ref) {
+            task_runner->ReleaseSoon(FROM_HERE, std::move(surface_bundle));
+            task_runner->ReleaseSoon(FROM_HERE, std::move(cdm_context_ref));
+          },
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          std::move(pair.second), media_crypto_, cdm_context_ref_));
 }
 
 AndroidOverlayFactoryCB MediaCodecVideoDecoder::CreateOverlayFactoryCb() {

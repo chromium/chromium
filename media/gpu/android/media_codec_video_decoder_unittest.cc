@@ -81,6 +81,21 @@ bool HasAv1Decoder() {
   return false;
 }
 
+class FakeCdmContextRef final : public CdmContextRef {
+ public:
+  FakeCdmContextRef(bool* destroyed, base::OnceClosure on_destroyed)
+      : destroyed_(destroyed), on_destroyed_(std::move(on_destroyed)) {}
+  ~FakeCdmContextRef() override {
+    *destroyed_ = true;
+    std::move(on_destroyed_).Run();
+  }
+  CdmContext* GetCdmContext() override { return nullptr; }
+
+ private:
+  raw_ptr<bool> destroyed_;
+  base::OnceClosure on_destroyed_;
+};
+
 }  // namespace
 
 class MockVideoFrameFactory : public VideoFrameFactory {
@@ -868,6 +883,104 @@ TEST_P(MediaCodecVideoDecoderTest, CdmInitializationWorksForL3) {
   ASSERT_EQ(codec_allocator_->most_recent_config->codec_type, CodecType::kAny);
   // We can't check for equality safely, but verify that something was provided.
   ASSERT_TRUE(codec_allocator_->most_recent_config->media_crypto);
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       EncryptedStreamReleasesCodecSynchronouslyOnDestroy) {
+  CreateCdm(true, false);
+  codec_allocator_->hold_codec_released_cb = true;
+  bool cdm_ref_destroyed = false;
+  base::RunLoop cdm_ref_destroyed_loop;
+  EXPECT_CALL(*cdm_, GetCdmContextRef()).WillOnce([&]() {
+    return std::make_unique<FakeCdmContextRef>(
+        &cdm_ref_destroyed, cdm_ref_destroyed_loop.QuitClosure());
+  });
+
+  ASSERT_TRUE(InitializeWithOverlay_OneDecodePending(
+      TestVideoConfig::NormalEncrypted(codec_)));
+  auto* codec = codec_allocator_->ProvideMockCodecAsync();
+  ASSERT_TRUE(codec);
+
+  // When a CDM is attached, DestroyAsync() must release the codec immediately
+  // and keep CdmContextRef alive until the ReleaseMediaCodec callback finishes,
+  // even after DeleteSoon(this) destroys MediaCodecVideoDecoder.
+  EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(codec)).WillOnce([&]() {
+    EXPECT_FALSE(cdm_ref_destroyed);
+  });
+  mcvd_.reset();
+  testing::Mock::VerifyAndClearExpectations(codec_allocator_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(cdm_ref_destroyed);
+
+  codec_allocator_->RunPendingCodecReleased();
+  cdm_ref_destroyed_loop.Run();
+  EXPECT_TRUE(cdm_ref_destroyed);
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       EncryptedStreamKeepsCdmAliveWhenDestroyedDuringCodecCreation) {
+  CreateCdm(true, false);
+  codec_allocator_->hold_codec_released_cb = true;
+  bool cdm_ref_destroyed = false;
+  base::RunLoop cdm_ref_destroyed_loop;
+  EXPECT_CALL(*cdm_, GetCdmContextRef()).WillOnce([&]() {
+    return std::make_unique<FakeCdmContextRef>(
+        &cdm_ref_destroyed, cdm_ref_destroyed_loop.QuitClosure());
+  });
+
+  ASSERT_TRUE(InitializeWithOverlay_OneDecodePending(
+      TestVideoConfig::NormalEncrypted(codec_)));
+
+  // Destroy MCVD while CreateMediaCodecAsync() is still in flight.
+  mcvd_.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(cdm_ref_destroyed);
+
+  // When codec creation finishes after MCVD destruction,
+  // OnCodecConfiguredInternal must release the codec and keep CdmContextRef
+  // alive until release completes.
+  EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(NotNull()));
+  ASSERT_TRUE(codec_allocator_->ProvideMockCodecAsync());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(cdm_ref_destroyed);
+
+  codec_allocator_->RunPendingCodecReleased();
+  cdm_ref_destroyed_loop.Run();
+  EXPECT_TRUE(cdm_ref_destroyed);
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       EncryptedStreamKeepsCdmAliveWhenCodecReleasedBeforeDestroy) {
+  CreateCdm(true, true);
+  codec_allocator_->hold_codec_released_cb = true;
+  bool cdm_ref_destroyed = false;
+  base::RunLoop cdm_ref_destroyed_loop;
+  EXPECT_CALL(*cdm_, GetCdmContextRef()).WillOnce([&]() {
+    return std::make_unique<FakeCdmContextRef>(
+        &cdm_ref_destroyed, cdm_ref_destroyed_loop.QuitClosure());
+  });
+
+  auto* overlay = InitializeWithOverlay_OneDecodePending(
+      TestVideoConfig::NormalEncrypted(codec_));
+  ASSERT_TRUE(overlay);
+  auto* codec = codec_allocator_->ProvideMockCodecAsync();
+  ASSERT_TRUE(codec);
+
+  // Losing the secure overlay surface triggers ReleaseCodec() before
+  // DestroyAsync().
+  EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(codec));
+  overlay->OnSurfaceDestroyed();
+  testing::Mock::VerifyAndClearExpectations(codec_allocator_.get());
+
+  // Destroying MCVD while that ReleaseMediaCodec() is still in flight must keep
+  // CdmContextRef alive until the release callback runs.
+  mcvd_.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(cdm_ref_destroyed);
+
+  codec_allocator_->RunPendingCodecReleased();
+  cdm_ref_destroyed_loop.Run();
+  EXPECT_TRUE(cdm_ref_destroyed);
 }
 
 TEST_P(MediaCodecVideoDecoderTest, CdmInitializationWorksForL1) {

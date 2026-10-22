@@ -33,6 +33,7 @@ class MEDIA_EXPORT MockMediaCryptoContext
   }
   MOCK_METHOD1(SetMediaCryptoReadyCB_,
                void(MediaCryptoReadyCB& media_crypto_ready_cb));
+  MOCK_METHOD0(GetCdmContextRef, std::unique_ptr<CdmContextRef>());
 
   MediaCryptoReadyCB media_crypto_ready_cb_;
 

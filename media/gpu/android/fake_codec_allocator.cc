@@ -39,7 +39,11 @@ void FakeCodecAllocator::CreateMediaCodecAsync(
 void FakeCodecAllocator::ReleaseMediaCodec(
     std::unique_ptr<MediaCodecBridge> media_codec,
     base::OnceClosure codec_released_cb) {
-  std::move(codec_released_cb).Run();
+  if (hold_codec_released_cb) {
+    pending_codec_released_cb_ = std::move(codec_released_cb);
+  } else {
+    std::move(codec_released_cb).Run();
+  }
   MockReleaseMediaCodec(media_codec.get());
 }
 
@@ -67,6 +71,11 @@ void FakeCodecAllocator::ProvideNullCodecAsync() {
   DCHECK(pending_codec_created_cb_);
   most_recent_codec = nullptr;
   std::move(pending_codec_created_cb_).Run(nullptr);
+}
+
+void FakeCodecAllocator::RunPendingCodecReleased() {
+  DCHECK(pending_codec_released_cb_);
+  std::move(pending_codec_released_cb_).Run();
 }
 
 }  // namespace media

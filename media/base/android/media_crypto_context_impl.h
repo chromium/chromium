@@ -32,6 +32,7 @@ class MEDIA_EXPORT MediaCryptoContextImpl final : public MediaCryptoContext {
 
   // MediaCryptoContext implementation.
   void SetMediaCryptoReadyCB(MediaCryptoReadyCB media_crypto_ready_cb) override;
+  std::unique_ptr<CdmContextRef> GetCdmContextRef() override;
 
  private:
   const raw_ptr<MediaDrmBridge> media_drm_bridge_;

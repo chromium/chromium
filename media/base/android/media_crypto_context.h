@@ -13,6 +13,8 @@
 
 namespace media {
 
+class CdmContextRef;
+
 // A class that provides MediaCrypto from MediaDrm to support decrypting and
 // decoding of encrypted streams, typically by MediaCodec-based decoders.
 //
@@ -41,6 +43,9 @@ class MEDIA_EXPORT MediaCryptoContext {
       bool requires_secure_video_codec)>;
   virtual void SetMediaCryptoReadyCB(
       MediaCryptoReadyCB media_crypto_ready_cb) = 0;
+
+  // Returns a CdmContextRef that keeps the backing CDM alive while held.
+  virtual std::unique_ptr<CdmContextRef> GetCdmContextRef() = 0;
 };
 
 }  // namespace media

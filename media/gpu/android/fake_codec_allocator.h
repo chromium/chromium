@@ -52,6 +52,13 @@ class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
   // Satisfies the pending codec creation with a null codec.
   void ProvideNullCodecAsync();
 
+  // Runs the held `codec_released_cb` when `hold_codec_released_cb` is true.
+  void RunPendingCodecReleased();
+
+  // When true, `ReleaseMediaCodec()` holds `codec_released_cb` until
+  // `RunPendingCodecReleased()` is called.
+  bool hold_codec_released_cb = false;
+
   // Most recent codec that we've created via CreateMockCodec, since we have
   // to assign ownership.  It may be freed already.
   raw_ptr<MockMediaCodecBridge> most_recent_codec = nullptr;
@@ -67,6 +74,7 @@ class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
 
  private:
   CodecCreatedCB pending_codec_created_cb_;
+  base::OnceClosure pending_codec_released_cb_;
 };
 
 }  // namespace media
