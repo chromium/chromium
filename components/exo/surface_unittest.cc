@@ -32,7 +32,7 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/khronos/GLES2/gl2.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 #include "ui/aura/test/window_occlusion_tracker_test_api.h"
 #include "ui/compositor/layer_surface.h"
 #include "ui/compositor/layer_tree_owner.h"

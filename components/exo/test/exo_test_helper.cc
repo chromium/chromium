@@ -25,7 +25,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/khronos/GLES2/gl2.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
