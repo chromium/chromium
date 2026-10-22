@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/safe_browsing/android/suspicious_site_controller_android.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -30,7 +31,7 @@ SuspiciousSiteDialogViewAndroid::~SuspiciousSiteDialogViewAndroid() {
 void SuspiciousSiteDialogViewAndroid::Show(ui::WindowAndroid& window_android) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_SafeBrowsingSuspiciousSiteDialogBridge_create(
-      env, window_android.GetJavaObject(), reinterpret_cast<intptr_t>(this)));
+      env, window_android.GetJavaObject(), jni_zero::MakeRaw(this)));
 
   Java_SafeBrowsingSuspiciousSiteDialogBridge_showDialog(
       env, java_object_, controller_->GetTitle(),

@@ -13,7 +13,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -38,18 +41,26 @@ import org.chromium.ui.widget.ChromeImageButton;
 @JNINamespace("safe_browsing")
 @NullMarked
 public class SafeBrowsingSuspiciousSiteDialogBridge implements ModalDialogProperties.Controller {
-    private long mNativeSuspiciousSiteDialogViewAndroid;
+    @JniType("::safe_browsing::SuspiciousSiteDialogViewAndroid")
+    interface NativeSuspiciousSiteDialogViewAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeSuspiciousSiteDialogViewAndroid>
+            mNativeSuspiciousSiteDialogViewAndroid;
     private final WindowAndroid mWindowAndroid;
     private @Nullable PropertyModel mDialogModel;
 
     private SafeBrowsingSuspiciousSiteDialogBridge(
-            WindowAndroid windowAndroid, long nativeSuspiciousSiteDialogViewAndroid) {
+            WindowAndroid windowAndroid,
+            JniRawPtr<NativeSuspiciousSiteDialogViewAndroid>
+                    nativeSuspiciousSiteDialogViewAndroid) {
         mNativeSuspiciousSiteDialogViewAndroid = nativeSuspiciousSiteDialogViewAndroid;
         mWindowAndroid = windowAndroid;
     }
 
     public static SafeBrowsingSuspiciousSiteDialogBridge createForTests(
-            WindowAndroid windowAndroid, long nativeSuspiciousSiteDialogViewAndroid) {
+            WindowAndroid windowAndroid,
+            JniRawPtr<NativeSuspiciousSiteDialogViewAndroid>
+                    nativeSuspiciousSiteDialogViewAndroid) {
         return new SafeBrowsingSuspiciousSiteDialogBridge(
                 windowAndroid, nativeSuspiciousSiteDialogViewAndroid);
     }
@@ -64,7 +75,8 @@ public class SafeBrowsingSuspiciousSiteDialogBridge implements ModalDialogProper
     @CalledByNative
     @UiThread
     public static SafeBrowsingSuspiciousSiteDialogBridge create(
-            WindowAndroid windowAndroid, long nativeDialog) {
+            WindowAndroid windowAndroid,
+            JniRawPtr<NativeSuspiciousSiteDialogViewAndroid> nativeDialog) {
         ThreadUtils.assertOnUiThread();
         return new SafeBrowsingSuspiciousSiteDialogBridge(windowAndroid, nativeDialog);
     }
@@ -77,17 +89,19 @@ public class SafeBrowsingSuspiciousSiteDialogBridge implements ModalDialogProper
             @JniType("std::u16string") String primaryButtonText,
             @JniType("std::u16string") String secondaryButtonText) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeSuspiciousSiteDialogViewAndroid == 0) return;
+        if (mNativeSuspiciousSiteDialogViewAndroid == null) return;
 
         Context context = mWindowAndroid.getContext().get();
         ModalDialogManager modalDialogManager = mWindowAndroid.getModalDialogManager();
         if (mWindowAndroid.getActivity().get() == null
                 || modalDialogManager == null
                 || context == null) {
-            long nativePtr = mNativeSuspiciousSiteDialogViewAndroid;
-            mNativeSuspiciousSiteDialogViewAndroid = 0;
+            JniRawPtr<NativeSuspiciousSiteDialogViewAndroid> nativePtr =
+                    mNativeSuspiciousSiteDialogViewAndroid;
+            mNativeSuspiciousSiteDialogViewAndroid = null;
             SafeBrowsingSuspiciousSiteDialogBridgeJni.get()
                     .close(nativePtr, DialogDismissalCause.ACTIVITY_DESTROYED);
+            nativePtr.release();
             return;
         }
 
@@ -124,8 +138,9 @@ public class SafeBrowsingSuspiciousSiteDialogBridge implements ModalDialogProper
                         new ChromeClickableSpan(
                                 context,
                                 v -> {
-                                    long nativePtr = mNativeSuspiciousSiteDialogViewAndroid;
-                                    if (nativePtr != 0) {
+                                    JniRawPtr<NativeSuspiciousSiteDialogViewAndroid> nativePtr =
+                                            mNativeSuspiciousSiteDialogViewAndroid;
+                                    if (nativePtr != null) {
                                         SafeBrowsingSuspiciousSiteDialogBridgeJni.get()
                                                 .onLearnMoreClicked(nativePtr);
                                     }
@@ -237,7 +252,10 @@ public class SafeBrowsingSuspiciousSiteDialogBridge implements ModalDialogProper
     @UiThread
     private void destroy() {
         ThreadUtils.assertOnUiThread();
-        mNativeSuspiciousSiteDialogViewAndroid = 0;
+        if (mNativeSuspiciousSiteDialogViewAndroid != null) {
+            mNativeSuspiciousSiteDialogViewAndroid.release();
+            mNativeSuspiciousSiteDialogViewAndroid = null;
+        }
         PropertyModel model = mDialogModel;
         mDialogModel = null;
         ModalDialogManager manager = mWindowAndroid.getModalDialogManager();
@@ -266,10 +284,11 @@ public class SafeBrowsingSuspiciousSiteDialogBridge implements ModalDialogProper
     @UiThread
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeSuspiciousSiteDialogViewAndroid == 0) return;
+        if (mNativeSuspiciousSiteDialogViewAndroid == null) return;
 
-        long nativePtr = mNativeSuspiciousSiteDialogViewAndroid;
-        mNativeSuspiciousSiteDialogViewAndroid = 0;
+        JniRawPtr<NativeSuspiciousSiteDialogViewAndroid> nativePtr =
+                mNativeSuspiciousSiteDialogViewAndroid;
+        mNativeSuspiciousSiteDialogViewAndroid = null;
         mDialogModel = null;
 
         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
@@ -279,18 +298,19 @@ public class SafeBrowsingSuspiciousSiteDialogBridge implements ModalDialogProper
         } else {
             SafeBrowsingSuspiciousSiteDialogBridgeJni.get().close(nativePtr, dismissalCause);
         }
+        nativePtr.release();
     }
 
     @NativeMethods
     interface Natives {
-        void continueAnyway(long nativeSuspiciousSiteDialogViewAndroid);
+        void continueAnyway(JniPtr<NativeSuspiciousSiteDialogViewAndroid> self);
 
-        void goBack(long nativeSuspiciousSiteDialogViewAndroid);
+        void goBack(JniPtr<NativeSuspiciousSiteDialogViewAndroid> self);
 
-        void onLearnMoreClicked(long nativeSuspiciousSiteDialogViewAndroid);
+        void onLearnMoreClicked(JniPtr<NativeSuspiciousSiteDialogViewAndroid> self);
 
         void close(
-                long nativeSuspiciousSiteDialogViewAndroid,
+                JniPtr<NativeSuspiciousSiteDialogViewAndroid> self,
                 @JniType("ui::ModalDialogWrapper::DismissalCause") int dismissalCause);
 
         void createControllerForTesting(@JniType("content::WebContents*") WebContents webContents);

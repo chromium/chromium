@@ -10,6 +10,8 @@ import android.app.Activity;
 import android.text.Spanned;
 import android.view.View;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,6 +25,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingSuspiciousSiteDialogBridge.NativeSuspiciousSiteDialogViewAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -42,7 +45,6 @@ public class SafeBrowsingSuspiciousSiteDialogBridgeTest {
             "This site may be unsafe. Learn more about the warning.";
     private static final String PRIMARY_BUTTON_TEXT = "Back to safety";
     private static final String SECONDARY_BUTTON_TEXT = "Mark as safe";
-    private static final long NATIVE_PTR = 1L;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -52,6 +54,7 @@ public class SafeBrowsingSuspiciousSiteDialogBridgeTest {
 
     private Activity mActivity;
     private SafeBrowsingSuspiciousSiteDialogBridge mBridge;
+    private JniRawPtr<NativeSuspiciousSiteDialogViewAndroid> mNativePtr;
 
     @Before
     public void setUp() {
@@ -62,7 +65,13 @@ public class SafeBrowsingSuspiciousSiteDialogBridgeTest {
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
 
-        mBridge = SafeBrowsingSuspiciousSiteDialogBridge.createForTests(mWindowAndroid, NATIVE_PTR);
+        mNativePtr = JniRawPtr.createForTesting(1L);
+        mBridge = SafeBrowsingSuspiciousSiteDialogBridge.createForTests(mWindowAndroid, mNativePtr);
+    }
+
+    @After
+    public void tearDown() {
+        mNativePtr.release();
     }
 
     private PropertyModel showDialogAndGetModel() {
@@ -164,7 +173,7 @@ public class SafeBrowsingSuspiciousSiteDialogBridgeTest {
                 .dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
 
         mBridge.onDismiss(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-        verify(mNativeMock).goBack(NATIVE_PTR);
+        verify(mNativeMock).goBack(mNativePtr);
     }
 
     @Test
@@ -177,7 +186,7 @@ public class SafeBrowsingSuspiciousSiteDialogBridgeTest {
                 .dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
 
         mBridge.onDismiss(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-        verify(mNativeMock).continueAnyway(NATIVE_PTR);
+        verify(mNativeMock).continueAnyway(mNativePtr);
     }
 
     @Test
@@ -187,6 +196,6 @@ public class SafeBrowsingSuspiciousSiteDialogBridgeTest {
 
         mBridge.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
-        verify(mNativeMock).close(NATIVE_PTR, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        verify(mNativeMock).close(mNativePtr, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
     }
 }
