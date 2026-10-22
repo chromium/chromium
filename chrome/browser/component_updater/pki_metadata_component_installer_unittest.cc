@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -247,11 +248,11 @@ class PKIMetadataComponentInstallerKeyPinningTest
   static constexpr uint64_t kMaxSupportedKPCompatibilityVersion = 1;
 
   // SHA256 SPKI hashes.
-  static constexpr uint8_t kSpkiHash1[] = {
+  static constexpr net::SHA256HashValue kSpkiHash1 = {
       0xec, 0x72, 0x29, 0x69, 0xcb, 0x64, 0x20, 0x0a, 0xb6, 0x63, 0x8f,
       0x68, 0xac, 0x53, 0x8e, 0x40, 0xab, 0xab, 0x5b, 0x19, 0xa6, 0x48,
       0x56, 0x61, 0x04, 0x2a, 0x10, 0x61, 0xc4, 0x61, 0x27, 0x76};
-  static constexpr uint8_t kSpkiHash2[] = {
+  static constexpr net::SHA256HashValue kSpkiHash2 = {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -270,12 +271,9 @@ class PKIMetadataComponentInstallerKeyPinningTest
       host_pin->set_include_subdomains(kPinsetIncludeSubdomains);
       auto* pinset = pinlist_.add_pinsets();
       pinset->set_name(kPinsetName);
-      std::string spki_bytes_as_string(std::begin(kSpkiHash1),
-                                       std::end(kSpkiHash1));
-      std::string bad_spki_bytes_as_string(std::begin(kSpkiHash2),
-                                           std::end(kSpkiHash2));
-      pinset->add_static_spki_hashes_sha256(spki_bytes_as_string);
-      pinset->add_bad_static_spki_hashes_sha256(bad_spki_bytes_as_string);
+      pinset->add_static_spki_hashes_sha256(base::as_string_view(kSpkiHash1));
+      pinset->add_bad_static_spki_hashes_sha256(
+          base::as_string_view(kSpkiHash2));
     }
   }
 
@@ -311,8 +309,7 @@ TEST_F(PKIMetadataComponentInstallerTest, TestProtoBytesConversion) {
   std::vector<std::vector<uint8_t>> test_bytes = {
       base::ToVector(test_hashes[0])};
 
-  std::string bytes_as_string(std::begin(test_bytes[0]),
-                              std::end(test_bytes[0]));
+  std::string bytes_as_string(base::as_string_view(test_bytes[0]));
   std::vector<std::string> repeated_bytes = {bytes_as_string};
 
   EXPECT_EQ(
@@ -403,10 +400,10 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
   EXPECT_EQ(host_pins.size(), 1u);
 
   EXPECT_EQ(pinsets.at(0).name(), kPinsetName);
-  EXPECT_THAT(pinsets.at(0).static_spki_hashes().at(0),
-              ::testing::ElementsAreArray(kSpkiHash1));
-  EXPECT_THAT(pinsets.at(0).bad_static_spki_hashes().at(0),
-              ::testing::ElementsAreArray(kSpkiHash2));
+  EXPECT_THAT(pinsets.at(0).static_spki_hashes(),
+              ::testing::ElementsAre(kSpkiHash1));
+  EXPECT_THAT(pinsets.at(0).bad_static_spki_hashes(),
+              ::testing::ElementsAre(kSpkiHash2));
 
   EXPECT_EQ(host_pins.at(0).hostname_, kPinsetHostName);
   EXPECT_EQ(host_pins.at(0).pinset_name_, kPinsetName);
