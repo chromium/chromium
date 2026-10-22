@@ -211,51 +211,86 @@ bool UseMapJit() {
 }
 #endif  // PA_BUILDFLAG(IS_IOS)
 
-namespace {
-
 #if PA_BUILDFLAG(IS_MAC)
 
-size_t GetZeroSegmentSizeFromOS() {
+WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions(uintptr_t address_limit) {
+  WellKnownReadOnlyRegions result;
   mach_vm_address_t address = 0x0;
-  mach_vm_size_t size = 0;
-  vm_region_basic_info_data_64_t info;
-  mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT_64;
-  mach_port_t object_name = MACH_PORT_NULL;
-  // `mach_vm_region()` sees that 0x0 is unmapped and automatically updates
-  // `address` to the start of the first valid memory mapping.
-  const kern_return_t kr = mach_vm_region(
-      mach_task_self(), &address, &size, VM_REGION_BASIC_INFO_64,
-      reinterpret_cast<vm_region_info_t>(&info), &info_count, &object_name);
-  if (kr != KERN_SUCCESS) {
-    return 0x100000000;  // 4GB
+
+  // On macOS, `__PAGEZERO` starts at 0x0 (`4GB` by default) and is not backed
+  // by a VM reservation. With ASLR, XNU grows `__PAGEZERO` by the slide rather
+  // than sliding it, so `[0, 4GB + slide)` is unmapped and non-allocatable, and
+  // `__TEXT` is mapped right at `4GB + slide`.
+  //
+  // The first `mach_vm_region(0x0)` call skips `__PAGEZERO` and updates
+  // `address` to `4GB + slide`. If that already reaches `address_limit`, we
+  // break and just record `[0, address)`. Otherwise we also include read-only
+  // mappings (such as `__TEXT`) up to `address_limit`.
+  while (address < address_limit) {
+    mach_vm_size_t size = 0;
+    vm_region_basic_info_data_64_t info;
+    mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT_64;
+    mach_port_t object_name = MACH_PORT_NULL;
+    const kern_return_t kr = mach_vm_region(
+        mach_task_self(), &address, &size, VM_REGION_BASIC_INFO_64,
+        reinterpret_cast<vm_region_info_t>(&info), &info_count, &object_name);
+    if (object_name != MACH_PORT_NULL) {
+      mach_port_deallocate(mach_task_self(), object_name);
+    }
+
+    if (kr != KERN_SUCCESS || size == 0 || address >= address_limit ||
+        (info.protection & VM_PROT_WRITE) != 0 ||
+        (info.max_protection & VM_PROT_WRITE) != 0) {
+      break;
+    }
+
+    if (result.count == 0) {
+      // Include the unmapped `__PAGEZERO` range `[0, address)` skipped by
+      // `mach_vm_region()`.
+      result.regions[result.count++] = {0, static_cast<size_t>(address + size)};
+    } else if (result.regions[result.count - 1].address +
+                   result.regions[result.count - 1].size ==
+               address) {
+      // Merge with the previous region in case there's consecutive
+      // reservations.
+      result.regions[result.count - 1].size += size;
+    } else if (result.count < WellKnownReadOnlyRegions::kMaxRegions) {
+      result.regions[result.count++] = {static_cast<uintptr_t>(address),
+                                        static_cast<size_t>(size)};
+    } else {
+      break;
+    }
+
+    address += size;
   }
-  return static_cast<size_t>(address);
+
+  if (result.count == 0) {
+    result.regions[result.count++] = {
+        0, address > 0 ? static_cast<size_t>(address) : 0x100000000};  // 4GB
+  }
+
+  return result;
 }
 
 #elif PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 
-size_t GetZeroSegmentSizeFromOS() {
+WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions(uintptr_t address_limit) {
   // TODO(40925855): Support larger `mmap_min_addr`.
-  return 0x10000;  // 64KB
-}
-
-#else
-
-size_t GetZeroSegmentSizeFromOS() {
-  return 0;
-}
-
-#endif
-
-}  // namespace
-
-WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions() {
   return WellKnownReadOnlyRegions{
       .regions = {{
-          {0, GetZeroSegmentSizeFromOS()},
+          {0, 0x10000},  // 64KB
       }},
       .count = 1,
   };
 }
+
+#else
+
+    WellKnownReadOnlyRegions
+    GetWellKnownReadOnlyRegions(uintptr_t address_limit) {
+  return WellKnownReadOnlyRegions{};
+}
+
+#endif
 
 }  // namespace partition_alloc::internal

@@ -248,7 +248,11 @@ bool SealSystemPagesInternal(uintptr_t address, size_t length) {
   return false;
 }
 
-WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions() {
+WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions(uintptr_t address_limit) {
+  // Windows (`VirtualQuery`) does not expose a maximum protection ceiling like
+  // macOS's `max_protection`, so we cannot dynamically check whether a mapped
+  // region could later become writable via `VirtualProtect()`. Stick to
+  // well-known OS regions.
   WellKnownReadOnlyRegions result;
   result.regions[0] = {0, 0x10000};  // [0, 64KB] NULL-pointer region
   result.count = 1;

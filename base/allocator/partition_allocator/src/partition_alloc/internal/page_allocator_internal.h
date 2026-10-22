@@ -38,10 +38,10 @@ struct WellKnownReadOnlyRegions {
   size_t count = 0;
 };
 
-// Returns the list of well-known read-only regions for the current platform.
-// The regions are sorted by address and non-overlapping.
+// Returns the list of well-known read-only regions for the current platform up
+// to `address_limit`. The regions are sorted by address and non-overlapping.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions();
+WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions(uintptr_t address_limit);
 
 }  // namespace partition_alloc::internal
 
