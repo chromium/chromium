@@ -5,7 +5,6 @@
 #include "components/browser_sync/active_devices_provider_impl.h"
 
 #include <algorithm>
-#include <map>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -16,6 +15,7 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace browser_sync {
 
@@ -70,7 +70,7 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
 
   // FCM registration tokens with corresponding interested data types for all
   // the clients with enabled sync standalone invalidations.
-  std::map<std::string, syncer::DataTypeSet>
+  absl::flat_hash_map<std::string, syncer::DataTypeSet>
       fcm_token_and_interested_data_types;
 
   for (const syncer::DeviceInfo* device : active_devices) {

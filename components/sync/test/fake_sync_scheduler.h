@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_SYNC_TEST_FAKE_SYNC_SCHEDULER_H_
 #define COMPONENTS_SYNC_TEST_FAKE_SYNC_SCHEDULER_H_
 
-#include <map>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "components/sync/engine/sync_scheduler.h"
 
 namespace syncer {
@@ -47,7 +47,7 @@ class FakeSyncScheduler : public SyncScheduler {
   void OnReceivedPollIntervalUpdate(
       const base::TimeDelta& new_interval) override;
   void OnReceivedCustomNudgeDelays(
-      const std::map<DataType, base::TimeDelta>& nudge_delays) override;
+      const base::flat_map<DataType, base::TimeDelta>& nudge_delays) override;
   void OnSyncProtocolError(const SyncProtocolError& error) override;
   void OnReceivedMigrationRequest(DataTypeSet types) override;
   void OnReceivedQuotaParamsForExtensionTypes(

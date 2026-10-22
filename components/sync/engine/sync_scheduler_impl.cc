@@ -835,7 +835,7 @@ void SyncSchedulerImpl::OnReceivedPollIntervalUpdate(
 }
 
 void SyncSchedulerImpl::OnReceivedCustomNudgeDelays(
-    const std::map<DataType, base::TimeDelta>& nudge_delays) {
+    const base::flat_map<DataType, base::TimeDelta>& nudge_delays) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (force_short_nudge_delay_for_test_) {

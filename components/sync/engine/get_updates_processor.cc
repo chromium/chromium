@@ -6,11 +6,12 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,8 +36,8 @@ namespace syncer {
 namespace {
 
 using SyncEntityList = std::vector<const sync_pb::SyncEntity*>;
-using TypeSyncEntityMap = std::map<DataType, SyncEntityList>;
-using TypeToIndexMap = std::map<DataType, size_t>;
+using TypeSyncEntityMap = base::flat_map<DataType, SyncEntityList>;
+using TypeToIndexMap = base::flat_map<DataType, size_t>;
 
 bool ShouldRequestEncryptionKey(SyncCycleContext* context) {
   return context->data_type_registry()
@@ -94,15 +95,15 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
       continue;
     }
 
-    auto it = updates_by_type->find(type);
-    if (it == updates_by_type->end()) {
+    SyncEntityList* update_list = base::FindOrNull(*updates_by_type, type);
+    if (!update_list) {
       DLOG(WARNING) << "Received update for unexpected type, or the type is "
                        "throttled or failed with partial failure:"
                     << DataTypeToDebugString(type);
       continue;
     }
 
-    it->second.push_back(&update);
+    update_list->push_back(&update);
   }
 }
 
@@ -202,20 +203,20 @@ void GetUpdatesProcessor::PrepareGetUpdates(
   sync_pb::GetUpdatesMessage* get_updates = message->mutable_get_updates();
 
   for (DataType type : gu_types) {
-    auto handler_it = update_handler_map_->find(type);
-    CHECK(handler_it != update_handler_map_->end())
-        << "Failed to look up handler for " << DataTypeToDebugString(type);
+    UpdateHandler* handler = base::FindPtrOrNull(*update_handler_map_, type);
+    CHECK(handler) << "Failed to look up handler for "
+                   << DataTypeToDebugString(type);
     sync_pb::DataTypeProgressMarker* progress_marker =
         get_updates->add_from_progress_marker();
-    *progress_marker = handler_it->second->GetDownloadProgress();
+    *progress_marker = handler->GetDownloadProgress();
     DCHECK(!progress_marker->has_gc_directive());
 
-    sync_pb::DataTypeContext context = handler_it->second->GetDataTypeContext();
+    sync_pb::DataTypeContext context = handler->GetDataTypeContext();
     if (!context.context().empty()) {
       *get_updates->add_client_contexts() = std::move(context);
     }
     if (delegate_->IsNotificationInfoRequired()) {
-      handler_it->second->CollectPendingInvalidations(
+      handler->CollectPendingInvalidations(
           progress_marker->mutable_get_update_triggers());
     }
   }
@@ -339,24 +340,25 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
 
   // Iterate over the updates for each type.
   for (const auto& [type, updates] : updates_by_type) {
-    auto progress_marker_iter = progress_index_by_type.find(type);
-    CHECK(progress_marker_iter != progress_index_by_type.end());
+    const size_t* progress_marker_index =
+        base::FindOrNull(progress_index_by_type, type);
+    CHECK(progress_marker_index);
 
-    auto update_handler_iter = update_handler_map_->find(type);
-    if (update_handler_iter == update_handler_map_->end()) {
+    UpdateHandler* update_handler =
+        base::FindPtrOrNull(*update_handler_map_, type);
+    if (!update_handler) {
       DLOG(WARNING) << "Ignoring received updates of a type we can't handle.  "
                     << "Type is: " << DataTypeToDebugString(type);
       continue;
     }
 
     sync_pb::DataTypeContext context;
-    auto context_iter = context_by_type.find(type);
-    if (context_iter != context_by_type.end()) {
-      context.CopyFrom(gu_response.context_mutations(context_iter->second));
+    if (const size_t* context_index = base::FindOrNull(context_by_type, type)) {
+      context.CopyFrom(gu_response.context_mutations(*context_index));
     }
 
-    update_handler_iter->second->ProcessGetUpdatesResponse(
-        gu_response.new_progress_marker(progress_marker_iter->second), context,
+    update_handler->ProcessGetUpdatesResponse(
+        gu_response.new_progress_marker(*progress_marker_index), context,
         updates, status_controller);
   }
 

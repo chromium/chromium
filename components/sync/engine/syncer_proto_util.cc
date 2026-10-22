@@ -4,9 +4,9 @@
 
 #include "components/sync/engine/syncer_proto_util.h"
 
-#include <map>
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -205,7 +205,7 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
   }
 
   if (command.custom_nudge_delays_size() > 0) {
-    std::map<DataType, base::TimeDelta> delay_map;
+    base::flat_map<DataType, base::TimeDelta> delay_map;
     for (int i = 0; i < command.custom_nudge_delays_size(); ++i) {
       DataType type = GetDataTypeFromSpecificsFieldNumber(
           command.custom_nudge_delays(i).datatype_id());

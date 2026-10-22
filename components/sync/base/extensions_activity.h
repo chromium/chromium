@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 
@@ -32,7 +32,7 @@ class ExtensionsActivity
     uint32_t bookmark_write_count = 0U;
   };
 
-  using Records = std::map<std::string, Record>;
+  using Records = base::flat_map<std::string, Record>;
 
   ExtensionsActivity();
 

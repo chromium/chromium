@@ -17,6 +17,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -54,6 +56,7 @@
 #include "components/sync/test/mock_nudge_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 
@@ -151,10 +154,10 @@ class SyncerTestBase : public SyncCycle::Delegate,
   }
 
   void OnReceivedCustomNudgeDelays(
-      const std::map<DataType, base::TimeDelta>& delay_map) override {
-    auto iter = delay_map.find(BOOKMARKS);
-    if (iter != delay_map.end() && iter->second.is_positive()) {
-      last_bookmarks_commit_delay_ = iter->second;
+      const base::flat_map<DataType, base::TimeDelta>& delay_map) override {
+    const base::TimeDelta* delay = base::FindOrNull(delay_map, BOOKMARKS);
+    if (delay && delay->is_positive()) {
+      last_bookmarks_commit_delay_ = *delay;
     }
   }
 
@@ -933,7 +936,8 @@ TEST_P(SyncerTest, ShouldPopulateFcmRegistrationTokensForInterestedTypesOnly) {
 }
 
 TEST_P(SyncerTest, ShouldNotPopulateTooManyFcmRegistrationTokens) {
-  std::map<std::string, DataTypeSet> fcm_token_and_interested_data_types;
+  absl::flat_hash_map<std::string, DataTypeSet>
+      fcm_token_and_interested_data_types;
   for (size_t i = 0; i < 7; ++i) {
     fcm_token_and_interested_data_types["token_" + base::NumberToString(i)] = {
         BOOKMARKS};

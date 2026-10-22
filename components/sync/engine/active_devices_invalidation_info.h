@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_SYNC_ENGINE_ACTIVE_DEVICES_INVALIDATION_INFO_H_
 #define COMPONENTS_SYNC_ENGINE_ACTIVE_DEVICES_INVALIDATION_INFO_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
 #include "components/sync/base/data_type.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 
@@ -29,7 +29,8 @@ class ActiveDevicesInvalidationInfo {
   static ActiveDevicesInvalidationInfo Create(
       std::vector<std::string> all_fcm_registration_tokens,
       DataTypeSet all_interested_data_types,
-      std::map<std::string, DataTypeSet> fcm_token_and_interested_data_types,
+      absl::flat_hash_map<std::string, DataTypeSet>
+          fcm_token_and_interested_data_types,
       DataTypeSet old_invalidations_interested_data_types);
 
   ~ActiveDevicesInvalidationInfo();
@@ -83,7 +84,8 @@ class ActiveDevicesInvalidationInfo {
   bool initialized_ = false;
   std::vector<std::string> all_fcm_registration_tokens_;
   DataTypeSet all_interested_data_types_;
-  std::map<std::string, DataTypeSet> fcm_token_and_interested_data_types_;
+  absl::flat_hash_map<std::string, DataTypeSet>
+      fcm_token_and_interested_data_types_;
   DataTypeSet old_invalidations_interested_data_types_;
 };
 

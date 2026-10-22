@@ -26,7 +26,8 @@ ActiveDevicesInvalidationInfo::CreateUninitialized() {
 ActiveDevicesInvalidationInfo ActiveDevicesInvalidationInfo::Create(
     std::vector<std::string> all_fcm_registration_tokens,
     DataTypeSet all_interested_data_types,
-    std::map<std::string, DataTypeSet> fcm_token_and_interested_data_types,
+    absl::flat_hash_map<std::string, DataTypeSet>
+        fcm_token_and_interested_data_types,
     DataTypeSet old_invalidations_interested_data_types) {
   ActiveDevicesInvalidationInfo result(/*initialized=*/true);
   result.all_fcm_registration_tokens_ = std::move(all_fcm_registration_tokens);

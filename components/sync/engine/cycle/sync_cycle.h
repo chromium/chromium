@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_SYNC_ENGINE_CYCLE_SYNC_CYCLE_H_
 #define COMPONENTS_SYNC_ENGINE_CYCLE_SYNC_CYCLE_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -64,7 +64,7 @@ class SyncCycle {
 
     // The client has been instructed to change a nudge delay.
     virtual void OnReceivedCustomNudgeDelays(
-        const std::map<DataType, base::TimeDelta>& nudge_delays) = 0;
+        const base::flat_map<DataType, base::TimeDelta>& nudge_delays) = 0;
 
     // Called for the syncer to respond to the error sent by the server.
     virtual void OnSyncProtocolError(

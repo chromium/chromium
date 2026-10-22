@@ -4,10 +4,10 @@
 
 #include "components/sync/engine/commit_processor.h"
 
-#include <map>
 #include <memory>
 #include <utility>
 
+#include "base/containers/map_util.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -15,8 +15,6 @@
 #include "components/sync/engine/commit_contributor.h"
 
 namespace syncer {
-
-using TypeToIndexMap = std::map<DataType, size_t>;
 
 CommitProcessor::CommitProcessor(DataTypeSet commit_types,
                                  CommitContributorMap* commit_contributor_map)
@@ -110,15 +108,16 @@ size_t CommitProcessor::GatherCommitContributionsForType(
   if (max_entries == 0) {
     return 0;
   }
-  auto cm_it = commit_contributor_map_->find(type);
-  if (cm_it == commit_contributor_map_->end()) {
+  CommitContributor* commit_contributor =
+      base::FindPtrOrNull(*commit_contributor_map_, type);
+  if (!commit_contributor) {
     DLOG(ERROR) << "Could not find requested type "
                 << DataTypeToDebugString(type) << " in contributor map.";
     return 0;
   }
 
   std::unique_ptr<CommitContribution> contribution =
-      cm_it->second->GetContribution(max_entries);
+      commit_contributor->GetContribution(max_entries);
   if (!contribution) {
     return 0;
   }

@@ -57,7 +57,7 @@ void FakeSyncScheduler::OnReceivedPollIntervalUpdate(
     const base::TimeDelta& new_interval) {}
 
 void FakeSyncScheduler::OnReceivedCustomNudgeDelays(
-    const std::map<DataType, base::TimeDelta>& nudge_delays) {}
+    const base::flat_map<DataType, base::TimeDelta>& nudge_delays) {}
 
 void FakeSyncScheduler::OnSyncProtocolError(const SyncProtocolError& error) {}
 
