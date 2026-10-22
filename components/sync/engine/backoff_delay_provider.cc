@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
@@ -17,11 +16,6 @@
 namespace syncer {
 
 namespace {
-
-// If enabled, the initial delay on network error will be 1 second instead of
-// 30 seconds.
-BASE_FEATURE(kSyncShortInitialDelayOnNetworkError,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This calculates approx. last_delay * kBackoffMultiplyFactor +/- last_delay
 // * kBackoffJitterFactor. `jitter_sign` must be -1 or 1 and determines whether
@@ -46,12 +40,8 @@ base::TimeDelta GetDelayImpl(base::TimeDelta last_delay, int jitter_sign) {
 // static
 std::unique_ptr<BackoffDelayProvider> BackoffDelayProvider::FromDefaults() {
   // base::WrapUnique() used because the constructor is private.
-  if (base::FeatureList::IsEnabled(kSyncShortInitialDelayOnNetworkError)) {
-    return base::WrapUnique(new BackoffDelayProvider(
-        kInitialBackoffRetryTime, kInitialBackoffShortRetryTime));
-  }
   return base::WrapUnique(new BackoffDelayProvider(
-      kInitialBackoffRetryTime, kInitialBackoffImmediateRetryTime));
+      kInitialBackoffRetryTime, kInitialBackoffShortRetryTime));
 }
 
 // static
@@ -82,17 +72,14 @@ base::TimeDelta BackoffDelayProvider::GetInitialDelay(
   // kNetworkError implies we did not receive HTTP response from server because
   // of some network error. If network is unavailable then on next connection
   // type or address change scheduler will run canary job. Otherwise we'll retry
-  // in 30 seconds.
+  // in 1 second.
   if (state.commit_result.type() == SyncerError::Type::kNetworkError ||
       state.last_download_updates_result.type() ==
           SyncerError::Type::kNetworkError) {
-    if (base::FeatureList::IsEnabled(kSyncShortInitialDelayOnNetworkError)) {
-      // Retry with a short delay on network error. This should be safe because
-      // it shouldn't increase traffic to the server but should help to recover
-      // from the network errors faster.
-      return short_initial_backoff_;
-    }
-    return default_initial_backoff_;
+    // Retry with a short delay on network error. This should be safe because
+    // it shouldn't increase traffic to the server but should help to recover
+    // from the network errors faster.
+    return short_initial_backoff_;
   }
 
   if (state.last_get_key_failed) {
