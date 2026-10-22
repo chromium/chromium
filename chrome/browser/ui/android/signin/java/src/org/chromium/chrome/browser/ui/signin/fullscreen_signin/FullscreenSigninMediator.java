@@ -662,6 +662,13 @@ public class FullscreenSigninMediator
                         .getImage());
         if (sAnimationsEnabled) {
             mModel.set(FullscreenSigninProperties.SHOW_ANIMATION, mConfig.logoId == 0);
+            if (mConfig.logoId != 0) {
+                // The animation view is hidden when a custom logo is used, so the animation would
+                // never end. Only wait for the delay that lets users read the welcome text.
+                ThreadUtils.postOnUiThreadDelayed(
+                        () -> finishSignIn(signinTimestampsLogger), SIGNIN_ANIMATION_DELAY_MS);
+                return;
+            }
             mModel.set(
                     FullscreenSigninProperties.ANIMATOR_LISTENER,
                     new AnimatorListenerAdapter() {

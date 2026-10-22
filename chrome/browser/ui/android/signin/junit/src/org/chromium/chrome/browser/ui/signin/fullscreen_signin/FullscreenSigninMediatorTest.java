@@ -9,12 +9,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.content.Context;
 
 import org.junit.After;
@@ -29,6 +34,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Promise;
@@ -100,6 +106,9 @@ public class FullscreenSigninMediatorTest {
 
     private FullscreenSigninMediator mMediator;
     private PropertyModel mModel;
+
+    // Config used by createMediator(). Tests can change these before calling it.
+    private int mLogoId;
 
     public FullscreenSigninMediatorTest(boolean isIdentityManagerSourceOfAccounts) {
         mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
@@ -327,6 +336,51 @@ public class FullscreenSigninMediatorTest {
         assertTrue(mModel.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE));
     }
 
+    @Test
+    public void testSignInWithDefaultLogoWaitsForAnimation() {
+        // Skip the account management check, so that sign-in is requested directly.
+        when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        createMediator();
+        initializeNative();
+
+        mMediator.proceedWithSignIn();
+
+        assertTrue(mModel.get(FullscreenSigninProperties.START_ANIMATION));
+        AnimatorListener listener = mModel.get(FullscreenSigninProperties.ANIMATOR_LISTENER);
+        assertNotNull(listener);
+        // Sign-in doesn't continue until the animation ends.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+
+        listener.onAnimationEnd(mock(Animator.class));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mSigninManagerMock).signin(eq(TestAccounts.ACCOUNT1), anyInt(), any());
+    }
+
+    @Test
+    public void testSignInWithCustomLogoCompletesWithoutAnimation() {
+        // Skip the account management check, so that sign-in is requested directly.
+        when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mLogoId = R.drawable.ic_domain;
+        createMediator();
+        initializeNative();
+
+        mMediator.proceedWithSignIn();
+
+        // The animation view is hidden when a custom logo is used, so the animation isn't started.
+        assertFalse(mModel.get(FullscreenSigninProperties.SHOW_ANIMATION));
+        assertFalse(mModel.get(FullscreenSigninProperties.START_ANIMATION));
+        assertNull(mModel.get(FullscreenSigninProperties.ANIMATOR_LISTENER));
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mSigninManagerMock).signin(eq(TestAccounts.ACCOUNT1), anyInt(), any());
+    }
+
     private void createMediator() {
         mMediator =
                 new FullscreenSigninMediator(
@@ -338,7 +392,7 @@ public class FullscreenSigninMediatorTest {
                                 /* title= */ "title",
                                 /* subtitle= */ "subtitle",
                                 /* dismissText= */ "dismiss",
-                                /* logoId= */ 0,
+                                mLogoId,
                                 /* shouldDisableSignin= */ false,
                                 /* surveyType= */ null,
                                 /* selectedAccountEmail= */ null,
