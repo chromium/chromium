@@ -4961,13 +4961,6 @@ inline constexpr char kVcSegmentationModelDescription[] =
     "Allows a different segmentation model to be used for blur and relighting, "
     "which may reduce the workload on the GPU.";
 
-inline constexpr char kVcTrayMicIndicatorName[] =
-    "Adds a mic indicator in VC tray";
-inline constexpr char kVcTrayMicIndicatorDescription[] =
-    "Displays a pulsing mic indicator that indicates how loud the audio is "
-    "captured by the microphone, after some effects like noise cancellation "
-    "is applied.";
-
 inline constexpr char kVcWebApiName[] = "VC web API";
 inline constexpr char kVcWebApiDescription[] =
     "Allows web API support for video conferencing on Chromebooks.";

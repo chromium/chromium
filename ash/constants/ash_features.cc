@@ -1698,11 +1698,6 @@ BASE_FEATURE(kVcSegmentationModel,
 // conferencing face retouch models.
 BASE_FEATURE(kVcRetouchInferenceBackend, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables mic indicator inside VC tray title header
-BASE_FEATURE(kVcTrayMicIndicator,
-             "VCTrayMicIndicator",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables web API support for ChromeOS video conferencing.
 BASE_FEATURE(kVcWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2812,10 +2807,6 @@ bool IsVcPortraitRelightEnabled() {
 
 bool IsVcControlsUiFakeEffectsEnabled() {
   return base::FeatureList::IsEnabled(kVcControlsUiFakeEffects);
-}
-
-bool IsVcTrayMicIndicatorEnabled() {
-  return base::FeatureList::IsEnabled(kVcTrayMicIndicator);
 }
 
 bool IsVcWebApiEnabled() {
