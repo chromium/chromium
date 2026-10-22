@@ -6,13 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
@@ -197,8 +197,9 @@ void TransferCookies(base::RepeatingClosure completion_callback,
 void TransferHttpAuthCacheToSystemNetworkContext(
     base::RepeatingClosure completion_callback,
     const base::UnguessableToken& cache_key) {
+  CHECK(SystemNetworkContextManager::HasInstance());
   network::mojom::NetworkContext* system_network_context =
-      g_browser_process->system_network_context_manager()->GetContext();
+      SystemNetworkContextManager::GetInstance()->GetContext();
   system_network_context->LoadHttpAuthCacheProxyEntries(cache_key,
                                                         completion_callback);
 }
