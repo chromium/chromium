@@ -1368,10 +1368,6 @@ IN_PROC_BROWSER_TEST_F(
             ReadAnythingController::PresentationState::kInImmersiveOverlay);
 }
 
-// TODO(crbug.com/476203141): Re-enable once the race condition in
-// TransferWebUiOwnership is fixed. Rapidly switching from Side Panel to
-// Immersive UI causes the asynchronous side panel close to transition the
-// presentation state back to kInactive, improperly closing the Immersive UI.
 IN_PROC_BROWSER_TEST_F(
     ReadAnythingControllerBrowserTest,
     ShowImmersiveUIImmediatelyFollowedByShowSidePanelUI_DoesNotCrash) {

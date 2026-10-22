@@ -85,8 +85,6 @@ export class LineFocusStyle {
   private constructor(
       public readonly type: LineFocusType, public readonly lines: number) {}
 
-  // TODO(crbug.com/447427066): Finalize the default mode. This is a
-  // placeholder.
   static defaultValue(): LineFocusStyle {
     return this.MEDIUM_WINDOW;
   }

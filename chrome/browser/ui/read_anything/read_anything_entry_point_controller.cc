@@ -267,9 +267,6 @@ void ReadAnythingEntryPointController::ShowUI(
                                   open_trigger);
   }
 
-  // TODO(crbug.com/471001915): Change IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
-  // one of the triggers of this method, to reflect that it's opening Immersive
-  // mode instead of Side Panel.
   if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
     auto* controller = ReadAnythingController::From(tab);
     CHECK(controller);

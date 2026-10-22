@@ -397,9 +397,6 @@ class ReadAloudAppModel {
   // currently being processed for phrases. -1 if none.
   int current_phrase_calculation_index_ = -1;
 
-  // TODO(crbug.com/40927698): Clear this when granularity changes.
-  // TODO(crbug.com/40927698): Use this to assist in navigating forwards /
-  // backwards.
   // Previously processed granularities on the current page.
   std::vector<a11y::ReadAloudCurrentGranularity>
       processed_granularities_on_current_page_;
