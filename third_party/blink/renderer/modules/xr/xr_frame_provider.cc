@@ -772,10 +772,15 @@ void XRFrameProvider::UpdateLayerViewports(XRProjectionLayer* layer) {
 
   XRGraphicsBinding* binding = layer->binding();
 
-  bool is_shared_buffer = frame_transport_->DrawingIntoSharedBuffer();
-  float width = (is_shared_buffer || layer->textureArrayLength() <= 1)
-                    ? layer->textureWidth()
-                    : layer->textureWidth() * layer->textureArrayLength();
+  // TODO(crbug.com/359418629): WebGPU and non-shared-buffer WebGL swapchains
+  // still copy array textures to a side-by-side 2D texture prior to submission.
+  bool uses_texture_array_shared_image =
+      frame_transport_->DrawingIntoSharedBuffer() &&
+      immersive_session_->GraphicsApi() != XRGraphicsBinding::Api::kWebGPU;
+  float width =
+      (uses_texture_array_shared_image || layer->textureArrayLength() <= 1)
+          ? layer->textureWidth()
+          : layer->textureWidth() * layer->textureArrayLength();
   float height = layer->textureHeight();
 
   gfx::RectF left_coords;
@@ -790,7 +795,7 @@ void XRFrameProvider::UpdateLayerViewports(XRProjectionLayer* layer) {
     gfx::Rect right = binding->GetViewportForView(layer, right_view);
 
     // Only offset right viewport if we are using the side-by-side fallback.
-    if (!is_shared_buffer && layer->textureArrayLength() > 1) {
+    if (!uses_texture_array_shared_image && layer->textureArrayLength() > 1) {
       right.set_x(right.x() + layer->textureWidth());
     }
 

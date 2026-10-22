@@ -123,17 +123,28 @@ XRCompositionLayer::CreateLayerData() const {
   layer_data->read_only_data->flip_y = drawing_context_->ShouldFlipY();
   layer_data->read_only_data->needs_raster_access =
       drawing_context_->NeedsRasterAccess();
-  layer_data->read_only_data->texture_type =
-      V8ToMojomTextureType(texture_type_);
-  if (layout_ == V8XRLayerLayout::Enum::kStereo &&
-      texture_type_ != V8XRTextureType::Enum::kTextureArray) {
-    // We put the layers into a single texture. So the other side should treat
-    // it as left-right. See XRWebGLTextureArraySwapChain.
-    layer_data->read_only_data->layout =
-        device::mojom::blink::XRLayerLayout::kStereoLeftRight;
-    layer_data->read_only_data->texture_width = textureWidth() * 2;
-  } else {
+  // TODO(crbug.com/359418629): WebGPU and non-shared-buffer WebGL swapchains
+  // still wrap texture-array layers in a single side-by-side 2D texture.
+  const bool uses_texture_array_shared_image =
+      session()->xr()->frameProvider()->DrawingIntoSharedBuffer() &&
+      session()->GraphicsApi() != XRGraphicsBinding::Api::kWebGPU;
+  if (uses_texture_array_shared_image) {
+    layer_data->read_only_data->texture_type =
+        V8ToMojomTextureType(texture_type_);
     layer_data->read_only_data->layout = V8ToMojomLayerLayout(layout_);
+  } else {
+    layer_data->read_only_data->texture_type =
+        device::mojom::blink::XRTextureType::kTexture;
+    if (layout_ == V8XRLayerLayout::Enum::kStereo) {
+      // We put the layers into a single texture. So the other side should treat
+      // it as left-right. See XRWebGLTextureArraySwapChain and
+      // XRGPUTextureArraySwapChain.
+      layer_data->read_only_data->layout =
+          device::mojom::blink::XRLayerLayout::kStereoLeftRight;
+      layer_data->read_only_data->texture_width = textureWidth() * 2;
+    } else {
+      layer_data->read_only_data->layout = V8ToMojomLayerLayout(layout_);
+    }
   }
   // Mutable data.
   layer_data->mutable_data = device::mojom::blink::XRLayerMutableData::New();
