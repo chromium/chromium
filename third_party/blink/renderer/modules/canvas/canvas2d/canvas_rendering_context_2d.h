@@ -264,7 +264,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                            PrepareMailboxWhenContextIsLostWithFailedRestore);
 
   void ResetInternal() override;
-  void ResetWithSize(gfx::Size size) override;
   void Reshape(gfx::Size old_size, gfx::Size new_size) override;
 
   void Dispose() override;

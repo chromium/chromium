@@ -575,12 +575,6 @@ void BaseRenderingContext2D::ResetInternal() {
   clear_frame_ = true;
 }
 
-void BaseRenderingContext2D::ResetWithSize(gfx::Size size) {
-  Canvas2DRecorderContext::ResetState();
-  ClearCanvas(size);
-  clear_frame_ = true;
-}
-
 CanvasRenderingContext2DSettings* BaseRenderingContext2D::getContextAttributes()
     const {
   return ToCanvasRenderingContext2DSettings(CreationAttributes());

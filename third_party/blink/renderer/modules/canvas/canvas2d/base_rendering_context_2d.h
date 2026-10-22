@@ -129,7 +129,6 @@ class MODULES_EXPORT BaseRenderingContext2D
   ~BaseRenderingContext2D() override;
 
   void ResetInternal() override;
-  void ResetWithSize(gfx::Size size) override;
 
   CanvasRenderingContext2DSettings* getContextAttributes() const;
 
