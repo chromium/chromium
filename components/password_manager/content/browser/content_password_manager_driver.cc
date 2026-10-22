@@ -668,6 +668,13 @@ void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
   if (!CheckFrameActiveAndNotPrerendering(render_frame_host_)) {
     return;
   }
+  // Frames that can't access password data for their URL's origin (e.g.
+  // sandboxed iframes, whose URL refers to the precursor origin) must not
+  // record username candidates. Legitimate renderers send this message from
+  // such frames too, so don't kill the renderer.
+  if (!HasValidURL(/*may_kill_renderer=*/false)) {
+    return;
+  }
   GetPasswordManager()->OnUserModifiedNonPasswordField(
       this, renderer_id, value, autocomplete_attribute_has_username,
       is_likely_otp);

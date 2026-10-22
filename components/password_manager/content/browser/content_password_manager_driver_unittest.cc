@@ -30,6 +30,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -195,6 +196,14 @@ class MockPasswordManager : public PasswordManager {
   MOCK_METHOD(void,
               OnPasswordFormCleared,
               (PasswordManagerDriver * driver, const autofill::FormData&),
+              (override));
+  MOCK_METHOD(void,
+              OnUserModifiedNonPasswordField,
+              (PasswordManagerDriver * driver,
+               autofill::FieldRendererId renderer_id,
+               const std::u16string& value,
+               bool autocomplete_attribute_has_username,
+               bool is_likely_otp),
               (override));
   MOCK_METHOD(PasswordFormCache*, GetPasswordFormCache, (), (override));
 };
@@ -438,6 +447,42 @@ TEST_F(ContentPasswordManagerDriverURLTest, PasswordFormCleared) {
   EXPECT_CALL(password_manager_, OnPasswordFormCleared(_, ExpectedFormData()));
 
   driver()->PasswordFormCleared(form);
+}
+
+TEST_F(ContentPasswordManagerDriverURLTest, UserModifiedNonPasswordField) {
+  EXPECT_CALL(password_manager_,
+              OnUserModifiedNonPasswordField(
+                  _, autofill::FieldRendererId(1), std::u16string(u"username"),
+                  /*autocomplete_attribute_has_username=*/true,
+                  /*is_likely_otp=*/false));
+
+  driver()->UserModifiedNonPasswordField(
+      autofill::FieldRendererId(1), u"username",
+      /*autocomplete_attribute_has_username=*/
+      true, /*is_likely_otp=*/false);
+}
+
+// Frames that are not allowed to access password data for their URL must not
+// record username candidates. The renderer must not be killed, since
+// legitimate renderers may send this message from such frames.
+TEST_F(ContentPasswordManagerDriverURLTest,
+       UserModifiedNonPasswordFieldIgnoredForInvalidURL) {
+  NavigateAndCommit(GURL("data:text/html,<input>"));
+  // The navigation may have swapped the RenderFrameHost, so create a driver
+  // for the current one.
+  driver_ = std::make_unique<ContentPasswordManagerDriver>(
+      main_rfh(), &password_manager_client_);
+  content::MockRenderProcessHost* process =
+      static_cast<content::MockRenderProcessHost*>(main_rfh()->GetProcess());
+  int bad_msg_count = process->bad_msg_count();
+
+  EXPECT_CALL(password_manager_, OnUserModifiedNonPasswordField).Times(0);
+
+  driver()->UserModifiedNonPasswordField(
+      autofill::FieldRendererId(1), u"username",
+      /*autocomplete_attribute_has_username=*/
+      true, /*is_likely_otp=*/false);
+  EXPECT_EQ(bad_msg_count, process->bad_msg_count());
 }
 
 TEST_F(ContentPasswordManagerDriverTest,
