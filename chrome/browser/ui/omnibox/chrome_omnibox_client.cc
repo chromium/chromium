@@ -461,8 +461,10 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
   // In touch mode, icons are 20x20. FaviconCache and ExtensionIconManager both
   // guarantee favicons and extension icons will be 16x16, so add extra padding
   // around them to align them vertically with the other vector icons.
-  CHECK_GE(icon_size, icon.Height(), base::NotFatalUntil::M162);
-  CHECK_GE(icon_size, icon.Width(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/576479304): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GE(icon_size, icon.Height());
+  DCHECK_GE(icon_size, icon.Width());
   auto padding_border = gfx::Insets::VH((icon_size - icon.Height()) / 2,
                                         (icon_size - icon.Width()) / 2);
   if (!padding_border.IsEmpty()) {
