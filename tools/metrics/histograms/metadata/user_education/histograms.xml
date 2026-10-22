@@ -67,6 +67,8 @@ chromium-metrics-reviews@google.com.
                right clicking a link."/>
   <variant name="SkillsAndExtensionsAppMenu"
       summary="Shown on the Extensions and Skills item in the app menu."/>
+  <variant name="TabGroupsFocusing"
+      summary="Promotion for focusing on a tab group in the tab context menu."/>
   <variant name="TabstripDeclutter"
       summary="Promotion for Close Unused Tabs in the app menu."/>
   <variant name="VerticalTabsNewBadge"

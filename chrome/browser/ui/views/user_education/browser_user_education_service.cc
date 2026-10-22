@@ -284,6 +284,17 @@ user_education::HelpBubbleArrow GetTabStripRegionBubbleArrow(
              : user_education::HelpBubbleArrow::kNone;
 }
 
+user_education::HelpBubbleArrow GetTabGroupBubbleArrow(
+    const ui::TrackedElement* anchor_element) {
+  const BrowserView* const browser_view =
+      views::ElementTrackerViews::GetInstance()
+          ->GetFirstMatchingViewAs<BrowserView>(kBrowserViewElementId,
+                                                anchor_element->context());
+  return browser_view && IsInVerticalTabsMode(browser_view)
+             ? user_education::HelpBubbleArrow::kLeftTop
+             : user_education::HelpBubbleArrow::kTopCenter;
+}
+
 // Returns the handle of the tab represented by `element`, or a null handle.
 // `Tab` is the legacy horizontal tab strip's tab view. `TabView` is used by the
 // vertical tab strip, and by the horizontal one when kTabStripUnification is
@@ -2144,6 +2155,31 @@ void MaybeRegisterChromeFeaturePromos(
               "the size of the tabs are shrunk significantly compared to their "
               "ideal width.")));
 
+  // kIPHTabGroupsFocusingFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::kIPHTabGroupsFocusingFeature,
+          kTabGroupHeaderElementId, IDS_TAB_GROUPS_FOCUSING_IPH_BODY)
+          .SetBubbleTitleText(IDS_TAB_GROUPS_FOCUSING_IPH_TITLE)
+          .SetBubbleArrowCallback(base::BindRepeating(&GetTabGroupBubbleArrow))
+          .SetMetadata(
+              159, "kunaldaftari@google.com",
+              "Triggered when there is at least one tab group in the tabstrip "
+              "and the total tab count exceeds the threshold.")));
+
+  // kIPHTabGroupsUnfocusingFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHTabGroupsUnfocusingFeature,
+          kUnfocusTabGroupButtonElementId, IDS_TAB_GROUPS_UNFOCUSING_IPH_BODY,
+          IDS_TAB_GROUPS_UNFOCUSING_IPH_BODY_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrowCallback(base::BindRepeating(&GetTabGroupBubbleArrow))
+          .SetMetadata(
+              159, "kunaldaftari@google.com",
+              "Triggered the first time a user focuses on a tab group or "
+              "tabs to point out the Unfocus button.")));
+
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSidePanelContextualTasksPinnableFeature,
@@ -2915,6 +2951,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       features::kIndigoContextMenu,
       user_education::Metadata(158, "jbroman@chromium.org",
                                "Shown on the Try it on context menu item.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kTabGroupsFocusing,
+      user_education::Metadata(159, "kunaldaftari@google.com",
+                               "Shown on the Focus on group item in the "
+                               "tab context menu.")));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   registry.RegisterFeature(user_education::NewBadgeSpecification(

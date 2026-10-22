@@ -924,6 +924,8 @@ should be able to be added at any place in this file.
       summary="For tab group creation dialog sync text."/>
   <variant name="_TabGroupsDragAndDrop"
       summary="For drop-to-merge in tab group."/>
+  <variant name="_TabGroupsFocusingFeature"
+      summary="For the tab groups focusing IPH feature."/>
   <variant name="_TabGroupSharedNotificationBubbleOnStrip"
       summary="For tab group shared notification bubble on tablet tab strip."/>
   <variant name="_TabGroupShareNotice"
@@ -952,6 +954,8 @@ should be able to be added at any place in this file.
       summary="For tab group surface after hiding a tab group while on the
                GTS."/>
   <variant name="_TabGroupsTapToSeeAnotherTab" summary="For tab strip."/>
+  <variant name="_TabGroupsUnfocusingFeature"
+      summary="For the tab groups unfocusing IPH feature."/>
   <variant name="_TabGroupSyncOnStrip"
       summary="For tab group sync on tablet tab strip."/>
   <variant name="_TabGroupsYourTabsTogether"

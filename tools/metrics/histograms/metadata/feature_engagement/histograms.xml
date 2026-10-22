@@ -786,6 +786,8 @@ chromium-metrics-reviews@google.com.
                teaching the user about tab group sync and save functionality"/>
   <variant name="IPH_TabGroupsDragAndDrop"
       summary="educating user to drop one tab on another tab to create group"/>
+  <variant name="IPH_TabGroupsFocusingFeature"
+      summary="educating user on how to focus on a tab group"/>
   <variant name="IPH_TabGroupSharedNotificationBubbleOnStrip"
       summary="For tab group share notification bubble on tablet tab strip."/>
   <variant name="IPH_TabGroupShareNotice"
@@ -815,6 +817,8 @@ chromium-metrics-reviews@google.com.
                the GTS"/>
   <variant name="IPH_TabGroupsTapToSeeAnotherTab"
       summary="(obsolete) tab strip"/>
+  <variant name="IPH_TabGroupsUnfocusingFeature"
+      summary="pointing out the Unfocus button when focusing on a tab group"/>
   <variant name="IPH_TabGroupSyncOnStrip"
       summary="For tab group sync on tablet tab strip."/>
   <variant name="IPH_TabGroupsYourTabsTogether"

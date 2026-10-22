@@ -11481,6 +11481,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Try using tab groups to organize tasks, for online shopping, and more
       </message>
 
+      <!-- Tab Groups Focusing IPH Strings -->
+      <message name="IDS_TAB_GROUPS_FOCUSING_IPH_TITLE" desc="The title of the IPH for focusing on a tab group">
+        Focus on tab group
+      </message>
+      <message name="IDS_TAB_GROUPS_FOCUSING_IPH_BODY" desc="The body text of the IPH for focusing on a tab group">
+        Right-click to hide other tabs temporarily
+      </message>
+      <message name="IDS_TAB_GROUPS_UNFOCUSING_IPH_BODY" desc="The body text of the IPH pointing to the Unfocus button">
+        Click here to bring your other tabs back
+      </message>
+      <message name="IDS_TAB_GROUPS_UNFOCUSING_IPH_BODY_SCREENREADER" is_accessibility_with_no_ui="true" desc="The screen reader text of the IPH pointing to the Unfocus button">
+        Click the Unfocus button to bring your other tabs back
+      </message>
+
       <!-- Customize Chrome Tutorial Strings -->
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH" desc="The description of the IPH to start the customize chrome tutorial">
         Customize Chrome to give your browser a new look

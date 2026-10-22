@@ -564,6 +564,10 @@ DEFINE_VARIATION_PARAM(kIPHWebUiHelpBubbleTestFeature,
 DEFINE_VARIATION_PARAM(kIPHPriceTrackingInSidePanelFeature,
                        "IPH_PriceTrackingInSidePanel");
 DEFINE_VARIATION_PARAM(kIPHBackNavigationMenuFeature, "IPH_BackNavigationMenu");
+DEFINE_VARIATION_PARAM(kIPHTabGroupsFocusingFeature,
+                       "IPH_TabGroupsFocusingFeature");
+DEFINE_VARIATION_PARAM(kIPHTabGroupsUnfocusingFeature,
+                       "IPH_TabGroupsUnfocusingFeature");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsSaveV2IntroFeature,
                        "IPH_TabGroupsSaveV2Intro");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsSaveV2CloseGroupFeature,
@@ -954,8 +958,10 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHSmartTabSharingTryItFeature),
         VARIATION_ENTRY(kIPHSplitViewHorizontalIndirectAccessFeature),
         VARIATION_ENTRY(kIPHTabAudioMutingFeature),
+        VARIATION_ENTRY(kIPHTabGroupsFocusingFeature),
         VARIATION_ENTRY(kIPHTabGroupsSharedTabChangedFeature),
         VARIATION_ENTRY(kIPHTabGroupsSharedTabFeedbackFeature),
+        VARIATION_ENTRY(kIPHTabGroupsUnfocusingFeature),
         VARIATION_ENTRY(kIPHTabScrollButtonFeature),
         VARIATION_ENTRY(kIPHWebUiHelpBubbleTestFeature),
 // keep-sorted end
