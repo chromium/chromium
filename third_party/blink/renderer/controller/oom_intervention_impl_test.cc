@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -15,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -65,23 +67,25 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
 // Mock intervention class that uses a mock MemoryUsageMonitor.
 class MockOomInterventionImpl : public OomInterventionImpl {
  public:
-  MockOomInterventionImpl()
+  explicit MockOomInterventionImpl(
+      MockMemoryUsageMonitor* mock_memory_usage_monitor)
       : OomInterventionImpl(scheduler::GetSingleThreadTaskRunnerForTesting()),
-        mock_memory_usage_monitor_(std::make_unique<MockMemoryUsageMonitor>()) {
+        mock_memory_usage_monitor_(mock_memory_usage_monitor) {}
+  ~MockOomInterventionImpl() override {
+    mock_memory_usage_monitor_->RemoveObserver(this);
   }
-  ~MockOomInterventionImpl() override {}
 
   MemoryUsageMonitor& MemoryUsageMonitorInstance() override {
     return *mock_memory_usage_monitor_;
   }
 
   MockMemoryUsageMonitor* mock_memory_usage_monitor() {
-    return mock_memory_usage_monitor_.get();
+    return mock_memory_usage_monitor_;
   }
 
  private:
   std::unique_ptr<OomInterventionMetrics> metrics_;
-  std::unique_ptr<MockMemoryUsageMonitor> mock_memory_usage_monitor_;
+  raw_ptr<MockMemoryUsageMonitor> mock_memory_usage_monitor_;
 };
 
 }  // namespace
@@ -89,7 +93,9 @@ class MockOomInterventionImpl : public OomInterventionImpl {
 class OomInterventionImplTest : public testing::Test {
  public:
   void SetUp() override {
-    intervention_ = std::make_unique<MockOomInterventionImpl>();
+    mock_memory_usage_monitor_ = std::make_unique<MockMemoryUsageMonitor>();
+    intervention_ = std::make_unique<MockOomInterventionImpl>(
+        mock_memory_usage_monitor_.get());
   }
 
   Page* DetectOnceOnBlankPage() {
@@ -118,6 +124,7 @@ class OomInterventionImplTest : public testing::Test {
 
  protected:
   test::TaskEnvironment task_environment_;
+  std::unique_ptr<MockMemoryUsageMonitor> mock_memory_usage_monitor_;
   std::unique_ptr<MockOomInterventionImpl> intervention_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   std::unique_ptr<SimRequest> main_resource_;
@@ -252,6 +259,55 @@ TEST_F(OomInterventionImplTest, V2DetectionV8PurgeMemory) {
   EXPECT_FALSE(frame->DomWindow()->IsContextDestroyed());
   RunDetection(true, true, true);
   EXPECT_TRUE(frame->DomWindow()->IsContextDestroyed());
+}
+
+TEST_F(OomInterventionImplTest, DestroyedDuringV8PurgeMemory) {
+  MemoryUsage usage;
+  usage.private_footprint_bytes = kTestPMFThreshold + 1024;
+  usage.swap_bytes = 0;
+  usage.vm_size_bytes = 0;
+  intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad("about:blank");
+  web_view->MainFrameImpl()
+      ->GetFrame()
+      ->GetDocument()
+      ->body()
+      ->SetInnerHTMLWithoutTrustedTypes(
+          "<iframe name='child' src='about:blank'></iframe>");
+
+  WebLocalFrame* child_web_frame = web_view_helper_.LocalMainFrame()
+                                       ->FindFrameByName(WebString("child"))
+                                       ->ToWebLocalFrame();
+  frame_test_helpers::PumpPendingRequestsForFrameToLoad(child_web_frame);
+
+  child_web_frame->ExecuteScript(WebScriptSource(
+      WebString("document.open();"
+                "document.write(\"<iframe id='gc' name='gc'></iframe>\");"
+                "document.onreadystatechange = () => {"
+                "  document.getElementById('gc').remove();"
+                "};")));
+
+  WebLocalFrame* gc_web_frame = web_view_helper_.LocalMainFrame()
+                                    ->FindFrameByName(WebString("gc"))
+                                    ->ToWebLocalFrame();
+
+  // Simulate OomInterventionImpl being deleted when synchronous JS runs during
+  // ForciblyPurgeV8Memory().
+  auto* gc_client = static_cast<frame_test_helpers::TestWebFrameClient*>(
+      To<WebLocalFrameImpl>(gc_web_frame)->Client());
+  bool destroyed_during_purge = false;
+  gc_client->SetFrameDetachedCallback(blink::BindOnce(
+      [](std::unique_ptr<MockOomInterventionImpl>* intervention,
+         bool* destroyed_flag) {
+        intervention->reset();
+        *destroyed_flag = true;
+      },
+      base::Unretained(&intervention_),
+      base::Unretained(&destroyed_during_purge)));
+
+  RunDetection(true, true, true);
+  EXPECT_TRUE(destroyed_during_purge);
 }
 
 }  // namespace blink
