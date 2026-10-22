@@ -9,17 +9,14 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync_sessions/features.h"
 #include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
@@ -429,14 +426,8 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
 
   for (int i = min_index; i < max_index; ++i) {
     const GURL url = tab_delegate.GetVirtualURLAtIndex(i);
-    if (base::FeatureList::IsEnabled(kFilterNavigationsBySyncSessionsClient)) {
-      if (!sessions_client_->ShouldSyncURL(url)) {
-        continue;
-      }
-    } else {
-      if (!url.is_valid()) {
-        continue;
-      }
+    if (!sessions_client_->ShouldSyncURL(url)) {
+      continue;
     }
     sessions::SerializedNavigationEntry serialized_entry;
     tab_delegate.GetSerializedNavigationAtIndex(i, &serialized_entry);
