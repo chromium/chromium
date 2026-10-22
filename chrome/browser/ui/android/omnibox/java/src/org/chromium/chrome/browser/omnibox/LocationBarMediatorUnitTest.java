@@ -37,6 +37,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.Property;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -4221,6 +4222,7 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_PREFETCH_SELECTED_SUGGESTIONS_OMT_ANDROID)
     public void testIsKeyboardSuppressed() {
         SettableNonNullObservableSupplier<Integer> popupStateSupplier =
                 ObservableSuppliers.createNonNull(PopupState.HIDDEN);
@@ -4236,6 +4238,42 @@ public class LocationBarMediatorUnitTest {
 
         // 3. Popup state is BOTTOM -> suppressed
         popupStateSupplier.set(PopupState.BOTTOM);
+        assertTrue(mMediator.isKeyboardSuppressed());
+
+        // 4. Suggestions dropdown scrolled -> not suppressed when feature is disabled
+        popupStateSupplier.set(PopupState.HIDDEN);
+        mMediator.onSuggestionDropdownScroll();
+        assertFalse(mMediator.isKeyboardSuppressed());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_PREFETCH_SELECTED_SUGGESTIONS_OMT_ANDROID)
+    public void testIsKeyboardSuppressed_omtPrefetchEnabled() {
+        SettableNonNullObservableSupplier<Integer> popupStateSupplier =
+                ObservableSuppliers.createNonNull(PopupState.HIDDEN);
+        doReturn(popupStateSupplier).when(mFuseboxCoordinator).getPopupStateSupplier();
+
+        // 1. Suggestions dropdown scrolled -> suppressed
+        mMediator.onSuggestionDropdownScroll();
+        assertTrue(mMediator.isKeyboardSuppressed());
+
+        // 2. Suggestions dropdown overscrolled to top -> not suppressed
+        mMediator.onSuggestionDropdownOverscrolledToTop();
+        assertFalse(mMediator.isKeyboardSuppressed());
+
+        // 3. Suggestions dropdown scrolled, then UrlBar touched -> not suppressed
+        mMediator.onSuggestionDropdownScroll();
+        assertTrue(mMediator.isKeyboardSuppressed());
+        mMediator.onUrlBarTouchDown();
+        assertFalse(mMediator.isKeyboardSuppressed());
+
+        // 4. Suggestions dropdown scrolled, then input session suspended -> not suppressed
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        mMediator.onSuggestionDropdownScroll();
+        assertTrue(mMediator.isKeyboardSuppressed());
+        mMediator.suspendInput();
+        assertFalse(mMediator.isKeyboardSuppressed());
     }
 
     @Test
