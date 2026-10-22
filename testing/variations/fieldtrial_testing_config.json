@@ -2538,6 +2538,26 @@
             ]
         }
     ],
+    "AutofillWipeInvalidNameStructure": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillWipeInvalidNameStructure"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillYourSavedInfoHatsSurveysContactInfo": [
         {
             "platforms": [

@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
@@ -366,7 +367,25 @@ void UpdateProfile(int profile,
       pdm->address_data_manager().GetProfileByGUID(guid);
   ASSERT_TRUE(pdm_profile);
   AutofillProfile updated_profile = *pdm_profile;
+  // Changing the value of a name subcomponent leaves `NAME_FULL` stale. The
+  // resulting invalid name structure would be wiped by `FinalizeAfterImport()`
+  // (which also runs when the profile is read from the database), discarding
+  // the update. Clear `NAME_FULL`, which may also clear its subcomponents, and
+  // restore them, so that the full name is re-formatted from the updated
+  // subcomponents.
+  constexpr autofill::FieldTypeSet kNameSubcomponents = {
+      autofill::NAME_FIRST, autofill::NAME_MIDDLE, autofill::NAME_LAST};
+  if (kNameSubcomponents.contains(type) &&
+      pdm_profile->GetRawInfo(type) != value) {
+    updated_profile.ClearFields({autofill::NAME_FULL});
+    for (autofill::FieldType name_type : kNameSubcomponents) {
+      updated_profile.SetRawInfoWithVerificationStatus(
+          name_type, pdm_profile->GetRawInfo(name_type),
+          pdm_profile->GetVerificationStatus(name_type));
+    }
+  }
   updated_profile.SetRawInfoWithVerificationStatus(type, value, status);
+  updated_profile.FinalizeAfterImport();
   autofill::PersonalDataChangedWaiter waiter(*pdm);
   pdm->address_data_manager().UpdateProfile(updated_profile);
   std::move(waiter).Wait();

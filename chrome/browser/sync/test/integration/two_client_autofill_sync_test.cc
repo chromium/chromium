@@ -448,9 +448,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ExceedsMaxLength) {
 
   std::u16string exceeds_max_length_string(
       autofill::kMaxDataLengthForDatabase + 1, '.');
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_FIRST,
-                exceeds_max_length_string);
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_LAST,
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_FULL,
                 exceeds_max_length_string);
   UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
                 autofill::EMAIL_ADDRESS, exceeds_max_length_string);
@@ -458,9 +456,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ExceedsMaxLength) {
                 autofill::ADDRESS_HOME_LINE1, exceeds_max_length_string);
   // The values stored on clients 0 are already truncated.
   const AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
-  for (const auto type :
-       {autofill::NAME_FIRST, autofill::NAME_LAST, autofill::EMAIL_ADDRESS,
-        autofill::ADDRESS_HOME_LINE1}) {
+  for (const auto type : {autofill::NAME_FULL, autofill::EMAIL_ADDRESS,
+                          autofill::ADDRESS_HOME_LINE1}) {
     EXPECT_EQ(profile->GetRawInfo(type).size(),
               autofill::kMaxDataLengthForDatabase);
   }

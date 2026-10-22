@@ -108,6 +108,7 @@ class AutofillEventHandlerBrowserTest : public InProcessBrowserTest {
     autofill_profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
     autofill_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
     autofill_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+    autofill_profile.FinalizeAfterImport();
 
     pdm->address_data_manager().AddProfile(autofill_profile);
   }
@@ -136,6 +137,7 @@ class AutofillEventHandlerBrowserTest : public InProcessBrowserTest {
     profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
     profile.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
     profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+    profile.FinalizeAfterImport();
 
     TestAutofillManager* manager = autofill_manager_injector_[rfh];
     manager->FillOrPreviewForm(mojom::ActionPersistence::kFill,
