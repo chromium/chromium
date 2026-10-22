@@ -107,7 +107,8 @@ class AwContents : public FindHelper::Listener,
 
   // AwGoogleAccountsDelegate:
   void OnGoogleAccountsRequest(const signin::ManageAccountsParams& params,
-                               bool is_outermost_main_frame) override;
+                               bool is_outermost_main_frame,
+                               bool is_navigation_request) override;
   std::string GetGaiaId() override;
 
   // |handler| is an instance of

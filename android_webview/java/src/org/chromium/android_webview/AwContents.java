@@ -3485,11 +3485,14 @@ public class AwContents implements SmartClipProvider {
     private void onGoogleAccountsRequest(
             int serviceType,
             @JniType("std::string") String continueUrl,
-            boolean isOutermostMainFrame) {
+            boolean isOutermostMainFrame,
+            boolean isNavigationRequest) {
+
         if (isDestroyed(NO_WARN)) return;
         if (mGoogleAccountsCallback != null) {
             mGoogleAccountsCallback.accept(
-                    new GoogleAccountsEvent(serviceType, continueUrl, isOutermostMainFrame));
+                    new GoogleAccountsEvent(
+                            serviceType, continueUrl, isOutermostMainFrame, isNavigationRequest));
         }
     }
 

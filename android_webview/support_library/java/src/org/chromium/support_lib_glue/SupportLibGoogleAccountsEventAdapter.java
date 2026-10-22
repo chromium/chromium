@@ -60,4 +60,14 @@ public class SupportLibGoogleAccountsEventAdapter implements GoogleAccountsEvent
             return mEvent.isOutermostMainFrame();
         }
     }
+
+    @Override
+    public boolean isNavigationRequest() {
+        try (TraceEvent traceEvent =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.GOOGLE_ACCOUNTS_EVENT_IS_NAVIGATION_REQUEST")) {
+            recordApiCall(ApiCall.GOOGLE_ACCOUNTS_EVENT_IS_NAVIGATION_REQUEST);
+            return mEvent.isNavigationRequest();
+        }
+    }
 }

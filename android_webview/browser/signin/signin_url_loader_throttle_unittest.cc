@@ -46,13 +46,13 @@ class MockGoogleAccountsDelegate : public AwGoogleAccountsDelegate {
 
   // AwGoogleAccountsDelegate:
   void OnGoogleAccountsRequest(const signin::ManageAccountsParams& params,
-                               bool is_outermost_main_frame) override {
+                               bool is_outermost_main_frame,
+                               bool is_navigation_request) override {
     ++on_google_accounts_request_call_count_;
     last_manage_accounts_params_ = params;
     last_is_outermost_main_frame_ = is_outermost_main_frame;
-    if (on_google_accounts_request_callback_) {
-      on_google_accounts_request_callback_.Run(params, is_outermost_main_frame);
-    }
+    last_is_navigation_request_ = is_navigation_request;
+
     if (on_google_accounts_request_closure_) {
       on_google_accounts_request_closure_.Run();
     }
@@ -73,13 +73,9 @@ class MockGoogleAccountsDelegate : public AwGoogleAccountsDelegate {
   std::optional<bool> last_is_outermost_main_frame() const {
     return last_is_outermost_main_frame_;
   }
-
-  void set_on_google_accounts_request_callback(
-      base::RepeatingCallback<void(const signin::ManageAccountsParams&, bool)>
-          callback) {
-    on_google_accounts_request_callback_ = std::move(callback);
+  std::optional<bool> last_is_navigation_request() const {
+    return last_is_navigation_request_;
   }
-
   void set_on_google_accounts_request_closure(base::RepeatingClosure closure) {
     on_google_accounts_request_closure_ = std::move(closure);
   }
@@ -90,8 +86,7 @@ class MockGoogleAccountsDelegate : public AwGoogleAccountsDelegate {
   int on_google_accounts_request_call_count_ = 0;
   std::optional<signin::ManageAccountsParams> last_manage_accounts_params_;
   std::optional<bool> last_is_outermost_main_frame_;
-  base::RepeatingCallback<void(const signin::ManageAccountsParams&, bool)>
-      on_google_accounts_request_callback_;
+  std::optional<bool> last_is_navigation_request_;
   base::RepeatingClosure on_google_accounts_request_closure_;
 };
 
@@ -251,6 +246,7 @@ TEST_F(SigninUrlLoaderThrottleTest, ProcessResponseTriggersDelegate) {
   EXPECT_EQ(signin::GAIA_SERVICE_TYPE_DEFAULT,
             delegate_ptr->last_manage_accounts_params()->service_type);
   EXPECT_TRUE(delegate_ptr->last_is_outermost_main_frame().value_or(false));
+  EXPECT_TRUE(delegate_ptr->last_is_navigation_request().value_or(false));
 }
 
 TEST_F(SigninUrlLoaderThrottleTest, ProcessResponseIgnoredForNonGaiaUrl) {
@@ -313,7 +309,8 @@ TEST_F(SigninUrlLoaderThrottleTest, ProcessResponseForSubresource) {
   ASSERT_TRUE(delegate_ptr->last_manage_accounts_params().has_value());
   EXPECT_EQ(signin::GAIA_SERVICE_TYPE_DEFAULT,
             delegate_ptr->last_manage_accounts_params()->service_type);
-  EXPECT_FALSE(delegate_ptr->last_is_outermost_main_frame().value_or(true));
+  EXPECT_TRUE(delegate_ptr->last_is_outermost_main_frame().value_or(false));
+  EXPECT_FALSE(delegate_ptr->last_is_navigation_request().value_or(true));
 }
 
 TEST_F(SigninUrlLoaderThrottleTest, ProcessResponseForSubframe) {
@@ -350,6 +347,7 @@ TEST_F(SigninUrlLoaderThrottleTest, ProcessResponseForSubframe) {
   EXPECT_EQ(signin::GAIA_SERVICE_TYPE_DEFAULT,
             delegate_ptr->last_manage_accounts_params()->service_type);
   EXPECT_FALSE(delegate_ptr->last_is_outermost_main_frame().value_or(true));
+  EXPECT_TRUE(delegate_ptr->last_is_navigation_request().value_or(false));
 }
 
 TEST_F(SigninUrlLoaderThrottleTest,
@@ -398,6 +396,7 @@ TEST_F(SigninUrlLoaderThrottleTest,
   run_loop.Run();
   EXPECT_EQ(1, delegate_ptr->on_google_accounts_request_call_count());
   EXPECT_TRUE(delegate_ptr->last_is_outermost_main_frame().value_or(false));
+  EXPECT_TRUE(delegate_ptr->last_is_navigation_request().value_or(false));
 }
 
 }  // namespace

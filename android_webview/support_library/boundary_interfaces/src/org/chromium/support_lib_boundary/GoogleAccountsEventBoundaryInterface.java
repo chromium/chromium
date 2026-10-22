@@ -34,4 +34,6 @@ public interface GoogleAccountsEventBoundaryInterface {
     String getContinueUrl();
 
     boolean isOutermostMainFrame();
+
+    boolean isNavigationRequest();
 }

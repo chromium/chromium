@@ -57,11 +57,13 @@ AwGoogleAccountsDelegate* GetDelegateFromWebContents(
 void ProcessMirrorHeader(
     SigninUrlLoaderThrottle::GoogleAccountsDelegateGetter delegate_getter,
     const signin::ManageAccountsParams& params,
-    bool is_outermost_main_frame) {
+    bool is_outermost_main_frame,
+    bool is_navigation_request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AwGoogleAccountsDelegate* delegate = delegate_getter.Run();
   if (delegate) {
-    delegate->OnGoogleAccountsRequest(params, is_outermost_main_frame);
+    delegate->OnGoogleAccountsRequest(params, is_outermost_main_frame,
+                                      is_navigation_request);
   }
 }
 
@@ -135,9 +137,10 @@ void SigninUrlLoaderThrottle::WillStartRequest(
   }
 
   request_url_ = request->url;
-  is_outermost_main_frame_ =
-      request->is_outermost_main_frame &&
-      request->destination == network::mojom::RequestDestination::kDocument;
+  is_navigation_request_ =
+      request->destination == network::mojom::RequestDestination::kDocument ||
+      request->destination == network::mojom::RequestDestination::kIframe;
+  is_outermost_main_frame_ = request->is_outermost_main_frame;
 
   net::HttpRequestHeaders modified_request_headers;
   std::vector<std::string> to_be_removed_request_headers;
@@ -241,8 +244,9 @@ void SigninUrlLoaderThrottle::ProcessResponse(
   // Post a task even if we are already on the UI thread to avoid making any
   // requests while processing a throttle event.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ProcessMirrorHeader, delegate_getter_,
-                                std::move(params), is_outermost_main_frame_));
+      FROM_HERE,
+      base::BindOnce(&ProcessMirrorHeader, delegate_getter_, std::move(params),
+                     is_outermost_main_frame_, is_navigation_request_));
 }
 
 }  // namespace android_webview

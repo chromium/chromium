@@ -21,11 +21,14 @@ class AwGoogleAccountsDelegate {
   // Called when a user wants to change the state of their GAIA account. This
   // could be a signin, signout, or any other action. See
   // signin::GAIAServiceType for all the possible actions.
-  // `is_outermost_main_frame` indicates whether the request was for an
-  // outermost main frame navigation.
+  //
+  // `is_outermost_main_frame` indicates whether the request happened in the
+  // outermost frame. `is_navigation_request` is true if the request was a
+  // navigation, whether this was in the outermost or an inner frame.
   virtual void OnGoogleAccountsRequest(
       const signin::ManageAccountsParams& params,
-      bool is_outermost_main_frame) = 0;
+      bool is_outermost_main_frame,
+      bool is_navigation_request) = 0;
 
   // The current GAIA ID the user is signed in with, or empty if the user is
   // signed out.

@@ -2240,6 +2240,7 @@ public class AwContentsTest extends AwParameterizedTest {
                     GAIAServiceType.GAIA_SERVICE_TYPE_ADDSESSION, event.getServiceType());
             Assert.assertEquals("https://example.com/continue", event.getContinueUrl());
             Assert.assertTrue(event.isOutermostMainFrame());
+            Assert.assertTrue(event.isNavigationRequest());
         }
     }
 }

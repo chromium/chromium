@@ -92,6 +92,7 @@ class SigninUrlLoaderThrottle : public blink::URLLoaderThrottle {
   net::HttpRequestHeaders request_headers_;
   // Tracks the last request URL in use, so ProcessResponse can reference it.
   GURL request_url_;
+  bool is_navigation_request_ = false;
   bool is_outermost_main_frame_ = false;
   bool response_header_processed_ = false;
 };

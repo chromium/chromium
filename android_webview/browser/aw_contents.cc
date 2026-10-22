@@ -484,7 +484,8 @@ void AwContents::SetGoogleAccountMirroringEnabled(bool enabled,
 
 void AwContents::OnGoogleAccountsRequest(
     const signin::ManageAccountsParams& params,
-    bool is_outermost_main_frame) {
+    bool is_outermost_main_frame,
+    bool is_navigation_request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -494,7 +495,7 @@ void AwContents::OnGoogleAccountsRequest(
 
   Java_AwContents_onGoogleAccountsRequest(
       env, obj, static_cast<int>(params.service_type), params.continue_url,
-      is_outermost_main_frame);
+      is_outermost_main_frame, is_navigation_request);
 }
 
 std::string AwContents::GetGaiaId() {

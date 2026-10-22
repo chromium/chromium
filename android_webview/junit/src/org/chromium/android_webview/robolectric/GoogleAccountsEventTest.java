@@ -25,10 +25,12 @@ public class GoogleAccountsEventTest {
                 new GoogleAccountsEvent(
                         GAIAServiceType.GAIA_SERVICE_TYPE_ADDSESSION,
                         "https://example.com/continue",
+                        true,
                         true);
 
         assertEquals(GAIAServiceType.GAIA_SERVICE_TYPE_ADDSESSION, event.getServiceType());
         assertEquals("https://example.com/continue", event.getContinueUrl());
         assertTrue(event.isOutermostMainFrame());
+        assertTrue(event.isNavigationRequest());
     }
 }

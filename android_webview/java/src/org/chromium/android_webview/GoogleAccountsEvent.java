@@ -16,12 +16,17 @@ public class GoogleAccountsEvent {
     private final @GAIAServiceType int mServiceType;
     private final String mContinueUrl;
     private final boolean mIsOutermostMainFrame;
+    private final boolean mIsNavigationRequest;
 
     public GoogleAccountsEvent(
-            @GAIAServiceType int serviceType, String continueUrl, boolean isOutermostMainFrame) {
+            @GAIAServiceType int serviceType,
+            String continueUrl,
+            boolean isOutermostMainFrame,
+            boolean isNavigationRequest) {
         mServiceType = serviceType;
         mContinueUrl = continueUrl;
         mIsOutermostMainFrame = isOutermostMainFrame;
+        mIsNavigationRequest = isNavigationRequest;
     }
 
     public @GAIAServiceType int getServiceType() {
@@ -34,5 +39,9 @@ public class GoogleAccountsEvent {
 
     public boolean isOutermostMainFrame() {
         return mIsOutermostMainFrame;
+    }
+
+    public boolean isNavigationRequest() {
+        return mIsNavigationRequest;
     }
 }
