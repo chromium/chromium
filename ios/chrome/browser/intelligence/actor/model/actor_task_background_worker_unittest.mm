@@ -957,7 +957,8 @@ TEST_F(ActorTaskBackgroundWorkerTest,
 }
 
 // Tests that the heartbeat timer is not started when the backgrounding feature
-// parameter is disabled, even though the killswitch is enabled.
+// parameter is disabled, even though `kEnableBackgroundContinuedProcessing` is
+// enabled.
 TEST_F(ActorTaskBackgroundWorkerTest,
        HeartbeatDisabledWhenFeatureParamDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;

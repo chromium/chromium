@@ -17,6 +17,8 @@
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/types/expected.h"
+#import "ios/chrome/app/application_delegate/app_init_stage.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/app/background_task/background_continued_processing_metrics.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
@@ -90,6 +92,15 @@ BackgroundContinuedProcessingTaskRequestResult RequestResultFromSubmissionError(
 }  // namespace
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
+@interface BackgroundContinuedProcessingAppAgent ()
+
+// YES if app initialization has finished and background continued processing is
+// enabled. Checking `AppInitStage::kFinal` first ensures `base::FeatureList` is
+// initialized before querying feature flags.
+@property(nonatomic, readonly, getter=isAvailable) BOOL available;
+
+@end
+
 @implementation BackgroundContinuedProcessingAppAgent {
   // Active task contexts retained by the agent for their execution lifetime.
   NSMutableDictionary<NSString*, BackgroundContinuedProcessingTaskContext*>*
@@ -143,7 +154,7 @@ BackgroundContinuedProcessingTaskRequestResult RequestResultFromSubmissionError(
     requestTaskWithIdentifier:(NSString*)identifier
                 configuration:(BackgroundContinuedProcessingTaskConfiguration*)
                                   configuration {
-  if (!IsBackgroundContinuedProcessingEnabled()) {
+  if (!self.available) {
     return nil;
   }
 
@@ -156,7 +167,7 @@ BackgroundContinuedProcessingTaskRequestResult RequestResultFromSubmissionError(
 
 - (void)appDidEnterBackground {
   [super appDidEnterBackground];
-  if (!IsBackgroundContinuedProcessingEnabled()) {
+  if (!self.available) {
     return;
   }
 
@@ -169,7 +180,7 @@ BackgroundContinuedProcessingTaskRequestResult RequestResultFromSubmissionError(
 
 - (void)appDidEnterForeground {
   [super appDidEnterForeground];
-  if (!IsBackgroundContinuedProcessingEnabled()) {
+  if (!self.available) {
     return;
   }
 
@@ -177,6 +188,11 @@ BackgroundContinuedProcessingTaskRequestResult RequestResultFromSubmissionError(
 }
 
 #pragma mark - Private
+
+- (BOOL)isAvailable {
+  return self.appState.initStage == AppInitStage::kFinal &&
+         IsBackgroundContinuedProcessingEnabled();
+}
 
 // Requests the tasks of `provider`, records the outcome of each request and
 // passes the task context to each request that was successfully started.
@@ -201,14 +217,14 @@ BackgroundContinuedProcessingTaskRequestResult RequestResultFromSubmissionError(
 }
 
 // Submits a task request and returns its context, or the failure reason. Must
-// only be called when background continued processing is enabled.
+// only be called when background continued processing is available.
 - (base::expected<BackgroundContinuedProcessingTaskContext*,
                   BackgroundContinuedProcessingTaskRequestResult>)
     submitTaskRequestWithIdentifier:(NSString*)identifier
                       configuration:
                           (BackgroundContinuedProcessingTaskConfiguration*)
                               configuration {
-  CHECK(IsBackgroundContinuedProcessingEnabled());
+  CHECK(self.available);
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   CHECK(identifier.length > 0);
   CHECK(configuration);

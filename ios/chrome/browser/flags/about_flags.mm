@@ -99,6 +99,7 @@
 #import "components/webui/flags/flags_storage.h"
 #import "components/webui/flags/flags_ui_switches.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/app/background_task/features.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/composebox/public/features.h"
@@ -3093,6 +3094,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          segmentation_platform::features::kMagicStackTipsNotificationTipIos,
          kMagicStackTipsNotificationTipIosVariations,
          "MagicStackTipsNotificationTipIos")},
+    {"enable-background-continued-processing",
+     flag_descriptions::kEnableBackgroundContinuedProcessingName,
+     flag_descriptions::kEnableBackgroundContinuedProcessingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableBackgroundContinuedProcessing)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -3653,6 +3653,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-background-continued-processing",
+    "owners": [ "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 168
+  },
+  {
     "name": "enable-benchmarking",
     "owners": [ "//components/variations/OWNERS" ],
     // This is used by testers and developers to determine whether a bug is

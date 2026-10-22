@@ -303,7 +303,9 @@ TEST_F(ActorFeaturesTest, IsGeminiExperimentalGuidedOnboardingEnabled) {
 TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {kPageActionMenu, kActorTools, kGeminiActor}, {});
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
 
   EXPECT_EQ(IsBackgroundContinuedProcessingEnabled(),
             IsGeminiActorBackgroundingEnabled());
@@ -316,13 +318,17 @@ TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingDisabled) {
   base::FieldTrialParams params;
   params[kGeminiActorBackgroundingParam] = "false";
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kPageActionMenu, {}}, {kActorTools, {}}, {kGeminiActor, params}}, {});
+      {{kPageActionMenu, {}},
+       {kActorTools, {}},
+       {kEnableBackgroundContinuedProcessing, {}},
+       {kGeminiActor, params}},
+      {});
   EXPECT_FALSE(IsGeminiActorBackgroundingEnabled());
 }
 
-// Tests that Gemini Actor backgrounding returns false when the Background
-// Continued Processing killswitch is disabled.
-TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingKillswitchDisabled) {
+// Tests that Gemini Actor backgrounding returns false when
+// `kEnableBackgroundContinuedProcessing` is disabled.
+TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kPageActionMenu, kActorTools, kGeminiActor},

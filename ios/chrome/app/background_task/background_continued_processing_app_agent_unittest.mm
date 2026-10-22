@@ -371,9 +371,13 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 // Tests that requesting a task returns nil without touching `BGTaskScheduler`
 // when background continued processing is unavailable in the current
 // configuration (i.e. the `ios_enable_background_continued_processing` GN arg
-// is false, or the OS is older than iOS 26), even with the killswitch enabled.
+// is false, or the OS is older than iOS 26), even with
+// `kEnableBackgroundContinuedProcessing` enabled.
 TEST_F(BackgroundContinuedProcessingAppAgentTest,
        TestRequestTaskFailsWhenUnavailable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kEnableBackgroundContinuedProcessing);
   if (IsBackgroundContinuedProcessingEnabled()) {
     GTEST_SKIP() << "Background continued processing is available.";
   }
@@ -396,11 +400,49 @@ class BackgroundContinuedProcessingAppAgentAvailableTest
  protected:
   void SetUp() override {
     BackgroundContinuedProcessingAppAgentTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        kEnableBackgroundContinuedProcessing);
     if (!IsBackgroundContinuedProcessingEnabled()) {
       GTEST_SKIP() << "Background continued processing is unavailable.";
     }
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests that task requests and scene transitions are ignored before
+// `AppInitStage::kFinal` is reached, and succeed once `AppInitStage::kFinal` is
+// reached.
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
+       TestIgnoredBeforeInitStageFinal) {
+  if (@available(iOS 26.0, *)) {
+    app_state_helper_.initStage = AppInitStage::kSafeMode;
+    BackgroundContinuedProcessingAppAgent* early_agent =
+        [[BackgroundContinuedProcessingAppAgent alloc] init];
+    early_agent.appState = mock_app_state_;
+
+    FakeContinuedProcessingTaskProvider* provider =
+        [[FakeContinuedProcessingTaskProvider alloc] initWithName:@"Foo"
+                                                              log:log_];
+    [early_agent addTaskProvider:provider];
+
+    EXPECT_EQ([early_agent requestTaskWithIdentifier:kTestTaskId
+                                       configuration:CreateTestConfiguration()],
+              nil);
+    [early_agent appDidEnterBackground];
+    [early_agent appDidEnterForeground];
+    EXPECT_EQ(log_.count, 0u);
+
+    app_state_helper_.initStage = AppInitStage::kFinal;
+    OCMStub([mock_scheduler_ cancelTaskRequestWithIdentifier:[OCMArg any]]);
+    StubScheduler();
+    BackgroundContinuedProcessingTaskContext* context =
+        [early_agent requestTaskWithIdentifier:kTestTaskId
+                                 configuration:CreateTestConfiguration()];
+    ASSERT_NE(context, nil);
+    [context setTaskCompletedWithSuccess:YES];
+  }
+}
 
 // Tests that requesting a task succeeds when a scene is in
 // `SceneActivationLevelForegroundInactive` (`foregroundActiveScene` is nil,
@@ -734,6 +776,7 @@ TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
 
     @autoreleasepool {
       id local_app_state = OCMClassMock([AppState class]);
+      OCMStub([local_app_state initStage]).andReturn(AppInitStage::kFinal);
       OCMStub([local_app_state foregroundActiveScene])
           .andReturn(mock_scene_state_);
       OCMStub([local_app_state foregroundScenes]).andReturn(@[
@@ -766,6 +809,7 @@ TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
 
     @autoreleasepool {
       id local_app_state = OCMClassMock([AppState class]);
+      OCMStub([local_app_state initStage]).andReturn(AppInitStage::kFinal);
       OCMStub([local_app_state foregroundActiveScene])
           .andReturn(mock_scene_state_);
       OCMStub([local_app_state foregroundScenes]).andReturn(@[

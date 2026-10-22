@@ -764,6 +764,11 @@ inline constexpr char kEnableAutofillAddressSavePromptName[] =
 inline constexpr char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
+inline constexpr char kEnableBackgroundContinuedProcessingName[] =
+    "Background Continued Processing";
+inline constexpr char kEnableBackgroundContinuedProcessingDescription[] =
+    "Enables background continued processing task support on iOS 26+.";
+
 inline constexpr char kEnableBulkDataEntryConnectorIOSName[] =
     "Enable bulk data entry connectors on iOS";
 inline constexpr char kEnableBulkDataEntryConnectorIOSDescription[] =

@@ -11,20 +11,23 @@
 
 using BackgroundContinuedProcessingFeaturesTest = PlatformTest;
 
-// Tests that Background Continued Processing is enabled by default (on iOS 26+
-// with the buildflag set) and can be disabled via the killswitch.
-TEST_F(BackgroundContinuedProcessingFeaturesTest, TestKillswitch) {
+// Tests that background continued processing is disabled by default.
+TEST_F(BackgroundContinuedProcessingFeaturesTest, DefaultDisabled) {
+  EXPECT_FALSE(IsBackgroundContinuedProcessingEnabled());
+}
+
+// Tests that enabling `kEnableBackgroundContinuedProcessing` enables background
+// continued processing on iOS 26+ when built with the buildflag.
+TEST_F(BackgroundContinuedProcessingFeaturesTest, FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kEnableBackgroundContinuedProcessing);
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   if (@available(iOS 26.0, *)) {
     EXPECT_TRUE(IsBackgroundContinuedProcessingEnabled());
   } else {
     EXPECT_FALSE(IsBackgroundContinuedProcessingEnabled());
   }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kEnableBackgroundContinuedProcessing);
-  EXPECT_FALSE(IsBackgroundContinuedProcessingEnabled());
 #else
   EXPECT_FALSE(IsBackgroundContinuedProcessingEnabled());
 #endif

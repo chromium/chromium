@@ -7,7 +7,7 @@
 
 #import "base/feature_list.h"
 
-// Feature flag acting as a killswitch for background continued processing.
+// Feature flag enabling background continued processing.
 BASE_DECLARE_FEATURE(kEnableBackgroundContinuedProcessing);
 
 // Returns true if background continued processing is enabled. Requires iOS 26

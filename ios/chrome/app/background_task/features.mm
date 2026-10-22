@@ -7,7 +7,7 @@
 #import "ios/chrome/app/background_mode_buildflags.h"
 
 BASE_FEATURE(kEnableBackgroundContinuedProcessing,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsBackgroundContinuedProcessingEnabled() {
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)

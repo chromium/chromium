@@ -57,7 +57,6 @@
 #import "ios/chrome/app/background_refresh/discover_feed_provider.h"
 #import "ios/chrome/app/background_refresh/test_refresher.h"
 #import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"
-#import "ios/chrome/app/background_task/features.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/change_profile_animator.h"
 #import "ios/chrome/app/change_profile_commands.h"
@@ -1040,10 +1039,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   [self.appState addAgent:[[CredentialProviderMigratorAppAgent alloc] init]];
 #endif
-  if (IsBackgroundContinuedProcessingEnabled()) {
-    [self.appState
-        addAgent:[[BackgroundContinuedProcessingAppAgent alloc] init]];
-  }
+  [self.appState addAgent:[[BackgroundContinuedProcessingAppAgent alloc] init]];
   [self.appState addAgent:[[DefaultBrowserBannerPromoAppAgent alloc] init]];
 }
 

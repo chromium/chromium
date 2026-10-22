@@ -282,8 +282,7 @@ class ActorTaskTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     // Backgrounding is disabled by default so that general tests do not start
-    // the repeating heartbeat timer. `ActorTaskBackgroundingTest` re-enables
-    // it.
+    // the repeating heartbeat timer. `ActorTaskBackgroundingTest` enables it.
     scoped_feature_list_.InitWithFeatures(
         {kPageActionMenu, kActorTools, kActorOriginGating, kGeminiActor},
         {kEnableBackgroundContinuedProcessing});
@@ -1150,10 +1149,10 @@ TEST_F(ActorTaskTest, KeepRenderProcessAliveFollowsControlState) {
   EXPECT_FALSE(web_state3->keep_render_process_alive());
 }
 
-// Fixture for tests exercising the backgrounding code paths. Re-enables the
-// `kEnableBackgroundContinuedProcessing` killswitch that `ActorTaskTest`
-// disables. Tests are skipped when backgrounding is unavailable in the current
-// configuration (i.e. the `ios_enable_background_continued_processing` GN arg
+// Fixture for tests exercising the backgrounding code paths. Enables
+// `kEnableBackgroundContinuedProcessing`, which `ActorTaskTest` disables. Tests
+// are skipped when backgrounding is unavailable in the current configuration
+// (i.e. the `ios_enable_background_continued_processing` GN arg
 // is false, or the OS is older than iOS 26), since
 // `IsGeminiActorBackgroundingEnabled()` is then always false regardless of the
 // runtime feature state.
@@ -1275,10 +1274,10 @@ TEST_F(ActorTaskTest, BackgroundWorkerReflectsTask) {
   EXPECT_EQ(task_->title(), worker->title());
 }
 
-// Test that when backgrounding is disabled (via the killswitch that
-// `ActorTaskTest` disables, or because it is unavailable in the current
-// configuration), the task ignores background contexts and never sends
-// heartbeat pings.
+// Tests that when backgrounding is disabled (via
+// `kEnableBackgroundContinuedProcessing`, which `ActorTaskTest` disables, or
+// because it is unavailable in the current configuration), the task ignores
+// background contexts and never sends heartbeat pings.
 TEST_F(ActorTaskTest, BackgroundingInertWhenDisabled) {
   ASSERT_FALSE(IsGeminiActorBackgroundingEnabled());
 
@@ -1444,8 +1443,9 @@ TEST_F(ActorTaskBackgroundingTest, HeartbeatPingsReachAllControlledWebStates) {
   EXPECT_EQ(main_frame2->GetJavaScriptCallHistory().size(), 2u);
 }
 
-// Test that no heartbeat pings are sent when the backgrounding feature
-// parameter is disabled, even though the killswitch is enabled.
+// Tests that no heartbeat pings are sent when the backgrounding feature
+// parameter is disabled, even though `kEnableBackgroundContinuedProcessing` is
+// enabled.
 TEST_F(ActorTaskBackgroundingTest,
        HeartbeatPingsDisabledWhenFeatureParamDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
