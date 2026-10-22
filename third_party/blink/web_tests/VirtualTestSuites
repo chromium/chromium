@@ -2414,7 +2414,7 @@
       "external/wpt/html/semantics/menu/tentative/menuitem-activate.html",
       "external/wpt/html/semantics/menu/tentative/menulist-popover-attribute.html",
       "external/wpt/screen-orientation/lock-sandboxed-iframe.html",
-      "external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/carousel-grid-order.html",
+      "external/wpt/shadow-dom/focus-navigation/reading-flow/carousel-grid-order.html",
       "fullscreen/full-screen-placeholder.html",
       "fullscreen/full-screen-render-inline.html",
       "fullscreen/full-screen-zIndex-after.html",

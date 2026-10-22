@@ -313,7 +313,7 @@ external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html
 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-2.html
 external/wpt/shadow-dom/focus-navigation/delegatesFocus-highlight-sibling.html
 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-fallback.html
-external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-with-iframe.html
+external/wpt/shadow-dom/focus-navigation/reading-flow/grid-order-with-iframe.html
 external/wpt/shadow-dom/reference-target/tentative/*
 external/wpt/speech-api/SpeechSynthesisEvent-properties.html
 external/wpt/speech-api/SpeechSynthesis-pause-resume.tentative.html
