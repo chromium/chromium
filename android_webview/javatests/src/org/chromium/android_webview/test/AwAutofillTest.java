@@ -2316,26 +2316,27 @@ public class AwAutofillTest extends AwParameterizedTest {
         HistogramWatcher.Builder histogramWatcherBuilder = HistogramWatcher.newBuilder();
 
         histogramWatcherBuilder
-                .expectBooleanRecord("Autofill.WebView.Funnel.ParsedAsType.Address", true)
+                .expectBooleanRecord("Autofill.WebView.Funnel.ParsedAsType2.Address", true)
                 // Ignore histogram for pages without any forms.
-                .allowExtraRecords("Autofill.WebView.Funnel.ParsedAsType.Address")
+                .allowExtraRecords("Autofill.WebView.Funnel.ParsedAsType2.Address")
                 .expectBooleanRecord(
-                        "Autofill.WebView.Funnel.InteractionAfterParsedAsType.Address", true)
-                .expectBooleanRecord("Autofill.WebView.Funnel.FillAfterInteraction.Address", true)
-                .expectBooleanRecord("Autofill.WebView.Funnel.SubmissionAfterFill.Address", true)
-                .expectBooleanRecord("Autofill.WebView.KeyMetrics.FillingCorrectness.Address", true)
-                .expectBooleanRecord("Autofill.WebView.KeyMetrics.FillingAssistance.Address", true)
+                        "Autofill.WebView.Funnel.InteractionAfterParsedAsType2.Address", true)
+                .expectBooleanRecord("Autofill.WebView.Funnel.FillAfterInteraction2.Address", true)
+                .expectBooleanRecord("Autofill.WebView.Funnel.SubmissionAfterFill2.Address", true)
                 .expectBooleanRecord(
-                        "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled.Address", true);
+                        "Autofill.WebView.KeyMetrics.FillingCorrectness2.Address", true)
+                .expectBooleanRecord("Autofill.WebView.KeyMetrics.FillingAssistance2.Address", true)
+                .expectBooleanRecord(
+                        "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled2.Address", true);
 
         histogramWatcherBuilder
-                .expectBooleanRecord("Autofill.WebView.Funnel.ParsedAsType.CreditCard", true)
+                .expectBooleanRecord("Autofill.WebView.Funnel.ParsedAsType2.CreditCard", true)
                 // Ignore histogram for pages without any forms.
-                .allowExtraRecords("Autofill.WebView.Funnel.ParsedAsType.CreditCard")
+                .allowExtraRecords("Autofill.WebView.Funnel.ParsedAsType2.CreditCard")
                 .expectBooleanRecord(
-                        "Autofill.WebView.Funnel.InteractionAfterParsedAsType.CreditCard", false);
+                        "Autofill.WebView.Funnel.InteractionAfterParsedAsType2.CreditCard", false);
         histogramWatcherBuilder.expectNoRecords(
-                "Autofill.WebView.Funnel.SubmissionAfterFill.CreditCard");
+                "Autofill.WebView.Funnel.SubmissionAfterFill2.CreditCard");
 
         HistogramWatcher histogramWatcher = histogramWatcherBuilder.build();
 
@@ -2358,7 +2359,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 () -> {
                     int numSamples =
                             RecordHistogram.getHistogramValueCountForTesting(
-                                    "Autofill.WebView.Funnel.ParsedAsType.Address",
+                                    "Autofill.WebView.Funnel.ParsedAsType2.Address",
                                     /* sample= */ 1);
                     return numSamples > 0;
                 });

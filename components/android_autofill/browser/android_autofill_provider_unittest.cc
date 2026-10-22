@@ -734,9 +734,9 @@ TEST_F(AndroidAutofillProviderTest,
   Reset(autofill_driver());
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", true, 1);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Address", true, 1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.CreditCard", 0);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.CreditCard", 0);
 }
 
 // Tests that on a login form whose username field is `<input type="email">`,
@@ -782,9 +782,9 @@ TEST_F(AndroidAutofillProviderTest,
   Reset(autofill_driver());
 
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", 0);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Address", 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Password", true, 1);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Password", true, 1);
 }
 
 // Tests that fields whose suggestions and filling are suppressed by default
@@ -818,7 +818,7 @@ TEST_F(AndroidAutofillProviderTest,
                                          AutofillManagerTestApi::pass_key());
   Reset(autofill_driver());
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.Funnel.ParsedAsType.Address", false, 1);
+      "Autofill.WebView.Funnel.ParsedAsType2.Address", false, 1);
 
   // Without the autocomplete attribute, the same fields form an address form.
   FormData control_form = CreateFormDataForFrame(
@@ -827,7 +827,7 @@ TEST_F(AndroidAutofillProviderTest,
                                          AutofillManagerTestApi::pass_key());
   Reset(autofill_driver());
   histogram_tester.ExpectBucketCount(
-      "Autofill.WebView.Funnel.ParsedAsType.Address", true, 1);
+      "Autofill.WebView.Funnel.ParsedAsType2.Address", true, 1);
 }
 
 // Tests that FillOrPreviewForm attributes the fill to all FieldTypeGroups
@@ -873,9 +873,9 @@ TEST_F(AndroidAutofillProviderTest,
   Reset(autofill_driver());
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", true, 1);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Address", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.CreditCard", true, 1);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.CreditCard", true, 1);
 }
 
 // Tests that a postal address form emits both Address and PostalAddress
@@ -907,11 +907,11 @@ TEST_F(AndroidAutofillProviderTest,
   Reset(autofill_driver());
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", true, 1);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Address", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.PostalAddress", true, 1);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.PostalAddress", true, 1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.EmailOnly", 0);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.EmailOnly", 0);
 }
 
 // Tests that an email-only form emits both Address and EmailOnly variants for
@@ -941,11 +941,11 @@ TEST_F(AndroidAutofillProviderTest,
   Reset(autofill_driver());
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", true, 1);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Address", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.EmailOnly", true, 1);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.EmailOnly", true, 1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.PostalAddress", 0);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.PostalAddress", 0);
 }
 
 // Tests that FillingAcceptance is recorded as true when platform Autofill
@@ -1034,15 +1034,15 @@ TEST_F(AndroidAutofillProviderTest,
   Reset(autofill_driver());
 
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.Funnel.ParsedAsType.Address", 0);
+      "Autofill.WebView.Funnel.ParsedAsType2.Address", 0);
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.Funnel.InteractionAfterParsedAsType.Address", 0);
+      "Autofill.WebView.Funnel.InteractionAfterParsedAsType2.Address", 0);
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.Funnel.FillAfterInteraction.Address", 0);
+      "Autofill.WebView.Funnel.FillAfterInteraction2.Address", 0);
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", 0);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Address", 0);
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled.Address", 0);
+      "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled2.Address", 0);
 }
 
 // Tests that a form submission of an ongoing Autofill session with source
@@ -1071,7 +1071,7 @@ TEST_F(AndroidAutofillProviderTest,
   Reset(autofill_driver());
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Password", false, 1);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Password", false, 1);
 }
 
 // Tests that a form submission of an ongoing Autofill session with source
@@ -1100,7 +1100,7 @@ TEST_F(AndroidAutofillProviderTest,
   Reset(autofill_driver());
 
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", 0);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Address", 0);
 }
 
 // Tests that a form submission with source DOM_MUTATION_AFTER_AUTOFILL is
@@ -1131,7 +1131,7 @@ TEST_F(AndroidAutofillProviderTest,
   Reset(autofill_driver());
 
   histogram_tester.ExpectTotalCount(
-      "Autofill.WebView.KeyMetrics.FillingAssistance.Password", 0);
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Password", 0);
 }
 
 // Tests that a form submission of an ongoing Autofill session is propagated to

@@ -54,58 +54,59 @@ TEST_P(AndroidFormEventLoggerFunnelTest, LogFunnelAndKeyMetrics) {
 
   // Phase 2: Check which metrics where recorded.
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.WebView.Funnel.ParsedAsType.FormType"),
+                  "Autofill.WebView.Funnel.ParsedAsType2.FormType"),
               BucketsAre(base::Bucket(parsed_form, 1)));
 
   if (parsed_form) {
     EXPECT_THAT(
         histogram_tester.GetAllSamples(
-            "Autofill.WebView.Funnel.InteractionAfterParsedAsType.FormType"),
+            "Autofill.WebView.Funnel.InteractionAfterParsedAsType2.FormType"),
         BucketsAre(base::Bucket(user_interacted_with_form, 1)));
   } else {
     histogram_tester.ExpectTotalCount(
-        "Autofill.WebView.Funnel.InteractionAfterParsedAsType.FormType", 0u);
+        "Autofill.WebView.Funnel.InteractionAfterParsedAsType2.FormType", 0u);
   }
 
   if (user_interacted_with_form) {
     EXPECT_THAT(histogram_tester.GetAllSamples(
-                    "Autofill.WebView.Funnel.FillAfterInteraction.FormType"),
+                    "Autofill.WebView.Funnel.FillAfterInteraction2.FormType"),
                 BucketsAre(base::Bucket(user_accepted_suggestion, 1)));
   } else {
     histogram_tester.ExpectTotalCount(
-        "Autofill.Funnel.FillAfterInteraction.FormType", 0u);
+        "Autofill.WebView.Funnel.FillAfterInteraction2.FormType", 0u);
   }
 
   if (user_submitted_form) {
     // `user_submitted_form` == true && `user_accepted_suggestion` == false
     // is tested in a different test.
     EXPECT_THAT(histogram_tester.GetAllSamples(
-                    "Autofill.WebView.KeyMetrics.FillingAssistance.FormType"),
+                    "Autofill.WebView.KeyMetrics.FillingAssistance2.FormType"),
                 BucketsAre(base::Bucket(user_accepted_suggestion, 1)));
 
     // A different test tests the user editing an autofilled field.
     EXPECT_THAT(histogram_tester.GetAllSamples(
-                    "Autofill.WebView.KeyMetrics.FillingCorrectness.FormType"),
+                    "Autofill.WebView.KeyMetrics.FillingCorrectness2.FormType"),
                 BucketsAre(base::Bucket(true, 1)));
 
     EXPECT_THAT(
         histogram_tester.GetAllSamples(
-            "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled.FormType"),
+            "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled2.FormType"),
         BucketsAre(base::Bucket(true, 1)));
   } else {
     histogram_tester.ExpectTotalCount(
-        "Autofill.WebView.KeyMetrics.FillingAssistance.FormType", 0u);
+        "Autofill.WebView.KeyMetrics.FillingAssistance2.FormType", 0u);
     histogram_tester.ExpectTotalCount(
-        "Autofill.WebView.KeyMetrics.FillingCorrectness.FormType", 0u);
+        "Autofill.WebView.KeyMetrics.FillingCorrectness2.FormType", 0u);
 
     if (user_accepted_suggestion) {
       EXPECT_THAT(
-          histogram_tester.GetAllSamples(
-              "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled.FormType"),
+          histogram_tester.GetAllSamples("Autofill.WebView.KeyMetrics."
+                                         "FormSubmission.Autofilled2.FormType"),
           BucketsAre(base::Bucket(false, 1)));
     } else {
       histogram_tester.ExpectTotalCount(
-          "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled.FormType", 0u);
+          "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled2.FormType",
+          0u);
     }
   }
 }
@@ -127,7 +128,7 @@ TEST_F(AndroidFormEventLoggerTest, FillingCorrectnessEditedAutofilledField) {
   }
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.WebView.KeyMetrics.FillingCorrectness.FormType"),
+                  "Autofill.WebView.KeyMetrics.FillingCorrectness2.FormType"),
               BucketsAre(base::Bucket(false, 1)));
 }
 
@@ -148,7 +149,7 @@ TEST_F(AndroidFormEventLoggerTest,
   }
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.WebView.KeyMetrics.FillingAssistance.FormType"),
+                  "Autofill.WebView.KeyMetrics.FillingAssistance2.FormType"),
               BucketsAre(base::Bucket(false, 1)));
   histogram_tester.ExpectTotalCount(
       "Autofill.WebView.KeyMetrics.FillingAcceptance.FormType", 0u);
@@ -210,7 +211,7 @@ TEST_F(AndroidFormEventLoggerTest, FormSubmissionManualFill) {
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled.FormType"),
+          "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled2.FormType"),
       BucketsAre(base::Bucket(true, 1)));
 }
 
@@ -231,7 +232,7 @@ TEST_F(AndroidFormEventLoggerTest, FilledFormNavigatedAway) {
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled.FormType"),
+          "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled2.FormType"),
       BucketsAre(base::Bucket(false, 1)));
 }
 

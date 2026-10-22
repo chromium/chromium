@@ -57,24 +57,25 @@ void AndroidFormEventLogger::OnEditedAutofilledField() {
 }
 
 void AndroidFormEventLogger::RecordFunnelAndKeyMetrics() {
-  UmaHistogramBoolean("Autofill.WebView.Funnel.ParsedAsType." + form_type_name_,
-                      has_parsed_form_);
+  UmaHistogramBoolean(
+      "Autofill.WebView.Funnel.ParsedAsType2." + form_type_name_,
+      has_parsed_form_);
   // Log chronological funnel.
   if (!has_parsed_form_) {
     return;
   }
 
-  UmaHistogramBoolean(
-      "Autofill.WebView.Funnel.InteractionAfterParsedAsType." + form_type_name_,
-      has_logged_interacted_);
+  UmaHistogramBoolean("Autofill.WebView.Funnel.InteractionAfterParsedAsType2." +
+                          form_type_name_,
+                      has_logged_interacted_);
   if (has_logged_interacted_) {
     UmaHistogramBoolean(
-        "Autofill.WebView.Funnel.FillAfterInteraction." + form_type_name_,
+        "Autofill.WebView.Funnel.FillAfterInteraction2." + form_type_name_,
         has_logged_suggestion_filled_);
   }
   if (has_logged_interacted_ && has_logged_suggestion_filled_) {
     UmaHistogramBoolean(
-        "Autofill.WebView.Funnel.SubmissionAfterFill." + form_type_name_,
+        "Autofill.WebView.Funnel.SubmissionAfterFill2." + form_type_name_,
         has_logged_will_submit_);
   }
   // Log key success metrics, always preconditioned on a form submission (except
@@ -91,22 +92,22 @@ void AndroidFormEventLogger::RecordFunnelAndKeyMetrics() {
       // Whether a filled form and submitted form required no fixes to filled
       // fields.
       UmaHistogramBoolean(
-          "Autofill.WebView.KeyMetrics.FillingCorrectness." + form_type_name_,
+          "Autofill.WebView.KeyMetrics.FillingCorrectness2." + form_type_name_,
           !has_logged_edited_autofilled_field_);
     }
     // Whether a submitted form was filled.
     UmaHistogramBoolean(
-        "Autofill.WebView.KeyMetrics.FillingAssistance." + form_type_name_,
+        "Autofill.WebView.KeyMetrics.FillingAssistance2." + form_type_name_,
         has_logged_suggestion_filled_);
   }
   if (has_logged_typed_into_non_filled_field_ ||
       has_logged_suggestion_filled_) {
     // Whether a (non-)autofilled form was submitted.
     UmaHistogramBoolean(
-        base::StrCat(
-            {"Autofill.WebView.KeyMetrics.FormSubmission.",
-             (has_logged_suggestion_filled_ ? "Autofilled." : "NotAutofilled."),
-             form_type_name_}),
+        base::StrCat({"Autofill.WebView.KeyMetrics.FormSubmission.",
+                      (has_logged_suggestion_filled_ ? "Autofilled2."
+                                                     : "NotAutofilled2."),
+                      form_type_name_}),
         has_logged_will_submit_);
   }
 }
