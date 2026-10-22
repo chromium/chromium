@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
@@ -299,15 +300,21 @@ class ExtensionTabsTest : public ExtensionApiTest {
   }
 
   // Moves the tab `tab_id` with `move_properties` and returns the moved tab.
+  // If `caller` is set, the call comes from that window.
   base::DictValue RunMoveFunction(const Extension* extension,
                                   int tab_id,
-                                  const std::string& move_properties) {
+                                  const std::string& move_properties,
+                                  BrowserWindowInterface* caller = nullptr) {
     auto function = base::MakeRefCounted<TabsMoveFunction>();
     function->set_extension(extension);
+    const std::string args =
+        base::StringPrintf("[%d, %s]", tab_id, move_properties.c_str());
+    if (caller) {
+      return utils::ToDict(RunFunctionWithDispatcherDelegateAndReturnValue(
+          function, args, caller));
+    }
     return utils::ToDict(utils::RunFunctionAndReturnSingleResult(
-        function.get(),
-        base::StringPrintf("[%d, %s]", tab_id, move_properties.c_str()),
-        profile()));
+        function.get(), args, profile()));
   }
 };
 
@@ -3864,15 +3871,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveOnlyTabToCurrentWindow) {
   ASSERT_EQ(1, tab_list->GetTabCount());
   content::WebContents* contents = tab_list->GetTab(0)->GetContents();
 
-  auto function = base::MakeRefCounted<TabsMoveFunction>();
-  function->set_extension(extension.get());
   base::DictValue tab =
-      utils::ToDict(RunFunctionWithDispatcherDelegateAndReturnValue(
-          function,
-          base::StringPrintf(R"([%d, {"windowId": %d, "index": 0}])",
-                             ExtensionTabUtil::GetTabId(contents),
-                             api::windows::WINDOW_ID_CURRENT),
-          window));
+      RunMoveFunction(extension.get(), ExtensionTabUtil::GetTabId(contents),
+                      base::StringPrintf(R"({"windowId": %d, "index": 0})",
+                                         api::windows::WINDOW_ID_CURRENT),
+                      window);
 
   EXPECT_EQ(ExtensionTabUtil::GetWindowId(window),
             utils::GetInteger(tab, "windowId"));
@@ -4058,6 +4061,36 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMovePinnedBoundaryAcrossWindows) {
   EXPECT_FALSE(utils::GetBoolean(tab, "pinned"));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Tests that WINDOW_ID_CURRENT resolves to the calling extension's window, not
+// to whichever window the OS last activated.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveToCurrentWindow) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveToCurrentWindowTest").Build();
+  BrowserWindowInterface* window_1 = browser_window_interface();
+  BrowserWindowInterface* window_2 =
+      CreateBrowserWindowWithType(BrowserWindowInterface::Type::TYPE_NORMAL);
+  CreateAndGetTabData(TabListInterface::From(window_1), 2);
+  CreateAndGetTabData(TabListInterface::From(window_2), 2);
+
+  // Call from each window in turn, so that one of the calls fails if
+  // WINDOW_ID_CURRENT resolves to the last active window instead.
+  for (auto [current, other] :
+       {std::pair(window_1, window_2), std::pair(window_2, window_1)}) {
+    content::WebContents* contents =
+        TabListInterface::From(other)->GetTab(0)->GetContents();
+    base::DictValue tab =
+        RunMoveFunction(extension.get(), ExtensionTabUtil::GetTabId(contents),
+                        base::StringPrintf(R"({"windowId": %d, "index": 0})",
+                                           api::windows::WINDOW_ID_CURRENT),
+                        current);
+
+    EXPECT_EQ(ExtensionTabUtil::GetWindowId(current),
+              utils::GetInteger(tab, "windowId"));
+    EXPECT_EQ(contents,
+              TabListInterface::From(current)->GetTab(0)->GetContents());
+  }
+}
 
 // Tests that saved tabs in a group can be moved.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveSavedTabGroupTabAllowed) {

@@ -163,22 +163,5 @@ loadScript.then(async function() {
     function moveNonExistentTab() {
       chrome.tabs.move(999999, {index: 0}, fail('No tab with id: 999999.'));
     },
-
-    // Move a tab to the current window.
-    function moveToCurrentWindow() {
-      chrome.windows.getCurrent(pass(function(win) {
-        const targetWin =
-            win.id === firstWindowId ? secondWindowId : firstWindowId;
-        chrome.tabs.query(
-            {windowId: targetWin}, pass(function(tabs) {
-              chrome.tabs.move(
-                  tabs[0].id,
-                  {windowId: chrome.windows.WINDOW_ID_CURRENT, index: 0},
-                  pass(function(tab) {
-                    assertEq(win.id, tab.windowId);
-                  }));
-            }));
-      }));
-    },
   ]);
 });
