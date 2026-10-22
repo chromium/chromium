@@ -63,7 +63,6 @@ void OfferNotificationBubbleViews::Init() {
     case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
       InitWithWalletDirectOfferContent();
       return;
-    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }

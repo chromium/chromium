@@ -81,7 +81,6 @@ std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
   switch (offer_.GetOfferType()) {
     case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
       return base::UTF8ToUTF16(offer_.GetOfferRewardAmount());
-    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
