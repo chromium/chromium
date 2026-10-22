@@ -278,6 +278,10 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   }
 
   // Remove reference to previous image (if any).
+  if (swap_chain_info.shared_buffer_texture.id != 0) {
+    glDeleteTextures(1, &swap_chain_info.shared_buffer_texture.id);
+    swap_chain_info.shared_buffer_texture.id = 0;
+  }
   swap_chain_info.local_eglimage.reset();
 
   static constexpr viz::SharedImageFormat format =
