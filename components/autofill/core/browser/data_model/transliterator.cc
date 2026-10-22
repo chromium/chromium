@@ -59,9 +59,9 @@ std::unique_ptr<base::i18n::Transliterator> CreateTransliterator(
   // follows DIN 5007-2 ("ö" becomes "oe"). Here we map everything to lower case
   // because that happens with "::Lower" anyway.
   constexpr std::string_view kGermanRules =
-      "[ö {o \u0308} Ö {O \u0308}] → oe;"
-      "[ä {a \u0308} Ä {A \u0308}] → ae;"
-      "[ü {u \u0308} Ü {U \u0308}] → ue;";
+      "[ö {o\u0308} Ö {O\u0308}] → oe;"
+      "[ä {a\u0308} Ä {A\u0308}] → ae;"
+      "[ü {u\u0308} Ü {U\u0308}] → ue;";
 
   // The following rules are happening in the following order:
   // First there are `TransliterationId::kGerman` specific rules if they are
