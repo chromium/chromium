@@ -152,7 +152,9 @@ public class MultiWindowAppMenuTest {
         ChromeFeatureList.SUBMENUS_IN_APP_MENU,
         ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS
     })
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM)
+    // TODO(crbug.com/576392759): Re-enable on tablets once SoftKeyboardCondition detects the
+    // soft keyboard in split-screen.
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testAddToGroup_showsGroupsFromOtherWindow() {
         WebPageStation page1InFirstWindow = mCtaTestRule.startOnBlankPage();
         RegularNewTabPageStation pageInSecondWindow =
