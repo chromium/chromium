@@ -1123,25 +1123,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupFullWebUIBrowserTest,
   EXPECT_EQ(state_manager->popup_state(), OmniboxPopupState::kNone);
 }
 
-// Tests the AIM popup without `omnibox::kOmniboxAimPopupDeferCreation`, the
-// feature's default state. Browser tests apply
-// testing/variations/fieldtrial_testing_config.json, whose
-// WebUIReloadButtonStudy entry enables the feature, so a test of the default
-// path has to disable it explicitly rather than rely on the default.
-class OmniboxAimPopupNoDeferCreationBrowserTest
-    : public OmniboxAimPopupBrowserTest {
- public:
-  OmniboxAimPopupNoDeferCreationBrowserTest() {
-    feature_list_.InitAndDisableFeature(omnibox::kOmniboxAimPopupDeferCreation);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Without `omnibox::kOmniboxAimPopupDeferCreation`, a new window's AIM popup
 // creates its content with the presenter, before the window is shown.
-IN_PROC_BROWSER_TEST_F(OmniboxAimPopupNoDeferCreationBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
                        CreatesContentWithPresenterWithoutDeferCreation) {
   ASSERT_FALSE(
       base::FeatureList::IsEnabled(omnibox::kOmniboxAimPopupDeferCreation));
