@@ -281,8 +281,8 @@ void ReminderNotificationClient::ScheduleNewRemindersIfNeeded(
   }
 
   PrefService* prefs = current_profile->GetPrefs();
-  const base::DictValue& reminders_in_prefs =
-      prefs->GetDict(prefs::kReminderNotifications);
+  const base::DictValue reminders_in_prefs =
+      prefs->GetDict(prefs::kReminderNotifications).Clone();
   if (reminders_in_prefs.empty()) {
     return;
   }

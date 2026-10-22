@@ -195,7 +195,7 @@ TEST_F(ReminderNotificationClientTest, OneReminderInPrefs) {
 }
 
 // Test scheduling multiple notifications from prefs.
-TEST_F(ReminderNotificationClientTest, DISABLED_MultipleRemindersInPrefs) {
+TEST_F(ReminderNotificationClientTest, MultipleRemindersInPrefs) {
   SetupMockNotificationCenter();
   SetReminderPermission(true);
   GURL url1("http://example.com/page1");
@@ -316,7 +316,7 @@ TEST_F(ReminderNotificationClientTest, OneReminderInPrefsHasPrefRemoved) {
 
 // Test scheduling multiple notifications from Prefs and verifies Prefs removal.
 TEST_F(ReminderNotificationClientTest,
-       DISABLED_MultipleRemindersInPrefsHavePrefsRemoved) {
+       MultipleRemindersInPrefsHavePrefsRemoved) {
   SetupMockNotificationCenter();
   SetReminderPermission(true);
   GURL url1("http://example.com/page1");
