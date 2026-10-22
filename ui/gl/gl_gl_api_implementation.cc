@@ -239,29 +239,53 @@ void RealGLApi::Initialize(DriverGL* driver) {
 }
 
 void RealGLApi::glGetIntegervFn(GLenum pname, GLint* params) {
-  if (pname == GL_NUM_EXTENSIONS && disabled_exts_.size()) {
-    InitializeFilteredExtensionsIfNeeded();
-    *params = static_cast<GLint>(filtered_exts_.size());
-  } else {
-    GLApiBase::glGetIntegervFn(pname, params);
+  if (disabled_exts_.size()) {
+    if (pname == GL_NUM_EXTENSIONS) {
+      InitializeFilteredExtensionsIfNeeded();
+      *params = static_cast<GLint>(filtered_exts_.size());
+      return;
+    }
+    if (pname == GL_NUM_REQUESTABLE_EXTENSIONS_ANGLE) {
+      InitializeFilteredRequestableExtensionsIfNeeded();
+      *params = static_cast<GLint>(filtered_requestable_exts_.size());
+      return;
+    }
   }
+  GLApiBase::glGetIntegervFn(pname, params);
 }
 
 const GLubyte* RealGLApi::glGetStringFn(GLenum name) {
-  if (name == GL_EXTENSIONS && disabled_exts_.size()) {
-    InitializeFilteredExtensionsIfNeeded();
-    return reinterpret_cast<const GLubyte*>(filtered_exts_str_.c_str());
+  if (disabled_exts_.size()) {
+    if (name == GL_EXTENSIONS) {
+      InitializeFilteredExtensionsIfNeeded();
+      return reinterpret_cast<const GLubyte*>(filtered_exts_str_.c_str());
+    }
+    if (name == GL_REQUESTABLE_EXTENSIONS_ANGLE) {
+      InitializeFilteredRequestableExtensionsIfNeeded();
+      return reinterpret_cast<const GLubyte*>(
+          filtered_requestable_exts_str_.c_str());
+    }
   }
   return GLApiBase::glGetStringFn(name);
 }
 
 const GLubyte* RealGLApi::glGetStringiFn(GLenum name, GLuint index) {
-  if (name == GL_EXTENSIONS && disabled_exts_.size()) {
-    InitializeFilteredExtensionsIfNeeded();
-    if (index >= filtered_exts_.size()) {
-      return nullptr;
+  if (disabled_exts_.size()) {
+    if (name == GL_EXTENSIONS) {
+      InitializeFilteredExtensionsIfNeeded();
+      if (index >= filtered_exts_.size()) {
+        return nullptr;
+      }
+      return reinterpret_cast<const GLubyte*>(filtered_exts_[index].c_str());
     }
-    return reinterpret_cast<const GLubyte*>(filtered_exts_[index].c_str());
+    if (name == GL_REQUESTABLE_EXTENSIONS_ANGLE) {
+      InitializeFilteredRequestableExtensionsIfNeeded();
+      if (index >= filtered_requestable_exts_.size()) {
+        return nullptr;
+      }
+      return reinterpret_cast<const GLubyte*>(
+          filtered_requestable_exts_[index].c_str());
+    }
   }
   return GLApiBase::glGetStringiFn(name, index);
 }
@@ -475,6 +499,21 @@ void RealGLApi::InitializeFilteredExtensionsIfNeeded() {
       filtered_exts_str_, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 }
 
+void RealGLApi::InitializeFilteredRequestableExtensionsIfNeeded() {
+  DCHECK(disabled_exts_.size());
+  if (filtered_requestable_exts_.size()) {
+    return;
+  }
+  DCHECK(filtered_requestable_exts_str_.empty());
+  filtered_requestable_exts_str_ = FilterGLExtensionList(
+      reinterpret_cast<const char*>(
+          GLApiBase::glGetStringFn(GL_REQUESTABLE_EXTENSIONS_ANGLE)),
+      disabled_exts_);
+  filtered_requestable_exts_ =
+      base::SplitString(filtered_requestable_exts_str_, " ",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+}
+
 void RealGLApi::SetDisabledExtensions(const std::string& disabled_extensions) {
   ClearCachedGLExtensions();
   disabled_exts_.clear();
@@ -489,6 +528,8 @@ void RealGLApi::SetDisabledExtensions(const std::string& disabled_extensions) {
 void RealGLApi::ClearCachedGLExtensions() {
   filtered_exts_.clear();
   filtered_exts_str_.clear();
+  filtered_requestable_exts_.clear();
+  filtered_requestable_exts_str_.clear();
 }
 
 void RealGLApi::set_version(std::unique_ptr<GLVersionInfo> version) {

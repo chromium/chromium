@@ -146,12 +146,18 @@ class GL_EXPORT RealGLApi : public GLApiBase {
  private:
   // Compute |filtered_exts_| & |filtered_exts_str_| from |disabled_ext_|.
   void InitializeFilteredExtensionsIfNeeded();
+  // Compute |filtered_requestable_exts_| & |filtered_requestable_exts_str_|
+  // from |disabled_exts_|.
+  void InitializeFilteredRequestableExtensionsIfNeeded();
 
   const bool logging_enabled_;
   std::vector<std::string> disabled_exts_;
   // Filtered GL_EXTENSIONS we return to glGetString(i) calls.
   std::vector<std::string> filtered_exts_;
   std::string filtered_exts_str_;
+  // Filtered GL_REQUESTABLE_EXTENSIONS_ANGLE we return to glGetString(i) calls.
+  std::vector<std::string> filtered_requestable_exts_;
+  std::string filtered_requestable_exts_str_;
 
   std::unique_ptr<GLVersionInfo> version_;
 };
