@@ -4200,6 +4200,8 @@ void RenderFrameImpl::DidCommitNavigation(
 
 void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
     blink::WebDocumentLoader* document_loader) {
+  GetFrameHost()->DidCommitDocumentReplacement();
+
   // TODO(crbug.com/40581836): figure out which of the following observer
   // calls are necessary, if any.
   for (auto& observer : observers_) {

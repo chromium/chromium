@@ -182,6 +182,8 @@ class MockFrameHost : public mojom::FrameHost {
 
   void DidOpenDocumentInputStream(const GURL& url) override {}
 
+  void DidCommitDocumentReplacement() override {}
+
   void BeginNavigation(
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::BeginNavigationParamsPtr begin_params,

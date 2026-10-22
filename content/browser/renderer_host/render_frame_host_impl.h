@@ -3527,6 +3527,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params)
       override;
   void DidOpenDocumentInputStream(const GURL& url) override;
+  void DidCommitDocumentReplacement() override;
   // |initiator_navigation_state_keep_alive_handle| is needed to ensure that the
   // NavigationStateKeepAlive of the initiator RenderFrameHost can still be
   // retrieved even if the RenderFrameHost has been deleted.

@@ -137,6 +137,7 @@
 #include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/renderer_host/mixed_content_checker.h"
+#include "content/browser/renderer_host/model_context_user_data.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_metrics_utils.h"
@@ -6846,6 +6847,24 @@ void RenderFrameHostImpl::DidOpenDocumentInputStream(const GURL& url) {
   // renderer in pending deletion state.
   if (owner_) {
     owner_->DidOpenDocumentInputStream();
+  }
+}
+
+void RenderFrameHostImpl::DidCommitDocumentReplacement() {
+  // The renderer replaced its Document, so drop the replaced Document's
+  // ModelContextUserData.
+  // TODO(crbug.com/576419973): Do this for all Document scoped user data.
+  //
+  // The new Document binds `ModelContextHost` through the frame's
+  // BrowserInterfaceBroker, which isn't ordered with navigation IPCs. When a
+  // commit replaces the window, the renderer creates a new broker whose
+  // messages are only processed after the commit IPC. But a document
+  // replacement reuses the broker, so the bind can race this IPC, as it does
+  // for a commit that reuses the initial empty Document's window.
+  // TODO(crbug.com/576011705): Order the bind after the IPC that replaces its
+  // Document.
+  if (ModelContextUserData::GetForCurrentDocument(this)) {
+    ModelContextUserData::DeleteForCurrentDocument(this);
   }
 }
 
