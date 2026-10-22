@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/contextual_tasks_tab_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -26,6 +28,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
@@ -574,4 +577,85 @@ TEST_F(TabMenuModelTest, AiModeShareHiddenWhenPolicyDisabledOrOffTheRecord) {
                          &otr_tab_strip_model, 0);
   EXPECT_FALSE(otr_model.GetIndexOfCommandId(TabStripModel::CommandAiModeShare)
                    .has_value());
+}
+
+TEST_F(TabMenuModelTest, AiModeShareSubMenuRecentThreads) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasks,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility,
+       contextual_tasks::kContextualTasksSidePanelRearchitecture},
+      {});
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(), base::BindOnce([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+        return std::make_unique<extensions::MenuManager>(context, nullptr);
+      }));
+#endif
+
+  ui::UnownedUserDataHost host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(host));
+  contextual_tasks::MockContextualTasksPanelController mock_panel_controller(
+      &mock_browser_window);
+
+  base::Uuid thread_id = base::Uuid::GenerateRandomV4();
+  std::vector<
+      contextual_tasks::ContextualTasksPanelController::RecentThreadInfo>
+      recent_threads = {
+          {thread_id, u"Recent Thread 1"},
+      };
+  ON_CALL(mock_panel_controller, GetRecentThreads())
+      .WillByDefault(testing::Return(recent_threads));
+
+  TestTabStripModelDelegate delegate;
+  delegate.SetBrowserWindowInterface(&mock_browser_window);
+  TabStripModel tab_strip_model(&delegate, profile());
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+  tab_strip_model.AppendWebContents(std::move(web_contents), true);
+
+  TabMenuModel model(&delegate_, &menu_model_delegate(), &tab_strip_model, 0);
+  std::optional<size_t> share_index =
+      model.GetIndexOfCommandId(TabStripModel::CommandAiModeShare);
+  ASSERT_TRUE(share_index.has_value());
+
+  ui::MenuModel* submenu = model.GetSubmenuModelAt(*share_index);
+  ASSERT_TRUE(submenu);
+  ASSERT_EQ(submenu->GetItemCount(), 3u);
+  EXPECT_EQ(submenu->GetCommandIdAt(0),
+            TabStripModel::CommandAiModeCreateNewThread);
+  EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(submenu->GetCommandIdAt(2),
+            contextual_tasks::ContextualTasksTabSubMenuModel::
+                kMinRecentThreadCommandId);
+  EXPECT_EQ(submenu->GetLabelAt(2), u"Recent Thread 1");
+  EXPECT_TRUE(submenu->IsEnabledAt(2));
+
+  // Verify root menu tree command ID dispatch resolves to the AI Mode submenu.
+  ui::MenuModel* resolved_model = &model;
+  size_t resolved_index = 0;
+  ASSERT_TRUE(ui::MenuModel::GetModelAndIndexForCommandId(
+      contextual_tasks::ContextualTasksTabSubMenuModel::
+          kMinRecentThreadCommandId,
+      &resolved_model, &resolved_index));
+  EXPECT_EQ(resolved_model, submenu);
+  EXPECT_EQ(resolved_index, 2u);
+
+  EXPECT_CALL(
+      mock_panel_controller,
+      ShareTabsWithExistingThread(
+          thread_id,
+          testing::ElementsAre(tab_strip_model.GetTabAtIndex(0)->GetHandle()),
+          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT))
+      .Times(1);
+  resolved_model->ActivatedAt(resolved_index);
+
+  tab_strip_model.CloseAllTabs();
+  delegate.SetBrowserWindowInterface(nullptr);
 }

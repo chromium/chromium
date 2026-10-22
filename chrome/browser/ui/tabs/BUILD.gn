@@ -123,6 +123,7 @@ if (!is_android) {
 
     public_deps = [
       "//base",
+      "//chrome/browser/contextual_tasks",
       "//chrome/browser/glic",
       "//components/tabs:public",
       "//ui/base/interaction",
@@ -197,6 +198,7 @@ if (!is_android) {
       "//components/contextual_tasks/public",
       "//components/contextual_tasks/public:feature_list",
       "//components/feed:feature_list",
+      "//third_party/omnibox_proto",
     ]
   }
 
@@ -1131,6 +1133,7 @@ if (!is_android) {
       "//skia",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/omnibox_proto",
       "//ui/base",
       "//ui/gfx",
       "//ui/views",

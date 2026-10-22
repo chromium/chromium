@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -20,6 +21,10 @@ namespace contextual_tasks {
 class ContextualTasksTabSubMenuModel : public ui::SimpleMenuModel,
                                        public ui::SimpleMenuModel::Delegate {
  public:
+  // Command IDs for recent threads.
+  static constexpr int kMinRecentThreadCommandId = 2101;
+  static constexpr int kMaxRecentThreadCommandId = 2105;
+
   ContextualTasksTabSubMenuModel(TabStripModel* tab_strip_model,
                                  int context_index);
   ContextualTasksTabSubMenuModel(const ContextualTasksTabSubMenuModel&) =
@@ -38,6 +43,7 @@ class ContextualTasksTabSubMenuModel : public ui::SimpleMenuModel,
 
   const raw_ptr<TabStripModel> tab_strip_model_;
   const int context_index_;
+  std::vector<ContextualTasksPanelController::RecentThreadInfo> recent_threads_;
 };
 
 }  // namespace contextual_tasks
