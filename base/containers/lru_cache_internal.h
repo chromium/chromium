@@ -11,15 +11,21 @@
 #include <atomic>
 #include <concepts>
 #include <list>
+#include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/base_export.h"
 #include "base/check.h"
+#include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory_coordinator/async_memory_consumer_registration.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
-#include "base/memory_coordinator/traits.h"
+#include "base/memory_coordinator/memory_limit.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 namespace trace_event::internal {
@@ -43,9 +49,30 @@ inline bool IsLRUCacheMemoryConsumerEnabled() {
          base::FeatureList::IsEnabled(kLRUCacheMemoryConsumer);
 }
 
+// Encapsulates the PassiveMemoryConsumer and its registration on the heap so
+// that it remains bound to the sequence where it was created even if the
+// owning LRUCacheBase is moved, accessed, or destroyed on another sequence.
+class BASE_EXPORT MemoryConsumerImpl : public PassiveMemoryConsumer {
+ public:
+  MemoryConsumerImpl();
+  ~MemoryConsumerImpl() override;
+
+  MemoryLimit current_memory_limit() const {
+    return current_memory_limit_.load(std::memory_order_relaxed);
+  }
+
+ protected:
+  // PassiveMemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+
+ private:
+  std::atomic<MemoryLimit> current_memory_limit_{MemoryLimit::Default()};
+  AsyncMemoryConsumerRegistration registration_;
+};
+
 // Base class for the LRU cache specializations defined below.
 template <class ValueType, class GetKeyFromValue, class KeyIndexTemplate>
-class LRUCacheBase : public PassiveMemoryConsumer {
+class LRUCacheBase {
  public:
   // The contents of the list. This must contain a copy of the key (that may be
   // extracted via `GetKeyFromValue()(value)` so we can efficiently delete
@@ -86,36 +113,30 @@ class LRUCacheBase : public PassiveMemoryConsumer {
         index_(std::move(other.index_)),
         baseline_max_size_(
             std::exchange(other.baseline_max_size_, std::nullopt)),
-        current_memory_limit_(
-            other.current_memory_limit_.load(std::memory_order_relaxed)) {
-    other.registration_.reset();
-    MaybeCreateOrRemoveRegistration();
-  }
+        consumer_(std::move(other.consumer_)),
+        consumer_task_runner_(std::move(other.consumer_task_runner_)) {}
 
   LRUCacheBase& operator=(LRUCacheBase&& other) noexcept {
     if (this != &other) {
+      ResetRegistration();
       ordering_ = std::move(other.ordering_);
       index_ = std::move(other.index_);
       baseline_max_size_ =
           std::exchange(other.baseline_max_size_, std::nullopt);
-      current_memory_limit_.store(
-          other.current_memory_limit_.load(std::memory_order_relaxed),
-          std::memory_order_relaxed);
-      other.registration_.reset();
-      registration_.reset();
-      MaybeCreateOrRemoveRegistration();
+      consumer_ = std::move(other.consumer_);
+      consumer_task_runner_ = std::move(other.consumer_task_runner_);
     }
     return *this;
   }
 
-  ~LRUCacheBase() override = default;
+  ~LRUCacheBase() { ResetRegistration(); }
 
   // Returns the maximum size of the cache. Valid to call only if there is a max
   // size (NO_AUTO_EVICT was *not* used).
   size_type max_size() const {
     CHECK(baseline_max_size_.has_value());
 
-    if (!registration_ || baseline_max_size_.value() == 0) {
+    if (!consumer_ || baseline_max_size_.value() == 0) {
       return baseline_max_size_.value();
     }
 
@@ -125,8 +146,7 @@ class LRUCacheBase : public PassiveMemoryConsumer {
     // MemoryCoordinator is >= 1, but we still need to honor a caller-passed max
     // size of 0.
     return std::max<size_type>(
-        1, current_memory_limit_.load(std::memory_order_relaxed)
-               .Scale(baseline_max_size_.value()));
+        1, consumer_->current_memory_limit().Scale(baseline_max_size_.value()));
   }
 
   void UpdateMaxSize(size_type new_max_size) {
@@ -220,14 +240,8 @@ class LRUCacheBase : public PassiveMemoryConsumer {
     ordering_.swap(other.ordering_);
     index_.swap(other.index_);
     std::swap(baseline_max_size_, other.baseline_max_size_);
-    MemoryLimit this_limit =
-        current_memory_limit_.load(std::memory_order_relaxed);
-    MemoryLimit other_limit =
-        other.current_memory_limit_.load(std::memory_order_relaxed);
-    current_memory_limit_.store(other_limit, std::memory_order_relaxed);
-    other.current_memory_limit_.store(this_limit, std::memory_order_relaxed);
-    MaybeCreateOrRemoveRegistration();
-    other.MaybeCreateOrRemoveRegistration();
+    std::swap(consumer_, other.consumer_);
+    std::swap(consumer_task_runner_, other.consumer_task_runner_);
   }
 
   // Erases the item referenced by the given iterator. An iterator to the item
@@ -309,30 +323,38 @@ class LRUCacheBase : public PassiveMemoryConsumer {
 
   bool empty() const { return ordering_.empty(); }
 
- protected:
-  // PassiveMemoryConsumer:
-  void OnUpdateMemoryLimit() override {
-    current_memory_limit_.store(memory_limit(), std::memory_order_relaxed);
-  }
-
  private:
   template <class LruCacheType>
   friend size_t trace_event::internal::DoEstimateMemoryUsageForLruCache(
       const LruCacheType&);
 
-  static constexpr MemoryConsumerTraits kDefaultTraits =
-      MemoryConsumerTraits(MemoryConsumerTraits::ConsumerType::kPassive);
-
   void MaybeCreateOrRemoveRegistration() {
-    if (IsLRUCacheMemoryConsumerEnabled()) {
-      if (baseline_max_size_.has_value() && !registration_) {
-        registration_.emplace("LRUCache", kDefaultTraits, this);
-      }
-
-      if (!baseline_max_size_.has_value() && registration_) {
-        registration_.reset();
-      }
+    if (!IsLRUCacheMemoryConsumerEnabled()) {
+      return;
     }
+    if (baseline_max_size_.has_value() && !consumer_ &&
+        SequencedTaskRunner::HasCurrentDefault()) {
+      consumer_ = std::make_unique<MemoryConsumerImpl>();
+      consumer_task_runner_ = SequencedTaskRunner::GetCurrentDefault();
+    } else if (!baseline_max_size_.has_value() && consumer_) {
+      ResetRegistration();
+    }
+  }
+
+  void ResetRegistration() {
+    if (!consumer_) {
+      return;
+    }
+    // Destroy synchronously if we are already on the creation sequence;
+    // otherwise, post deletion back to the creation sequence where
+    // AsyncMemoryConsumerRegistration is sequence-bound.
+    if (consumer_task_runner_->RunsTasksInCurrentSequence()) {
+      consumer_.reset();
+    } else {
+      ANNOTATE_LEAKING_OBJECT_PTR(consumer_.get());
+      consumer_task_runner_->DeleteSoon(FROM_HERE, consumer_.release());
+    }
+    consumer_task_runner_.reset();
   }
 
   ValueList ordering_;
@@ -342,10 +364,8 @@ class LRUCacheBase : public PassiveMemoryConsumer {
   // maximum size and eviction is not done automatically.
   std::optional<size_type> baseline_max_size_;
 
-  // Caches the current memory limit reported by the MemoryCoordinator.
-  std::atomic<MemoryLimit> current_memory_limit_{MemoryLimit::Default()};
-
-  std::optional<AsyncMemoryConsumerRegistration> registration_;
+  std::unique_ptr<MemoryConsumerImpl> consumer_;
+  scoped_refptr<SequencedTaskRunner> consumer_task_runner_;
 };
 
 }  // namespace internal

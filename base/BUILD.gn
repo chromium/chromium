@@ -314,6 +314,7 @@ component("base") {
     "containers/linked_list.cc",
     "containers/linked_list.h",
     "containers/lru_cache.h",
+    "containers/lru_cache_internal.cc",
     "containers/lru_cache_internal.h",
     "containers/map_util.h",
     "containers/ring_buffer.h",
