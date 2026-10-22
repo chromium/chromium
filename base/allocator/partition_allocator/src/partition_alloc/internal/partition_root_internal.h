@@ -449,6 +449,9 @@ AllocationNotificationData PartitionRoot::CreateAllocationNotificationData(
     notification_data.SetMteReportingMode(memory_tagging_reporting_mode());
 #endif
   }
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  notification_data.set_brp_enabled(brp_enabled());
+#endif
 
   return notification_data;
 }

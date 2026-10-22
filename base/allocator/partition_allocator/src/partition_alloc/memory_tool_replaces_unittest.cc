@@ -35,11 +35,14 @@ bool MallocOverrideHook(void** out,
                         size_t size,
                         const char* type_name,
                         std::optional<size_t> alignment,
-                        [[maybe_unused]] bool use_brp) {
+                        bool use_brp) {
   ++g_malloc_override_hook_called;
   void* result = ContainsFlags(flags, AllocFlags::kZeroFill) ? calloc(1, size)
                                                              : malloc(size);
   AllocationNotificationData data(result, size, type_name);
+  // TODO(553120509, 555037375): make `use_brp` available for
+  // AsanBackupRefPtrService and V2, and add the test to see the `use_brp`.
+  data.set_brp_enabled(use_brp);
   g_allocation_data->push_back(data);
   *out = data.address();
   return true;

@@ -47,6 +47,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AllocationNotificationData {
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
+  void set_brp_enabled(bool brp_enabled) { brp_enabled_ = brp_enabled; }
+  bool brp_enabled() const { return brp_enabled_; }
+
  private:
   void* address_ = nullptr;
   size_t size_ = 0;
@@ -55,6 +58,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AllocationNotificationData {
   TagViolationReportingMode mte_reporting_mode_ =
       TagViolationReportingMode::kUndefined;
 #endif
+  bool brp_enabled_ = false;
 };
 
 // FreeNotificationData is the in-parameter of a free observer hook.
