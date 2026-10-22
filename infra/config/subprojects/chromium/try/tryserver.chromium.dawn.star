@@ -24,7 +24,6 @@ try_.defaults.set(
     # them, so there's no need to page for them.
     alerts_enabled = False,
     check_for_flakiness = False,
-    check_for_flakiness_with_resultdb = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
@@ -201,7 +200,6 @@ shared_gpu.try_.win_optional_builder(
     ],
     gn_args = "ci/Dawn Win10 x86 DEPS Builder",
     check_for_flakiness = False,
-    check_for_flakiness_with_resultdb = False,
     cq_settings = try_.cq_settings(
         location_filters = _dawn_location_filters,
     ),
