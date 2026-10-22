@@ -62,7 +62,14 @@ bool ShouldAutoReload(content::NavigationHandle* handle) {
          // policies.
          net_error != net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS &&
          // Do not auto-reload if the error is caused by connection allowlist.
-         net_error != net::ERR_NETWORK_ACCESS_REVOKED;
+         net_error != net::ERR_NETWORK_ACCESS_REVOKED &&
+         // Do not auto-reload unsafe redirects. Among other things, this error
+         // is used when a redirect is blocked by the initiator's connection
+         // allowlist, and since auto-reloads are browser-initiated, they would
+         // not be subject to the initiator's connection allowlist. As a result,
+         // the reload would succeed, which is not how the allowlist is expected
+         // to behave.
+         net_error != net::ERR_UNSAFE_REDIRECT;
 }
 
 base::TimeDelta GetNextReloadDelay(size_t reload_count) {

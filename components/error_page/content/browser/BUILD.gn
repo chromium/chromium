@@ -36,6 +36,7 @@ source_set("browser_tests") {
     "//content/test:browsertest_support",
     "//content/test:test_support",
     "//net",
+    "//net:test_support",
     "//services/network:test_support",
     "//testing/gtest",
     "//url",

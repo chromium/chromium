@@ -4,12 +4,15 @@
 
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 
+#include <atomic>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/escape.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
@@ -29,6 +32,11 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "net/base/net_errors.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -446,6 +454,11 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
     EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
   }
+  {
+    NetErrorUrlInterceptor interceptor(GetTestUrl(), net::ERR_UNSAFE_REDIRECT);
+    EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
+    EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
+  }
 }
 
 // Only HTTP and HTTPS navigation error pages activate auto-reload.
@@ -796,6 +809,120 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
   // Check that there is an auto-reload timer is running again, resuming with
   // the delay from when it was interrupted by the manual reload.
   EXPECT_EQ(GetDelayForReloadCount(1), GetCurrentAutoReloadDelay());
+}
+
+class NetErrorAutoReloaderConnectionAllowlistBrowserTest
+    : public NetErrorAutoReloaderBrowserTest {
+ public:
+  static constexpr char kConnectionAllowlistHeader[] =
+      "(response-origin);redirects=block";
+
+  NetErrorAutoReloaderConnectionAllowlistBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        network::features::kConnectionAllowlists);
+  }
+
+  void SetUpOnMainThread() override {
+    NetErrorAutoReloaderBrowserTest::SetUpOnMainThread();
+
+    // Map all hosts to localhost, so a.test and b.test are distinct origins
+    // served by the same test server.
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        &NetErrorAutoReloaderConnectionAllowlistBrowserTest::HandleRequest,
+        base::Unretained(this)));
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  int attacker_request_count() const { return attacker_request_count_.load(); }
+
+ private:
+  // Runs on the EmbeddedTestServer's thread.
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    const GURL url = request.GetURL();
+
+    // A page protected by a Connection-Allowlist that only permits
+    // connections to its own origin, and blocks redirects.
+    if (url.path() == "/allowlisted") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_content_type("text/html");
+      response->set_content("<html><body>Protected page</body></html>");
+      response->AddCustomHeader("Connection-Allowlist",
+                                kConnectionAllowlistHeader);
+      return response;
+    }
+
+    // An open redirector. Redirects to the (escaped) URL in the query string.
+    if (url.path() == "/redirect") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_FOUND);
+      response->AddCustomHeader("Location",
+                                base::UnescapeBinaryURLComponent(url.query()));
+      response->AddCustomHeader("Connection-Allowlist",
+                                kConnectionAllowlistHeader);
+      return response;
+    }
+
+    // The "attacker" endpoint, which should never be reached.
+    if (url.path() == "/attacker") {
+      ++attacker_request_count_;
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_content_type("text/plain");
+      response->set_content("Attacker origin reached.");
+      return response;
+    }
+
+    return nullptr;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  std::atomic<int> attacker_request_count_ = 0;
+};
+
+// A renderer-initiated navigation from a page with a Connection-Allowlist to a
+// same-origin URL that redirects cross-origin is blocked with
+// ERR_UNSAFE_REDIRECT. The resulting error page must not be auto-reloaded,
+// since the browser-initiated reload would not be subject to the initiator's
+// Connection-Allowlist, and would follow the redirect.
+IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderConnectionAllowlistBrowserTest,
+                       NoAutoReloadAfterRedirectBlockedByConnectionAllowlist) {
+  const GURL allowlisted_url =
+      embedded_https_test_server().GetURL("a.test", "/allowlisted");
+  const GURL attacker_url = embedded_https_test_server().GetURL(
+      "b.test", "/attacker?secret=TOP_SECRET");
+  const GURL redirect_url = embedded_https_test_server().GetURL(
+      "a.test", "/redirect?" + base::EscapeQueryParamValue(attacker_url.spec(),
+                                                           /*use_plus=*/false));
+
+  ASSERT_TRUE(content::NavigateToURL(shell(), allowlisted_url));
+  EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
+
+  // Navigate to the redirector from the protected page. The redirect should be
+  // blocked by the Connection-Allowlist.
+  content::NavigationHandleObserver handle_observer(web_contents(),
+                                                    redirect_url);
+  content::TestNavigationManager navigation(web_contents(), redirect_url);
+  content::ExecuteScriptAsync(
+      web_contents(), content::JsReplace("location.href = $1;", redirect_url));
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());
+  EXPECT_FALSE(navigation.was_successful());
+  EXPECT_TRUE(handle_observer.has_committed());
+  EXPECT_TRUE(handle_observer.is_error());
+  EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, handle_observer.net_error_code());
+  EXPECT_TRUE(web_contents()->GetPrimaryMainFrame()->IsErrorDocument());
+  EXPECT_EQ(0, attacker_request_count());
+
+  // No auto-reload should be scheduled.
+  EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
+
+  // The error page should be committed at the URL of the redirector, not the
+  // blocked redirect destination. Reloading will still follow the redirect,
+  // since the "Connection-Allowlist" was a property of the original page, not
+  // the redirect.
+  EXPECT_EQ(redirect_url, web_contents()->GetLastCommittedURL());
 }
 
 }  // namespace
