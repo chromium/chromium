@@ -25,7 +25,8 @@
 
 namespace {
 
-constexpr char kTaskURL[] = "https://artsandculture.google.com/color?col=RED";
+constexpr char kTaskURL[] =
+    "https://commons.wikimedia.org/wiki/Commons:Explore/Colors/Purple";
 
 }  // namespace
 
