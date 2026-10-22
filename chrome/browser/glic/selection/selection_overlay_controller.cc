@@ -22,6 +22,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
@@ -780,7 +781,7 @@ void SelectionOverlayController::SetScreenshot(const SkBitmap& screenshot,
 }
 
 bool SelectionOverlayController::IsResultsSidePanelShowing() {
-  return true;
+  return GlicSidePanelCoordinator::IsShowing(tab_);
 }
 
 GURL SelectionOverlayController::GetInitialURL() {

@@ -1454,8 +1454,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
                         "el => el.screenshot_ !== null"),
-      CheckResult(GetOverlayVisibilityAt(0), true),
-      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
+      CheckResult(GetOverlayVisibilityAt(0), true), Do([this]() {
+        chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, false);
+      }),
       EnterSplitView(/*active_tab=*/0, /*other_tab=*/1),
       CheckResult(GetOverlayVisibilityAt(0), true),
       CheckOverlayBoundsMatchContents(0),
