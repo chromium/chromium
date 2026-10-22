@@ -186,6 +186,12 @@ class ChromiumDepGraph {
             org_checkerframework_checker_util: new PropertyOverride(
                     licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/checker-util/LICENSE.txt',
                     licenseName: 'MIT'),
+            org_commonmark_commonmark: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/commonmark/commonmark-java/main/LICENSE.txt',
+                    licenseName: 'BSD-2-Clause'),
+            org_commonmark_commonmark_ext_gfm_tables: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/commonmark/commonmark-java/main/LICENSE.txt',
+                    licenseName: 'BSD-2-Clause'),
             org_conscrypt_conscrypt_openjdk_uber: new PropertyOverride(
                     licenseUrl: 'https://raw.githubusercontent.com/google/conscrypt/master/LICENSE',
                     licenseName: 'Apache 2.0'),
@@ -264,6 +270,9 @@ class ChromiumDepGraph {
             org_robolectric_utils_reflector: new PropertyOverride(
                     licenseName: 'Apache-2.0, MIT',
                     licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_safere_safere: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/eaftan/safere/main/LICENSE',
+                    licenseName: 'BSD'),
             io_reactivex_rxjava3_rxjava: new PropertyOverride(
                     exclude: true),  // An unnecessary dep of androidx.xr.runtime.
             org_jetbrains_kotlinx_kotlinx_coroutines_reactive: new PropertyOverride(
