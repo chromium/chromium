@@ -27,8 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_TYPES_3D_H_
 
 #ifndef __glext_h_
-#include "third_party/khronos/GLES2/gl2ext.h"
-#include "third_party/khronos/GLES3/gl3.h"
+#include "third_party/angle/include/GLES2/gl2ext.h"
+#include "third_party/angle/include/GLES3/gl3.h"
 #endif
 
 #include <stdint.h>

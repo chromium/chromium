@@ -10,10 +10,10 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
-#include "third_party/khronos/GLES2/gl2.h"
 
 namespace blink {
 

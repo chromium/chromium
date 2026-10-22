@@ -7,12 +7,12 @@
 
 #include <bitset>
 
+#include "third_party/angle/include/GLES2/gl2.h"
+#include "third_party/angle/include/GLES2/gl2ext.h"
+#include "third_party/angle/include/GLES3/gl31.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension_name.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/khronos/GLES2/gl2.h"
-#include "third_party/khronos/GLES2/gl2ext.h"
-#include "third_party/khronos/GLES3/gl31.h"
 
 namespace base {
 class SingleThreadTaskRunner;

@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/angle/include/GLES2/gl2.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/khronos/GLES2/gl2.h"
 
 namespace gpu {
 namespace gles2 {
