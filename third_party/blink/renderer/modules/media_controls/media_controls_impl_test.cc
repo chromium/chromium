@@ -28,9 +28,12 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html/track/text_track.h"
+#include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -1905,6 +1908,61 @@ TEST_F(MediaControlsImplTest, InterstitialFontFamilyIsGeneric) {
 
   EXPECT_TRUE(found_interstitial_message);
   EXPECT_TRUE(found_toast_message);
+}
+
+TEST_F(MediaControlsImplTest, TextTrackElementsAreReadOnly) {
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      video::-webkit-media-text-track-container,
+      video::-webkit-media-text-track-region,
+      video::-webkit-media-text-track-region-container,
+      video::-webkit-media-text-track-display {
+        -webkit-user-modify: read-write;
+      }
+    </style>
+  )HTML");
+
+  auto& video = To<HTMLVideoElement>(*QuerySelector("video"));
+  LoadMediaWithDuration(10.0);
+  SetReady();
+  video.setCurrentTime(0.5);
+
+  TextTrack* track = video.addTextTrack(
+      V8TextTrackKind(V8TextTrackKind::Enum::kSubtitles), AtomicString("sub"),
+      AtomicString("en"), ASSERT_NO_EXCEPTION);
+  track->SetModeEnum(TextTrackMode::kShowing);
+
+  auto* cue = VTTCue::Create(GetDocument(), 0.0, 2.0, "cue text");
+  track->addCue(cue);
+  UpdateAllLifecyclePhasesForTest();
+
+  ShadowRoot* shadow_root = video.UserAgentShadowRoot();
+  ASSERT_TRUE(shadow_root);
+
+  Element* container = GetElementByShadowPseudoId(
+      *shadow_root, "-webkit-media-text-track-container");
+  ASSERT_TRUE(container);
+  auto* region = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  region->SetShadowPseudoId(AtomicString("-webkit-media-text-track-region"));
+  auto* region_container = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  region_container->SetShadowPseudoId(
+      AtomicString("-webkit-media-text-track-region-container"));
+  region->AppendChild(region_container);
+  container->AppendChild(region);
+  UpdateAllLifecyclePhasesForTest();
+
+  for (const char* pseudo_id :
+       {"-webkit-media-text-track-container", "-webkit-media-text-track-region",
+        "-webkit-media-text-track-region-container",
+        "-webkit-media-text-track-display"}) {
+    Element* element = GetElementByShadowPseudoId(*shadow_root, pseudo_id);
+    ASSERT_TRUE(element) << pseudo_id;
+    ASSERT_TRUE(element->GetComputedStyle()) << pseudo_id;
+    EXPECT_EQ(element->GetComputedStyle()->UsedUserModify(),
+              EUserModify::kReadOnly)
+        << pseudo_id;
+    EXPECT_FALSE(element->IsFocusable()) << pseudo_id;
+  }
 }
 
 }  // namespace blink
