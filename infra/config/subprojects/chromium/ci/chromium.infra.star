@@ -359,6 +359,16 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.0/google_apis_ps16k/x86_64.yaml",
             },
             {
+                "sdk_package_name": "system-images/android-37.1/android-desktop/arm64-v8a",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.1/android-desktop/arm64-v8a.yaml",
+                "sdk_channel": "BETA",
+            },
+            {
+                "sdk_package_name": "system-images/android-37.1/android-desktop/x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.1/android-desktop/x86_64.yaml",
+                "sdk_channel": "BETA",
+            },
+            {
                 "sdk_package_name": "system-images/android-37.2/google_apis_ps16k/arm64-v8a",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.2/google_apis_ps16k/arm64-v8a.yaml",
             },
