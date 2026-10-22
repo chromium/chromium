@@ -62,7 +62,6 @@
 //third_party/compiler-rt
 //third_party/cpu_features
 //third_party/jni_zero
-//third_party/kotlin_stdlib
 //third_party/llvm-libc
 //third_party/metrics_proto
 //third_party/modp_b64

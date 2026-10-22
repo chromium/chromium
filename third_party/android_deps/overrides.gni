@@ -19,10 +19,10 @@ template("define_override_android_deps_targets") {
   java_group("kotlin_stdlib_java") {
     preferred_dep = true
 
-    # TODO(agrieve): Point this at the generated
-    #     :org_jetbrains_kotlin_kotlin_stdlib_java target once it exists, and
-    #     turn //third_party/kotlin_stdlib into an alias of this target.
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [
+      ":org_jetbrains_annotations_java",
+      ":org_jetbrains_kotlin_kotlin_stdlib_java",
+    ]
   }
 
   if (!limit_android_deps) {

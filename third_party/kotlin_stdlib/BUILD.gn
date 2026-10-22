@@ -4,7 +4,9 @@
 
 import("//build/config/android/rules.gni")
 
-java_prebuilt("kotlin_stdlib_java") {
-  jar_path = "cipd/kotlin-stdlib-jdk8.jar"
-  supports_android = true
+# TODO(agrieve): Delete this directory once there are no remaining references
+#     to this target.
+java_group("kotlin_stdlib_java") {
+  # Please depend on //third_party/android_deps:kotlin_stdlib_java instead.
+  deps = [ "//third_party/android_deps:kotlin_stdlib_java" ]
 }
