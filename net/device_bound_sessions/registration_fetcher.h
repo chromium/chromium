@@ -21,7 +21,8 @@
 #include "net/device_bound_sessions/session_error.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_source.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 class URLRequestContext;

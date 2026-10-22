@@ -52,7 +52,6 @@
 #include "net/http/http_transaction_factory.h"
 #include "net/http/no_vary_search_cache.h"
 #include "net/http/no_vary_search_cache_storage.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 class GURL;

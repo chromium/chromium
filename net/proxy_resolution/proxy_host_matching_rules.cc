@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/url_util.h"
+#include "url/gurl.h"
 
 namespace net {
 

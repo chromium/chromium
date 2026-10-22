@@ -14,7 +14,8 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/scheme_host_port_matcher_result.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 

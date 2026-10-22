@@ -11,8 +11,9 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
-#include "url/gurl.h"
 #include "url/origin.h"
+
+class GURL;
 
 namespace net {
 

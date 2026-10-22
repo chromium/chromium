@@ -10,7 +10,8 @@
 #include "net/base/load_states.h"
 #include "net/base/net_export.h"
 #include "net/proxy_resolution/pac_file_data.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 

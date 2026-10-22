@@ -23,8 +23,9 @@
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/web_transport_interface.h"
-#include "url/gurl.h"
 #include "url/origin.h"
+
+class GURL;
 
 namespace net {
 

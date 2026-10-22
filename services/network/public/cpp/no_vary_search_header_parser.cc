@@ -11,6 +11,7 @@
 #include "base/types/expected_macros.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
+#include "url/gurl.h"
 
 namespace network {
 

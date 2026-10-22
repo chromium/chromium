@@ -13,6 +13,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
+#include "url/gurl.h"
 
 namespace net {
 

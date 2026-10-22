@@ -21,7 +21,8 @@
 #include "net/base/net_export.h"
 #include "net/filter/source_stream_type.h"
 #include "net/log/net_log_capture_mode.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 

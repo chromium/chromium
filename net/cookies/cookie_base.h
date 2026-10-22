@@ -15,6 +15,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
 

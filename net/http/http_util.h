@@ -21,12 +21,13 @@
 #include "net/base/net_export.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_version.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 // This is a macro to support extending this string literal at compile time.
 // Please excuse me polluting your global namespace!
 #define HTTP_LWS " \t"
+
+class GURL;
 
 namespace net {
 

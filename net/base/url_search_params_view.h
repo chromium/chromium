@@ -16,7 +16,8 @@
 #include "base/containers/flat_set.h"
 #include "net/base/net_export.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 

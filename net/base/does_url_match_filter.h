@@ -9,8 +9,9 @@
 
 #include "base/containers/flat_set.h"
 #include "net/base/net_export.h"
-#include "url/gurl.h"
 #include "url/origin.h"
+
+class GURL;
 
 namespace net {
 

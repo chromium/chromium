@@ -23,8 +23,9 @@
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_target_type.h"
-#include "url/gurl.h"
 #include "url/origin.h"
+
+class GURL;
 
 namespace net {
 

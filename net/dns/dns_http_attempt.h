@@ -30,7 +30,8 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 

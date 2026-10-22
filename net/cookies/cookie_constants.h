@@ -11,7 +11,8 @@
 
 #include "base/time/time.h"
 #include "net/base/net_export.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 

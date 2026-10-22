@@ -15,11 +15,12 @@
 #include "net/base/cronet_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
-#include "url/gurl.h"
 
 #if !BUILDFLAG(CRONET_BUILD)
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #endif
+
+class GURL;
 
 namespace net {
 

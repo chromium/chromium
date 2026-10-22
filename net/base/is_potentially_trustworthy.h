@@ -12,7 +12,8 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "net/base/net_export.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace url {
 class Origin;

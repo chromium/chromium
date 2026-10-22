@@ -40,7 +40,8 @@
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "net/proxy_resolution/resolve_host_request.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace base {
 class TimeDelta;

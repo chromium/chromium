@@ -13,7 +13,8 @@
 #include "net/base/net_export.h"
 #include "net/base/scheme_host_port_matcher.h"
 #include "net/base/scheme_host_port_matcher_rule.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 

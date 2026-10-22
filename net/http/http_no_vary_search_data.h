@@ -15,7 +15,8 @@
 #include "net/base/net_export.h"
 #include "net/base/pickle_traits.h"
 #include "net/http/structured_headers.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 

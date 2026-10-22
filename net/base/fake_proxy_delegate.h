@@ -12,7 +12,8 @@
 #include "net/base/proxy_delegate.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace net {
 

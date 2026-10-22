@@ -24,6 +24,7 @@
 #include "components/policy/core/common/policy_logger.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "url/gurl.h"
 
 namespace enterprise_auth {
 
