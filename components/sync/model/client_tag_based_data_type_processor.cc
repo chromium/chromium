@@ -1577,6 +1577,8 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionAfter(
     const ClientTagHash& target_client_tag_hash) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(entity_tracker_);
+  CHECK(bridge_->SupportsUniquePositions(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
 
   UniquePosition position_before = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_before));
@@ -1602,6 +1604,8 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBefore(
     const ClientTagHash& target_client_tag_hash) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(entity_tracker_);
+  CHECK(bridge_->SupportsUniquePositions(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
 
   UniquePosition position_after = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_after));
@@ -1628,6 +1632,8 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBetween(
     const ClientTagHash& target_client_tag_hash) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(entity_tracker_);
+  CHECK(bridge_->SupportsUniquePositions(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
 
   UniquePosition position_before = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_before));
@@ -1669,6 +1675,8 @@ ClientTagBasedDataTypeProcessor::UniquePositionForInitialEntity(
     const ClientTagHash& target_client_tag_hash) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(entity_tracker_);
+  CHECK(bridge_->SupportsUniquePositions(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
 
   const ProcessorEntity* target_entity =
       entity_tracker_->GetEntityForClientTagHash(target_client_tag_hash);
@@ -1688,6 +1696,8 @@ ClientTagBasedDataTypeProcessor::GetUniquePositionForStorageKey(
     const std::string& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(entity_tracker_);
+  CHECK(bridge_->SupportsUniquePositions(), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
 
   ProcessorEntity* entity =
       entity_tracker_->GetEntityForStorageKey(storage_key);
