@@ -1210,6 +1210,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BottomBar.EnabledState" enum="BooleanEnabled"
+    expires_after="2027-05-26">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
+  <summary>
+    Records whether the bottom bar is enabled for an eligible device (see
+    BottomBarConfigUtils#isBottomBarEligible). Recorded when a tabbed activity's
+    bottom controls are initialized. Note: this currently also includes activity
+    recreation (e.g. config changes), so per-user analysis is more reliable than
+    raw sample ratios.
+  </summary>
+</histogram>
+
 <histogram name="Android.BottomBar.ExtraAction.CandidateDecisionTime"
     units="ms" expires_after="2027-05-26">
   <owner>madhavpruthi@google.com</owner>

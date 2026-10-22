@@ -50,6 +50,7 @@ android_library("metrics_java") {
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java",
   ]
   deps = [
+    ":config_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/glic/android:common_java",
@@ -135,6 +136,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarEducationUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetricsUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarPromoDialogCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarViewBinderUnitTest.java",
@@ -143,6 +145,7 @@ robolectric_library("junit") {
   deps = [
     ":config_java",
     ":java",
+    ":metrics_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

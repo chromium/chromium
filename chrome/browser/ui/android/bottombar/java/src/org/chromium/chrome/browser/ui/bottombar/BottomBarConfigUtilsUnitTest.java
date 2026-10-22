@@ -101,6 +101,33 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsBottomBarEligible_Phone_IgnoresUserPref() {
+        BottomBarConfigUtils.setBottomBarUserEnabled(false);
+        assertTrue(BottomBarConfigUtils.isBottomBarEligible(mContext));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsBottomBarEligible_Tablet() {
+        assertFalse(BottomBarConfigUtils.isBottomBarEligible(mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsBottomBarEligible_Automotive() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        assertFalse(BottomBarConfigUtils.isBottomBarEligible(mContext));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsBottomBarEligible_FlagDisabled() {
+        assertFalse(BottomBarConfigUtils.isBottomBarEligible(mContext));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":default_user_enabled/true")
     public void testIsBottomBarUserEnabled_PrefUnset_DefaultParamTrue() {
         assertTrue(BottomBarConfigUtils.isBottomBarUserEnabled());

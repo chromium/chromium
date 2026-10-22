@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import android.content.Context;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.StringDef;
 
@@ -114,6 +116,18 @@ public class BottomBarMetrics {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarGlicIneligibilityReason)
+
+    /**
+     * Records whether the bottom bar is enabled on an eligible device when bottom controls are
+     * initialized.
+     *
+     * @param context The context to check device eligibility against.
+     */
+    public static void maybeRecordEnabledState(Context context) {
+        if (!BottomBarConfigUtils.isBottomBarEligible(context)) return;
+        RecordHistogram.recordBooleanHistogram(
+                "Android.BottomBar.EnabledState", BottomBarConfigUtils.isBottomBarEnabled(context));
+    }
 
     /**
      * Records the visual state of the Glic button in the bottom bar at the moment of the user

@@ -235,6 +235,7 @@ import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarEducationDialogCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
@@ -2556,6 +2557,7 @@ public class ToolbarManager
     /** Enable the bottom controls. */
     public void enableBottomControls() {
         enableTabGroupUiControls();
+        BottomBarMetrics.maybeRecordEnabledState(mActivity);
         if (BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
             enableBottomBar();
         } else if (BottomBarConfigUtils.isBottomBarEligible(mActivity)
