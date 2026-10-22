@@ -949,8 +949,11 @@ TEST_P(HTMLCanvasElementTest, SlotAssignmentDuringSetIsInCanvasSubtree) {
 
   s2->AssignedNodes();
   d->SetValue("2001-02-04");
-  d->Focus();
   h2->SetIsInCanvasSubtree(false);
+  // A suggested value makes SetIsInCanvasSubtree(true) clear it, which rebuilds
+  // the date fields and changes focus.
+  d->SetSuggestedValue("2005-06-07");
+  d->Focus();
   d->setAttribute(html_names::kValueAttr, AtomicString("2003-04-05"));
   y->setAttribute(html_names::kSlotAttr, AtomicString("away"));
 
@@ -1094,6 +1097,183 @@ TEST_P(HTMLCanvasElementTest, RemoveAndReinsertSlottedElementToSameHost) {
   EXPECT_TRUE(child1->IsInCanvasSubtree());
   EXPECT_TRUE(slotted2->IsInCanvasSubtree());
   EXPECT_TRUE(child2->IsInCanvasSubtree());
+}
+
+// Moving a focused <input type=date> with no suggested value into a canvas
+// subtree must not rebuild its fields, so slot assignment recalc does not move
+// focus or run script.
+TEST_P(HTMLCanvasElementTest, SlotIntoCanvasWithoutSuggestedValueKeepsFocus) {
+  class FocusChangeCounter final : public GarbageCollected<FocusChangeCounter>,
+                                   public FocusedElementChangeObserver {
+   public:
+    void DidChangeFocus() override { ++count_; }
+    int Count() const { return count_; }
+
+   private:
+    int count_ = 0;
+  };
+
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(
+      "<div id=\"host\">"
+      "<template shadowrootmode=\"open\">"
+      "<slot name=\"outside\"></slot>"
+      "<canvas content=\"drawable\"><slot id=\"inside\" name=\"inside\">"
+      "</slot></canvas>"
+      "</template>"
+      "<input id=\"d\" type=\"date\" value=\"2001-02-03\" slot=\"outside\">"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host = GetDocument().getElementById(AtomicString("host"));
+  auto* date =
+      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("d")));
+  auto* inside = To<HTMLSlotElement>(
+      host->GetShadowRoot()->getElementById(AtomicString("inside")));
+  date->Focus();
+  Element* focused = GetDocument().FocusedElement();
+  ASSERT_TRUE(focused);
+  EXPECT_FALSE(date->IsInCanvasSubtree());
+  // Make the date field layout stale, as in date.value = date.value;
+  // date.defaultValue = '2003-04-05'. Without this, DateTimeEditElement::
+  // GetLayout() returns early and would not move focus even without the fix.
+  date->SetValue(date->Value());
+  date->setAttribute(html_names::kValueAttr, AtomicString("2003-04-05"));
+
+  auto* counter = MakeGarbageCollected<FocusChangeCounter>();
+  GetDocument().AddFocusedElementChangeObserver(counter);
+
+  date->setAttribute(html_names::kSlotAttr, AtomicString("inside"));
+  inside->AssignedNodes();
+
+  EXPECT_TRUE(date->IsInCanvasSubtree());
+  EXPECT_EQ(0, counter->Count());
+  EXPECT_EQ(focused, GetDocument().FocusedElement());
+}
+
+// Regression test for crbug.com/573335176. Moving a focused <input type=date>
+// that shows an autofill preview into a canvas subtree clears the preview,
+// which rebuilds the fields and makes slot assignment recalc dispatch a blur.
+// A handler
+// that re-enters recalc through assignedNodes() must bail out, so the slot it
+// adds has no assigned nodes until the next recalc. This checks the re-entrancy
+// guard directly instead of relying on the freed memory read crashing.
+TEST_P(HTMLCanvasElementTest, ReentrantSlotRecalcDuringDidRecalcAssignedNodes) {
+#if DCHECK_IS_ON()
+  // Reaching this path trips a separate, pre-existing DCHECK:
+  // RecalcAssignment() holds a FlatTreeTraversalForbiddenScope while the date
+  // field dispatches focus and blur. See crbug.com/574469802.
+  GTEST_SKIP() << "Blocked by a pre-existing DCHECK in Element::Focus()";
+#else
+  class ReentrantRecalcObserver final
+      : public GarbageCollected<ReentrantRecalcObserver>,
+        public FocusedElementChangeObserver {
+   public:
+    explicit ReentrantRecalcObserver(ShadowRoot* shadow_root, Element* spare)
+        : shadow_root_(shadow_root), spare_(spare) {}
+
+    void DidChangeFocus() override {
+      if (invoked_) {
+        return;
+      }
+      invoked_ = true;
+      // Records that the blur really was dispatched from inside
+      // SlotAssignment::RecalcAssignment(), so this test cannot silently stop
+      // covering the re-entrant path.
+      reentrant_ = shadow_root_->GetDocument().IsInSlotAssignmentRecalc();
+
+      // Add a slot and move a light child into it so the assignment is dirty,
+      // then re-enter recalc through assignedNodes(). Without the fix this
+      // nested recalc rebuilds slots_ (freeing the buffer the outer loop is
+      // iterating) and assigns |spare_| to the new slot. With the fix the
+      // re-entrant recalc bails, so the new slot has no assigned nodes yet.
+      auto* extra =
+          MakeGarbageCollected<HTMLSlotElement>(shadow_root_->GetDocument());
+      extra->setAttribute(html_names::kNameAttr, AtomicString("extra"));
+      shadow_root_->AppendChild(extra);
+      spare_->setAttribute(html_names::kSlotAttr, AtomicString("extra"));
+      assigned_in_handler_ = extra->AssignedNodes().size();
+    }
+
+    bool Invoked() const { return invoked_; }
+    bool Reentrant() const { return reentrant_; }
+    wtf_size_t AssignedInHandler() const { return assigned_in_handler_; }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(shadow_root_);
+      visitor->Trace(spare_);
+      FocusedElementChangeObserver::Trace(visitor);
+    }
+
+   private:
+    Member<ShadowRoot> shadow_root_;
+    Member<Element> spare_;
+    bool invoked_ = false;
+    bool reentrant_ = false;
+    wtf_size_t assigned_in_handler_ = 0;
+  };
+
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+
+  // The <input> starts in the second slot and is moved to the first, so the
+  // re-entrant recalc happens while the outer DidRecalcAssignedNodes() loop is
+  // still running. No filler slots are needed because the test asserts the
+  // re-entrancy behavior rather than relying on a freed-buffer read crashing.
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(
+      "<canvas id=\"cv\" content=\"drawable\"><div id=\"host\">"
+      "<template shadowrootmode=\"open\">"
+      "<slot id=\"s1\" name=\"first\"></slot>"
+      "<slot id=\"s2\" name=\"second\"></slot>"
+      "</template>"
+      "<input id=\"d\" type=\"date\" value=\"2001-02-03\" slot=\"second\">"
+      "<span id=\"spare\" slot=\"unslotted\"></span>"
+      "</div></canvas>");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host = GetDocument().getElementById(AtomicString("host"));
+  auto* date =
+      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("d")));
+  auto* shadow_root = host->GetShadowRoot();
+  auto* s1 =
+      To<HTMLSlotElement>(shadow_root->getElementById(AtomicString("s1")));
+
+  s1->AssignedNodes();
+  date->SetValue("2001-02-04");
+  // Clear the bit on the <input> only, so that re-slotting it flips the bit
+  // back on and clears the suggested value, which rebuilds the date fields.
+  // The slots themselves stay in the canvas subtree.
+  date->SetIsInCanvasSubtree(false);
+  date->SetSuggestedValue("2005-06-07");
+  ASSERT_FALSE(date->SuggestedValue().IsNull());
+  date->Focus();
+  date->setAttribute(html_names::kValueAttr, AtomicString("2003-04-05"));
+
+  auto* observer = MakeGarbageCollected<ReentrantRecalcObserver>(
+      shadow_root, GetDocument().getElementById(AtomicString("spare")));
+  GetDocument().AddFocusedElementChangeObserver(observer);
+
+  // Moving the <input> to the first slot re-assigns slots and dispatches the
+  // blur from inside the DidRecalcAssignedNodes() loop.
+  date->setAttribute(html_names::kSlotAttr, AtomicString("first"));
+  s1->AssignedNodes();
+
+  ASSERT_TRUE(observer->Invoked());
+  EXPECT_TRUE(observer->Reentrant());
+  EXPECT_TRUE(date->SuggestedValue().IsNull());
+  // The re-entrant recalc must have bailed out instead of rebuilding slots_,
+  // so the slot added during the handler has no assigned nodes yet.
+  EXPECT_EQ(0u, observer->AssignedInHandler());
+
+  // The deferred recalc is picked up here and produces the correct assignment.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(date->AssignedSlot(), s1);
+#endif  // DCHECK_IS_ON()
 }
 
 }  // namespace blink

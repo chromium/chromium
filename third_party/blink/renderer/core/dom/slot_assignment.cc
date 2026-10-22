@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -232,6 +233,15 @@ void SlotAssignment::SetNeedsAssignmentRecalc() {
 void SlotAssignment::RecalcAssignment() {
   if (!needs_assignment_recalc_)
     return;
+  // DidRecalcAssignedNodes() below can run script that re-enters here, which
+  // would rebuild slots_ while the outer call is iterating it. Bail out; the
+  // recalc stays pending and runs on the next lifecycle update. This is a
+  // stopgap: script should not run here at all. Remove this or upgrade it to a
+  // CHECK once the remaining sources are gone (crbug.com/574469802).
+  if (in_recalc_assignment_) {
+    return;
+  }
+  base::AutoReset<bool> in_recalc(&in_recalc_assignment_, true);
   {
     NestingLevelIncrementer slot_assignment_recalc_depth(
         owner_->GetDocument().SlotAssignmentRecalcDepth());
@@ -330,7 +340,14 @@ void SlotAssignment::RecalcAssignment() {
           .RemoveShadowRootNeedingRecalc(*owner_);
     }
 
-    for (auto& slot : Slots()) {
+    // Defense in depth: script is not supposed to run here, but
+    // DidRecalcAssignedNodes() still can (crbug.com/574469802) and add or
+    // remove slots. Iterate over a copy and skip slots that left this root.
+    const HeapVector<Member<HTMLSlotElement>> slots = Slots();
+    for (auto& slot : slots) {
+      if (slot->ContainingShadowRoot() != owner_) {
+        continue;
+      }
       // TODO(crbug.com/1208573): Consider if we really need to be using
       // IsInLockedSubtreeCrossingFrames, or if
       // LockedInclusiveAncestorPreventingStyleWithinTreeScope is good enough

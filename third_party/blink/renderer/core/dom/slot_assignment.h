@@ -73,6 +73,10 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   unsigned needs_collect_slots_ : 1;
   unsigned needs_assignment_recalc_ : 1;
   unsigned slot_count_ : 30;
+  // True while RecalcAssignment() is running for this shadow root. Used to
+  // bail out of re-entrant recalcs, which would rebuild slots_ while an outer
+  // RecalcAssignment() is still iterating it.
+  bool in_recalc_assignment_ = false;
 };
 
 }  // namespace blink

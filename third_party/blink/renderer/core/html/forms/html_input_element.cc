@@ -1354,9 +1354,11 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
 void HTMLInputElement::DidChangeIsInCanvasSubtree(
     CanvasSubtreePropagation propagation_behavior) {
   TextControlElement::DidChangeIsInCanvasSubtree(propagation_behavior);
-  if (IsInCanvasSubtree()) {
-    // Hide suggested values when under canvas, to prevent leaking this
-    // information to javascript.
+  // Hide suggested values when under canvas, to prevent leaking this
+  // information to javascript. Skip when there is nothing to hide:
+  // SetSuggestedValue() always rebuilds the view, which can move focus and run
+  // script during slot assignment recalc (crbug.com/574469802).
+  if (IsInCanvasSubtree() && !SuggestedValue().IsNull()) {
     SetSuggestedValue(String());
   }
 }
