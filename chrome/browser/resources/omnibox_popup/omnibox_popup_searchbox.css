@@ -146,7 +146,9 @@ cr-searchbox-input::part(mirror) {
   padding-top: 0;
 }
 
-:host(:not([aim-button-visible_])) cr-searchbox-input::part(searchbox-input) {
+/* On the shared container, so the gap follows the UI direction, and the input
+ * and #mirror (both dir="ltr" for URLs) keep the same box. */
+:host(:not([aim-button-visible_])) cr-searchbox-input::part(mirror-container) {
   margin-inline-end: 18px;
 }
 
