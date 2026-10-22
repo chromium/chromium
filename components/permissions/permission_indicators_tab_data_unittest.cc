@@ -317,4 +317,52 @@ TEST_F(PermissionIndicatorsTabDataTest, CameraUsageRecord) {
       base::Hours(2), 2);
 }
 
+TEST_F(PermissionIndicatorsTabDataTest,
+       VerboseIndicatorAllowedTracksBlockedAndInUseSeparately) {
+  using IndicatorsType = PermissionIndicatorsTabData::IndicatorsType;
+  GURL url1("https://www.google.com");
+  GURL url2("https://www.example.com");
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url1);
+
+  EXPECT_TRUE(
+      tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kMediaStream));
+  EXPECT_TRUE(tab_data().IsVerboseIndicatorAllowed(
+      IndicatorsType::kMediaStreamBlocked));
+  EXPECT_TRUE(tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kSensors));
+  EXPECT_TRUE(
+      tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kSensorsBlocked));
+
+  // Displaying the blocked indicator should not suppress the in-use indicator.
+  tab_data().SetVerboseIndicatorDisplayed(IndicatorsType::kMediaStreamBlocked);
+  EXPECT_FALSE(tab_data().IsVerboseIndicatorAllowed(
+      IndicatorsType::kMediaStreamBlocked));
+  EXPECT_TRUE(
+      tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kMediaStream));
+
+  tab_data().SetVerboseIndicatorDisplayed(IndicatorsType::kMediaStream);
+  EXPECT_FALSE(
+      tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kMediaStream));
+
+  tab_data().SetVerboseIndicatorDisplayed(IndicatorsType::kSensorsBlocked);
+  EXPECT_FALSE(
+      tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kSensorsBlocked));
+  EXPECT_TRUE(tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kSensors));
+
+  tab_data().SetVerboseIndicatorDisplayed(IndicatorsType::kSensors);
+  EXPECT_FALSE(tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kSensors));
+
+  // Cross-origin navigation resets all flags.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url2);
+  EXPECT_TRUE(
+      tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kMediaStream));
+  EXPECT_TRUE(tab_data().IsVerboseIndicatorAllowed(
+      IndicatorsType::kMediaStreamBlocked));
+  EXPECT_TRUE(tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kSensors));
+  EXPECT_TRUE(
+      tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kSensorsBlocked));
+}
+
 }  // namespace permissions

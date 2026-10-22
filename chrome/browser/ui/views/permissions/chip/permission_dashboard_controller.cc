@@ -113,13 +113,20 @@ bool ShouldExpandChipIndicator(
 }
 
 permissions::PermissionIndicatorsTabData::IndicatorsType GetIndicatorsType(
-    ContentSettingImageModel::ImageType image_type) {
-  switch (image_type) {
+    const ContentSettingImageModel* indicator_model) {
+  switch (indicator_model->image_type()) {
     case ContentSettingImageModel::ImageType::kSensors:
-      return permissions::PermissionIndicatorsTabData::IndicatorsType::kSensors;
+      return indicator_model->is_blocked()
+                 ? permissions::PermissionIndicatorsTabData::IndicatorsType::
+                       kSensorsBlocked
+                 : permissions::PermissionIndicatorsTabData::IndicatorsType::
+                       kSensors;
     case ContentSettingImageModel::ImageType::kMediaStream:
-      return permissions::PermissionIndicatorsTabData::IndicatorsType::
-          kMediaStream;
+      return indicator_model->is_blocked()
+                 ? permissions::PermissionIndicatorsTabData::IndicatorsType::
+                       kMediaStreamBlocked
+                 : permissions::PermissionIndicatorsTabData::IndicatorsType::
+                       kMediaStream;
     default:
       NOTREACHED();
   }
@@ -313,7 +320,7 @@ bool PermissionDashboardController::Update(
                   ->GetTabFeatures()
                   ->permission_indicators_tab_data();
       const permissions::PermissionIndicatorsTabData::IndicatorsType type =
-          GetIndicatorsType(indicator_model->image_type());
+          GetIndicatorsType(indicator_model);
       if (permission_indicators_tab_data &&
           permission_indicators_tab_data->IsVerboseIndicatorAllowed(type)) {
         indicator_chip->ResetAnimation(
@@ -384,7 +391,7 @@ void PermissionDashboardController::OnCollapseAnimationEnded() {
 
   if (permission_indicators_tab_data && content_setting_image_model_) {
     permissions::PermissionIndicatorsTabData::IndicatorsType type =
-        GetIndicatorsType(content_setting_image_model_->image_type());
+        GetIndicatorsType(content_setting_image_model_);
     permission_indicators_tab_data->SetVerboseIndicatorDisplayed(type);
   }
 

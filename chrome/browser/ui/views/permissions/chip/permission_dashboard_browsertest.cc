@@ -362,4 +362,42 @@ IN_PROC_BROWSER_TEST_F(PermissionDashboardBrowserTest,
 
   EXPECT_FALSE(chip->GetVisible());
 }
+
+IN_PROC_BROWSER_TEST_F(PermissionDashboardBrowserTest,
+                       DisplayLHSIndicatorForCameraAllowedAfterBlocked) {
+  PermissionChipInterface* chip = indicator_chip();
+
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(pscs);
+
+  // 1. Show blocked camera indicator and let it collapse and hide.
+  pscs->OnMediaStreamPermissionSet(
+      GURL("http://a.com"),
+      {content_settings::PageSpecificContentSettings::kCameraAccessed,
+       content_settings::PageSpecificContentSettings::kCameraBlocked});
+
+  WaitForAnimationCompletion();
+  EXPECT_TRUE(chip->GetVisible());
+  EXPECT_TRUE(dashboard_controller()->is_verbose());
+
+  dashboard_controller()->get_collapse_timer_for_testing().FireNow();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return chip->IsAnimating(); }));
+  WaitForAnimationCompletion();
+  EXPECT_FALSE(dashboard_controller()->is_verbose());
+
+  pscs->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_CAMERA,
+                               /*update_indicators=*/true);
+  EXPECT_FALSE(chip->GetVisible());
+
+  // 2. Subsequent in-use camera indicator should still expand to verbose state.
+  pscs->OnMediaStreamPermissionSet(
+      GURL("http://a.com"),
+      {content_settings::PageSpecificContentSettings::kCameraAccessed});
+
+  WaitForAnimationCompletion();
+  EXPECT_TRUE(chip->GetVisible());
+  EXPECT_TRUE(dashboard_controller()->is_verbose());
+}
 #endif
