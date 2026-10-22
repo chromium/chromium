@@ -5,3 +5,17 @@ team_email: "pwa-dev@chromium.org"
 buganizer_public: {
   component_id: 1457043
 }
+
+# Opt in to agentic code review.
+agentic_review {
+  # Web apps tests: unit, browser, and interactive UI tests in the desktop
+  # trees, and the web apps sync integration tests.
+  capability_groups {
+    path_expression: [
+      "chrome/browser/(web_applications|ui/web_applications|ui/views/web_apps)/.*_(unittest|browsertest|interactive_uitest|interactve_uitest|ui_test)(_[a-z0-9_]+)?\\.(cc|mm)",
+      "chrome/browser/sync/test/integration/web_apps/.*_test(_[a-z0-9_]+)?\\.cc"
+    ]
+    path_expression_exclusion: ".*_(base|util|utils|helper|helpers|mixin)\\.(cc|mm)"
+    review_capability_skills: ["chrome/browser/web_applications/docs/skills/webapps-testing-review/SKILL.md"]
+  }
+}
