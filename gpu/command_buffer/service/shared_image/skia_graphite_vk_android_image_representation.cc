@@ -275,7 +275,7 @@ SkiaGraphiteVkAndroidImageRepresentation::CreateGraphiteTextureHolder() {
       std::move(backend_texture));
 }
 
-SkiaGraphiteImageRepresentation::EndAccessState
+EndAccessState
 SkiaGraphiteVkAndroidImageRepresentation::GenerateEndAccessState() {
   // `kSingleDeviceUsage` defines the set of usages for which only the Vulkan
   // device from SharedContextState is used. If the SI has any usages outside

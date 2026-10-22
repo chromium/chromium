@@ -251,6 +251,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/egl_image_backing.h",
     "shared_image/egl_image_backing_factory.cc",
     "shared_image/egl_image_backing_factory.h",
+    "shared_image/end_access_state.cc",
+    "shared_image/end_access_state.h",
     "shared_image/gl_common_image_backing_factory.cc",
     "shared_image/gl_common_image_backing_factory.h",
     "shared_image/gl_repack_utils.cc",

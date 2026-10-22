@@ -623,52 +623,6 @@ SkiaGraphiteImageRepresentation::SkiaGraphiteImageRepresentation(
     : SkiaImageRepresentation(manager, backing, tracker, /*is_graphite=*/true) {
 }
 
-SkiaGraphiteImageRepresentation::EndAccessState::EndAccessState() = default;
-
-SkiaGraphiteImageRepresentation::EndAccessState::EndAccessState(
-    GraphiteSharedContext* context,
-    skgpu::graphite::BackendTexture texture,
-    std::unique_ptr<skgpu::MutableTextureState> end_state)
-    : context_(context),
-      texture_(std::move(texture)),
-      end_state_(std::move(end_state)) {
-  CHECK(context_);
-  CHECK(texture_.isValid());
-  CHECK(end_state_->isValid());
-}
-
-SkiaGraphiteImageRepresentation::EndAccessState::EndAccessState(
-    EndAccessState&& other)
-    : context_(std::exchange(other.context_, nullptr)),
-      texture_(std::exchange(other.texture_, {})),
-      end_state_(std::move(other.end_state_)) {}
-
-SkiaGraphiteImageRepresentation::EndAccessState&
-SkiaGraphiteImageRepresentation::EndAccessState::operator=(
-    EndAccessState&& other) {
-  if (this != &other) {
-    CHECK(!NeedsApply());
-    context_ = std::exchange(other.context_, nullptr);
-    texture_ = std::exchange(other.texture_, {});
-    end_state_ = std::move(other.end_state_);
-  }
-  return *this;
-}
-
-SkiaGraphiteImageRepresentation::EndAccessState::~EndAccessState() {
-  CHECK(!NeedsApply());
-}
-
-void SkiaGraphiteImageRepresentation::EndAccessState::Apply() {
-  if (!NeedsApply()) {
-    return;
-  }
-  if (!context_->setMutableState(texture_, *end_state_)) {
-    LOG(ERROR) << "setMutableState() failed.";
-  }
-  context_ = nullptr;
-}
-
 SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
     ScopedGraphiteWriteAccess(
         base::PassKey<SkiaGraphiteImageRepresentation> /* pass_key */,

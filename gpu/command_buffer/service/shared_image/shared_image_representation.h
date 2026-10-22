@@ -17,6 +17,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image/end_access_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
@@ -25,7 +26,6 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
-#include "third_party/skia/include/gpu/graphite/BackendSemaphore.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/color_space.h"
@@ -72,7 +72,6 @@ class NativePixmap;
 }  // namespace gfx
 
 namespace gpu {
-class GraphiteSharedContext;
 class SharedImageManager;
 class TextureBase;
 
@@ -678,29 +677,6 @@ class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
 class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
     : public SkiaImageRepresentation {
  public:
-  // Holds state that needs to be applied before ending access. This will be
-  // empty for Graphite/Dawn as Dawn handles transitions and synchronization.
-  class GPU_GLES2_EXPORT EndAccessState {
-   public:
-    EndAccessState();
-    EndAccessState(GraphiteSharedContext* context,
-                   skgpu::graphite::BackendTexture texture,
-                   std::unique_ptr<skgpu::MutableTextureState> end_state);
-    EndAccessState(EndAccessState&& other);
-    EndAccessState& operator=(EndAccessState&& other);
-    ~EndAccessState();
-
-    // Returns true if Apply() needs to be called.
-    bool NeedsApply() const { return context_ != nullptr; }
-
-    void Apply();
-
-   private:
-    raw_ptr<GraphiteSharedContext> context_ = nullptr;
-    skgpu::graphite::BackendTexture texture_;
-    std::unique_ptr<skgpu::MutableTextureState> end_state_;
-  };
-
   class GPU_GLES2_EXPORT ScopedGraphiteWriteAccess : public ScopedWriteAccess {
    public:
     ScopedGraphiteWriteAccess(
