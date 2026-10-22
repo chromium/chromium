@@ -1079,13 +1079,6 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
   bool should_force_bgra8_to_rgba =
       !shared_image_usages.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                                   gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-#if BUILDFLAG(IS_WIN)
-  // Concurrent read/write on Windows results in a swapchain backing, which
-  // supports BGRA; hence there is no need to force to RGBA in this case.
-  should_force_bgra8_to_rgba =
-      should_force_bgra8_to_rgba &&
-      !shared_image_usages.Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-#endif
 
 #if BUILDFLAG(IS_LINUX)
   // WebGpu preferred canvas on linux is RGBA and interop (vk on gl) is
@@ -1098,44 +1091,27 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
     format = viz::SinglePlaneFormat::kRGBA_8888;
   }
 
-  const bool is_mappable_shared_image_allowed =
-      is_gpu_compositing_enabled &&
-      IsScanoutSupportedForCanvasWithFormat(format, capabilities);
+  if (shared_image_usages.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
+    const bool is_scanout_supported =
+        is_gpu_compositing_enabled &&
+        IsScanoutSupportedForCanvasWithFormat(format, capabilities) &&
+        shared_context_wrapper->ContextProvider()
+            .SharedImageInterface()
+            ->GetCapabilities()
+            .supports_scanout_shared_images;
 
-  // If we cannot use overlay, we have to remove the scanout flag and the
-  // concurrent read write flag.
-  const auto& shared_image_caps = shared_context_wrapper->ContextProvider()
-                                      .SharedImageInterface()
-                                      ->GetCapabilities();
-  bool is_overlay_supported =
-      is_mappable_shared_image_allowed &&
-      shared_image_caps.supports_scanout_shared_images;
-
-#if BUILDFLAG(IS_WIN)
-  // On Windows, SCANOUT usage is additionally supported in the special case
-  // of the swapchain being used on the service side to implement concurrent
-  // read/write.
-  is_overlay_supported =
-      is_overlay_supported ||
-      (shared_image_usages.Has(
-           gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
-       shared_image_caps.shared_image_swap_chain);
-#endif
-
-  if (!is_overlay_supported) {
-    shared_image_usages.RemoveAll(
-        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-        gpu::SHARED_IMAGE_USAGE_SCANOUT);
-  }
-
+    if (!is_scanout_supported) {
+      shared_image_usages.RemoveAll(gpu::SHARED_IMAGE_USAGE_SCANOUT);
+    }
 #if BUILDFLAG(IS_MAC)
-  if (shared_image_usages.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
-      format == viz::SinglePlaneFormat::kRGBA_8888) {
-    // GPU-accelerated scannout usage on Mac uses IOSurface.  Must switch from
-    // RGBA_8888 to BGRA_8888 in that case.
-    format = viz::SinglePlaneFormat::kBGRA_8888;
-  }
+    if (shared_image_usages.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
+        format == viz::SinglePlaneFormat::kRGBA_8888) {
+      // GPU-accelerated scanout usage on Mac uses IOSurface. Must switch from
+      // RGBA_8888 to BGRA_8888 in that case.
+      format = viz::SinglePlaneFormat::kBGRA_8888;
+    }
 #endif
+  }
 
   // These SharedImages are both read and written by the raster interface
   // (both occur, for example, when copying canvas resources between
