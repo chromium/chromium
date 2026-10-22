@@ -25,6 +25,8 @@ This file checks for the following:
     layout, encouraging the usage of Chrome's semantically named colors
   - Checks if new preference XML files are added and encourages search indexing
     and registration.
+  - Encourages using android:layout_margin* for stationary view positioning in
+    layout XML files when android:translationX or android:translationY is added.
 """
 
 from collections import defaultdict
@@ -89,6 +91,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckXmlNamespacePrefixes(input_api, output_api))
   result.extend(_CheckTextAppearance(input_api, output_api))
   result.extend(_CheckLineSpacingAttribute(input_api, output_api))
+  result.extend(_CheckLayoutTranslationAttributes(input_api, output_api))
   result.extend(_CheckButtonCompatWidgetUsage(input_api, output_api))
   result.extend(_CheckStringResourceQuotesPunctuations(input_api, output_api))
   result.extend(_CheckStringResourceEllipsisPunctuations(input_api, output_api))
@@ -587,6 +590,43 @@ def _CheckLineSpacingAttribute(input_api, output_api):
   return []
 
 
+def _CheckLayoutTranslationAttributes(input_api, output_api):
+  """Warns when android:translationX/Y is used in layout XML."""
+  warnings = []
+  translation_attr_pattern = re.compile(r'\bandroid:translation[XY]\s*=')
+
+  for f in IncludedFiles(input_api):
+    if not _is_layout_file(f):
+      continue
+    for line_number, line in f.ChangedContents():
+      if line.lstrip().startswith('<!--'):
+        continue
+      if translation_attr_pattern.search(line):
+        warnings.append(
+          '  %s:%d\n    \t%s' % (f.LocalPath(), line_number, line.strip())
+        )
+
+  if warnings:
+    return [
+      output_api.PresubmitPromptWarning(
+        '''
+  Android Layout Translation Attribute Warning:
+    Your new code uses android:translationX or android:translationY in a
+    layout XML file, listed below.
+
+    Translation attributes shift pixels post-layout. While touch targets do move
+    with the translation, the view's layout bounds remain at the original position,
+    meaning sibling views won't adapt to the shift and touch events may get clipped
+    by the parent. Use android:layout_margin* attributes for stationary view
+    positioning so layout bounds are properly calculated.
+  ''',
+        warnings,
+      )
+    ]
+
+  return []
+
+
 ### important for accessibility below ###
 def _CheckImportantForAccessibility(input_api, output_api):
   """
@@ -730,6 +770,14 @@ def _CheckStringResourceEllipsisPunctuations(input_api, output_api):
 
 
 ### helpers ###
+def _is_layout_file(f):
+  path_components = re.split(r'[\\/]', f.LocalPath())
+  return any(
+    component == 'layout' or component.startswith('layout-')
+    for component in path_components
+  )
+
+
 def _colorXml2Dict(content):
   dct = dict()
   tree = ET.fromstring(content)
@@ -797,16 +845,8 @@ def _CheckThemeColorAttributes(input_api, output_api):
     r'\b(android|app):(\S*)\s*=\s*"\?attr\/.*([Cc]olor)'
   )
 
-  # Split the file path into a list of strings and check whether that list
-  # contains the string "layout".
-  def is_layout_file(f):
-    # Split path string (on either a forward or backslash) into a list of strings
-    # and check whether that list contains the string "layout".
-    path_components = re.split(r'[\\/]', f.LocalPath())
-    return 'layout' in path_components
-
   for f in IncludedFiles(input_api):
-    if not is_layout_file(f):
+    if not _is_layout_file(f):
       continue
     for line_number, line in f.ChangedContents():
       if color_theme_attr_pattern.search(line):

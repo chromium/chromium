@@ -569,6 +569,50 @@ class UnfavoredLayoutAttributesTest(unittest.TestCase):
       result[0].items[1].splitlines()[0],
     )
 
+  def testLayoutTranslationAttributesUsage(self):
+    xmlChanges = [
+      '<ImageButton android:id="@+id/close_button"',
+      '    android:layout_width="24dp"',
+      '    android:layout_height="24dp"',
+      '    android:translationX="4dp"',
+      '    android:translationY="-2dp"',
+      '/>',
+      '<!-- android:translationX="8dp" -->',
+      '<ImageButton android:id="@+id/aligned_button"',
+      '    android:layout_marginStart="4dp"',
+      '/>',
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockFile('chrome/android/java/res/layout/custom_toolbar.xml', xmlChanges),
+      MockFile(
+        'chrome/android/java/res/layout-sw600dp/custom_toolbar.xml',
+        ['<View android:translationX="2dp" />'],
+      ),
+      MockFile(
+        'chrome/android/java/res/anim/slide_in.xml',
+        ['<objectAnimator android:translationX="16dp" />'],
+      ),
+    ]
+    result = checkxmlstyle._CheckLayoutTranslationAttributes(
+      mock_input_api, MockOutputApi()
+    )
+
+    self.assertEqual(1, len(result))
+    self.assertEqual(3, len(result[0].items))
+    self.assertEqual(
+      '  chrome/android/java/res/layout/custom_toolbar.xml:4',
+      result[0].items[0].splitlines()[0],
+    )
+    self.assertEqual(
+      '  chrome/android/java/res/layout/custom_toolbar.xml:5',
+      result[0].items[1].splitlines()[0],
+    )
+    self.assertEqual(
+      '  chrome/android/java/res/layout-sw600dp/custom_toolbar.xml:1',
+      result[0].items[2].splitlines()[0],
+    )
+
 
 class UnfavoredWidgetsTest(unittest.TestCase):
   def testButtonCompatUsage(self):
@@ -811,6 +855,23 @@ class CheckThemeColorAttributesTest(unittest.TestCase):
       mock_input_api, MockOutputApi()
     )
     self.assertEqual(0, len(warnings))
+
+  def testQualifiedLayoutDirectoryIsChecked(self):
+    """Tests that qualified layout directories (e.g. layout-sw600dp) are checked."""
+    lines = [
+      '<TextView',
+      '    android:textColor="?attr/colorPrimary" />',
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockFile('chrome/android/java/res/layout-sw600dp/test_layout.xml', lines)
+    ]
+    warnings = checkxmlstyle._CheckThemeColorAttributes(
+      mock_input_api, MockOutputApi()
+    )
+    self.assertEqual(1, len(warnings))
+    self.assertEqual(1, len(warnings[0].items))
+    self.assertIn('test_layout.xml:2', warnings[0].items[0])
 
 
 class AttrChecksTest(unittest.TestCase):
