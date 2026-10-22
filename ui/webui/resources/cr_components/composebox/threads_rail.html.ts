@@ -11,8 +11,13 @@ export function getHtml(this: ThreadsRailElement) {
   <div id="rail">
     <cr-icon-button id="logoButton"
         suppress-rtl-flip
-        @click="${this.onLogoClick_}">
+        @click="${this.onLogoClick_}"
+        aria-label="${this.i18n('aimThreadsGoogleSearchLabel')}">
     </cr-icon-button>
+    <cr-tooltip for="logoButton" position="right" offset="16"
+        animation-delay="0" hide-delay="0">
+      ${this.i18n('aimThreadsGoogleSearchLabel')}
+    </cr-tooltip>
     <div id="iconsContainer">
       <!-- TODO(crbug.com/570552031): Replace placeholders with
            server-driven icons once AimEligibility icon config is wired up. -->

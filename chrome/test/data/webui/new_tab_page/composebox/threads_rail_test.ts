@@ -13,6 +13,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../test_support.js';
 
+const AIM_THREADS_GOOGLE_SEARCH_LABEL = 'Google Search';
 const AIM_THREADS_HISTORY_LABEL = 'AI Mode history';
 const AIM_THREADS_NEW_SEARCH_LABEL = 'Start new AI Mode search';
 const GOOGLE_BASE_URL = 'https://www.google.com/';
@@ -34,6 +35,7 @@ suite('NewTabPageThreadsRailTest', () => {
     windowProxy = installMock(ComposeboxWindowProxy);
     metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({
+      aimThreadsGoogleSearchLabel: AIM_THREADS_GOOGLE_SEARCH_LABEL,
       aimThreadsHistoryLabel: AIM_THREADS_HISTORY_LABEL,
       aimThreadsNewSearchLabel: AIM_THREADS_NEW_SEARCH_LABEL,
       googleBaseUrl: GOOGLE_BASE_URL,
@@ -53,7 +55,17 @@ suite('NewTabPageThreadsRailTest', () => {
         threadsRailElement.shadowRoot.querySelector<HTMLElement>('#logoButton');
     assertTrue(!!logoButton);
     assertTrue(isVisible(logoButton));
+    assertEquals(
+        loadTimeData.getString('aimThreadsGoogleSearchLabel'),
+        logoButton.getAttribute('aria-label'));
     assertTrue(logoButton.hasAttribute('suppress-rtl-flip'));
+    const logoTooltip =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            'cr-tooltip[for="logoButton"]');
+    assertTrue(!!logoTooltip);
+    assertEquals(
+        loadTimeData.getString('aimThreadsGoogleSearchLabel'),
+        logoTooltip.textContent.trim());
 
     const historyButton =
         threadsRailElement.shadowRoot.querySelector<HTMLElement>(

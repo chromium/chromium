@@ -693,6 +693,7 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
       {"mobilePromoQrCode", IDS_NTP_MOBILE_PROMO_QR_CODE_LABEL},
 
       // Threads rail.
+      {"aimThreadsGoogleSearchLabel", IDS_NTP_THREADS_GOOGLE_SEARCH_LABEL},
       {"aimThreadsHistoryLabel", IDS_NTP_THREADS_HISTORY_LABEL},
       {"aimThreadsNewSearchLabel", IDS_NTP_THREADS_NEW_SEARCH_LABEL},
 
