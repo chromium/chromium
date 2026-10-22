@@ -1,9 +1,9 @@
 Name: OpenH264
 Short Name: openh264
 URL: http://www.openh264.org/
-Version: N/A
-Revision: DEPS
-Update Mechanism: Manual
+Version: v2.7.0
+Revision: 1bca62311e447fd9c39fc93de2c4b96cd5ce971c
+Update Mechanism: Autoroll
 CPEPrefix: cpe:/a:cisco:openh264:2.6.0
 (Cut at 652bdb7719f30b52b08e506645a7322ff1b2cc6f)
 License: BSD-2-Clause
