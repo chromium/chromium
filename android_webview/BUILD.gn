@@ -33,7 +33,6 @@ if (_is_default_toolchain) {
   import("//android_webview/system_webview_bundle.gni")
   import("//chrome/android/chrome_public_apk_tmpl.gni")
   import("//chrome/android/static_initializers.gni")
-  import("//chrome/android/trichrome.gni")
 }
 assert(!is_cronet_build)
 
@@ -66,7 +65,7 @@ if (_is_default_toolchain) {
   _main_system_webview_base_bundle_module_target =
       "system_webview${_default_arch_tokens}_base_bundle_module"
 
-  template("standalone_system_webview_apk_tmpl") {
+  template("system_webview_apk_tmpl") {
     system_webview_apk_or_module_tmpl(target_name) {
       forward_variables_from(invoker, "*")
       deps = upstream_only_webview_deps
@@ -80,7 +79,7 @@ if (_is_default_toolchain) {
   }
 
   if (!android_64bit_target_cpu || defined(android_app_secondary_abi)) {
-    standalone_system_webview_apk_tmpl(_main_system_webview_apk_target) {
+    system_webview_apk_tmpl(_main_system_webview_apk_target) {
       apk_name = "SystemWebView"
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
@@ -100,8 +99,7 @@ if (_is_default_toolchain) {
       }
     }
 
-    standalone_system_webview_apk_tmpl(
-        _main_system_webview_base_bundle_module_target) {
+    system_webview_apk_tmpl(_main_system_webview_base_bundle_module_target) {
       target_type = "android_app_bundle_module"
       is_base_module = true
       if (android_64bit_target_cpu) {
@@ -125,14 +123,14 @@ if (_is_default_toolchain) {
   }
 
   if (android_64bit_target_cpu) {
-    standalone_system_webview_apk_tmpl("system_webview_64_apk") {
+    system_webview_apk_tmpl("system_webview_64_apk") {
       apk_name = "SystemWebView64"
       is_64_bit_browser = true
       include_32_bit_webview = false
       include_64_bit_webview = true
     }
 
-    standalone_system_webview_apk_tmpl("system_webview_64_base_bundle_module") {
+    system_webview_apk_tmpl("system_webview_64_base_bundle_module") {
       target_type = "android_app_bundle_module"
       is_base_module = true
       is_64_bit_browser = true
@@ -156,14 +154,13 @@ if (_is_default_toolchain) {
       # These targets builds a 32-bit only Webview on a 64-bit config, analogous
       # to what's built on a 32-bit config. This lets all Webviews build on a
       # single configuration.
-      standalone_system_webview_apk_tmpl("system_webview_32_apk") {
+      system_webview_apk_tmpl("system_webview_32_apk") {
         apk_name = "SystemWebView32"
         is_64_bit_browser = false
         include_64_bit_webview = false
       }
 
-      standalone_system_webview_apk_tmpl(
-          "system_webview_32_base_bundle_module") {
+      system_webview_apk_tmpl("system_webview_32_base_bundle_module") {
         target_type = "android_app_bundle_module"
         include_64_bit_webview = false
         is_base_module = true
@@ -184,9 +181,9 @@ if (_is_default_toolchain) {
         }
       }
 
-      # 64_32 targets for standalone
+      # 64_32 targets
       template("system_webview_64_32_tmpl") {
-        standalone_system_webview_apk_tmpl(target_name) {
+        system_webview_apk_tmpl(target_name) {
           forward_variables_from(invoker, "*")
           is_64_bit_browser = true
           include_32_bit_webview = true
@@ -1105,7 +1102,7 @@ declare_args() {
   # linked.
   webview_orderfile_path = ""
 
-  # Calculate the orderfile path for the standalone WebView
+  # Calculate the orderfile path for WebView
   # The orderfile is trained on PGO builds (for arm64, chrome_pgo_phase == 2)
   # and AFDO builds (for arm32). We also apply the PGO-trained orderfile to
   # non-PGO arm64 builds (chrome_pgo_phase == 0) because testing has
@@ -1185,7 +1182,7 @@ template("webview_chromium_library") {
   }
 }
 
-# The shared library used by standalone WebView. Make sure we don't define it
+# The native library used by WebView. Make sure we don't define it
 # in the default toolchain if we're using the WebView PGO profile, as the target
 # should always be built with a dedicated toolchain in these circumstances.
 webview_chromium_library("libwebviewchromium") {
@@ -1216,33 +1213,5 @@ if (_is_default_toolchain && enable_resource_allowlist_generation) {
       "$root_out_dir/libsystem_webview_pak_allowlist_inputs$shlib_extension",
     ]
     output = system_webview_pak_allowlist
-  }
-}
-
-# These are the definitions for the WebView's alternate-ABI libraries, which are
-# used by Trichrome on 64-bit devices which support both 32 and 64-bit ABIs.
-# WebView's browser process must use the same ABI as the embedding app (renderer
-# processes used the ABI defined in the WebView APK manifest), which requires us
-# to have two copies of the library available, one for each ABI.  The primary
-# library is the one shared with Chrome, and the alternate is a WebView-specific
-# library defined here for whichever ABI isn't used by Chrome.
-#
-# Note that this library does also include code needed for the embedded usecase,
-# because even though it's not used in normal circumstances, it is required on
-# a 64-bit-only device where the nonembedded process will also be 64-bit.
-if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
-  # Note here that on a given system, the webview-only library needs the same
-  # library name as the browser library, since the system webview factory will
-  # differentiate only by ABI.
-  webview_chromium_library("monochrome_64") {
-    # This target is the 32-bit WebView library that pairs with a 64-bit
-    # browser. It is suffixed with _64 because its name must match the 64-bit
-    # browser library.
-    enable_target = current_toolchain == android_secondary_abi_toolchain
-  }
-
-  # Inverse of above, for the original 32-bit case.
-  webview_chromium_library("monochrome") {
-    enable_target = current_toolchain != android_secondary_abi_toolchain
   }
 }

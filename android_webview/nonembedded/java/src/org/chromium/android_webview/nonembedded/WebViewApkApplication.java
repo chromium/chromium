@@ -32,7 +32,7 @@ import org.chromium.components.crash.CustomAssertionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler;
 
 /**
- * Application subclass for SystemWebView and Trichrome.
+ * Application subclass for SystemWebView.
  *
  * <p>Application subclass is used by renderer processes, services, and content providers that run
  * under the WebView APK's package.
@@ -45,9 +45,8 @@ public class WebViewApkApplication extends Application {
 
     // Called by the framework for ALL processes. Runs before ContentProviders are created.
     //
-    // Logic here is specific for standalone WebView and trichrome. There used to be a historical
-    // distinction between this method and maybeInitProcessGlobals(), but now initialization logic
-    // can safely go in either method.
+    // There used to be a historical distinction between this method and maybeInitProcessGlobals(),
+    // but now initialization logic can safely go in either method.
     // Quirk: context.getApplicationContext() returns null during this method.
     @Override
     protected void attachBaseContext(Context context) {

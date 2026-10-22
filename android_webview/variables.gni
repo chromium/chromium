@@ -4,13 +4,20 @@
 
 import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/compiler/pgo/pgo.gni")
 
 declare_args() {
   # Show a launcher icon to open WebView developer UI. This is enabled by
   # default for all prestable builds.
-  webview_devui_show_icon = android_channel != "stable"
+  webview_devui_show_icon =
+      android_channel != "stable" && !use_stable_package_name
 }
+
+# We can't include an icon for anything with the Stable channel package name
+# because it confuses work profiles.
+assert(!webview_devui_show_icon || !use_stable_package_name,
+       "webview_devui_show_icon is incompatible with use_stable_package_name")
 
 upstream_only_webview_deps = [
   "//android_webview/nonembedded:devui_banner_resources",

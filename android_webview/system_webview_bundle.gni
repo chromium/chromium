@@ -8,10 +8,6 @@ import("//components/crash/android/silent_java_assert_reporting.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
 template("system_webview_bundle") {
-  _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
-
-  assert(_is_trichrome == defined(invoker.static_library_provider))
-
   android_app_bundle(target_name) {
     command_line_flags_file = "webview-command-line"
     if (!is_java_debug) {

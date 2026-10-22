@@ -9,7 +9,6 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/locales.gni")
-import("//chrome/android/trichrome.gni")
 import("//chrome/version.gni")
 import("//components/crash/android/silent_java_assert_reporting.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -24,16 +23,7 @@ declare_args() {
 }
 
 template("system_webview_apk_or_module_tmpl") {
-  _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
-  assert(_is_trichrome == defined(invoker.static_library_provider),
-         "If trichrome library is used, static_library_provider must be set " +
-             "so that a dep can be added on the library APK.")
-
-  _mergeable_android_manifests = []
-  if (!_is_trichrome) {
-    _mergeable_android_manifests +=
-        [ "//android_webview/AndroidManifest_standalone_webview.xml" ]
-  }
+  _mergeable_android_manifests = [ "//android_webview/AndroidManifest.xml" ]
   if (defined(invoker.mergeable_android_manifests)) {
     _mergeable_android_manifests += invoker.mergeable_android_manifests
   }
@@ -58,11 +48,7 @@ template("system_webview_apk_or_module_tmpl") {
   _is_64_bit_browser =
       android_64bit_target_cpu && defined(invoker.is_64_bit_browser) &&
       invoker.is_64_bit_browser
-  if (_is_trichrome) {
-    _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
-  } else {
-    _version_code = WEBVIEW_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
-  }
+  _version_code = WEBVIEW_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
 
   if (defined(invoker.version_code)) {
     _version_code = invoker.version_code
@@ -90,15 +76,6 @@ template("system_webview_apk_or_module_tmpl") {
       "force_32_bit=$_force_32_bit",
       "manifest_package=$_manifest_package",
     ]
-    if (_is_trichrome) {
-      variables +=
-          trichrome_jinja_variables + [ "trichrome_version=$_version_code" ]
-      if (_is_64_bit_browser) {
-        variables += [ "library=libmonochrome_64.so" ]
-      } else {
-        variables += [ "library=libmonochrome.so" ]
-      }
-    }
     includes = []
     if (defined(invoker.jinja_input)) {
       includes += [ input ]
@@ -126,13 +103,10 @@ template("system_webview_apk_or_module_tmpl") {
                            "*",
                            TESTONLY_AND_VISIBILITY + [
                                  "is_64_bit_browser",
-                                 "is_trichrome",
                                  "include_32_bit_webview",
                                  "include_64_bit_webview",
                                  "manifest_package",
                                  "webview_framework_dep",
-                                 "webview_devui_show_icon",
-                                 "use_stable_package_name",
                                  "mergeable_android_manifests",
                                ])
 
@@ -171,13 +145,7 @@ template("system_webview_apk_or_module_tmpl") {
       alternative_android_sdk_dep = invoker.webview_framework_dep
     }
 
-    # We can't include an icon for anything with the Stable channel package name
-    # because it confuses work profiles. We check
-    # use_stable_package_name here instead of where
-    # webview_devui_show_icon is assigned to avoid a circular dependency
-    # between //android_webview/variables.gni and
-    # //chrome/android/trichrome.gni.
-    if (invoker.webview_devui_show_icon && !invoker.use_stable_package_name) {
+    if (webview_devui_show_icon) {
       deps += [ "//android_webview/nonembedded:devui_launcher_icon_resources" ]
     }
 
@@ -187,68 +155,32 @@ template("system_webview_apk_or_module_tmpl") {
 
     app_as_shared_lib = true
 
-    if (!_is_trichrome) {
-      if ((!android_64bit_target_cpu && _include_32_bit_webview) ||
-          (android_64bit_target_cpu && _include_64_bit_webview)) {
-        if (use_webview_pgo_profile) {
-          shared_libraries =
-              [ "//android_webview:libwebviewchromium($webview_toolchain)" ]
-          if (!defined(data_deps)) {
-            data_deps = []
-          }
+    if ((!android_64bit_target_cpu && _include_32_bit_webview) ||
+        (android_64bit_target_cpu && _include_64_bit_webview)) {
+      if (use_webview_pgo_profile) {
+        shared_libraries =
+            [ "//android_webview:libwebviewchromium($webview_toolchain)" ]
+        if (!defined(data_deps)) {
+          data_deps = []
+        }
 
-          # This needs to be a swarming runtime dep for the orderfile bot to
-          # work.
-          data_deps += [ "//android_webview:copy_webview_lib_unstripped" ]
-        } else {
-          shared_libraries = [ "//android_webview:libwebviewchromium" ]
-        }
-        _include_primary_support = true
-      }
-      if (android_64bit_target_cpu && _include_32_bit_webview) {
-        secondary_abi_shared_libraries = [ "//android_webview:libwebviewchromium($android_secondary_abi_toolchain)" ]
-        _include_secondary_support = true
-      }
-      deps += [ "//third_party/icu:icu_assets" ]
-    } else {
-      # Include placeholder libraries to ensure we are treated as the desired
-      # architecture.
-      if (android_64bit_target_cpu) {
-        if (_is_64_bit_browser) {
-          if (_include_32_bit_webview) {
-            secondary_abi_shared_libraries = [ "//android_webview:monochrome_64($android_secondary_abi_toolchain)" ]
-            _include_secondary_support = true
-          }
-          assert(_include_64_bit_webview)
-          native_lib_placeholders = [ "libplaceholder.so" ]
-        } else {
-          if (_include_64_bit_webview) {
-            shared_libraries = [ "//android_webview:monochrome" ]
-            _include_primary_support = true
-          } else {
-            # 32-bit-only WebView on a 64-bit target.
-            static_library_provider_use_secondary_abi = true
-          }
-          assert(_include_32_bit_webview)
-          secondary_native_lib_placeholders = [ "libplaceholder.so" ]
-        }
+        # This needs to be a swarming runtime dep for the orderfile bot to
+        # work.
+        data_deps += [ "//android_webview:copy_webview_lib_unstripped" ]
       } else {
-        assert(_include_32_bit_webview)
-        native_lib_placeholders = [ "libplaceholder.so" ]
+        shared_libraries = [ "//android_webview:libwebviewchromium" ]
       }
+      _include_primary_support = true
     }
+    if (android_64bit_target_cpu && _include_32_bit_webview) {
+      secondary_abi_shared_libraries = [ "//android_webview:libwebviewchromium($android_secondary_abi_toolchain)" ]
+      _include_secondary_support = true
+    }
+    deps += [ "//third_party/icu:icu_assets" ]
     if (defined(shared_libraries)) {
       _jni_registrations = shared_libraries
     } else if (defined(secondary_abi_shared_libraries)) {
       _jni_registrations = secondary_abi_shared_libraries
-    } else if (_is_trichrome) {
-      # Here, the only native library present in trichrome is the one shared
-      # between Chrome and WebView, so we depend on it instead.
-      if (android_64bit_target_cpu) {
-        _jni_registrations = [ "//chrome/android:libmonochrome_64" ]
-      } else {
-        _jni_registrations = [ "//chrome/android:libmonochrome" ]
-      }
     }
     if (defined(_jni_registrations)) {
       srcjar_deps = []

@@ -9,10 +9,6 @@ import android.webkit.WebViewFactory;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.library_loader.NativeLibraryPreloader;
 
-/**
- * The library preloader for Trichrome for sharing native library's relro between Chrome and
- * WebView.
- */
 @Lifetime.Singleton
 public class WebViewLibraryPreloader extends NativeLibraryPreloader {
     @Override

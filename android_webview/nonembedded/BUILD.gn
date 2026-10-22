@@ -189,7 +189,7 @@ source_set("nonembedded") {
   assert_no_deps = [ "//content/public" ]
 }
 
-# WebView icon used by upstream SystemWebView and Trichrome.
+# WebView icon used by upstream SystemWebView.
 android_resources("icon_resources") {
   sources = [
     "java/res_icon/drawable-hdpi/icon_webview.png",
