@@ -7,9 +7,56 @@
 #include <array>
 
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/media/router/media_router_feature.h"
+#include "media/audio/audio_device_description.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mirroring {
+
+#if BUILDFLAG(IS_MAC)
+TEST(CastMirroringServiceHostTest, DesktopAudioUsesCastLoopbackDeviceOnMac) {
+  EXPECT_EQ(CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId(),
+            media::AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast);
+}
+#elif BUILDFLAG(IS_WIN)
+TEST(CastMirroringServiceHostTest,
+     DesktopAudioDoesNotMuteLocalPlaybackOnWinByDefault) {
+  EXPECT_EQ(CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId(),
+            media::AudioDeviceDescription::kLoopbackInputDeviceId);
+}
+
+TEST(CastMirroringServiceHostTest,
+     DesktopAudioDoesNotMuteLocalPlaybackOnWinWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      media_router::kCastDesktopMirroringKeepLocalAudio);
+  EXPECT_EQ(CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId(),
+            media::AudioDeviceDescription::kLoopbackInputDeviceId);
+}
+
+TEST(CastMirroringServiceHostTest,
+     DesktopAudioMutesLocalPlaybackOnWinWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      media_router::kCastDesktopMirroringKeepLocalAudio);
+  EXPECT_EQ(CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId(),
+            media::AudioDeviceDescription::kLoopbackWithMuteDeviceId);
+}
+#else
+TEST(CastMirroringServiceHostTest, DesktopAudioMutesLocalPlayback) {
+  EXPECT_EQ(CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId(),
+            media::AudioDeviceDescription::kLoopbackWithMuteDeviceId);
+}
+#endif
+
+// The selected device ID must always be one that the audio service treats as
+// a loopback device; otherwise it would be opened as a regular input device.
+TEST(CastMirroringServiceHostTest, DesktopAudioDeviceIsLoopbackDevice) {
+  EXPECT_TRUE(media::AudioDeviceDescription::IsLoopbackDevice(
+      CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId()));
+}
 
 TEST(CastMirroringServiceHostTest, TestGetClampedResolution) {
   // {screen width, screen height, capture width, capture height}

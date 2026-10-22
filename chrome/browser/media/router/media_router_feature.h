@@ -62,6 +62,16 @@ BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 // can be frequent and contain sensitive information, so disabled by default.
 BASE_DECLARE_FEATURE(kCastMessageLogging);
 
+#if BUILDFLAG(IS_WIN)
+// If enabled, Cast desktop (screen) mirroring on Windows captures system audio
+// without muting the local output device. Muting the default render endpoint
+// silences the loopback capture itself on some audio drivers, which leaves the
+// Cast receiver silent (https://crbug.com/369209699). This matches the macOS
+// behavior. Disabling this restores the legacy behavior of muting local audio
+// for the duration of the session.
+BASE_DECLARE_FEATURE(kCastDesktopMirroringKeepLocalAudio);
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
 // If enabled, the redirection (MMR) Media Route Provider is registered.
 BASE_DECLARE_FEATURE(kRedirectionMediaRouteProvider);

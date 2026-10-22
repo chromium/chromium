@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -17,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/cast_remoting_connector.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -273,6 +275,28 @@ gfx::Size CastMirroringServiceHost::GetCaptureResolutionConstraint() {
 }
 
 // static
+std::string_view CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId() {
+#if BUILDFLAG(IS_MAC)
+  // Temporary logic to make the launch of CatapAudioInputStream for Cast
+  // independent of the launch of the same feature for getDisplayMedia().
+  // TODO(https://crbug.com/425902990): Remove the usage of
+  // `kLoopbackWithMuteDeviceIdCast` once CatapAudioInputStream is launched for
+  // both Cast and getDisplayMedia().
+  return media::AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast;
+#elif BUILDFLAG(IS_WIN)
+  // On some Windows audio drivers, muting the default render endpoint also
+  // silences the endpoint loopback capture, so the receiver gets no audio.
+  // Capture without muting local playback instead.
+  return base::FeatureList::IsEnabled(
+             media_router::kCastDesktopMirroringKeepLocalAudio)
+             ? media::AudioDeviceDescription::kLoopbackInputDeviceId
+             : media::AudioDeviceDescription::kLoopbackWithMuteDeviceId;
+#else
+  return media::AudioDeviceDescription::kLoopbackWithMuteDeviceId;
+#endif
+}
+
+// static
 gfx::Size CastMirroringServiceHost::GetClampedResolution(
     gfx::Size screen_resolution) {
   // Use landscape mode dimensions for screens in portrait mode.
@@ -445,18 +469,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
   mojo::MessagePipe pipe_to_audio_service;
   mojo::MessagePipe pipe_to_mirroring_service;
 
-  // Temporary logic to make the launch of CatapAudioInputStream for Cast
-  // independent of the launch of the same feature for getDisplayMedia().
-  // TODO(https://crbug.com/425902990): Remove the usage of
-  // `kLoopbackWithMuteDeviceIdCast` once CatapAudioInputStream is launched for
-  // both Cast and getDisplayMedia().
-#if BUILDFLAG(IS_MAC)
-  const char* loopback_id =
-      media::AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast;
-#else  // IS_MAC
-  const char* loopback_id =
-      media::AudioDeviceDescription::kLoopbackWithMuteDeviceId;
-#endif
+  const std::string loopback_id(GetDesktopAudioLoopbackDeviceId());
 
   // This does the mostly the same thing as the similar insane glob of code in
   // the CreateAudioStreamForTab() method. Here, system-wide audio is requested

@@ -55,6 +55,11 @@ BASE_FEATURE(kShowCastPermissionRejectedError,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCastMessageLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kCastDesktopMirroringKeepLocalAudio,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
 // If enabled, the redirection (MMR) Media Route Provider is registered.
 BASE_FEATURE(kRedirectionMediaRouteProvider, base::FEATURE_DISABLED_BY_DEFAULT);

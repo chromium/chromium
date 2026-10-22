@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -57,6 +58,11 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   CastMirroringServiceHost& operator=(const CastMirroringServiceHost&) = delete;
 
   ~CastMirroringServiceHost() override;
+
+  // Returns the audio input device ID used to capture system audio when
+  // mirroring a desktop (screen). Whether local playback is muted while
+  // capturing depends on the platform and on feature state.
+  static std::string_view GetDesktopAudioLoopbackDeviceId();
 
   // MirroringServiceHost implementation.
   void Start(mojom::SessionParametersPtr session_params,

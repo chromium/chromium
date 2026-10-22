@@ -131,7 +131,10 @@ source_set("unittests") {
 
   if (enable_extensions) {
     sources += [ "cast_mirroring_service_host_unittest.cc" ]
-    deps += [ ":impl" ]
+    deps += [
+      ":impl",
+      "//chrome/browser/media/router:media_router_feature",
+    ]
   }
 
   if (enable_media_remoting && !is_android) {
