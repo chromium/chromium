@@ -334,7 +334,9 @@ bool PrintersSyncBridge::IsEntityDataValid(
 ConflictResolution PrintersSyncBridge::ResolveConflict(
     const std::string& storage_key,
     const EntityData& remote_data) const {
-  CHECK(remote_data.specifics.has_printer(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/576116695): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(remote_data.specifics.has_printer());
 
   auto iter = all_data_.find(storage_key);
   // If the local printer doesn't exist, it must have been deleted. In this
