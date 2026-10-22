@@ -8,7 +8,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
-#include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -47,11 +46,6 @@ class BookmarkPageActionController : public BookmarkTabHelperObserver,
       delete;
 
   static BookmarkPageActionController* From(tabs::TabInterface* tab);
-
-  // Reports to a histogram indicating how the bookmark page action was
-  // triggered.
-  static void RecordPageActionExecution(
-      page_actions::PageActionTrigger trigger);
 
   // BookmarkTabHelperObserver
   void URLStarredChanged(content::WebContents* web_contents,

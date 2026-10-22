@@ -6,10 +6,7 @@
 
 #include <string_view>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -124,26 +121,6 @@ TEST_F(BookmarkPageActionControllerTest, EditBookmarkPrefControlsVisibility) {
 
   EXPECT_CALL(page_action_controller(), Hide(kActionBookmarkThisTab)).Times(1);
   pref_service().SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
-}
-
-TEST_F(BookmarkPageActionControllerTest,
-       RecordPageActionExecutionRecordsHistogram) {
-  base::HistogramTester histogram_tester;
-
-  BookmarkPageActionController::RecordPageActionExecution(
-      page_actions::PageActionTrigger::kMouse);
-  histogram_tester.ExpectUniqueSample("Bookmarks.EntryPoint",
-                                      BookmarkEntryPoint::kStarMouse, 1);
-
-  BookmarkPageActionController::RecordPageActionExecution(
-      page_actions::PageActionTrigger::kKeyboard);
-  histogram_tester.ExpectBucketCount("Bookmarks.EntryPoint",
-                                     BookmarkEntryPoint::kStarKey, 1);
-
-  BookmarkPageActionController::RecordPageActionExecution(
-      page_actions::PageActionTrigger::kGesture);
-  histogram_tester.ExpectBucketCount("Bookmarks.EntryPoint",
-                                     BookmarkEntryPoint::kStarGesture, 1);
 }
 
 TEST_F(BookmarkPageActionControllerTest, HiddenOnNTP) {

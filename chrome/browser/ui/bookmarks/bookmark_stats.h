@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_STATS_H_
 
 #include "base/time/time.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom-forward.h"
 #include "components/profile_metrics/browser_profile_type.h"
 
 class GURL;
@@ -79,6 +80,10 @@ std::ostream& operator<<(std::ostream& out, const BookmarkLaunchAction& action);
 // Records an app launch metric if the URL is associated with an installed
 // Chrome App.
 void RecordAppLaunchForBookmarkBar(Profile* profile, const GURL& url);
+
+// Records that the bookmark page action was executed via `trigger`.
+void RecordBookmarkPageActionExecution(
+    toolbar_ui_api::mojom::PageActionTrigger trigger);
 
 // Records the launch of a bookmark for UMA purposes.
 void RecordBookmarkLaunch(BookmarkLaunchLocation location,

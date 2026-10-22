@@ -6,9 +6,11 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -60,6 +62,25 @@ void RecordAppLaunchForBookmarkBar(Profile* profile, const GURL& url) {
                                     extension->GetType());
   }
 #endif
+}
+
+void RecordBookmarkPageActionExecution(
+    toolbar_ui_api::mojom::PageActionTrigger trigger) {
+  BookmarkEntryPoint entry_point;
+  switch (trigger) {
+    case toolbar_ui_api::mojom::PageActionTrigger::kMouse:
+      entry_point = BookmarkEntryPoint::kStarMouse;
+      break;
+    case toolbar_ui_api::mojom::PageActionTrigger::kKeyboard:
+      entry_point = BookmarkEntryPoint::kStarKey;
+      break;
+    case toolbar_ui_api::mojom::PageActionTrigger::kGesture:
+      entry_point = BookmarkEntryPoint::kStarGesture;
+      break;
+    default:
+      NOTREACHED();
+  }
+  UMA_HISTOGRAM_ENUMERATION("Bookmarks.EntryPoint", entry_point);
 }
 
 void RecordBookmarkLaunch(BookmarkLaunchLocation location,

@@ -363,7 +363,6 @@ if (!is_android) {
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/user_education",
-      "//chrome/browser/ui/views/bookmarks",
       "//chrome/browser/ui/views/commerce",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/file_system_access",

@@ -5,13 +5,10 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
-#include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
@@ -64,26 +61,6 @@ BookmarkPageActionController::~BookmarkPageActionController() = default;
 BookmarkPageActionController* BookmarkPageActionController::From(
     tabs::TabInterface* tab) {
   return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
-}
-
-// static
-void BookmarkPageActionController::RecordPageActionExecution(
-    page_actions::PageActionTrigger trigger) {
-  BookmarkEntryPoint entry_point;
-  switch (trigger) {
-    case page_actions::PageActionTrigger::kMouse:
-      entry_point = BookmarkEntryPoint::kStarMouse;
-      break;
-    case page_actions::PageActionTrigger::kKeyboard:
-      entry_point = BookmarkEntryPoint::kStarKey;
-      break;
-    case page_actions::PageActionTrigger::kGesture:
-      entry_point = BookmarkEntryPoint::kStarGesture;
-      break;
-    default:
-      NOTREACHED();
-  }
-  UMA_HISTOGRAM_ENUMERATION("Bookmarks.EntryPoint", entry_point);
 }
 
 void BookmarkPageActionController::URLStarredChanged(
