@@ -33,7 +33,7 @@
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/proto_conversions.h"
-#import "components/send_tab_to_self/send_tab_to_self_entity_builder.h"
+#import "components/send_tab_to_self/test_send_tab_to_self_entity_builder.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/pref_names.h"
@@ -630,7 +630,7 @@ std::string AddSendTabToSelfEntryToFakeSyncServer(
     const std::string& text_fragment) {
   CHECK(IsFakeSyncServerSetUp());
 
-  send_tab_to_self::SendTabToSelfEntityBuilder builder(url, title);
+  send_tab_to_self::TestSendTabToSelfEntityBuilder builder(url, title);
   builder.SetDeviceName(device_name);
 
   std::string target_guid = target_device_cache_guid;

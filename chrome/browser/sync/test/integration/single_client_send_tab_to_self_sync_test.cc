@@ -30,9 +30,9 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
-#include "components/send_tab_to_self/send_tab_to_self_entity_builder.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/test_send_tab_to_self_entity_builder.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -114,8 +114,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   const GURL url(kUrl);
 
   fake_server_->InjectEntity(
-      send_tab_to_self::SendTabToSelfEntityBuilder(url).SetGuid(kGuid).Build(
-          *fake_server_));
+      send_tab_to_self::TestSendTabToSelfEntityBuilder(url)
+          .SetGuid(kGuid)
+          .Build(*fake_server_));
 
   ASSERT_TRUE(SetupSync());
 
@@ -133,11 +134,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
 
   const GURL url = embedded_test_server()->GetURL(kAutofillTestFormPath);
 
-  fake_server_->InjectEntity(send_tab_to_self::SendTabToSelfEntityBuilder(url)
-                                 .SetGuid(kGuid)
-                                 .AddFormField("NAME_FIRST", kName)
-                                 .AddFormField("EMAIL_ADDRESS", kEmail)
-                                 .Build(*fake_server_));
+  fake_server_->InjectEntity(
+      send_tab_to_self::TestSendTabToSelfEntityBuilder(url)
+          .SetGuid(kGuid)
+          .AddFormField("NAME_FIRST", kName)
+          .AddFormField("EMAIL_ADDRESS", kEmail)
+          .Build(*fake_server_));
 
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0));
@@ -290,8 +292,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   const base::Time navigation_time(base::Time::Now());
 
   fake_server_->InjectEntity(
-      send_tab_to_self::SendTabToSelfEntityBuilder(url).SetGuid(kGuid).Build(
-          *fake_server_));
+      send_tab_to_self::TestSendTabToSelfEntityBuilder(url)
+          .SetGuid(kGuid)
+          .Build(*fake_server_));
 
   ASSERT_TRUE(SetupSync());
 
@@ -420,10 +423,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   const GURL url = embedded_test_server()->GetURL(kScrollPagePath);
   constexpr char kTextStart[] = "quick brown fox";
 
-  fake_server_->InjectEntity(send_tab_to_self::SendTabToSelfEntityBuilder(url)
-                                 .SetGuid(kGuid)
-                                 .SetTextFragment(kTextStart)
-                                 .Build(*fake_server_));
+  fake_server_->InjectEntity(
+      send_tab_to_self::TestSendTabToSelfEntityBuilder(url)
+          .SetGuid(kGuid)
+          .SetTextFragment(kTextStart)
+          .Build(*fake_server_));
 
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0));

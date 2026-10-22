@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/send_tab_to_self/send_tab_to_self_entity_builder.h"
+#include "components/send_tab_to_self/test_send_tab_to_self_entity_builder.h"
 
 #include <utility>
 
@@ -33,7 +33,7 @@ constexpr char kClientEntityNonUniqueName[] = "non_unique_name";
 // of `specifics`, and encrypts it into `encrypted_page_context` using the
 // Nigori keystore keys from `fake_server`.
 void PopulatePageContext(
-    const std::vector<SendTabToSelfEntityBuilder::FormField>& form_fields,
+    const std::vector<TestSendTabToSelfEntityBuilder::FormField>& form_fields,
     const std::string& text_fragment,
     const fake_server::FakeServer& fake_server,
     sync_pb::SendTabToSelfSpecifics* specifics) {
@@ -66,7 +66,7 @@ void PopulatePageContext(
 
   std::string key_base64 = base::Base64Encode(keystore_keys.back());
   std::unique_ptr<syncer::CryptographerImpl> cryptographer =
-      syncer::CryptographerImpl::FromSingleKeyForTesting(  // IN-TEST
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
           key_base64, syncer::KeyDerivationParams::CreateForPbkdf2());
   CHECK(cryptographer);
   CHECK(cryptographer->Encrypt(PageContextToProto(context),
@@ -75,62 +75,65 @@ void PopulatePageContext(
 
 }  // namespace
 
-SendTabToSelfEntityBuilder::SendTabToSelfEntityBuilder(GURL url,
-                                                       std::string title)
+TestSendTabToSelfEntityBuilder::TestSendTabToSelfEntityBuilder(
+    GURL url,
+    std::string title)
     : url_(std::move(url)),
       title_(std::move(title)),
       guid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
-SendTabToSelfEntityBuilder::~SendTabToSelfEntityBuilder() = default;
+TestSendTabToSelfEntityBuilder::~TestSendTabToSelfEntityBuilder() = default;
 
-SendTabToSelfEntityBuilder::SendTabToSelfEntityBuilder(
-    SendTabToSelfEntityBuilder&&) = default;
+TestSendTabToSelfEntityBuilder::TestSendTabToSelfEntityBuilder(
+    TestSendTabToSelfEntityBuilder&&) = default;
 
-SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::operator=(
-    SendTabToSelfEntityBuilder&&) = default;
+TestSendTabToSelfEntityBuilder& TestSendTabToSelfEntityBuilder::operator=(
+    TestSendTabToSelfEntityBuilder&&) = default;
 
-SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::SetTitle(
+TestSendTabToSelfEntityBuilder& TestSendTabToSelfEntityBuilder::SetTitle(
     std::string title) {
   title_ = std::move(title);
   return *this;
 }
 
-SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::SetGuid(
+TestSendTabToSelfEntityBuilder& TestSendTabToSelfEntityBuilder::SetGuid(
     std::string guid) {
   guid_ = std::move(guid);
   return *this;
 }
 
-SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::SetDeviceName(
+TestSendTabToSelfEntityBuilder& TestSendTabToSelfEntityBuilder::SetDeviceName(
     std::string device_name) {
   device_name_ = std::move(device_name);
   return *this;
 }
 
-SendTabToSelfEntityBuilder&
-SendTabToSelfEntityBuilder::SetTargetDeviceCacheGuid(std::string target_guid) {
+TestSendTabToSelfEntityBuilder&
+TestSendTabToSelfEntityBuilder::SetTargetDeviceCacheGuid(
+    std::string target_guid) {
   target_device_cache_guid_ = std::move(target_guid);
   return *this;
 }
 
-SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::SetSharedTime(
+TestSendTabToSelfEntityBuilder& TestSendTabToSelfEntityBuilder::SetSharedTime(
     base::Time time) {
   shared_time_ = time;
   return *this;
 }
 
-SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::SetOpened(bool opened) {
+TestSendTabToSelfEntityBuilder& TestSendTabToSelfEntityBuilder::SetOpened(
+    bool opened) {
   opened_ = opened;
   return *this;
 }
 
-SendTabToSelfEntityBuilder&
-SendTabToSelfEntityBuilder::SetNotificationDismissed(bool dismissed) {
+TestSendTabToSelfEntityBuilder&
+TestSendTabToSelfEntityBuilder::SetNotificationDismissed(bool dismissed) {
   notification_dismissed_ = dismissed;
   return *this;
 }
 
-SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::AddFormField(
+TestSendTabToSelfEntityBuilder& TestSendTabToSelfEntityBuilder::AddFormField(
     std::string_view id_attribute,
     std::string_view value,
     std::string_view name_attribute) {
@@ -142,13 +145,14 @@ SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::AddFormField(
   return *this;
 }
 
-SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::SetTextFragment(
+TestSendTabToSelfEntityBuilder& TestSendTabToSelfEntityBuilder::SetTextFragment(
     std::string_view text_fragment) {
   text_fragment_ = std::string(text_fragment);
   return *this;
 }
 
-std::unique_ptr<syncer::LoopbackServerEntity> SendTabToSelfEntityBuilder::Build(
+std::unique_ptr<syncer::LoopbackServerEntity>
+TestSendTabToSelfEntityBuilder::Build(
     const fake_server::FakeServer& fake_server) const {
   base::Time shared_time =
       shared_time_.is_null() ? base::Time::Now() : shared_time_;
@@ -170,11 +174,10 @@ std::unique_ptr<syncer::LoopbackServerEntity> SendTabToSelfEntityBuilder::Build(
 
   PopulatePageContext(form_fields_, text_fragment_, fake_server, specifics);
 
-  return syncer::PersistentUniqueClientEntity::
-      CreateFromSpecificsForTesting(  // IN-TEST
-          kClientEntityNonUniqueName, guid_, entity_specifics,
-          /*creation_time=*/shared_time_usec,
-          /*last_modified_time=*/shared_time_usec);
+  return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+      kClientEntityNonUniqueName, guid_, entity_specifics,
+      /*creation_time=*/shared_time_usec,
+      /*last_modified_time=*/shared_time_usec);
 }
 
 }  // namespace send_tab_to_self

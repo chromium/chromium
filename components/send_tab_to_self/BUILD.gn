@@ -98,12 +98,12 @@ source_set("test_support") {
   sources = [
     "fake_send_tab_to_self_model.cc",
     "fake_send_tab_to_self_model.h",
-    "send_tab_to_self_entity_builder.cc",
-    "send_tab_to_self_entity_builder.h",
     "stub_send_tab_to_self_sync_service.cc",
     "stub_send_tab_to_self_sync_service.h",
     "test_matchers.cc",
     "test_matchers.h",
+    "test_send_tab_to_self_entity_builder.cc",
+    "test_send_tab_to_self_entity_builder.h",
   ]
   public_deps = [
     "//base",

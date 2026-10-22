@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_ENTITY_BUILDER_H_
-#define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_ENTITY_BUILDER_H_
+#ifndef COMPONENTS_SEND_TAB_TO_SELF_TEST_SEND_TAB_TO_SELF_ENTITY_BUILDER_H_
+#define COMPONENTS_SEND_TAB_TO_SELF_TEST_SEND_TAB_TO_SELF_ENTITY_BUILDER_H_
 
 #include <memory>
 #include <string>
@@ -26,44 +26,46 @@ namespace send_tab_to_self {
 // Builder for constructing Send Tab to Self entities for `FakeServer` in tests.
 // Encapsulates GUID generation, page context packaging, and Nigori encryption
 // of `PageContext` fields.
-class SendTabToSelfEntityBuilder {
+class TestSendTabToSelfEntityBuilder {
  public:
   static constexpr std::string_view kDefaultTitle = "Default Title";
   static constexpr std::string_view kDefaultDeviceName = "target_device";
 
   // Constructs a builder with `url` and optional `title`.
-  explicit SendTabToSelfEntityBuilder(
+  explicit TestSendTabToSelfEntityBuilder(
       GURL url,
       std::string title = std::string(kDefaultTitle));
-  ~SendTabToSelfEntityBuilder();
+  ~TestSendTabToSelfEntityBuilder();
 
-  SendTabToSelfEntityBuilder(const SendTabToSelfEntityBuilder&) = delete;
-  SendTabToSelfEntityBuilder& operator=(const SendTabToSelfEntityBuilder&) =
+  TestSendTabToSelfEntityBuilder(const TestSendTabToSelfEntityBuilder&) =
       delete;
+  TestSendTabToSelfEntityBuilder& operator=(
+      const TestSendTabToSelfEntityBuilder&) = delete;
 
-  SendTabToSelfEntityBuilder(SendTabToSelfEntityBuilder&&);
-  SendTabToSelfEntityBuilder& operator=(SendTabToSelfEntityBuilder&&);
+  TestSendTabToSelfEntityBuilder(TestSendTabToSelfEntityBuilder&&);
+  TestSendTabToSelfEntityBuilder& operator=(TestSendTabToSelfEntityBuilder&&);
 
   // Sets the title of the entity.
-  SendTabToSelfEntityBuilder& SetTitle(std::string title);
+  TestSendTabToSelfEntityBuilder& SetTitle(std::string title);
 
   // Sets the unique GUID of the entity. If omitted, a random UUID is generated.
-  SendTabToSelfEntityBuilder& SetGuid(std::string guid);
+  TestSendTabToSelfEntityBuilder& SetGuid(std::string guid);
 
   // Sets the sender device name. Defaults to `kDefaultDeviceName`.
-  SendTabToSelfEntityBuilder& SetDeviceName(std::string device_name);
+  TestSendTabToSelfEntityBuilder& SetDeviceName(std::string device_name);
 
   // Sets the target device's sync cache GUID.
-  SendTabToSelfEntityBuilder& SetTargetDeviceCacheGuid(std::string target_guid);
+  TestSendTabToSelfEntityBuilder& SetTargetDeviceCacheGuid(
+      std::string target_guid);
 
   // Sets the shared timestamp. If omitted, defaults to `base::Time::Now()`.
-  SendTabToSelfEntityBuilder& SetSharedTime(base::Time time);
+  TestSendTabToSelfEntityBuilder& SetSharedTime(base::Time time);
 
   // Sets whether the entry has been opened on the receiving side.
-  SendTabToSelfEntityBuilder& SetOpened(bool opened);
+  TestSendTabToSelfEntityBuilder& SetOpened(bool opened);
 
   // Sets whether the notification for this entry was dismissed.
-  SendTabToSelfEntityBuilder& SetNotificationDismissed(bool dismissed);
+  TestSendTabToSelfEntityBuilder& SetNotificationDismissed(bool dismissed);
 
   struct FormField {
     std::string id_attribute;
@@ -73,13 +75,14 @@ class SendTabToSelfEntityBuilder {
 
   // Adds a form field to the entry's `PageContext` with `id_attribute` and
   // optional `name_attribute` (defaults to empty string).
-  SendTabToSelfEntityBuilder& AddFormField(
+  TestSendTabToSelfEntityBuilder& AddFormField(
       std::string_view id_attribute,
       std::string_view value,
       std::string_view name_attribute = "");
 
   // Sets the text fragment selector string for scroll position restoration.
-  SendTabToSelfEntityBuilder& SetTextFragment(std::string_view text_fragment);
+  TestSendTabToSelfEntityBuilder& SetTextFragment(
+      std::string_view text_fragment);
 
   // Builds the `syncer::LoopbackServerEntity` representing this Send Tab to
   // Self entry. If `PageContext` fields (`AddFormField()` or
@@ -113,4 +116,4 @@ class SendTabToSelfEntityBuilder {
 
 }  // namespace send_tab_to_self
 
-#endif  // COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_ENTITY_BUILDER_H_
+#endif  // COMPONENTS_SEND_TAB_TO_SELF_TEST_SEND_TAB_TO_SELF_ENTITY_BUILDER_H_
