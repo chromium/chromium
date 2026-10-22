@@ -86,6 +86,11 @@ void CollectionStorageObserver::SaveStructureSnapshot(bool clear_unused_nodes) {
   }
 }
 
+void CollectionStorageObserver::SetSynchronizer(
+    StorageCollectionSynchronizer* synchronizer) {
+  synchronizer_ = synchronizer;
+}
+
 CollectionStorageObserver::~CollectionStorageObserver() = default;
 
 void CollectionStorageObserver::SaveChildNodeOnly(
@@ -102,6 +107,10 @@ void CollectionStorageObserver::SaveChildNodeOnly(
       service_->Save(tab);
     }
   }
+  if (synchronizer_) {
+    synchronizer_->SaveStructureSnapshot(/*clear_unused_nodes=*/false,
+                                         base::NullCallback());
+  }
 }
 
 void CollectionStorageObserver::OnChildrenAdded(
@@ -109,20 +118,14 @@ void CollectionStorageObserver::OnChildrenAdded(
     const tabs::TabCollectionNodes& handles,
     bool insert_from_detached) {
   for (const auto& handle : handles) {
-    const TabCollection* parent;
-    if (std::holds_alternative<TabCollection::Handle>(handle)) {
-      const TabCollection* collection =
-          std::get<TabCollection::Handle>(handle).Get();
-      service_->Save(collection);
-      parent = collection->GetParentCollection();
-    } else {
+    if (std::holds_alternative<TabHandle>(handle)) {
       const TabInterface* tab = std::get<TabHandle>(handle).Get();
       service_->Save(tab);
-      parent = tab->GetParentCollection();
     }
-
-    DCHECK(parent) << "Child node should have parent";
-    service_->SaveChildren(parent);
+  }
+  if (synchronizer_) {
+    synchronizer_->SaveStructureSnapshot(/*clear_unused_nodes=*/false,
+                                         base::NullCallback());
   }
 }
 
@@ -138,31 +141,19 @@ void CollectionStorageObserver::OnChildrenRemoved(
       const TabInterface* tab = std::get<TabHandle>(handle).Get();
       service_->Remove(tab);
     }
-    service_->SaveChildren(position.parent_handle.Get());
+  }
+  if (synchronizer_) {
+    synchronizer_->SaveStructureSnapshot(/*clear_unused_nodes=*/false,
+                                         base::NullCallback());
   }
 }
 
 void CollectionStorageObserver::OnChildMoved(
     const TabCollection::Position& to_position,
     const NodeData& node_data) {
-  TabCollectionNodeHandle handle = node_data.handle;
-  const TabCollection* curr_parent;
-  const TabCollection* prev_parent = node_data.position.parent_handle.Get();
-  if (std::holds_alternative<TabCollectionHandle>(handle)) {
-    const TabCollection* collection =
-        std::get<TabCollection::Handle>(handle).Get();
-    curr_parent = collection->GetParentCollection();
-  } else {
-    const TabInterface* tab = std::get<TabHandle>(handle).Get();
-    curr_parent = tab->GetParentCollection();
-  }
-
-  DCHECK(curr_parent) << "Child node should have parent";
-  service_->SaveChildren(curr_parent);
-  service_->Save(curr_parent);
-  if (curr_parent != prev_parent) {
-    service_->SaveChildren(prev_parent);
-    service_->Save(prev_parent);
+  if (synchronizer_) {
+    synchronizer_->SaveStructureSnapshot(/*clear_unused_nodes=*/false,
+                                         base::NullCallback());
   }
 }
 

@@ -38,8 +38,8 @@ class CollectionStorageObserver
                     const NodeData& node_data) override;
   void SaveChildNodeOnly(TabCollectionNodeHandle handle) override;
 
-  // Saves a structural snapshot of the TabStripCollection.
-  void SaveStructureSnapshot(bool clear_unused_nodes);
+  void SaveStructureSnapshot(bool clear_unused_nodes) override;
+  void SetSynchronizer(StorageCollectionSynchronizer* synchronizer) override;
 
   // Removes `collection` and all its descendants from storage.
   static void ClearSubTree(const TabCollection* collection,
@@ -48,6 +48,7 @@ class CollectionStorageObserver
  private:
   raw_ptr<TabStripCollection> collection_;
   raw_ptr<TabStateStorageService> service_;
+  raw_ptr<StorageCollectionSynchronizer> synchronizer_ = nullptr;
 };
 
 }  // namespace tabs

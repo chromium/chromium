@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_TAB_STORAGE_COLLECTION_SYNCHRONIZER_H_
 
 #include <memory>
+#include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -27,6 +30,11 @@ class StorageCollectionSynchronizer {
     // will only save the payload for the given handle.
     virtual void SaveChildNodeOnly(TabCollectionNodeHandle handle) = 0;
 
+    // Saves a structural snapshot of the collection tree.
+    virtual void SaveStructureSnapshot(bool clear_unused_nodes) = 0;
+
+    virtual void SetSynchronizer(StorageCollectionSynchronizer* synchronizer);
+
     // Called when the restoration process is cancelled.
     virtual void OnRestoreCancelled();
   };
@@ -41,6 +49,11 @@ class StorageCollectionSynchronizer {
 
   // Saves the entire collection and its descendants to the service.
   void FullSave(base::OnceClosure callback);
+
+  // Saves an authoritative structural snapshot of the collection tree.
+  // Coalesces rapid mutations via a 0ms PostTask.
+  void SaveStructureSnapshot(bool clear_unused_nodes,
+                             base::OnceClosure callback = base::NullCallback());
 
   // Cancels the restoration process.
   void CancelRestore();
@@ -57,9 +70,16 @@ class StorageCollectionSynchronizer {
       std::unique_ptr<CollectionSynchronizerObserver> new_observer);
 
  private:
+  void FlushPendingStructureSnapshot();
+
   raw_ptr<TabStripCollection> collection_;
   raw_ptr<TabStateStorageService> service_;
   std::unique_ptr<CollectionSynchronizerObserver> observer_;
+
+  bool is_snapshot_scheduled_ = false;
+  bool pending_clear_unused_nodes_ = false;
+  std::vector<base::OnceClosure> pending_callbacks_;
+  base::WeakPtrFactory<StorageCollectionSynchronizer> weak_ptr_factory_{this};
 };
 
 }  // namespace tabs
