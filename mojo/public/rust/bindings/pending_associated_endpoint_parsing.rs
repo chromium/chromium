@@ -141,14 +141,7 @@ where
         // register ourselves on the other side of the pipe.
         let interface_id = match self.state {
             AssociatedEndpointState::Shared(shared_state) => {
-                // TODO(crbug.com/556744520): Handle failure gracefully. Simply
-                // sending a disconnect notification now is
-                // wrong because it will be sent too early
-                // and arrive _before_ the interface that's supposed to be
-                // disconnected.
-                AssociatedState::register_with_router(shared_state, context).expect(
-                    "Cannot serialize an associated endpoint whose peer was already dropped",
-                )
+                AssociatedState::register_with_router(shared_state, context)
             }
             AssociatedEndpointState::Singleton(AssociatedRouterHandle::Cpp(cpp_handle)) => {
                 if cpp_handle.is_associated() {

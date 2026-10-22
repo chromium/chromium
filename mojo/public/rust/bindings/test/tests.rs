@@ -2253,3 +2253,93 @@ fn test_ready_for_messages_when_created_from_cpp_pair() {
     });
     run_loop.run();
 }
+
+/// Verifies that sending an associated endpoint whose peer was already dropped
+/// before serialization succeeds and notifies the receiving endpoint of peer
+/// closure.
+#[gtest(RustBindingsAPI, TestSendEndpointWithClosedPeer)]
+fn test_send_endpoint_with_closed_peer() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_primary_remote, pending_primary_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+    let mut primary_remote = pending_primary_remote.bind();
+    let sender_impl = AssociatedSenderImpl::new();
+    let _primary_receiver = pending_primary_receiver.bind(sender_impl.clone());
+
+    // Helper to wait for the received PendingAssociatedReceiver, bind it with a
+    // disconnect handler, and verify that the disconnect handler runs.
+    let verify_received_disconnects = || {
+        let run_loop = RunLoop::new();
+        run_loop.run_until_idle();
+
+        let received =
+            sender_impl.send_receiver.lock().unwrap().take().expect(
+                "Expected AssociatedSenderImpl to have received a PendingAssociatedReceiver",
+            );
+
+        let dc_loop = RunLoop::new();
+        let quit = dc_loop.get_quit_closure();
+        let _bound_receiver = received.bind_with_options(
+            SaturatingMathService {},
+            None,
+            Some(Box::new(move || {
+                quit();
+            })),
+        );
+        dc_loop.run();
+    };
+
+    // 1. Pure Rust pair: peer dropped while still pending (unbound).
+    let (pending_rem, pending_rec) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+    drop(pending_rem);
+    primary_remote.SendReceiver(pending_rec);
+    verify_received_disconnects();
+
+    // 2. Pure Rust pair: peer bound with a disconnect handler, then dropped
+    // before serialization. The dropped peer's disconnect handler should NOT
+    // run.
+    let (pending_rem, pending_rec) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+    let rem = pending_rem.bind_with_options(
+        None,
+        Some(Box::new(|| {
+            panic!("Disconnect handler should not run for a locally dropped endpoint");
+        })),
+    );
+    drop(rem);
+    primary_remote.SendReceiver(pending_rec);
+    verify_received_disconnects();
+
+    // 3. C++ pair: peer dropped before sending across a Rust router
+    let (pending_rem, pending_rec_cpp) = PendingAssociatedRemote::<dyn MathService>::new_pair_cpp();
+    drop(pending_rem);
+    let pending_rec = PendingAssociatedReceiver::<dyn MathService>::from_cpp(pending_rec_cpp);
+    primary_remote.SendReceiver(pending_rec);
+    verify_received_disconnects();
+
+    // 4. C++ pair: peer dropped before sending across a C++ associated remote
+    //    on a Rust primary pipe
+    let (nested_sender_rec, nested_sender_rem_cpp) =
+        PendingAssociatedReceiver::<dyn AssociatedSender>::new_pair_cpp();
+    primary_remote.SendAssociatedSender(nested_sender_rec);
+    {
+        let run_loop = RunLoop::new();
+        run_loop.run_until_idle();
+    }
+    let _nested_sender_receiver = sender_impl
+        .send_associated_sender
+        .lock()
+        .unwrap()
+        .take()
+        .unwrap()
+        .bind(sender_impl.clone());
+    let mut nested_sender_rem =
+        PendingAssociatedRemote::<dyn AssociatedSender>::from_cpp(nested_sender_rem_cpp).bind();
+
+    let (pending_rem, pending_rec_cpp) = PendingAssociatedRemote::<dyn MathService>::new_pair_cpp();
+    drop(pending_rem);
+    let pending_rec = PendingAssociatedReceiver::<dyn MathService>::from_cpp(pending_rec_cpp);
+    nested_sender_rem.SendReceiver(pending_rec);
+    verify_received_disconnects();
+}

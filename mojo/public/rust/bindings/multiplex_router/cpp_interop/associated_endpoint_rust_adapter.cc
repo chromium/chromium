@@ -114,11 +114,11 @@ void AssociatedEndpointRustAdapter::AssociatePeerWithRustController(
   CHECK(!is_associated());
   CHECK(mojo::IsValidInterfaceId(interface_id) &&
         !mojo::IsPrimaryInterfaceId(interface_id));
-  bool success = controller.AssociatePeer(PassHandle(), interface_id);
-  // TODO(crbug.com/556744520): Handle failure gracefully. Simply sending a
-  // disconnect notification now is wrong because it will be sent too early
-  // and arrive _before_ the interface that's supposed to be disconnected.
-  CHECK(success);
+  mojo::ScopedInterfaceEndpointHandle handle = PassHandle();
+  auto reason = handle.disconnect_reason();
+  if (!controller.AssociatePeer(std::move(handle), interface_id)) {
+    controller.CloseEndpointHandle(interface_id, reason);
+  }
 }
 
 void CreatePairPendingAssociation(

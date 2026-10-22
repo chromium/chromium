@@ -135,11 +135,9 @@ mojo::InterfaceId RustAssociatedGroupController::AssociateInterface(
   if (!mojo::IsValidInterfaceId(id) || mojo::IsPrimaryInterfaceId(id)) {
     return mojo::kInvalidInterfaceId;
   }
-  bool peer_alive = NotifyAssociation(&handle_to_send, id);
-  // TODO(crbug.com/556744520): Handle failure gracefully. Simply sending a
-  // disconnect notification now is wrong because it will be sent too early
-  // and arrive _before_ the interface that's supposed to be disconnected.
-  CHECK(peer_alive);
+  if (!NotifyAssociation(&handle_to_send, id)) {
+    CloseEndpointHandle(id, handle_to_send.disconnect_reason());
+  }
   return id;
 }
 

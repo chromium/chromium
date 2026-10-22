@@ -76,29 +76,39 @@ impl AssociatedState {
     /// endpoint. It updates the shared state, meaning that the _other_ endpoint
     /// will be the recipient of the newly created handle.
     ///
-    /// Returns the interface ID of the newly created handle, to be serialized,
-    /// or `None` if the other endpoint has already been closed.
+    /// Returns the interface ID of the newly created handle, to be serialized.
+    ///
+    /// If the other endpoint has already been dropped, the new handle will be
+    /// closed immediately after registration. Note that this will result in a
+    /// disconnect notification being sent to the other side _before_ this
+    /// function returns.
     pub(crate) fn register_with_router(
         shared_state: SharedAssociatedState,
         router_ref: &impl Registrar,
-    ) -> Option<InterfaceId> {
+    ) -> InterfaceId {
         let mut guard = shared_state.lock().unwrap();
-        if !guard.peer_is_alive(&shared_state) {
-            return None;
-        }
-        // This removes the endpoint info from the shared state. This is fine:
-        // 1. If it was present, the other side is already finished with the
-        //    shared state
-        // 2. If it was absent, we lost nothing (and the other side will see
-        //    that `router` is present so it won't try to set it later).
+        let endpoint_info = if guard.peer_is_alive(&shared_state) {
+            // This removes the endpoint info from the shared state. This is
+            // fine:
+            // 1. If it was present, the other side is already finished with the
+            //    shared state
+            // 2. If it was absent, we lost nothing (and the other side will see
+            //    that `router` is present so it won't try to set it later).
+            guard.endpoint_info.take()
+        } else {
+            // If the peer is dead, don't provide its endpoint info when
+            // registering it, because there's no point running its
+            // handlers.
+            None
+        };
         let handle = router_ref
-            .register_new_endpoint(None, guard.endpoint_info.take())
+            .register_new_endpoint(None, endpoint_info)
             .expect("Multiplex router should never fail to register if we don't provide an ID");
         let interface_id = handle.interface_id();
         guard.router.set(handle).unwrap_or_else(|_| {
             panic!("Exactly one endpoint in each pair should be sent in a message, not both")
         });
-        Some(interface_id)
+        interface_id
     }
 }
 
