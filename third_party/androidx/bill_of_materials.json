@@ -432,7 +432,7 @@
     {
         "name": "datastore",
         "group": "androidx.datastore",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-android",
@@ -447,17 +447,17 @@
     {
         "name": "datastore-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-core-okio",
         "group": "androidx.datastore",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-core-okio-jvm",
         "group": "androidx.datastore",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences",
@@ -467,27 +467,27 @@
     {
         "name": "datastore-preferences-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences-external-protobuf",
         "group": "androidx.datastore",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "datastore-preferences-proto",
         "group": "androidx.datastore",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "documentfile",
