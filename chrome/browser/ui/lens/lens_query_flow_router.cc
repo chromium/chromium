@@ -63,6 +63,12 @@ bool IsSelectedRegionOnlyInvocationSource(
       lens::LensOverlayInvocationSource::kOmniboxPopupButton) {
     return true;
   }
+  if (lens::features::
+          IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
+      invocation_source ==
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage) {
+    return true;
+  }
   if (contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(profile)) {
     return invocation_source ==
                lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||

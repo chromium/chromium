@@ -1239,7 +1239,7 @@ TEST_F(
   // Arrange: Create some page content.
   std::vector<uint8_t> bytes = {1, 2, 3};
   std::vector<lens::PageContent> page_contents;
-  page_contents.push_back({bytes, lens::MimeType::kPlainText});
+  page_contents.emplace_back(bytes, lens::MimeType::kPlainText);
 
   // Act: Start query flow.
   router.StartQueryFlow(router.GetViewportScreenshot(),
@@ -1248,6 +1248,55 @@ TEST_F(
                         ui_scale_factor, invocation_time);
   EXPECT_EQ(router.context_upload_mode(),
             LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
+}
+
+TEST_F(
+    LensQueryFlowRouterContextualTaskEnabledTest,
+    StartQueryFlow_RoutesToContextualTasks_SelectedRegionOnly_WhenImageSearchNonBlockingNotice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {lens::features::kLensOverlayNonBlockingPrivacyNotice,
+       lens::features::kLensOverlayNonBlockingPrivacyNoticeForImageSearch},
+      {});
+  SignInUser();
+  // Image search routes to selected region only regardless of permission state.
+  profile_->GetPrefs()->SetBoolean(
+      lens::prefs::kLensSharingPageScreenshotEnabled, true);
+  profile_->GetPrefs()->SetBoolean(lens::prefs::kLensSharingPageContentEnabled,
+                                   true);
+
+  // Arrange: Set up invocation source to kContentAreaContextMenuImage.
+  EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+      .WillRepeatedly(Return(
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage));
+
+  // Arrange: Set up and create the router.
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillOnce(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+
+  GURL example_url("https://example.com");
+  std::string page_title = "Title";
+  lens::MimeType primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  float ui_scale_factor = 1.0f;
+  base::TimeTicks invocation_time = base::TimeTicks::Now();
+
+  // Arrange: Create some page content.
+  std::vector<uint8_t> bytes = {1, 2, 3};
+  std::vector<lens::PageContent> page_contents;
+  page_contents.emplace_back(bytes, lens::MimeType::kPlainText);
+
+  // Act: Start query flow.
+  router.StartQueryFlow(router.GetViewportScreenshot(),
+                        router.GetViewportScreenshot(), example_url, page_title,
+                        {}, page_contents, primary_content_type, std::nullopt,
+                        ui_scale_factor, invocation_time);
+  EXPECT_EQ(router.context_upload_mode(),
+            LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
+  EXPECT_FALSE(router.ShouldPopulateFullPageContext());
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
@@ -1357,7 +1406,7 @@ TEST_F(
   // Arrange: Create some page content.
   std::vector<uint8_t> bytes = {1, 2, 3};
   std::vector<lens::PageContent> page_contents;
-  page_contents.push_back({bytes, lens::MimeType::kPlainText});
+  page_contents.emplace_back(bytes, lens::MimeType::kPlainText);
 
   // Arrange: Create expected contextual input data.
   lens::ContextualInputData expected_input_data;

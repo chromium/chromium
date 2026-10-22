@@ -942,18 +942,9 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
   // permanently.
   bool has_permission_for_session_ = false;
 
-  // True if the session began without permanent permissions in a flow requiring
-  // restricted initial uploads (e.g. image context menu search).
+  // True if the session is in a flow requiring restricted uploads (e.g. image
+  // context menu search).
   bool initial_query_restricted_ = false;
-
-  // True if the initial page content upload was blocked because the user
-  // performed a context menu image search but had not granted permissions
-  // permanently.
-  bool initial_page_content_blocked_ = false;
-
-  // True if the full screenshot and page context have been sent after the
-  // initial query of the non-blocking image context menu search flow.
-  bool deferred_screenshot_and_page_context_sent_ = false;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

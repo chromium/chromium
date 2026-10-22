@@ -385,8 +385,7 @@ void LensOverlayQueryController::StartQueryFlow(
   if (lens::features::
           IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
       invocation_source_ ==
-          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage &&
-      !lens::DidUserGrantLensOverlayNeededPermissions(profile_)) {
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage) {
     initial_query_restricted_ = true;
   }
 
@@ -1286,11 +1285,9 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
     return;
   }
 
-  // If the initial query was restricted in the non-blocking image context menu
-  // flow, block the page content request. Subsequent queries will be allowed
-  // since the privacy notice will have been shown.
-  if (initial_query_restricted_ && !initial_page_content_blocked_) {
-    initial_page_content_blocked_ = true;
+  // If the query was restricted in the image context menu flow, block the page
+  // content request.
+  if (initial_query_restricted_) {
     return;
   }
 
@@ -1657,22 +1654,6 @@ void LensOverlayQueryController::SendInteraction(
   // image request / response handlers.
   pending_interaction_callback_.Reset();
 
-  // If in the non-blocking image context menu flow, the full screenshot and
-  // page content were blocked during the initial request, but they are allowed
-  // for subsequent requests since the privacy notice has been shown. Send them
-  // now before handling the interaction.
-  if (initial_query_restricted_ && selection_type != lens::INJECTED_IMAGE &&
-      !deferred_screenshot_and_page_context_sent_) {
-    pending_interaction_callback_ = base::BindOnce(
-        &LensOverlayQueryController::SendInteraction,
-        weak_ptr_factory_.GetWeakPtr(), query_start_time, std::move(region),
-        query_text, object_id, selection_type, additional_search_query_params,
-        region_bytes, media_type);
-    PrepareAndFetchFullImageRequest();
-    PrepareAndFetchPageContentRequest();
-    deferred_screenshot_and_page_context_sent_ = true;
-    return;
-  }
 
   // If the cluster info is missing add the interaction to the pending callback
   // to be sent once the cluster info is available.
