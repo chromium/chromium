@@ -43,8 +43,10 @@ class COMPONENT_EXPORT(GFX) PlatformFontMac : public PlatformFont {
                   int font_size);
 
   // Constructs a PlatformFontMac representing the font specified by |typeface|
-  // and the size |font_size_pixels|. Do not call this for a system-specified
-  // font; use the |SystemFontType| constructor for that.
+  // and the size |font_size_pixels|. If |params| is provided it is used as the
+  // font's render params; otherwise they are determined with
+  // gfx::GetFontRenderParams(). Do not call this for a system-specified font;
+  // use the |SystemFontType| constructor for that.
   PlatformFontMac(sk_sp<SkTypeface> typeface,
                   int font_size_pixels,
                   const std::optional<FontRenderParams>& params);

@@ -11,8 +11,13 @@
 #include "base/apple/bridging.h"
 #import "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkFontStyle.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/font_render_params.h"
+#include "ui/gfx/platform_font.h"
 
 namespace gfx {
 
@@ -264,6 +269,30 @@ TEST(PlatformFontMacTest, DerivedSemiboldFontIsNotItalic) {
   NSFontTraitMask semibold_traits = [NSFontManager.sharedFontManager
       traitsOfFont:base::apple::CFToNSPtrCast(semibold_font.GetCTFont())];
   EXPECT_FALSE(semibold_traits & NSItalicFontMask);
+}
+
+// PlatformFont::CreateFromSkTypeface() documents that provided
+// FontRenderParams are used, and that they are determined with
+// gfx::GetFontRenderParams() otherwise.
+TEST(PlatformFontMacTest, CreateFromSkTypefaceRenderParams) {
+  sk_sp<SkTypeface> typeface =
+      skia::MakeTypefaceFromName("Helvetica", SkFontStyle());
+  ASSERT_TRUE(typeface);
+
+  FontRenderParams params;
+  params.antialiasing = false;
+  params.subpixel_positioning = false;
+  params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_NONE;
+  params.hinting = FontRenderParams::HINTING_NONE;
+
+  Font font_with_params(
+      PlatformFont::CreateFromSkTypeface(typeface, 13, params));
+  EXPECT_EQ(font_with_params.GetFontRenderParams(), params);
+
+  Font font_without_params(
+      PlatformFont::CreateFromSkTypeface(typeface, 13, std::nullopt));
+  EXPECT_EQ(font_without_params.GetFontRenderParams(),
+            GetFontRenderParams(FontRenderParamsQuery(), nullptr));
 }
 
 }  // namespace gfx

@@ -303,7 +303,11 @@ PlatformFontMac::PlatformFontMac(sk_sp<SkTypeface> typeface,
                           SkTypeface_GetCTFontRef(typeface.get())),
                       {GetFamilyNameFromTypeface(typeface), font_size_pixels,
                        (typeface->isItalic() ? Font::ITALIC : Font::NORMAL),
-                       FontWeightFromInt(typeface->fontStyle().weight())}) {}
+                       FontWeightFromInt(typeface->fontStyle().weight())}) {
+  if (params.has_value()) {
+    render_params_ = params.value();
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // PlatformFontMac, PlatformFont implementation:
