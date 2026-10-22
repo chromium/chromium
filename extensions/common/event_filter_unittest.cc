@@ -39,7 +39,7 @@ class EventFilterUnittest : public testing::Test {
   }
 
   std::unique_ptr<EventMatcher> AllURLs() {
-    return std::make_unique<EventMatcher>(std::make_unique<base::DictValue>(),
+    return std::make_unique<EventMatcher>(base::DictValue(),
                                           IPC::mojom::kRoutingIdNone);
   }
 
@@ -51,8 +51,8 @@ class EventFilterUnittest : public testing::Test {
 
   std::unique_ptr<EventMatcher> MatcherFromURLFilterList(
       base::ListValue url_filter_list) {
-    auto filter_dict = std::make_unique<base::DictValue>();
-    filter_dict->Set("url", base::Value(std::move(url_filter_list)));
+    base::DictValue filter_dict;
+    filter_dict.Set("url", base::Value(std::move(url_filter_list)));
     return std::make_unique<EventMatcher>(std::move(filter_dict),
                                           IPC::mojom::kRoutingIdNone);
   }

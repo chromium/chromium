@@ -19,12 +19,10 @@ namespace extensions {
 
 const char kEventFilterServiceTypeKey[] = "serviceType";
 
-EventMatcher::EventMatcher(std::unique_ptr<base::DictValue> filter,
-                           int routing_id)
+EventMatcher::EventMatcher(base::DictValue filter, int routing_id)
     : filter_(std::move(filter)), routing_id_(routing_id) {}
 
-EventMatcher::~EventMatcher() {
-}
+EventMatcher::~EventMatcher() = default;
 
 bool EventMatcher::MatchNonURLCriteria(
     const mojom::EventFilteringInfo& event_info) const {
@@ -60,14 +58,14 @@ bool EventMatcher::MatchNonURLCriteria(
 }
 
 int EventMatcher::GetURLFilterCount() const {
-  base::ListValue* url_filters = filter_->FindList(kUrlFiltersKey);
+  const base::ListValue* url_filters = filter_.FindList(kUrlFiltersKey);
   if (url_filters)
     return url_filters->size();
   return 0;
 }
 
 const base::DictValue* EventMatcher::GetURLFilter(int i) {
-  base::ListValue* url_filters = filter_->FindList(kUrlFiltersKey);
+  const base::ListValue* url_filters = filter_.FindList(kUrlFiltersKey);
   if (url_filters)
     return (*url_filters)[i].GetIfDict();
   return nullptr;
@@ -79,8 +77,7 @@ bool EventMatcher::HasURLFilters() const {
 
 std::string EventMatcher::GetServiceTypeFilter() const {
   std::string service_type_filter;
-  if (const std::string* ptr =
-          filter_->FindString(kEventFilterServiceTypeKey)) {
+  if (const std::string* ptr = filter_.FindString(kEventFilterServiceTypeKey)) {
     if (base::IsStringASCII(*ptr))
       service_type_filter = *ptr;
   }
@@ -88,18 +85,19 @@ std::string EventMatcher::GetServiceTypeFilter() const {
 }
 
 int EventMatcher::GetInstanceID() const {
-  return filter_->FindInt("instanceId").value_or(0);
+  return filter_.FindInt("instanceId").value_or(0);
 }
 
 int EventMatcher::GetWindowTypeCount() const {
-  base::ListValue* window_type_filters = filter_->FindList(kWindowTypesKey);
+  const base::ListValue* window_type_filters =
+      filter_.FindList(kWindowTypesKey);
   if (window_type_filters)
     return window_type_filters->size();
   return 0;
 }
 
 bool EventMatcher::GetWindowType(int i, std::string* window_type_out) const {
-  base::ListValue* window_types = filter_->FindList(kWindowTypesKey);
+  const base::ListValue* window_types = filter_.FindList(kWindowTypesKey);
   if (window_types) {
     if (i >= 0 && static_cast<size_t>(i) < window_types->size() &&
         (*window_types)[i].is_string()) {

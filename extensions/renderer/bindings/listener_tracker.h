@@ -62,11 +62,10 @@ class ListenerTracker {
   // specific filter, and an integer for the filter ID. If the filter could not
   // be added (i.e., it was invalid), the filter ID will be -1, and no listener
   // will have been added.
-  std::pair<bool, int> AddFilteredListener(
-      const std::string& context_owner_id,
-      const std::string& event_name,
-      std::unique_ptr<base::DictValue> filter,
-      int routing_id);
+  std::pair<bool, int> AddFilteredListener(const std::string& context_owner_id,
+                                           const std::string& event_name,
+                                           base::DictValue filter,
+                                           int routing_id);
 
   // Removes a record of a filtered listener for the given `event_name`,
   // associated with the given `context_owner_id` and `filter_id`. DCHECKs that
@@ -74,10 +73,15 @@ class ListenerTracker {
   // Returns a pair, with the bool indicating if this was the last listener
   // added for this event and `context_owner_id` with this specific filter, and
   // a copy of the filter value.
-  std::pair<bool, std::unique_ptr<base::DictValue>> RemoveFilteredListener(
+  std::pair<bool, base::DictValue> RemoveFilteredListener(
       const std::string& context_owner_id,
       const std::string& event_name,
       int filter_id);
+
+  // Returns the filter of the filtered listener with the given `filter_id`,
+  // which must exist. The returned reference is only valid until the listener
+  // is removed.
+  const base::DictValue& GetFilter(int filter_id);
 
   // Returns a set of filter IDs to that correspond to the given `event_name`,
   // `filter`, and `routing_id`.

@@ -199,9 +199,8 @@ bool EventListenerMap::AddListener(std::unique_ptr<EventListener> listener) {
 
 std::unique_ptr<EventMatcher> EventListenerMap::ParseEventMatcher(
     const base::DictValue& filter_dict) {
-  return std::make_unique<EventMatcher>(
-      std::make_unique<base::DictValue>(filter_dict.Clone()),
-      IPC::mojom::kRoutingIdNone);
+  return std::make_unique<EventMatcher>(filter_dict.Clone(),
+                                        IPC::mojom::kRoutingIdNone);
 }
 
 bool EventListenerMap::RemoveListener(const EventListener* listener) {

@@ -324,15 +324,14 @@ bool FilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
     return false;
   }
 
-  auto filter_dict = std::make_unique<base::DictValue>();
-  if (!ValidateFilter(context, filter, *filter_dict, error)) {
+  base::DictValue filter_dict;
+  if (!ValidateFilter(context, filter, filter_dict, error)) {
     return false;
   }
   // NOTE: injects options into the filter dictionary.
-  if (!ValidateOptions(context, options, *filter_dict, error)) {
+  if (!ValidateOptions(context, options, filter_dict, error)) {
     return false;
   }
-  base::DictValue* filter_weak = filter_dict.get();
 
   int filter_id = -1;
   bool was_first_of_kind = false;
@@ -354,7 +353,8 @@ bool FilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
     listeners_updated_.Run(event_name_,
                            binding::EventListenersChanged::
                                kFirstListenerWithFilterForContextOwnerAdded,
-                           filter_weak, supports_lazy_listeners_, context);
+                           &listener_tracker_->GetFilter(filter_id),
+                           supports_lazy_listeners_, context);
   }
 
   return true;
@@ -432,16 +432,13 @@ void FilteredEventListeners::InvalidateListener(
   DCHECK(!context_owner_id_.empty())
       << "The context owner must be instantiated if listeners were removed.";
 
-  bool was_last_of_kind = false;
-  std::unique_ptr<base::DictValue> filter;
-  std::tie(was_last_of_kind, filter) =
-      listener_tracker_->RemoveFilteredListener(context_owner_id_, event_name_,
-                                                listener.filter_id);
+  auto [was_last_of_kind, filter] = listener_tracker_->RemoveFilteredListener(
+      context_owner_id_, event_name_, listener.filter_id);
   if (was_last_of_kind) {
     listeners_updated_.Run(event_name_,
                            binding::EventListenersChanged::
                                kLastListenerWithFilterForContextOwnerRemoved,
-                           filter.get(), was_manual && supports_lazy_listeners_,
+                           &filter, was_manual && supports_lazy_listeners_,
                            context);
   }
 }

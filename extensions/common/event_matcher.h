@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_COMMON_EVENT_MATCHER_H_
 #define EXTENSIONS_COMMON_EVENT_MATCHER_H_
 
-#include <memory>
-
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 
@@ -19,7 +17,7 @@ extern const char kEventFilterServiceTypeKey[];
 // MatchNonURLCriteria() - URL matching is handled by EventFilter.
 class EventMatcher {
  public:
-  EventMatcher(std::unique_ptr<base::DictValue> filter, int routing_id);
+  EventMatcher(base::DictValue filter, int routing_id);
 
   EventMatcher(const EventMatcher&) = delete;
   EventMatcher& operator=(const EventMatcher&) = delete;
@@ -39,7 +37,7 @@ class EventMatcher {
   // Returns true if there are any specified URL filters.
   bool HasURLFilters() const;
 
-  base::DictValue* value() const { return filter_.get(); }
+  const base::DictValue& value() const { return filter_; }
   int routing_id() const { return routing_id_; }
 
  private:
@@ -60,7 +58,7 @@ class EventMatcher {
   // {url: [{hostSuffix: 'google.com'}]}
   //
   // The valid filter keys are event-specific.
-  const std::unique_ptr<base::DictValue> filter_;
+  const base::DictValue filter_;
 
   const int routing_id_;
 };
