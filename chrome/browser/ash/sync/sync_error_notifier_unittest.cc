@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
@@ -19,14 +17,6 @@
 namespace ash {
 
 namespace {
-
-class FakeLoginUI : public LoginUIService::LoginUI {
- public:
-  FakeLoginUI() = default;
-  ~FakeLoginUI() override = default;
-
-  void FocusUI() override {}
-};
 
 class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
  public:
@@ -39,10 +29,6 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-
-    LoginUIService* login_ui_service =
-        LoginUIServiceFactory::GetForProfile(profile());
-    login_ui_service->SetLoginUI(&login_ui_);
 
     error_notifier_ = std::make_unique<SyncErrorNotifier>(&service_, profile());
   }
@@ -78,7 +64,6 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<SyncErrorNotifier> error_notifier_;
   syncer::TestSyncService service_;
-  FakeLoginUI login_ui_;
 };
 
 TEST_F(SyncErrorNotifierTest, NoNotificationWhenNoPassphrase) {

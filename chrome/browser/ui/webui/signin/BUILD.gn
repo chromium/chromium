@@ -522,7 +522,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "login_ui_service_unittest.cc",
     "signin_url_utils_unittest.cc",
     "sync_confirmation_handler_unittest.cc",
     "sync_confirmation_ui_unittest.cc",

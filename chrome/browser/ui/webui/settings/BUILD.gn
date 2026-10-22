@@ -72,7 +72,6 @@ source_set("settings") {
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/webui/help",
-    "//chrome/browser/ui/webui/signin:login_ui_service",
     "//chrome/browser/upgrade_detector",
     "//chrome/browser/web_applications",
     "//chrome/common",

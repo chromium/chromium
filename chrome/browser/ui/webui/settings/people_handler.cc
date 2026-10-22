@@ -48,8 +48,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -75,7 +73,6 @@
 #include "components/unified_consent/unified_consent_metrics.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -796,8 +793,6 @@ void PeopleHandler::HandleShowSyncSetupUI(const base::ListValue& args) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  GetLoginUIService()->SetLoginUI(this);
-
   // Observe the web contents for a before unload event.
   Observe(web_ui()->GetWebContents());
 
@@ -984,8 +979,6 @@ void PeopleHandler::HandleShowAccountSettingsUI(const base::ListValue& args) {
   CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   AllowJavascript();
 
-  GetLoginUIService()->SetLoginUI(this);
-
   // Observe the web contents for a before unload event.
   Observe(web_ui()->GetWebContents());
 
@@ -1040,45 +1033,37 @@ void PeopleHandler::CloseSyncSetup() {
   // Stop a timer to handle timeout in waiting for checking network connection.
   engine_start_timer_.reset();
 
-  // LoginUIService can be nullptr if page is brought up in incognito mode
-  // (i.e. if the user is running in guest mode in cros and brings up settings).
-  LoginUIService* service = GetLoginUIService();
-  if (service) {
-    auto self_weak_ptr = weak_factory_.GetWeakPtr();
-
-    // ChromeOS Ash doesn't support signing out and hence the code below
-    // cannot build (RevokeSyncConsent() doesn't exist). However, the code is
-    // unreachable on Ash because IsInitialSyncFeatureSetupComplete() in the
-    // condition below always returns true.
+  // ChromeOS Ash doesn't support signing out and hence the code below
+  // cannot build (RevokeSyncConsent() doesn't exist). However, the code is
+  // unreachable on Ash because IsInitialSyncFeatureSetupComplete() in the
+  // condition below always returns true.
 #if !BUILDFLAG(IS_CHROMEOS)
-    syncer::SyncService* sync_service = GetSyncService();
+  syncer::SyncService* sync_service = GetSyncService();
 
-    // Don't log a cancel event if the sync setup dialog is being
-    // automatically closed due to an auth error.
-    if (service->current_login_ui() == this && sync_service &&
-        configuring_sync_ &&
-        !sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
-        sync_service->GetAuthError().state() == GoogleServiceAuthError::NONE) {
-      DVLOG(1) << "Sync setup aborted by user action";
+  // Don't log a cancel event if the sync setup dialog is being
+  // automatically closed due to an auth error.
+  if (sync_service && configuring_sync_ &&
+      !sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
+      sync_service->GetAuthError().state() == GoogleServiceAuthError::NONE) {
+    DVLOG(1) << "Sync setup aborted by user action";
 
-      // Revoke sync consent on desktop Chrome if they click cancel during
-      // initial setup or close sync setup without confirming sync.
-      IdentityManagerFactory::GetForProfile(profile_)
-          ->GetPrimaryAccountMutator()
-          ->RevokeSyncConsent(signin_metrics::ProfileSignout::kAbortSignin);
-    }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-    service->LoginUIClosed(this);
-
-    // The call to RevokeSyncConsent() above may delete the current browser that
+    // The call to RevokeSyncConsent() below may delete the current browser that
     // owns `this` if force signin is enabled. Accessing instance members caused
     // crashes (see https://crbug.com/40266665) which we guard against by
     // checking a weak pointer to the current instance.
+    auto self_weak_ptr = weak_factory_.GetWeakPtr();
+
+    // Revoke sync consent on desktop Chrome if they click cancel during
+    // initial setup or close sync setup without confirming sync.
+    IdentityManagerFactory::GetForProfile(profile_)
+        ->GetPrimaryAccountMutator()
+        ->RevokeSyncConsent(signin_metrics::ProfileSignout::kAbortSignin);
+
     if (!self_weak_ptr) {
       return;
     }
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Alert the sync service anytime the sync setup dialog is closed. This can
   // happen due to the user clicking the OK or Cancel button, or due to the
@@ -1110,11 +1095,6 @@ void PeopleHandler::InitializeSyncBlocker() {
   if (IsSyncSubpage(web_contents->GetVisibleURL())) {
     sync_blocker_ = service->GetSetupInProgressHandle();
   }
-}
-
-void PeopleHandler::FocusUI() {
-  WebContents* web_contents = web_ui()->GetWebContents();
-  web_contents->GetDelegate()->ActivateContents(web_contents);
 }
 
 void PeopleHandler::OnPrimaryAccountChanged(
@@ -1375,10 +1355,6 @@ void PeopleHandler::PushTrustedVaultBannerState() {
 
   FireWebUIListener(kTrustedVaultBannerStateChangedEvent,
                     base::Value(static_cast<int>(state)));
-}
-
-LoginUIService* PeopleHandler::GetLoginUIService() const {
-  return LoginUIServiceFactory::GetForProfile(profile_);
 }
 
 void PeopleHandler::UpdateSyncStatus() {

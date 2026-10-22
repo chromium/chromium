@@ -21,19 +21,6 @@ void LoginUIService::RemoveObserver(LoginUIService::Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-LoginUIService::LoginUI* LoginUIService::current_login_ui() const {
-  return ui_list_.empty() ? nullptr : ui_list_.front();
-}
-
-void LoginUIService::SetLoginUI(LoginUI* ui) {
-  ui_list_.remove(ui);
-  ui_list_.push_front(ui);
-}
-
-void LoginUIService::LoginUIClosed(LoginUI* ui) {
-  ui_list_.remove(ui);
-}
-
 void LoginUIService::SyncConfirmationUIClosed(
     SyncConfirmationUIClosedResult result) {
   for (Observer& observer : observer_list_) {

@@ -16,7 +16,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -24,7 +23,6 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
-class LoginUIService;
 enum class ChromeSigninUserChoice;
 
 namespace content {
@@ -43,7 +41,6 @@ namespace settings {
 
 class PeopleHandler : public SettingsPageUIHandler,
                       public signin::IdentityManager::Observer,
-                      public LoginUIService::LoginUI,
                       public syncer::SyncServiceObserver,
                       public content::WebContentsObserver,
                       public ProfileAttributesStorage::Observer {
@@ -156,9 +153,6 @@ class PeopleHandler : public SettingsPageUIHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // LoginUIService::LoginUI implementation.
-  void FocusUI() override;
-
   // IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
@@ -192,9 +186,6 @@ class PeopleHandler : public SettingsPageUIHandler,
   // Helper routine that gets the SyncService associated with the parent
   // profile.
   syncer::SyncService* GetSyncService() const;
-
-  // Returns the LoginUIService for the parent profile.
-  LoginUIService* GetLoginUIService() const;
 
   // Callbacks from the page.
   void HandleGetProfileInfo(const base::ListValue& args);

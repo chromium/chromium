@@ -15,8 +15,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -61,19 +59,6 @@ void OpenOSSyncSettings(Profile* profile) {
       profile, chromeos::settings::mojom::kSyncControlsSubpagePath);
 }
 
-void OpenSyncSettings(Profile* profile, syncer::SyncService* sync_service) {
-  LoginUIService* login_ui = LoginUIServiceFactory::GetForProfile(profile);
-  if (login_ui->current_login_ui()) {
-    // TODO(michaelpg): The LoginUI might be on an inactive desktop.
-    // See crbug.com/41095891.
-    login_ui->current_login_ui()->FocusUI();
-    return;
-  }
-
-  chrome::ShowSettingsSubPageForProfile(
-      profile, SyncErrorNotifier::GetDestinationSubpage(sync_service));
-}
-
 void TriggerSyncKeyRetrieval(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   OpenTabForSyncKeyRetrieval(
@@ -109,12 +94,12 @@ BubbleViewParameters GetBubbleViewParameters(
     params.message_id = IsNewSignInNonSyncingUser(sync_service)
                             ? IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE_2
                             : IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE;
-    // |profile| and its SyncService outlive the click callback since
-    // notifications are tied to the active user session and MessageCenter is
-    // torn down before profiles during shutdown.
-    params.click_action =
-        base::BindRepeating(&OpenSyncSettings, base::Unretained(profile),
-                            base::Unretained(sync_service));
+    // |profile| outlives the click callback since notifications are tied to the
+    // active user session and MessageCenter is torn down before profiles during
+    // shutdown.
+    params.click_action = base::BindRepeating(
+        &chrome::ShowSettingsSubPageForProfile, base::Unretained(profile),
+        SyncErrorNotifier::GetDestinationSubpage(sync_service));
     return params;
   }
 
