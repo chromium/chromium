@@ -70,6 +70,7 @@ ScanRequestUploadResult FakeContentAnalysisDelegate::result_ =
     ScanRequestUploadResult::kSuccess;
 bool FakeContentAnalysisDelegate::dialog_shown_ = false;
 bool FakeContentAnalysisDelegate::dialog_canceled_ = false;
+bool FakeContentAnalysisDelegate::toast_shown_ = false;
 int64_t FakeContentAnalysisDelegate::total_analysis_requests_count_ = 0;
 
 FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
@@ -105,6 +106,7 @@ void FakeContentAnalysisDelegate::
     ResetStaticDialogFlagsAndTotalRequestsCount() {
   dialog_shown_ = false;
   dialog_canceled_ = false;
+  toast_shown_ = false;
   total_analysis_requests_count_ = 0;
 }
 
@@ -116,6 +118,11 @@ bool FakeContentAnalysisDelegate::WasDialogShown() {
 // static
 bool FakeContentAnalysisDelegate::WasDialogCanceled() {
   return dialog_canceled_;
+}
+
+// static
+bool FakeContentAnalysisDelegate::WasToastShown() {
+  return toast_shown_;
 }
 
 int FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount() {
@@ -355,6 +362,11 @@ void FakeContentAnalysisDelegate::FakeUploadClipboardDataForDeepScanning(
 bool FakeContentAnalysisDelegate::ShowFinalResultInDialog() {
   dialog_shown_ = true;
   return ContentAnalysisDelegate::ShowFinalResultInDialog();
+}
+
+bool FakeContentAnalysisDelegate::ShowFinalResultInToast() {
+  toast_shown_ = true;
+  return ContentAnalysisDelegate::ShowFinalResultInToast();
 }
 
 bool FakeContentAnalysisDelegate::CancelDialog() {

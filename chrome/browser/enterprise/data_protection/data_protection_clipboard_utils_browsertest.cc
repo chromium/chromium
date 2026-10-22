@@ -3361,6 +3361,94 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
             data_controls::CopyRestrictionLevel::kBlocked);
 }
 
+// Copy verdicts are surfaced through toasts only: the content analysis dialog
+// used by the other access points is never involved.
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       Copy_ContentAnalysisBlocked_ShowsToastNotDialog) {
+  SetupDMToken();
+  SetupContentAnalysisToBlockCopy();
+  enterprise_connectors::test::FakeContentAnalysisDelegate::
+      ResetStaticDialogFlagsAndTotalRequestsCount();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  auto source = content::ClipboardEndpoint::ForFrame(
+      ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
+        return contents()->GetBrowserContext();
+      }),
+      *contents()->GetPrimaryMainFrame());
+
+  ui::ClipboardMetadata metadata = {
+      .size = 100,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  content::ClipboardPasteData data;
+  data.text = std::u16string(100, 'a');
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<1>().empty());
+  EXPECT_TRUE(future.Get<2>().has_value());
+
+  auto* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return toast_controller->IsShowingToast(); }));
+  EXPECT_EQ(toast_controller->GetCurrentToastId(),
+            ToastId::kEnterpriseCopyBlocked);
+
+  EXPECT_TRUE(enterprise_connectors::test::FakeContentAnalysisDelegate::
+                  WasToastShown());
+  EXPECT_FALSE(enterprise_connectors::test::FakeContentAnalysisDelegate::
+                   WasDialogShown());
+  EXPECT_FALSE(enterprise_connectors::test::FakeContentAnalysisDelegate::
+                   WasDialogCanceled());
+}
+
+// Paste verdicts keep using the content analysis dialog and never show one of
+// the copy toasts.
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       Paste_ContentAnalysisBlocked_ShowsDialogNotToast) {
+  SetupDMToken();
+  SetupContentAnalysisToBlock();
+  enterprise_connectors::test::FakeContentAnalysisDelegate::
+      ResetStaticDialogFlagsAndTotalRequestsCount();
+
+  DialogObserver dialog_observer;
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  auto source = content::ClipboardEndpoint::ForOutsideChrome(std::nullopt);
+  auto destination = CreateURLClipboardEndpoint("https://google.com");
+  ui::ClipboardMetadata metadata = {
+      .size = 100,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+                         future.GetCallback());
+
+  auto* dialog = dialog_observer.WaitForDialog();
+  ASSERT_TRUE(dialog);
+  EXPECT_FALSE(future.Get());
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    return enterprise_connectors::test::FakeContentAnalysisDelegate::
+        WasDialogShown();
+  }));
+
+  EXPECT_FALSE(enterprise_connectors::test::FakeContentAnalysisDelegate::
+                   WasToastShown());
+  auto* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  EXPECT_FALSE(toast_controller->IsShowingToast());
+
+  dialog->CancelDialog();
+}
+
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        Copy_ContentAnalysisKeptInManagedChrome) {
   active_user_test_mixin_->SetFakeCookieValue();

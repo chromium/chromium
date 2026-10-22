@@ -686,85 +686,8 @@ ContentAnalysisDelegate::GetFilesRequestHandlerForTesting() {
 }
 
 bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
-  // Handle copy access point separately since it shows a toast instead of a
-  // dialog.
-  if (access_point_ == DeepScanAccessPoint::COPY) {
-#if !BUILDFLAG(IS_ANDROID)
-    bool wait_for_verdict =
-        data_.settings.block_until_verdict == BlockUntilVerdict::kBlock;
-    auto* tracker =
-        enterprise_data_protection::ClipboardToastTracker::GetForProfile(
-            profile_);
-    bool is_new_copy = creation_time_ > tracker->last_toast_time();
-    // Shows `toast_id`, unless it's already showing for the same copy.
-    auto maybe_show_toast = [&](ToastId toast_id) {
-      auto* toast_controller =
-          ToastController::MaybeGetForWebContents(web_contents_.get());
-      if (toast_controller && wait_for_verdict &&
-          (is_new_copy || toast_controller->GetCurrentToastId() != toast_id) &&
-          toast_controller->MaybeShowToast(ToastParams(toast_id))) {
-        tracker->set_last_toast_time(base::TimeTicks::Now());
-      }
-    };
-    switch (final_result_) {
-      case FinalContentAnalysisResult::WARNING:
-        if (web_contents_) {
-          // Set the delegate in the tracker so it can be found by the toast
-          // controller later to bypass the copy warning.
-          CopyWarningDelegateTracker::SetDelegate(web_contents_.get(), this);
-          maybe_show_toast(ToastId::kEnterpriseCopyWarning);
-          // Delay deleting the content analysis delegate until the toast is
-          // clicked.
-          return true;
-        }
-        return false;
-      case FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME:
-        if (web_contents_) {
-          enterprise_data_protection::MaybeShowCopyToast(
-              profile_, web_contents_.get(),
-              enterprise_data_protection::CopyToastType::kKeptInManagedChrome);
-        }
-        return false;
-      case FinalContentAnalysisResult::SUCCESS:
-        if (web_contents_) {
-          if (enterprise_data_protection::MaybeShowCopyToast(
-                  profile_, web_contents_.get(),
-                  enterprise_data_protection::CopyToastType::kAudit)) {
-            tracker->set_last_toast_time(base::TimeTicks::Now());
-          } else if (is_new_copy && !data_.image.empty() &&
-                     toast_features::IsEnabled(
-                         toast_features::kImageCopiedToast)) {
-            // The image is only copied now that the scan allowed it.
-            maybe_show_toast(ToastId::kImageCopied);
-          }
-        }
-        return false;
-      case FinalContentAnalysisResult::FAIL_CLOSED:
-        // The scan couldn't complete and the policy fails closed, so tell the
-        // user the scan failed rather than that the content itself was
-        // blocked.
-        if (web_contents_) {
-          maybe_show_toast(ToastId::kEnterpriseCopyFailClosed);
-        }
-        return false;
-      case FinalContentAnalysisResult::FAILURE:
-        if (web_contents_) {
-          maybe_show_toast(ToastId::kEnterpriseCopyBlocked);
-        }
-        return false;
-      case FinalContentAnalysisResult::CANCELLED:
-      case FinalContentAnalysisResult::LARGE_FILES:
-      case FinalContentAnalysisResult::ENCRYPTED_FILES:
-      case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
-        NOTREACHED();
-    }
-#else
-    // Clipboard copy scanning isn't supported on Android: it is only wired up
-    // behind BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS), so no COPY delegate is
-    // ever created there.
-    NOTREACHED();
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
+  // The COPY access point never opens a dialog, see ShowFinalResultInToast().
+  CHECK(access_point_ != DeepScanAccessPoint::COPY);
 
   if (!dialog_) {
     return false;
@@ -781,6 +704,84 @@ bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
 
   dialog_->ShowResult(final_result_);
   return true;
+}
+
+bool ContentAnalysisDelegate::ShowFinalResultInToast() {
+  CHECK(access_point_ == DeepScanAccessPoint::COPY);
+#if BUILDFLAG(IS_ANDROID)
+  // Clipboard copy scanning isn't supported on Android: it is only wired up
+  // behind BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS), so no COPY delegate is
+  // ever created there.
+  NOTREACHED();
+#else
+  bool wait_for_verdict =
+      data_.settings.block_until_verdict == BlockUntilVerdict::kBlock;
+  auto* tracker =
+      enterprise_data_protection::ClipboardToastTracker::GetForProfile(
+          profile_);
+  bool is_new_copy = creation_time_ > tracker->last_toast_time();
+  // Shows `toast_id`, unless it's already showing for the same copy.
+  auto maybe_show_toast = [&](ToastId toast_id) {
+    auto* toast_controller =
+        ToastController::MaybeGetForWebContents(web_contents_.get());
+    if (toast_controller && wait_for_verdict &&
+        (is_new_copy || toast_controller->GetCurrentToastId() != toast_id) &&
+        toast_controller->MaybeShowToast(ToastParams(toast_id))) {
+      tracker->set_last_toast_time(base::TimeTicks::Now());
+    }
+  };
+  switch (final_result_) {
+    case FinalContentAnalysisResult::WARNING:
+      if (web_contents_) {
+        // Set the delegate in the tracker so it can be found by the toast
+        // controller later to bypass the copy warning.
+        CopyWarningDelegateTracker::SetDelegate(web_contents_.get(), this);
+        maybe_show_toast(ToastId::kEnterpriseCopyWarning);
+        // Delay deleting the content analysis delegate until the toast is
+        // clicked.
+        return true;
+      }
+      return false;
+    case FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME:
+      if (web_contents_) {
+        enterprise_data_protection::MaybeShowCopyToast(
+            profile_, web_contents_.get(),
+            enterprise_data_protection::CopyToastType::kKeptInManagedChrome);
+      }
+      return false;
+    case FinalContentAnalysisResult::SUCCESS:
+      if (web_contents_) {
+        if (enterprise_data_protection::MaybeShowCopyToast(
+                profile_, web_contents_.get(),
+                enterprise_data_protection::CopyToastType::kAudit)) {
+          tracker->set_last_toast_time(base::TimeTicks::Now());
+        } else if (is_new_copy && !data_.image.empty() &&
+                   toast_features::IsEnabled(
+                       toast_features::kImageCopiedToast)) {
+          // The image is only copied now that the scan allowed it.
+          maybe_show_toast(ToastId::kImageCopied);
+        }
+      }
+      return false;
+    case FinalContentAnalysisResult::FAIL_CLOSED:
+      // The scan couldn't complete and the policy fails closed, so tell the
+      // user the scan failed rather than that the content itself was blocked.
+      if (web_contents_) {
+        maybe_show_toast(ToastId::kEnterpriseCopyFailClosed);
+      }
+      return false;
+    case FinalContentAnalysisResult::FAILURE:
+      if (web_contents_) {
+        maybe_show_toast(ToastId::kEnterpriseCopyBlocked);
+      }
+      return false;
+    case FinalContentAnalysisResult::CANCELLED:
+    case FinalContentAnalysisResult::LARGE_FILES:
+    case FinalContentAnalysisResult::ENCRYPTED_FILES:
+    case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
+      NOTREACHED();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ContentAnalysisDelegate::CancelDialog() {
@@ -1033,13 +1034,19 @@ ContentAnalysisDelegate::GetNavigationObserverManager() const {
       GetForBrowserContext(profile_);
 }
 
-bool ContentAnalysisDelegate::UpdateDialog() {
+bool ContentAnalysisDelegate::UpdateUI() {
   // In the case of fail-closed, show the final result UI regardless of cloud or
   // local analysis. Otherwise, only show the result for cloud analysis.
   bool show_ui = final_result_ == FinalContentAnalysisResult::FAIL_CLOSED ||
                  data_.settings.cloud_or_local_settings.is_cloud_analysis();
 
   DVLOG(1) << __func__ << ": show_ui=" << show_ui;
+  if (access_point_ == DeepScanAccessPoint::COPY) {
+    // Copies never open a dialog: the verdict reaches the user through the
+    // clipboard content and non-blocking toasts, so there is nothing to cancel
+    // when no UI should be shown either.
+    return show_ui && ShowFinalResultInToast();
+  }
   return show_ui ? ShowFinalResultInDialog() : CancelDialog();
 }
 
@@ -1089,7 +1096,7 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
     return;
   }
 
-  if (!UpdateDialog() && data_uploaded_) {
+  if (!UpdateUI() && data_uploaded_) {
     // No UI was shown.  Delete |this| to cleanup, unless UploadData isn't done
     // yet.
     DVLOG(1) << __func__ << ": about to delete `this` to clean up.";

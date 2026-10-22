@@ -91,6 +91,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   static void ResetStaticDialogFlagsAndTotalRequestsCount();
   static bool WasDialogShown();
   static bool WasDialogCanceled();
+  static bool WasToastShown();
   static int GetTotalAnalysisRequestsCount();
 
   ContentAnalysisResponse GetStatus(const std::string& contents,
@@ -113,6 +114,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
 
   // ContentAnalysisDelegate overrides.
   bool ShowFinalResultInDialog() override;
+  bool ShowFinalResultInToast() override;
   bool CancelDialog() override;
   BinaryUploadService* GetBinaryUploadService() override;
 
@@ -129,6 +131,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   static ScanRequestUploadResult result_;
   static bool dialog_shown_;
   static bool dialog_canceled_;
+  static bool toast_shown_;
   static int64_t total_analysis_requests_count_;
 
   base::RepeatingClosure delete_closure_;
