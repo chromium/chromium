@@ -164,6 +164,10 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
 
   disallowed_custom_cursors_scope_.RunAndReset();
 
+  // Notify observers before `OnPromptBubbleDismissed()` below, which can
+  // resolve the permission request and destroy `PermissionPromptChip`.
+  permission_prompt_observers_.Notify(&Observer::OnPermissionPromptHidden);
+
   if (!prompt_decision_.has_value()) {
     widget->RemoveObserver(this);
     bubble_tracker_.SetView(nullptr);
@@ -184,8 +188,6 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
       OnPromptBubbleDismissed();
     }
   }
-
-  permission_prompt_observers_.Notify(&Observer::OnPermissionPromptHidden);
 }
 
 void ChipController::OnWidgetDestroyed(views::Widget* widget) {

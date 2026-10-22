@@ -32,8 +32,8 @@ PermissionRequestManagerTestApi::PermissionRequestManagerTestApi(
 
 void PermissionRequestManagerTestApi::AddSimpleRequest(
     content::RenderFrameHost* source_frame,
-    permissions::RequestType type) {
-  const bool user_gesture = true;
+    permissions::RequestType type,
+    bool user_gesture) {
   manager_->AddRequest(
       source_frame,
       std::make_unique<permissions::PermissionRequest>(

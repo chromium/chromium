@@ -22,6 +22,12 @@ namespace location_bar {
 // associating a custom `LocationBar` instance with the `WebContents` so that
 // these UI features interact with the secondary surface instead of the main
 // browser omnibox.
+//
+// Note: `ShouldUseChip()` in `permission_prompt_factory.cc` also exempts any
+// `WebContents` with `LocationBarOverrideData` from the user-gesture
+// requirement so that permission prompts always show the request chip as an
+// anchor (including for web origins transferred from a tab into the secondary
+// surface).
 class LocationBarOverrideData
     : public content::WebContentsUserData<LocationBarOverrideData> {
  public:

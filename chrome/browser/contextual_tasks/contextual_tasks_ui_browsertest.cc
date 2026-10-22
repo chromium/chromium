@@ -40,9 +40,12 @@
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_uma_constants.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
@@ -1205,6 +1208,106 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
     return !side_panel_chip_controller->IsBubbleShowing() &&
            !prm->IsRequestInProgress();
   }));
+}
+
+// Requests made without a user gesture, such as voice search's microphone
+// request via the Web Speech API, get a chip-less prompt bubble in the main
+// omnibox. In the side panel, they still show the request chip, which the
+// prompt bubble then opens from and notifies `PermissionPromptObserver` on
+// show/hide (see `PermissionPromptAnchorsAndRoutesToSidePanelLocationBar`).
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       PermissionRequestWithoutUserGestureShowsRequestChip) {
+  class TestPermissionPromptObserver
+      : public PermissionPromptObserver::Observer {
+   public:
+    void OnPermissionPromptChanged(bool is_showing,
+                                   const gfx::Size& prompt_size) override {
+      is_showing_history.push_back(is_showing);
+    }
+    std::vector<bool> is_showing_history;
+  };
+
+  auto* service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  auto* tab = TabListInterface::From(browser())->GetActiveTab();
+  service->InitSidePanelWithGhostLoader(browser(), tab, nullptr);
+
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return panel_controller->IsPanelOpenForContextualTask(); }));
+
+  auto* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::Get(
+          browser()->GetUnownedUserDataHost());
+  ASSERT_TRUE(coordinator);
+  content::WebContents* panel_contents = coordinator->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(panel_contents));
+
+  auto* location_bar =
+      coordinator->permission_controller()->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar);
+  content::WebContents* toolbar_contents =
+      location_bar->GetToolbarWebContents();
+  ASSERT_TRUE(toolbar_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(toolbar_contents));
+
+  PermissionPromptObserver::CreateForWebContents(panel_contents);
+  PermissionPromptObserver* prompt_observer =
+      PermissionPromptObserver::FromWebContents(panel_contents);
+  ASSERT_TRUE(prompt_observer);
+  TestPermissionPromptObserver test_observer;
+  prompt_observer->AddObserver(&test_observer);
+
+  auto* prm =
+      permissions::PermissionRequestManager::FromWebContents(panel_contents);
+  ASSERT_TRUE(prm);
+  test::PermissionRequestManagerTestApi test_api(prm);
+  permissions::PermissionRequestObserver observer(panel_contents);
+  test_api.AddSimpleRequest(panel_contents->GetPrimaryMainFrame(),
+                            permissions::RequestType::kMicStream,
+                            /*user_gesture=*/false);
+  observer.Wait();
+  ASSERT_TRUE(observer.request_shown());
+
+  // The prompt is shown through the side panel's request chip rather than as a
+  // chip-less bubble.
+  EXPECT_EQ(prm->current_request_prompt_disposition_for_testing(),
+            permissions::PermissionPromptDisposition::
+                LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+  ChipController* side_panel_chip_controller =
+      location_bar->GetChipController();
+  ASSERT_TRUE(side_panel_chip_controller);
+  EXPECT_TRUE(side_panel_chip_controller->IsPermissionPromptChipVisible());
+
+  // Finishing the chip expand animation opens the prompt bubble and notifies
+  // `PermissionPromptObserver` on the side panel `WebContents`.
+  side_panel_chip_controller->chip()->EndAnimationForTesting();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !side_panel_chip_controller->is_waiting_for_anchor_for_testing() &&
+           side_panel_chip_controller->IsBubbleShowing() &&
+           test_observer.is_showing_history.size() >= 1u;
+  }));
+  ASSERT_EQ(1u, test_observer.is_showing_history.size());
+  EXPECT_TRUE(test_observer.is_showing_history[0]);
+
+  auto* bubble_view = static_cast<PermissionPromptBubbleBaseView*>(
+      side_panel_chip_controller->get_prompt_bubble_view_for_testing());
+  ASSERT_TRUE(bubble_view);
+  bubble_view->RunButtonCallback(static_cast<int>(
+      PermissionPromptBubbleBaseView::PermissionDialogButton::kAccept));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !side_panel_chip_controller->IsBubbleShowing() &&
+           !prm->IsRequestInProgress() &&
+           test_observer.is_showing_history.size() >= 2u;
+  }));
+  ASSERT_EQ(2u, test_observer.is_showing_history.size());
+  EXPECT_FALSE(test_observer.is_showing_history[1]);
+
+  prompt_observer->RemoveObserver(&test_observer);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
