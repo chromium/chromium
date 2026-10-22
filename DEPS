@@ -422,7 +422,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling aapt2_version
   # and whatever else without interference from each other.
-  'aapt2_version': 'version:2@9.5.0-alpha08-16409357',
+  'aapt2_version': 'version:2@9.6.0-alpha01-16666295',
   # Used by the //third_party/android_deps/cipd entry. Rolled by the
   # android_deps autoroller.
   # Three lines of non-changing comments so that
