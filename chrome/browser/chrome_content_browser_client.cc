@@ -4721,9 +4721,27 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
 // with extensions (the chrome.fontSettings API can change these).
 // - http://crbug.com/40337093, http://crbug.com/41304476.
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  bool is_initial_webui = false;
+#if !BUILDFLAG(IS_ANDROID)
+  is_initial_webui =
+      waap::IsForInitialWebUI(main_frame_site.GetSecurityPrincipal());
+#endif
   // Enabling the FontFamilyCache needs some KeyedService that might not be
   // available for some irregular profiles, like the System Profile.
-  if (!AreKeyedServicesDisabledForProfileByDefault(profile)) {
+  if (is_initial_webui) {
+    // Initial WebUI uses the browser UI font from text_defaults.css and
+    // layout_constants_v0.css rather than user web-content font preferences.
+    // Clearing the default generic font maps avoids populating FontFamilyCache
+    // during startup prewarming and prevents prewarming or loading unused
+    // default web fonts such as "Times New Roman".
+    web_prefs->standard_font_family_map.clear();
+    web_prefs->fixed_font_family_map.clear();
+    web_prefs->serif_font_family_map.clear();
+    web_prefs->sans_serif_font_family_map.clear();
+    web_prefs->cursive_font_family_map.clear();
+    web_prefs->fantasy_font_family_map.clear();
+    web_prefs->math_font_family_map.clear();
+  } else if (!AreKeyedServicesDisabledForProfileByDefault(profile)) {
     FontFamilyCache::FillFontFamilyMap(profile,
                                        prefs::kWebKitStandardFontFamilyMap,
                                        &web_prefs->standard_font_family_map);

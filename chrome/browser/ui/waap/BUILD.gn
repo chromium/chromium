@@ -177,6 +177,8 @@ source_set("unit_tests") {
     "//components/performance_manager",
     "//components/performance_manager/test_support:test_support_common",
     "//components/startup_metric_utils",
+    "//content/public/browser",
+    "//content/public/common",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

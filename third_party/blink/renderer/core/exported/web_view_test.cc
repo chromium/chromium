@@ -164,6 +164,7 @@
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -6850,6 +6851,51 @@ TEST_F(WebViewTest, TouchEmulationSurvivesWebPreferencesRepush) {
 
   emulator->SetTouchEventEmulationEnabled(false, 0);
   EXPECT_EQ(kUpdatedEmbedderMaxTouchPoints, settings.GetMaxTouchPoints());
+}
+
+TEST_F(WebViewTest, ApplyWebPreferencesSkipsPrewarmingEmptyFontFamilies) {
+  WebViewImpl* web_view_impl = web_view_helper_.Initialize();
+  GenericFontFamilySettings& font_settings =
+      web_view_impl->GetPage()->GetSettings().GetGenericFontFamilySettings();
+
+  web_pref::WebPreferences empty_font_prefs;
+  empty_font_prefs.standard_font_family_map.clear();
+  empty_font_prefs.fixed_font_family_map.clear();
+  empty_font_prefs.serif_font_family_map.clear();
+  empty_font_prefs.sans_serif_font_family_map.clear();
+  empty_font_prefs.cursive_font_family_map.clear();
+  empty_font_prefs.fantasy_font_family_map.clear();
+  empty_font_prefs.math_font_family_map.clear();
+
+  {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+    test::ScopedTestFontPrewarmer prewarmer;
+#endif
+    WebView::ApplyWebPreferences(empty_font_prefs, web_view_impl);
+    EXPECT_TRUE(font_settings.Serif().empty());
+    EXPECT_TRUE(font_settings.SansSerif().empty());
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+    EXPECT_TRUE(prewarmer.PrewarmedFamilyNames().empty());
+#endif
+  }
+
+  {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+    test::ScopedTestFontPrewarmer prewarmer;
+#endif
+    web_pref::WebPreferences default_prefs;
+    WebView::ApplyWebPreferences(default_prefs, web_view_impl);
+    EXPECT_EQ("Times New Roman", font_settings.Serif());
+    EXPECT_EQ("Arial", font_settings.SansSerif());
+#if BUILDFLAG(IS_WIN)
+    ASSERT_EQ(2u, prewarmer.PrewarmedFamilyNames().size());
+    EXPECT_EQ("Times New Roman", prewarmer.PrewarmedFamilyNames()[0]);
+    EXPECT_EQ("Arial", prewarmer.PrewarmedFamilyNames()[1]);
+#elif BUILDFLAG(IS_ANDROID)
+    ASSERT_EQ(1u, prewarmer.PrewarmedFamilyNames().size());
+    EXPECT_EQ("Arial", prewarmer.PrewarmedFamilyNames()[0]);
+#endif
+  }
 }
 
 TEST_F(WebViewTest, ViewportOverrideIntegratesDeviceMetricsOffsetAndScale) {

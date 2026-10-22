@@ -13,8 +13,9 @@
 class Profile;
 
 namespace content {
+class SecurityPrincipal;
 class WebContents;
-}
+}  // namespace content
 
 namespace waap {
 
@@ -71,9 +72,10 @@ enum class InitialWebUISurfaceSyncResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:InitialWebUISurfaceSyncResult)
 
-// Returns true if the given URL is the initial WebUI scheme.
+// Returns true if the given URL or SecurityPrincipal is for the initial WebUI.
 // This is only relevant on non-Android platforms.
 bool IsForInitialWebUI(const GURL& url);
+bool IsForInitialWebUI(const content::SecurityPrincipal& principal);
 
 class PrewarmHelper {
  public:

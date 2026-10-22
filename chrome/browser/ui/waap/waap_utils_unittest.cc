@@ -14,6 +14,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,42 +24,57 @@
 namespace waap {
 namespace {
 
-TEST(IsForInitialWebUITest, FeaturesDisabled) {
+using IsForInitialWebUITest = ChromeRenderViewHostTestHarness;
+
+TEST_F(IsForInitialWebUITest, FeaturesDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {}, {features::kInitialWebUI, features::kWebUIReloadButton});
 
-  EXPECT_FALSE(
-      IsForInitialWebUI(GURL(std::string(content::kChromeUIScheme) + "://" +
-                             chrome::kChromeUIWebUIToolbarHost)));
+  const GURL url(std::string(content::kChromeUIScheme) + "://" +
+                 chrome::kChromeUIWebUIToolbarHost);
+  EXPECT_FALSE(IsForInitialWebUI(url));
+  std::unique_ptr<content::SecurityPrincipal> principal =
+      content::SecurityPrincipal::CreateForTesting(profile(), url);
+  EXPECT_FALSE(IsForInitialWebUI(*principal));
 }
 
-TEST(IsForInitialWebUITest, FeaturesEnabled) {
+TEST_F(IsForInitialWebUITest, FeaturesEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kInitialWebUI, features::kWebUIReloadButton}, {});
 
-  EXPECT_TRUE(
-      IsForInitialWebUI(GURL(std::string(content::kChromeUIScheme) + "://" +
-                             chrome::kChromeUIWebUIToolbarHost)));
+  const GURL url(std::string(content::kChromeUIScheme) + "://" +
+                 chrome::kChromeUIWebUIToolbarHost);
+  EXPECT_TRUE(IsForInitialWebUI(url));
+  std::unique_ptr<content::SecurityPrincipal> principal =
+      content::SecurityPrincipal::CreateForTesting(profile(), url);
+  EXPECT_TRUE(IsForInitialWebUI(*principal));
 }
 
-TEST(IsForInitialWebUITest, NonChromeScheme) {
+TEST_F(IsForInitialWebUITest, NonChromeScheme) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kInitialWebUI, features::kWebUIReloadButton}, {});
 
-  EXPECT_FALSE(IsForInitialWebUI(
-      GURL(std::string("https") + "://" + chrome::kChromeUIWebUIToolbarHost)));
+  const GURL url(std::string("https") + "://" +
+                 chrome::kChromeUIWebUIToolbarHost);
+  EXPECT_FALSE(IsForInitialWebUI(url));
+  std::unique_ptr<content::SecurityPrincipal> principal =
+      content::SecurityPrincipal::CreateForTesting(profile(), url);
+  EXPECT_FALSE(IsForInitialWebUI(*principal));
 }
 
-TEST(IsForInitialWebUITest, NonInitialWebUIHost) {
+TEST_F(IsForInitialWebUITest, NonInitialWebUIHost) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kInitialWebUI, features::kWebUIReloadButton}, {});
 
-  EXPECT_FALSE(IsForInitialWebUI(
-      GURL(std::string(content::kChromeUIScheme) + "://" + "wrong-host")));
+  const GURL url(std::string(content::kChromeUIScheme) + "://" + "wrong-host");
+  EXPECT_FALSE(IsForInitialWebUI(url));
+  std::unique_ptr<content::SecurityPrincipal> principal =
+      content::SecurityPrincipal::CreateForTesting(profile(), url);
+  EXPECT_FALSE(IsForInitialWebUI(*principal));
 }
 
 class PrewarmHelperTest : public ChromeRenderViewHostTestHarness {

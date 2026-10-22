@@ -21,6 +21,7 @@
 #include "content/public/browser/frame_eviction_opt_out_client.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -79,6 +80,15 @@ bool IsForInitialWebUI(const GURL& url) {
       base::FeatureList::IsEnabled(features::kWebUIReloadButton)) {
     return url.SchemeIs(content::kChromeUIScheme) &&
            url.host() == chrome::kChromeUIWebUIToolbarHost;
+  }
+  return false;
+}
+
+bool IsForInitialWebUI(const content::SecurityPrincipal& principal) {
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+      base::FeatureList::IsEnabled(features::kWebUIReloadButton)) {
+    return principal.SchemeIs(content::kChromeUIScheme) &&
+           principal.GetHost() == chrome::kChromeUIWebUIToolbarHost;
   }
   return false;
 }

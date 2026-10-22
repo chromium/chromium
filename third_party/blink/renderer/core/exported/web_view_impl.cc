@@ -1959,9 +1959,14 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       // trigger the expensive SkFontMgr initialization (parsing fonts.xml).
       // Pre-warming additional families is redundant.
 #if !BUILDFLAG(IS_ANDROID)
-      prewarmer->PrewarmFamily(font_settings.Serif());
+      if (const AtomicString& serif = font_settings.Serif(); !serif.empty()) {
+        prewarmer->PrewarmFamily(serif);
+      }
 #endif
-      prewarmer->PrewarmFamily(font_settings.SansSerif());
+      if (const AtomicString& sans_serif = font_settings.SansSerif();
+          !sans_serif.empty()) {
+        prewarmer->PrewarmFamily(sans_serif);
+      }
     }
   }
 #endif
