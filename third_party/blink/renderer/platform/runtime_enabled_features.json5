@@ -7711,7 +7711,7 @@
     },
     {
       name: "WebTransportDraining",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebTransportExportKeyingMaterial",

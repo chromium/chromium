@@ -3431,6 +3431,7 @@ interface WebTransport
     getter anticipatedConcurrentIncomingUnidirectionalStreams
     getter closed
     getter datagrams
+    getter draining
     getter incomingBidirectionalStreams
     getter incomingUnidirectionalStreams
     getter protocol
