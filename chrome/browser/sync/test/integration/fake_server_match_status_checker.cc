@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 
+#include "base/check.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 
@@ -11,7 +12,7 @@ namespace fake_server {
 
 FakeServerMatchStatusChecker::FakeServerMatchStatusChecker()
     : fake_server_(sync_datatype_helper::test()->GetFakeServer()) {
-  DCHECK(fake_server_);
+  CHECK(fake_server_);
   fake_server_->AddObserver(this);
 }
 

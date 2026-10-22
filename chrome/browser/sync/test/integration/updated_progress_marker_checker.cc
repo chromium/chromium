@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -13,7 +14,7 @@
 UpdatedProgressMarkerChecker::UpdatedProgressMarkerChecker(
     syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {
-  DCHECK(sync_datatype_helper::test()->TestUsesSelfNotifications());
+  CHECK(sync_datatype_helper::test()->TestUsesSelfNotifications());
 
   // HasUnsyncedItemsForTest() requires the engine to be initialized.
   if (service->IsEngineInitialized()) {

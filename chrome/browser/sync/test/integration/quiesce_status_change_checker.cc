@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -28,9 +30,9 @@ bool AreProgressMarkersEquivalent(const std::string& serialized1,
   sync_pb::DataTypeProgressMarker marker2;
   CHECK(marker1.ParseFromString(serialized1));
   CHECK(marker2.ParseFromString(serialized2));
-  DCHECK(marker1.data_type_id() == marker2.data_type_id());
-  DCHECK(!marker1.has_gc_directive());
-  DCHECK(!marker2.has_gc_directive());
+  CHECK_EQ(marker1.data_type_id(), marker2.data_type_id());
+  CHECK(!marker1.has_gc_directive());
+  CHECK(!marker2.has_gc_directive());
 
   return marker1.SerializeAsString() == marker2.SerializeAsString();
 }
@@ -112,7 +114,7 @@ class QuiesceStatusChangeChecker::NestedUpdatedProgressMarkerChecker
 QuiesceStatusChangeChecker::QuiesceStatusChangeChecker(
     std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>> services)
     : MultiClientStatusChangeChecker(services) {
-  DCHECK_LE(1U, services.size());
+  CHECK_LE(1U, services.size());
   for (syncer::SyncServiceImpl* service : services) {
     checkers_.push_back(std::make_unique<NestedUpdatedProgressMarkerChecker>(
         service,
