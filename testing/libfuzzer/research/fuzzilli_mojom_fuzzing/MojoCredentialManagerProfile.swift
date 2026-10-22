@@ -249,13 +249,16 @@ private let mojoBuiltins: [String: ILType] = [
     /// is only called once, and (2) the remote is saved to a global variable so it
     /// can be closed at the end of the program.
     "getOrCreatePrimaryRemote": .function([] => .jsBlinkMojomCredentialManagerRemote),
+    /// Declared in `codePrefix`. `MojoAsyncFunctionGenerator` pushes the promise
+    /// of every async function it emits, and `codeSuffix` awaits them all. Typed
+    /// as an opaque object Fuzzilli does not use it as a general-purpose array.
+    "mojoAsyncFunctionPromises": .object(withMethods: ["push"]),
     "blink.mojom.CredentialInfo": .jsBlinkMojomCredentialInfoConstructor,
 ]
 
 private let keepGenerators = [
     "IntegerGenerator", "StringGenerator", "TernaryOperationGenerator",
-    "PlainFunctionGenerator", "AsyncFunctionGenerator", "AwaitGenerator",
-    "SubroutineReturnGenerator", "TryCatchGenerator",
+    "PlainFunctionGenerator", "SubroutineReturnGenerator", "TryCatchGenerator",
 ]
 
 private let mojoDisabledGenerators: [String] = CodeGenerators.map { $0.name }
@@ -274,6 +277,7 @@ let mojoCredentialManagerProfile = Profile(
     codePrefix: """
         // --- Begin program prefix ---
         let globalRemote = null;
+        const mojoAsyncFunctionPromises = [];
         function getOrCreatePrimaryRemote() {
             if (!globalRemote) {
                 globalRemote = blink.mojom.CredentialManager.getRemote();
@@ -284,7 +288,14 @@ let mojoCredentialManagerProfile = Profile(
         """,
     codeSuffix: """
         // --- Begin program suffix ---
-        if (globalRemote) {globalRemote.$.close()}
+        // ExecJs awaits the promise returned by the last statement, so the
+        // async functions run to completion (including code after `await`)
+        // before the primary remote is closed. The leading `;` stops this from
+        // being parsed as a call on the program's last line.
+        ;(async () => {
+            await Promise.allSettled(mojoAsyncFunctionPromises);
+            if (globalRemote) {globalRemote.$.close()}
+        })();
         // --- End program suffix ---
         """,
     ecmaVersion: v8Profile.ecmaVersion,
