@@ -4088,9 +4088,11 @@ void WebViewImpl::MainFrameLayoutUpdated() {
     return;
   }
 
-  for (auto& observer : observers_) {
-    observer.DidUpdateMainFrameLayout();
-  }
+  // Allow reentrancy because `OnPageVisibilityChanged` observers (e.g.
+  // `media::RendererWebMediaPlayerDelegate`) can synchronously run script that
+  // forces a main-frame layout update while `SetVisibilityState()` is iterating
+  // `observers_`.
+  observers_.NotifyAllowReentrancy(&WebViewObserver::DidUpdateMainFrameLayout);
   needs_preferred_size_update_ = true;
 }
 

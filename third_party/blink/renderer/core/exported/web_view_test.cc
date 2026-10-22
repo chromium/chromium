@@ -8381,4 +8381,47 @@ TEST_F(WebViewTest, KeyboardFocusOnTabindexLinkShowsBubble) {
   EXPECT_EQ(KURL("http://example.com/"), web_view->target_url_);
 }
 
+TEST_F(WebViewTest, MainFrameLayoutUpdatedDuringOnPageVisibilityChanged) {
+  class LayoutUpdatingVisibilityObserver : public WebViewObserver {
+   public:
+    explicit LayoutUpdatingVisibilityObserver(WebView* web_view)
+        : WebViewObserver(web_view) {}
+    ~LayoutUpdatingVisibilityObserver() override = default;
+
+    void OnPageVisibilityChanged(
+        blink::mojom::PageVisibilityState visibility_state) override {
+      Document* document = To<WebViewImpl>(GetWebView())
+                               ->MainFrameImpl()
+                               ->GetFrame()
+                               ->GetDocument();
+      Element* target = document->getElementById(AtomicString("target"));
+      target->setAttribute(html_names::kStyleAttr,
+                           AtomicString("width: 200px"));
+      // Reading innerText forces a synchronous style and layout update, which
+      // calls WebViewImpl::MainFrameLayoutUpdated() while SetVisibilityState()
+      // is iterating `observers_`.
+      target->innerText();
+    }
+
+    void DidUpdateMainFrameLayout() override { ++layout_updated_count_; }
+
+    void OnDestruct() override {}
+
+    int layout_updated_count() const { return layout_updated_count_; }
+
+   private:
+    int layout_updated_count_ = 0;
+  };
+
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(), "<div id='target'>Hello</div>",
+      url_test_helpers::ToKURL("http://example.com/"));
+
+  LayoutUpdatingVisibilityObserver observer(web_view);
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  EXPECT_GE(observer.layout_updated_count(), 1);
+}
+
 }  // namespace blink
