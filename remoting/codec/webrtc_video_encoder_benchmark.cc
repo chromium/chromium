@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
 #include <deque>
+#include <iomanip>
 #include <iostream>
 #include <memory>
+#include <numeric>
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
@@ -73,6 +79,37 @@ struct RuntimeParams {
   std::string scenario;
 };
 
+struct FrameMetric {
+  double encode_time_ms = 0.0;
+  size_t size_bytes = 0;
+  int quantizer = 0;
+  bool key_frame = false;
+};
+
+struct LatencyStats {
+  size_t count = 0;
+  double total_ms = 0.0;
+  double mean_ms = 0.0;
+  double p50_ms = 0.0;
+  double p90_ms = 0.0;
+  double p99_ms = 0.0;
+  double max_ms = 0.0;
+};
+
+struct SizeStats {
+  size_t count = 0;
+  size_t total_bytes = 0;
+  double avg_bytes = 0.0;
+  size_t max_bytes = 0;
+};
+
+struct QuantizerStats {
+  size_t count = 0;
+  double avg_qp = 0.0;
+  int min_qp = 0;
+  int max_qp = 0;
+};
+
 std::unique_ptr<WebrtcVideoEncoder> CreateEncoder(const EncoderParams& params) {
   std::unique_ptr<WebrtcVideoEncoder> encoder;
   if (params.codec == Codec::kAv1) {
@@ -100,6 +137,64 @@ std::string CodecToString(Codec codec) {
     case Codec::kVp9:
       return "vp9";
   }
+}
+
+double ComputePercentileFromSorted(const std::vector<double>& sorted_values,
+                                   double percentile) {
+  if (sorted_values.empty()) {
+    return 0.0;
+  }
+  double index = (percentile / 100.0) * (sorted_values.size() - 1);
+  size_t lower = static_cast<size_t>(std::floor(index));
+  size_t upper = static_cast<size_t>(std::ceil(index));
+  double weight = index - lower;
+  return sorted_values[lower] * (1.0 - weight) + sorted_values[upper] * weight;
+}
+
+LatencyStats ComputeLatencyStats(const std::vector<double>& times_ms) {
+  LatencyStats stats;
+  stats.count = times_ms.size();
+  if (times_ms.empty()) {
+    return stats;
+  }
+  std::vector<double> sorted_times = times_ms;
+  std::ranges::sort(sorted_times);
+  stats.total_ms =
+      std::accumulate(sorted_times.begin(), sorted_times.end(), 0.0);
+  stats.mean_ms = stats.total_ms / stats.count;
+  stats.p50_ms = ComputePercentileFromSorted(sorted_times, 50.0);
+  stats.p90_ms = ComputePercentileFromSorted(sorted_times, 90.0);
+  stats.p99_ms = ComputePercentileFromSorted(sorted_times, 99.0);
+  stats.max_ms = sorted_times.back();
+  return stats;
+}
+
+SizeStats ComputeSizeStats(const std::vector<size_t>& sizes) {
+  SizeStats stats;
+  stats.count = sizes.size();
+  if (sizes.empty()) {
+    return stats;
+  }
+  stats.total_bytes =
+      std::accumulate(sizes.begin(), sizes.end(), static_cast<size_t>(0));
+  stats.avg_bytes = static_cast<double>(stats.total_bytes) / stats.count;
+  stats.max_bytes = *std::ranges::max_element(sizes);
+  return stats;
+}
+
+QuantizerStats ComputeQuantizerStats(const std::vector<int>& quantizers) {
+  QuantizerStats stats;
+  stats.count = quantizers.size();
+  if (quantizers.empty()) {
+    return stats;
+  }
+  int64_t sum =
+      std::accumulate(quantizers.begin(), quantizers.end(), int64_t{0});
+  stats.avg_qp = static_cast<double>(sum) / stats.count;
+  auto [min_it, max_it] = std::ranges::minmax_element(quantizers);
+  stats.min_qp = *min_it;
+  stats.max_qp = *max_it;
+  return stats;
 }
 
 class EncoderBenchmark {
@@ -136,7 +231,7 @@ class EncoderBenchmark {
     frames_encoded_ = 0;
     total_pixels_ = 0;
     updated_pixels_ = 0;
-    total_encode_time_ = base::TimeDelta();
+    frame_metrics_.clear();
 
     std::unique_ptr<FrameGenerator> generator;
     if (!runtime_params_.frame_dir.empty()) {
@@ -177,6 +272,7 @@ class EncoderBenchmark {
     }
 
     frames_to_encode_ = preloaded_frames_.size();
+    frame_metrics_.reserve(frames_to_encode_);
 
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -237,6 +333,7 @@ class EncoderBenchmark {
     WebrtcVideoEncoder::FrameParams params;
     params.bitrate_kbps = encoder_params_.bitrate_kbps;
     params.duration = base::Hertz(runtime_params_.fps);
+    params.fps = static_cast<int>(std::round(runtime_params_.fps));
     params.key_frame = (frames_encoded_ == 0);
     params.clear_active_map = true;
 
@@ -279,8 +376,14 @@ class EncoderBenchmark {
       WebrtcVideoEncoder::EncodeResult result,
       std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame) {
     DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
     if (result == WebrtcVideoEncoder::EncodeResult::SUCCEEDED && frame) {
-      total_encode_time_ += base::TimeTicks::Now() - start_time;
+      FrameMetric metric;
+      metric.encode_time_ms = elapsed.InMillisecondsF();
+      metric.size_bytes = frame->data ? frame->data->size() : 0;
+      metric.quantizer = frame->quantizer;
+      metric.key_frame = frame->key_frame;
+      frame_metrics_.push_back(metric);
     } else {
       LOG(ERROR) << "Encoder failed to encode frame.";
     }
@@ -304,7 +407,69 @@ class EncoderBenchmark {
   }
 
   void PrintResults() {
-    std::cout << "--------------------------------------------------"
+    std::vector<double> all_times_ms;
+    std::vector<double> keyframe_times_ms;
+    std::vector<double> delta_times_ms;
+
+    std::vector<size_t> all_sizes;
+    std::vector<size_t> keyframe_sizes;
+    std::vector<size_t> delta_sizes;
+
+    std::vector<int> all_quantizers;
+    std::vector<int> delta_quantizers;
+
+    all_times_ms.reserve(frame_metrics_.size());
+    all_sizes.reserve(frame_metrics_.size());
+    all_quantizers.reserve(frame_metrics_.size());
+
+    for (const auto& m : frame_metrics_) {
+      all_times_ms.push_back(m.encode_time_ms);
+      all_sizes.push_back(m.size_bytes);
+      all_quantizers.push_back(m.quantizer);
+      if (m.key_frame) {
+        keyframe_times_ms.push_back(m.encode_time_ms);
+        keyframe_sizes.push_back(m.size_bytes);
+      } else {
+        delta_times_ms.push_back(m.encode_time_ms);
+        delta_sizes.push_back(m.size_bytes);
+        delta_quantizers.push_back(m.quantizer);
+      }
+    }
+
+    LatencyStats all_latency = ComputeLatencyStats(all_times_ms);
+    LatencyStats kf_latency = ComputeLatencyStats(keyframe_times_ms);
+    LatencyStats delta_latency = ComputeLatencyStats(delta_times_ms);
+
+    SizeStats all_size_stats = ComputeSizeStats(all_sizes);
+    SizeStats kf_size_stats = ComputeSizeStats(keyframe_sizes);
+    SizeStats delta_size_stats = ComputeSizeStats(delta_sizes);
+
+    QuantizerStats all_qp_stats = ComputeQuantizerStats(all_quantizers);
+    QuantizerStats delta_qp_stats = ComputeQuantizerStats(delta_quantizers);
+
+    double wall_clock_ms = (end_time_ - start_time_).InMillisecondsF();
+    double wall_clock_fps =
+        (wall_clock_ms > 0.0 && !frame_metrics_.empty())
+            ? (frame_metrics_.size() * 1000.0) / wall_clock_ms
+            : 0.0;
+    double encoder_fps =
+        (all_latency.total_ms > 0.0 && !frame_metrics_.empty())
+            ? (frame_metrics_.size() * 1000.0) / all_latency.total_ms
+            : 0.0;
+    double updated_area_pct =
+        (total_pixels_ > 0) ? (updated_pixels_ * 100.0) / total_pixels_ : 0.0;
+    double achieved_bitrate_kbps =
+        (!frame_metrics_.empty() && runtime_params_.fps > 0.0)
+            ? (static_cast<double>(all_size_stats.total_bytes) * 8.0 *
+               runtime_params_.fps) /
+                  (frame_metrics_.size() * 1000.0)
+            : 0.0;
+
+    std::ios old_state(nullptr);
+    old_state.copyfmt(std::cout);
+    std::cout << std::fixed << std::setprecision(2);
+
+    std::cout << "=================================================="
               << std::endl;
     std::cout << "RESULTS (" << CodecToString(encoder_params_.codec) << ", "
               << runtime_params_.size.width() << "x"
@@ -312,49 +477,76 @@ class EncoderBenchmark {
               << (runtime_params_.scenario.empty() ? "custom"
                                                    : runtime_params_.scenario)
               << ", " << runtime_params_.fps << " FPS)" << std::endl;
-    std::cout << "Profile: "
-              << (encoder_params_.profile == Profile::k1 ? "1" : "0") << " ("
-              << (encoder_params_.color_space == ColorSpace::kI444 ? "I444"
-                                                                  : "I420")
-              << ")" << std::endl;
-    std::cout << "Active Map: "
+    std::cout << "Config:  Profile "
+              << (encoder_params_.profile == Profile::k1 ? "1 (I444)"
+                                                         : "0 (I420)")
+              << " | Active Map: "
               << (encoder_params_.use_active_map ? "enabled" : "disabled")
-              << std::endl;
+              << " | Target Bitrate: " << encoder_params_.bitrate_kbps
+              << " kbps" << std::endl;
     std::cout << "--------------------------------------------------"
               << std::endl;
-    std::cout << "Encoded " << frames_encoded_ << " frames." << std::endl;
-
-    double total_time_ms = (end_time_ - start_time_).InMillisecondsF();
-    if (frames_encoded_ > 0 && total_time_ms > 0) {
-      std::cout << "Total wall-clock time: " << total_time_ms << " ms"
-                << std::endl;
-      std::cout << "Average wall-clock FPS: "
-                << (frames_encoded_ * 1000.0) / total_time_ms << std::endl;
-
-      double total_encode_time_ms = total_encode_time_.InMillisecondsF();
-      std::cout << "Total encoder-only time: " << total_encode_time_ms << " ms"
-                << std::endl;
-      std::cout << "Average encoder-only time per frame: "
-                << total_encode_time_ms / frames_encoded_ << " ms" << std::endl;
-      if (total_encode_time_ms > 0) {
-        std::cout << "Average encoder FPS: "
-                  << (frames_encoded_ * 1000.0) / total_encode_time_ms
-                  << std::endl;
-      } else {
-        std::cout << "Average encoder FPS: N/A (zero encode time)" << std::endl;
-      }
-    } else {
-      std::cout << "Average FPS: N/A (too few frames or zero time duration)"
-                << std::endl;
+    std::cout << "Frames encoded:           " << frame_metrics_.size() << " ("
+              << kf_latency.count << " key, " << delta_latency.count
+              << " delta)" << std::endl;
+    std::cout << "Average updated area:     " << updated_area_pct << "%"
+              << std::endl;
+    std::cout << "Wall-clock time:          " << wall_clock_ms << " ms ("
+              << wall_clock_fps << " FPS)" << std::endl;
+    std::cout << "Encoder-only time:        " << all_latency.total_ms << " ms ("
+              << encoder_fps << " FPS)" << std::endl;
+    std::cout << "--------------------------------------------------"
+              << std::endl;
+    std::cout << "Encode Latency (All):     mean=" << all_latency.mean_ms
+              << " ms | p50=" << all_latency.p50_ms
+              << " ms | p90=" << all_latency.p90_ms
+              << " ms | p99=" << all_latency.p99_ms
+              << " ms | max=" << all_latency.max_ms << " ms" << std::endl;
+    if (kf_latency.count > 0) {
+      std::cout << "Encode Latency (Key):     mean=" << kf_latency.mean_ms
+                << " ms | max=" << kf_latency.max_ms << " ms" << std::endl;
     }
-
-    if (total_pixels_ > 0) {
-      std::cout << "Average updated area: "
-                << (updated_pixels_ * 100.0) / total_pixels_ << "%"
-                << std::endl;
+    if (delta_latency.count > 0) {
+      std::cout << "Encode Latency (Delta):   mean=" << delta_latency.mean_ms
+                << " ms | p50=" << delta_latency.p50_ms
+                << " ms | p90=" << delta_latency.p90_ms
+                << " ms | p99=" << delta_latency.p99_ms
+                << " ms | max=" << delta_latency.max_ms << " ms" << std::endl;
     }
     std::cout << "--------------------------------------------------"
               << std::endl;
+    std::cout << "Stream Bitrate:           " << achieved_bitrate_kbps
+              << " kbps (target: " << encoder_params_.bitrate_kbps << " kbps)"
+              << std::endl;
+    std::cout << "Total Encoded Size:       " << all_size_stats.total_bytes
+              << " bytes (" << (all_size_stats.total_bytes / 1024.0) << " KiB)"
+              << std::endl;
+    std::cout << "Frame Size (All):         avg=" << all_size_stats.avg_bytes
+              << " B | max=" << all_size_stats.max_bytes << " B" << std::endl;
+    if (kf_size_stats.count > 0) {
+      std::cout << "Frame Size (Key):         avg=" << kf_size_stats.avg_bytes
+                << " B | max=" << kf_size_stats.max_bytes << " B" << std::endl;
+    }
+    if (delta_size_stats.count > 0) {
+      std::cout << "Frame Size (Delta):       avg="
+                << delta_size_stats.avg_bytes
+                << " B | max=" << delta_size_stats.max_bytes << " B"
+                << std::endl;
+    }
+    if (all_qp_stats.count > 0) {
+      std::cout << "Quantizer / QP (All):     avg=" << all_qp_stats.avg_qp
+                << " | min=" << all_qp_stats.min_qp
+                << " | max=" << all_qp_stats.max_qp << std::endl;
+    }
+    if (delta_qp_stats.count > 0) {
+      std::cout << "Quantizer / QP (Delta):   avg=" << delta_qp_stats.avg_qp
+                << " | min=" << delta_qp_stats.min_qp
+                << " | max=" << delta_qp_stats.max_qp << std::endl;
+    }
+    std::cout << "=================================================="
+              << std::endl;
+
+    std::cout.copyfmt(old_state);
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
@@ -370,7 +562,7 @@ class EncoderBenchmark {
   int frames_encoded_ = 0;
   int64_t total_pixels_ = 0;
   int64_t updated_pixels_ = 0;
-  base::TimeDelta total_encode_time_;
+  std::vector<FrameMetric> frame_metrics_;
   std::deque<std::unique_ptr<webrtc::DesktopFrame>> preloaded_frames_;
   base::RepeatingClosure quit_closure_;
   base::TimeTicks start_time_;
