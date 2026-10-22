@@ -1079,7 +1079,7 @@ LevelDBStatusValue GetLevelDBStatusUMAValue(const leveldb::Status& s) {
 
 // Forwards all calls to the underlying leveldb::DB instance.
 // Adds / removes itself in the DBTracker it's created with.
-class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
+class DBTracker::TrackedDBImpl : public base::UnsafeLinkNode<TrackedDBImpl>,
                                  public TrackedDB {
  public:
   TrackedDBImpl(DBTracker* tracker,

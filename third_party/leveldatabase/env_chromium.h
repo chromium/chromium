@@ -277,7 +277,7 @@ class LEVELDB_EXPORT DBTracker {
 
   // Protect databases_ and mdp_ members.
   mutable base::Lock databases_lock_;
-  base::LinkedList<TrackedDBImpl> databases_;
+  base::UnsafeLinkedList<TrackedDBImpl> databases_;
   std::unique_ptr<MemoryDumpProvider> mdp_;
 };
 
