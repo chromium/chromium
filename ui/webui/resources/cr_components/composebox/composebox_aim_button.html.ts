@@ -19,8 +19,7 @@ export function getHtml(this: ComposeboxAimButtonElement) {
   ${this.showLeadingIcon_() ? html`
     <div id="leadingIcon"
         slot="prefix-icon"
-        aria-hidden="true"
-        style="--cr-icon-image: url(${this.leadingIconUrl})">
+        aria-hidden="true">
     </div>
   ` : ''}
   <span id="label">${this.label}</span>

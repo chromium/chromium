@@ -439,6 +439,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
       {"composeboxSmartComposeTabTitle", IDS_NTP_COMPOSE_SMART_COMPOSE_TAB},
       {"composeboxSmartComposeTitle", IDS_NTP_COMPOSE_SMART_COMPOSE_A11Y_LABEL},
       {"composeboxSubmitButtonTitle", IDS_NTP_COMPOSE_SUBMIT_BUTTON_A11Y_LABEL},
+      {"composeboxAimButtonExitTitle", IDS_NTP_COMPOSE_EXIT_A11Y_LABEL},
+      {"composeboxAimButtonSendTitle", IDS_NTP_COMPOSE_SEND_A11Y_LABEL},
       {"composeboxDeleteFileTitle", IDS_NTP_COMPOSE_DELETE_FILE_A11Y_LABEL},
       {"composeboxFileUploadStartedText",
        IDS_NTP_COMPOSE_FILE_UPLOAD_STARTED_A11Y_TEXT},

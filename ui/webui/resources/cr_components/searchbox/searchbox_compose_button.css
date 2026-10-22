@@ -4,6 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_components/composebox/aim_button_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -23,10 +24,6 @@
   --cr-hover-background-color: #F3F5F6;
   --cr-button-height: 32px;
   flex-shrink: 0;
-  /* Dynamic mode motion tokens */
-  --aim-motion-duration-enter: 333ms;
-  --aim-motion-duration-exit: 383ms;
-  --aim-motion-easing: cubic-bezier(0.2, 0, 0, 1);
 
   --label-transform-input: translateX(-18px);
 }
@@ -574,12 +571,12 @@
   display: inline-block;
   margin-inline-start: 22px; /* 18px icon + 4px gap */
   transform: translateX(0);
-  transition: transform var(--aim-motion-duration-exit) var(--aim-motion-easing);
+  transition: transform var(--aim-motion-duration-long) var(--aim-motion-easing);
 }
 
 :host([dynamic][has-user-input]) #label {
   transform: var(--label-transform-input);
-  transition: transform var(--aim-motion-duration-enter) var(--aim-motion-easing);
+  transition: transform var(--aim-motion-duration-short) var(--aim-motion-easing);
 }
 
 :host([dynamic]) .compose-icon {
@@ -591,8 +588,8 @@
   top: 50%;
   transform: translateY(-50%);
   visibility: visible;
-  transition: opacity var(--aim-motion-duration-exit) var(--aim-motion-easing),
-              visibility var(--aim-motion-duration-exit) var(--aim-motion-easing);
+  transition: opacity var(--aim-motion-duration-long) var(--aim-motion-easing),
+              visibility var(--aim-motion-duration-long) var(--aim-motion-easing);
 }
 
 :host([dynamic][has-user-input]) .compose-icon {
@@ -627,6 +624,6 @@
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
-  transition: opacity var(--aim-motion-duration-enter) var(--aim-motion-easing),
-              visibility var(--aim-motion-duration-enter) var(--aim-motion-easing);
+  transition: opacity var(--aim-motion-duration-short) var(--aim-motion-easing),
+              visibility var(--aim-motion-duration-short) var(--aim-motion-easing);
 }

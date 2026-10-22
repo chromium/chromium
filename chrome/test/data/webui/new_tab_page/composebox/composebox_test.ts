@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxElement, NtpComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
+import {AimButtonMode, ComposeboxElement, NtpComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, InputSource, QueryActionOverride, SearchboxTutorial} from 'chrome://new-tab-page/new_tab_page.js';
 import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ComposeboxAimButtonElement} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
@@ -16,7 +17,7 @@ import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -1431,6 +1432,155 @@ suite('NewTabPageComposeboxTest', () => {
       } finally {
         loadTimeData.overrideValues({[FLAG]: true});
       }
+    });
+  });
+
+  suite('persistent AIM button', () => {
+    // Both flags are read when the element is constructed, so they must be
+    // overridden before createComposeboxElement().
+    async function createWithAimButton(
+        enabled: boolean, withX: boolean,
+        properties: Partial<ComposeboxElement> = {}) {
+      loadTimeData.overrideValues({
+        'composeboxPersistentAimButton': enabled,
+        'composeboxPersistentAimButtonWithX': withX,
+      });
+      createComposeboxElement(
+          testProxy, {searchboxNextEnabled: true, ...properties});
+      testProxy.element.searchboxLayoutMode = 'Compact';
+      await microtasksFinished();
+    }
+
+    function queryAimButton(): ComposeboxAimButtonElement|null {
+      return testProxy.element.shadowRoot
+          .querySelector<ComposeboxAimButtonElement>(
+              'cr-composebox-aim-button');
+    }
+
+    function getAimButton(): ComposeboxAimButtonElement {
+      const aimButton = queryAimButton();
+      assertTrue(!!aimButton);
+      return aimButton;
+    }
+
+    async function typeInput(text: string) {
+      const input =
+          testProxy.element.getInputElement()
+              .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+      input.value = text;
+      input.dispatchEvent(new Event('input'));
+      await microtasksFinished();
+    }
+
+    async function showMatch(allowedToBeDefaultMatch: boolean) {
+      testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+          createAutocompleteResultForTesting({
+            queryId: testProxy.element.activeQueryId,
+            input: 'test',
+            matches: [createSearchMatchForTesting(
+                {fillIntoEdit: 'test', allowedToBeDefaultMatch})],
+          }));
+      await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+    }
+
+    [false, true].forEach(enabled => {
+      [false, true].forEach(withX => {
+        test(
+            `mounts per flags: enabled=${enabled}, withX=${withX}`,
+            async () => {
+              await createWithAimButton(enabled, withX);
+              await typeInput('test');
+
+              const aimButton = queryAimButton();
+              assertEquals(enabled, !!aimButton);
+              // The AIM button replaces the clear (X) and submit buttons.
+              assertEquals(
+                  enabled, testProxy.element.getInputElement().hideCancel);
+              assertEquals(
+                  !enabled,
+                  !!testProxy.element.shadowRoot.querySelector(
+                      'cr-composebox-submit'));
+              if (aimButton) {
+                assertEquals(withX, aimButton.showExitIcon);
+              }
+            });
+      });
+    });
+
+    test('binds label and titles', async () => {
+      await createWithAimButton(true, false);
+      const aimButton = getAimButton();
+      assertEquals('AI Mode', aimButton.label);
+      assertEquals('Exit AI Mode', aimButton.exitTitle);
+      assertEquals('Send', aimButton.sendTitle);
+    });
+
+    test('mode follows the input and is held after submit', async () => {
+      await createWithAimButton(
+          true, false, {clearAllInputsWhenSubmittingQuery: true});
+      const aimButton = getAimButton();
+      assertEquals(AimButtonMode.EXIT, aimButton.mode);
+
+      await typeInput('test');
+      assertEquals(AimButtonMode.SEND, aimButton.mode);
+
+      // Submitting clears the input, but SEND is held while the navigation
+      // is pending and the button is not dimmed.
+      aimButton.$.button.click();
+      await microtasksFinished();
+      assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+      assertEquals('', testProxy.element.input);
+      assertTrue(testProxy.element.submitting);
+      assertEquals(AimButtonMode.SEND, aimButton.mode);
+      assertFalse(aimButton.disabled);
+    });
+
+    test('EXIT click closes the composebox', async () => {
+      await createWithAimButton(true, false);
+      const closed = eventToPromise('close-composebox', testProxy.element);
+      getAimButton().$.button.click();
+      await closed;
+      assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+    });
+
+    test('SEND keyboard activation opens the match via keyboard', async () => {
+      await createWithAimButton(true, false);
+      await typeInput('test');
+      await showMatch(/*allowedToBeDefaultMatch=*/ true);
+      assertEquals(0, testProxy.element.selectedMatchIndex);
+
+      // cr-button turns Enter keydown into click(); the AIM button forwards
+      // the keyboard event so the modifiers and `viaKeyboard` survive.
+      getAimButton().$.button.dispatchEvent(new KeyboardEvent('keydown', {
+        key: 'Enter',
+        altKey: true,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      }));
+      await microtasksFinished();
+
+      assertEquals(
+          1, testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'));
+      const args =
+          testProxy.searchboxHandler.getArgs('openAutocompleteMatch')[0];
+      assertDeepEquals(
+          {altKey: true, ctrlKey: false, metaKey: false, shiftKey: false},
+          args[5]);
+      assertTrue(args[6]);
+    });
+
+    test('focusin in SEND selects the first match', async () => {
+      await createWithAimButton(true, false);
+      await typeInput('test');
+      await showMatch(/*allowedToBeDefaultMatch=*/ false);
+      assertEquals(-1, testProxy.element.selectedMatchIndex);
+
+      getAimButton().dispatchEvent(
+          new FocusEvent('focusin', {bubbles: true, composed: true}));
+      await microtasksFinished();
+      assertEquals(0, testProxy.element.selectedMatchIndex);
     });
   });
 });

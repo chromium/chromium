@@ -98,6 +98,12 @@ setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
       'contextManagementInComposeboxEnabled': false,
       'searchboxComposePlaceholder': 'Placeholder',
       'lensSendRawFileMediaTypesEnabled': false,
+      // Read when the element is constructed; override before creating it.
+      'composeboxPersistentAimButton': false,
+      'composeboxPersistentAimButtonWithX': false,
+      'searchboxComposeButtonText': 'AI Mode',
+      'composeboxAimButtonExitTitle': 'Exit AI Mode',
+      'composeboxAimButtonSendTitle': 'Send',
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 

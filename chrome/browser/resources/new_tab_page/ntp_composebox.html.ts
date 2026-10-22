@@ -84,6 +84,7 @@ export function getHtml(this: NtpComposeboxElement) {
             .smartComposeInlineHint="${this.smartComposeInlineHint}"
             .submitEnabled="${this.submitEnabled}"
             .cancelButtonTitle="${this.computeCancelButtonTitle()}"
+            .hideCancel="${this.persistentAimButtonEnabled_}"
             @input-input="${this.onInputInput}"
             @input-focusin="${this.onInputFocusin}"
             @cancel-click="${this.onCancelClick}"
@@ -95,6 +96,18 @@ export function getHtml(this: NtpComposeboxElement) {
                 @click="${this.onVoiceSearchButtonClick}"
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </cr-icon-button>
+          ` : ''}
+          ${this.persistentAimButtonEnabled_ ? html`
+            <cr-composebox-aim-button slot="action-buttons"
+                .mode="${this.getAimButtonMode()}"
+                .showExitIcon="${this.showAimButtonExitIcon_}"
+                .disabled="${this.isAimButtonDisabled()}"
+                .label="${this.i18n('searchboxComposeButtonText')}"
+                .exitTitle="${this.i18n('composeboxAimButtonExitTitle')}"
+                .sendTitle="${this.i18n('composeboxAimButtonSendTitle')}"
+                @aim-button-click="${this.onAimButtonClick}"
+                @focusin="${this.onAimButtonFocusin}">
+            </cr-composebox-aim-button>
           ` : ''}
         </cr-composebox-input>
         <div id="context" part="context-entrypoint">
@@ -127,7 +140,8 @@ export function getHtml(this: NtpComposeboxElement) {
                   </div>
                   ` : ''}
               </div>
-              ${this.shouldShowSubmitButton() ? html`
+              ${!this.persistentAimButtonEnabled_ &&
+                  this.shouldShowSubmitButton() ? html`
               <cr-composebox-submit
                 exportparts="action-icon, submit, submit-icon, submit-overlay"
                 ?disabled="${!this.canSubmitFilesAndInput}"

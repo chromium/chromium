@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/composebox/composebox_aim_button.js';
 import '//resources/cr_components/composebox/composebox_dropdown.js';
 import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/composebox_submit.js';
@@ -80,6 +81,11 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
+      persistentAimButtonEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
+      showAimButtonExitIcon_: {type: Boolean},
     };
   }
 
@@ -95,6 +101,10 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
       getLoadTimeBoolean('composeboxRealboxOutsideClick', false);
   protected accessor expanding_: boolean = true;
   protected accessor shouldRemainFolded_: boolean = true;
+  protected accessor persistentAimButtonEnabled_: boolean =
+      getLoadTimeBoolean('composeboxPersistentAimButton', false);
+  protected accessor showAimButtonExitIcon_: boolean =
+      getLoadTimeBoolean('composeboxPersistentAimButtonWithX', false);
 
   override get keepMenuOpenOnTabSelect(): boolean {
     return getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);

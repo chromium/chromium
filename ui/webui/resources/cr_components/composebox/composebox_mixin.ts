@@ -9,7 +9,7 @@ import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_h
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import type {I18nMixinLitInterface} from '//resources/cr_elements/i18n_mixin_lit.js';
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
@@ -25,6 +25,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, isValidTabId, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordRichImageSuggestClicked, recordSingleTabMenuItemAction, recordToolModeSelection, recordToolModeShown, recordUserAction, SingleTabMenuItemAction, SingleTabType, TabSuggestionsState} from './common.js';
 import type {BrowserFileUpload, ComposeboxFuseboxActionRequest, ComposeboxState, ContextualUpload, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
+import {AimButtonMode} from './composebox_aim_button.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
@@ -2091,6 +2092,15 @@ export const ComposeboxEmbedderMixin =
           this.submitQuery(e);
         }
 
+        // SEND is held while a submission navigates away, so clearing the
+        // input on submit doesn't flash the button back to EXIT.
+        getAimButtonMode(): AimButtonMode {
+          if (this.submitEnabled || this.submitting) {
+            return AimButtonMode.SEND;
+          }
+          return AimButtonMode.EXIT;
+        }
+
         // Only SEND depends on whether the query can be submitted, so EXIT
         // is never disabled by an empty or invalid query.
         isAimButtonDisabled(): boolean {
@@ -2104,14 +2114,22 @@ export const ComposeboxEmbedderMixin =
         }
 
         onAimButtonClick(e: CustomEvent<KeyboardEvent|MouseEvent>) {
-          if (!this.submitEnabled) {
-            // Closes the composebox directly. `onCancelClick()` is not reused
-            // because with an active tool it clears the inputs instead of
-            // closing.
-            this.closeComposebox();
-            return;
+          const mode = this.getAimButtonMode();
+          switch (mode) {
+            case AimButtonMode.EXIT:
+              // Closes the composebox directly. `onCancelClick()` is not reused
+              // because with an active tool it clears the inputs instead of
+              // closing.
+              this.closeComposebox();
+              return;
+            case AimButtonMode.SEND:
+              if (this.submitEnabled) {
+                this.onSubmitClick(e.detail);
+              }
+              return;
+            default:
+              assertNotReachedCase(mode);
           }
-          this.onSubmitClick(e.detail);
         }
 
         // =====================================================================
@@ -3612,6 +3630,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   onCancelClick(): void;
   onSubmitFocusin(): void;
   onSubmitClick(e: MouseEvent|KeyboardEvent): void;
+  getAimButtonMode(): AimButtonMode;
   isAimButtonDisabled(): boolean;
   onAimButtonFocusin(): void;
   onAimButtonClick(e: CustomEvent<KeyboardEvent|MouseEvent>): void;

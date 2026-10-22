@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
+import {AimButtonMode, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {SingleTabMenuItemAction, SingleTabType} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ComposeboxAimButtonElement} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxSubmitElement} from 'chrome://resources/cr_components/composebox/composebox_submit.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -370,6 +371,22 @@ suite('ComposeboxDelayedTabSubmitTest', () => {
     await markSnapshotReady(FAKE_TOKEN_STRING);
     testProxy.element.submitQuery();
     assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+  });
+
+  test('AIM button is held until the snapshot is ready', async () => {
+    // Read when attachPendingDelayedTab() constructs the element.
+    loadTimeData.overrideValues({'composeboxPersistentAimButton': true});
+    const token = await attachPendingDelayedTab();
+    const aimButton =
+        testProxy.element.shadowRoot.querySelector<ComposeboxAimButtonElement>(
+            'cr-composebox-aim-button');
+    assertTrue(!!aimButton);
+    assertEquals(AimButtonMode.SEND, aimButton.mode);
+    assertTrue(aimButton.disabled);
+
+    await markSnapshotReady(token);
+    assertEquals(AimButtonMode.SEND, aimButton.mode);
+    assertFalse(aimButton.disabled);
   });
 });
 

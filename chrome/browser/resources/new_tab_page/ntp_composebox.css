@@ -145,6 +145,29 @@ cr-composebox-submit::part(submit) {
   }
 }
 
+/* Place the text container, voice icon, and localized AIM pill in one
+ * top-aligned row so multi-line text wraps beside both buttons. */
+:host([persistent-aim-button-enabled_]) #composeboxInput {
+  --text-input-inline-end-spacing: 6px;
+  align-items: flex-start;
+  flex-direction: row;
+}
+
+:host([persistent-aim-button-enabled_]) #composeboxInput::part(text-container) {
+  flex: 1;
+  min-width: 0;
+}
+
+:host([persistent-aim-button-enabled_]) #voiceSearchButton {
+  margin-block-start: 10px;
+  position: static;
+}
+
+:host([persistent-aim-button-enabled_]) cr-composebox-aim-button {
+  margin-block-start: 10px;
+  margin-inline: 6px 10px;
+}
+
 #composebox[inert] {
   pointer-events: none;
 }

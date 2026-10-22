@@ -46,23 +46,19 @@ export class ComposeboxAimButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
-      mode: {type: String},
+      mode: {type: String, reflect: true},
       showExitIcon: {type: Boolean},
       disabled: {type: Boolean, reflect: true},
       label: {type: String},
-      leadingIconUrl: {type: String},
       exitTitle: {type: String},
       sendTitle: {type: String},
     };
   }
 
-  // `mode` is not reflected; styling is conditioned on icon presence rather
-  // than the mode state itself.
   accessor mode: AimButtonMode = AimButtonMode.EXIT;
   accessor showExitIcon: boolean = false;
   accessor disabled: boolean = false;
   accessor label: string = '';
-  accessor leadingIconUrl: string = '';
   accessor exitTitle: string = '';
   accessor sendTitle: string = '';
 
@@ -89,8 +85,7 @@ export class ComposeboxAimButtonElement extends CrLitElement {
 
   // Only the exit state without X (exit icon) shows the leading icon.
   protected showLeadingIcon_(): boolean {
-    return this.mode === AimButtonMode.EXIT && !this.showExitIcon &&
-        !!this.leadingIconUrl;
+    return this.mode === AimButtonMode.EXIT && !this.showExitIcon;
   }
 
   // Send state shows the arrow icon; exit state with X (exit icon) shows the

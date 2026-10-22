@@ -8,6 +8,7 @@ import './test_composebox_mixin.js';
 import {ComposeboxFile, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, isValidTabId} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxFuseboxActionRequest} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {AimButtonMode} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 import type {ComposeboxEmbedderMixinInterface} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
@@ -3049,6 +3050,48 @@ suite('ComposeboxMixinTest', () => {
     assertEquals(
         0, handler.getCallCount('notifyComposeboxQuerySubmittedWithContext'));
   });
+
+  test(
+      'AIM button holds an inert SEND while a submission navigates',
+      async () => {
+        let closeCount = 0;
+        element.addEventListener('close-composebox', () => ++closeCount);
+        element.clearAllInputsWhenSubmittingQuery = true;
+        element.onInputStateChanged(
+            new MockInputState({activeTool: ToolMode.kDeepSearch}));
+        await element.updateComplete;
+        await simulateUserTextInput(element.getInputElement(), 'hello');
+        assertEquals(AimButtonMode.SEND, element.getAimButtonMode());
+
+        element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+        await microtasksFinished();
+        assertEquals(1, searchboxHandler.getCallCount('submitQuery'));
+        assertEquals(
+            1,
+            handler.getCallCount('notifyComposeboxQuerySubmittedWithContext'));
+        // The input is cleared, but the button neither falls back to EXIT
+        // nor gets disabled.
+        assertEquals('', element.input);
+        assertFalse(element.submitEnabled);
+        assertTrue(element.submitting);
+        assertEquals(AimButtonMode.SEND, element.getAimButtonMode());
+        assertFalse(element.isAimButtonDisabled());
+
+        // A second click neither closes the composebox nor resubmits.
+        element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+        assertEquals(0, closeCount);
+        assertEquals(1, searchboxHandler.getCallCount('submitQuery'));
+        assertEquals(
+            1,
+            handler.getCallCount('notifyComposeboxQuerySubmittedWithContext'));
+
+        // Re-engaging the input ends the held state and restores EXIT.
+        element.getInputElement().inputElement.dispatchEvent(
+            new KeyboardEvent('keydown', {bubbles: true, composed: true}));
+        await microtasksFinished();
+        assertFalse(element.submitting);
+        assertEquals(AimButtonMode.EXIT, element.getAimButtonMode());
+      });
 
   test(
       'onAimButtonClick opens the selected match with activation details',

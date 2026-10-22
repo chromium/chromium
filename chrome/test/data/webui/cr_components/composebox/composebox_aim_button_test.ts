@@ -25,7 +25,10 @@ async function createButton(): Promise<ComposeboxAimButtonElement> {
   element.label = 'AI Mode';
   element.exitTitle = 'Exit AI Mode';
   element.sendTitle = 'Send';
-  element.leadingIconUrl = 'chrome://resources/images/icon_search.svg';
+  // Finish transitions instantly so state assertions are deterministic.
+  for (const token of ['short', 'long']) {
+    element.style.setProperty(`--aim-motion-duration-${token}`, '0ms');
+  }
   document.body.appendChild(element);
   await microtasksFinished();
   return element;
@@ -180,13 +183,15 @@ suite('ComposeboxAimButtonTest', () => {
   test('IconsAndLayoutPerState', async () => {
     const button = element.$.button;
     const style = getComputedStyle(button);
+    const label = $$(element, '#label');
+    assertTrue(!!label);
 
-    function assertPadding(
-        inlineStart: string, inlineEnd: string, block: string) {
-      assertEquals(inlineStart, style.paddingInlineStart);
-      assertEquals(inlineEnd, style.paddingInlineEnd);
-      assertEquals(block, style.paddingBlockStart);
-      assertEquals(block, style.paddingBlockEnd);
+    // Padding and height are the same in every state.
+    function assertLayout() {
+      assertEquals('8px', style.paddingInlineStart);
+      assertEquals('12px', style.paddingInlineEnd);
+      assertEquals('8px', style.paddingBlockStart);
+      assertEquals('8px', style.paddingBlockEnd);
       assertNear(36, parseFloat(style.height), 0.5);
     }
 
@@ -200,24 +205,31 @@ suite('ComposeboxAimButtonTest', () => {
       return trailingIcon;
     }
 
-    // Exit without X: leading icon only.
+    // Exit without X: leading icon, label at rest.
     assertTrue(!!$$(element, '#leadingIcon'));
     assertFalse(!!$$(element, '#trailingIcon'));
-    assertPadding('8px', '12px', '8px');
+    assertLayout();
+    const exitWidth = button.getBoundingClientRect().width;
+    const restingLeft = label.getBoundingClientRect().left;
 
-    // Exit with X: trailing X only, no block padding.
+    // Exit with X: close icon; the label slides 18px into the leading icon's
+    // slot while the button keeps its width.
     await setState(element, AimButtonMode.EXIT, true);
     assertFalse(!!$$(element, '#leadingIcon'));
     assertTrailingIcon('icon-clear');
-    assertPadding('12px', '8px', '0px');
+    assertLayout();
+    assertEquals(exitWidth, button.getBoundingClientRect().width);
+    assertNear(restingLeft - 18, label.getBoundingClientRect().left, 0.1);
 
-    // Send: trailing arrow only.
+    // Send: arrow, same geometry as exit with X.
     await setState(element, AimButtonMode.SEND, false);
     assertFalse(!!$$(element, '#leadingIcon'));
     const arrow = assertTrailingIcon('arrow-icon');
-    assertPadding('12px', '8px', '8px');
+    assertLayout();
+    assertEquals(exitWidth, button.getBoundingClientRect().width);
+    assertNear(restingLeft - 18, label.getBoundingClientRect().left, 0.1);
 
-    // The arrow mirrors in RTL.
+    // The arrow mirrors and the label shift flips in RTL.
     const html = document.documentElement;
     const originalDir = html.getAttribute('dir');
     try {
@@ -226,6 +238,10 @@ suite('ComposeboxAimButtonTest', () => {
       html.dir = 'rtl';
       assertEquals(
           'matrix(-1, 0, 0, 1, 0, 0)', getComputedStyle(arrow).transform);
+      const shiftedRight = label.getBoundingClientRect().right;
+      await setState(element, AimButtonMode.EXIT, false);
+      assertEquals(exitWidth, button.getBoundingClientRect().width);
+      assertNear(shiftedRight - 18, label.getBoundingClientRect().right, 0.1);
     } finally {
       if (originalDir === null) {
         html.removeAttribute('dir');
@@ -233,6 +249,17 @@ suite('ComposeboxAimButtonTest', () => {
         html.dir = originalDir;
       }
     }
+
+    element.style.setProperty('--aim-motion-duration-short', '100ms');
+    element.style.setProperty('--aim-motion-duration-long', '200ms');
+    const leadingIcon = $$(element, '#leadingIcon');
+    assertTrue(!!leadingIcon);
+    assertEquals('0.2s', getComputedStyle(label).transitionDuration);
+    assertEquals('0.2s', getComputedStyle(leadingIcon).transitionDuration);
+    await setState(element, AimButtonMode.SEND, false);
+    const arrowIcon = assertTrailingIcon('arrow-icon');
+    assertEquals('0.1s', getComputedStyle(label).transitionDuration);
+    assertEquals('0.1s', getComputedStyle(arrowIcon).transitionDuration);
   });
 
   test('DisabledSuppressesClickAndKeyboard', async () => {

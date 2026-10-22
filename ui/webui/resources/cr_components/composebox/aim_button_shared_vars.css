@@ -1,0 +1,14 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+html {
+  --aim-motion-duration-long: 383ms;
+  --aim-motion-duration-short: 333ms;
+  --aim-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+}
