@@ -3648,6 +3648,7 @@
                         "MigratedSessionRestore": "true",
                         "MigratedStartupLaunch": "true",
                         "MigratedTabSharing": "true",
+                        "MigratedThemeInstalled": "true",
                         "MigratedWebAppBlockedMigration": "true",
                         "MigratedWebAuthFlow": "true"
                     },
