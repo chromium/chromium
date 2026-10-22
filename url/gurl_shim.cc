@@ -16,4 +16,13 @@ rust::Str GURLPossiblyInvalidSpec(const GURL& gurl) {
   return rust::Str(gurl.possibly_invalid_spec());
 }
 
+rust::Str GURLScheme(const GURL& gurl) {
+  std::string_view scheme = gurl.scheme();
+  return rust::Str(scheme.data(), scheme.size());
+}
+
+bool GURLSchemeIs(const GURL& gurl, rust::Str lower_ascii_scheme) {
+  return gurl.SchemeIs(std::string_view(lower_ascii_scheme));
+}
+
 }  // namespace url

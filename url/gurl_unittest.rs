@@ -23,3 +23,35 @@ fn test_creation_and_validity() {
     expect_false!(invalid.is_valid());
     expect_eq!(possibly_invalid_spec(&invalid), "http://:invalid/");
 }
+
+#[gtest(GURLRustTest, SchemeAndSchemeIs)]
+fn test_scheme_and_scheme_is() {
+    let https_url = create_gurl_from_str("HTTPS://example.com/foo");
+    expect_eq!(https_url.scheme(), "https");
+    expect_true!(https_url.scheme_is("https"));
+    expect_false!(https_url.scheme_is("http"));
+
+    let custom_url = create_gurl_from_str("externalfile:drive/root/file.txt");
+    expect_eq!(custom_url.scheme(), "externalfile");
+    expect_true!(custom_url.scheme_is("externalfile"));
+
+    let invalid_url = create_gurl_from_str("not a url");
+    expect_eq!(invalid_url.scheme(), "");
+    expect_false!(invalid_url.scheme_is("http"));
+
+    let blob_url =
+        create_gurl_from_str("blob:https://example.com/550e8400-e29b-41d4-a716-446655440000");
+    expect_true!(blob_url.scheme_is_blob());
+    expect_false!(blob_url.scheme_is_file());
+    expect_false!(blob_url.scheme_is_filesystem());
+
+    let file_url = create_gurl_from_str("file:///tmp/test.txt");
+    expect_true!(file_url.scheme_is_file());
+    expect_false!(file_url.scheme_is_blob());
+    expect_false!(file_url.scheme_is_filesystem());
+
+    let filesystem_url = create_gurl_from_str("filesystem:https://example.com/temporary/test.txt");
+    expect_true!(filesystem_url.scheme_is_filesystem());
+    expect_false!(filesystem_url.scheme_is_blob());
+    expect_false!(filesystem_url.scheme_is_file());
+}

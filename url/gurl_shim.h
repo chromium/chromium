@@ -21,6 +21,12 @@ std::unique_ptr<GURL> CreateGURLFromStr(rust::Str spec);
 // Shim for FFI to call GURL::PossiblyInvalidSpec() and get a Rust `str`.
 rust::Str GURLPossiblyInvalidSpec(const GURL& gurl);
 
+// Shim for FFI to call GURL::scheme() and get a Rust `str`.
+rust::Str GURLScheme(const GURL& gurl);
+
+// Shim for FFI to call GURL::SchemeIs(std::string_view).
+bool GURLSchemeIs(const GURL& gurl, rust::Str lower_ascii_scheme);
+
 }  // namespace url
 
 #endif  // URL_GURL_SHIM_H_

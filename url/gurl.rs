@@ -17,6 +17,12 @@ pub mod ffi {
         pub type GURL;
 
         fn is_valid(self: &GURL) -> bool;
+        #[rust_name = "scheme_is_blob"]
+        fn SchemeIsBlob(self: &GURL) -> bool;
+        #[rust_name = "scheme_is_file"]
+        fn SchemeIsFile(self: &GURL) -> bool;
+        #[rust_name = "scheme_is_filesystem"]
+        fn SchemeIsFileSystem(self: &GURL) -> bool;
 
         #[namespace = "url"]
         #[rust_name = "create_gurl_from_str"]
@@ -25,9 +31,27 @@ pub mod ffi {
         #[namespace = "url"]
         #[rust_name = "possibly_invalid_spec"]
         fn GURLPossiblyInvalidSpec(gurl: &GURL) -> &str;
+
+        #[namespace = "url"]
+        #[rust_name = "gurl_scheme"]
+        fn GURLScheme(gurl: &GURL) -> &str;
+
+        #[namespace = "url"]
+        #[rust_name = "gurl_scheme_is"]
+        fn GURLSchemeIs(gurl: &GURL, lower_ascii_scheme: &str) -> bool;
     }
 
     impl UniquePtr<GURL> {}
+}
+
+impl ffi::GURL {
+    pub fn scheme(&self) -> &str {
+        ffi::gurl_scheme(self)
+    }
+
+    pub fn scheme_is(&self, lower_ascii_scheme: &str) -> bool {
+        ffi::gurl_scheme_is(self, lower_ascii_scheme)
+    }
 }
 
 // SAFETY: `GURL` does not utilize shared or thread-bound data so moving it
