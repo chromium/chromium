@@ -33,6 +33,7 @@
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(IS_OZONE)

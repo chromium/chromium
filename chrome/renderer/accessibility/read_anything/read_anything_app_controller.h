@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/threading/sequence_bound.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"

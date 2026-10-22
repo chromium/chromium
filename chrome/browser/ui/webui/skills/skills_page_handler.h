@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SKILLS_SKILLS_PAGE_HANDLER_H_
 
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "components/prefs/pref_change_registrar.h"

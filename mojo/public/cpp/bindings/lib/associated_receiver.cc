@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -66,9 +67,15 @@ void AssociatedReceiverBase::FlushForTesting() {
   endpoint_client_->FlushForTesting();  // IN-TEST
 }
 
+void AssociatedReceiverBase::ResetFromAnotherSequenceUnsafe() {
+  if (endpoint_client_) {
+    endpoint_client_->ResetFromAnotherSequenceUnsafe();
+  }
+}
+
 AssociatedReceiverBase::~AssociatedReceiverBase() = default;
 
-void AssociatedReceiverBase::BindImpl(
+void AssociatedReceiverBase::Bind(
     ScopedInterfaceEndpointHandle handle,
     MessageReceiverWithResponderStatus* receiver,
     std::unique_ptr<MessageReceiver> payload_validator,
@@ -86,6 +93,10 @@ void AssociatedReceiverBase::BindImpl(
       internal::GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner)),
       interface_version, interface_name, method_info_callback,
       method_name_callback);
+}
+
+ScopedInterfaceEndpointHandle AssociatedReceiverBase::Unbind() {
+  return std::exchange(endpoint_client_, nullptr)->PassHandle();
 }
 
 }  // namespace internal

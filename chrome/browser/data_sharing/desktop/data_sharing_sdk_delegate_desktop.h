@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "content/public/browser/browser_context.h"

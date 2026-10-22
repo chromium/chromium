@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/timer/timer.h"
 #include "chromecast/common/mojom/audio_socket.mojom.h"
 #include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
 #include "chromecast/media/audio/audio_output_service/output_connection.h"

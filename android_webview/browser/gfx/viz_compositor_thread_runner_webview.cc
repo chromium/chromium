@@ -18,6 +18,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 
 namespace android_webview {
 

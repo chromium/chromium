@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/mac/notification_dispatcher_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
