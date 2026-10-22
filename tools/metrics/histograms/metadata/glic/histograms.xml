@@ -1007,9 +1007,12 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
-    Recorded when user input is first submitted after completing the onboarding
-    steps. Records the last invocation source used before user input is
-    submitted.
+    Recorded when user input is first submitted after the user accepts the web
+    client FRE, at most once per acceptance and only if Chrome is not restarted
+    in between. Records the invocation source of the most recent Glic open (an
+    initial show of a side panel or floating window, including a re-show after
+    it was closed) before the onboarding was accepted. This may differ from the
+    source used to open the Glic instance in which the input is submitted.
   </summary>
 </histogram>
 

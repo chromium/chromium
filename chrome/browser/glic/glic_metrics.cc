@@ -259,13 +259,13 @@ void GlicMetrics::OnResponseRated(bool positive) {
 
 void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
                                              mojom::InvocationSource source) {
-  // Sets `invocation_source_`, triggers trust-first FRE metrics via
+  // Sets `invocation_source_`, triggers web client FRE metrics via
   // OnInstanceOpened(), and records the Glic.WindowOpen UKM and
   // Glic.PanelWebUi.ElapsedTimeBetweenSessions.
   invocation_source_ = source;
 
   // This method depends on first setting invocation_source_. This is used for
-  // trust-first FRE metrics.
+  // web client FRE metrics.
   OnInstanceOpened();
 
   // TODO(b/452120577): No tab context is known at this point, so no page

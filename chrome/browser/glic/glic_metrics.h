@@ -120,9 +120,10 @@ enum class OptInFlow {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicOptInFlowSource)
 
-// Responsible for all glic web-client metrics, and all stateful glic metrics.
-// Some stateless glic metrics are logged inline in the relevant code for
-// convenience.
+// Records profile-scoped glic metrics, such as FRE/onboarding, entry point
+// and preference metrics. Per-instance metrics are recorded by
+// `GlicInstanceMetrics`. Some stateless glic metrics are logged inline in the
+// relevant code for convenience.
 class GlicMetrics {
  public:
   GlicMetrics(Profile* profile, GlicEnabling* enabling);
@@ -135,22 +136,25 @@ class GlicMetrics {
   // browser session.
   void OnUserInputSubmitted();
 
-  // See glic.mojom for details. These are events from the web client. The
-  // lifetime of the web client is scoped to that of the window, so if these
-  // methods are called then controller_ is guaranteed to exist.
+  // See glic.mojom for details. These are events from the web client.
   void OnContextUploadStarted();
   void OnContextUploadCompleted();
   void OnSessionTerminated();
   void OnResponseRated(bool positive);
 
   // ----Public API called by other glic classes-----
-  // Called when the user completes the onboarding flow (consents).
+  // Called when the web client reports that the user completed the
+  // FRE (consented).
   void OnTrustFirstOnboardingAccept();
-  // Called when any instance is closed. This method is idempotent. If
-  // trust-first FRE was shown and not accepted, this metric logs a dismiss
-  // metric, and then clears the bit tracking FRE open.
+  // Called whenever an embedder (side panel or floating window) of any glic
+  // instance is closed. Idempotent: if the web client FRE was shown and not
+  // accepted, logs dismiss metrics and clears `onboarding_shown_time_`;
+  // otherwise a no-op.
   void OnInstanceClosed();
-  // Called when the user clicks Accept in the FRE.
+  // Called when the user accepts the web client FRE (from
+  // OnTrustFirstOnboardingAccept()). Records the acceptance time and
+  // invocation source used by the FRE-to-first-query metrics logged in
+  // OnUserInputSubmitted().
   void OnFreAccepted();
   // Called when an opt-in dialog or onboarding flow is shown.
   void OnOptInShown(OptInFlow flow);
@@ -162,12 +166,16 @@ class GlicMetrics {
   void OnOptInDismissed(OptInFlow flow);
   // Called when an opt-in dialog or onboarding flow is explicitly rejected.
   void OnOptInRejected(OptInFlow flow);
-  // Called when the glic window starts to open.
+  // Called by GlicInstanceImpl::Show() on every initial show of an embedder
+  // (side panel or floating window) of any glic instance: the first time it
+  // is shown, and again each time it is shown after being closed. Overwrites
+  // `invocation_source_`, may record web client FRE "shown" metrics, and
+  // records open metrics (see the implementation).
   void OnGlicWindowStartedOpening(bool attached,
                                   mojom::InvocationSource source);
 
-  // Called when a tab is pinned for sharing with glic. `success` is true if the
-  // pinning was successful.
+  // Called when a tab is pinned for sharing with glic. `result` indicates
+  // whether the pinning succeeded or why it failed.
   void OnTabPinnedForSharing(GlicTabPinnedForSharingResult result);
 
   // Called when a response is received with closed captions showing.
@@ -202,23 +210,20 @@ class GlicMetrics {
   // for each profile is created.
   void RecordGlicProfilePreferences();
 
-  // Sets the input mode of the web client. Should be called when the panel is
-  // opened and in every subsequent mode change.
+  // Sets the input mode of the web client. Called when the web client reports
+  // its mode as the panel opens, and on every subsequent mode change.
   void SetWebClientMode(mojom::WebClientMode mode);
 
  private:
-  // Called when any instance is opened. This method is used to track whether an
-  // FRE onboarding is going to be shown. If an FRE onboarding is already shown,
-  // this method is idempotent.
+  // Called from OnGlicWindowStartedOpening(). If consent has not been given
+  // and the web client FRE is not already showing, records FRE "shown"
+  // metrics and sets `onboarding_shown_time_`. Otherwise this is a no-op.
   void OnInstanceOpened();
 
   // Called when `impression_timer_` fires.
   void OnImpressionTimerFired();
 
-  // Stores the source id at the time that context is requested.
-  void StoreSourceId();
-
-  // Called when kGlicCompletedFre or GlicEnabling::IsAllowed() changes.
+  // Called when consent or GlicEnabling::IsAllowed() changes.
   void OnMaybeEnabledAndConsentForProfileChanged();
 
   // Called when kGlicPinnedToTabstrip changes.
@@ -227,13 +232,31 @@ class GlicMetrics {
   // Records the time from startup until Glic was enabled for the profile.
   void RecordStartupEnablement();
 
+  // Time at which the FRE was accepted (set in OnFreAccepted()). Cleared
+  // after the FRE-to-first-query metrics are recorded in
+  // OnUserInputSubmitted(); null otherwise.
   base::TimeTicks fre_accepted_time_;
 
-  // The last web client input mode used by the user.
+  // The current web client input mode, as last reported via
+  // SetWebClientMode(). Used to suffix the Glic.Api.GetContext*.Error
+  // histograms.
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
 
+  // Invocation source passed to the most recent OnGlicWindowStartedOpening()
+  // call, so it is stored on every initial show of an embedder of any
+  // instance (see there). Recorded to
+  // Glic.Fre.{Shown,Accept,Dismissed}.InvocationSource and snapshotted into
+  // `onboarding_invocation_source_` by OnFreAccepted().
   mojom::InvocationSource invocation_source_ =
       mojom::InvocationSource::kUnsupported;
+
+  // Snapshot of `invocation_source_` taken in OnFreAccepted(), i.e. the
+  // source of the most recent glic open before the user accepted the FRE.
+  // Kept separately because `invocation_source_` is overwritten whenever
+  // glic is opened again before the first query. Recorded to
+  // Glic.Fre.UserInput.InvocationSource by the first OnUserInputSubmitted()
+  // call after FRE acceptance (while `fre_accepted_time_` is set). Not reset
+  // after use.
   mojom::InvocationSource onboarding_invocation_source_ =
       mojom::InvocationSource::kUnsupported;
 
@@ -258,14 +281,12 @@ class GlicMetrics {
   bool is_pinned_ = false;
   PrefChangeRegistrar pref_registrar_;
 
-  // The timestamp when the onboarding flow was shown.
+  // The time the web client FRE was shown, or null if it is not
+  // currently showing. Set in OnInstanceOpened() and reset, after recording
+  // Glic.Fre.TotalTime.*, when the onboarding is accepted or dismissed.
   base::TimeTicks onboarding_shown_time_;
 
-  // The following variables are used for recording scroll related metrics.
-  // The number of scroll attempts  (tracked per session and reset when the
-  // session ends).
-  int scroll_attempt_count_ = 0;
-
+  // Start time of the in-flight context upload, if any.
   std::optional<base::TimeTicks> last_upload_start_time_;
 
   // The time the last attempt to share an image started.

@@ -219,8 +219,6 @@ GlicKeyedService::GlicKeyedService(
 
   GlicEnabling::RegisterDefaultHotkeyScopeSyntheticTrial(profile);
 
-  // TODO(crbug.com/450026474): Consider not constructing this metrics
-  // instance for multi-instance
   metrics_->RecordGlicProfilePreferences();
 
   if (base::FeatureList::IsEnabled(features::kGlicShareImage)) {
