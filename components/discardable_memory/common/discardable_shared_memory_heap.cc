@@ -114,7 +114,7 @@ DiscardableSharedMemoryHeap::~DiscardableSharedMemoryHeap() {
   DCHECK_EQ(num_blocks_, 0u);
   DCHECK_EQ(num_free_blocks_, 0u);
   DCHECK(!std::ranges::contains(free_spans_, false,
-                                &base::LinkedList<Span>::empty));
+                                &base::UnsafeLinkedList<Span>::empty));
 }
 
 std::unique_ptr<DiscardableSharedMemoryHeap::Span>
@@ -215,7 +215,7 @@ DiscardableSharedMemoryHeap::SearchFreeLists(size_t blocks, size_t slack) {
 
   // Search array of free lists for a suitable span.
   while (length < std::size(free_spans_)) {
-    const base::LinkedList<Span>& free_spans = free_spans_[length - 1u];
+    const base::UnsafeLinkedList<Span>& free_spans = free_spans_[length - 1u];
     if (!free_spans.empty()) {
       // Return the most recently used span located in tail.
       return Carve(free_spans.tail()->value(), blocks);
@@ -227,12 +227,12 @@ DiscardableSharedMemoryHeap::SearchFreeLists(size_t blocks, size_t slack) {
     }
   }
 
-  const base::LinkedList<Span>& overflow_free_spans =
+  const base::UnsafeLinkedList<Span>& overflow_free_spans =
       free_spans_[std::size(free_spans_) - 1u];
 
   // Search overflow free list for a suitable span. Starting with the most
   // recently used span located in tail and moving towards head.
-  for (base::LinkNode<Span>* node = overflow_free_spans.tail();
+  for (base::UnsafeLinkNode<Span>* node = overflow_free_spans.tail();
        node != overflow_free_spans.end(); node = node->previous()) {
     Span* span = node->value();
     if (span->num_blocks_ >= blocks && span->num_blocks_ <= max_length) {
@@ -277,9 +277,9 @@ std::optional<size_t> DiscardableSharedMemoryHeap::GetResidentSize() const {
   size_t resident_size = 0;
   // Each member of |free_spans_| is a LinkedList of Spans. We need to iterate
   // over each of these.
-  for (const base::LinkedList<Span>& span_list : free_spans_) {
-    for (base::LinkNode<Span>* curr = span_list.head(); curr != span_list.end();
-         curr = curr->next()) {
+  for (const base::UnsafeLinkedList<Span>& span_list : free_spans_) {
+    for (base::UnsafeLinkNode<Span>* curr = span_list.head();
+         curr != span_list.end(); curr = curr->next()) {
       Span* free_span = curr->value();
       base::span<uint8_t> mem = free_span->memory();
       std::optional<size_t> resident_in_span =

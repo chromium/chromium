@@ -38,7 +38,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
   class ScopedMemorySegment;
 
  public:
-  class DISCARDABLE_MEMORY_EXPORT Span : public base::LinkNode<Span> {
+  class DISCARDABLE_MEMORY_EXPORT Span : public base::UnsafeLinkNode<Span> {
    public:
     Span(const Span&) = delete;
     Span& operator=(const Span&) = delete;
@@ -214,7 +214,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
   // where the 1st entry is located at index 0 of the array, the kth entry
   // is a free list of runs that consist of k blocks. The 256th entry is a
   // free list of runs that have length >= 256 blocks.
-  std::array<base::LinkedList<Span>, 256> free_spans_;
+  std::array<base::UnsafeLinkedList<Span>, 256> free_spans_;
 };
 
 }  // namespace discardable_memory

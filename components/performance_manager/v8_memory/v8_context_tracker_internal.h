@@ -57,7 +57,7 @@ struct TokenComparator {
 // Internal wrapper of ExecutionContextState. Augments with additional data
 // needed for the implementation. Since these objects also need to be tracked
 // per-process, they are kept in a process-associated doubly-linked list.
-class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
+class ExecutionContextData : public base::UnsafeLinkNode<ExecutionContextData>,
                              public ExecutionContextState {
  public:
   using Comparator =
@@ -136,7 +136,7 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
 
 // Represents data about an ExecutionCOntext from the point of view of the
 // parent frame that owns it.
-class RemoteFrameData : public base::LinkNode<RemoteFrameData> {
+class RemoteFrameData : public base::UnsafeLinkNode<RemoteFrameData> {
  public:
   using Comparator = TokenComparator<RemoteFrameData, blink::RemoteFrameToken>;
   using PassKey = base::PassKey<RemoteFrameData>;
@@ -174,7 +174,7 @@ class RemoteFrameData : public base::LinkNode<RemoteFrameData> {
 
 // Internal wrapper of V8ContextState. Augments with additional data needed for
 // the implementation.
-class V8ContextData : public base::LinkNode<V8ContextData>,
+class V8ContextData : public base::UnsafeLinkNode<V8ContextData>,
                       public V8ContextState {
  public:
   using Comparator = TokenComparator<V8ContextData, blink::V8ContextToken>;
@@ -289,13 +289,13 @@ class ProcessData : public NodeAttachedDataImpl<ProcessData> {
   ContextCounts counts_;
 
   // List of ExecutionContextDatas associated with this process.
-  base::LinkedList<ExecutionContextData> execution_context_datas_;
+  base::UnsafeLinkedList<ExecutionContextData> execution_context_datas_;
 
   // List of RemoteFrameDatas associated with this process.
-  base::LinkedList<RemoteFrameData> remote_frame_datas_;
+  base::UnsafeLinkedList<RemoteFrameData> remote_frame_datas_;
 
   // List of V8ContextDatas associated with this process.
-  base::LinkedList<V8ContextData> v8_context_datas_;
+  base::UnsafeLinkedList<V8ContextData> v8_context_datas_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
