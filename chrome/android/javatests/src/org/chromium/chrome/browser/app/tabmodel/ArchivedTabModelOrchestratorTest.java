@@ -46,8 +46,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -72,7 +70,6 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_group_sync.VersioningMessageController;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -509,7 +506,6 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/399128533")
     public void testOpenArchivedTabFromHubSearch() {
         finishLoading();
         String declutterUrl = mActivityTestRule.getTestServer().getURL(TEST_PATH);
@@ -553,7 +549,6 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287897
     public void testOpenArchivedTabFromHubSearch_Incognito() {
         finishLoading();
         String declutterUrl = mActivityTestRule.getTestServer().getURL(TEST_PATH);
