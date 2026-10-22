@@ -282,6 +282,10 @@ void ProcessRankPolicyAndroid::OnIsActiveTabChanged(const PageNode* page_node) {
   UpdateProcessRank(page_node);
 }
 
+void ProcessRankPolicyAndroid::OnIsDiscardedChanged(const PageNode* page_node) {
+  UpdateProcessRank(page_node);
+}
+
 void ProcessRankPolicyAndroid::OnIsAutoDiscardableChanged(
     const PageNode* page_node) {
   UpdateProcessRank(page_node);

@@ -26,6 +26,38 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AndroidSwapPressureCheckOutcome) -->
+
+<enum name="AndroidSwapPressureCheckOutcome">
+  <int value="0" label="Healthy (neither swap nor file cache under pressure)"/>
+  <int value="1" label="Swap pressure only (file cache above threshold)"/>
+  <int value="2" label="File cache pressure only (swap healthy)"/>
+  <int value="3"
+      label="Blocked by min_tabs_to_keep floor (live tabs at or below floor)"/>
+  <int value="4"
+      label="No eligible candidates (background tabs aging through visibility
+             window)"/>
+  <int value="5"
+      label="No eligible candidates (all background tabs protected or
+             disallowed)"/>
+  <int value="6" label="Discarded one or more background tabs"/>
+  <int value="7" label="Discard attempt failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/policies/swap_pressure_discarding_policy_android.h:AndroidSwapPressureCheckOutcome) -->
+
+<!-- LINT.IfChange(AndroidSwapPressureDiscardedTabSessionOutcome) -->
+
+<enum name="AndroidSwapPressureDiscardedTabSessionOutcome">
+  <int value="0"
+      label="Revisited in same foreground session (user-visible reload)"/>
+  <int value="1" label="Closed without revisit (free tab kill)"/>
+  <int value="2"
+      label="Foreground session ended without revisit (free tab kill)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/policies/swap_pressure_discarding_policy_android.h:AndroidSwapPressureDiscardedTabSessionOutcome) -->
+
 <!-- LINT.IfChange(CanDiscardResult) -->
 
 <enum name="CanDiscardResult">

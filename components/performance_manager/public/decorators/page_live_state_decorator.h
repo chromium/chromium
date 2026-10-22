@@ -283,6 +283,7 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsBeingMirroredChanged(const PageNode* page_node) {}
   virtual void OnIsCapturingWindowChanged(const PageNode* page_node) {}
   virtual void OnIsCapturingDisplayChanged(const PageNode* page_node) {}
+  virtual void OnIsDiscardedChanged(const PageNode* page_node) {}
   virtual void OnIsAutoDiscardableChanged(const PageNode* page_node) {}
   virtual void OnIsActiveTabChanged(const PageNode* page_node) {}
   virtual void OnIsPinnedTabChanged(const PageNode* page_node) {}

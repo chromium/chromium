@@ -72,6 +72,7 @@ BASE_DECLARE_FEATURE(kAndroidSetGoogleAccountInHelp);
 BASE_DECLARE_FEATURE(kAndroidSettingsUrl);
 BASE_DECLARE_FEATURE(kAndroidSetupList);
 BASE_DECLARE_FEATURE(kAndroidStartupImprovements);
+BASE_DECLARE_FEATURE(kAndroidSwapPressureTabDiscard);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveOnDesktop);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch);
 BASE_DECLARE_FEATURE(kAndroidTabSkipSaveTabsKillswitch);
@@ -386,6 +387,21 @@ inline constexpr base::FeatureParam<std::string>
     kAndroidSidePanelDevFeatureScopeParam(&kEnableAndroidSidePanelDevFeature,
                                           "scope",
                                           "window");
+
+inline constexpr base::FeatureParam<int>
+    kAndroidSwapPressureSwapFreeThresholdPct(&kAndroidSwapPressureTabDiscard,
+                                             "swap_free_threshold_pct",
+                                             0);
+
+inline constexpr base::FeatureParam<int>
+    kAndroidSwapPressureFileCacheThresholdMb(&kAndroidSwapPressureTabDiscard,
+                                             "file_cache_threshold_mb",
+                                             0);
+
+inline constexpr base::FeatureParam<int> kAndroidSwapPressureMinTabsToKeep(
+    &kAndroidSwapPressureTabDiscard,
+    "min_tabs_to_keep",
+    0);
 
 inline constexpr base::FeatureParam<int>
     kAppIntegrationCCTVisitDurationLimitSecParam(

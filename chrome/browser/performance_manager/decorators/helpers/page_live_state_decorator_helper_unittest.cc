@@ -20,13 +20,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #if BUILDFLAG(IS_ANDROID)
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-
+#include "content/public/common/content_features.h"
 #endif
 
 namespace performance_manager {
@@ -435,6 +436,26 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest,
   TabModelList::RemoveTabModel(&tab_model);
 
   EXPECT_FALSE(tab_model.GetObserver());
+}
+
+TEST_F(PageLiveStateDecoratorHelperTest, IsDiscardedUpdatedOnAndroid) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::features::kWebContentsDiscard);
+
+  NavigateAndCommit(GURL("https://www.example.com/"));
+  testing::TestPageNodeProperty(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsDiscarded, false);
+
+  web_contents()->Discard(base::NullCallback());
+  testing::TestPageNodeProperty(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsDiscarded, true);
+
+  NavigateAndCommit(GURL("https://www.example.com/reloaded"));
+  testing::TestPageNodeProperty(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsDiscarded, false);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

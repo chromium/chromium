@@ -240,6 +240,20 @@ class PageLiveStateDecoratorHelper::WebContentsObserver
                                                      capability_type, used);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // On desktop, this is updated by TabLifecycleUnit.
+  // TODO(crbug.com/394889323): Unify the desktop and Android implementations.
+  void WasDiscarded() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    PageLiveStateDecorator::SetIsDiscarded(web_contents(), true);
+  }
+
+  void PrimaryPageChanged(content::Page& page) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    PageLiveStateDecorator::SetIsDiscarded(web_contents(), false);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   void WebContentsDestroyed() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DetachAndDestroy();

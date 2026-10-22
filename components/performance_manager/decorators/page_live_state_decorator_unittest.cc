@@ -58,6 +58,7 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     kOnIsBeingMirroredChanged,
     kOnIsCapturingWindowChanged,
     kOnIsCapturingDisplayChanged,
+    kOnIsDiscardedChanged,
     kOnIsAutoDiscardableChanged,
     kOnIsActiveTabChanged,
     kOnIsPinnedTabChanged,
@@ -105,6 +106,10 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
   }
   void OnIsCapturingDisplayChanged(const PageNode* page_node) override {
     latest_function_called_ = ObserverFunction::kOnIsCapturingDisplayChanged;
+    page_node_passed_ = page_node;
+  }
+  void OnIsDiscardedChanged(const PageNode* page_node) override {
+    latest_function_called_ = ObserverFunction::kOnIsDiscardedChanged;
     page_node_passed_ = page_node;
   }
   void OnIsAutoDiscardableChanged(const PageNode* page_node) override {
@@ -363,6 +368,8 @@ TEST_F(PageLiveStateDecoratorTest, SetIsDiscarded) {
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsDiscarded, setter,
       /*default_state=*/false);
+  VerifyObserverExpectation(
+      TestPageLiveStateObserver::ObserverFunction::kOnIsDiscardedChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, SetIsAutoDiscardable) {

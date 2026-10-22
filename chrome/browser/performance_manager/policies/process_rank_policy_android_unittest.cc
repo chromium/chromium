@@ -407,6 +407,39 @@ TEST_F(ProcessRankPolicyAndroidTest, NotAutoDiscardablePage) {
             content::ChildProcessImportance::NOT_PERCEPTIBLE);
 }
 
+TEST_F(ProcessRankPolicyAndroidTest, DiscardedPageReloadUpdatesRank) {
+  if (!content::IsNotPerceptibleImportanceSupported()) {
+    GTEST_SKIP() << "NOT_PERCEPTIBLE importance is not supported.";
+  }
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {
+          // Effectively disable the recently visible timer.
+          {chrome::android::kProtectRecentlyVisibleTab,
+           {{"duration_in_seconds", "0"}}},
+      },
+      /*disabled_features=*/{});
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(true));
+  MockPageGraph page_graph = CreateDefaultPage();
+  page_graph.page.get()->SetIsFocused(false);
+  page_graph.page.get()->SetIsVisible(false);
+  auto* live_state_data = PageLiveStateDecorator::Data::GetOrCreateForPageNode(
+      page_graph.page.get());
+  live_state_data->SetIsDiscardedForTesting(true);
+
+  // When a discarded tab is reloaded, OnMainFrameDocumentChanged() runs on
+  // DidCommitNavigation() before PrimaryPageChanged() clears IsDiscarded().
+  DefaultNavigation(page_graph.page.get());
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::NOT_PERCEPTIBLE);
+
+  // Clearing IsDiscarded() notifies OnIsDiscardedChanged() and updates the
+  // rank to NORMAL.
+  live_state_data->SetIsDiscardedForTesting(false);
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::NORMAL);
+}
+
 TEST_F(ProcessRankPolicyAndroidTest, CapturingVideoPage) {
   if (!content::IsNotPerceptibleImportanceSupported()) {
     GTEST_SKIP() << "NOT_PERCEPTIBLE importance is not supported.";

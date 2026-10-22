@@ -135,6 +135,119 @@ each histogram.
   <token key="CoreType" variants="CoreType"/>
 </histogram>
 
+<histogram name="PerformanceManager.AndroidSwapPressure.CheckOutcome"
+    enum="AndroidSwapPressureCheckOutcome" expires_after="2027-04-15">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The outcome of each swap-pressure evaluation in
+    SwapPressureDiscardingPolicyAndroid (recorded once per rate-limited check on
+    page lifecycle events). Used to normalize how often the policy triggers
+    (DiscardedTabs / total checks), how often the file-cache gate suppresses
+    false-positive swap-only triggers (SwapPressureOnly), and how often pressure
+    is blocked by the minimum live-tab floor or candidate protection rules.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.AndroidSwapPressure.DiscardedTabCount"
+    units="tabs" expires_after="2027-04-15">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded when SwapPressureDiscardingPolicyAndroid attempts to urgently
+    discard one or more eligible background tabs due to swap and file-cache
+    pressure on Android. Logs the number of tabs discarded in that check (or 0
+    if the discard attempt did not succeed).
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceManager.AndroidSwapPressure.DiscardedTabSessionOutcome"
+    enum="AndroidSwapPressureDiscardedTabSessionOutcome"
+    expires_after="2027-04-15">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded once for each background tab proactively discarded by
+    SwapPressureDiscardingPolicyAndroid, resolving its fate within the
+    foreground browsing session in which it was discarded: whether the user
+    switched back to it in the same foreground session (causing a visible
+    reload), closed the tab without ever revisiting it (&quot;free tab
+    kill&quot;), or backgrounded Chrome (ending the visible session) without
+    ever revisiting it (&quot;free tab kill&quot;).
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceManager.AndroidSwapPressure.DiscardedTabTimeInBackground"
+    units="ms" expires_after="2027-04-15">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded for each background tab urgently discarded by
+    SwapPressureDiscardingPolicyAndroid. Measures how long the tab had been
+    hidden in the background at the moment it was discarded.
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceManager.AndroidSwapPressure.DiscardedTabTimeToRevisit"
+    units="ms" expires_after="2027-04-15">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded when a user switches back to a tab that was previously discarded by
+    SwapPressureDiscardingPolicyAndroid. Measures the elapsed time between when
+    the tab was proactively discarded and when it became visible again.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.AndroidSwapPressure.EstimatedReclaimedMb"
+    units="MB" expires_after="2027-04-15">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The total estimated private memory footprint (in MiB) of the background tabs
+    discarded in a single SwapPressureDiscardingPolicyAndroid check. Recorded
+    once per check that successfully discards at least one tab.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.AndroidSwapPressure.FileCacheMb" units="MB"
+    expires_after="2027-04-15">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The total file-backed page cache (Active(file) + Inactive(file) from
+    /proc/meminfo) in MiB observed when SwapPressureDiscardingPolicyAndroid
+    evaluates system swap pressure on Android and at least one pressure
+    criterion (swap pressure or file-cache pressure) is active.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.AndroidSwapPressure.LiveTabCountAtPressure"
+    units="tabs" expires_after="2027-04-15">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The number of non-discarded live tabs present in the PerformanceManager
+    graph when both swap pressure and file-cache pressure gates are active on
+    Android (recorded before applying the min_tabs_to_keep floor).
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.AndroidSwapPressure.SwapFreePercent"
+    units="%" expires_after="2027-04-15">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The percentage of total swap space that is free (SwapFree / SwapTotal from
+    /proc/meminfo) observed when SwapPressureDiscardingPolicyAndroid evaluates
+    system swap pressure on Android and at least one pressure criterion (swap
+    pressure or file-cache pressure) is active.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.Discarding.DecisionResult{Trigger}"
     enum="CanDiscardResult" expires_after="2027-03-28">
   <owner>aattar@google.com</owner>

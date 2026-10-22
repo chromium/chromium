@@ -256,7 +256,13 @@ class PageLiveStateDataImpl
   }
   void set_is_discarded(bool is_discarded) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (is_discarded_ == is_discarded) {
+      return;
+    }
     is_discarded_ = is_discarded;
+    for (auto& obs : observers_) {
+      obs.OnIsDiscardedChanged(page_node_);
+    }
   }
   void set_is_auto_discardable(bool is_auto_discardable) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -91,6 +91,16 @@ class PageDiscardingHelper
       DiscardEligibilityPolicy::DiscardReason discard_reason,
       bool ignore_recent_visibility = true);
 
+  // Same as above, but uses `eligibility_policy` to check whether each page in
+  // `page_nodes` can be discarded. If `eligibility_policy` is null, the caller
+  // MUST have already validated that all pages in `page_nodes` can be
+  // discarded.
+  bool ImmediatelyDiscardMultiplePages(
+      const std::vector<const PageNode*>& page_nodes,
+      DiscardEligibilityPolicy::DiscardReason discard_reason,
+      bool ignore_recent_visibility,
+      DiscardEligibilityPolicy* eligibility_policy);
+
   void SetMockDiscarderForTesting(
       std::unique_ptr<mechanism::PageDiscarder> discarder);
 

@@ -83,6 +83,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_page_with_crashed_subframe_policy.h"
 #include "chrome/browser/performance_manager/policies/process_rank_policy_android.h"
+#include "chrome/browser/performance_manager/policies/swap_pressure_discarding_policy_android.h"
 #else
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
@@ -292,6 +293,14 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     graph->PassToGraph(
         std::make_unique<performance_manager::policies::
                              DiscardPageWithCrashedSubframePolicy>());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kAndroidSwapPressureTabDiscard) &&
+      base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
+    graph->PassToGraph(
+        std::make_unique<performance_manager::policies::
+                             SwapPressureDiscardingPolicyAndroid>());
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -91,6 +91,7 @@ class ProcessRankPolicyAndroid
 
   // PageLiveStateObserver implementation:
   void OnIsActiveTabChanged(const PageNode* page_node) override;
+  void OnIsDiscardedChanged(const PageNode* page_node) override;
   void OnIsAutoDiscardableChanged(const PageNode* page_node) override;
   void OnIsCapturingVideoChanged(const PageNode* page_node) override;
   void OnIsCapturingAudioChanged(const PageNode* page_node) override;
