@@ -213,12 +213,10 @@ bool DualLayerUserPrefStore::GetValue(std::string_view key,
 base::DictValue DualLayerUserPrefStore::GetValues() const {
   base::DictValue values = local_pref_store_->GetValues();
 
-  if (base::FeatureList::IsEnabled(features::kAccountScopedPrefs)) {
-    for (const std::string& pref_name :
-         GetSyncablePrefNamesInStore(local_pref_store_.get())) {
-      if (!ShouldGetValueFromLocalStore(pref_name)) {
-        values.RemoveByDottedPath(pref_name);
-      }
+  for (const std::string& pref_name :
+       GetSyncablePrefNamesInStore(local_pref_store_.get())) {
+    if (!ShouldGetValueFromLocalStore(pref_name)) {
+      values.RemoveByDottedPath(pref_name);
     }
   }
 
@@ -588,10 +586,6 @@ void DualLayerUserPrefStore::EnableType(syncer::DataType data_type) {
 
 bool DualLayerUserPrefStore::ShouldSetValueInLocalStore(
     std::string_view key) const {
-  if (!base::FeatureList::IsEnabled(features::kAccountScopedPrefs)) {
-    // A preference `key` should always be writable to the local store.
-    return true;
-  }
   if (!pref_model_associator_client_) {
     // Safer this way.
     return true;
@@ -607,10 +601,6 @@ bool DualLayerUserPrefStore::ShouldSetValueInLocalStore(
 
 bool DualLayerUserPrefStore::ShouldGetValueFromLocalStore(
     std::string_view key) const {
-  if (!base::FeatureList::IsEnabled(features::kAccountScopedPrefs)) {
-    // A preference `key` should always be readable from the local store.
-    return true;
-  }
   if (!pref_model_associator_client_) {
     // Safer this way.
     return true;
@@ -704,13 +694,11 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
     // Clear any account-only prefs from the local store. There shouldn't be any
     // such prefs in the local store, but if there are due to some bug, this
     // will clear them.
-    if (base::FeatureList::IsEnabled(features::kAccountScopedPrefs)) {
-      for (const std::string& pref_name :
-           GetSyncablePrefNamesInStore(local_pref_store_.get())) {
-        if (!ShouldSetValueInLocalStore(pref_name)) {
-          local_pref_store_->RemoveValue(
-              pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-        }
+    for (const std::string& pref_name :
+         GetSyncablePrefNamesInStore(local_pref_store_.get())) {
+      if (!ShouldSetValueInLocalStore(pref_name)) {
+        local_pref_store_->RemoveValue(
+            pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }
     }
   }

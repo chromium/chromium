@@ -49,7 +49,6 @@
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync_preferences/common_syncable_prefs_database.h"
-#include "components/sync_preferences/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2371,24 +2370,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class SingleClientPreferencesAccountScopedSyncTest
-    : public SingleClientPreferencesWithAccountStorageSyncTest {
- public:
-  SingleClientPreferencesAccountScopedSyncTest() {
-    feature_list_.InitAndEnableFeature(
-        sync_preferences::features::kAccountScopedPrefs);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SingleClientPreferencesAccountScopedSyncTest,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
-
-IN_PROC_BROWSER_TEST_P(SingleClientPreferencesAccountScopedSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
                        ShouldStoreAccountScopedPrefInAccountStoreOnly) {
   ASSERT_TRUE(SetupClients());
   GetRegistry(GetProfile(0))

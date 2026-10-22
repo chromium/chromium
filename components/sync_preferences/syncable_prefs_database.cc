@@ -6,14 +6,11 @@
 
 #include <string_view>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
-#include "components/sync_preferences/features.h"
 
 namespace sync_preferences {
 
 WriteBehavior SyncablePrefMetadata::write_behavior() const {
-  CHECK(base::FeatureList::IsEnabled(features::kAccountScopedPrefs));
   return write_behavior_;
 }
 
