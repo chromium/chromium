@@ -648,12 +648,12 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
   ShutdownHost();
 }
 
-// Flaky on all platforms.  http://crbug.com/1265894
-TEST_F(ChromotingHostTest, DISABLED_OnSessionRouteChange) {
+TEST_F(ChromotingHostTest, OnSessionRouteChange) {
   StartHost();
 
-  ExpectClientConnected(0);
+  auto future = ExpectClientConnected(0);
   SimulateClientConnection(0, true, false);
+  future->Get();
 
   std::string channel_name("ChannelName");
   protocol::TransportRoute route;
