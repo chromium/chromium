@@ -17980,6 +17980,21 @@
             ]
         }
     ],
+    "UseAccountInfoFetcherIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAccountInfoFetcherIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseAndroidCustomFrameDeadlines": [
         {
             "platforms": [
