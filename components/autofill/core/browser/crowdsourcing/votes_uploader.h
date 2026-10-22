@@ -47,11 +47,10 @@ class BrowserAutofillManager;
 // "to potentially display an Autofill survey". For brevity, function names
 // don't mention this explicitly.
 //
-// VotesUploader enqueues votes that are cast before form submission are
-// enqueued. New votes for a form signature replace already-enqueued ones for
-// that signature. Enqueued votes are flushed by BrowserAutofillManager when it
-// dies or is reset. Therefore, votes are called "pending" while they are in the
-// queue.
+// VotesUploader enqueues votes that are cast before form submission. New votes
+// for a form signature replace already-enqueued ones for that signature.
+// Enqueued votes are flushed by BrowserAutofillManager when it dies or is
+// reset. Therefore, votes are called "pending" while they are in the queue.
 //
 //   MaybeStartVoteUploadProcess()◄─────────BrowserAutofillManager
 //       │
@@ -74,7 +73,7 @@ class BrowserAutofillManager;
 //       │
 //       │       if submission
 //       ├──────►────────────────────────────────┐
-//       │ else                                   │
+//       │ else                                  │
 //       │                                       │
 //       ▼                                       │
 //   Store PendingVote, which is uploaded when   │
@@ -102,8 +101,9 @@ class VotesUploader : public AutofillDriverFactory::Observer {
   VotesUploader& operator=(const VotesUploader&) = delete;
   ~VotesUploader() override;
 
-  // Will send an upload based on the |form| data and the local Autofill profile
-  // data. |observed_submission| is specified if the upload follows an observed
+  // Will send an upload based on the |form| data and the local Autofill data
+  // (addresses, credit cards, entities, loyalty cards, and OTPs).
+  // |observed_submission| is specified if the upload follows an observed
   // submission event. Returns false if the upload couldn't start.
   //
   // If the form contains a potential OTP field this function may initiate an
@@ -122,8 +122,9 @@ class VotesUploader : public AutofillDriverFactory::Observer {
   //
   // `initial_interaction_timestamp` is the last interaction with the form
   // passed to MaybeStartVoteUploadProcess(). `submission_timestamp` is the time
-  // MaybeStartVoteUploadProcess() was called. `observed_submission` indicates
-  // whether the upload is a result of an observed submission event.
+  // StartVoteUploadProcess() was called, which may be later than the call of
+  // MaybeStartVoteUploadProcess() due to OTP retrieval. `observed_submission`
+  // indicates whether the upload is a result of an observed submission event.
   // `ukm_source_id` is the form's page's UKM source ID.
   //
   // Virtual and protected for testing.
@@ -201,7 +202,7 @@ class VotesUploader : public AutofillDriverFactory::Observer {
   std::list<PendingVote> pending_votes_;
 
   // Task runner for DeterminePossibleFieldTypesForUpload(). It is important
-  // that this is a *sequenced* task runner for reasons:
+  // that this is a *sequenced* task runner for two reasons:
   // - Form submission not only uploads the submission vote but also flushes
   //   blur votes. For that to work, the blur votes' OnFieldTypesDetermined()
   //   must be called before the submission vote's OnFieldTypesDetermined().

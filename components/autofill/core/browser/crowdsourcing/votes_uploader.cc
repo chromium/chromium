@@ -192,7 +192,7 @@ void VotesUploader::OnAutofillDriverStateChanged(
   }
 
   if (old_state == kPendingReset) {
-    // Case (3): The was reset.
+    // Case (3): The driver was reset.
     FlushPendingVotesForFrame(driver.GetFrameToken());
   }
 }
@@ -414,8 +414,8 @@ void VotesUploader::OnFieldTypesDetermined(
 void VotesUploader::FlushOldestPendingVotesIfNecessary() {
   // Entries in pending_votes_ are submitted after navigations or form
   // submissions. To reduce the risk of collecting too much data that is not
-  // send, we allow only `kMaxEntriesInQueue` entries. Anything in excess will
-  // be sent when the queue becomes to long.
+  // sent, we allow only `kMaxEntriesInQueue` entries. Anything in excess will
+  // be sent when the queue becomes too long.
   constexpr int kMaxEntriesInQueue = 10;
   while (pending_votes_.size() >= kMaxEntriesInQueue) {
     base::OnceCallback oldest_callback =
