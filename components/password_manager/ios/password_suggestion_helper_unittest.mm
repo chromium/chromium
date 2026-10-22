@@ -1160,7 +1160,9 @@ TEST_F(PasswordSuggestionHelperTest,
 // remains false.
 TEST_F(PasswordSuggestionHelperTest,
        RetrieveSuggestions_SubmissionReadiness_FeatureDisabled) {
-  // Feature kIOSPasswordAutoSubmission is disabled by default.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordAutoSubmission);
   FormSuggestionProviderQuery* query =
       BuildQuery(@"password1", FieldType::kObfuscated, NSFrameId(main_frame_));
   FormRendererId form_renderer_id = query.formRendererID;
