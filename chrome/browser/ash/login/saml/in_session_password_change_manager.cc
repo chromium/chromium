@@ -14,6 +14,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -24,8 +25,6 @@
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
@@ -112,7 +111,7 @@ void RecordCryptohomePasswordChangeFailure(PasswordSource password_source) {
   }
 }
 
-InSessionPasswordChangeManager* g_test_instance = nullptr;
+InSessionPasswordChangeManager* g_instance = nullptr;
 
 // Traits for running RecheckPasswordExpiryTask.
 // Runs from the UI thread to show notification.
@@ -189,14 +188,13 @@ InSessionPasswordChangeManager::CreateIfEnabled(PrefService* local_state,
 
 // static
 bool InSessionPasswordChangeManager::IsInitialized() {
-  return GetNullable();
+  return g_instance != nullptr;
 }
 
 // static
 InSessionPasswordChangeManager* InSessionPasswordChangeManager::Get() {
-  InSessionPasswordChangeManager* result = GetNullable();
-  CHECK(result);
-  return result;
+  CHECK(g_instance);
+  return g_instance;
 }
 
 InSessionPasswordChangeManager::InSessionPasswordChangeManager(
@@ -214,27 +212,21 @@ InSessionPasswordChangeManager::InSessionPasswordChangeManager(
     session_controller->AddSessionActivationObserverForAccountId(
         primary_user_->GetAccountId(), this);
   }
+
+  CHECK(!g_instance);
+  g_instance = this;
 }
 
 InSessionPasswordChangeManager::~InSessionPasswordChangeManager() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+
   // Remove `this` as a SessionActivationObserver.
   auto* session_controller = SessionController::Get();
   if (session_controller) {
     session_controller->RemoveSessionActivationObserverForAccountId(
         primary_user_->GetAccountId(), this);
   }
-}
-
-// static
-void InSessionPasswordChangeManager::SetForTesting(
-    InSessionPasswordChangeManager* instance) {
-  CHECK(!g_test_instance);
-  g_test_instance = instance;
-}
-
-// static
-void InSessionPasswordChangeManager::ResetForTesting() {
-  g_test_instance = nullptr;
 }
 
 void InSessionPasswordChangeManager::MaybeShowExpiryNotification() {
@@ -492,13 +484,6 @@ void InSessionPasswordChangeManager::CreateTokenAsync() {
       primary_profile_->GetURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(primary_profile_.get()), this);
   password_sync_token_fetcher_->StartTokenCreate();
-}
-
-// static
-InSessionPasswordChangeManager* InSessionPasswordChangeManager::GetNullable() {
-  return g_test_instance ? g_test_instance
-                         : g_browser_process->platform_part()
-                               ->in_session_password_change_manager();
 }
 
 void InSessionPasswordChangeManager::NotifyObservers(Event event) {

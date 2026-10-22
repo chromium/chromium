@@ -161,14 +161,14 @@ class PasswordChangeSuccessDetectionTest
     profile->GetPrefs()->SetBoolean(prefs::kSamlInSessionPasswordChangeEnabled,
                                     true);
 
+    // BrowserProcessPlatformPart created no manager at login, because the pref
+    // was off then, so this one can register itself as the instance returned
+    // by InSessionPasswordChangeManager::Get().
     password_change_manager_ = std::make_unique<InSessionPasswordChangeManager>(
         g_browser_process->local_state(), profile);
-    InSessionPasswordChangeManager::SetForTesting(
-        password_change_manager_.get());
   }
 
   void TearDownOnMainThread() override {
-    InSessionPasswordChangeManager::ResetForTesting();
     password_change_manager_.reset();
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }

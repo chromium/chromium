@@ -164,10 +164,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
     return essential_search_manager_.get();
   }
 
-  ash::InSessionPasswordChangeManager* in_session_password_change_manager() {
-    return in_session_password_change_manager_.get();
-  }
-
   ash::AutoSignOutService* auto_sign_out_service() {
     return auto_sign_out_service_.get();
   }

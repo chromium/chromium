@@ -82,11 +82,10 @@ class InSessionPasswordChangeManagerTestBase : public testing::Test {
     // notification, instead of an urgent one, because it is simpler to test.
     // TODO(crbug.com/40613129): Test both types of notification.
     manager_->urgent_warning_days_ = -1;
-    InSessionPasswordChangeManager::SetForTesting(manager_.get());
   }
 
   void TearDown() override {
-    InSessionPasswordChangeManager::ResetForTesting();
+    manager_.reset();
     message_center::MessageCenter::Shutdown();
   }
 
