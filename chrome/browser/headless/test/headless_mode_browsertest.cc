@@ -11,6 +11,7 @@
 // providing a compile time condition over the entire file.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include <string>
+#include <string_view>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -395,9 +396,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessClipboardCopyPaste) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ASSERT_TRUE(clipboard);
 
-  static const struct ClipboardBufferInfo {
+  static constexpr struct ClipboardBufferInfo {
     ui::ClipboardBuffer buffer;
-    std::u16string paste_text;
+    std::u16string_view paste_text;
   } clipboard_buffers[] = {
       {ui::ClipboardBuffer::kCopyPaste, u"kCopyPaste"},
       {ui::ClipboardBuffer::kSelection, u"kSelection"},

@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserSplitCacheTest,
 
 IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserSplitCacheTest,
                        LoadAfterPrefetchCrossOriginRendererInitiated) {
-  static const std::string kSecondaryDomain = "www.foo.com";
+  static constexpr char kSecondaryDomain[] = "www.foo.com";
   GURL cross_domain_url =
       embedded_test_server()->GetURL(kSecondaryDomain, kPrefetchPageBigger);
 

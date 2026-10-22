@@ -41,10 +41,10 @@ static const char kDumpDevToolsProtocol[] = "dump-devtools-protocol";
 }  // namespace switches
 
 namespace {
-static const base::FilePath kTestDataDir(
-    FILE_PATH_LITERAL("chrome/browser/headless/test/data"));
-static const base::FilePath kSharedTestDataDir(
-    FILE_PATH_LITERAL("components/headless/test/data"));
+constexpr base::FilePath::CharType kTestDataDir[] =
+    FILE_PATH_LITERAL("chrome/browser/headless/test/data");
+constexpr base::FilePath::CharType kSharedTestDataDir[] =
+    FILE_PATH_LITERAL("components/headless/test/data");
 
 constexpr char kProtocolTestDir[] = "protocol";
 }  // namespace
@@ -53,7 +53,8 @@ HeadlessModeProtocolBrowserTest::HeadlessModeProtocolBrowserTest() = default;
 HeadlessModeProtocolBrowserTest::~HeadlessModeProtocolBrowserTest() = default;
 
 base::FilePath HeadlessModeProtocolBrowserTest::GetTestDataDir() {
-  return IsSharedTestScript() ? kSharedTestDataDir : kTestDataDir;
+  return base::FilePath(IsSharedTestScript() ? kSharedTestDataDir
+                                             : kTestDataDir);
 }
 
 base::FilePath HeadlessModeProtocolBrowserTest::GetScriptPath() {
