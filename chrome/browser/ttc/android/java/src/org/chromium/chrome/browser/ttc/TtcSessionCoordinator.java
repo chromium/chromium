@@ -23,10 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Owns the TTC session UI for one activity. The session itself (start / end, microphone permission,
- * following the active profile) lives in {@link TtcSessionMediator} and is form-factor agnostic;
- * this class wires the mediator's model to a view. On small screens that view is a floating pill
- * shown over the content area while a session is live, see {@link #usesMobileSessionUi(Context)}.
+ * Owns the TTC session UI for one activity. The session itself (start / end, first run experience,
+ * microphone permission, following the active profile) lives in {@link TtcSessionMediator} and is
+ * form-factor agnostic; this class wires the mediator's model to a view. On small screens that view
+ * is a floating pill shown over the content area while a session is live, see {@link
+ * #usesMobileSessionUi(Context)}.
  */
 @NullMarked
 public class TtcSessionCoordinator {
@@ -60,7 +61,8 @@ public class TtcSessionCoordinator {
 
     /**
      * @param anchorView The activity's content area; the pill is pinned to its bottom-end corner.
-     * @param windowAndroid The activity's window, used for the microphone permission.
+     * @param windowAndroid The activity's window, used for the first run dialog and the microphone
+     *     permission.
      * @param profileSupplier Supplies the profile sessions run against.
      * @param lifecycleDispatcher Used to report this window's visibility to the profile's {@link
      *     TtcSessionWindowTracker}, which ends the session once no window is visible, since
@@ -102,8 +104,9 @@ public class TtcSessionCoordinator {
     }
 
     /**
-     * Ends the session if one is active, otherwise starts one, prompting for the microphone
-     * permission first if it hasn't been granted.
+     * Ends the session if one is active, otherwise starts one, first showing the first run dialog
+     * if the user hasn't completed it yet, and then asking for the microphone permission if it
+     * hasn't been granted.
      */
     public void toggleSession() {
         mMediator.toggleSession();

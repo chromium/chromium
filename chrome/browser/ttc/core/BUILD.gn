@@ -27,6 +27,12 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
+source_set("prefs") {
+  public = [ "prefs.h" ]
+  sources = [ "prefs.cc" ]
+  deps = [ "//components/prefs" ]
+}
+
 if (enable_ttc_webui) {
   mojom("mojo_bindings") {
     sources = [ "eval_harness.mojom" ]

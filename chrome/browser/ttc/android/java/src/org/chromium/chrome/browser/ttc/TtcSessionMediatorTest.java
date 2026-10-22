@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -16,6 +18,8 @@ import static org.mockito.Mockito.when;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,17 +40,26 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.PermissionCallback;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TtcSessionMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.TTC)
+@DisableFeatures(ChromeFeatureList.TTC_FRE)
 public class TtcSessionMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -56,6 +69,9 @@ public class TtcSessionMediatorTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private ActivityLifecycleDispatcher mOtherLifecycleDispatcher;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Mock private PrefService mPrefService;
 
     private PropertyModel mModel;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -76,6 +92,11 @@ public class TtcSessionMediatorTest {
         when(mOtherLifecycleDispatcher.getCurrentActivityState())
                 .thenReturn(ActivityState.RESUMED_WITH_NATIVE);
         when(mWindowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(true);
+        when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
+        when(mWindowAndroid.getContext())
+                .thenReturn(new WeakReference<>(ApplicationProvider.getApplicationContext()));
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
     }
 
     /** Creates a mediator and, unless {@code profileAvailable} is false, supplies the profile. */
@@ -333,6 +354,200 @@ public class TtcSessionMediatorTest {
         mProfileSupplier.set(mock(Profile.class));
         verify(mService, never()).endSession();
         assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
+    }
+
+    // First run experience.
+
+    /** Returns the model of the FRE dialog shown via {@link #mModalDialogManager}. */
+    private PropertyModel getShownFreDialog() {
+        ArgumentCaptor<PropertyModel> captor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager)
+                .showDialog(captor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        return captor.getValue();
+    }
+
+    /** Simulates the user tapping {@code buttonType} on {@code dialog}, which dismisses it. */
+    private void clickFreDialogButton(
+            PropertyModel dialog, @ModalDialogProperties.ButtonType int buttonType) {
+        ModalDialogProperties.Controller controller = dialog.get(ModalDialogProperties.CONTROLLER);
+        @DialogDismissalCause
+        int cause =
+                buttonType == ModalDialogProperties.ButtonType.POSITIVE
+                        ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                        : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
+        controller.onClick(dialog, buttonType);
+        verify(mModalDialogManager).dismissDialog(dialog, cause);
+        controller.onDismiss(dialog, cause);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testFreDialogShownWhenFreNotCompleted() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        verify(mService, never()).startSession();
+        PropertyModel dialog = getShownFreDialog();
+        assertEquals("Placeholder", dialog.get(ModalDialogProperties.TITLE));
+        assertEquals("Enable TTC?", dialog.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testFreDialogAcceptedMarksFreCompletedAndStartsSession() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        clickFreDialogButton(getShownFreDialog(), ModalDialogProperties.ButtonType.POSITIVE);
+        verify(mPrefService).setBoolean(Pref.TTC_FRE_COMPLETED, true);
+        verify(mService).startSession();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testFreDialogAcceptedRequestsPermissionBeforeStarting() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        when(mWindowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        clickFreDialogButton(getShownFreDialog(), ModalDialogProperties.ButtonType.POSITIVE);
+        verify(mPrefService).setBoolean(Pref.TTC_FRE_COMPLETED, true);
+        verify(mService, never()).startSession();
+
+        resolvePermissionRequest(PackageManager.PERMISSION_GRANTED);
+        verify(mService).startSession();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testFreDialogCancelledLeavesFreIncompleteAndDoesNotStart() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        clickFreDialogButton(getShownFreDialog(), ModalDialogProperties.ButtonType.NEGATIVE);
+        verify(mPrefService, never()).setBoolean(eq(Pref.TTC_FRE_COMPLETED), anyBoolean());
+        // The permission is already granted in setUp(), so a session would have started if the
+        // dialog had been skipped or accepted.
+        verify(mWindowAndroid, never()).requestPermissions(any(), any());
+        verify(mService, never()).startSession();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testFreDialogDismissedLeavesFreIncompleteAndDoesNotStart() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        PropertyModel dialog = getShownFreDialog();
+        dialog.get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(dialog, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        verify(mPrefService, never()).setBoolean(eq(Pref.TTC_FRE_COMPLETED), anyBoolean());
+        // The permission is already granted in setUp(), so a session would have started if the
+        // dialog had been skipped or accepted.
+        verify(mWindowAndroid, never()).requestPermissions(any(), any());
+        verify(mService, never()).startSession();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testFreDialogAcceptedWhileActivityStoppedDoesNotStartSession() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        when(mLifecycleDispatcher.getCurrentActivityState())
+                .thenReturn(ActivityState.STOPPED_WITH_NATIVE);
+        clickFreDialogButton(getShownFreDialog(), ModalDialogProperties.ButtonType.POSITIVE);
+        // The FRE is still marked completed; only the session start is skipped.
+        verify(mPrefService).setBoolean(Pref.TTC_FRE_COMPLETED, true);
+        verify(mService, never()).startSession();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testDestroyDismissesFreDialog() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        PropertyModel dialog = getShownFreDialog();
+        mediator.destroy();
+        verify(mModalDialogManager).dismissDialog(dialog, DialogDismissalCause.DISMISSED_BY_NATIVE);
+
+        // The presenter reports the dismissal back; nothing is recorded or started.
+        dialog.get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(dialog, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        verify(mPrefService, never()).setBoolean(eq(Pref.TTC_FRE_COMPLETED), anyBoolean());
+        verify(mService, never()).startSession();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testSwitchingToIncognitoDismissesFreDialog() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        PropertyModel dialog = getShownFreDialog();
+        switchToIncognito(mProfileSupplier);
+        verify(mModalDialogManager).dismissDialog(dialog, DialogDismissalCause.DISMISSED_BY_NATIVE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testFreDialogAcceptedAfterProfileSwitchDoesNotMarkFreCompleted() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        PropertyModel dialog = getShownFreDialog();
+        switchToIncognito(mProfileSupplier);
+        // Even if the dialog somehow outlived the switch, accepting it must not mark the FRE
+        // completed for the new profile.
+        clickFreDialogButton(dialog, ModalDialogProperties.ButtonType.POSITIVE);
+        verify(mPrefService, never()).setBoolean(eq(Pref.TTC_FRE_COMPLETED), anyBoolean());
+        verify(mUserPrefsJni, never()).get(mIncognitoProfile);
+        verify(mService, never()).startSession();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testToggleWhileFreDialogShowingDoesNotShowAnother() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        mediator.toggleSession();
+        verify(mModalDialogManager).showDialog(any(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testFreDialogNotShownWhenFreCompleted() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mService).startSession();
+    }
+
+    @Test
+    public void testFreDisabledSkipsDialogAndResetsFreCompleted() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mService).startSession();
+        // Testing stopgap until there is a settings UI: lets the dialog show again when the FRE
+        // is re-enabled.
+        verify(mPrefService).clearPref(Pref.TTC_FRE_COMPLETED);
     }
 
     // Multiple windows sharing the profile's session.

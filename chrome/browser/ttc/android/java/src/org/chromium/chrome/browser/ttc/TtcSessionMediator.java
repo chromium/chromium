@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.ttc;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 
@@ -15,17 +18,24 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Runs TTC sessions for one activity and keeps the session pill's {@link PropertyModel} in sync
- * with the {@link TtcKeyedService}: follows the active profile, starts and ends sessions (prompting
- * for the microphone permission first), and mirrors the service's state into the model.
+ * with the {@link TtcKeyedService}: follows the active profile, starts and ends sessions (showing
+ * the first run dialog and asking for the microphone permission first), and mirrors the service's
+ * state into the model.
  *
  * <p>The session belongs to the profile and is shared by every window. This mediator reports its
  * window's visibility to the profile's {@link TtcSessionWindowTracker}, which ends the session once
@@ -47,6 +57,9 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     private final Handler mHandler = ThreadUtils.getUiThreadHandler();
     private final Runnable mHideAfterErrorTask = this::hideAfterError;
 
+    // The current profile, or null until one is available or after destroy().
+    private @Nullable Profile mProfile;
+
     // The service for the current profile, or null when no session can run against it (the
     // feature is off, or the profile has no service / isn't enabled for it).
     private @Nullable TtcKeyedService mService;
@@ -55,10 +68,14 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     // even if the session has already ended.
     private boolean mShowingError;
 
+    // The first run dialog while it is showing, so it can be dismissed if the service goes away.
+    private @Nullable PropertyModel mFreDialog;
+
     /**
      * @param model The pill's model; {@link TtcSessionProperties#VISIBLE} is false until a session
      *     starts.
-     * @param windowAndroid The activity's window, used for the microphone permission.
+     * @param windowAndroid The activity's window, used for the first run dialog and the microphone
+     *     permission.
      * @param profileSupplier Supplies the profile sessions run against.
      * @param lifecycleDispatcher Used to report this window's visibility to the profile's {@link
      *     TtcSessionWindowTracker}, which ends the session once no window is visible, since
@@ -89,11 +106,13 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
         mProfileSupplier.removeObserver(mProfileObserver);
         // Only ends the session if no other window is still showing it.
         detachFromService();
+        mProfile = null;
     }
 
     /**
-     * Ends the session if one is active, otherwise starts one, prompting for the microphone
-     * permission first if it hasn't been granted.
+     * Ends the session if one is active, otherwise starts one, first showing the first run dialog
+     * if the user hasn't completed it yet, and then asking for the microphone permission if it
+     * hasn't been granted.
      */
     void toggleSession() {
         if (mService == null) return;
@@ -101,6 +120,73 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
             mService.endSession();
             return;
         }
+        if (needsFre()) {
+            showFreDialog();
+            return;
+        }
+        startSessionWithPermission();
+    }
+
+    /**
+     * Whether the first run dialog must be shown before a session can start: the FRE is enabled and
+     * the user hasn't completed it yet.
+     */
+    private boolean needsFre() {
+        PrefService prefs = getPrefs();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TTC_FRE)) {
+            // TODO(crbug.com/575529047): for testing only. Until there is a settings UI to reset
+            // the FRE, starting TTC with the FRE disabled resets the pref so that the dialog shows
+            // again once the FRE is re-enabled.
+            prefs.clearPref(Pref.TTC_FRE_COMPLETED);
+            return false;
+        }
+        return !prefs.getBoolean(Pref.TTC_FRE_COMPLETED);
+    }
+
+    private void showFreDialog() {
+        if (mFreDialog != null) return;
+        // Every Chrome activity has a dialog manager, and the activity (the window's context) is
+        // alive while this mediator is, since the coordinator is destroyed with it.
+        ModalDialogManager modalDialogManager =
+                assumeNonNull(mWindowAndroid.getModalDialogManager());
+        Context context = assumeNonNull(mWindowAndroid.getContext().get());
+        mFreDialog =
+                TtcFreDialog.show(
+                        modalDialogManager, context.getResources(), this::onFreDialogDismissed);
+    }
+
+    private void onFreDialogDismissed(boolean accepted) {
+        mFreDialog = null;
+        // The dialog is asynchronous. detachFromService() dismisses it if the service goes away,
+        // but check anyway so that the FRE is only marked completed for a profile that can use it.
+        if (!accepted || mService == null) return;
+        getPrefs().setBoolean(Pref.TTC_FRE_COMPLETED, true);
+        startSessionWithPermission();
+    }
+
+    /**
+     * Dismisses the first run dialog if it is showing; {@link #onFreDialogDismissed} sees false.
+     */
+    private void dismissFreDialog() {
+        if (mFreDialog == null) return;
+        ModalDialogManager modalDialogManager = mWindowAndroid.getModalDialogManager();
+        if (modalDialogManager != null) {
+            modalDialogManager.dismissDialog(mFreDialog, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        }
+        mFreDialog = null;
+    }
+
+    /** Returns the current profile's prefs. Only valid while {@link #mService} is non-null. */
+    private PrefService getPrefs() {
+        // mService is only ever set for a profile that has been supplied to onProfileAvailable().
+        assert mProfile != null;
+        return UserPrefs.get(mProfile);
+    }
+
+    /**
+     * Starts a session, prompting for the microphone permission first if it hasn't been granted.
+     */
+    private void startSessionWithPermission() {
         if (mWindowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)) {
             startSession();
             return;
@@ -108,12 +194,8 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
         mWindowAndroid.requestPermissions(
                 new String[] {Manifest.permission.RECORD_AUDIO},
                 (permissions, grantResults) -> {
-                    // The prompt is asynchronous; by the time it resolves the mediator may have
-                    // been destroyed (mService is null) or the activity stopped, in which case a
-                    // session would run with no UI and nothing to end it.
                     if (grantResults.length > 0
-                            && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                            && isActivityVisible()) {
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         startSession();
                     }
                 });
@@ -171,6 +253,7 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     }
 
     private void onProfileAvailable(Profile profile) {
+        mProfile = profile;
         TtcKeyedService service = TtcSessionCoordinator.getServiceIfAvailable(profile);
         if (service == mService) return;
         // This window stops hosting the previous profile's session. That only ends the session if
@@ -196,6 +279,8 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
      */
     private void detachFromService() {
         clearError();
+        // A pending first run dialog is for the old profile's service.
+        dismissFreDialog();
         if (mService == null) return;
         mService.getWindowTracker().removeVisibleWindow(this);
         mService.removeObserver(this);
@@ -203,7 +288,10 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     }
 
     private void startSession() {
-        if (mService == null || mService.isSessionActive()) return;
+        // Reached from the asynchronous first run and permission prompts; by the time they resolve
+        // the mediator may have been destroyed (mService is null) or the activity stopped, in which
+        // case a session would run with no UI and nothing to end it.
+        if (mService == null || mService.isSessionActive() || !isActivityVisible()) return;
         mService.startSession();
     }
 

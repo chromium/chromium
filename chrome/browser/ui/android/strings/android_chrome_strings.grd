@@ -8042,6 +8042,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TTC_SESSION_END_DESCRIPTION" desc="Accessibility description of the TTC session pill. Tapping it ends the session." translateable="false">
         End TTC session
       </message>
+      <message name="IDS_TTC_FRE_DIALOG_TITLE" desc="Placeholder title of the TTC first run dialog that asks for the user's consent." translateable="false">
+        Placeholder
+      </message>
+      <message name="IDS_TTC_FRE_DIALOG_BODY" desc="Placeholder body of the TTC first run dialog that asks for the user's consent." translateable="false">
+        Enable TTC?
+      </message>
+      <message name="IDS_TTC_FRE_DIALOG_ALLOW" desc="Label of the button in the TTC first run dialog that gives consent." translateable="false">
+        Allow
+      </message>
 
       <!-- Immersive Playback Confirmation strings -->
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the snackbar asking the user if they want to view the video in immersive mode.">
