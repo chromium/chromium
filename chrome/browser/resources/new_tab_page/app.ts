@@ -338,6 +338,15 @@ export class AppElement extends AppElementBase {
       maxMostVisitedTilesInExpandedState_: {type: Number},
       maxEnterpriseShortcuts_: {type: Number},
       containerFocused_: {type: Boolean},
+      composeboxFocused_: {type: Boolean},
+      pageContentHidden_: {
+        type: Boolean,
+        reflect: true,
+      },
+      composeboxOutsideClickEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
 
       /**
        * Whether the scrim is shown in Realbox Next.
@@ -484,6 +493,10 @@ export class AppElement extends AppElementBase {
   protected accessor maxEnterpriseShortcuts_: number =
       loadTimeData.getInteger('maxEnterpriseShortcuts');
   protected accessor containerFocused_: boolean = false;
+  protected accessor composeboxFocused_: boolean = false;
+  protected accessor pageContentHidden_: boolean = false;
+  protected accessor composeboxOutsideClickEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxRealboxOutsideClick');
   protected accessor showScrim_: boolean = false;
   protected realboxContextMenuAnimationAllowed_: boolean = false;
   protected accessor contextMenuGlifAnimationState_: GlifAnimationState =
@@ -772,8 +785,21 @@ export class AppElement extends AppElementBase {
           this.showVoiceSearchOverlay_;
     }
 
+    if (this.composeboxOutsideClickEnabled_ &&
+        changedPrivateProperties.has('showComposebox_') &&
+        !this.showComposebox_) {
+      this.composeboxFocused_ = false;
+    }
+
+    if (this.composeboxOutsideClickEnabled_ &&
+        changedPrivateProperties.has('composeboxFocused_')) {
+      this.pageContentHidden_ =
+          !this.ntpRealboxNextEnabled_ && this.composeboxFocused_;
+    }
+
     if (this.ntpRealboxNextEnabled_ && [
-          'showComposebox_',
+          this.composeboxOutsideClickEnabled_ ? 'composeboxFocused_' :
+                                                'showComposebox_',
           'showLensUploadDialog_',
           'containerFocused_',
           'showVoiceSearchScrim_',
@@ -799,9 +825,16 @@ export class AppElement extends AppElementBase {
        *   4. The scrim is kept since showComposebox_ is still true.
        *   5. The onclick handler of the scrim runs and sets showComposebox_ to
        *      false, and everything works as desired.
+       *
+       * With composeboxOutsideClickEnabled_ enabled, composeboxFocused_
+       * replaces showComposebox_ in this sequence and is cleared by the scrim
+       * click.
        */
-      this.showScrim_ = this.showComposebox_ || this.showLensUploadDialog_ ||
-          this.containerFocused_ || this.showVoiceSearchScrim_;
+      this.showScrim_ =
+          (this.composeboxOutsideClickEnabled_ ? this.composeboxFocused_ :
+                                                 this.showComposebox_) ||
+          this.showLensUploadDialog_ || this.containerFocused_ ||
+          this.showVoiceSearchScrim_;
     }
   }
 
@@ -862,7 +895,9 @@ export class AppElement extends AppElementBase {
       this.onModulesLoadedChange_();
     }
 
-    if (changedPrivateProperties.has('showComposebox_')) {
+    if (changedPrivateProperties.has(
+            this.composeboxOutsideClickEnabled_ ? 'composeboxFocused_' :
+                                                  'showComposebox_')) {
       this.onShowComposeboxChange_();
     }
 
@@ -1057,6 +1092,9 @@ export class AppElement extends AppElementBase {
   private ensureComposeboxOpen_() {
     if (!this.showComposebox_) {
       this.showComposebox_ = true;
+      if (this.composeboxOutsideClickEnabled_) {
+        this.composeboxFocused_ = true;
+      }
     } else {
       this.shadowRoot.querySelector<NtpComposeboxElement>('#composebox')
           ?.focusInput();
@@ -1091,16 +1129,20 @@ export class AppElement extends AppElementBase {
   }
 
   protected onComposeboxOutsideClick_() {
-    const composebox =
-        this.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
-    assert(composebox);
-    const closeComposebox = new CustomEvent('closeComposebox', {
-      detail: {composeboxText: composebox.input},
-      bubbles: true,
-      cancelable: true,
-    });
+    if (this.composeboxOutsideClickEnabled_) {
+      this.composeboxFocused_ = false;
+    } else {
+      const composebox =
+          this.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
+      assert(composebox);
+      const closeComposebox = new CustomEvent('closeComposebox', {
+        detail: {composeboxText: composebox.input},
+        bubbles: true,
+        cancelable: true,
+      });
 
-    this.onCloseComposebox_(closeComposebox);
+      this.onCloseComposebox_(closeComposebox);
+    }
   }
 
   protected onComposeboxContextMenuOpened_() {
@@ -1336,7 +1378,9 @@ export class AppElement extends AppElementBase {
     // <if expr="is_macosx">
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
     // </if>
-    if (e.key === 'Escape' && this.showComposebox_) {
+    if (e.key === 'Escape' &&
+        (this.composeboxOutsideClickEnabled_ ? this.composeboxFocused_ :
+                                               this.showComposebox_)) {
       const composebox =
           this.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
       if (composebox) {
@@ -1725,12 +1769,14 @@ export class AppElement extends AppElementBase {
   }
 
   protected onSearchboxContainerFocusin_(e: FocusEvent) {
-    if (this.ntpRealboxNextEnabled_) {
-      const isHelpBubble = e.composedPath().some(
-          el => (el as HTMLElement)?.tagName === 'HELP-BUBBLE');
-      if (!isHelpBubble) {
-        this.containerFocused_ = true;
-      }
+    const isHelpBubble = e.composedPath().some(
+        el => (el as HTMLElement)?.tagName === 'HELP-BUBBLE');
+    if (this.ntpRealboxNextEnabled_ && !isHelpBubble) {
+      this.containerFocused_ = true;
+    }
+    if (this.composeboxOutsideClickEnabled_ && this.showComposebox_ &&
+        !isHelpBubble) {
+      this.composeboxFocused_ = true;
     }
   }
 
@@ -1880,12 +1926,16 @@ export class AppElement extends AppElementBase {
   }
 
   private onShowComposeboxChange_() {
-    const notSelector =
-        COMPOSEBOX_INERT_ALLOWLIST.map(s => `:not(${s})`).join('');
+    const notSelector = (this.composeboxOutsideClickEnabled_ ?
+                             [...COMPOSEBOX_INERT_ALLOWLIST, '#scrim'] :
+                             COMPOSEBOX_INERT_ALLOWLIST)
+                            .map(s => `:not(${s})`)
+                            .join('');
     const blockedElements = this.shadowRoot.querySelectorAll<HTMLElement>(
         `#rhsContent > ${notSelector}`);
     blockedElements.forEach(element => {
-      if (this.showComposebox_) {
+      if (this.composeboxOutsideClickEnabled_ ? this.composeboxFocused_ :
+                                                this.showComposebox_) {
         element.setAttribute('inert', '');
       } else {
         element.removeAttribute('inert');

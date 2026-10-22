@@ -2316,6 +2316,86 @@ suite('NewTabPageAppTest', () => {
             });
       });
     });
+
+    suite('OutsideClickLegacy', () => {
+      let originalOutsideClick: boolean;
+      let originalRealboxNext: boolean;
+
+      suiteSetup(() => {
+        originalOutsideClick =
+            loadTimeData.getBoolean('composeboxRealboxOutsideClick');
+        originalRealboxNext = loadTimeData.getBoolean('ntpRealboxNextEnabled');
+        loadTimeData.overrideValues({
+          composeboxRealboxOutsideClick: true,
+          ntpRealboxNextEnabled: false,
+        });
+      });
+
+      suiteTeardown(() => {
+        loadTimeData.overrideValues({
+          composeboxRealboxOutsideClick: originalOutsideClick,
+          ntpRealboxNextEnabled: originalRealboxNext,
+        });
+      });
+
+      test('scrim click keeps the composebox and shows the page', async () => {
+        $$(app, '#searchbox')!.dispatchEvent(new CustomEvent(
+            'open-composebox', {detail: {text: 'draft', files: []}}));
+        await microtasksFinished();
+        const composebox =
+            app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
+        assertTrue(!!composebox);
+        assertTrue(app.hasAttribute('page-content-hidden_'));
+        const mostVisited = $$<HTMLElement>(app, '#mostVisited')!;
+        assertEquals('none', window.getComputedStyle(mostVisited).display);
+        const blockedElements = app.shadowRoot.querySelectorAll<HTMLElement>(
+            '#rhsContent > :not(#logo):not(#searchboxContainer)');
+        assertTrue(blockedElements.length > 0);
+        blockedElements.forEach(el => assertTrue(el.hasAttribute('inert')));
+
+        getScrim()!.click();
+        await microtasksFinished();
+
+        assertEquals(composebox, app.shadowRoot.querySelector('#composebox'));
+        assertEquals('draft', composebox.input);
+        assertFalse(app.hasAttribute('page-content-hidden_'));
+        assertNotEquals('none', window.getComputedStyle(mostVisited).display);
+        assertFalse(!!getScrim());
+        blockedElements.forEach(el => assertFalse(el.hasAttribute('inert')));
+
+        app.shadowRoot.getElementById('searchboxContainer')!.dispatchEvent(
+            new Event('focusin', {bubbles: true}));
+        await microtasksFinished();
+
+        assertTrue(app.hasAttribute('page-content-hidden_'));
+        assertEquals('none', window.getComputedStyle(mostVisited).display);
+        assertTrue(!!getScrim());
+        blockedElements.forEach(el => assertTrue(el.hasAttribute('inert')));
+      });
+
+      test('page hiding keeps the original CSS with the flag off', async () => {
+        loadTimeData.overrideValues({composeboxRealboxOutsideClick: false});
+        try {
+          await recreateApp();
+          const mostVisited = $$<HTMLElement>(app, '#mostVisited')!;
+          assertNotEquals('none', window.getComputedStyle(mostVisited).display);
+          $$(app, '#searchbox')!.dispatchEvent(new CustomEvent(
+              'open-composebox', {detail: {text: 'draft', files: []}}));
+          await microtasksFinished();
+          assertFalse(app.hasAttribute('page-content-hidden_'));
+          assertEquals('none', window.getComputedStyle(mostVisited).display);
+
+          const composebox = app.shadowRoot.querySelector<NtpComposeboxElement>(
+              '#composebox')!;
+          composebox.fire('close-composebox', {composeboxText: ''});
+          await microtasksFinished();
+          assertNotEquals('none', window.getComputedStyle(mostVisited).display);
+        } finally {
+          loadTimeData.overrideValues({composeboxRealboxOutsideClick: true});
+          await recreateApp();
+        }
+      });
+    });
   });
 
   suite('WallpaperSearch', () => {
@@ -3033,6 +3113,147 @@ suite('NewTabPageAppTest', () => {
 
     test('Contextual entrypoint IPH', () => {
       assertTrue(app.canShowHelpBubble(CONTEXTUAL_ENTRYPOINT_ELEMENT_ID));
+    });
+
+    suite('OutsideClick', () => {
+      const BLOCKED_SELECTOR =
+          '#rhsContent > :not(#logo):not(#searchboxContainer):not(#scrim)';
+      let originalOutsideClick: boolean;
+      let originalPersistentAimButton: boolean;
+
+      suiteSetup(() => {
+        originalOutsideClick =
+            loadTimeData.getBoolean('composeboxRealboxOutsideClick');
+        originalPersistentAimButton =
+            loadTimeData.getBoolean('composeboxPersistentAimButton');
+        loadTimeData.overrideValues({
+          composeboxRealboxOutsideClick: true,
+          composeboxPersistentAimButton: false,
+        });
+      });
+
+      suiteTeardown(() => {
+        loadTimeData.overrideValues({
+          composeboxRealboxOutsideClick: originalOutsideClick,
+          composeboxPersistentAimButton: originalPersistentAimButton,
+        });
+      });
+
+      function getComposebox(): NtpComposeboxElement|null {
+        return app.shadowRoot.querySelector<NtpComposeboxElement>(
+            '#composebox');
+      }
+
+      async function openComposebox(text: string = ''):
+          Promise<NtpComposeboxElement> {
+        $$(app, '#searchbox')!.dispatchEvent(
+            new CustomEvent('open-composebox', {detail: {text, files: []}}));
+        await microtasksFinished();
+        const composebox = getComposebox();
+        assertTrue(!!composebox);
+        await composebox.updateComplete;
+        return composebox;
+      }
+
+      async function clickOutside() {
+        getScrim()!.click();
+        await microtasksFinished();
+      }
+
+      function assertPageBlocked(blocked: boolean) {
+        assertEquals(!blocked, getScrim()!.hidden);
+        const elements =
+            app.shadowRoot.querySelectorAll<HTMLElement>(BLOCKED_SELECTOR);
+        assertTrue(elements.length > 0);
+        elements.forEach(el => assertEquals(blocked, el.hasAttribute('inert')));
+      }
+
+      test(
+          'page click keeps the composebox and lifts page blocking',
+          async () => {
+            const composebox = await openComposebox('draft');
+            assertPageBlocked(true);
+            composebox.getInputElement().inputElement.blur();
+            await microtasksFinished();
+            assertPageBlocked(true);
+            composebox.queryAutocomplete(/*clearMatches=*/ false);
+            const queryId = composebox.activeQueryId;
+            assertTrue(queryId >= 0);
+
+            $$<HTMLElement>(app, '#logo')!.click();
+            await microtasksFinished();
+            assertPageBlocked(true);
+            assertEquals(queryId, composebox.activeQueryId);
+
+            await clickOutside();
+            assertPageBlocked(false);
+            assertEquals(composebox, getComposebox());
+            assertEquals('draft', composebox.input);
+            assertEquals(queryId, composebox.activeQueryId);
+          });
+
+      test('focus returning to the searchbox restores blocking', async () => {
+        const composebox = await openComposebox('draft');
+        await clickOutside();
+        assertPageBlocked(false);
+
+        app.shadowRoot.getElementById('searchboxContainer')!.dispatchEvent(
+            new Event('focusin', {bubbles: true}));
+        await microtasksFinished();
+        assertPageBlocked(true);
+        assertEquals(composebox, getComposebox());
+        assertEquals('draft', composebox.input);
+      });
+
+      test('Escape is ignored while the composebox is unfocused', async () => {
+        await openComposebox();
+        const consumed = new KeyboardEvent(
+            'keydown', {key: 'Escape', bubbles: true, cancelable: true});
+        window.dispatchEvent(consumed);
+        await microtasksFinished();
+        assertTrue(consumed.defaultPrevented);
+        assertFalse(!!getComposebox());
+
+        const composebox = await openComposebox('draft');
+        await clickOutside();
+        const ignored = new KeyboardEvent(
+            'keydown', {key: 'Escape', bubbles: true, cancelable: true});
+        window.dispatchEvent(ignored);
+        await microtasksFinished();
+        assertFalse(ignored.defaultPrevented);
+        assertEquals(composebox, getComposebox());
+        assertEquals('draft', composebox.input);
+
+        const input = composebox.getInputElement().inputElement;
+        input.blur();
+        input.focus();
+        await microtasksFinished();
+        assertPageBlocked(true);
+        input.dispatchEvent(new KeyboardEvent('keydown', {
+          key: 'Escape',
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        }));
+        await microtasksFinished();
+        assertEquals(composebox, getComposebox());
+        assertEquals('', composebox.input);
+      });
+
+      test(
+          'page blocking returns when the composebox is reopened', async () => {
+            const composebox = await openComposebox('draft');
+            await clickOutside();
+            assertPageBlocked(false);
+
+            composebox.fire('close-composebox', {composeboxText: ''});
+            await microtasksFinished();
+            assertFalse(!!getComposebox());
+            assertPageBlocked(false);
+
+            await openComposebox();
+            assertPageBlocked(true);
+          });
     });
   });
 

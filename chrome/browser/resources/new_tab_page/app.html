@@ -79,6 +79,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
                   .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
                   @context-menu-opened="${this.onComposeboxContextMenuOpened_}"
                   @close-composebox="${this.onCloseComposebox_}"
+                  .focused="${this.composeboxFocused_}"
                   @voice-search-action="${this.onComposeVoiceSearchAction_}"
                   .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
                   .clearAllInputsWhenSubmittingQuery="${true}"
@@ -245,7 +246,9 @@ ${this.showVoiceSearchOverlay_ &&
   </ntp-voice-search-overlay>
 ` : ''}
 ${!this.ntpRealboxNextEnabled_ &&
-    (this.showComposebox_ || this.showVoiceSearchScrim_) ? html`
+    ((this.composeboxOutsideClickEnabled_ ? this.composeboxFocused_ :
+                                            this.showComposebox_) ||
+     this.showVoiceSearchScrim_) ? html`
   <div id="scrim"
       @click="${this.onScrimClick_}"></div>
 ` : ''}

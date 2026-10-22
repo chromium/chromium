@@ -1328,6 +1328,111 @@ suite('NewTabPageComposeboxTest', () => {
               });
         });
       });
+
+  suite('outside click', () => {
+    const FLAG = 'composeboxRealboxOutsideClick';
+    let originalFlag: boolean;
+
+    suiteSetup(() => {
+      originalFlag = loadTimeData.valueExists(FLAG) ?
+          loadTimeData.getBoolean(FLAG) :
+          false;
+      loadTimeData.overrideValues({[FLAG]: true});
+    });
+
+    suiteTeardown(() => {
+      loadTimeData.overrideValues({[FLAG]: originalFlag});
+    });
+
+    async function createComposebox(): Promise<NtpComposeboxElement> {
+      const composebox = new NtpComposeboxElement();
+      document.body.appendChild(composebox);
+      await testProxy.searchboxHandler.whenCalled('getInputState');
+      await microtasksFinished();
+      await composebox.updateComplete;
+      return composebox;
+    }
+
+    async function sendTwoMatches(queryId: number, sequenceId: number = 0) {
+      testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+          createAutocompleteResultForTesting({
+            queryId,
+            sequenceId,
+            matches: [
+              createSearchMatchForTesting(),
+              createSearchMatchForTesting(),
+            ],
+          }));
+      await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+    }
+
+    test('hides suggestions until focus returns', async () => {
+      const composebox = await createComposebox();
+      const queryId = composebox.activeQueryId;
+      assertTrue(queryId >= 0);
+      assertTrue(composebox.hasAttribute('should-remain-folded_'));
+      composebox.focused = false;
+      composebox.input = 'a\nb';
+      await composebox.updateComplete;
+      assertFalse(composebox.hasAttribute('should-remain-folded_'));
+      composebox.focused = true;
+      composebox.input = '';
+      await composebox.updateComplete;
+
+      await sendTwoMatches(queryId);
+      assertTrue(composebox.showDropdown);
+      assertFalse(composebox.hasAttribute('should-remain-folded_'));
+      const stopCount =
+          testProxy.searchboxHandler.getCallCount('stopAutocomplete');
+      const queryCount =
+          testProxy.searchboxHandler.getCallCount('queryAutocomplete');
+
+      composebox.focused = false;
+      await composebox.updateComplete;
+
+      assertFalse(composebox.showDropdown);
+      assertTrue(composebox.hasAttribute('should-remain-folded_'));
+      assertEquals(queryId, composebox.activeQueryId);
+      assertEquals(
+          stopCount,
+          testProxy.searchboxHandler.getCallCount('stopAutocomplete'));
+
+      await sendTwoMatches(queryId, /*sequenceId=*/ 7);
+      assertFalse(composebox.showDropdown);
+      assertTrue(!!composebox.result);
+      assertEquals(7, composebox.result.sequenceId);
+
+      composebox.input = 'draft';
+      await composebox.updateComplete;
+      assertFalse(composebox.showDropdown);
+      assertFalse(composebox.hasAttribute('should-remain-folded_'));
+
+      composebox.focused = true;
+      await composebox.updateComplete;
+      assertTrue(composebox.showDropdown);
+      assertFalse(composebox.hasAttribute('should-remain-folded_'));
+      assertEquals('', composebox.lastQueriedInput);
+      assertEquals(
+          queryCount,
+          testProxy.searchboxHandler.getCallCount('queryAutocomplete'));
+    });
+
+    test('folds without matches when the flag is off', async () => {
+      loadTimeData.overrideValues({[FLAG]: false});
+      try {
+        const composebox = await createComposebox();
+        composebox.focused = false;
+        composebox.input = 'a\nb';
+        await composebox.updateComplete;
+        assertTrue(composebox.hasAttribute('should-remain-folded_'));
+        await sendTwoMatches(composebox.activeQueryId);
+        assertTrue(composebox.showDropdown);
+      } finally {
+        loadTimeData.overrideValues({[FLAG]: true});
+      }
+    });
+  });
 });
 
 // ==========================================================
