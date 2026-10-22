@@ -8,6 +8,7 @@
 #import <memory>
 
 #import "base/files/file_path.h"
+#import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
@@ -56,10 +57,11 @@ class ActorInternalsHandler
   void TraceFileInitDone(bool success);
   // Opens the share menu to let the user interact with the trace.
   void ShareTraceFile(base::FilePath trace_file);
-  // Closes the serializer and posts a task to delete the `file_to_cleanup`.
-  void Shutdown(
-      std::unique_ptr<actor::AggregatedJournalFileSerializer> serializer,
-      base::FilePath file_for_cleanup);
+  // Closes the trace file on the serializer's writer sequence and synchronously
+  // destroys `file_journal_serializer_` (its `FileWriter` is destroyed behind
+  // the close). `on_file_closed` then runs on the current sequence. No-op when
+  // logging is not active.
+  void CloseTraceFile(base::OnceClosure on_file_closed);
 
   // The WebState associated with the page.
   base::WeakPtr<web::WebState> web_state_;

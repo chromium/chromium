@@ -26,3 +26,17 @@ source_set("actor_internals") {
     "//mojo/public/cpp/bindings",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "actor_internals_handler_unittest.mm" ]
+  deps = [
+    ":actor_internals",
+    "//base",
+    "//base/test:test_support",
+    "//components/actor/core:journal",
+    "//components/actor/public/mojom:mojo_bindings",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

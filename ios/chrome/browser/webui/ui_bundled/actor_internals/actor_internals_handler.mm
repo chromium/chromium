@@ -13,12 +13,12 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/notreached.h"
 #import "base/path_service.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
-#import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "components/actor/core/aggregated_journal.h"
@@ -27,6 +27,16 @@
 #import "components/actor/public/mojom/actor_internals.mojom.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+
+// Deletes `trace_file` on the thread pool.
+void PostDeleteTraceFile(const base::FilePath& trace_file) {
+  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                             base::GetDeleteFileCallback(trace_file));
+}
+
+}  // namespace
 
 ActorInternalsHandler::ActorInternalsHandler(
     web::WebState* web_state,
@@ -58,7 +68,7 @@ ActorInternalsHandler::~ActorInternalsHandler() {
     [presenting_view_controller dismissViewControllerAnimated:NO
                                                    completion:nil];
   }
-  Shutdown(std::move(file_journal_serializer_), current_trace_file_);
+  CloseTraceFile(base::BindOnce(&PostDeleteTraceFile, current_trace_file_));
 }
 
 // This starts logging to disk and continues until StopLogging is called. A
@@ -98,27 +108,20 @@ void ActorInternalsHandler::StopLogging() {
     return;
   }
 
-  // Take ownership and clear active state immediately.
-  std::unique_ptr<actor::AggregatedJournalFileSerializer> serializer =
-      std::move(file_journal_serializer_);
-  actor::AggregatedJournalFileSerializer* serializer_ptr = serializer.get();
   base::FilePath trace_file = std::move(current_trace_file_);
   current_trace_file_.clear();
-
-  serializer_ptr->Shutdown(base::BindPostTaskToCurrentDefault(base::BindOnce(
+  CloseTraceFile(base::BindOnce(
       [](base::WeakPtr<ActorInternalsHandler> handler,
-         base::FilePath trace_file,
-         std::unique_ptr<
-             actor::AggregatedJournalFileSerializer> /*serializer*/) {
+         base::FilePath trace_file) {
         if (handler) {
           handler->ShareTraceFile(trace_file);
         } else {
-          // Tab was closed before shutdown finished. Delete the orphaned file.
-          base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                                     base::GetDeleteFileCallback(trace_file));
+          // Tab was closed before the file was closed. Delete the orphaned
+          // file.
+          PostDeleteTraceFile(trace_file);
         }
       },
-      weak_ptr_factory_.GetWeakPtr(), trace_file, std::move(serializer))));
+      weak_ptr_factory_.GetWeakPtr(), std::move(trace_file)));
 }
 
 void ActorInternalsHandler::WillAddJournalEntry(
@@ -139,7 +142,7 @@ void ActorInternalsHandler::WillAddJournalEntry(
 void ActorInternalsHandler::TraceFileInitDone(bool success) {
   if (!success) {
     // If initialization fails, clean up the temporary file and reset state.
-    Shutdown(std::move(file_journal_serializer_), current_trace_file_);
+    CloseTraceFile(base::BindOnce(&PostDeleteTraceFile, current_trace_file_));
     current_trace_file_.clear();
   }
 }
@@ -160,9 +163,7 @@ void ActorInternalsHandler::ShareTraceFile(base::FilePath trace_file) {
         NSError* activity_error) {
         // Capture file_url to avoid capturing C++ objects in Objective-C
         // blocks.
-        base::FilePath path = base::apple::NSURLToFilePath(file_url);
-        base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                                   base::GetDeleteFileCallback(path));
+        PostDeleteTraceFile(base::apple::NSURLToFilePath(file_url));
         if (weak_this) {
           weak_this->activity_view_controller_ = nil;
         }
@@ -176,6 +177,7 @@ void ActorInternalsHandler::ShareTraceFile(base::FilePath trace_file) {
     window = web_state->GetView().window;
   }
   if (!window) {
+    PostDeleteTraceFile(trace_file);
     return;
   }
 
@@ -183,8 +185,7 @@ void ActorInternalsHandler::ShareTraceFile(base::FilePath trace_file) {
   if (!top_view_controller || top_view_controller.presentedViewController) {
     // If a view controller is already presented, or if there is no root view
     // controller, do not present the share sheet.
-    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                               base::GetDeleteFileCallback(trace_file));
+    PostDeleteTraceFile(trace_file);
     return;
   }
   source_view = top_view_controller.view;
@@ -202,18 +203,16 @@ void ActorInternalsHandler::ShareTraceFile(base::FilePath trace_file) {
                                   completion:nil];
 }
 
-void ActorInternalsHandler::Shutdown(
-    std::unique_ptr<actor::AggregatedJournalFileSerializer> serializer,
-    base::FilePath file_for_cleanup) {
-  if (serializer) {
-    actor::AggregatedJournalFileSerializer* serializer_ptr = serializer.get();
-    serializer_ptr->Shutdown(base::BindOnce(
-        [](base::OnceClosure delete_file,
-           std::unique_ptr<
-               actor::AggregatedJournalFileSerializer> /*serializer*/) {
-          base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                                     std::move(delete_file));
-        },
-        base::GetDeleteFileCallback(file_for_cleanup), std::move(serializer)));
+void ActorInternalsHandler::CloseTraceFile(base::OnceClosure on_file_closed) {
+  if (!file_journal_serializer_) {
+    return;
   }
+  file_journal_serializer_->Shutdown(std::move(on_file_closed));
+  // The serializer holds a `SafeRef` to the profile-owned journal, so it must
+  // not be handed to a posted task: at termination the main thread no longer
+  // runs tasks and pending ones are destroyed after the profile, which trips
+  // the `SafeRef` in the serializer's destructor. Destroying it right away is
+  // safe since `SequenceBound::Reset()` enqueues the `FileWriter` destruction
+  // behind the `Shutdown()` call posted above.
+  file_journal_serializer_.reset();
 }
