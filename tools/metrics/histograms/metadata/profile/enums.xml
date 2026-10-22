@@ -577,13 +577,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Timeout: Sign in error"/>
 </enum>
 
+<!-- LINT.IfChange(ProfilePickerSignInProviderStep) -->
+
 <enum name="ProfilePickerSignInProviderStep">
   <int value="0" label="Switch to signin screen"/>
   <int value="1" label="Navigation to the Gaia blank page"/>
   <int value="2" label="Finish flow: SAML"/>
-  <int value="3" label="Finish flow: Sync conformation"/>
+  <int value="3" label="(Obsolete) Finish flow: Sync confirmation"/>
   <int value="4" label="Finish flow: History optin"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.cc:ProfilePickerSignInProviderStep) -->
 
 <!-- LINT.IfChange(ProfilePreviousExitStatus) -->
 

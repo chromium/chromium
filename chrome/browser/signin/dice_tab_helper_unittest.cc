@@ -95,7 +95,6 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
         signin_url_, access_point, reason,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
         /*record_signin_started_metrics=*/true,
-        DiceTabHelper::EnableSyncCallback(),
         DiceTabHelper::EnableHistorySyncOptinCallback(),
         DiceTabHelper::OnSigninHeaderReceived(),
         DiceTabHelper::ShowSigninErrorCallback());
@@ -215,7 +214,6 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
       signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       GURL(), /*record_signin_started_metrics=*/true,
-      DiceTabHelper::EnableSyncCallback(),
       DiceTabHelper::EnableHistorySyncOptinCallback(),
       DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::ShowSigninErrorCallback());
@@ -252,7 +250,6 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
       signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT, GURL(),
       /*record_signin_started_metrics=*/true,
-      DiceTabHelper::EnableSyncCallback(),
       DiceTabHelper::EnableHistorySyncOptinCallback(),
       DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::ShowSigninErrorCallback());
@@ -277,7 +274,6 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
       signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT, GURL(),
       /*record_signin_started_metrics=*/false,
-      DiceTabHelper::EnableSyncCallback(),
       DiceTabHelper::EnableHistorySyncOptinCallback(),
       DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::ShowSigninErrorCallback());
@@ -311,7 +307,6 @@ TEST_F(DiceTabHelperTest, AddSecondaryAccountMetrics) {
       signin_metrics::Reason::kAddSecondaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       GURL(), /*record_signin_started_metrics=*/true,
-      DiceTabHelper::EnableSyncCallback(),
       DiceTabHelper::EnableHistorySyncOptinCallback(),
       DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::ShowSigninErrorCallback());

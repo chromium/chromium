@@ -117,12 +117,6 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
   void FinishFlow(const CoreAccountInfo& account_info);
 
   // Callbacks for the `DiceTabHelper`. Calls `FinishFlow()`.
-  void FinishFlowInPickerWithSyncConfirmation(
-      Profile* profile,
-      signin_metrics::AccessPoint access_point,
-      signin_metrics::PromoAction promo_action,
-      content::WebContents* contents,
-      const CoreAccountInfo& account_info);
   void FinishFlowInPickerWithHistorySyncOptin(
       Profile* profile,
       content::WebContents* contents,
@@ -136,12 +130,12 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
 
   GURL BuildSigninURL() const;
 
-  // The sync confirmation screen is triggered by the `DiceTabHelper`. This can
-  // happen in two cases: in the picker for normal accounts, and  in the
-  // browser for SAML account.
+  // The post-sign-in history sync opt-in step is triggered by the
+  // `DiceTabHelper`. This can happen in two cases: in the picker for normal
+  // accounts, and in the browser for SAML accounts.
   enum class DiceTabHelperMode {
-    kInPicker,   // The sync confirmation screen opens in the picker.
-    kInBrowser,  // The sync confirmation screen opens in the browser.
+    kInPicker,   // The history sync opt-in screen opens in the picker.
+    kInBrowser,  // The history sync opt-in screen opens in the browser.
   };
 
   // Initializes or updates the `DiceTabHelper`.

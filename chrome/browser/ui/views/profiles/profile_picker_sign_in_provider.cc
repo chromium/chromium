@@ -57,15 +57,17 @@ constexpr char kProfilePickerSignInProviderStepHistogram[] =
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(ProfilePickerSignInProviderStep)
 enum class SigninProviderStep {
   kSwitchToSignin = 0,
   kGaiaBlankPageNavigation = 1,
   kFinishFlowSaml = 2,
-  kFinishFlowSyncConfirmation = 3,
+  // DEPRECATED: kFinishFlowSyncConfirmation = 3,
   kFinishFlowHistoryOptin = 4,
 
   kMaxValue = kFinishFlowHistoryOptin
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfilePickerSignInProviderStep)
 
 bool IsTwoFactorIntersitial(const GURL& url) {
   return base::StartsWith(url.spec(), chrome::kGoogleTwoFactorIntersitialURL);
@@ -235,8 +237,8 @@ void ProfilePickerSignInProvider::NavigationStateChanged(
     return;
   }
 
-  // Attach DiceTabHelper to `contents_` so that sync consent dialog appears
-  // after a successful sign-in.
+  // Update `DiceTabHelper` on `contents_` so that the history sync opt-in step
+  // opens in the browser after a successful SAML sign-in.
   base::UmaHistogramEnumeration(kProfilePickerSignInProviderStepHistogram,
                                 SigninProviderStep::kFinishFlowSaml);
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents_.get());
@@ -325,19 +327,6 @@ void ProfilePickerSignInProvider::FinishFlow(
                            StepSwitchFinishedCallback());
 }
 
-void ProfilePickerSignInProvider::FinishFlowInPickerWithSyncConfirmation(
-    Profile* profile,
-    signin_metrics::AccessPoint /*access_point*/,
-    signin_metrics::PromoAction /*promo_action*/,
-    content::WebContents* /*contents*/,
-    const CoreAccountInfo& account_info) {
-  CHECK_EQ(profile, profile_.get());
-  base::UmaHistogramEnumeration(
-      kProfilePickerSignInProviderStepHistogram,
-      SigninProviderStep::kFinishFlowSyncConfirmation);
-  FinishFlow(account_info);
-}
-
 void ProfilePickerSignInProvider::FinishFlowInPickerWithHistorySyncOptin(
     Profile* profile,
     content::WebContents* /*contents*/,
@@ -404,9 +393,6 @@ void ProfilePickerSignInProvider::InitializeOrUpdateDiceTabHelper(
           /*redirect_url=*/GURL(),
           /*record_signin_started_metrics=*/true,
           base::BindRepeating(&ProfilePickerSignInProvider::
-                                  FinishFlowInPickerWithSyncConfirmation,
-                              weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&ProfilePickerSignInProvider::
                                   FinishFlowInPickerWithHistorySyncOptin,
                               weak_ptr_factory_.GetWeakPtr()),
           DiceTabHelper::OnSigninHeaderReceived(),
@@ -420,8 +406,6 @@ void ProfilePickerSignInProvider::InitializeOrUpdateDiceTabHelper(
       // of Gaia).
       // Also triggered when a navigation outside of Gaia occurs (e.g. account
       // recovery in crbug.com/29524688).
-      helper.UpdateSyncCallback(
-          DiceTabHelper::GetEnableSyncCallbackForBrowser());
       helper.UpdateHistorySyncOptinCallback(
           DiceTabHelper::GetHistorySyncOptinCallbackForBrowser());
       helper.UpdateSigninErrorCallback(

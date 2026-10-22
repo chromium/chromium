@@ -58,7 +58,7 @@ TEST_F(SigninQRCodeInfoBarDelegateTest, AddAndRemoveOnStateChange) {
           signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
           GURL("https://redirect.com"),
           /*record_signin_started_metrics=*/false, base::DoNothing(),
-          base::DoNothing(), base::DoNothing(), base::DoNothing());
+          base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(
       DiceTabHelper::FromWebContents(web_contents())->IsChromeSigninPage());
 

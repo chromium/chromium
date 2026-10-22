@@ -6,37 +6,28 @@
 
 #include <memory>
 
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/signin/signin_view_controller.h"
-#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/service/sync_user_settings.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -57,41 +48,6 @@ void RecordDiceSyncHeaderTimeout(bool timeout) {
 // static
 base::TimeDelta DiceTabHelper::g_delay_before_interception_bubble_retry =
     base::Seconds(3);
-
-// static
-DiceTabHelper::EnableSyncCallback
-DiceTabHelper::GetEnableSyncCallbackForBrowser() {
-  return base::BindRepeating([](Profile* profile,
-                                signin_metrics::AccessPoint access_point,
-                                signin_metrics::PromoAction promo_action,
-                                content::WebContents* web_contents,
-                                const CoreAccountInfo& account_info) {
-    CHECK(profile, base::NotFatalUntil::M162);
-    BrowserWindowInterface* browser =
-        web_contents
-            ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-                  web_contents)
-            : ProfileBrowserCollection::GetForProfile(profile)
-                  ->GetLastActiveBrowser();
-    if (!browser) {
-      return;
-    }
-
-    bool is_sync_promo =
-        access_point ==
-            signin_metrics::AccessPoint::kProfileMenuPrimaryButton ||
-        access_point == signin_metrics::AccessPoint::kSettings ||
-        access_point == signin_metrics::AccessPoint::kSettingsYourSavedInfo;
-    TurnSyncOnHelper::SigninAbortedMode abort_mode =
-        is_sync_promo ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT
-                      : TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT;
-
-    // TurnSyncOnHelper is suicidal (it will kill itself once it
-    // finishes enabling sync).
-    new TurnSyncOnHelper(profile, browser, access_point, promo_action,
-                         account_info.account_id, abort_mode, is_sync_promo);
-  });
-}
 
 // static
 DiceTabHelper::EnableHistorySyncOptinCallback
@@ -179,7 +135,6 @@ void DiceTabHelper::InitializeSigninFlow(
     signin_metrics::PromoAction promo_action,
     const GURL& redirect_url,
     bool record_signin_started_metrics,
-    EnableSyncCallback enable_sync_callback,
     EnableHistorySyncOptinCallback history_sync_optin_callback,
     OnSigninHeaderReceived on_signin_header_received_callback,
     ShowSigninErrorCallback show_signin_error_callback) {
@@ -193,7 +148,6 @@ void DiceTabHelper::InitializeSigninFlow(
   state_->signin_access_point = access_point;
   state_->signin_promo_action = promo_action;
   state_->signin_reason = reason;
-  state_->enable_sync_callback = std::move(enable_sync_callback);
   state_->history_sync_optin_callback = std::move(history_sync_optin_callback);
   state_->on_signin_header_received_callback =
       std::move(on_signin_header_received_callback);
@@ -261,11 +215,6 @@ void DiceTabHelper::OnSigninFlowComplete() {
 void DiceTabHelper::OnTokenExchangeSuccess(
     base::OnceClosure retry_interception_bubble_callback) {
   StartInterceptionBubbleTimer(std::move(retry_interception_bubble_callback));
-}
-
-void DiceTabHelper::UpdateSyncCallback(
-    EnableSyncCallback enable_sync_callback) {
-  state_->enable_sync_callback = std::move(enable_sync_callback);
 }
 
 void DiceTabHelper::UpdateHistorySyncOptinCallback(

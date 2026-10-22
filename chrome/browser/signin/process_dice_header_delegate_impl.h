@@ -25,15 +25,6 @@ class SigninUIError;
 
 class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
  public:
-  // Callback starting Sync.
-  // This is similar to `DiceTabHelper::EnableSyncCallback` but is a once
-  // callback (vs repeating).
-  using EnableSyncCallback =
-      base::OnceCallback<void(Profile*,
-                              signin_metrics::AccessPoint,
-                              signin_metrics::PromoAction,
-                              content::WebContents*,
-                              const CoreAccountInfo&)>;
   // Callback starting History syncing.
   // This is similar to `DiceTabHelper::EnableHistorySyncOptinCallback` but is a
   // once callback (vs repeating).
@@ -65,9 +56,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
       content::WebContents* web_contents,
       bool is_chrome_signin_tab,
       signin_metrics::AccessPoint access_point,
-      signin_metrics::PromoAction promo_action,
       GURL redirect_url,
-      EnableSyncCallback enable_sync_callback,
       EnableHistorySyncOptinCallback history_sync_optin_callback,
       OnSigninHeaderReceived on_signin_header_received,
       ShowSigninErrorCallback show_signin_error_callback);
@@ -93,8 +82,6 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   void OnDiceSigninHeaderReceived() override;
 
  private:
-  // Returns true if sync should be enabled after the user signs in.
-  bool ShouldEnableSync();
   bool ShouldEnableHistorySync();
   void AttemptChromeSignin(CoreAccountId account_id);
   bool AttemptSettingPrimaryAccount(const CoreAccountInfo& account_info,
@@ -107,9 +94,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   const raw_ref<Profile> profile_;
   const bool is_chrome_signin_tab_;
   signin_metrics::AccessPoint access_point_;
-  const signin_metrics::PromoAction promo_action_;
   const GURL redirect_url_;
-  EnableSyncCallback enable_sync_callback_;
   EnableHistorySyncOptinCallback history_sync_optin_callback_;
   OnSigninHeaderReceived on_signin_header_received_;
   ShowSigninErrorCallback show_signin_error_callback_;

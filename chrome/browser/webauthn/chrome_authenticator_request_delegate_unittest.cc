@@ -989,7 +989,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, SigninQRCodeModelPopulation) {
           signin_metrics::Reason::kSigninPrimaryAccount,
           signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
           /*record_signin_started_metrics=*/false, base::DoNothing(),
-          base::DoNothing(), base::DoNothing(), base::DoNothing());
+          base::DoNothing(), base::DoNothing());
 
   // 2. Instantiate the delegate.
   MockCableDiscoveryFactory discovery_factory;
@@ -1044,7 +1044,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, MagiChromeForceHybridDiscovery) {
           signin_metrics::Reason::kSigninPrimaryAccount,
           signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
           /*record_signin_started_metrics=*/false, base::DoNothing(),
-          base::DoNothing(), base::DoNothing(), base::DoNothing());
+          base::DoNothing(), base::DoNothing());
 
   MockCableDiscoveryFactory discovery_factory;
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
@@ -1082,7 +1082,7 @@ class ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase
             signin_metrics::Reason::kSigninPrimaryAccount,
             signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
             /*record_signin_started_metrics=*/false, base::DoNothing(),
-            base::DoNothing(), base::DoNothing(), base::DoNothing());
+            base::DoNothing(), base::DoNothing());
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
