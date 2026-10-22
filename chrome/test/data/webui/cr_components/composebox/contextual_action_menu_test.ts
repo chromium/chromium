@@ -2495,34 +2495,6 @@ suite('ContextualActionMenu', () => {
         assertTrue(tabButton2.disabled);
       });
 
-  test('Recent tab suffix disabled state', async () => {
-    actionMenu.remove();
-    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
-    actionMenu.contextManagementInComposeboxEnabled = true;
-    const tabInfo = createTabSuggestion({
-      tabId: 1,
-      title: 'Recent Tab',
-    });
-    actionMenu.tabSuggestions = [tabInfo];
-    actionMenu.recentTabId = tabInfo.tabId;
-    actionMenu.inputState = new MockInputState({
-      allowedInputTypes: [InputType.kBrowserTab],
-      disabledInputTypes: [InputType.kBrowserTab],
-    });
-    document.body.appendChild(actionMenu);
-    await microtasksFinished();
-
-    actionMenu.showAt(actionMenu);
-    await microtasksFinished();
-
-    actionMenu.shareTabsFlyoutOpen = true;
-    await actionMenu.updateComplete;
-
-    const suffix = $$(actionMenu, '.recent-tabs-suffix');
-    assertTrue(isVisible(suffix));
-    assertTrue(suffix!.hasAttribute('disabled'));
-  });
-
   test('Share tabs trigger disabled when tab upload disabled', async () => {
     actionMenu.remove();
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
@@ -2750,132 +2722,6 @@ suite('ContextualActionMenu', () => {
         assertTrue(actionMenu.$.menu.open);
       });
 
-  test(
-      'Recent tab suffix follows the correct tab after reordering',
-      async () => {
-        const tab1 = createTabSuggestion({
-          tabId: 1,
-          title: 'Tab 1',
-          url: 'about:blank/1',
-        });
-        const tab2 = createTabSuggestion({
-          tabId: 2,
-          title: 'Tab 2',
-          url: 'about:blank/2',
-        });
-
-        loadTimeData.overrideValues({
-          composeboxContextMenuEnableMultiTabSelection: true,
-        });
-        actionMenu.remove();
-        actionMenu =
-            document.createElement('cr-composebox-contextual-action-menu');
-        actionMenu.contextManagementInComposeboxEnabled = true;
-
-        actionMenu.inputState = new MockInputState({
-          allowedInputTypes: [InputType.kBrowserTab],
-          toolsSectionConfig: {header: ''},
-          modelSectionConfig: {header: ''},
-        });
-
-        // Backend initially provides Tab 1 as the first (most recent) item.
-        actionMenu.tabSuggestions = [tab1, tab2];
-        actionMenu.recentTabId = tab1.tabId;
-        document.body.appendChild(actionMenu);
-
-        actionMenu.showAt(actionMenu);
-        await microtasksFinished();
-        await actionMenu.updateComplete;
-
-        // Precisely target only the tab items inside the Flyout.
-        const getFlyoutItems = () => {
-          return actionMenu.shadowRoot.querySelectorAll(
-              '.share-tabs-flyout .dropdown-item');
-        };
-
-        let items = getFlyoutItems();
-        assertEquals(2, items.length, 'The flyout menu should render 2 tabs');
-
-        // Verify Tab 1 (index 0 in flyout) has the suffix and Tab 2 (index 1)
-        // does not.
-        assertTrue(
-            !!items[0]?.querySelector('.recent-tabs-suffix'),
-            'Tab 1 should have a suffix initially');
-        assertFalse(
-            !!items[1]?.querySelector('.recent-tabs-suffix'),
-            'Tab 2 should not have a suffix initially');
-
-        // Simulate frontend re-sorting (Tab 2 moved to index 0)
-        actionMenu.tabSuggestions = [tab2, tab1];
-
-        actionMenu.requestUpdate();
-        await microtasksFinished();
-        await actionMenu.updateComplete;
-
-        // Allow a small amount of time for the Lit render tree to sync.
-        await new Promise(resolve => setTimeout(resolve, 0));
-
-        // Re-fetch the latest items inside the Flyout.
-        items = getFlyoutItems();
-        assertEquals(2, items.length);
-
-        // The new index 0 (Tab 2) should NOT have the suffix.
-        assertFalse(
-            !!items[0]?.querySelector('.recent-tabs-suffix'),
-            'Tab 2 should not have a suffix after reordering');
-
-        // The suffix should still be on Tab 1, now at index 1.
-        assertTrue(
-            !!items[1]?.querySelector('.recent-tabs-suffix'),
-            'Tab 1 should retain the suffix after reordering');
-      });
-
-  test(
-      'Dynamic suffix shows Current Tab only in Side Panel Contextual Tasks',
-      async () => {
-        actionMenu.remove();
-        actionMenu =
-            document.createElement('cr-composebox-contextual-action-menu');
-        actionMenu.contextManagementInComposeboxEnabled = true;
-
-        const tabInfo = createTabSuggestion({
-          tabId: 1,
-          title: 'Google Docs',
-        });
-        actionMenu.tabSuggestions = [tabInfo];
-        actionMenu.recentTabId = tabInfo.tabId;
-        actionMenu.inputState = new MockInputState({
-          allowedInputTypes: [InputType.kBrowserTab],
-        });
-
-        document.body.appendChild(actionMenu);
-        await microtasksFinished();
-
-        actionMenu.showAt(actionMenu);
-        await microtasksFinished();
-
-        const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
-        trigger.dispatchEvent(new PointerEvent('pointerenter'));
-        await microtasksFinished();
-
-        const suffix = $$(actionMenu, '.recent-tabs-suffix') as HTMLElement;
-        assertTrue(isVisible(suffix), 'Suffix should be visible');
-
-        actionMenu.isSidePanel = true;
-        await microtasksFinished();
-        assertEquals(
-            `· ${actionMenu.i18n('currentTabSuffix')}`,
-            suffix.textContent.trim(),
-            'Should render "Current tab" in side panel contextual tasks');
-
-        actionMenu.isSidePanel = false;
-        await microtasksFinished();
-        assertEquals(
-            `· ${actionMenu.i18n('recentTabsSuffix')}`,
-            suffix.textContent.trim(),
-            'Should fall back to "Recent tab" on the NTP');
-      });
-
   suite('SingleTabMenuItem', () => {
     let metrics: MetricsTracker;
 
@@ -2939,8 +2785,6 @@ suite('ContextualActionMenu', () => {
       assertEquals(
           recentTab.title,
           item.querySelector('.tab-title')!.textContent.trim());
-      // No "Recent"/"Current tab" suffix on the standalone row.
-      assertFalse(!!item.querySelector('.recent-tabs-suffix'));
       assertFalse(!!item.querySelector('.share-tabs-check'));
       const favicon = item.querySelector('cr-composebox-tab-favicon');
       assertTrue(!!favicon);
@@ -2958,7 +2802,6 @@ suite('ContextualActionMenu', () => {
       const flyoutItems = actionMenu.shadowRoot.querySelectorAll(
           '.share-tabs-flyout .dropdown-item');
       assertEquals(2, flyoutItems.length);
-      assertTrue(!!flyoutItems[0]!.querySelector('.recent-tabs-suffix'));
     });
 
     test('Item hidden when the recent tab is not a suggestion', async () => {

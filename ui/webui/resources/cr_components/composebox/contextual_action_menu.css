@@ -356,36 +356,6 @@ composebox-favicon-group {
   width: 100% !important;
 }
 
-.tab-title-group {
-  align-items: center;
-  display: flex;
-  flex: 1 1 auto;
-  gap: 4px;
-  min-width: 0;
-}
-
-.tab-title-group .tab-title {
-  min-width: 0;
-}
-
-.recent-tabs-suffix {
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  font-family: var(--cr-composebox-context-menu-font-family, inherit);
-  font-size: 12px;
-  font-weight: 400;
-  height: 20px;
-  justify-content: flex-end;
-  line-height: var(--cr-composebox-context-menu-line-height, 18px);
-  white-space: nowrap;
-  width: 72px;
-}
-
-.recent-tabs-suffix[disabled] {
-  color: var(--color-composebox-context-entrypoint-text-disabled);
-}
-
 .share-tabs-check {
   --iron-icon-height: 16px;
   --iron-icon-width: 16px;
