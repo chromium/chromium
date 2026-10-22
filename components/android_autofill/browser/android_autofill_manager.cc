@@ -49,12 +49,19 @@ bool AndroidAutofillManager::ShouldClearPreviewedForm() {
 void AndroidAutofillManager::OnFormSubmittedImpl(
     const FormData& form,
     mojom::SubmissionSource source) {
-  address_logger_->OnWillSubmitForm();
-  loyalty_card_logger_->OnWillSubmitForm();
-  payments_logger_->OnWillSubmitForm();
-  password_logger_->OnWillSubmitForm();
-  if (auto* provider = GetAutofillProvider())
+  if (auto* provider = GetAutofillProvider()) {
     provider->OnFormSubmitted(this, form, source);
+  }
+  const FormStructure* submitted_form = FindCachedFormById(form.global_id());
+  if (!submitted_form) {
+    return;
+  }
+  for (FormType form_type :
+       submitted_form->GetFormTypes(GetAcUnrecognizedBehavior(client()))) {
+    if (auto* logger = GetEventFormLogger(form_type)) {
+      logger->OnWillSubmitForm();
+    }
+  }
 }
 
 void AndroidAutofillManager::OnTextFieldValueChangedImpl(
@@ -224,23 +231,13 @@ AndroidAutofillManager::GetCreditCardAccessManager() const {
   return nullptr;
 }
 
-FieldTypeGroup AndroidAutofillManager::ComputeFieldTypeGroupForField(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id) {
-  auto [form, field] = FindFormAndField(form_id, field_id);
-  if (!field) {
-    return FieldTypeGroup::kNoGroup;
-  }
-  return GroupTypeOfFieldType(GetMostRelevantFieldType(field->Type()));
-}
-
 void AndroidAutofillManager::FillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
     FormData form,
-    FieldTypeGroup field_type_group,
     const url::Origin& triggered_origin) {
   DCHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
 
+  const FormGlobalId form_id = form.global_id();
   std::vector<FormFieldData> fields = form.ExtractFields();
   std::erase_if(fields, [&](const FormFieldData& field) {
     // The renderer doesn't fill such fields, and therefore they can be removed
@@ -261,9 +258,22 @@ void AndroidAutofillManager::FillOrPreviewForm(
                            fields, FillId::Create(),
                            /*supports_refill=*/false, triggered_origin,
                            field_type_map);
-  // We do not call OnAutofillProfileOrCreditCardFormFilled() because WebView
-  // doesn't have AutofillProfile or CreditCard.
-  if (auto* logger = GetEventFormLogger(field_type_group)) {
+  // WebView does not have visibility into what type of dataset the Android
+  // Autofill service used to fill the form, so it infers the affected loggers
+  // from the classified types of the filled `fields`. Looking at all filled
+  // fields ensures fills are still attributed when predictions arrive
+  // asynchronously after focus, when the trigger field itself is unclassified,
+  // or when a single fill populates multiple field groups. However, this
+  // remains an approximation and may call the wrong logger if a filled field
+  // was misclassified or has multiple possible types.
+  base::flat_set<AndroidFormEventLogger*> loggers;
+  for (const FormFieldData& field : fields) {
+    if (auto* logger = GetEventFormLogger(form_id, field.global_id())) {
+      loggers.insert(logger);
+    }
+  }
+  for (AndroidFormEventLogger* logger : loggers) {
+    logger->OnDidInteractWithAutofillableForm();
     logger->OnDidFillSuggestion();
   }
 }
@@ -290,12 +300,12 @@ void AndroidAutofillManager::StartNewLoggingSession() {
 AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id) {
-  return GetEventFormLogger(ComputeFieldTypeGroupForField(form_id, field_id));
-}
-
-AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
-    FieldTypeGroup group) {
-  return GetEventFormLogger(FieldTypeGroupToFormType(group));
+  auto [form, field] = FindFormAndField(form_id, field_id);
+  if (!field) {
+    return nullptr;
+  }
+  return GetEventFormLogger(FieldTypeGroupToFormType(
+      GroupTypeOfFieldType(GetMostRelevantFieldType(field->Type()))));
 }
 
 AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(

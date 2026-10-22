@@ -405,12 +405,7 @@ void AndroidAutofillProvider::UpdateCurrentField(
        field.datalist_options().empty())) {
     bridge_->HideDatalistPopup();
   }
-  session_state_->current_field = {
-      field.global_id(),
-      manager ? manager->ComputeFieldTypeGroupForField(form.global_id(),
-                                                       field.global_id())
-              : FieldTypeGroup::kNoGroup,
-      field.origin()};
+  session_state_->current_field = {field.global_id(), field.origin()};
 }
 
 void AndroidAutofillProvider::OnAutofillAvailable() {
@@ -422,7 +417,6 @@ void AndroidAutofillProvider::OnAutofillAvailable() {
     session_state_->form->UpdateFromJava();
     FillOrPreviewForm(session_state_->manager.get(),
                       session_state_->form->form(),
-                      session_state_->current_field.group,
                       session_state_->current_field.origin);
   }
 }

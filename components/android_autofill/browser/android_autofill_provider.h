@@ -309,7 +309,6 @@ class AndroidAutofillProvider : public AutofillProvider,
     // Information about a field in an autofill session.
     struct CurrentFieldInfo {
       FieldGlobalId id;
-      FieldTypeGroup group = {FieldTypeGroup::kNoGroup};
       url::Origin origin;
     };
 

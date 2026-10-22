@@ -73,9 +73,6 @@ class AndroidAutofillManager : public AutofillManager,
     return forms_with_server_predictions_.contains(form);
   }
 
-  FieldTypeGroup ComputeFieldTypeGroupForField(const FormGlobalId& form_id,
-                                               const FieldGlobalId& field_id);
-
   // Send the |form| to the renderer for the specified |action|.
   //
   // |triggered_origin| is the origin of the field from which the autofill is
@@ -83,7 +80,6 @@ class AndroidAutofillManager : public AutofillManager,
   // AutofillDriver::FillOrPreviewForm() for further details.
   void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
                          FormData form,
-                         const FieldTypeGroup field_type_group,
                          const url::Origin& triggered_origin);
 
  protected:
@@ -159,9 +155,6 @@ class AndroidAutofillManager : public AutofillManager,
   // Returns logger associated with the passed-in `form_id` and `field_id`.
   AndroidFormEventLogger* GetEventFormLogger(const FormGlobalId& form_id,
                                              const FieldGlobalId& field_id);
-
-  // Returns logger associated with the passed-in `field_type_group`.
-  AndroidFormEventLogger* GetEventFormLogger(FieldTypeGroup field_type_group);
 
   // Returns logger associated with the passed-in `form_type`.
   AndroidFormEventLogger* GetEventFormLogger(FormType form_type);

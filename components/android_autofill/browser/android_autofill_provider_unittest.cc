@@ -695,6 +695,97 @@ TEST_F(AndroidAutofillProviderTest, OnFormSubmitted) {
       AutofillManagerTestApi::pass_key());
 }
 
+// Tests that submitting a form only records submission metrics for loggers
+// matching the submitted form's FormTypes, and does not falsely log
+// FillingAssistance=false for other forms interacted with on the same page.
+TEST_F(AndroidAutofillProviderTest,
+       OnFormSubmittedOnlyLogsMetricsForSubmittedFormTypes) {
+  base::HistogramTester histogram_tester;
+
+  FormData address_form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  FormData credit_card_form = CreateFormDataForFrame(
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true),
+      main_frame_token());
+  android_autofill_manager().OnFormsSeen({address_form, credit_card_form},
+                                         /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // Interact with the credit card form first, then switch to the address form.
+  android_autofill_manager().OnAskForValuesToFillTest(
+      credit_card_form, credit_card_form.fields()[0].global_id());
+  android_autofill_manager().OnAskForValuesToFillTest(
+      address_form, address_form.fields()[0].global_id());
+
+  // Autofill the address form and submit only the address form.
+  FormData filled_address_form = address_form;
+  test_api(filled_address_form)
+      .field(0)
+      .set_is_autofilled_according_to_renderer(true);
+  test_api(filled_address_form).field(0).set_value(u"Jane");
+  android_autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, filled_address_form,
+      address_form.main_frame_origin());
+
+  android_autofill_manager().OnFormSubmitted(
+      address_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.CreditCard", 0);
+}
+
+// Tests that FillOrPreviewForm attributes the fill to all FieldTypeGroups
+// present in the filled fields when a single form spans multiple groups.
+TEST_F(AndroidAutofillProviderTest,
+       FillOrPreviewFormAttributesAllFilledFieldTypeGroups) {
+  base::HistogramTester histogram_tester;
+
+  FormData combined_form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  FormData cc_form = CreateFormDataForFrame(
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true),
+      main_frame_token());
+  std::vector<FormFieldData> combined_fields = combined_form.fields();
+  combined_fields.insert(combined_fields.end(), cc_form.fields().begin(),
+                         cc_form.fields().end());
+  combined_form.set_fields(std::move(combined_fields));
+
+  android_autofill_manager().OnFormsSeen({combined_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // User triggers autofill from the first (Address) field and the autofill
+  // service populates both an Address field and a CreditCard field.
+  android_autofill_manager().OnAskForValuesToFillTest(
+      combined_form, combined_form.fields()[0].global_id());
+
+  FormData filled_form = combined_form;
+  test_api(filled_form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(filled_form).field(0).set_value(u"Jane");
+  const size_t cc_field_index =
+      CreateTestPersonalInformationFormData().fields().size();
+  test_api(filled_form)
+      .field(cc_field_index)
+      .set_is_autofilled_according_to_renderer(true);
+  test_api(filled_form).field(cc_field_index).set_value(u"Jane Doe");
+  android_autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, filled_form,
+      combined_form.main_frame_origin());
+
+  android_autofill_manager().OnFormSubmitted(
+      combined_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.Address", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAssistance.CreditCard", true, 1);
+}
+
 // Tests that a form submission of an ongoing Autofill session with source
 // DOM_MUTATION_AFTER_AUTOFILL is propagated to Java for password forms.
 TEST_F(AndroidAutofillProviderTest,

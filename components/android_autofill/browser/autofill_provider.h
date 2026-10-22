@@ -71,7 +71,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
 
   void FillOrPreviewForm(AndroidAutofillManager* manager,
                          const FormData& form_data,
-                         FieldTypeGroup field_type_group,
                          const url::Origin& triggered_origin);
 
   // Notifies the renderer should accept the datalist suggestion given by
