@@ -459,6 +459,17 @@ void RemoveInfoBarWithoutResult(infobars::InfoBarManager* manager,
   manager->RemoveInfoBar(infobar);
 }
 
+// Returns the browser whose tab shows `infobar`, if any.
+BrowserWindowInterface* BrowserForInfoBar(infobars::InfoBar* infobar) {
+  content::WebContents* web_contents =
+      static_cast<RegistryInfoBarDelegate*>(infobar->delegate())
+          ->web_contents();
+  tabs::TabInterface* tab =
+      web_contents ? tabs::TabInterface::MaybeGetFromContents(web_contents)
+                   : nullptr;
+  return tab ? tab->GetBrowserWindowInterface() : nullptr;
+}
+
 }  // namespace
 
 DEFINE_USER_DATA(BrowserInfoBarManager);
@@ -523,6 +534,7 @@ infobars::InfoBar* BrowserInfoBarManager::Show(
           it->second, contents, std::move(params), *this))) {
     static_cast<RegistryInfoBarDelegate*>(added_infobar->delegate())
         ->set_shown();
+    TrackTabInstance(added_infobar);
     base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
     return added_infobar;
   }
@@ -559,6 +571,7 @@ infobars::InfoBar* BrowserInfoBarManager::Replace(
                                             std::move(params), *this))) {
     static_cast<RegistryInfoBarDelegate*>(replaced_infobar->delegate())
         ->set_shown();
+    TrackTabInstance(replaced_infobar);
     return replaced_infobar;
   }
   return nullptr;
@@ -661,12 +674,39 @@ void BrowserInfoBarManager::Hide(infobars::InfoBar* infobar) {
 }
 
 void BrowserInfoBarManager::Hide(
-    infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
+    infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+    const InfoBarSpec::BrowserFilter& browser_filter) {
   auto it = registered_specs_.find(identifier);
   if (it == registered_specs_.end()) {
     return;
   }
-  CHECK(it->second.scope() == InfoBarScope::kGlobal);
+
+  if (it->second.scope() == InfoBarScope::kTab) {
+    // Removal drops instances from `active_tab_infobars_`, so iterate a copy.
+    const std::vector<infobars::InfoBar*> instances(
+        active_tab_infobars_.begin(), active_tab_infobars_.end());
+    for (infobars::InfoBar* infobar : instances) {
+      // A removal can take other instances with it, so check the set, which
+      // removals keep current, before touching one.
+      if (!active_tab_infobars_.contains(infobar) ||
+          infobar->delegate()->GetIdentifier() != identifier) {
+        continue;
+      }
+
+      if (browser_filter) {
+        BrowserWindowInterface* browser = BrowserForInfoBar(infobar);
+        if (!browser || !browser_filter.Run(browser)) {
+          continue;
+        }
+      }
+
+      Hide(infobar);
+    }
+    return;
+  }
+
+  // A global infobar is hidden everywhere.
+  CHECK(!browser_filter);
 
   auto active_it = active_global_infobars_.find(identifier);
   if (active_it != active_global_infobars_.end()) {
@@ -697,6 +737,8 @@ void BrowserInfoBarManager::OnBrowserClosed(BrowserWindowInterface* browser) {
 
 void BrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                              bool animate) {
+  active_tab_infobars_.erase(infobar);
+
   // Only tracked instances matter here. Everything in
   // `active_global_infobars_` was put there by ShowGlobally(), which only
   // accepts global specs, so membership is the scope check.
@@ -750,6 +792,11 @@ void BrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
     static_cast<RegistryInfoBarDelegate*>(infobar->delegate())
         ->set_shown(std::exchange(it->second.pending_result, std::nullopt));
   }
+}
+
+void BrowserInfoBarManager::OnInfoBarReplaced(infobars::InfoBar* old_infobar,
+                                              infobars::InfoBar* new_infobar) {
+  active_tab_infobars_.erase(old_infobar);
 }
 
 void BrowserInfoBarManager::OnManagerWillBeDestroyed(
@@ -829,6 +876,15 @@ void BrowserInfoBarManager::OnActiveTabChanged(
   }
 
   last_active_managers_[browser] = new_manager;
+}
+
+void BrowserInfoBarManager::TrackTabInstance(infobars::InfoBar* infobar) {
+  active_tab_infobars_.insert(infobar);
+  infobars::InfoBarManager* manager = infobar->owner();
+
+  if (!infobar_manager_observations_.IsObservingSource(manager)) {
+    infobar_manager_observations_.AddObservation(manager);
+  }
 }
 
 bool BrowserInfoBarManager::IsTrackedGlobalInstance(

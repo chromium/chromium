@@ -135,6 +135,50 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   EXPECT_EQ(0u, infobar_manager->infobars().size());
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       HideByIdentifierReachesEveryTab) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Test Message")
+                          .SetScope(InfoBarScope::kTab)
+                          .Build());
+
+  tabs::TabInterface* background_tab =
+      browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(manager()->Show(background_tab, identifier));
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/true);
+  tabs::TabInterface* active_tab =
+      browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_NE(background_tab, active_tab);
+  ASSERT_TRUE(manager()->Show(active_tab, identifier));
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  tabs::TabInterface* other_window_tab =
+      browser2->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(manager()->Show(other_window_tab, identifier));
+
+  auto count = [](tabs::TabInterface* tab) {
+    return ContentInfoBarManager::FromWebContents(tab->GetContents())
+        ->infobars()
+        .size();
+  };
+
+  ASSERT_EQ(1u, count(background_tab));
+  ASSERT_EQ(1u, count(active_tab));
+  ASSERT_EQ(1u, count(other_window_tab));
+
+  manager()->Hide(identifier,
+                  base::BindLambdaForTesting([&](BrowserWindowInterface* b) {
+                    return b == browser2;
+                  }));
+  EXPECT_EQ(1u, count(background_tab));
+  EXPECT_EQ(1u, count(active_tab));
+  EXPECT_EQ(0u, count(other_window_tab));
+
+  manager()->Hide(identifier);
+  EXPECT_EQ(0u, count(background_tab));
+  EXPECT_EQ(0u, count(active_tab));
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, ButtonConfiguration) {
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;
   bool ok_called = false;

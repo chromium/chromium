@@ -79,8 +79,10 @@ class InfoBarSpec {
   // then, in which case it is null.
   using ResultCallback =
       base::RepeatingCallback<void(content::WebContents*, InfoBarResult)>;
-  // Returns true if the infobar may be shown in the given browser. Only
-  // consulted for InfoBarScope::kGlobal.
+  // Returns true if the infobar applies to the given browser. A spec's own
+  // filter is only consulted for InfoBarScope::kGlobal.
+  // BrowserInfoBarManager::Hide(identifier, filter) takes one to limit which
+  // browsers' kTab instances it hides.
   using BrowserFilter = base::RepeatingCallback<bool(BrowserWindowInterface*)>;
 
   class Builder;

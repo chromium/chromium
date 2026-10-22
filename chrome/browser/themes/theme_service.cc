@@ -1033,6 +1033,31 @@ void ThemeService::NotifyThemeChanged() {
     return;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE)) {
+    // The theme installed infobar offers to undo the install of the current
+    // theme, so it is stale once another theme is current, wherever it is
+    // showing.
+    const std::string theme_id = GetThemeID();
+
+    if (theme_id != notified_theme_id_) {
+      notified_theme_id_ = theme_id;
+      auto* browser_infobar_manager =
+          infobars::BrowserInfoBarManager::From(g_browser_process);
+      CHECK(browser_infobar_manager);
+
+      browser_infobar_manager->Hide(
+          infobars::InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE,
+          base::BindRepeating(
+              [](Profile* profile, BrowserWindowInterface* browser) {
+                return browser->GetProfile()->GetOriginalProfile() == profile;
+              },
+              profile_.get()));
+    }
+  }
+#endif
+
   // Redraw and notify sync that theme has changed.
   for (auto& observer : observers_) {
     observer.OnThemeChanged();

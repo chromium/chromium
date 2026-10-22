@@ -311,7 +311,14 @@ class ThemeService : public KeyedService,
 
   Profile* profile() const { return profile_; }
 
-  void set_ready() { ready_ = true; }
+  void set_ready() {
+    ready_ = true;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    if (profile_) {
+      notified_theme_id_ = GetThemeID();
+    }
+#endif
+  }
 
   // True if the theme service is ready to be used.
   // TODO(pkotwicz): Add DCHECKS to the theme service's getters once
@@ -459,6 +466,12 @@ class ThemeService : public KeyedService,
   // We hold onto this just to be sure not to uninstall the extension view
   // RemoveUnusedThemes while it's still being built.
   std::string building_extension_id_;
+
+  // The theme ID the observers were last notified of, starting from the one
+  // current when the service became ready. Tells a switch to another theme,
+  // which closes the theme installed infobar, from a change to the current
+  // theme, which keeps it.
+  std::string notified_theme_id_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_ = nullptr;

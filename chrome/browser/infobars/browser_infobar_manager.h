@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "base/callback_list.h"
 #include "base/scoped_multi_source_observation.h"
@@ -89,8 +90,15 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // if the infobar is already closing.
   void Hide(infobars::InfoBar* infobar);
 
-  // Hides the global infobar in every browser window.
-  void Hide(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
+  // Hides the infobar everywhere. For `InfoBarScope::kGlobal` scope, it is
+  // every mirrored instance, and the infobar stops appearing in new windows
+  // and tabs. For `InfoBarScope::kTab` scope, it is every instance that
+  // `Show()` or `Replace()` added and that is still showing, in any tab of any
+  // browser. The `browser_filter` only applies to `kTab` scope and limits the
+  // hiding to the browsers it accepts.
+  void Hide(infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+            const InfoBarSpec::BrowserFilter& browser_filter =
+                InfoBarSpec::BrowserFilter());
 
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
@@ -98,6 +106,8 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
 
   // infobars::InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
+  void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
+                         infobars::InfoBar* new_infobar) override;
   void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
  private:
@@ -105,6 +115,11 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
 
   void OnActiveTabChanged(BrowserWindowInterface* browser);
   bool IsTrackedGlobalInstance(infobars::InfoBar* infobar) const;
+
+  // Records a tab-scoped `infobar` that was just added, so that
+  // Hide(identifier) can reach it, and observes its InfoBarManager to known
+  // when it goes away.
+  void TrackTabInstance(infobars::InfoBar* infobar);
 
   ui::ScopedUnownedUserData<BrowserInfoBarManager> scoped_unowned_user_data_;
 
@@ -121,6 +136,11 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // Tracking for active global infobars and their instances.
   std::map<infobars::InfoBarDelegate::InfoBarIdentifier, GlobalInfoBarContext>
       active_global_infobars_;
+
+  // Tab-scoped instances added by Show() or Replace() that are still in their
+  // InfoBarManager. An instance leaves when it is removed or replaced, before
+  // it can be destroyed.
+  std::set<infobars::InfoBar*> active_tab_infobars_;
 
   // Track the last active tab's InfoBarManager for each browser.
   std::map<BrowserWindowInterface*, infobars::InfoBarManager*>

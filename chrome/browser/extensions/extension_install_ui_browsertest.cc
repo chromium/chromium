@@ -126,7 +126,41 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   ASSERT_EQ(nullptr, GetTheme());
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest, TestThemeReset) {
+  InstallThemeAndVerify("theme", "camo theme");
+
+  // Reset to default theme.
+  ThemeServiceFactory::GetForProfile(profile())->UseDefaultTheme();
+  ASSERT_FALSE(GetTheme());
+}
+
+// Flaky (http://crbug.com/41393682).
 IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
+                       DISABLED_TestInstallThemeInFullScreen) {
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_FULLSCREEN));
+  InstallThemeAndVerify("theme", "camo theme");
+}
+
+class ExtensionInstallUIThemeInfoBarBrowserTest
+    : public ExtensionInstallUIBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  ExtensionInstallUIThemeInfoBarBrowserTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{infobars::kMigratedThemeInstalled.name, "true"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          infobars::kCentralizedInfoBarFramework);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExtensionInstallUIThemeInfoBarBrowserTest,
                        TestThemeInstallUndoResetsToPreviousTheme) {
   // Install first theme.
   InstallThemeAndVerify("theme", "camo theme");
@@ -143,21 +177,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   EXPECT_EQ(theme, GetTheme());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
-                       TestThemeReset) {
-  InstallThemeAndVerify("theme", "camo theme");
-
-  // Reset to default theme.
-  ThemeServiceFactory::GetForProfile(profile())->UseDefaultTheme();
-  ASSERT_FALSE(GetTheme());
-}
-
-// Flaky (http://crbug.com/41393682).
-IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
-                       DISABLED_TestInstallThemeInFullScreen) {
-  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_FULLSCREEN));
-  InstallThemeAndVerify("theme", "camo theme");
-}
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionInstallUIThemeInfoBarBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Migrated" : "Legacy";
+                         });
 
 class ExtensionInstallUIInstallationErrorBrowserTest
     : public ExtensionInstallUIBrowserTest,
