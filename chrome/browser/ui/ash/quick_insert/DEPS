@@ -21,8 +21,6 @@ include_rules = [
   "+chrome/browser/ash/login/session",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/thumbnail_loader",
-  "+chrome/browser/ui/browser_window",
-  "+chrome/browser/ui/interaction",
   "+chrome/browser/ui/webui/ash/mako",
 ]
 
@@ -58,9 +56,13 @@ specific_include_rules = {
   # factory; production uses ash::HistoryServiceProvider.
   ".*(unittest|uitest)\\.cc": [
     "+chrome/browser/history",
+    "+chrome/browser/ui/interaction",
   ],
 
   "quick_insert_client_impl_unittest\\.cc": [
     "+chrome/browser/signin/identity_manager_factory.h",
+  ],
+  "(quick_insert_client_impl_browsertest\\.cc|quick_insert_interactive_uitest\\.cc)": [
+    "+chrome/browser/ui/browser_window",
   ],
 }
