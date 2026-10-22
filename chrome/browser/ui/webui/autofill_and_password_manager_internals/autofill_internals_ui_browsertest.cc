@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
+#include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,12 +17,16 @@
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -105,6 +113,99 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
   // Wait for dialog to disappear.
   while (EvalJs(kDialogTextVisible).ExtractBool()) {
     SpinRunLoop();
+  }
+}
+
+// Tests that every LoggingScope renders a filter checkbox and styled log entry,
+// and that toggling a scope checkbox hides and restores both its log entry and
+// preceding <hr> separator without affecting other scopes.
+IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ScopeFiltering) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://autofill-internals")));
+
+  static constexpr char kIsReadyScript[] =
+      "document.body.dataset.incognito === 'false' && "
+      "document.querySelectorAll("
+      "'#scopes-checkbox-placeholder input[type=checkbox]').length > 0";
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return EvalJs(kIsReadyScript).ExtractBool(); }));
+
+  static constexpr int kScopeCount =
+      static_cast<int>(autofill::LoggingScope::kLastScope);
+  EXPECT_EQ(
+      kScopeCount,
+      EvalJs("document.querySelectorAll("
+             "'#scopes-checkbox-placeholder input[type=checkbox]').length"));
+
+  ASSERT_TRUE(
+      ExecJs("document.getElementById('log-entries').replaceChildren();"));
+
+  autofill::LogRouter* log_router =
+      autofill::AutofillLogRouterFactory::GetForBrowserContext(GetProfile());
+  ASSERT_TRUE(log_router);
+  for (int i = 0; i < kScopeCount; ++i) {
+    const auto scope = static_cast<autofill::LoggingScope>(i);
+    autofill::LogBuffer buffer;
+    buffer << scope << autofill::LoggingScopeToString(scope);
+    std::optional<base::DictValue> entry = buffer.RetrieveResult();
+    ASSERT_TRUE(entry.has_value());
+    log_router->ProcessLog(*entry);
+  }
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs("document.querySelectorAll('#log-entries .log-entry').length")
+               .ExtractInt() == kScopeCount;
+  }));
+
+  static constexpr char kVerifyScopeFilterScript[] = R"(
+    (() => {
+      const scope = $1;
+      const checkbox = document.getElementById(scope);
+      const entry = document.querySelector(
+          '#log-entries .log-entry[scope="' + scope + '"]');
+      if (!checkbox || !checkbox.checked || !entry) {
+        return 'missing or unchecked initial state for ' + scope;
+      }
+      const hr = entry.previousElementSibling;
+      if (!hr || hr.tagName !== 'HR') {
+        return 'missing preceding <hr> for ' + scope;
+      }
+      if (getComputedStyle(entry).backgroundColor === 'rgba(0, 0, 0, 0)') {
+        return 'missing background-color style for ' + scope;
+      }
+      if (!entry.checkVisibility() || !hr.checkVisibility()) {
+        return 'initially hidden for ' + scope;
+      }
+
+      checkbox.click();
+      if (entry.checkVisibility() || hr.checkVisibility()) {
+        return 'still visible after unchecking ' + scope;
+      }
+      for (const other of document.querySelectorAll(
+               '#log-entries .log-entry')) {
+        if (other.getAttribute('scope') === scope) {
+          continue;
+        }
+        const otherHr = other.previousElementSibling;
+        if (!other.checkVisibility() || !otherHr.checkVisibility()) {
+          return 'unchecking ' + scope + ' hid ' + other.getAttribute('scope');
+        }
+      }
+
+      checkbox.click();
+      if (!entry.checkVisibility() || !hr.checkVisibility()) {
+        return 'failed to restore ' + scope + ' after re-checking';
+      }
+      return 'ok';
+    })()
+  )";
+
+  for (int i = 0; i < kScopeCount; ++i) {
+    const char* scope_name =
+        autofill::LoggingScopeToString(static_cast<autofill::LoggingScope>(i));
+    EXPECT_EQ("ok",
+              EvalJs(content::JsReplace(kVerifyScopeFilterScript, scope_name)))
+        << "Failed for scope: " << scope_name;
   }
 }
 

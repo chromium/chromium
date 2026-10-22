@@ -700,15 +700,19 @@ function setUpScopeCheckboxes() {
 
   // Create and initialize filter checkboxes: remove/add hide-<Scope> class to
   // |logDiv| when (un)checked.
+  // LINT.IfChange(LoggingScope)
   const SCOPES: CheckboxInfo[] = [
     {id: 'Context'},
     {id: 'Parsing'},
+    {id: 'Rationalization'},
     {id: 'AbortParsing'},
     {id: 'Filling'},
     {id: 'Submission'},
     {id: 'AutofillServer'},
     {id: 'Metrics'},
     {id: 'AddressProfileFormImport'},
+    {id: 'CreditCardUploadStatus'},
+    {id: 'CardUploadDecision'},
     {id: 'WebsiteModifiedFieldValue'},
     {id: 'TouchToFill'},
     {id: 'AutofillAi'},
@@ -716,6 +720,23 @@ function setUpScopeCheckboxes() {
     {id: 'OneTimeTokens'},
     {id: 'AtMemory'},
   ];
+  // LINT.ThenChange(
+  //     //components/autofill/core/common/autofill_internals/logging_scope.h:LoggingScope,
+  //     //components/autofill/core/browser/autofill_and_password_manager_internals/autofill_and_password_manager_internals.html:LoggingScope
+  // )
+
+  // Generate hide-<Scope> rules dynamically so every filter checkbox hides its
+  // matching log entries and the <hr> inserted immediately before each entry
+  // (inlined in <head> so HTML exports preserve active filter state).
+  const style = document.createElement('style');
+  style.textContent =
+      SCOPES
+          .map(
+              scope => `.hide-${scope.id} .log-entry[scope='${
+                  scope.id}'], .hide-${scope.id} hr:has(+ .log-entry[scope='${
+                  scope.id}']) { display: none; }`)
+          .join('\n');
+  document.head.appendChild(style);
 
   interface ScopeCheckbox {
     input: HTMLInputElement;
