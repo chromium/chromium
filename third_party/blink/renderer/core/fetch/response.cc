@@ -353,7 +353,9 @@ Response* Response::redirect(ScriptState* script_state,
                              const String& url,
                              uint16_t status,
                              ExceptionState& exception_state) {
-  KURL parsed_url = ExecutionContext::From(script_state)->CompleteURL(url);
+  // The URL parser always encodes as UTF-8, so don't use CompleteURL(), which
+  // uses the document's encoding.
+  KURL parsed_url(ExecutionContext::From(script_state)->BaseURL(), url);
   if (!parsed_url.IsValid()) {
     exception_state.ThrowTypeError(StrCat({"Failed to parse URL from ", url}));
     return nullptr;
