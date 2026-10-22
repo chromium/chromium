@@ -230,6 +230,25 @@ generate_grd("build_lens_chip_grdp") {
   deps = [ ":bundle_lens_chip" ]
 }
 
+bundle_js("bundle_color_scheme") {
+  host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
+  input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+  js_module_in_files = [ "color_scheme.js" ]
+  out_folder = "$target_gen_dir/color_scheme_bundled"
+  deps = [ ":build_ts" ]
+}
+
+generate_grd("build_color_scheme_grdp") {
+  grd_prefix = "contextual_tasks_extension"
+  out_grd = "$target_gen_dir/color_scheme_resources.grdp"
+  resource_path_prefix = "contextual_tasks_extension"
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [ "color_scheme_bundled/color_scheme.rollup.js" ]
+  resource_path_rewrites =
+      [ "color_scheme_bundled/color_scheme.rollup.js|color_scheme.js" ]
+  deps = [ ":bundle_color_scheme" ]
+}
+
 build_webui("build") {
   grd_prefix = "contextual_tasks_extension"
   grd_resource_path_prefix = "contextual_tasks_extension"
@@ -247,18 +266,21 @@ build_webui("build") {
 
   extra_grdp_deps = [
     ":build_background_grdp",
+    ":build_color_scheme_grdp",
     ":build_lens_chip_grdp",
     ":build_post_message_handler_grdp",
     ":build_tab_picker_grdp",
   ]
   extra_grdp_files = [
     "$target_gen_dir/background_resources.grdp",
+    "$target_gen_dir/color_scheme_resources.grdp",
     "$target_gen_dir/lens_chip_resources.grdp",
     "$target_gen_dir/post_message_handler_resources.grdp",
     "$target_gen_dir/tab_picker_resources.grdp",
   ]
 
   ts_files = [
+    "color_scheme.ts",
     "context_library.html.ts",
     "context_library.ts",
     "lens_button_app.html.ts",

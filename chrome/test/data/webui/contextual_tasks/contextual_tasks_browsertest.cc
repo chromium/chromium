@@ -27,16 +27,21 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include <cstddef>
 #include <string>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/common/constants.h"
@@ -44,7 +49,11 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/compositor/compositor_switches.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
+#include "url/gurl.h"
 #endif
 
 class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
@@ -287,10 +296,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, ContextLibrary) {
   RunTest("contextual_tasks/context_library_test.js", "mocha.run();");
 }
 
-class ContextualTasksForcedDarkModeBrowserTest
+class ContextualTasksExtensionBrowserTestBase
     : public ContextualTasksBrowserTest {
  protected:
-  ContextualTasksForcedDarkModeBrowserTest() {
+  ContextualTasksExtensionBrowserTestBase() {
+    EnablePixelOutput();
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
     extension_feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasksRearchitecture,
@@ -299,14 +309,226 @@ class ContextualTasksForcedDarkModeBrowserTest
         {});
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContextualTasksBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kForceDarkMode);
-    command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
+  void VerifyEmbeddedExtensionIframesStayTransparentForHostPage(
+      const std::string& host_page_url,
+      bool expected_browser_dark_mode,
+      bool search_dark_mode) {
+    // Google Search omits `<meta name="color-scheme">` in light mode (`cs=0`),
+    // and emits `<meta content="dark light" name="color-scheme">` in dark mode
+    // (`cs=1`). Use non-white / non-#121212 host container colors so composited
+    // pixel readback catches both white (#FFFFFF) and dark (#121212)
+    // color-adjust canvas backgrounds.
+    const SkColor expected_surface_color = search_dark_mode
+                                               ? SkColorSetRGB(44, 46, 54)
+                                               : SkColorSetRGB(240, 244, 249);
+    const std::string surface_css_color =
+        search_dark_mode ? "rgb(44, 46, 54)" : "rgb(240, 244, 249)";
+    const std::string meta_tag =
+        search_dark_mode ? "<meta content='dark light' name='color-scheme'>"
+                         : "";
+    const std::string cs_param = search_dark_mode ? "1" : "0";
+    // Use distinct sentinel colors per `search_dark_mode` pass so sequential
+    // same-tab navigations never match a stale held compositor frame.
+    const SkColor ready_sentinel_color = search_dark_mode
+                                             ? SkColorSetRGB(0, 176, 255)
+                                             : SkColorSetRGB(0, 200, 83);
+    const char* ready_sentinel_css =
+        search_dark_mode ? "rgb(0, 176, 255)" : "rgb(0, 200, 83)";
+
+    std::string host_page_html = base::ReplaceStringPlaceholders(
+        "<!DOCTYPE html>"
+        "<html><head>$1<style>"
+        "html, body { margin: 0; padding: 0; background: $2; }"
+        ".surface {"
+        "  position: fixed; top: 40px; width: 80px; height: 80px;"
+        "  background: $2;"
+        "}"
+        "iframe { border: 0; display: block; pointer-events: none; }"
+        "</style></head><body>"
+        "<div class='surface' style='left: 40px;'>"
+        "  <iframe width='80' height='80' "
+        "src='chrome-extension://$3/tab_picker.html?cs=$4'></iframe>"
+        "</div>"
+        "<div class='surface' style='left: 130px;'>"
+        "  <iframe width='80' height='80' "
+        "src='chrome-extension://$3/context_library.html?cs=$4'></iframe>"
+        "</div>"
+        "<div class='surface' style='left: 220px;'>"
+        "  <iframe width='80' height='80' "
+        "src='chrome-extension://$3/lens_button.html?cs=$4'></iframe>"
+        "</div>"
+        "<div class='surface' style='left: 310px;'>"
+        "  <iframe width='80' height='80' "
+        "src='chrome-extension://$3/lens_chip.html?cs=$4'></iframe>"
+        "</div>"
+        "</body></html>",
+        {meta_tag, surface_css_color,
+         extension_misc::kContextualTasksExtensionId, cs_param},
+        nullptr);
+
+    content::URLLoaderInterceptor interceptor(base::BindRepeating(
+        [](const std::string& expected_url, const std::string& html,
+           content::URLLoaderInterceptor::RequestParams* params) {
+          if (params->url_request.url.spec() != expected_url) {
+            return false;
+          }
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n\n",
+              html, params->client.get());
+          return true;
+        },
+        host_page_url, std::move(host_page_html)));
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(host_page_url)));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+
+    struct FrameExpectation {
+      size_t child_index;
+      const char* tag_name;
+      int left_dip;
+    };
+    constexpr FrameExpectation kExpectations[] = {
+        {0, "tab-picker-app", 40},
+        {1, "context-library", 130},
+        {2, "lens-button-app", 220},
+        {3, "lens-chip-app", 310},
+    };
+
+    for (const auto& expectation : kExpectations) {
+      content::RenderFrameHost* child_rfh =
+          content::ChildFrameAt(main_rfh, expectation.child_index);
+      ASSERT_NE(child_rfh, nullptr);
+      ASSERT_TRUE(content::WaitForRenderFrameReady(child_rfh));
+
+      EXPECT_EQ(
+          expected_browser_dark_mode,
+          content::EvalJs(
+              child_rfh,
+              "window.matchMedia('(prefers-color-scheme: dark)').matches"));
+      EXPECT_EQ(
+          search_dark_mode,
+          content::EvalJs(
+              child_rfh, "document.documentElement.hasAttribute('dark-mode')"));
+      EXPECT_EQ(search_dark_mode ? "light dark" : "light",
+                content::EvalJs(
+                    child_rfh,
+                    "getComputedStyle(document.documentElement).colorScheme"));
+
+      // Verify the custom element's resolved scheme, suppress hover/focus
+      // backgrounds, and paint a per-pass bottom sentinel strip so readback
+      // waits until Viz aggregates every new cross-process extension surface.
+      const std::string prepare_frame_js = content::JsReplace(
+          R"js(
+            (async () => {
+              await customElements.whenDefined($1);
+              const el = document.querySelector($1);
+              if ('updateComplete' in el) {
+                await el.updateComplete;
+              }
+              document.activeElement?.blur?.();
+              el.shadowRoot?.activeElement?.blur?.();
+              el.style.pointerEvents = 'none';
+              el.style.setProperty('--cr-focus-outline-color', 'transparent');
+              el.style.setProperty(
+                  '--tab-picker-hover-background-color', 'transparent');
+              const marker = document.createElement('div');
+              marker.style.cssText =
+                  'position:fixed;left:0;bottom:0;width:100%;height:20px;' +
+                  'pointer-events:none;background:' + $2 + ';';
+              document.body.appendChild(marker);
+              return {
+                hasDarkAttr: el.hasAttribute('dark-mode'),
+                colorScheme: getComputedStyle(el).colorScheme,
+              };
+            })()
+          )js",
+          expectation.tag_name, ready_sentinel_css);
+      content::EvalJsResult eval_result =
+          content::EvalJs(child_rfh, prepare_frame_js);
+      const base::DictValue& result = eval_result.ExtractDict();
+      EXPECT_EQ(search_dark_mode, result.FindBool("hasDarkAttr"))
+          << expectation.tag_name;
+      EXPECT_EQ(search_dark_mode ? "dark" : "light",
+                *result.FindString("colorScheme"))
+          << expectation.tag_name;
+    }
+
+    content::RenderWidgetHostView* view = main_rfh->GetView();
+    ASSERT_NE(view, nullptr);
+    const float scale = view->GetDeviceScaleFactor();
+    const int host_sample_x = base::ClampRound(10 * scale);
+    const int host_sample_y = base::ClampRound(10 * scale);
+    const int transparent_y = base::ClampRound((40 + 4) * scale);
+    const int sentinel_y = base::ClampRound((40 + 70) * scale);
+
+    SkBitmap snapshot;
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      base::test::TestFuture<const content::CopyFromSurfaceResult&> copy_future;
+      view->CopyFromSurface(gfx::Rect(), gfx::Size(), base::TimeDelta(),
+                            copy_future.GetCallback());
+      const auto& copy_result = copy_future.Get();
+      if (!copy_result.has_value()) {
+        return false;
+      }
+      snapshot = copy_result->bitmap;
+      if (snapshot.drawsNothing() || host_sample_x >= snapshot.width() ||
+          sentinel_y >= snapshot.height() ||
+          snapshot.getColor(host_sample_x, host_sample_y) !=
+              expected_surface_color) {
+        return false;
+      }
+      for (const auto& expectation : kExpectations) {
+        const int sentinel_x =
+            base::ClampRound((expectation.left_dip + 40) * scale);
+        if (sentinel_x >= snapshot.width() ||
+            snapshot.getColor(sentinel_x, sentinel_y) != ready_sentinel_color) {
+          return false;
+        }
+      }
+      return true;
+    }));
+
+    for (const auto& expectation : kExpectations) {
+      const int sample_x = base::ClampRound((expectation.left_dip + 4) * scale);
+      EXPECT_EQ(expected_surface_color,
+                snapshot.getColor(sample_x, transparent_y))
+          << "Opaque canvas painted behind " << expectation.tag_name
+          << " (expected_browser_dark_mode=" << expected_browser_dark_mode
+          << ", search_dark_mode=" << search_dark_mode << ")";
+    }
   }
+
+  ui::MockOsSettingsProvider os_settings_provider_;
 
  private:
   base::test::ScopedFeatureList extension_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionBrowserTestBase,
+    EmbeddedExtensionIframesStayTransparentAcrossColorSchemes) {
+  VerifyEmbeddedExtensionIframesStayTransparentForHostPage(
+      "https://www.google.com/search?udm=50&cs=0",
+      /*expected_browser_dark_mode=*/false, /*search_dark_mode=*/false);
+  VerifyEmbeddedExtensionIframesStayTransparentForHostPage(
+      "https://www.google.com/search?udm=50&cs=1",
+      /*expected_browser_dark_mode=*/false, /*search_dark_mode=*/true);
+}
+
+class ContextualTasksForcedDarkModeBrowserTest
+    : public ContextualTasksExtensionBrowserTestBase {
+ protected:
+  ContextualTasksForcedDarkModeBrowserTest() {
+    os_settings_provider_.SetPreferredColorScheme(
+        ui::NativeTheme::PreferredColorScheme::kDark);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContextualTasksExtensionBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForceDarkMode);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksForcedDarkModeBrowserTest, LensButton) {
@@ -329,175 +551,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksForcedDarkModeBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksForcedDarkModeBrowserTest,
     EmbeddedExtensionIframesStayTransparentAcrossColorSchemes) {
-  constexpr char kHostPageUrl[] = "https://www.google.com/search?udm=50";
-  // Google Search pages intentionally omit `<meta name="color-scheme">` and
-  // CSS `color-scheme`, leaving each `<iframe>`'s owner color scheme as light.
-  std::string host_page_html =
-      "<!DOCTYPE html>"
-      "<html><head><style>"
-      "html, body { margin: 0; padding: 0; background: rgb(255, 255, 255); }"
-      "#light-surface {"
-      "  position: fixed; left: 0; top: 0; width: 120px; height: 120px;"
-      "  background: rgb(255, 255, 255);"
-      "}"
-      "#dark-surface {"
-      "  position: fixed; left: 140px; top: 0; width: 120px; height: 120px;"
-      "  background: rgb(44, 46, 54);"
-      "}"
-      "iframe { border: 0; display: block; }"
-      "</style></head><body>"
-      "<div id='light-surface'>"
-      "  <iframe id='light-tab-picker' width='120' height='120' "
-      "src='chrome-extension://$EXT_ID/tab_picker.html?cs=0'></iframe>"
-      "</div>"
-      "<div id='dark-surface'>"
-      "  <iframe id='dark-tab-picker' width='120' height='120' "
-      "src='chrome-extension://$EXT_ID/tab_picker.html?cs=1'></iframe>"
-      "</div>"
-      "<div style='position: fixed; left: 0; top: 140px; "
-      "background: rgb(255, 255, 255);'>"
-      "  <iframe width='40' height='40' "
-      "src='chrome-extension://$EXT_ID/context_library.html?cs=0'></iframe>"
-      "  <iframe width='40' height='40' "
-      "src='chrome-extension://$EXT_ID/lens_button.html?cs=0'></iframe>"
-      "  <iframe width='40' height='40' "
-      "src='chrome-extension://$EXT_ID/lens_chip.html?cs=0'></iframe>"
-      "</div>"
-      "<div style='position: fixed; left: 140px; top: 140px; "
-      "background: rgb(44, 46, 54);'>"
-      "  <iframe width='40' height='40' "
-      "src='chrome-extension://$EXT_ID/context_library.html?cs=1'></iframe>"
-      "  <iframe width='40' height='40' "
-      "src='chrome-extension://$EXT_ID/lens_button.html?cs=1'></iframe>"
-      "  <iframe width='40' height='40' "
-      "src='chrome-extension://$EXT_ID/lens_chip.html?cs=1'></iframe>"
-      "</div>"
-      "</body></html>";
-  base::ReplaceSubstringsAfterOffset(
-      &host_page_html, 0, "$EXT_ID",
-      extension_misc::kContextualTasksExtensionId);
-
-  content::URLLoaderInterceptor interceptor(base::BindRepeating(
-      [](const std::string& expected_url, const std::string& html,
-         content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.spec() != expected_url) {
-          return false;
-        }
-        content::URLLoaderInterceptor::WriteResponse(
-            "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n\n", html,
-            params->client.get());
-        return true;
-      },
-      std::string(kHostPageUrl), std::move(host_page_html)));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kHostPageUrl)));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
-
-  struct FrameExpectation {
-    size_t child_index;
-    const char* tag_name;
-    bool expect_dark_mode;
-  };
-  constexpr FrameExpectation kExpectations[] = {
-      {0, "tab-picker-app", false},  {1, "tab-picker-app", true},
-      {2, "context-library", false}, {3, "lens-button-app", false},
-      {4, "lens-chip-app", false},   {5, "context-library", true},
-      {6, "lens-button-app", true},  {7, "lens-chip-app", true},
-  };
-
-  for (const auto& expectation : kExpectations) {
-    content::RenderFrameHost* child_rfh =
-        content::ChildFrameAt(main_rfh, expectation.child_index);
-    ASSERT_NE(child_rfh, nullptr);
-    ASSERT_TRUE(content::WaitForRenderFrameReady(child_rfh));
-
-    // Confirm Chrome's preferred color scheme is dark inside every OOPIF while
-    // `<html>` keeps `color-scheme: normal` so Blink does not synthesize an
-    // opaque #121212 color-adjust canvas background against the light owner.
-    EXPECT_EQ(true, content::EvalJs(
-                        child_rfh,
-                        "window.matchMedia('(prefers-color-scheme: dark)')"
-                        ".matches"));
-    EXPECT_EQ("normal",
-              content::EvalJs(
-                  child_rfh,
-                  "getComputedStyle(document.documentElement).colorScheme"));
-
-    const std::string check_host_js = content::JsReplace(
-        R"js(
-          (async () => {
-            await customElements.whenDefined($1);
-            const el = document.querySelector($1);
-            if ('updateComplete' in el) {
-              await el.updateComplete;
-            }
-            return {
-              hasDarkAttr: el.hasAttribute('dark-mode'),
-              colorScheme: getComputedStyle(el).colorScheme,
-            };
-          })()
-        )js",
-        expectation.tag_name);
-    content::EvalJsResult eval_result =
-        content::EvalJs(child_rfh, check_host_js);
-    const base::DictValue& result = eval_result.ExtractDict();
-    EXPECT_EQ(expectation.expect_dark_mode, result.FindBool("hasDarkAttr"));
-    EXPECT_EQ(expectation.expect_dark_mode ? "dark" : "light",
-              *result.FindString("colorScheme"));
-  }
-
-  // Paint a sentinel strip at the bottom of both tab-picker OOPIFs so pixel
-  // readback waits until Viz has composited both cross-process surfaces before
-  // asserting transparency at the top of each OOPIF.
-  constexpr SkColor kReadySentinelColor = SkColorSetRGB(0, 200, 83);
-  constexpr char kAddSentinelJs[] = R"js(
-    (() => {
-      const marker = document.createElement('div');
-      marker.style.cssText =
-          'position:fixed;left:0;bottom:0;width:100%;height:20px;' +
-          'background:rgb(0, 200, 83);pointer-events:none;';
-      document.body.appendChild(marker);
-      return true;
-    })()
-  )js";
-  ASSERT_EQ(true, content::EvalJs(content::ChildFrameAt(main_rfh, 0),
-                                  kAddSentinelJs));
-  ASSERT_EQ(true, content::EvalJs(content::ChildFrameAt(main_rfh, 1),
-                                  kAddSentinelJs));
-
-  content::RenderWidgetHostView* view = main_rfh->GetView();
-  ASSERT_NE(view, nullptr);
-  const float scale = view->GetDeviceScaleFactor();
-  const int light_x = base::ClampRound(60 * scale);
-  const int dark_x = base::ClampRound(200 * scale);
-  const int transparent_y = base::ClampRound(12 * scale);
-  const int sentinel_y = base::ClampRound(110 * scale);
-
-  SkBitmap snapshot;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    base::test::TestFuture<const content::CopyFromSurfaceResult&> copy_future;
-    view->CopyFromSurface(gfx::Rect(), gfx::Size(), base::TimeDelta(),
-                          copy_future.GetCallback());
-    const auto& copy_result = copy_future.Get();
-    if (!copy_result.has_value()) {
-      return false;
-    }
-    snapshot = copy_result->bitmap;
-    return !snapshot.drawsNothing() && dark_x < snapshot.width() &&
-           sentinel_y < snapshot.height() &&
-           snapshot.getColor(light_x, sentinel_y) == kReadySentinelColor &&
-           snapshot.getColor(dark_x, sentinel_y) == kReadySentinelColor;
-  }));
-
-  ASSERT_FALSE(snapshot.drawsNothing());
-  ASSERT_EQ(kReadySentinelColor, snapshot.getColor(light_x, sentinel_y));
-  ASSERT_EQ(kReadySentinelColor, snapshot.getColor(dark_x, sentinel_y));
-  EXPECT_EQ(SkColorSetRGB(255, 255, 255),
-            snapshot.getColor(light_x, transparent_y));
-  EXPECT_EQ(SkColorSetRGB(44, 46, 54),
-            snapshot.getColor(dark_x, transparent_y));
+  VerifyEmbeddedExtensionIframesStayTransparentForHostPage(
+      "https://www.google.com/search?udm=50&cs=0",
+      /*expected_browser_dark_mode=*/true, /*search_dark_mode=*/false);
+  VerifyEmbeddedExtensionIframesStayTransparentForHostPage(
+      "https://www.google.com/search?udm=50&cs=1",
+      /*expected_browser_dark_mode=*/true, /*search_dark_mode=*/true);
 }
 #endif
 
