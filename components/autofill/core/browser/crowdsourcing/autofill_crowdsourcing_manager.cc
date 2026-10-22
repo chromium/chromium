@@ -23,6 +23,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -403,12 +404,8 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
     out << Tr{} << Attrib{"style", "font-weight: bold"}
         << "field_signature:" << field.signature();
 
-    std::vector<std::string> types_as_strings;
-    types_as_strings.reserve(field.autofill_type_size());
-    for (uint32_t type : field.autofill_type()) {
-      types_as_strings.emplace_back(FieldTypeToString(type));
-    }
-    out << Tr{} << "autofill_type:" << types_as_strings;
+    out << Tr{} << "autofill_type:"
+        << base::ToVector(field.autofill_type(), &FieldTypeToString);
 
     if (field.generation_type()) {
       out << Tr{}
@@ -609,10 +606,9 @@ void InitActiveExperiments() {
           {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
            variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
   std::erase_if(active_experiments, std::not_fn(&IsAutofillExperimentId));
-  std::sort(active_experiments.begin(), active_experiments.end());
-  active_experiments.erase(
-      std::unique(active_experiments.begin(), active_experiments.end()),
-      active_experiments.end());
+  std::ranges::sort(active_experiments);
+  auto duplicates = std::ranges::unique(active_experiments);
+  active_experiments.erase(duplicates.begin(), duplicates.end());
 
   if (features::debug::kAutofillServerCommunicationExperimentId.Get()) {
     active_experiments.push_back(
