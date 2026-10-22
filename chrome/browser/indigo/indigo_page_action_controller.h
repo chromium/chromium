@@ -90,6 +90,13 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // not need direct dependencies on branded internal vector icon targets.
   static const gfx::VectorIcon& GetEntryPointVectorIcon();
 
+  // Returns whether the current page is eligible for Indigo.
+  bool IsPageEligible() const;
+
+  // Records metrics when a context menu containing the Indigo item is shown.
+  // Deduplicated so that it is recorded at most once per page load.
+  void OnContextMenuShown();
+
   void InvokeAction(EntryPoint entry_point);
   void DeleteOriginalPhoto();
 
@@ -357,6 +364,11 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   // The trigger source that was evaluated when eligibility was determined.
   std::optional<IndigoTriggerSource> last_trigger_source_;
+
+  // True if a context menu containing the Indigo item has already been shown on
+  // the current page load. Used to deduplicate
+  // `Indigo.PageAction.ShownEntryPoint` impressions per page load.
+  bool context_menu_shown_on_current_page_ = false;
 
   // Weak pointer factory used for the invocation flow. This is invalidated on
   // navigation to ensure that if a user starts an action (like onboarding) and

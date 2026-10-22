@@ -193,7 +193,8 @@ chromium-metrics-reviews@google.com.
   <owner>baranerf@google.com</owner>
   <summary>
     Records the entry point or presentation style of the Indigo page action when
-    it is shown to the user.
+    it is shown to the user. For the context menu entry point, this is recorded
+    at most once per page load when a context menu containing the item is shown.
   </summary>
 </histogram>
 
