@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -33,6 +34,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -283,6 +285,38 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
   auto it = journeys.find(source_tab_id);
   ASSERT_NE(it, journeys.end());
   EXPECT_TRUE(it->second.search_tab_closed);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
+                       KeepsPromoParamsAcrossSameDocumentNavigation) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
+  tabs::TabInterface* source_tab = tab_list()->GetActiveTab();
+  ASSERT_TRUE(source_tab);
+  const SessionID source_tab_id =
+      sessions::SessionTabHelper::IdForTab(source_tab->GetContents());
+
+  tabs::TabInterface* search_tab = SearchInNewTab(u"how do tides work");
+  ASSERT_TRUE(search_tab);
+  content::WebContents* search_contents = search_tab->GetContents();
+  AimPromoParams params;
+  params.mstk = "token";
+  ASSERT_TRUE(tracker()->OnAimPromoParamsReceived(
+      sessions::SessionTabHelper::IdForTab(search_contents),
+      u"how do tides work", std::move(params), {}));
+
+  // The results page updates its URL without loading a new document.
+  content::TestNavigationObserver observer(search_contents);
+  ASSERT_TRUE(content::ExecJs(
+      search_contents,
+      "history.replaceState(null, '', location.href + '&ved=1');"));
+  observer.Wait();
+
+  const auto& journeys = tracker()->GetActiveJourneysForTesting();
+  auto it = journeys.find(source_tab_id);
+  ASSERT_NE(it, journeys.end());
+  ASSERT_TRUE(it->second.promo_params.has_value());
+  EXPECT_EQ(it->second.promo_params->mstk, "token");
 }
 
 IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,

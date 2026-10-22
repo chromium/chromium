@@ -22,9 +22,18 @@
 
 namespace contextual_tasks {
 
+AimPromoParams::AimPromoParams() = default;
+AimPromoParams::AimPromoParams(const AimPromoParams&) = default;
+AimPromoParams& AimPromoParams::operator=(const AimPromoParams&) = default;
+AimPromoParams::AimPromoParams(AimPromoParams&&) = default;
+AimPromoParams& AimPromoParams::operator=(AimPromoParams&&) = default;
+AimPromoParams::~AimPromoParams() = default;
+
 JourneyState::JourneyState() = default;
 JourneyState::JourneyState(const JourneyState&) = default;
 JourneyState& JourneyState::operator=(const JourneyState&) = default;
+JourneyState::JourneyState(JourneyState&&) = default;
+JourneyState& JourneyState::operator=(JourneyState&&) = default;
 JourneyState::~JourneyState() = default;
 
 SearchJourneyTracker::SearchJourneyTracker(
@@ -160,6 +169,15 @@ void SearchJourneyTracker::OnSearchNavigationCommitted(
 
   EvictExpiredRecords();
 
+  // A commit for the query the tab's journey is already for, such as a
+  // same-document navigation or a reload, isn't a new search.
+  if (std::ranges::any_of(active_journeys_, [&](const auto& pair) {
+        return pair.second.search_tab_id == search_tab_id &&
+               pair.second.search_terms == search_terms;
+      })) {
+    return;
+  }
+
   // A new search in Tab B replaces the journey tied to its previous search.
   std::erase_if(active_journeys_, [search_tab_id](const auto& pair) {
     return pair.second.search_tab_id == search_tab_id;
@@ -181,6 +199,28 @@ void SearchJourneyTracker::OnSearchNavigationCommitted(
   journey.search_committed_time = base::TimeTicks::Now();
   journey.matched_copy = MatchesCopyFromTab(source_tab_->tab_id, search_terms);
   active_journeys_.insert_or_assign(source_tab_->tab_id, std::move(journey));
+}
+
+bool SearchJourneyTracker::OnAimPromoParamsReceived(
+    SessionID search_tab_id,
+    std::u16string_view search_terms,
+    AimPromoParams params,
+    AimPromoQueryHints query_hints) {
+  if (!search_tab_id.is_valid() || params.mstk.empty()) {
+    return false;
+  }
+
+  EvictExpiredRecords();
+
+  for (auto& [source_tab_id, journey] : active_journeys_) {
+    if (journey.search_tab_id == search_tab_id && !journey.search_tab_closed &&
+        journey.search_terms == search_terms) {
+      journey.promo_params = std::move(params);
+      journey.query_hints = query_hints;
+      return true;
+    }
+  }
+  return false;
 }
 
 void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {

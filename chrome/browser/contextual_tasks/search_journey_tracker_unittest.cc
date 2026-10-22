@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,6 +47,15 @@ void SetNonGoogleDefaultSearchProvider(
   TemplateURL* turl =
       template_url_service->Add(std::make_unique<TemplateURL>(data));
   template_url_service->SetUserSelectedDefaultSearchProvider(turl);
+}
+
+AimPromoParams CreatePromoParams(std::string mstk = "token") {
+  AimPromoParams params;
+  params.mstk = std::move(mstk);
+  params.aioh = "3";
+  params.csuir = "1";
+  params.sxsrf = "xsrf";
+  return params;
 }
 
 }  // namespace
@@ -328,6 +338,117 @@ TEST_F(SearchJourneyTrackerTest, ClosingSourceTabClearsJourney) {
   // The closed tab is no longer a candidate Tab A for a new search.
   tracker_.OnSearchNavigationCommitted(kSearchTab1, u"another query");
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+}
+
+TEST_F(SearchJourneyTrackerTest, StoresPromoParamsForJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+
+  EXPECT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams(),
+      {AimPromoQueryHint::kEduHomework, AimPromoQueryHint::kHowToWebApp}));
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  ASSERT_TRUE(journey->promo_params.has_value());
+  EXPECT_EQ(journey->promo_params->mstk, "token");
+  EXPECT_EQ(journey->promo_params->aioh, "3");
+  EXPECT_EQ(journey->promo_params->csuir, "1");
+  EXPECT_EQ(journey->promo_params->sxsrf, "xsrf");
+  EXPECT_EQ(journey->query_hints,
+            AimPromoQueryHints({AimPromoQueryHint::kEduHomework,
+                                AimPromoQueryHint::kHowToWebApp}));
+}
+
+TEST_F(SearchJourneyTrackerTest, NewPromoParamsReplaceEarlierOnes) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams("first"),
+      {AimPromoQueryHint::kEduHomework}));
+
+  EXPECT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams("second"), {}));
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  ASSERT_TRUE(journey->promo_params.has_value());
+  EXPECT_EQ(journey->promo_params->mstk, "second");
+  EXPECT_TRUE(journey->query_hints.empty());
+}
+
+TEST_F(SearchJourneyTrackerTest, PromoParamsForOtherQueryIgnored) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+
+  EXPECT_FALSE(tracker_.OnAimPromoParamsReceived(kSearchTab1, u"another query",
+                                                 CreatePromoParams(), {}));
+  ASSERT_TRUE(GetJourney(kSourceTab1));
+  EXPECT_FALSE(GetJourney(kSourceTab1)->promo_params.has_value());
+}
+
+TEST_F(SearchJourneyTrackerTest, PromoParamsWithoutJourneyIgnored) {
+  EXPECT_FALSE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams(), {}));
+
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  EXPECT_FALSE(tracker_.OnAimPromoParamsReceived(
+      kOtherTab, u"quantum computing", CreatePromoParams(), {}));
+  EXPECT_FALSE(GetJourney(kSourceTab1)->promo_params.has_value());
+}
+
+TEST_F(SearchJourneyTrackerTest, PromoParamsWithoutMstkIgnored) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+
+  EXPECT_FALSE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams(/*mstk=*/""), {}));
+  EXPECT_FALSE(GetJourney(kSourceTab1)->promo_params.has_value());
+}
+
+TEST_F(SearchJourneyTrackerTest, NewSearchInSearchTabDropsPromoParams) {
+  StartJourney(kSourceTab1, kSearchTab1, u"first query");
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(kSearchTab1, u"first query",
+                                                CreatePromoParams(), {}));
+
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"second query");
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_EQ(journey->search_terms, u"second query");
+  EXPECT_FALSE(journey->promo_params.has_value());
+
+  // A late registration from the first results page is never paired with the
+  // new query.
+  EXPECT_FALSE(tracker_.OnAimPromoParamsReceived(kSearchTab1, u"first query",
+                                                 CreatePromoParams(), {}));
+  EXPECT_FALSE(GetJourney(kSourceTab1)->promo_params.has_value());
+}
+
+TEST_F(SearchJourneyTrackerTest, CommitForSameQueryKeepsJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  const base::TimeTicks committed_time = base::TimeTicks::Now();
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams(), {}));
+
+  task_environment_.AdvanceClock(base::Minutes(1));
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"quantum computing");
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_TRUE(journey->promo_params.has_value());
+  EXPECT_EQ(journey->search_committed_time, committed_time);
+}
+
+TEST_F(SearchJourneyTrackerTest, ClosingSearchTabKeepsPromoParams) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams(), {}));
+
+  tracker_.OnTabDestroyed(kSearchTab1);
+  EXPECT_FALSE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams("late"), {}));
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  ASSERT_TRUE(journey->promo_params.has_value());
+  EXPECT_EQ(journey->promo_params->mstk, "token");
 }
 
 TEST_F(SearchJourneyTrackerTest, JourneyTtlExpiry) {

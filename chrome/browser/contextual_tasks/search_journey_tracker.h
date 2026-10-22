@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -35,6 +36,41 @@ struct CopyRecord {
   uint64_t nonce = 0;
 };
 
+// Coarse labels that Search can send about the query. Only used to slice
+// metrics.
+enum class AimPromoQueryHint {
+  kEduHomework = 0,
+  kEduConceptual = 1,
+  kHowToWebApp = 2,
+  kMinValue = kEduHomework,
+  kMaxValue = kHowToWebApp,
+};
+
+using AimPromoQueryHints = base::EnumSet<AimPromoQueryHint,
+                                         AimPromoQueryHint::kMinValue,
+                                         AimPromoQueryHint::kMaxValue>;
+
+// Parameters that a Google search results page registers so Chrome can later
+// restore its AI Overview as the first turn of an AI Mode thread. Empty
+// strings are omitted from the restore URL.
+struct AimPromoParams {
+  AimPromoParams();
+  AimPromoParams(const AimPromoParams&);
+  AimPromoParams& operator=(const AimPromoParams&);
+  AimPromoParams(AimPromoParams&&);
+  AimPromoParams& operator=(AimPromoParams&&);
+  ~AimPromoParams();
+
+  // Magi State Token. Required.
+  std::string mstk;
+  // How to handle the AIM handover.
+  std::string aioh;
+  // Where to restore the AIM thread from.
+  std::string csuir;
+  // XSRF token for the restore navigation.
+  std::string sxsrf;
+};
+
 // An armed ABA journey: the user left an eligible source tab (Tab A) and a
 // Google search committed in the tab they moved to (Tab B). Keyed by Tab A's
 // `SessionID`.
@@ -42,6 +78,8 @@ struct JourneyState {
   JourneyState();
   JourneyState(const JourneyState&);
   JourneyState& operator=(const JourneyState&);
+  JourneyState(JourneyState&&);
+  JourneyState& operator=(JourneyState&&);
   ~JourneyState();
 
   // Tab A's `NavigationEntry` unique ID when the user left it.
@@ -56,6 +94,10 @@ struct JourneyState {
   // Whether Tab B has closed. Closing Tab B usually re-activates Tab A, which
   // counts as a return, so the journey is kept.
   bool search_tab_closed = false;
+  // Restore parameters registered by Tab B's results page for this query.
+  std::optional<AimPromoParams> promo_params;
+  // Labels registered along with `promo_params`.
+  AimPromoQueryHints query_hints;
 };
 
 // Profile-keyed service that tracks ABA search journeys: the user leaves an
@@ -111,13 +153,26 @@ class SearchJourneyTracker : public KeyedService,
   bool OnTabActivated(SessionID tab_id, int nav_entry_id);
 
   // Called when a Google default-search-provider results page commits in
-  // `search_tab_id` with `search_terms`. Drops any journey tied to an earlier
-  // search in `search_tab_id`. If `search_tab_id` is the tab the user is
+  // `search_tab_id` with `search_terms`. A commit for the same query as the
+  // tab's journey, such as a same-document navigation, keeps the journey and
+  // its restore parameters. Otherwise, drops any journey tied to an earlier
+  // search in `search_tab_id`, and if `search_tab_id` is the tab the user is
   // looking at and they left a candidate Tab A to get there, arms a journey for
   // Tab A. A tab opened from `search_tab_id` is never Tab A. No-op if the
   // default search provider is not Google.
   void OnSearchNavigationCommitted(SessionID search_tab_id,
                                    std::u16string_view search_terms);
+
+  // Called when the results page in `search_tab_id`, showing `search_terms`,
+  // registers restore parameters for its AI Overview. Stores them on the
+  // journey whose Tab B is `search_tab_id`, replacing any earlier ones, but
+  // only if that journey is for the same query, so parameters from one search
+  // are never paired with another search's query. Returns whether they were
+  // stored.
+  bool OnAimPromoParamsReceived(SessionID search_tab_id,
+                                std::u16string_view search_terms,
+                                AimPromoParams params,
+                                AimPromoQueryHints query_hints);
 
   // Clears copy records for `tab_id` and any journey whose Tab A is `tab_id`.
   // Journeys whose Tab B is `tab_id` are kept and marked as closed.
