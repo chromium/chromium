@@ -569,6 +569,7 @@ bool IsLocalDevToolsFrontendURL(const GURL& url) {
   if (!url.is_valid() || url.IsAboutBlank() ||
       !url.SchemeIs(content::kChromeDevToolsScheme) ||
       url.host() != chrome::kChromeUIDevToolsHost) {
+    // Host kChromeUIDevToolsRemoteHost immediately returns false here.
     return false;
   }
   std::string_view path = url.path();
@@ -749,8 +750,11 @@ DevToolsUIBindings::FrontendWebContentsObserver::
 
 // static
 GURL DevToolsUIBindings::SanitizeFrontendURL(const GURL& url) {
-  return ::SanitizeFrontendURL(url, content::kChromeDevToolsScheme,
-                               chrome::kChromeUIDevToolsHost,
+  std::string host = chrome::kChromeUIDevToolsHost;
+  if (url.GetHost() == chrome::kChromeUIDevToolsRemoteHost) {
+    host = chrome::kChromeUIDevToolsRemoteHost;
+  }
+  return ::SanitizeFrontendURL(url, content::kChromeDevToolsScheme, host,
                                SanitizeFrontendPath(url.GetPath()), true);
 }
 

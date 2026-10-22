@@ -124,6 +124,7 @@ inline constexpr char kChromeUIDevToolsBlankPath[] = "blank";
 inline constexpr char kChromeUIDevToolsBundledPath[] = "bundled";
 inline constexpr char kChromeUIDevToolsCustomPath[] = "custom";
 inline constexpr char kChromeUIDevToolsHost[] = "devtools";
+inline constexpr char kChromeUIDevToolsRemoteHost[] = "devtools-remote";
 inline constexpr char kChromeUIDevToolsRemotePath[] = "remote";
 inline constexpr char kChromeUIDevToolsURL[] =
     "devtools://devtools/bundled/inspector.html";

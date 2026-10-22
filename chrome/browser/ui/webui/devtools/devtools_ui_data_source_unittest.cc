@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/url_data_source.h"
@@ -35,6 +36,12 @@ GURL DevToolsUrl() {
                             chrome::kChromeUIDevToolsHost}));
 }
 
+GURL DevToolsRemoteUrl() {
+  return GURL(base::StrCat({content::kChromeDevToolsScheme,
+                            url::kStandardSchemeSeparator,
+                            chrome::kChromeUIDevToolsRemoteHost}));
+}
+
 std::string DevToolsBundledPath(const std::string& path) {
   return base::StrCat({chrome::kChromeUIDevToolsBundledPath, path});
 }
@@ -51,7 +58,9 @@ std::string DevToolsCustomPath(const std::string& path) {
 
 class TestDevToolsDataSource : public DevToolsDataSource {
  public:
-  TestDevToolsDataSource() : DevToolsDataSource(nullptr) {}
+  explicit TestDevToolsDataSource(
+      std::string source_name = chrome::kChromeUIDevToolsHost)
+      : DevToolsDataSource(nullptr, std::move(source_name)) {}
   ~TestDevToolsDataSource() override = default;
 
   void StartNetworkRequest(
@@ -83,12 +92,21 @@ class DevToolsUIDataSourceTest : public testing::Test {
 
   void SetUp() override {
     devtools_data_source_ = std::make_unique<TestDevToolsDataSource>();
+    remote_data_source_ = std::make_unique<TestDevToolsDataSource>(
+        chrome::kChromeUIDevToolsRemoteHost);
   }
 
-  void TearDown() override { devtools_data_source_.reset(); }
+  void TearDown() override {
+    devtools_data_source_.reset();
+    remote_data_source_.reset();
+  }
 
   TestDevToolsDataSource* data_source() const {
     return devtools_data_source_.get();
+  }
+
+  TestDevToolsDataSource* remote_data_source() const {
+    return remote_data_source_.get();
   }
 
   bool data_received() const { return data_received_; }
@@ -97,17 +115,26 @@ class DevToolsUIDataSourceTest : public testing::Test {
 
   // TODO(crbug.com/40050262): pass in GURL instead.
   void StartRequest(const std::string& path) {
+    StartRequestOnSource(data_source(), path);
+  }
+
+  void StartRemoteRequest(const std::string& path) {
+    StartRequestOnSource(remote_data_source(), path);
+  }
+
+ private:
+  void StartRequestOnSource(TestDevToolsDataSource* source,
+                            const std::string& path) {
     data_received_ = false;
     data_.clear();
     std::string trimmed_path = path.substr(1);
     content::WebContents::Getter wc_getter;
-    data_source()->StartDataRequest(
+    source->StartDataRequest(
         GURL("chrome://any-host/" + trimmed_path), std::move(wc_getter),
         base::BindOnce(&DevToolsUIDataSourceTest::OnDataReceived,
                        base::Unretained(this)));
   }
 
- private:
   void OnDataReceived(scoped_refptr<base::RefCountedMemory> bytes) {
     data_received_ = true;
     if (bytes.get()) {
@@ -117,6 +144,7 @@ class DevToolsUIDataSourceTest : public testing::Test {
   }
 
   std::unique_ptr<TestDevToolsDataSource> devtools_data_source_;
+  std::unique_ptr<TestDevToolsDataSource> remote_data_source_;
   bool data_received_ = false;
   std::string data_;
 };
@@ -199,15 +227,15 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsBlankURLWithQueryParam) {
   EXPECT_TRUE(data().empty());
 }
 
-// devtools/remote path
+// devtools-remote/remote path
 
 TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteURLWithSwitch) {
   const char* flag_value = "http://example.com/example/path/";
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kCustomDevtoolsFrontend, flag_value);
-  const GURL path =
-      DevToolsUrl().Resolve(DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
-  StartRequest(path.GetPath());
+  const GURL path = DevToolsRemoteUrl().Resolve(
+      DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
+  StartRemoteRequest(path.GetPath());
   EXPECT_TRUE(data_received());
   EXPECT_EQ(data(), "url: http://example.com/example/path/devtools_app.html");
 }
@@ -220,9 +248,9 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteFileURLWithSwitch) {
 #endif
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kCustomDevtoolsFrontend, flag_value);
-  const GURL path =
-      DevToolsUrl().Resolve(DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
-  StartRequest(path.GetPath());
+  const GURL path = DevToolsRemoteUrl().Resolve(
+      DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
+  StartRemoteRequest(path.GetPath());
   EXPECT_TRUE(data_received());
   EXPECT_EQ(data(), "file: devtools_app.html");
 }
@@ -236,10 +264,10 @@ TEST_F(DevToolsUIDataSourceTest,
 #endif
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kCustomDevtoolsFrontend, flag_value);
-  const GURL path = DevToolsUrl().Resolve(
+  const GURL path = DevToolsRemoteUrl().Resolve(
       DevToolsRemotePath("/serve_rev/@76e4c1bb2ab4671b8beba3444e61c0f17584b2fc/"
                          "devtools_app.html"));
-  StartRequest(path.GetPath());
+  StartRemoteRequest(path.GetPath());
   EXPECT_TRUE(data_received());
   EXPECT_EQ(data(), "file: devtools_app.html");
 }
@@ -253,10 +281,10 @@ TEST_F(DevToolsUIDataSourceTest,
 #endif
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kCustomDevtoolsFrontend, flag_value);
-  const GURL path = DevToolsUrl().Resolve(DevToolsRemotePath(
+  const GURL path = DevToolsRemoteUrl().Resolve(DevToolsRemotePath(
       "/serve_file/@76e4c1bb2ab4671b8beba3444e61c0f17584b2fc/"
       "devtools_app.html"));
-  StartRequest(path.GetPath());
+  StartRemoteRequest(path.GetPath());
   EXPECT_TRUE(data_received());
   EXPECT_EQ(data(), "file: devtools_app.html");
 }
@@ -270,18 +298,18 @@ TEST_F(DevToolsUIDataSourceTest,
 #endif
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kCustomDevtoolsFrontend, flag_value);
-  const GURL path = DevToolsUrl().Resolve(DevToolsRemotePath(
+  const GURL path = DevToolsRemoteUrl().Resolve(DevToolsRemotePath(
       "/serve_internal_file/@76e4c1bb2ab4671b8beba3444e61c0f17584b2fc/"
       "devtools_app.html"));
-  StartRequest(path.GetPath());
+  StartRemoteRequest(path.GetPath());
   EXPECT_TRUE(data_received());
   EXPECT_EQ(data(), "file: devtools_app.html");
 }
 
 TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteURL) {
-  const GURL path =
-      DevToolsUrl().Resolve(DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
-  StartRequest(path.GetPath());
+  const GURL path = DevToolsRemoteUrl().Resolve(
+      DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
+  StartRemoteRequest(path.GetPath());
   EXPECT_TRUE(data_received());
   EXPECT_EQ(
       data(),
@@ -289,12 +317,68 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteURL) {
 }
 
 TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteURLWithQueryParam) {
-  const GURL path =
-      DevToolsUrl().Resolve(DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
-  StartRequest(path.GetPath() + "?foo");
+  const GURL path = DevToolsRemoteUrl().Resolve(
+      DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
+  StartRemoteRequest(path.GetPath() + "?foo");
   EXPECT_TRUE(data_received());
   ASSERT_TRUE(base::StartsWith(data(), kDevToolsUITest404Response,
                                base::CompareCase::SENSITIVE));
+}
+
+TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteHostDataSource) {
+  GURL proxy_url = DevToolsUI::GetProxyURL(
+      "https://chrome-devtools-frontend.appspot.com/serve_rev/@12345/"
+      "inspector.html");
+  EXPECT_EQ(chrome::kChromeUIDevToolsRemoteHost, proxy_url.GetHost());
+  EXPECT_TRUE(
+      DevToolsUI::GetProxyURL("devtools://devtools/bundled/inspector.html")
+          .is_empty());
+
+  EXPECT_EQ(chrome::kChromeUIDevToolsRemoteHost,
+            remote_data_source()->GetSource());
+
+  // Test remote URL is served on the devtools-remote host.
+  const GURL remote_path = DevToolsRemoteUrl().Resolve(
+      DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
+  StartRemoteRequest(remote_path.GetPath());
+  EXPECT_TRUE(data_received());
+  EXPECT_EQ(
+      data(),
+      "url: https://chrome-devtools-frontend.appspot.com/devtools_app.html");
+
+  // Test bundled and custom URLs are rejected on the devtools-remote host.
+  const GURL bundled_path = DevToolsRemoteUrl().Resolve(
+      DevToolsBundledPath(kDevToolsUITestFrontEndUrl));
+  StartRemoteRequest(bundled_path.GetPath());
+  EXPECT_TRUE(data_received());
+  EXPECT_TRUE(base::StartsWith(data(), kDevToolsUITest404Response,
+                               base::CompareCase::SENSITIVE));
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kCustomDevtoolsFrontend, "http://localhost:8090/front_end/");
+  const GURL custom_path = DevToolsRemoteUrl().Resolve(
+      DevToolsCustomPath(kDevToolsUITestFrontEndUrl));
+  StartRemoteRequest(custom_path.GetPath());
+  EXPECT_TRUE(data_received());
+  EXPECT_TRUE(base::StartsWith(data(), kDevToolsUITest404Response,
+                               base::CompareCase::SENSITIVE));
+
+  // Test blank path is served as empty memory on devtools-remote.
+  const GURL blank_path =
+      DevToolsRemoteUrl().Resolve(chrome::kChromeUIDevToolsBlankPath);
+  StartRemoteRequest(blank_path.GetPath());
+  EXPECT_TRUE(data_received());
+  EXPECT_TRUE(data().empty());
+
+  // Test CORS header allows devtools://devtools to fetch from
+  // devtools://devtools-remote, but not other origins.
+  EXPECT_EQ("devtools://devtools",
+            remote_data_source()->GetAccessControlAllowOriginForOrigin(
+                "devtools://devtools"));
+  EXPECT_EQ("", remote_data_source()->GetAccessControlAllowOriginForOrigin(
+                    "https://example.com"));
+  EXPECT_EQ("", data_source()->GetAccessControlAllowOriginForOrigin(
+                    "devtools://devtools"));
 }
 
 // devtools/custom path.
@@ -388,7 +472,8 @@ TEST_F(DevToolsUIDataSourceWithTaskEnvTest,
        GotDataCallbackOwnsDevToolsDataSource) {
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
-  DevToolsDataSource* data_source = new DevToolsDataSource(factory);
+  DevToolsDataSource* data_source =
+      new DevToolsDataSource(factory, chrome::kChromeUIDevToolsRemoteHost);
 
   DevToolsDataSource::GotDataCallback callback = base::BindOnce(
       [](DevToolsDataSource* data_source,
@@ -401,8 +486,8 @@ TEST_F(DevToolsUIDataSourceWithTaskEnvTest,
   // deleted after the callback is done running. This is similar to what
   // WebUIURLLoaderFactory is doing.
 
-  const GURL path =
-      DevToolsUrl().Resolve(DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
+  const GURL path = DevToolsRemoteUrl().Resolve(
+      DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
   content::WebContents::Getter wc_getter;
   data_source->StartDataRequest(path, std::move(wc_getter),
                                 std::move(callback));

@@ -34,7 +34,7 @@ GURL DevToolsUI::GetProxyURL(const std::string& frontend_url) {
 
   return GURL(absl::StrFormat(
       "%s://%s/%s/%s?%s", content::kChromeDevToolsScheme,
-      chrome::kChromeUIDevToolsHost, chrome::kChromeUIDevToolsRemotePath,
+      chrome::kChromeUIDevToolsRemoteHost, chrome::kChromeUIDevToolsRemotePath,
       url.path().substr(1), url.query()));
 }
 
@@ -77,7 +77,12 @@ DevToolsUI::DevToolsUI(content::WebUI* web_ui)
                        ->GetURLLoaderFactoryForBrowserProcess();
     content::URLDataSource::Add(
         browser_context,
-        std::make_unique<DevToolsDataSource>(std::move(factory)));
+        std::make_unique<DevToolsDataSource>(factory,
+                                             chrome::kChromeUIDevToolsHost));
+    content::URLDataSource::Add(
+        browser_context,
+        std::make_unique<DevToolsDataSource>(
+            std::move(factory), chrome::kChromeUIDevToolsRemoteHost));
   }
 }
 

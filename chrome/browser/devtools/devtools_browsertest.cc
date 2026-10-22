@@ -5169,6 +5169,39 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   CloseDevToolsWindow();
 }
 
+// Tests that localStorage is isolated between remote DevTools and bundled DevTools.
+IN_PROC_BROWSER_TEST_F(DevToolsTest, RemoteFrontendLocalStorageIsolation) {
+  // Use a blank page under the remote DevTools host to avoid external network fetch.
+  GURL remote_blank_url(base::StringPrintf("%s://%s/%s",
+                                          content::kChromeDevToolsScheme,
+                                          chrome::kChromeUIDevToolsRemoteHost,
+                                          chrome::kChromeUIDevToolsBlankPath));
+
+  std::unique_ptr<content::WebContents> remote_wc =
+      content::WebContents::Create(content::WebContents::CreateParams(GetProfile()));
+  ASSERT_TRUE(content::NavigateToURL(remote_wc.get(), remote_blank_url));
+
+  // In that WebContents, execute JS: localStorage.setItem('canary_key', 'canary_val');
+  EXPECT_TRUE(content::ExecJs(
+      remote_wc.get(), "localStorage.setItem('canary_key', 'canary_val');"));
+  EXPECT_EQ("canary_val",
+            content::EvalJs(remote_wc.get(), "localStorage.getItem('canary_key')"));
+
+  // Open a standard bundled DevTools window.
+  OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
+  ASSERT_TRUE(main_web_contents());
+
+  // Execute JS in the bundled WebContents: return localStorage.getItem('canary_key');
+  // Assert that the return value is null.
+  EXPECT_EQ(true, content::EvalJs(main_web_contents(),
+                                  "localStorage.getItem('canary_key') === null"));
+  EXPECT_EQ(
+      base::Value(),
+      content::EvalJs(main_web_contents(), "localStorage.getItem('canary_key')"));
+
+  CloseDevToolsWindow();
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // TODO(crbug.com/40937316): Test is flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
