@@ -7,14 +7,24 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/service/google_groups_manager.h"
+#include "components/variations/service/google_groups_manager_prefs.h"
+#include "components/variations/variations_seed_processor.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -316,6 +326,88 @@ TEST_F(GeicEnablingTest, LatchesDisabledStatePerProfile) {
   SetPolicyUrl("https://business.gemini.google/home/cid/late");
   EXPECT_FALSE(IsGeicEnabled(profile_.get()));
   EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
+}
+
+TEST_F(GeicEnablingTest, GoogleGroupsFilterEnablesOnlyMatchingProfile) {
+  constexpr char kTeamfoodGroupId[] = "657956975164";
+  constexpr char kGuestUrl[] =
+      "https://ucs-app-autopush.corp.google.com/side-panel";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{"enabled", "true"},
+         {"geic-guest-url", kGuestUrl},
+         {variations::internal::kGoogleGroupFeatureParamName,
+          kTeamfoodGroupId}}}},
+      {});
+
+  TestingPrefServiceSimple local_state;
+  local_state.registry()->RegisterDictionaryPref(
+      variations::prefs::kVariationsGoogleGroups);
+
+  auto create_profile_with_groups =
+      [&local_state](const std::vector<std::string>& groups) {
+        TestingProfile::Builder builder;
+        builder.AddTestingFactory(
+            GoogleGroupsManagerFactory::GetInstance(),
+            base::BindLambdaForTesting(
+                [&local_state](content::BrowserContext* context)
+                    -> std::unique_ptr<KeyedService> {
+                  Profile* p = Profile::FromBrowserContext(context);
+                  return std::make_unique<GoogleGroupsManager>(
+                      local_state, p->GetPath().BaseName().AsUTF8Unsafe(),
+                      *p->GetPrefs());
+                }));
+        std::unique_ptr<TestingProfile> profile = builder.Build();
+        base::ListValue pref_groups_list;
+        for (const std::string& group : groups) {
+          base::DictValue group_dict;
+          group_dict.Set(variations::kDogfoodGroupsSyncPrefGaiaIdKey, group);
+          pref_groups_list.Append(std::move(group_dict));
+        }
+        profile->GetPrefs()->SetList(
+#if BUILDFLAG(IS_CHROMEOS)
+            variations::kOsDogfoodGroupsSyncPrefName,
+#else
+            variations::kDogfoodGroupsSyncPrefName,
+#endif
+            std::move(pref_groups_list));
+        // Ensure GoogleGroupsManager is instantiated so it observes the pref.
+        GoogleGroupsManagerFactory::GetForBrowserContext(profile.get());
+        return profile;
+      };
+
+  // Profile in the required Google Group gets GEiC enabled with the Finch URL.
+  std::unique_ptr<TestingProfile> corp_profile =
+      create_profile_with_groups({kTeamfoodGroupId});
+  EXPECT_TRUE(IsGeicEnabled(corp_profile.get()));
+  EXPECT_EQ(GetGeicGuestUrl(corp_profile.get()), GURL(kGuestUrl));
+
+  // Personal profile not in the Google Group has GEiC disabled and falls back
+  // to empty URL (so consumer GiC is used instead of the corp autopush URL).
+  std::unique_ptr<TestingProfile> personal_profile =
+      create_profile_with_groups({"111111111"});
+  EXPECT_FALSE(IsGeicEnabled(personal_profile.get()));
+  EXPECT_TRUE(GetGeicGuestUrl(personal_profile.get()).is_empty());
+
+  // Unsynced profile with no groups also has the Finch guest URL ignored.
+  std::unique_ptr<TestingProfile> unsynced_profile =
+      create_profile_with_groups({});
+  EXPECT_FALSE(IsGeicEnabled(unsynced_profile.get()));
+  EXPECT_TRUE(GetGeicGuestUrl(unsynced_profile.get()).is_empty());
+
+  // A profile not in the Google Group (or unsynced) that has the
+  // GeminiEnterpriseUrl admin policy configured still gets GEiC enabled via
+  // the policy URL.
+  std::unique_ptr<TestingProfile> policy_profile =
+      create_profile_with_groups({});
+  policy_profile->GetPrefs()->SetString(
+      glic::prefs::kGlicGeminiEnterpriseUrl,
+      "https://enterprise.gemini.cloud.google/side-panel");
+  EXPECT_TRUE(IsGeicEnabled(policy_profile.get()));
+  EXPECT_EQ(GetGeicGuestUrl(policy_profile.get()),
+            GURL("https://enterprise.gemini.cloud.google/side-panel"));
 }
 
 }  // namespace

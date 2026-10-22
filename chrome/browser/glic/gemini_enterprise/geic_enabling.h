@@ -13,7 +13,7 @@ class BrowserContext;
 }  // namespace content
 
 // Internal helper for resolving Gemini Enterprise in Chrome (GEiC)
-// configuration from Finch and the command line.
+// configuration from Finch, enterprise policy, and the command line.
 //
 // This library is NOT a general purpose enablement check and must not be
 // consulted directly by feature code. It only answers "how is GEiC
@@ -22,9 +22,8 @@ class BrowserContext;
 // GlicKeyedService::provider_spec() / GlicProviderSpec), which layer profile
 // eligibility on top of these helpers. These helpers resolve and latch the
 // result on the first call for a profile. In particular, GEiC is unavailable
-// whenever GLiC
-// itself is disabled or ineligible for the profile, and that is not reflected
-// here.
+// whenever GLiC itself is disabled or ineligible for the profile, and that is
+// not reflected here.
 //
 // Including this header is restricted to allowlists in
 // chrome/browser/glic/DEPS and chrome/browser/glic/host/DEPS so that callers go
@@ -43,8 +42,12 @@ bool IsGeicEnabledByFeature();
 // `browser_context`.
 //
 // Requires both `IsGeicEnabledByFeature()` and a valid resolved GEiC guest URL
-// for `browser_context`. The result is resolved on the first call and latched
-// on `browser_context`, so it does not change for the rest of the session.
+// for `browser_context` (from `--geic-guest-url`, the `GeminiEnterpriseUrl`
+// policy, or the `features::kGeicGuestURL` Finch parameter; when
+// `features::kGeic` is controlled by a `google_groups`-filtered Finch study,
+// the Finch URL parameter only applies to profiles in those groups). The result
+// is resolved on the first call and latched on `browser_context`, so it does
+// not change for the rest of the session.
 bool IsGeicEnabled(content::BrowserContext* browser_context);
 
 // Returns the Gemini Enterprise guest URL for `browser_context` if enabled, or

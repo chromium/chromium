@@ -19,9 +19,11 @@
 #include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/service/google_groups_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -122,6 +124,19 @@ base::expected<GURL, GuestUrlError> GetPolicyGuestUrl(
              : base::unexpected(GuestUrlError::kUnset);
 }
 
+base::expected<GURL, GuestUrlError> GetFinchGuestUrl(
+    content::BrowserContext* browser_context) {
+  if (browser_context) {
+    const GoogleGroupsManager* google_groups_manager =
+        GoogleGroupsManagerFactory::GetForBrowserContext(browser_context);
+    if (google_groups_manager &&
+        !google_groups_manager->IsFeatureEnabledForProfile(features::kGeic)) {
+      return base::unexpected(GuestUrlError::kUnset);
+    }
+  }
+  return ToGuestUrl(features::kGeicGuestURL.Get());
+}
+
 // Returns the GEiC config for `browser_context`, resolving and latching it on
 // the first call. Both enabled and disabled results are latched, so the answer
 // does not change for the lifetime of `browser_context`.
@@ -163,7 +178,7 @@ GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
       ToGuestUrl(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kGeicGuestURLSwitch)),
       GetPolicyGuestUrl(browser_context),
-      ToGuestUrl(features::kGeicGuestURL.Get()),
+      GetFinchGuestUrl(browser_context),
   };
   // The first set candidate wins, even if it is invalid, so that an invalid
   // higher-priority source doesn't silently fall through.

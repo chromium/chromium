@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
@@ -41,9 +42,10 @@ void GlicProviderLatchFactory::SetProviderForTesting(
 }
 
 GlicProviderLatchFactory::GlicProviderLatchFactory()
-    : ProfileKeyedServiceFactory(
-          "GlicProviderLatch",
-          ProfileSelections::BuildForRegularProfile()) {}
+    : ProfileKeyedServiceFactory("GlicProviderLatch",
+                                 ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(GoogleGroupsManagerFactory::GetInstance());
+}
 
 GlicProviderLatchFactory::~GlicProviderLatchFactory() = default;
 
