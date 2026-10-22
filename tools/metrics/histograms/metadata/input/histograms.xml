@@ -1133,7 +1133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.CharactersInserted.{Mode}"
-    units="characters" expires_after="2026-12-01">
+    units="characters" expires_after="2027-12-01">
   <owner>hdchuong@google.com</owner>
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1175,7 +1175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.CharactersSelectedForInsert.{Mode}"
-    units="characters" expires_after="2026-12-01">
+    units="characters" expires_after="2027-12-01">
   <owner>hdchuong@google.com</owner>
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1217,7 +1217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.FreeFormCharactersForInsert.{Mode}"
-    units="characters" expires_after="2026-12-01">
+    units="characters" expires_after="2027-12-01">
   <owner>hdchuong@google.com</owner>
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1234,7 +1234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.IndexOfInsertedResponse.{Mode}"
-    units="units" expires_after="2026-12-01">
+    units="units" expires_after="2027-12-01">
   <owner>hdchuong@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1269,7 +1269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.LengthOfLongestResponse.{Mode}"
-    units="characters" expires_after="2026-12-01">
+    units="characters" expires_after="2027-12-01">
   <owner>hdchuong@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1311,7 +1311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.NumResponses.{Mode}" units="units"
-    expires_after="2026-12-01">
+    expires_after="2027-12-01">
   <owner>hdchuong@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
