@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -33,6 +35,7 @@
 #include "components/sync/model/client_tag_based_remote_update_handler.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/data_type_state.pb.h"
@@ -512,6 +515,12 @@ void ClientTagBasedDataTypeProcessor::Put(
   CHECK(!storage_key.empty()) << DataTypeToDebugString(type_);
   CHECK_EQ(type_, GetDataTypeFromSpecifics(data->specifics))
       << DataTypeToDebugString(type_);
+  // Commit-only bridges do not receive remote updates and implement
+  // `IsEntityDataValid()` as `NOTREACHED()`.
+  if (!CommitOnlyTypes().Has(type_)) {
+    CHECK(bridge_->IsEntityDataValid(*data), base::NotFatalUntil::M162)
+        << DataTypeToDebugString(type_);
+  }
 
   if (!entity_tracker_) {
     // Ignore changes before the initial sync is done.
@@ -1210,6 +1219,12 @@ void ClientTagBasedDataTypeProcessor::ConsumeDataBatch(
     if (entity != nullptr && entity->RequiresCommitData()) {
       CHECK(base::IsStringUTF8(data->name), base::NotFatalUntil::M162)
           << DataTypeToDebugString(type_);
+      // Commit-only bridges do not receive remote updates and implement
+      // `IsEntityDataValid()` as `NOTREACHED()`.
+      if (!CommitOnlyTypes().Has(type_)) {
+        CHECK(bridge_->IsEntityDataValid(*data), base::NotFatalUntil::M162)
+            << DataTypeToDebugString(type_);
+      }
       // SetCommitData will update EntityData's fields with values from
       // metadata.
       entity->SetCommitData(std::move(data));

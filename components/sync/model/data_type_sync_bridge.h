@@ -248,8 +248,11 @@ class DataTypeSyncBridge {
       const sync_pb::EntitySpecifics& entity_specifics) const = 0;
 
   // Returns true if the provided `entity_data` is valid. This method should be
-  // implemented by the bridges and can be used to validate the incoming remote
-  // updates.
+  // implemented by the bridges to validate incoming remote updates, and must
+  // also hold for local entities passed to `Put()` or returned by
+  // `GetDataForCommit()`. Commit-only data types do not receive remote updates
+  // and typically implement this method as `NOTREACHED()`, so the processor
+  // skips calling it for `CommitOnlyTypes()`.
   virtual bool IsEntityDataValid(const EntityData& entity_data) const = 0;
 
   // Needs to be informed about any model change occurring via Delete() and
