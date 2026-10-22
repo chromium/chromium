@@ -1943,8 +1943,14 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
       CheckResult(GetOverlayVisibilityAt(0), true));
 }
 
+// TODO(crbug.com/576383946): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GrowingCardStaysInViewport DISABLED_GrowingCardStaysInViewport
+#else
+#define MAYBE_GrowingCardStaysInViewport GrowingCardStaysInViewport
+#endif
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
-                       GrowingCardStaysInViewport) {
+                       MAYBE_GrowingCardStaysInViewport) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
