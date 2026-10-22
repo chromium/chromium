@@ -210,14 +210,14 @@ class CORE_EXPORT SystemClipboard final
 
    private:
     struct BufferData {
-      std::optional<String> plain_text_;
+      String plain_text_;
 
-      std::optional<String> html_;
+      String html_;
       KURL url_;
       unsigned fragment_start_ = 0;
       unsigned fragment_end_ = 0;
 
-      std::optional<String> rtf_;
+      String rtf_;
 
       std::optional<mojo_base::BigBuffer> png_;
 
