@@ -16,8 +16,14 @@ _package_dir = "$root_out_dir/ios_web_view"
 action("ios_web_view_generate_license") {
   _license_path = "$_package_dir/LICENSE"
 
+  # `buildtools` names the Linux directory `linux64`, not `$host_os`.
+  _gn_dir = host_os
+  if (host_os == "linux") {
+    _gn_dir = "linux64"
+  }
+
   script = "//tools/licenses/licenses.py"
-  inputs = [ "//buildtools/$host_os/gn" ]
+  inputs = [ "//buildtools/$_gn_dir/gn" ]
   outputs = [ _license_path ]
   args = [
     "license_file",
