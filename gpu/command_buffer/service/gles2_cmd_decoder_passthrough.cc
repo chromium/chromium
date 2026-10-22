@@ -319,6 +319,8 @@ constexpr const char* kValidRequestableExtensions[] = {
     "GL_ANGLE_multi_draw",
     "GL_ANGLE_polygon_mode",
     "GL_ANGLE_provoking_vertex",
+    "GL_ANGLE_shader_pixel_local_storage",
+    "GL_ANGLE_shader_pixel_local_storage_coherent",
     "GL_ANGLE_stencil_texturing",
     "GL_ANGLE_texture_compression_dxt1",
     "GL_ANGLE_texture_compression_dxt3",
@@ -381,7 +383,6 @@ constexpr const char* kValidRequestableExtensions[] = {
 // WebGL extensions.
 constexpr const char* kValidRequestableWebGLDraftExtensions[] = {
     "GL_ANGLE_base_vertex_base_instance",
-    "GL_ANGLE_shader_pixel_local_storage",
 };
 
 void RequestExtensions(gl::GLApi* api,

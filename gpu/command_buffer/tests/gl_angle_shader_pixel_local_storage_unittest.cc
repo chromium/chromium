@@ -23,14 +23,6 @@ class ANGLEShaderPixelLocalStorageTest : public testing::Test {
 
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    if (gles2::UsePassthroughCommandDecoder(command_line)) {
-      // TODO(crbug.com/40278644): fix the test for passthrough.
-      GTEST_SKIP();
-    }
-#endif
-
     GLManager::Options options;
     options.context_type = CONTEXT_TYPE_OPENGLES3;
     gl_.Initialize(options);
@@ -118,7 +110,7 @@ TEST_F(ANGLEShaderPixelLocalStorageTest,
        GetFramebufferPixelLocalStorageParameter) {
   if (!gl_.IsInitialized() ||
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
-    return;
+    GTEST_SKIP();
   }
 
   GLuint fbo;
@@ -177,7 +169,7 @@ TEST_F(ANGLEShaderPixelLocalStorageTest,
 TEST_F(ANGLEShaderPixelLocalStorageTest, LoadStoreTokens) {
   if (!gl_.IsInitialized() ||
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
-    return;
+    GTEST_SKIP();
   }
 
 // Test skipped on Intel-based Macs when running Metal. crbug.com/326278125
@@ -226,7 +218,7 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, LoadStoreTokens) {
 TEST_F(ANGLEShaderPixelLocalStorageTest, DrawAPI) {
   if (!gl_.IsInitialized() ||
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
-    return;
+    GTEST_SKIP();
   }
 
 // Test skipped on Intel-based Macs when running Metal. crbug.com/326278125
@@ -306,7 +298,7 @@ void main() {
 TEST_F(ANGLEShaderPixelLocalStorageTest, BlockEmulatedDefaultFramebuffer) {
   if (!gl_.IsInitialized() ||
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
-    return;
+    GTEST_SKIP();
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);

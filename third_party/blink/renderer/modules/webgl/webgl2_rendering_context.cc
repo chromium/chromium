@@ -120,7 +120,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension<WebGLPolygonMode>();
   RegisterExtension<WebGLProvokingVertex>();
   RegisterExtension<WebGLRenderSharedExponent>();
-  RegisterExtension<WebGLShaderPixelLocalStorage>(kDraftExtension);
+  RegisterExtension<WebGLShaderPixelLocalStorage>();
   RegisterExtension<WebGLStencilTexturing>();
 }
 

@@ -3686,6 +3686,19 @@
       "features": [
         "finish_gl_before_dawn_vulkan_image_access"
       ]
+    },
+    {
+      "id": 505,
+      "cr_bugs": [40259276],
+      "description": "Disable GL_ANGLE_shader_pixel_local_storage on Imagination's GLES driver",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "gl_type": "angle_gles",
+      "disabled_extensions": [
+        "GL_ANGLE_shader_pixel_local_storage"
+      ]
     }
   ]
 }

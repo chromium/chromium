@@ -219,6 +219,9 @@ crbug.com/angleproject/3031 [ win angle-opengl passthrough ] WebglExtension_KHR_
 # Not available on Mesa older than 21.3.0
 crbug.com/1473838 [ linux intel passthrough ] WebglExtension_EXT_render_snorm [ Skip ]
 
+# Extension is blocklisted on Imagination's OpenGL ES driver
+crbug.com/angleproject/40096838 [ android android-pixel-10 angle-opengles imagination-technologies passthrough ] WebglExtension_WEBGL_shader_pixel_local_storage [ Skip ]
+
 # This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
 # proprietary codecs.
 crbug.com/1136205 [ chromeos ] conformance/textures/misc/video-rotation.html [ Skip ]
