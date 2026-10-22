@@ -1,0 +1,533 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+agentic_review {
+  capability_groups {
+    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-data-source-only-for-interaction-queries.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocol-identify-items-by-stable-id-not-index.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocol-no-mediator-sender-parameter.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocol-state-independence-complete-values.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocols-no-cpp-strings.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocols-pass-simple-value-types-not-model-objects.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?BUILD\\.gn"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/depend-on-granular-feature-targets-in-earlgrey-tests.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?DEPS"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/clean-up-obsolete-deps-include-rules.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?DEPS"
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:gn|gni)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/omit-unused-gn-dependencies.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?DEPS"
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/scope-deps-include-rules-to-innermost-directory.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|css|h|html|js|mm|ts)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-fallback-conditions-in-comments.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|js|mm|ts|tsx)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/extract-repeated-condition-checks-into-helper.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?test/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/assert-injected-dependencies-in-constructors.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/accept-webframe-in-javascript-feature-apis.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/align-api-comment-terminology-with-declarations.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/annotate-blocking-scopes-with-scoped-blocking-call.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/assert-invariants-with-check-over-comments.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/assert-required-block-parameters.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/audit-callers-when-relaxing-contract-to-nullptr.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-block-suffix-for-direct-action-methods.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-blocking-main-thread-with-file-io.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-boolean-parameters-in-objective-c-methods.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-capturing-this-in-objc-blocks.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-dangling-untriaged-on-raw-ptr.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-destructive-side-effects-in-predicates.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-dual-ownership-when-transferring-unique-ptr.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-duplicate-feature-flag-cleanup-todos.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-duplicate-invocations-for-conditional-arguments.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-feature-specific-names-for-shared-constants.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-guarding-telemetry-behind-feature-flags.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-intermediate-collection-for-single-element.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-invariant-parameters-in-helpers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-mixing-ivar-and-property-access.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-mutable-setters-for-lifecycle-configuration.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-notreached-in-ui-action-handlers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-placeholder-variables-for-unimplemented-features.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-redundant-conditions-in-nested-checks.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-redundant-semicolons.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-repurposing-properties-with-different-semantics.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-returning-collections-in-recursive-traversals.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-runtime-string-splitting-for-static-lists.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-speculative-null-checks-on-invariant-dependencies.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-static-cast-between-optional-types.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-tautological-method-doc-comments.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-unapproved-disk-space-queries.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-unretained-for-background-tasks.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-weakptr-as-lazy-initialization-cache.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/batch-expensive-bookmark-model-observer-updates.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/bind-objc-objects-weakly-in-base-bind.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/blocks-must-be-kept-short-single-method-call.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/cache-parsed-origin-filters-at-initialization.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/call-class-methods-over-internal-storage-members.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/capitalize-all-words-in-pascal-case-names.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/centralize-once-guard-in-shared-handler.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/chain-callbacks-with-then.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/check-gurl-is-valid-before-spec.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/choose-smallest-crash-key-buffer-size.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/clean-up-feature-declarations-on-flag-removal.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/clear-container-adapters-by-reassignment.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/combine-consecutive-early-return-guards.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/command-handler-property-naming-convention.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/comment-empty-method-bodies-with-noop.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/compare-unvalidated-integers-against-cast-enums.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/consolidate-duplicate-conditionals-into-if-else.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/consolidate-repeated-constants-in-anonymous-namespace.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinator-teardown-disconnects-mediator-in-stop.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/copy-or-swap-mutable-collection-before-reentrant-iteration.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/deactivate-constraints-before-reinstalling.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/declare-keyed-service-factory-dependencies-with-depends-on.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/defer-branch-specific-instantiation.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/define-dedicated-entrypoint-enum-values.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/define-subcomponent-types-in-subcomponent-header.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/do-not-post-tasks-solely-to-record-histograms.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-api-contracts-by-observable-behavior.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-enums-and-enumerator-values.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-file-scope-helpers-returning-abstract-types.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-member-declaration-order-for-destruction-safety.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-non-obvious-conditions-and-state-transitions.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-non-obvious-execution-order-and-side-effects.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-non-obvious-function-parameters.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-reasons-for-asynchronous-workaround-dispatches.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/enumerate-all-enum-cases-in-switch.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/extract-complex-inline-callbacks-to-methods.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/extract-duplicate-logic-into-shared-helper.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/extract-explanatory-boolean-variables-for-conditions.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/extract-nested-conditionals-to-helpers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/format-lint-directives-on-dedicated-lines-with-repo-paths.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/format-parameter-name-comments-with-equals.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/gate-new-features-behind-feature-flag.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/guard-cancelable-callback-pointer-before-cancel.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/guard-enclosing-pointer-before-member-access.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/guard-high-frequency-state-updates-with-early-return.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/guard-optional-dereference-after-reset.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/guard-ui-updates-with-change-checks.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/guard-unsupported-legacy-methods-under-feature-flags.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/hoist-duplicate-statements-out-of-conditional-branches.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/hoist-loop-invariant-operations.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/hook-up-coordinator-presentation-methods.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/inject-security-feature-scripts-at-document-start.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/inject-sync-test-data-into-fake-server.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/invoke-callback-on-early-return.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/match-header-filenames-to-defined-types.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/match-parameter-names-between-declaration-and-definition.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/match-pragma-mark-to-interface-name.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/mediator-class-name-suffix-reserved.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/name-accessibility-identifiers-by-role.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/name-browser-state-path-as-state-path.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/name-condition-enums-as-state-not-availability.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/name-parameterized-block-types-with-typedef.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/name-parameters-to-match-target-entity.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/no-check-or-notreached-on-script-messages.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/no-internal-codenames-in-public-code.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/observe-model-via-scoped-observation-bridges.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/omit-no-op-super-method-overrides.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/omit-redundant-protocol-method-declarations.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/pass-sink-parameters-by-value-and-move.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/pass-weakptr-to-async-callbacks.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/phrase-declaration-comments-in-third-person-indicative.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-enum-class-over-ns-enum.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-enum-modes-and-switch-over-ad-hoc-ladders.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-optional-or-value-over-unique-ptr.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-positive-condition-in-if-else.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-raw-pointer-over-weakptr-for-sync-params.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-spin-run-loop-over-dummy-grey-condition.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-unique-ptr-over-scoped-refptr-for-single-ownership.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-value-or-for-default-fallback.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-weakptr-over-observer-reset.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/preserve-existing-comments-on-unchanged-declarations.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/preserve-return-in-switch-dispatch.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/remove-obsolete-ios-version-checks.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/remove-unused-file-scope-constants.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/remove-unused-member-variables-and-teardown.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/reserve-leading-underscores-for-instance-variables.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/retain-incomplete-todos-with-followup-bugs.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/reuse-local-variable-for-repeated-flag-or-predicate-checks.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/scope-enums-to-handled-variants.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/spell-out-objective-c-parameter-names.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/state-mandatory-restrictions-definitively-in-comments.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/suppress-failing-tests-in-test-expectations.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/terminate-switch-cases-with-break.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/test-feature-flag-enabled-and-disabled-states.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/test-queue-filtering-rejection-and-retention.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/todo-comments-must-include-crbug-and-ios-label.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/unregister-observers-or-use-scoped-observation.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-chromium-task-runner-not-grand-central-dispatch.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-consistent-domain-terminology.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-cpp-naming-in-objective-cpp.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-delegating-constructor-syntax.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-import-instead-of-include.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-nullptr-for-cpp-and-nil-for-objective-c.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-repeating-callback-for-multiple-invocations.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/use-subsystem-presentation-helpers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/verify-embedder-support-before-removing-feature-overrides.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/verify-isolation-info-origin-before-dereference.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/verify-user-action-and-histogram-metrics-in-tests.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/wrap-base-features-in-is-enabled-helper.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/wrap-symbols-in-backticks-in-objective-c-comments.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:gn|gni)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/verify-compilation-for-non-default-build-flags.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:grd|grdp)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/remove-unused-grd-resources-and-assets.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression: "tools/metrics/histograms/metadata/ios/(?:.*/)?enums\\.xml"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefix-and-number-histogram-enums.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm|swift)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-informal-acronyms-in-comments.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-trivial-single-use-helpers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/combine-guard-and-predicate-in-boolean-return.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|m)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/all-ios-source-files-must-be-objective-cpp.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-naming-local-helpers-identically-to-imported-functions.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:gn|gni)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/omit-redundant-target-label-in-gn-deps.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/propagate-public-header-dependencies-via-public-deps.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/set-copyright-year-to-creation-year.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/chrome/browser/shared/ui/symbols/symbol_info\\.mm"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/use-centralized-symbol-enum-for-icons.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/app-configuration-for-egtest-feature-flags.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-bare-id-in-objc.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-naive-xor-in-hash.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-on-prefix-for-objective-c-methods.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-raw-ptr-in-objective-c-properties.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-redundant-std-string-to-nsstring-conversion.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-stacking-visual-effect-views.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-unused-methods-in-public-headers.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/avoid-weakself-in-short-lived-task-callbacks.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/blocks-must-not-capture-strong-self.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/cache-bar-button-items-across-ui-updates.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/cache-bounds-for-path-and-mask-updates.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/cache-invariant-strings-in-frame-callbacks.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/capture-weak-delegate-in-completion-blocks.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinator-does-not-drive-mediator-business-logic.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/declare-objective-c-string-constants-as-nsstring.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/declare-protocol-conformance-when-implementing-handlers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/declare-subclass-hooks-in-subclassing-header.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/delegate-methods-pass-sender-as-first-parameter.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/delegate-properties-and-ivars-must-be-weak.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-delegate-invocation-context-and-callback-obligation.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-objective-c-class-and-interface-declarations.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-secondary-cleanups-in-commit-messages.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/encapsulate-view-configuration-before-hierarchy-insertion.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/import-header-over-casting-forward-declared-type.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/inspect-headers-via-nsurlsession-data-delegate.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/line-in-the-sand-no-backbone-containers-in-mediators.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/match-api-available-to-minimum-required-sdk-version.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/mediator-deterministic-cleanup-in-disconnect.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/mediator-observes-web-state-list-for-active-tab.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/mediator-pushes-state-to-consumer-no-polling.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/mutate-constraint-constant-instead-of-recreating.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/name-ui-interaction-handlers-after-user-actions.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/no-auto-type-deduction-for-basic-objective-c-alloc-init.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/omit-empty-objective-c-class-extensions.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/omit-redundant-unavailable-initializers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-base-time-over-ns-date.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/prefer-pref-service-over-ns-user-defaults.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-readonly-properties-over-getter-methods.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-sys-utf8-to-nsstring.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefix-boolean-objective-c-methods-with-assertive-verbs.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/reserve-set-prefix-for-property-accessors.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/size-symbols-with-point-size-helpers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/sort-adopted-protocols-alphabetically.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/sort-forward-declarations-alphabetically.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/sync-custom-property-accessors-with-declarations.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/synthesize-protocol-properties-over-trivial-getters.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-copy-for-properties-with-mutable-counterparts.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-objc-cast-strict-for-objective-c-downcasting.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression: "ios/chrome/(?:.*/)?BUILD\\.gn"
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/use-semantic-colors-never-hardcoded-hex.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:js|ts)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-unmanaged-high-frequency-listeners-in-web-scripts.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/evaluate-cheap-checks-before-computed-style.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/filter-non-content-tags-in-dom-text-extraction.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.gn"
+    path_expression: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:cc|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/wire-test-targets-into-test-aggregators.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-member-variable-lifecycle-and-invariants.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/header-declaration-order-properties-methods-inits.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-forward-declarations-over-imports-in-headers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/remove-unused-forward-declarations.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/retain-preference-constants-until-callers-migrated.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.mm"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-redundant-copy-of-local-mutable-object.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-redundant-table-view-begin-end-updates.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-unconditional-button-configuration-copy.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/check-non-nil-before-collection-insert.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/lazily-instantiate-optional-subviews.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/no-redundant-nsstring-defensive-copy.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/omit-redundant-nil-check-before-message-send.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-last-or-first-object-over-boundary-subscript.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-unnamed-namespace-helpers-over-private-methods.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/use-dot-syntax-for-property-access.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.swift"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/guard-weak-let-with-swift-version.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*_egtest\\.mm"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/earl-grey-tests-must-subclass-chrome-test-case.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/evaluate-earl-grey-skip-guards-before-setup.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.(?:h|mm)"
+    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/bundle-complex-command-parameters-into-command-objects.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
+    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/command-methods-must-return-void.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/command-protocols-flat-no-protocol-inheritance.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/commands-pass-minimal-context-not-ui-or-geometry.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/commands-strictly-for-ui-transitions-not-model-mutations.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*flag_description[^/]*"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/avoid-tautological-flag-descriptions.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:cc|h|mm)"
+    path_expression: "ios/(?:.*/)?test/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression: "ios/(?:.*/)?testing/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/assert-specific-values-over-non-empty-in-tests.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/document-test-case-purpose.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/extract-repeated-test-setup-into-fixture-helpers.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/name-test-methods-after-outcome-and-condition.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/prefer-assert-for-test-preconditions.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/remove-obsolete-todos-when-reenabling-tests.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/remove-unused-scoped-feature-list-in-tests.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?about_flags[^/]*"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/append-new-flags-to-end-of-about-flags.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?coordinator/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinators-must-be-browser-scoped-not-tab-scoped.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/unregister-command-dispatch-in-stop.md"
+  }
+  capability_groups {
+    path_expression: "ios/.*"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/annotate-deps-include-rules-with-keep-sorted.md"
+    rules: "ios/chrome/browser/intelligence/kb/general/split-large-changes-or-bypass-presubmit-warning.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/chrome/common/ui/util/constraints_ui_util\\.[^/]*"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/prefer-add-same-constraints.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinators-do-not-own-lifecycle.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/no-named-cpp-namespaces-in-ios-chrome.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/null-check-get-active-web-state.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/query-browser-wide-prefs-from-local-state.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/use-current-browser-provider-for-active-browser.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression: "ios/public/provider/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/implement-provider-apis-across-all-targets.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/disconnect-mediator-in-test-teardown.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinator-use-self-profile.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/no-browser-command-dispatcher-in-scene-components.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/reset-scoped-ui-blocker-on-ui-teardown.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/synthesize-base-navigation-controller-in-coordinators.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?BUILD\\.gn"
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression: "ios/public/provider/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/place-model-components-in-model-subdirectory.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?DEPS"
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/avoid-direct-dependencies-between-ui-and-model.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/avoid-reentrant-webstatelist-mutations.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/avoid-unneeded-keyed-services-in-coordinators.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/clear-syncable-consent-prefs-on-account-change.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/defer-startup-policy-and-capability-checks.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/inject-command-handlers-over-pass-through-delegates.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/keyed-service-inject-dependencies-over-profile.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/rely-on-keyed-service-factory-default-incognito-behavior.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression: "ios/web_view/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/register-keyed-service-preferences-in-factory.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:gn|gni)"
+    path_expression: "ios/chrome/test/(?:.*/)?[^/]*\\.(?:gn|gni)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/avoid-legacy-ui-bundled-directories.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinator-view-controller-property-for-containment-only.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/dispatch-and-cleanup-before-overlay-ui-did-finish-dismissal.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/local-command-protocols-stay-in-feature-ui.md"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/verify-signin-enabled-before-account-menu.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/autofill/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/isolate-sensitive-autofill-cache-by-origin.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/fullscreen/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/exit-fullscreen-and-clear-forced-triggers-on-navigation.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/shared/model/(?:.*/)?[^/]*\\.gn"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/decouple-model-objects-from-application-context.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/webui/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/chrome/guard-internal-debug-webui-pages.md"
+  }
+  capability_groups {
+    path_expression: "ios/components/(?:.*/)?[^/]*\\.(?:gn|gni)"
+    path_expression: "ios/web/(?:.*/)?[^/]*\\.(?:gn|gni)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/avoid-embedder-dependencies-in-ios-components.md"
+  }
+  capability_groups {
+    path_expression: "ios/components/security_interstitials/safe_browsing/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/safe-browsing-differentiate-redirect-chains.md"
+  }
+  capability_groups {
+    path_expression: "ios/web_view/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/update-web-view-bridge-implementations-for-shared-protocols.md"
+  }
+  capability_groups {
+    path_expression: "ios/web_view/public/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    rules: "ios/chrome/browser/intelligence/kb/general/export-public-classes-with-cwv-export.md"
+  }
+}

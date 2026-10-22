@@ -1,0 +1,166 @@
+---
+name: ios/document-objective-c-class-and-interface-declarations
+rubric: readability
+severity: should_fix
+---
+
+**Rule.** Precede Objective-C class, class extension, category, protocol
+(`@interface`, `@protocol`), method, property, and initializer declarations with
+doc comments explaining their purpose, responsibilities, parameter semantics,
+and contracts, quoting referenced parameter names, types, and symbols in
+backticks (`symbol`), and documenting delegate or observer callback invocation
+conditions ("Called when ..."). Do not omit doc comments even when a declaration
+appears self-explanatory, and do not leave placeholder comments (such as
+`// TODO: comment`). Begin class comments with a concise overview before
+enumerating details, document concrete behaviors and managed data, and keep
+protocol comments focused on the abstract role the conforming object plays
+rather than naming a concrete conforming class or coupling the protocol to
+specific subviews or granular method-level operations. When declaring designated
+initializers (`NS_DESIGNATED_INITIALIZER`) or methods that accept parameters
+that may be nil, state which parameters are optional and the default or fallback
+behavior when they are nil. In Objective-C++ implementation (`.mm`) files,
+precede every private method, internal initializer, or helper that is not
+declared in an interface or protocol with a doc comment detailing its purpose,
+preconditions, parameters, return value, side effects, and external state
+dependencies (such as orientation, layout traits, or active presentation mode),
+and place such helpers under `#pragma mark - Private` (never under a protocol or
+superclass section). Conversely, do not repeat method-level doc comments on
+implementations of protocol, delegate, observer-bridge, or superclass methods
+grouped under `#pragma mark - <ProtocolName>`, and do not write comments that
+merely describe trivial forwarding; the header or protocol declaration is the
+authoritative contract, and implementation comments are reserved for non-obvious
+internal mechanics.
+
+**Why.** Public header files and declarations serve as the authoritative API
+contract for clients and future maintainers; omitting comments on interfaces,
+extensions, accessors, or initializers obscures why they exist, leaves parameter
+expectations and default values ambiguous, and forces callers to inspect
+implementation files. Describing specific subviews, granular operations, or a
+concrete conforming class in protocol comments leaks implementation details into
+abstract contracts and couples callers to a class they should only know through
+the protocol, whereas keeping protocol comments high-level preserves clean
+abstractions while method comments capture granular operations. Because
+nullability annotations (`nonnull`/`nullable`) are disallowed in `//ios/`,
+caller contracts must spell out nil handling and fallback behavior in prose.
+Undeclared private helpers have no header declaration, so a doc comment under
+`#pragma mark - Private` is the only place their parameter contracts and
+external state dependencies are recorded, while repeating doc comments on
+protocol or superclass method implementations clutters implementation files and
+drifts as signatures evolve. Quoting symbols and parameters in backticks avoids
+ambiguity and integrates cleanly with code search tools.
+
+## Examples
+
+Bad:
+
+```cpp
+// Bad: Placeholder TODO and unquoted symbols.
+// Mediator for the Assistant AIM UI.
+@interface AssistantAIMMediator : NSObject
+// TODO: comment
+@property(nonatomic, assign, readonly) BOOL collapsible;
+@end
+
+// Bad: Protocol coupled to concrete subviews and a concrete conformer; method
+// comment restates the selector.
+// Protocol for FacePileView to update its shareButton background color.
+// Implemented by FacePileViewController.
+@protocol FacePileColorUpdater <NSObject>
+// Updates the face pile background color.
+- (void)updateFacePileBackgroundColor:(UIColor*)color;
+@end
+
+// Bad: Undocumented nil fallback on the initializer.
+@interface ConsentViewController : UIViewController
+// Initializer for the consent view controller.
+- (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged
+                                 country:(NSString*)country
+    NS_DESIGNATED_INITIALIZER;
+@end
+
+// In FeatureHandler.h:
+@protocol FeatureHandlerDelegate
+// Bad: Missing callback invocation trigger.
+- (void)featureHandler:(FeatureHandler*)handler didCompleteWithResult:(BOOL)result;
+@end
+
+// In FeatureHandler.mm:
+#pragma mark - FeatureHandlerDelegate
+
+// Bad: Redundant doc comment duplicating the protocol declaration.
+// Called when the feature handling sequence completes.
+- (void)featureHandler:(FeatureHandler*)handler didCompleteWithResult:(BOOL)result {
+  [self handleCompletionWithResult:result];
+}
+
+#pragma mark - IdentityManagerObserving
+
+// Bad: Redundant doc comment on an observer bridge implementation.
+// Called when a user changes the sign-in state.
+- (void)primaryAccountDidChange:(const signin::PrimaryAccountChangeEvent&)event {
+  [self updateUI];
+}
+
+#pragma mark - ChromeTableViewController
+
+// Bad: Private helper misplaced under the superclass mark, undocumented.
+- (void)updateLayoutWithAnimationDuration:(NSTimeInterval)duration {
+  [self updateUIForScene:self.view.window.windowScene duration:duration];
+}
+```
+
+Good:
+
+```cpp
+// Good: Class documented with purpose and managed data; symbols quoted in backticks.
+// Mediator that manages the business logic and data for the AI mode Assistant.
+@interface AssistantAIMMediator : NSObject
+// Whether the menu expands or collapses when tapped.
+@property(nonatomic, assign, readonly) BOOL collapsible;
+@end
+
+// Good: Protocol focused on the abstract role.
+// Receives theme color updates for views that display a face pile.
+@protocol FacePileColorUpdater <NSObject>
+// Applies `color` as the background of the face pile.
+- (void)updateFacePileBackgroundColor:(UIColor*)color;
+@end
+
+// Good: Optional nil parameter documented on the designated initializer.
+@interface ConsentViewController : UIViewController
+// Designated initializer for the consent view controller. `country` is
+// optional; passing nil displays the default consent UI.
+- (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged
+                                 country:(NSString*)country
+    NS_DESIGNATED_INITIALIZER;
+@end
+
+// In FeatureHandler.h:
+// Delegate receiving lifecycle notifications from `FeatureHandler`.
+@protocol FeatureHandlerDelegate
+// Called when the feature handling sequence completes; `result` is YES when
+// the feature was applied.
+- (void)featureHandler:(FeatureHandler*)handler didCompleteWithResult:(BOOL)result;
+@end
+
+// In FeatureHandler.mm:
+#pragma mark - FeatureHandlerDelegate
+
+- (void)featureHandler:(FeatureHandler*)handler didCompleteWithResult:(BOOL)result {
+  [self handleCompletionWithResult:result];
+}
+
+#pragma mark - IdentityManagerObserving
+
+- (void)primaryAccountDidChange:(const signin::PrimaryAccountChangeEvent&)event {
+  [self updateUI];
+}
+
+#pragma mark - Private
+
+// Updates the layout for the current window scene orientation and presentation
+// mode, animating view transitions over `duration`.
+- (void)updateLayoutWithAnimationDuration:(NSTimeInterval)duration {
+  [self updateUIForScene:self.view.window.windowScene duration:duration];
+}
+```
