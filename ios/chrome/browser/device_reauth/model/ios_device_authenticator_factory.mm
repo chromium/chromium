@@ -22,7 +22,7 @@ DeviceAuthenticatorProxyFactory::BuildServiceInstanceFor(
   return std::make_unique<DeviceAuthenticatorProxy>();
 }
 
-std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+std::unique_ptr<IOSDeviceAuthAvailabilityChecker>
 CreateIOSDeviceAuthAvailabilityChecker(
     id<ReauthenticationProtocol> reauth_module) {
   return std::make_unique<IOSDeviceAuthAvailabilityChecker>(reauth_module);

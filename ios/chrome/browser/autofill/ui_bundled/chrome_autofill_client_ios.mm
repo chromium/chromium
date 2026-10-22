@@ -49,6 +49,7 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -185,8 +186,15 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
                                    ? GetEntityDataManager()
                                    : nullptr) {
     if (base::FeatureList::IsEnabled(kAutofillAiAsyncReauthAvailability)) {
-      if (std::unique_ptr<IOSDeviceAuthenticator> authenticator =
-              GetIOSDeviceAuthenticator("")) {
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kDeviceReauthRefactor)) {
+        if (std::unique_ptr<IOSDeviceAuthAvailabilityChecker> checker =
+                GetIOSDeviceAuthAvailabilityChecker()) {
+          checker->CanAuthenticateWithBiometricOrScreenLock(base::BindOnce(
+              &EntityDataManager::SetReauthAvailability, edm->GetWeakPtr()));
+        }
+      } else if (std::unique_ptr<IOSDeviceAuthenticator> authenticator =
+                     GetIOSDeviceAuthenticator("")) {
         authenticator->CanAuthenticateWithBiometricOrScreenLock(base::BindOnce(
             &EntityDataManager::SetReauthAvailability, edm->GetWeakPtr()));
       }
@@ -755,6 +763,14 @@ bool ChromeAutofillClientIOS::ShouldFormatForLargeKeyboardAccessory() const {
   return YES;
 }
 
+std::unique_ptr<IOSDeviceAuthAvailabilityChecker>
+ChromeAutofillClientIOS::GetIOSDeviceAuthAvailabilityChecker() const {
+  id<ReauthenticationProtocol> reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(profile_)
+          ->GetReauthModule();
+  return CreateIOSDeviceAuthAvailabilityChecker(reauthModule);
+}
+
 std::unique_ptr<IOSDeviceAuthenticator>
 ChromeAutofillClientIOS::GetIOSDeviceAuthenticator(
     std::string histogram) const {
@@ -774,10 +790,7 @@ ChromeAutofillClientIOS::GetDeviceAuthenticator(std::string histogram) const {
 
 std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
 ChromeAutofillClientIOS::GetDeviceAuthAvailabilityChecker() const {
-  id<ReauthenticationProtocol> reauthModule =
-      ReauthenticationServiceFactory::GetForProfile(profile_)
-          ->GetReauthModule();
-  return CreateIOSDeviceAuthAvailabilityChecker(reauthModule);
+  return GetIOSDeviceAuthAvailabilityChecker();
 }
 
 std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {

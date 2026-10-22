@@ -10,10 +10,10 @@
 #import "components/device_reauth/device_authenticator_common.h"
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
+class IOSDeviceAuthAvailabilityChecker;
 class IOSDeviceAuthenticator;
 
 namespace device_reauth {
-class DeviceAuthAvailabilityChecker;
 class DeviceAuthParams;
 }
 
@@ -35,7 +35,7 @@ class DeviceAuthenticatorProxyFactory final
 
 // Creates an `IOSDeviceAuthAvailabilityChecker`. `reauth_module` is the
 // component that provides the device reauth functionalities.
-std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+std::unique_ptr<IOSDeviceAuthAvailabilityChecker>
 CreateIOSDeviceAuthAvailabilityChecker(
     id<ReauthenticationProtocol> reauth_module);
 

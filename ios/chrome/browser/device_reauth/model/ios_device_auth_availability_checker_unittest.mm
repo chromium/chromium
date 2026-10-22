@@ -6,6 +6,8 @@
 
 #import <memory>
 
+#import "base/test/task_environment.h"
+#import "base/test/test_future.h"
 #import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -53,6 +55,23 @@ TEST_F(IOSDeviceAuthAvailabilityCheckerTest, NeitherAvailable) {
 
   EXPECT_FALSE(checker()->CanAuthenticateWithBiometrics());
   EXPECT_FALSE(checker()->CanAuthenticateWithBiometricOrScreenLock());
+}
+
+// Tests that async auth availability is correctly returned.
+TEST_F(IOSDeviceAuthAvailabilityCheckerTest, ReauthAvailabilityAsync) {
+  base::test::TaskEnvironment task_environment;
+
+  fake_reauth_module().canAttempt = YES;
+  base::test::TestFuture<bool> future_available;
+  checker()->CanAuthenticateWithBiometricOrScreenLock(
+      future_available.GetCallback());
+  EXPECT_TRUE(future_available.Get());
+
+  fake_reauth_module().canAttempt = NO;
+  base::test::TestFuture<bool> future_unavailable;
+  checker()->CanAuthenticateWithBiometricOrScreenLock(
+      future_unavailable.GetCallback());
+  EXPECT_FALSE(future_unavailable.Get());
 }
 
 }  // namespace

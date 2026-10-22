@@ -42,6 +42,7 @@
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
+#import "ios/chrome/browser/device_reauth/model/ios_device_auth_availability_checker.h"
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator.h"
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator_factory.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"

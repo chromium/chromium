@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DEVICE_REAUTH_MODEL_IOS_DEVICE_AUTH_AVAILABILITY_CHECKER_H_
 #define IOS_CHROME_BROWSER_DEVICE_REAUTH_MODEL_IOS_DEVICE_AUTH_AVAILABILITY_CHECKER_H_
 
+#import "base/functional/callback_forward.h"
 #import "components/device_reauth/device_auth_availability_checker.h"
 
 @protocol ReauthenticationProtocol;
@@ -23,6 +24,11 @@ class IOSDeviceAuthAvailabilityChecker
 
   // Returns whether biometrics or screen lock are available for a given device.
   bool CanAuthenticateWithBiometricOrScreenLock() override;
+
+  // Asynchronously checks whether biometrics or screen lock are available for a
+  // given device.
+  void CanAuthenticateWithBiometricOrScreenLock(
+      base::OnceCallback<void(bool)> callback);
 
  private:
   id<ReauthenticationProtocol> reauth_module_;
