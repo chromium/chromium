@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/notifications/passphrase_textfield.h",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/browser/ui/screen_capture_notification_ui.h",
   "+chrome/grit",

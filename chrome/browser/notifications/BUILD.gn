@@ -100,13 +100,9 @@ source_set("notifications") {
       "chrome_ash_message_center_client.h",
       "notification_platform_bridge_chromeos.h",
       "notification_platform_bridge_delegate.h",
-      "passphrase_textfield.h",
     ]
 
-    public_deps += [
-      "//components/app_icon_loader",
-      "//ui/views",
-    ]
+    public_deps += [ "//components/app_icon_loader" ]
   }
 
   if (is_win) {
@@ -283,7 +279,6 @@ source_set("impl") {
     sources += [
       "chrome_ash_message_center_client.cc",
       "notification_platform_bridge_chromeos.cc",
-      "passphrase_textfield.cc",
     ]
 
     deps += [

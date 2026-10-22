@@ -12,11 +12,11 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/notifications/passphrase_textfield.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/security_token_pin/error_generator.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -181,7 +181,8 @@ void RequestPinView::Init() {
                              views::LayoutAlignment::kStart);
 
   // Textfield to enter the PIN/PUK.
-  textfield_ = AddChildView(std::make_unique<chromeos::PassphraseTextfield>());
+  textfield_ = AddChildView(std::make_unique<views::Textfield>());
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   textfield_->set_controller(this);
   textfield_->SetEnabled(true);
   textfield_->GetViewAccessibility().SetName(*header_label_);

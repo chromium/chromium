@@ -23,7 +23,6 @@ source_set("notifications") {
 
   deps = [
     "//chrome/app:generated_resources",
-    "//chrome/browser/notifications",
     "//chrome/browser/ui/views:layout_provider",
     "//ui/events",
     "//ui/gfx",

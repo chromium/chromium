@@ -14,9 +14,9 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/notifications/passphrase_textfield.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -145,8 +145,9 @@ void RequestSystemProxyCredentialsView::Init() {
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_SYSTEM_PROXY_AUTH_DIALOG_PASSWORD_LABEL)));
   password_label->SetEnabled(true);
-  password_textfield_ = auth_container->AddChildView(
-      std::make_unique<chromeos::PassphraseTextfield>());
+  password_textfield_ =
+      auth_container->AddChildView(std::make_unique<views::Textfield>());
+  password_textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   password_textfield_->SetEnabled(true);
   password_textfield_->GetViewAccessibility().SetName(*password_label);
   auth_container->AddPaddingRow(views::TableLayout::kFixedSize,
