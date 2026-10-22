@@ -200,6 +200,7 @@ source_set("unit_tests") {
   if (is_linux || is_mac || is_win) {
     deps += [
       "//chrome/browser/component_updater",
+      "//components/component_updater:component_updater_paths",
       "//components/live_caption:constants",
       "//components/soda",
       "//components/soda:constants",

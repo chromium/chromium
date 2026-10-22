@@ -4,12 +4,15 @@
 
 #include "chrome/browser/accessibility/soda_installer_impl.h"
 
+#include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/soda/constants.h"
@@ -38,11 +41,13 @@ class MockSodaInstallerImpl : public SodaInstallerImpl {
   ~MockSodaInstallerImpl() override = default;
 
   void InstallSoda(PrefService* global_prefs) override {
+    ASSERT_TRUE(base::CreateDirectory(speech::GetSodaDirectory()));
     OnSodaBinaryInstalled();
   }
 
   void InstallLanguage(std::string_view language,
                        PrefService* global_prefs) override {
+    ASSERT_TRUE(base::CreateDirectory(speech::GetSodaLanguagePacksDirectory()));
     SodaInstaller::RegisterLanguage(language, global_prefs);
     OnSodaLanguagePackInstalled(speech::GetLanguageCode(language));
   }
@@ -121,6 +126,8 @@ class SodaInstallerImplTest : public testing::Test {
     soda_installer_impl_->soda_installer_initialized_ = initialized;
   }
 
+  base::ScopedPathOverride component_user_dir_override_{
+      component_updater::DIR_COMPONENT_USER};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<MockSodaInstallerImpl> soda_installer_impl_;
@@ -403,6 +410,51 @@ TEST_F(SodaInstallerImplTest, ExpirationMetricsTest) {
       GetRedownloadedAfterExpirationMetricForLanguage(
           GetLanguageName(kEnglishLocale)),
       true, 1);
+}
+
+TEST_F(SodaInstallerImplTest, ReinstallSodaAfterExpiration) {
+  Init();
+  pref_service_->SetFilePath(prefs::kSodaBinaryPath,
+                             base::FilePath(FILE_PATH_LITERAL("soda.so")));
+  ASSERT_TRUE(base::PathExists(speech::GetSodaDirectory()));
+  ASSERT_TRUE(base::PathExists(speech::GetSodaLanguagePacksDirectory()));
+
+  SetLiveCaptionEnabled(false);
+  SetUninstallTimer(kEnglishLocale);
+  SetSodaInstallerInitialized(false);
+  FastForwardBy(kSodaUninstallTime);
+  Init();
+  EXPECT_FALSE(base::PathExists(speech::GetSodaDirectory()));
+  EXPECT_FALSE(base::PathExists(speech::GetSodaLanguagePacksDirectory()));
+  EXPECT_TRUE(pref_service_->GetFilePath(prefs::kSodaBinaryPath).empty());
+
+  // Re-enabling Live Caption in the same session should reinstall SODA without
+  // scheduling another asynchronous directory deletion that wipes the SODA
+  // directories.
+  SetLiveCaptionEnabled(true);
+  Init();
+  EXPECT_TRUE(IsSodaInstalled(kEnglishLocale));
+  EXPECT_TRUE(base::PathExists(speech::GetSodaDirectory()));
+  EXPECT_TRUE(base::PathExists(speech::GetSodaLanguagePacksDirectory()));
+}
+
+TEST_F(SodaInstallerImplTest, PreemptiveDownloadAfterExpiration) {
+  {
+    base::test::ScopedFeatureList disabled_feature;
+    disabled_feature.InitAndDisableFeature(media::kPreemptiveSodaDownload);
+    Init();
+    SetLiveCaptionEnabled(false);
+    SetUninstallTimer(kEnglishLocale);
+    SetSodaInstallerInitialized(false);
+    FastForwardBy(kSodaUninstallTime);
+  }
+
+  base::test::ScopedFeatureList enabled_feature;
+  enabled_feature.InitAndEnableFeature(media::kPreemptiveSodaDownload);
+  Init();
+  EXPECT_TRUE(IsSodaInstalled(kEnglishLocale));
+  EXPECT_TRUE(base::PathExists(speech::GetSodaDirectory()));
+  EXPECT_TRUE(base::PathExists(speech::GetSodaLanguagePacksDirectory()));
 }
 
 }  // namespace speech

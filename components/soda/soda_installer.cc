@@ -99,11 +99,6 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     return;
   }
 
-  // Uninstall unused language packs, even if features using SODA are enabled.
-  // `MaybeUninstallSoda` will not uninstall default languages for enabled
-  // features.
-  MaybeUninstallSoda(profile_prefs, global_prefs);
-
   bool preemptive_download_enabled =
       base::FeatureList::IsEnabled(media::kPreemptiveSodaDownload) &&
       !global_prefs->GetBoolean(prefs::kSodaPreemptiveDownloadInitiated);
@@ -116,6 +111,11 @@ void SodaInstaller::Init(PrefService* profile_prefs,
                                       CHECK_DEREF(profile_prefs)),
         global_prefs);
   }
+
+  // Uninstall unused language packs, even if features using SODA are enabled.
+  // `MaybeUninstallSoda` will not uninstall default languages for enabled
+  // features.
+  MaybeUninstallSoda(profile_prefs, global_prefs);
 
   // Register SODA if a feature is actively using SODA or used it recently.
   if (IsAnyFeatureUsingSodaEnabled(profile_prefs) ||
@@ -426,7 +426,9 @@ void SodaInstaller::MaybeUninstallSoda(PrefService* profile_prefs,
   }
 
   // If no registered language packs remain, uninstall the SODA library.
-  if (global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks).size() == 0) {
+  if (!languages_to_uninstall.empty() &&
+      !IsAnyFeatureUsingSodaEnabled(profile_prefs) &&
+      global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks).empty()) {
     UninstallSoda(global_prefs);
   }
 }

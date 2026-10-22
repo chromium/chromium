@@ -139,6 +139,7 @@ void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
       base::BindOnce(&SodaInstallerImpl::DeleteSodaFiles));
 
   SodaInstaller::UnregisterLanguages(global_prefs);
+  global_prefs->ClearPref(prefs::kSodaBinaryPath);
 
   soda_binary_installed_ = false;
   is_soda_downloading_ = false;
