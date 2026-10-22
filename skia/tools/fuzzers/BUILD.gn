@@ -36,7 +36,13 @@ if (is_win && use_fuzzing_engine) {
   static_library("skia_encoder_fuzzer_lib") {
     sources = [ "//third_party/skia/fuzz/FuzzEncoders.cpp" ]
     configs += [ "//skia:skia_library_config" ]
-    deps = [ "//skia" ]
+
+    # "//skia" depends on partition_alloc privately, but this target compiles
+    # private Skia files that include raw_ptr.h, so it needs the dep directly.
+    deps = [
+      "//base/allocator/partition_allocator/src/partition_alloc:raw_ptr",
+      "//skia",
+    ]
   }
 
   config("skia_test_fonts_includes_config") {
@@ -51,7 +57,13 @@ if (is_win && use_fuzzing_engine) {
     configs += [ "//skia:skia_library_config" ]
 
     public_configs = [ ":skia_test_fonts_includes_config" ]
-    deps = [ "//skia" ]
+
+    # "//skia" depends on partition_alloc privately, but this target compiles
+    # private Skia files that include raw_ptr.h, so it needs the dep directly.
+    deps = [
+      "//base/allocator/partition_allocator/src/partition_alloc:raw_ptr",
+      "//skia",
+    ]
     check_includes = false  # Builds some private Skia files
   }
 
