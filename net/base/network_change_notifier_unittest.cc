@@ -334,20 +334,14 @@ TEST_F(NetworkChangeNotifierConnectionCostTest, GetConnectionCost) {
             NetworkChangeNotifier::GetConnectionCost());
 }
 
-// TODO(crbug.com/575487840): Crashes on iOS simulators in
-// `NetworkChangeNotifierApple::EnsureNetworkPathMonitorStarted()`.
-#if BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR
-#define MAYBE_AddObserver DISABLED_AddObserver
-#else
-#define MAYBE_AddObserver AddObserver
-#endif
-TEST_F(NetworkChangeNotifierConnectionCostTest, MAYBE_AddObserver) {
+TEST_F(NetworkChangeNotifierConnectionCostTest, AddObserver) {
   TestConnectionCostObserver observer;
   EXPECT_NO_FATAL_FAILURE(
       NetworkChangeNotifier::AddConnectionCostObserver(&observer));
   // RunUntilIdle because the secondary work resulting from adding an observer
   // may be posted to a task queue.
   base::RunLoop().RunUntilIdle();
+  NetworkChangeNotifier::RemoveConnectionCostObserver(&observer);
 }
 
 class TestLowLatencyObserver

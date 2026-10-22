@@ -238,11 +238,13 @@ NetworkChangeNotifierApple::NetworkChangeNotifierApple()
 }
 
 NetworkChangeNotifierApple::~NetworkChangeNotifierApple() {
-  StopNetworkPathMonitor();
   ClearGlobalPointer();
   // Delete the ConfigWatcher to join the notifier thread, ensuring that
-  // StartReachabilityNotifications() has an opportunity to run to completion.
+  // SetInitialConnectionType() and StartReachabilityNotifications() have an
+  // opportunity to run to completion before tearing down the path monitor or
+  // reachability state.
   config_watcher_.reset();
+  StopNetworkPathMonitor();
 
 #if defined(COMPILE_OLD_NOTIFIER_IMPL)
   // Now that StartReachabilityNotifications() has either run to completion or
