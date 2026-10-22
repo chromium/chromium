@@ -5,6 +5,7 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_HIGHLIGHT_VIEW_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_HIGHLIGHT_VIEW_H_
 
+#include <memory>
 #include <optional>
 
 #include "ash/ash_export.h"
@@ -12,6 +13,10 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+namespace views {
+class ViewDecoration;
+}  // namespace views
 
 namespace ash {
 
@@ -46,12 +51,17 @@ class ASH_EXPORT SplitViewHighlightView : public views::View {
       bool previews_only,
       bool can_dragged_window_be_snapped);
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   // Determines whether this particular highlight view is located at the right
   // or bottom of the screen. These highlights animate in the opposite direction
   // as left or top highlights, so when we use |SetBounds()| extra calucations
   // have to be done to ensure the animation is correct.
   const bool is_right_or_bottom_;
+
+  std::unique_ptr<views::ViewDecoration> view_decoration_;
 };
 
 }  // namespace ash

@@ -4,6 +4,8 @@
 
 #include "ash/wm/splitview/split_view_highlight_view.h"
 
+#include <memory>
+
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -13,8 +15,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/view_decoration.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -59,18 +64,25 @@ class ClippingObserver : public ui::ImplicitAnimationObserver,
 
 SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
     : is_right_or_bottom_(is_right_or_bottom) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  SetBackground(views::CreateLayerBasedRoundedBackground(
+      cros_tokens::kCrosSysPrimary,
+      gfx::RoundedCornersF(kHighlightScreenRoundRectRadius)));
 
-  SetBackground(views::CreateRoundedRectBackground(
-      cros_tokens::kCrosSysPrimary, kHighlightScreenRoundRectRadius));
-
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kHighlightScreenRoundRectRadius,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow));
+  view_decoration_ = std::make_unique<views::ViewDecoration>(this);
+  view_decoration_->SetRoundedCornerRadius(kHighlightScreenRoundRectRadius);
 }
 
 SplitViewHighlightView::~SplitViewHighlightView() = default;
+
+void SplitViewHighlightView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  view_decoration_->SetHighlightBorder(
+      views::HighlightBorder::GetHighlightColor(
+          *this, views::HighlightBorder::Type::kHighlightBorderNoShadow),
+      views::HighlightBorder::GetBorderColor(
+          *this, views::HighlightBorder::Type::kHighlightBorderNoShadow));
+}
 
 void SplitViewHighlightView::SetBounds(
     const gfx::Rect& bounds,
