@@ -16,6 +16,7 @@
 #include "base/uuid.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/backend.h"
+#include "services/on_device_model/decision/decision_model.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/on_device_model_executor.h"
 #include "services/on_device_model/ml_internal_buildflags.h"
@@ -163,6 +164,20 @@ void OnDeviceModelService::LoadTextSafetyModel(
   safety_model_holder_.AsyncCall(&SafetyModelHolder::Reset)
       .WithArgs(std::move(params), std::move(model));
 #endif
+}
+
+void OnDeviceModelService::LoadDecisionModel(
+    mojom::DecisionModelParamsPtr params,
+    mojo::PendingReceiver<mojom::DecisionModel> model,
+    LoadDecisionModelCallback callback) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelService::LoadDecisionModel");
+  auto decision_model = DecisionModel::Create(std::move(params));
+  if (!decision_model) {
+    std::move(callback).Run(mojom::LoadModelResult::kFailedToLoadLibrary);
+    return;
+  }
+  decision_models_.Add(std::move(decision_model), std::move(model));
+  std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
 
 void OnDeviceModelService::SetForceQueueingForTesting(bool force_queueing) {

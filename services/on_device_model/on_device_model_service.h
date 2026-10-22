@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   void LoadTextSafetyModel(
       mojom::TextSafetyModelParamsPtr params,
       mojo::PendingReceiver<mojom::TextSafetyModel> model) override;
+  void LoadDecisionModel(mojom::DecisionModelParamsPtr params,
+                         mojo::PendingReceiver<mojom::DecisionModel> model,
+                         LoadDecisionModelCallback callback) override;
   void GetDeviceAndPerformanceInfo(
       GetDeviceAndPerformanceInfoCallback callback) override;
 
@@ -70,6 +73,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   std::set<std::unique_ptr<mojom::OnDeviceModel>, base::UniquePtrComparator>
       models_;
   scoped_refptr<Backend> backend_;
+  mojo::UniqueReceiverSet<mojom::DecisionModel> decision_models_;
 #if !BUILDFLAG(IS_FUCHSIA)
   base::SequenceBound<SafetyModelHolder> safety_model_holder_ =
       SafetyModelHolder::Create();

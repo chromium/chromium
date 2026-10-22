@@ -417,6 +417,63 @@ interface TextSafetyModel {
   StartSession@0(pending_receiver<TextSafetySession> session);
 };
 
+// The type of a decision question.
+enum DecisionQuestionType {
+  kBoolean,
+  kChoice,
+  kScore,
+};
+
+// A candidate option for a decision question.
+struct DecisionOption {
+  // Label for the option (e.g. "true", "bug", "4").
+  string label;
+  // Optional criteria shown to the model next to the label; empty if not
+  // provided.
+  string description;
+};
+
+// A single question in a decision query.
+struct DecisionQuestion {
+  // Unique question identifier.
+  string id;
+  // Question or classification criteria evaluated by the model.
+  string prompt;
+  DecisionQuestionType type;
+  // Candidate options. For `kBoolean`, always "true" then "false".
+  array<DecisionOption> options;
+};
+
+// The query schema used to configure a DecisionSession.
+struct DecisionQuery {
+  // Optional background instructions or task context shared across questions;
+  // empty if not provided.
+  string shared_context;
+  // Ordered list of questions to evaluate in each Decide() call.
+  array<DecisionQuestion> questions;
+};
+
+// Per-question option probabilities returned by `DecisionSession.Decide()`.
+struct DecisionQuestionResult {
+  // Probabilities for each candidate option in `DecisionQuestion`, in the same
+  // order as `DecisionQuestion.options`.
+  array<float> probabilities;
+};
+
+// A session with a loaded decision model configured with a `DecisionQuery`.
+interface DecisionSession {
+  // Evaluates `input` against the session's `DecisionQuery` and returns
+  // per-question results in the same order as `DecisionQuery.questions`, or
+  // null on failure.
+  Decide(string input) => (array<DecisionQuestionResult>? results);
+};
+
+// A loaded decision model that can be shared across sessions.
+interface DecisionModel {
+  // Starts a session with this model for the given `query`.
+  StartSession(DecisionQuery query, pending_receiver<DecisionSession> session);
+};
+
 // Classifies the device based on how fast it is estimated to be able to run a
 // model.
 [Stable, Extensible]

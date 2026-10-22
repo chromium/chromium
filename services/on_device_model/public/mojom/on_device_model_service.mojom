@@ -90,6 +90,15 @@ struct TextSafetyModelParams {
   mojo_base.mojom.ReadOnlyFile? language_model;
 };
 
+// Params to describe a decision model to load.
+struct DecisionModelParams {
+  // Backend type of the model.
+  ModelBackendType backend_type;
+
+  // Assets for the model.
+  ModelAssets assets;
+};
+
 // An observer to report the current platform model loading progress.
 [Stable]
 interface PlatformModelProgressObserver {
@@ -148,6 +157,12 @@ interface OnDeviceModelService {
   // The model is disconnected on any errors with it.
   LoadTextSafetyModel(
       TextSafetyModelParams params, pending_receiver<TextSafetyModel> model);
+
+  // Initializes a new DecisionModel with the provided `params`. If the model
+  // cannot be created the model pipe will be reset.
+  LoadDecisionModel(
+      DecisionModelParams params, pending_receiver<DecisionModel> model)
+      => (LoadModelResult result);
 
   // Returns performance benchmark results for the device as well as
   // its info (vendor id, device id, driver version, fp16 support).

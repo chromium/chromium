@@ -36,6 +36,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       ":ml_internal_buildflags",
       "//build:chromecast_buildflags",
       "//components/optimization_guide/core:features",
+      "//services/on_device_model/decision",
       "//services/on_device_model/fake",
       "//services/on_device_model/ml:ml_no_internal",
 
