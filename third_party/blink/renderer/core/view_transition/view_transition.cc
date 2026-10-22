@@ -680,6 +680,10 @@ void ViewTransition::ProcessCurrentState() {
           break;
         }
 
+        if (style_tracker_->IsOldSnapshotFrozen()) {
+          style_tracker_->CaptureResolved();
+        }
+
         switch (creation_type_) {
           case CreationType::kScript: {
             CHECK(script_delegate_);

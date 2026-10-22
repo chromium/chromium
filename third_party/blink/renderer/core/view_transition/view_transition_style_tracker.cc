@@ -1048,6 +1048,7 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
 
     auto* element_data = MakeGarbageCollected<ElementData>();
     element_data->target_element = element;
+    element_data->is_document_element = element->IsDocumentElement();
     element_data->element_index = next_index++;
     element_data->old_snapshot_id = snapshot_id;
     element_data->class_list = GetDocumentScopedClassList(element);
@@ -1268,6 +1269,7 @@ bool ViewTransitionStyleTracker::Start() {
     auto& element_data = element_data_map_.find(name)->value;
     DCHECK(!element_data->target_element);
     element_data->target_element = element;
+    element_data->is_document_element = element->IsDocumentElement();
     element_data->new_snapshot_id = snapshot_id;
     element_data->class_list = GetDocumentScopedClassList(element);
 
@@ -1636,7 +1638,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
     ElementData* element_data,
     const int max_capture_size_in_layout,
     bool& needs_style_invalidation) {
-  if (!element_data->target_element) {
+  if (!element_data->target_element || state_ == State::kOldSnapshotFrozen) {
     // For an exiting element, there is no "new" geometry. But if it's parented
     // to a group that has a "new" geometry, the UA stylesheet needs a
     // transform to correctly position this element relative to the parent's
@@ -2514,7 +2516,7 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetReferenceRect(
 
 bool ViewTransitionStyleTracker::ElementData::
     ShouldPropagateVisualOverflowRectAsMaxExtentsRect() const {
-  return !target_element || !target_element->IsDocumentElement();
+  return !is_document_element;
 }
 
 void ViewTransitionStyleTracker::ElementData::CacheStateForOldSnapshot() {

@@ -2425,4 +2425,60 @@ TEST_P(ViewTransitionTest, ScopeSnapshotLayerWithoutSvgFilter_FeatureDisabled) {
       WebFeature::kViewTransitionPreventSvgFilterPaint));
 }
 
+TEST_P(ViewTransitionTest, ScopedViewTransitionRemoveChildDuringCallback) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #scope {
+        width: 100px;
+        height: 100px;
+      }
+      #child {
+        width: 50px;
+        height: 50px;
+        view-transition-name: child-item;
+      }
+    </style>
+    <div id="scope">
+      <div id="child"></div>
+    </div>
+  )HTML");
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  Element* scope_element = GetDocument().getElementById(AtomicString("scope"));
+  Element* child_element = GetDocument().getElementById(AtomicString("child"));
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+  auto start_setup_callback =
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+
+  auto* transition = ScopedViewTransition::startViewTransition(
+      script_state, *scope_element,
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
+  auto* vt = transition->GetViewTransitionForTest();
+
+  // Run the capture frame and commit it (without finishing Viz capture rects
+  // yet) so the DOM callback runs while waiting for capture rects.
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(GetState(transition), State::kCapturing);
+  vt->WillCommitCompositorFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kWaitingForCaptureRects);
+
+  // Remove the named child and run a main-frame lifecycle update before capture
+  // rects arrive from the compositor.
+  child_element->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kWaitingForCaptureRects);
+
+  // Now finish the capture directive and verify the transition animates.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+}
+
 }  // namespace blink

@@ -376,6 +376,8 @@ class ViewTransitionStyleTracker
     // Auto-generated names do not appear in reflection methods such as
     // getAnimations.
     bool is_generated_name;
+
+    bool is_document_element = false;
   };
 
   // Remaps the element data's snapshot matrix to be relative to the new parent
