@@ -20,24 +20,24 @@ include_rules = [
   "+chrome/browser/ash/login/demo_mode",
   "+chrome/browser/ash/remote_apps",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/extensions/chrome_app_icon.h",
   "+chrome/browser/extensions/context_menu_matcher.h",
-  "+chrome/browser/extensions/install_tracker_factory.h",
   "+chrome/browser/extensions/menu_manager.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
-  "+chrome/browser/ui/web_applications",
-  "+chrome/browser/web_applications/mojom",
-  "+chrome/browser/web_applications/test",
-  "+chrome/browser/web_applications/web_app_command_manager.h",
-  "+chrome/browser/web_applications/web_app_icon_manager.h",
-  "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
   ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/extensions/chrome_app_icon.h",
+    "+chrome/browser/extensions/install_tracker_factory.h",
+    "+chrome/browser/ui/web_applications",
+    "+chrome/browser/web_applications/mojom",
+    "+chrome/browser/web_applications/test",
+    "+chrome/browser/web_applications/web_app_command_manager.h",
+    "+chrome/browser/web_applications/web_app_icon_manager.h",
+    "+chrome/browser/web_applications/web_app_install_info.h",
     "+chrome/browser/web_applications/web_app_provider.h",
   ],
   ".*_browsertest\\.cc": [
