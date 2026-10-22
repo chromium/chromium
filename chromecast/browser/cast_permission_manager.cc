@@ -48,7 +48,12 @@ blink::mojom::PermissionStatus GetPermissionStatusFromCastPermissionUserData(
   }
 
   if (!cast_permission_user_data->GetEnforceFeaturePermissions()) {
-    return blink::mojom::PermissionStatus::GRANTED;
+    return IsRequestingOriginAllowed(
+               requesting_origin, app_web_url,
+               cast_permission_user_data
+                   ->GetAdditionalFeaturePermissionOrigins())
+               ? blink::mojom::PermissionStatus::GRANTED
+               : blink::mojom::PermissionStatus::DENIED;
   }
 
   // Permissions that are granted by default should have been added to the
@@ -96,22 +101,19 @@ blink::mojom::PermissionStatus GetPermissionStatusInternal(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin) {
+  DCHECK(render_frame_host);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
+  DCHECK(web_contents);
   const cast_receiver::PermissionsManager* permissions_manager =
       cast_receiver::PermissionsManager::GetInstance(*web_contents);
   const auto permission_type =
       blink::PermissionDescriptorToPermissionType(permission_descriptor);
   if (permissions_manager) {
-    const blink::mojom::PermissionStatus permission_status =
-        permissions_manager->GetPermissionStatus(permission_type,
-                                                 requesting_origin);
-    if (permission_status == blink::mojom::PermissionStatus::GRANTED) {
-      return permission_status;
-    }
+    return permissions_manager->GetPermissionStatus(permission_type,
+                                                    requesting_origin);
   }
 
-  DCHECK(render_frame_host);
   CastPermissionUserData* cast_permission_user_data =
       CastPermissionUserData::FromWebContents(web_contents);
 
@@ -136,7 +138,6 @@ blink::mojom::PermissionStatus GetPermissionStatusInternal(
 CastPermissionManager::CastPermissionManager() {}
 
 CastPermissionManager::~CastPermissionManager() {}
-
 
 void CastPermissionManager::ResetPermission(blink::PermissionType permission,
                                             const GURL& requesting_origin,

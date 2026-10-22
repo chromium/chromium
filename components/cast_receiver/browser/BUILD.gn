@@ -108,7 +108,10 @@ source_set("permissions_manager") {
     "//base",
     "//content",
   ]
-  friend = [ ":unit_tests" ]
+  friend = [
+    ":unit_tests",
+    "//chromecast/browser:unittests",
+  ]
   if (enable_cast_receiver) {
     friend += [ ":browser" ]
   }
