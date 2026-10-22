@@ -41,6 +41,7 @@ namespace storage {
 // TODO(ericu): Add a method that will give a unique filename for a data file.
 class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxDirectoryDatabase {
  public:
+  // -1 is used as the invalid value. 0 is used for the root directory.
   using FileId = int64_t;
 
   struct COMPONENT_EXPORT(STORAGE_BROWSER) FileInfo {
