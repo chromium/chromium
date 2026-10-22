@@ -152,6 +152,9 @@ WebUIReadOnlyOmnibox::OnOmniboxAction(
 
     case toolbar_ui_api::mojom::OmniboxAction::Tag::kDropFile:
       return OnDropFile(*action->get_drop_file());
+
+    case toolbar_ui_api::mojom::OmniboxAction::Tag::kDragStart:
+      return OnDragStart();
   }
 }
 
@@ -1072,6 +1075,16 @@ WebUIReadOnlyOmnibox::OnDropFile(
       SetUserText(text, /*update_popup=*/false);
       SelectAll(false);
     }
+  }
+  return base::ok(std::monostate());
+}
+
+base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+WebUIReadOnlyOmnibox::OnDragStart() {
+  // Like OmniboxViewViews::OnMouseDragged(), close the popup, since the user
+  // may want to drop the text on something that the popup covers.
+  if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
+    popup_closer->CloseWithReason(omnibox::PopupCloseReason::kTextDrag);
   }
   return base::ok(std::monostate());
 }

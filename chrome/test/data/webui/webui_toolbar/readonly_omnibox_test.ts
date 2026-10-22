@@ -1559,4 +1559,89 @@ suite('ReadonlyOmnibox', function() {
     assertTrue(!!args[0].dropText);
     assertEquals('dropped text', args[0].dropText.text);
   });
+
+  // Like the native omnibox, dragging text out asks the browser to close the
+  // suggestions popup, so that it does not cover the drop target.
+  test('Dragging text notifies the browser', async () => {
+    const input = getTextInput();
+    input.focus();
+    input.value = 'hello world';
+    input.setSelectionRange(0, input.value.length);
+    omnibox.adjustedCopyResult = {
+      adjustedText: 'hello world',
+      adjustedUrl: null,
+      pageTitle: null,
+    };
+    await microtasksFinished();
+
+    uiHandler.reset();
+    omnibox.dispatchEvent(new DragEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: new DataTransfer(),
+    }));
+    await microtasksFinished();
+
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].dragStart);
+  });
+
+  // The adjusted copy result is fetched asynchronously, so a drag can start
+  // before it is set. The selected text is still dragged, so the browser is
+  // still notified.
+  test(
+      'Dragging text before the adjusted copy result is set notifies the ' +
+          'browser',
+      async () => {
+        const input = getTextInput();
+        input.focus();
+        input.value = 'hello world';
+        input.setSelectionRange(0, input.value.length);
+        // Let the selection change trigger its own copy result refresh first,
+        // so that it does not overwrite the result cleared below.
+        await uiHandler.whenCalled('adjustOmniboxTextForCopy');
+        await microtasksFinished();
+        omnibox.adjustedCopyResult = null;
+        await microtasksFinished();
+
+        uiHandler.reset();
+        omnibox.dispatchEvent(new DragEvent('dragstart', {
+          bubbles: true,
+          cancelable: true,
+          dataTransfer: new DataTransfer(),
+        }));
+        await microtasksFinished();
+
+        assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+        const args = uiHandler.getArgs('onOmniboxAction');
+        assertTrue(!!args[0].dragStart);
+      });
+
+  // A drag without selected text carries no text, so it does not notify the
+  // browser.
+  test(
+      'Dragging without selected text does not notify the browser',
+      async () => {
+        const input = getTextInput();
+        input.focus();
+        input.value = 'hello world';
+        input.setSelectionRange(0, 0);
+        omnibox.adjustedCopyResult = {
+          adjustedText: '',
+          adjustedUrl: null,
+          pageTitle: null,
+        };
+        await microtasksFinished();
+
+        uiHandler.reset();
+        omnibox.dispatchEvent(new DragEvent('dragstart', {
+          bubbles: true,
+          cancelable: true,
+          dataTransfer: new DataTransfer(),
+        }));
+        await microtasksFinished();
+
+        assertEquals(0, uiHandler.getCallCount('onOmniboxAction'));
+      });
 });

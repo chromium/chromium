@@ -8,6 +8,7 @@ import "components/browser_apis/browser_controls/browser_controls_api_data_model
 import "components/browser_apis/ui_controllers/toolbar/extensions_bar_data_model.mojom";
 import "components/browser_apis/ui_controllers/toolbar/icon_handle.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
+import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
@@ -203,6 +204,8 @@ union OmniboxAction {
   OmniboxActionPointer pointer;
   OmniboxActionDropText drop_text;
   OmniboxActionDropFile drop_file;
+  // Notifies the browser the user started dragging text out of the omnibox.
+  mojo_base.mojom.Empty drag_start;
 };
 
 struct ReloadControlState {

@@ -50,6 +50,7 @@ interface OmniboxInputDelegate {
       element: ReadonlyOmniboxElement, dragText: OmniboxActionDropText): void;
   handleDropFile(
       element: ReadonlyOmniboxElement, dragFile: OmniboxActionDropFile): void;
+  handleDragStart(element: ReadonlyOmniboxElement): void;
 }
 
 // Implementation of input handling that works by forwarding the relevant
@@ -179,6 +180,12 @@ class MojoOmniboxInputDelegate implements OmniboxInputDelegate {
       void {
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
       dropFile,
+    });
+  }
+
+  handleDragStart(_: ReadonlyOmniboxElement): void {
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      dragStart: {},
     });
   }
 }
@@ -1050,6 +1057,15 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   private onDragStart_(e: DragEvent): void {
     this.isDraggingFromSelf_ = true;
+
+    // Like the native omnibox, close the popup when text is dragged. Check the
+    // selection rather than whether the drag data below is written, since the
+    // asynchronous `adjustedCopyResult` may not be set yet, in which case the
+    // selected text is still dragged by default.
+    const input = this.$.textInput.inputElement;
+    if (input.selectionStart !== input.selectionEnd) {
+      this.inputDelegate_.handleDragStart(this);
+    }
 
     if (e.dataTransfer &&
         this.populateDataTransfer_(e.dataTransfer, /*forClipboard=*/ false)) {

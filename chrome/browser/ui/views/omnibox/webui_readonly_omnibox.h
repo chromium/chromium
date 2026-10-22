@@ -215,6 +215,7 @@ class WebUIReadOnlyOmnibox
       const toolbar_ui_api::mojom::OmniboxActionDropText& drop_text);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropFile(
       const toolbar_ui_api::mojom::OmniboxActionDropFile& drop_file);
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDragStart();
 
   void OnContextMenuReady(views::Widget* widget,
                           const gfx::Point& point,

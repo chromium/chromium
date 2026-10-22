@@ -42,8 +42,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -1556,6 +1558,14 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
         base::StrCat({"el => el.hasFocus() && ", condition})));
   }
 
+  // Returns whether the omnibox suggestions popup is open.
+  bool IsOmniboxPopupOpen() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetLocationBar()
+        ->GetOmniboxController()
+        ->IsPopupOpen();
+  }
+
 #if defined(USE_AURA)
   // The drag data expected from the omnibox. Like the native omnibox, both copy
   // and move are always allowed.
@@ -1715,6 +1725,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
   Omnibox_DragPlainText_StateAfterDrop
 #define MAYBE_Omnibox_DragPlainText_StateAfterCancel \
   Omnibox_DragPlainText_StateAfterCancel
+#define MAYBE_Omnibox_DragPlainText_PopupAfterDrop \
+  Omnibox_DragPlainText_PopupAfterDrop
+#define MAYBE_Omnibox_DragPlainText_PopupAfterCancel \
+  Omnibox_DragPlainText_PopupAfterCancel
 #define MAYBE_Omnibox_DragHttpsUrl Omnibox_DragHttpsUrl
 #define MAYBE_Omnibox_DragHttpsUrl_StateAfterDrop \
   Omnibox_DragHttpsUrl_StateAfterDrop
@@ -1739,6 +1753,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
   DISABLED_Omnibox_DragPlainText_StateAfterDrop
 #define MAYBE_Omnibox_DragPlainText_StateAfterCancel \
   DISABLED_Omnibox_DragPlainText_StateAfterCancel
+#define MAYBE_Omnibox_DragPlainText_PopupAfterDrop \
+  DISABLED_Omnibox_DragPlainText_PopupAfterDrop
+#define MAYBE_Omnibox_DragPlainText_PopupAfterCancel \
+  DISABLED_Omnibox_DragPlainText_PopupAfterCancel
 #define MAYBE_Omnibox_DragHttpsUrl DISABLED_Omnibox_DragHttpsUrl
 #define MAYBE_Omnibox_DragHttpsUrl_StateAfterDrop \
   DISABLED_Omnibox_DragHttpsUrl_StateAfterDrop
@@ -1844,6 +1862,76 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
       CheckJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
                       "el => el.omniboxViewState.userInputInProgress"),
       CheckOmniboxAfterDragOut("hello world"));
+#endif
+}
+
+// Typed text, with the suggestions popup that typing opened, dropped on an
+// external target that copies it. Like the native omnibox, dragging the text
+// closes the popup, so that it does not cover the drop target, and the popup
+// stays closed after the drop.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+                       MAYBE_Omnibox_DragPlainText_PopupAfterDrop) {
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+
+  RunTestSequence(
+      WaitForToolbarLoaded(), NavigateWebContents(TabId(), initial_url),
+      WaitForJsResultAt(WebUIToolbarId(), kTextInputDeepQuery,
+                        "el => el.value.includes('title1')"),
+      TypeInOmniboxAndSelectAll("hello world"),
+      WaitForAdjustedCopyUrl(
+          GURL(),
+          "el.omniboxViewState.userInputInProgress && "
+          "el.adjustedCopyResult.adjustedText === 'hello world'"),
+      PollUntil(
+          base::BindLambdaForTesting([this]() { return IsOmniboxPopupOpen(); }),
+          "Popup is open"),
+      DragFromOmniboxAndCheck({.text = u"hello world"}, kTextSpanDeepQuery,
+                              ui::mojom::DragOperation::kCopy),
+      PollUntil(base::BindLambdaForTesting(
+                    [this]() { return !IsOmniboxPopupOpen(); }),
+                "Popup is closed"),
+      // Round trip to the toolbar, so that a reopening caused by the drag
+      // would have reached the browser, before checking again.
+      CheckJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
+                      "el => !el.isPopupOpen"),
+      CheckResult(
+          base::BindLambdaForTesting([this]() { return IsOmniboxPopupOpen(); }),
+          false, "Popup stays closed"));
+#endif
+}
+
+// Same as Omnibox_DragPlainText_PopupAfterDrop, but the drag is cancelled, or
+// dropped where no target accepts it.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+                       MAYBE_Omnibox_DragPlainText_PopupAfterCancel) {
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+
+  RunTestSequence(
+      WaitForToolbarLoaded(), NavigateWebContents(TabId(), initial_url),
+      WaitForJsResultAt(WebUIToolbarId(), kTextInputDeepQuery,
+                        "el => el.value.includes('title1')"),
+      TypeInOmniboxAndSelectAll("hello world"),
+      WaitForAdjustedCopyUrl(
+          GURL(),
+          "el.omniboxViewState.userInputInProgress && "
+          "el.adjustedCopyResult.adjustedText === 'hello world'"),
+      PollUntil(
+          base::BindLambdaForTesting([this]() { return IsOmniboxPopupOpen(); }),
+          "Popup is open"),
+      DragFromOmniboxAndCheck({.text = u"hello world"}, kTextSpanDeepQuery,
+                              ui::mojom::DragOperation::kNone),
+      PollUntil(base::BindLambdaForTesting(
+                    [this]() { return !IsOmniboxPopupOpen(); }),
+                "Popup is closed"),
+      // Round trip to the toolbar, so that a reopening caused by the drag
+      // would have reached the browser, before checking again.
+      CheckJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
+                      "el => !el.isPopupOpen"),
+      CheckResult(
+          base::BindLambdaForTesting([this]() { return IsOmniboxPopupOpen(); }),
+          false, "Popup stays closed"));
 #endif
 }
 
