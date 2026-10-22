@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
@@ -44,10 +45,8 @@ class FileChooserChromeOs::Core : public ui::SelectFileDialog::Listener {
  private:
   void RunCallback(const FileChooser::Result& result);
 
-  void Cleanup();
-
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  const raw_ref<AshProxy, LeakedDanglingUntriaged> ash_;
+  const raw_ref<AshProxy> ash_;
   FileChooser::ResultCallback callback_;
 };
 
