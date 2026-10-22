@@ -776,8 +776,12 @@ export class CdpTarget {
     }
 
     if (CdpTarget.isFrameTarget(this.#targetType)) {
-      // Geolocation, script execution, certificate errors, touch, and media emulation
-      // are only supported on frame targets.
+      // CSP bypass, geolocation, script execution, certificate errors, touch,
+      // and media emulation are only supported on frame targets.
+      if (config.bypassCSP !== undefined) {
+        promises.push(this.setBypassCSP(config.bypassCSP));
+      }
+
       if (config.geolocation !== undefined && config.geolocation !== null) {
         promises.push(this.setGeolocationOverride(config.geolocation));
       }
@@ -1002,6 +1006,19 @@ export class CdpTarget {
         locale,
       });
     }
+  }
+
+  async setBypassCSP(bypassCSP: true | null): Promise<void> {
+    if (!CdpTarget.isFrameTarget(this.#targetType)) {
+      // Bypassing CSP is only supported on frame targets.
+      return;
+    }
+    // In Chromium, `Page.setBypassCSP` only takes effect when a new document is
+    // created (i.e. on the next navigation), and does not bypass
+    // `frame-ancestors`.
+    await this.cdpClient.sendCommand('Page.setBypassCSP', {
+      enabled: bypassCSP === true,
+    });
   }
 
   async setScriptingEnabled(scriptingEnabled: false | null): Promise<void> {

@@ -2099,6 +2099,14 @@ export class BrowsingContextImpl {
     );
   }
 
+  async setBypassCSP(bypassCSP: true | null): Promise<void> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setBypassCSP(bypassCSP),
+      ),
+    );
+  }
+
   async setScriptingEnabled(scriptingEnabled: false | null): Promise<void> {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(

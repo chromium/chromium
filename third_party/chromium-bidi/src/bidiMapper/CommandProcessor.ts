@@ -305,9 +305,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseReloadParams(command.params),
         );
       case 'browsingContext.setBypassCSP':
-        this.#parser.parseSetBypassCspParams(command.params);
-        throw new UnsupportedOperationException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#browsingContextProcessor.setBypassCSP(
+          this.#parser.parseSetBypassCspParams(command.params),
         );
       case 'browsingContext.setViewport':
         return await this.#browsingContextProcessor.setViewport(

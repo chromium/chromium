@@ -201,6 +201,34 @@ export class BrowsingContextProcessor {
     return await context.print(params);
   }
 
+  async setBypassCSP(
+    params: BrowsingContext.SetBypassCspParameters,
+  ): Promise<EmptyResult> {
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
+        {
+          bypassCSP: params.bypass,
+        },
+        params.contexts,
+        params.userContexts,
+      );
+
+    await Promise.all(
+      relatedBrowsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setBypassCSP(config.bypassCSP ?? null);
+      }),
+    );
+
+    return {};
+  }
+
   async setViewport(
     params: BrowsingContext.SetViewportParameters,
   ): Promise<EmptyResult> {
