@@ -28,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 
 namespace extensions {
@@ -109,6 +110,9 @@ DocumentScanAPIHandler::DocumentScanAPIHandler(
     : browser_context_(browser_context) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context));
+  if (user_manager::UserManager::IsInitialized()) {
+    user_manager_observation_.Observe(user_manager::UserManager::Get());
+  }
 }
 
 DocumentScanAPIHandler::~DocumentScanAPIHandler() = default;
@@ -146,7 +150,7 @@ void DocumentScanAPIHandler::ExtensionCleanup(const ExtensionId& id) {
   extension_state_.erase(id);
 }
 
-void DocumentScanAPIHandler::Shutdown() {
+void DocumentScanAPIHandler::ClearExtensionsState() {
   while (!extension_state_.empty()) {
     // `ExtensionCleanup` will remove the given item from the map, so this loop
     // will eventually terminate.
@@ -154,11 +158,24 @@ void DocumentScanAPIHandler::Shutdown() {
   }
 }
 
+void DocumentScanAPIHandler::Shutdown() {
+  ClearExtensionsState();
+}
+
 void DocumentScanAPIHandler::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
   ExtensionCleanup(extension->id());
+}
+
+void DocumentScanAPIHandler::ActiveUserChanged(
+    user_manager::User* active_user) {
+  if (ExtensionsBrowserClient::Get()->IsActiveContext(browser_context_)) {
+    return;
+  }
+
+  ClearExtensionsState();
 }
 
 void DocumentScanAPIHandler::SimpleScan(
@@ -180,6 +197,10 @@ void DocumentScanAPIHandler::OnSimpleScanCompleted(
     SimpleScanCallback callback,
     std::optional<api::document_scan::ScanResults> scan_results,
     std::optional<std::string> error) {
+  if (!ExtensionsBrowserClient::Get()->IsActiveContext(browser_context_)) {
+    std::move(callback).Run(std::nullopt, "Document scanning is unavailable from an inactive user profile.");
+    return;
+  }
   std::move(callback).Run(std::move(scan_results), std::move(error));
 }
 
@@ -207,6 +228,12 @@ void DocumentScanAPIHandler::OnScannerListReceived(
     std::unique_ptr<ScannerDiscoveryRunner> runner,
     GetScannerListCallback callback,
     api::document_scan::GetScannerListResponse response) {
+  if (!ExtensionsBrowserClient::Get()->IsActiveContext(browser_context_)) {
+    api::document_scan::GetScannerListResponse denied_response;
+    denied_response.result = api::document_scan::OperationResult::kAccessDenied;
+    std::move(callback).Run(std::move(denied_response));
+    return;
+  }
   // Clear all the previously valid tokens and handles.  The backend has closed
   // any open handles and canceled any active jobs when this extension called
   // GetScannerList.
@@ -272,6 +299,23 @@ void DocumentScanAPIHandler::OnOpenScannerResponse(
   // TODO(crbug.com/479031241): For other operations we don't override the
   // response like this. We should be consistent.
   api_response.scanner_id = scanner_id;
+
+  if (!ExtensionsBrowserClient::Get()->IsActiveContext(browser_context_)) {
+    if (api_response.result == api::document_scan::OperationResult::kSuccess &&
+        api_response.scanner_handle.has_value() &&
+        !api_response.scanner_handle->empty()) {
+      lorgnette::CloseScannerRequest request;
+      request.mutable_scanner()->set_token(api_response.scanner_handle.value());
+      ash::LorgnetteScannerManagerFactory::GetForBrowserContext(
+          browser_context_)
+          ->CloseScanner(request, base::DoNothing());
+    }
+    api_response.result = api::document_scan::OperationResult::kAccessDenied;
+    api_response.scanner_handle = std::nullopt;
+    api_response.options = std::nullopt;
+    std::move(callback).Run(std::move(api_response));
+    return;
+  }
 
   if (api_response.result != api::document_scan::OperationResult::kSuccess) {
     std::move(callback).Run(std::move(api_response));
@@ -484,6 +528,20 @@ void DocumentScanAPIHandler::OnStartScanResponse(
   } else {
     api_response.scanner_handle = scanner_handle;
     api_response.result = api::document_scan::OperationResult::kInternalError;
+  }
+
+  if (!ExtensionsBrowserClient::Get()->IsActiveContext(browser_context_)) {
+    if (api_response.result == api::document_scan::OperationResult::kSuccess &&
+        api_response.job.has_value() && !api_response.job.value().empty()) {
+      lorgnette::CancelScanRequest request;
+      request.mutable_job_handle()->set_token(api_response.job.value());
+      ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+          ->CancelScan(request, base::DoNothing());
+    }
+    api_response.result = api::document_scan::OperationResult::kAccessDenied;
+    api_response.job = std::nullopt;
+    std::move(callback).Run(std::move(api_response));
+    return;
   }
 
   if (runner) {

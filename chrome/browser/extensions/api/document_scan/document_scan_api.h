@@ -13,7 +13,18 @@
 
 namespace extensions {
 
-class DocumentScanScanFunction : public ExtensionFunction {
+// Rejects device access from an extension profile that is not the active
+// ChromeOS user context.
+class DocumentScanExtensionFunction : public ExtensionFunction {
+ protected:
+  DocumentScanExtensionFunction();
+  ~DocumentScanExtensionFunction() override;
+
+  // ExtensionFunction:
+  bool PreRunValidation(std::string* error) override;
+};
+
+class DocumentScanScanFunction : public DocumentScanExtensionFunction {
  public:
   DocumentScanScanFunction();
   DocumentScanScanFunction(const DocumentScanScanFunction&) = delete;
@@ -23,6 +34,7 @@ class DocumentScanScanFunction : public ExtensionFunction {
   ~DocumentScanScanFunction() override;
 
   // ExtensionFunction:
+  bool PreRunValidation(std::string* error) override;
   ResponseAction Run() override;
 
  private:
@@ -32,7 +44,8 @@ class DocumentScanScanFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENTSCAN_SCAN)
 };
 
-class DocumentScanGetScannerListFunction : public ExtensionFunction {
+class DocumentScanGetScannerListFunction
+    : public DocumentScanExtensionFunction {
  public:
   DocumentScanGetScannerListFunction();
   DocumentScanGetScannerListFunction(
@@ -53,7 +66,7 @@ class DocumentScanGetScannerListFunction : public ExtensionFunction {
                              DOCUMENTSCAN_GETSCANNERLIST)
 };
 
-class DocumentScanOpenScannerFunction : public ExtensionFunction {
+class DocumentScanOpenScannerFunction : public DocumentScanExtensionFunction {
  public:
   DocumentScanOpenScannerFunction();
   DocumentScanOpenScannerFunction(const DocumentScanOpenScannerFunction&) =
@@ -73,7 +86,8 @@ class DocumentScanOpenScannerFunction : public ExtensionFunction {
                              DOCUMENTSCAN_OPENSCANNER)
 };
 
-class DocumentScanGetOptionGroupsFunction : public ExtensionFunction {
+class DocumentScanGetOptionGroupsFunction
+    : public DocumentScanExtensionFunction {
  public:
   DocumentScanGetOptionGroupsFunction();
   DocumentScanGetOptionGroupsFunction(
@@ -93,7 +107,8 @@ class DocumentScanGetOptionGroupsFunction : public ExtensionFunction {
                              DOCUMENTSCAN_GETOPTIONGROUPS)
 };
 
-class DocumentScanCloseScannerFunction : public ExtensionFunction {
+class DocumentScanCloseScannerFunction
+    : public DocumentScanExtensionFunction {
  public:
   DocumentScanCloseScannerFunction();
   DocumentScanCloseScannerFunction(const DocumentScanCloseScannerFunction&) =
@@ -113,7 +128,7 @@ class DocumentScanCloseScannerFunction : public ExtensionFunction {
                              DOCUMENTSCAN_CLOSESCANNER)
 };
 
-class DocumentScanSetOptionsFunction : public ExtensionFunction {
+class DocumentScanSetOptionsFunction : public DocumentScanExtensionFunction {
  public:
   DocumentScanSetOptionsFunction();
   DocumentScanSetOptionsFunction(const DocumentScanSetOptionsFunction&) =
@@ -132,7 +147,7 @@ class DocumentScanSetOptionsFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("documentScan.setOptions", DOCUMENTSCAN_SETOPTIONS)
 };
 
-class DocumentScanStartScanFunction : public ExtensionFunction {
+class DocumentScanStartScanFunction : public DocumentScanExtensionFunction {
  public:
   DocumentScanStartScanFunction();
   DocumentScanStartScanFunction(const DocumentScanStartScanFunction&) = delete;
@@ -150,7 +165,7 @@ class DocumentScanStartScanFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("documentScan.startScan", DOCUMENTSCAN_STARTSCAN)
 };
 
-class DocumentScanCancelScanFunction : public ExtensionFunction {
+class DocumentScanCancelScanFunction : public DocumentScanExtensionFunction {
  public:
   DocumentScanCancelScanFunction();
   DocumentScanCancelScanFunction(const DocumentScanCancelScanFunction&) =
@@ -169,7 +184,8 @@ class DocumentScanCancelScanFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("documentScan.cancelScan", DOCUMENTSCAN_CANCELSCAN)
 };
 
-class DocumentScanReadScanDataFunction : public ExtensionFunction {
+class DocumentScanReadScanDataFunction
+    : public DocumentScanExtensionFunction {
  public:
   DocumentScanReadScanDataFunction();
   DocumentScanReadScanDataFunction(const DocumentScanReadScanDataFunction&) =

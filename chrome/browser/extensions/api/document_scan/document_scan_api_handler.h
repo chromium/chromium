@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/common/extensions/api/document_scan.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -44,7 +45,8 @@ class StartScanRunner;
 
 // Handles chrome.documentScan API function calls.
 class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
-                               public ExtensionRegistryObserver {
+                               public ExtensionRegistryObserver,
+                               public user_manager::UserManager::UserSessionStateObserver {
  public:
   using SimpleScanCallback = base::OnceCallback<void(
       std::optional<api::document_scan::ScanResults> scan_results,
@@ -82,6 +84,12 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
+
+  // UserManager::UserSessionStateObserver:
+  // Clears state and cancels any pending scans when the user associated with
+  // this profile becomes inactive, preventing background extensions from
+  // retaining scanner access across user boundaries.
+  void ActiveUserChanged(user_manager::User* active_user) override;
 
   // KeyedService implementation:
   void Shutdown() override;
@@ -224,6 +232,9 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
   // Cleanup all handles and state for the given extension.
   void ExtensionCleanup(const ExtensionId& id);
 
+  // Clears state and revokes scanner handles for all extensions.
+  void ClearExtensionsState();
+
   void OnSimpleScanCompleted(
       std::unique_ptr<SimpleScanRunner> runner,
       SimpleScanCallback callback,
@@ -255,6 +266,11 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  base::ScopedObservation<
+      user_manager::UserManager,
+      user_manager::UserManager::UserSessionStateObserver>
+      user_manager_observation_{this};
 
   base::WeakPtrFactory<DocumentScanAPIHandler> weak_ptr_factory_{this};
 };

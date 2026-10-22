@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "extensions/browser/extensions_browser_client.h"
 
 namespace extensions {
 
@@ -24,16 +25,40 @@ constexpr char kScanImageError[] = "Failed to scan image";
 
 }  // namespace
 
+DocumentScanExtensionFunction::DocumentScanExtensionFunction() = default;
+DocumentScanExtensionFunction::~DocumentScanExtensionFunction() = default;
+
+bool DocumentScanExtensionFunction::PreRunValidation(std::string* error) {
+  if (!ExtensionFunction::PreRunValidation(error)) {
+    return false;
+  }
+
+  if (!ExtensionsBrowserClient::Get()->IsActiveContext(browser_context())) {
+    *error =
+        "Document scanning is unavailable from an inactive user profile.";
+    return false;
+  }
+
+  return true;
+}
+
 DocumentScanScanFunction::DocumentScanScanFunction() = default;
 DocumentScanScanFunction::~DocumentScanScanFunction() = default;
+
+bool DocumentScanScanFunction::PreRunValidation(std::string* error) {
+  if (!DocumentScanExtensionFunction::PreRunValidation(error)) {
+    return false;
+  }
+  if (!user_gesture()) {
+    *error = kUserGestureRequiredError;
+    return false;
+  }
+  return true;
+}
 
 ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
   auto params = api::document_scan::Scan::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (!user_gesture()) {
-    return RespondNow(Error(kUserGestureRequiredError));
-  }
 
   std::vector<std::string> mime_types;
   if (params->options.mime_types) {

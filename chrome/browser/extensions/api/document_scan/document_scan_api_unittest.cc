@@ -10,6 +10,10 @@
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/api_test_utils.h"
 
@@ -32,6 +36,16 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
                                     base::Unretained(this))));
     ExtensionApiUnittest::SetUp();
     function_->set_user_gesture(true);
+
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    const AccountId account_id = AccountId::FromUserEmail("test@test");
+    fake_user_manager->AddUser(account_id);
+    fake_user_manager->LoginUser(account_id);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        fake_user_manager->GetActiveUser(), profile());
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+
   }
 
  protected:
@@ -53,11 +67,24 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
 
   scoped_refptr<DocumentScanScanFunction> function_;
   std::optional<base::CallbackListSubscription> create_services_subscription_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+
 };
 
 TEST_F(DocumentScanScanFunctionTest, UserGestureRequiredError) {
   function_->set_user_gesture(false);
   EXPECT_EQ("User gesture required to perform scan",
+            RunFunctionAndReturnError("[{}]"));
+}
+
+TEST_F(DocumentScanScanFunctionTest, InactiveProfileError) {
+  auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(user_manager::UserManager::Get());
+  const AccountId user2 = AccountId::FromUserEmail("user2@test");
+  fake_user_manager->AddUser(user2);
+  fake_user_manager->LoginUser(user2);
+  fake_user_manager->SwitchActiveUser(user2);
+
+  EXPECT_EQ("Document scanning is unavailable from an inactive user profile.",
             RunFunctionAndReturnError("[{}]"));
 }
 

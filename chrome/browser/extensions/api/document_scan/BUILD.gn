@@ -46,6 +46,7 @@ source_set("document_scan") {
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
     "//components/prefs",
+    "//components/user_manager",
     "//ui/native_window_tracker",
     "//ui/views",
   ]
@@ -60,5 +61,6 @@ source_set("profile_prefs_registry_util") {
   deps = [
     "//ash/constants",
     "//components/prefs",
+    "//components/user_manager",
   ]
 }

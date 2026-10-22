@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
@@ -32,6 +33,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
@@ -98,6 +100,12 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     ash::ProfileHelper::Get();  // Instantiate.
 
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    fake_user_manager_ = fake_user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+
+
     create_services_subscription_.emplace(
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
@@ -111,6 +119,11 @@ class DocumentScanAPIHandlerTest : public testing::Test {
           AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345")));
       testing_profile_ =
           profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
+      fake_user_manager_->AddUser(AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345")));
+      fake_user_manager_->LoginUser(AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345")));
+      fake_user_manager_->SwitchActiveUser(AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345")));
+      ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+          fake_user_manager_->GetActiveUser(), testing_profile_);
     }
 
     extension_ = ExtensionBuilder(kExtensionName)
@@ -126,6 +139,8 @@ class DocumentScanAPIHandlerTest : public testing::Test {
   void TearDown() override {
     document_scan_api_handler_.reset();
     testing_profile_ = nullptr;
+    fake_user_manager_ = nullptr;
+    scoped_user_manager_.reset();
     create_services_subscription_.reset();
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
   }
@@ -280,8 +295,12 @@ class DocumentScanAPIHandlerTest : public testing::Test {
         }));
   }
 
+ protected:
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<TestingProfile> testing_profile_;
+  raw_ptr<ash::FakeChromeUserManager> fake_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+ private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::optional<base::CallbackListSubscription> create_services_subscription_;
 };
@@ -1926,6 +1945,110 @@ TEST_F(DocumentScanAPIHandlerTest, Shutdown) {
   EXPECT_EQ(response2.result, api::document_scan::OperationResult::kInvalid);
   EXPECT_EQ(response2.scanner_handle, scanner_handle2);
   EXPECT_FALSE(response2.job.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, OpenScanner_InactiveProfile_ClearsResponse) {
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
+
+  // Open the scanner. The request goes to the backend but the response should be caught and cleared.
+  OpenScannerFuture open_scanner_future;
+  document_scan_api_handler_->OpenScanner(
+      extension_, scanner_id, open_scanner_future.GetCallback());
+
+  // Switch to a different user while OpenScanner response is in flight.
+  const AccountId user2 = AccountId::FromUserEmail("user2@test");
+  fake_user_manager_->AddUser(user2);
+  fake_user_manager_->LoginUser(user2);
+  fake_user_manager_->SwitchActiveUser(user2);
+
+  const auto& open_scanner_response = open_scanner_future.Get();
+
+  EXPECT_EQ(api::document_scan::OperationResult::kAccessDenied,
+            open_scanner_response.result);
+  EXPECT_FALSE(open_scanner_response.scanner_handle.has_value());
+  EXPECT_FALSE(open_scanner_response.options.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, ActiveUserChanged_ClearsState) {
+  const std::string scanner_handle = OpenScannerForExtension(extension_);
+  ASSERT_FALSE(scanner_handle.empty());
+
+  const AccountId user1 = AccountId::FromUserEmail("test@test");
+  const AccountId user2 = AccountId::FromUserEmail("user2@test");
+  fake_user_manager_->AddUser(user2);
+  fake_user_manager_->LoginUser(user2);
+  fake_user_manager_->SwitchActiveUser(user2);
+
+  // Switch back to the original user
+  fake_user_manager_->SwitchActiveUser(user1);
+
+  api::document_scan::StartScanOptions options;
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/true,
+      scanner_handle, std::move(options), future.GetCallback());
+
+  EXPECT_EQ(future.Get().result, api::document_scan::OperationResult::kInvalid);
+}
+
+
+TEST_F(DocumentScanAPIHandlerTest, StartScan_InactiveProfile_CancelsScan) {
+  const std::string scanner_handle = OpenScannerForExtension(extension_);
+  ASSERT_FALSE(scanner_handle.empty());
+
+  auto auto_approve =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(true);
+
+  api::document_scan::StartScanOptions options;
+  options.format = "image/png";
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/true,
+      scanner_handle, std::move(options), future.GetCallback());
+
+  // Switch active user while StartPreparedScan response is in flight.
+  const AccountId user2 = AccountId::FromUserEmail("user2@test");
+  fake_user_manager_->AddUser(user2);
+  fake_user_manager_->LoginUser(user2);
+  fake_user_manager_->SwitchActiveUser(user2);
+
+  const api::document_scan::StartScanResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kAccessDenied);
+  EXPECT_FALSE(response.job.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, GetScannerList_InactiveProfile) {
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
+
+  api::document_scan::DeviceFilter filter;
+  GetScannerListFuture future;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/true,
+      std::move(filter), future.GetCallback());
+
+  const AccountId user2 = AccountId::FromUserEmail("user2@test");
+  fake_user_manager_->AddUser(user2);
+  fake_user_manager_->LoginUser(user2);
+  fake_user_manager_->SwitchActiveUser(user2);
+
+  const api::document_scan::GetScannerListResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kAccessDenied);
+  EXPECT_TRUE(response.scanners.empty());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, SimpleScan_InactiveProfile) {
+  SimpleScanFuture future;
+  document_scan_api_handler_->SimpleScan(
+      extension_, {"image/png"}, future.GetCallback());
+
+  const AccountId user2 = AccountId::FromUserEmail("user2@test");
+  fake_user_manager_->AddUser(user2);
+  fake_user_manager_->LoginUser(user2);
+  fake_user_manager_->SwitchActiveUser(user2);
+
+  const auto& [scan_results, error] = future.Get();
+  EXPECT_FALSE(scan_results.has_value());
+  EXPECT_EQ(error, "Document scanning is unavailable from an inactive user profile.");
 }
 
 }  // namespace
