@@ -352,6 +352,16 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h:PersonalContextCacheReadinessOnFirstInteraction) -->
 
+<!-- LINT.IfChange(AutofillAiPersonalContextDeduplicationAgainstRecordType) -->
+
+<enum name="AutofillAiPersonalContextDeduplicationAgainstRecordType">
+  <int value="0" label="Local"/>
+  <int value="1" label="Server Wallet"/>
+  <int value="2" label="Not deduplicated"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h:AutofillAiPersonalContextDeduplicationAgainstRecordType) -->
+
 <!-- LINT.IfChange(AutofillAiPersonalContextPrefetchEntityValidationResult) -->
 
 <enum name="AutofillAiPersonalContextPrefetchEntityValidationResult">

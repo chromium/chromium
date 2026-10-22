@@ -18,6 +18,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
@@ -704,6 +705,62 @@ TEST_F(
   WaitUntilIdle();
 
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(flight_local));
+}
+
+// Tests that the record type that personal context entities are deduplicated
+// against is logged on every deduplication.
+TEST_F(EntityDataManagerTest_InitiallyEmpty,
+       DedupePersonalContextEntities_LogsAgainstRecordType) {
+  // Wait for the database to load, which also triggers a deduplication.
+  WaitUntilIdle();
+  entity_data_manager().OnPrefetchContextComplete(
+      pcontext_manager(),
+      std::vector<EntityInstance>{test::GetOrderEntityInstanceWithRandomGuid(
+          {.id = u"123",
+           .record_type = EntityInstance::RecordType::kPersonalContext})});
+  WaitUntilIdle();
+
+  entity_data_manager().AddOrUpdateEntityInstance(
+      test::GetOrderEntityInstanceWithRandomGuid(
+          {.id = u"123", .record_type = EntityInstance::RecordType::kLocal}));
+  WaitUntilIdle();
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          "Autofill.Ai.PersonalContext.Deduplication.AgainstRecordType"),
+      BucketsAre(
+          Bucket(
+              PersonalContextDeduplicationAgainstRecordType::kNotDeduplicated,
+              1),
+          Bucket(PersonalContextDeduplicationAgainstRecordType::kLocal, 1)));
+}
+
+// Tests that a personal context entity that is a duplicate of both a local and
+// a Wallet entity is logged as a Wallet duplicate, also per entity type.
+TEST_F(EntityDataManagerTest_InitiallyEmpty,
+       DedupePersonalContextEntities_LogsWalletOverLocal) {
+  entity_data_manager().AddOrUpdateEntityInstance(
+      test::GetOrderEntityInstanceWithRandomGuid(
+          {.id = u"123", .record_type = EntityInstance::RecordType::kLocal}));
+  entity_data_manager().AddOrUpdateEntityInstance(
+      test::GetOrderEntityInstanceWithRandomGuid(
+          {.id = u"123",
+           .record_type = EntityInstance::RecordType::kServerWallet}));
+  WaitUntilIdle();
+
+  entity_data_manager().OnPrefetchContextComplete(
+      pcontext_manager(),
+      std::vector<EntityInstance>{test::GetOrderEntityInstanceWithRandomGuid(
+          {.id = u"123",
+           .record_type = EntityInstance::RecordType::kPersonalContext})});
+  WaitUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Deduplication.AgainstRecordType",
+      PersonalContextDeduplicationAgainstRecordType::kServerWallet, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Deduplication.AgainstRecordType.Order",
+      PersonalContextDeduplicationAgainstRecordType::kServerWallet, 1);
 }
 
 }  // namespace

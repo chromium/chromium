@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -28,6 +29,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
@@ -49,6 +51,36 @@ namespace autofill {
 
 namespace {
 
+// Returns the record type of the Wallet or local entity in `entities` that
+// `pcontext_entity` is a duplicate of, preferring Wallet over local, or
+// `std::nullopt` if there is none.
+std::optional<EntityInstance::RecordType>
+GetPersonalContextDeduplicationAgainstRecordType(
+    const EntityInstance& pcontext_entity,
+    const base::flat_set<EntityInstance, EntityInstance::CompareByGuid>&
+        entities) {
+  // Returns whether `pcontext_entity` is a duplicate of any entity of
+  // `record_type` in `entities`, i.e. matches its merge constraints.
+  auto has_counterpart = [&](EntityInstance::RecordType record_type) {
+    return std::ranges::any_of(entities, [&](const EntityInstance& other) {
+      return other.record_type() == record_type &&
+             pcontext_entity.MatchesMergeConstraintsOf(other);
+    });
+  };
+  // The record types that a Personal Context entity can be deduplicated
+  // against, in order of priority: an entity that is a duplicate of both a
+  // Wallet and a local entity is deduplicated against the Wallet entity.
+  static constexpr std::array kRecordTypesByPriority = {
+      EntityInstance::RecordType::kServerWallet,
+      EntityInstance::RecordType::kLocal};
+  for (EntityInstance::RecordType record_type : kRecordTypesByPriority) {
+    if (has_counterpart(record_type)) {
+      return record_type;
+    }
+  }
+  return std::nullopt;
+}
+
 absl::flat_hash_set<EntityInstance::EntityId>
 FindDuplicatePersonalContextEntities(
     base::flat_set<EntityInstance, EntityInstance::CompareByGuid> entities) {
@@ -58,18 +90,11 @@ FindDuplicatePersonalContextEntities(
       continue;
     }
 
-    const bool is_duplicate =
-        std::ranges::any_of(entities, [&](const EntityInstance& other) {
-          switch (other.record_type()) {
-            case EntityInstance::RecordType::kLocal:
-            case EntityInstance::RecordType::kServerWallet:
-              return entity.MatchesMergeConstraintsOf(other);
-            case EntityInstance::RecordType::kPersonalContext:
-              return false;
-          }
-        });
-
-    if (is_duplicate) {
+    const std::optional<EntityInstance::RecordType> record_type =
+        GetPersonalContextDeduplicationAgainstRecordType(entity, entities);
+    LogPersonalContextDeduplicationAgainstRecordType(entity.type(),
+                                                     record_type);
+    if (record_type) {
       duplicate_guids.insert(entity.guid());
     }
   }
