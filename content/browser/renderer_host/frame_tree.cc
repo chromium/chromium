@@ -498,6 +498,7 @@ FrameTreeNode* FrameTree::AddFrame(
 FrameTreeNode* FrameTree::CreateDelegateFrameTreeNode(
     RenderFrameHostImpl* parent,
     blink::FrameOwnerElementType owner_type) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
   return AddFrame(
       /*parent=*/parent,
       /*process_id=*/parent->GetProcess()->GetDeprecatedID(),
@@ -527,6 +528,7 @@ RenderFrameProxyHost* FrameTree::ConnectOuterDelegateProxy(
     const blink::RemoteFrameToken& frame_token,
     blink::mojom::RemoteFrameInterfacesFromRendererPtr
         remote_frame_interfaces) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
   outer_delegate_node->current_frame_host()
       ->set_inner_tree_main_frame_tree_node_id(root()->frame_tree_node_id());
 
@@ -553,6 +555,7 @@ RenderFrameProxyHost* FrameTree::ConnectOuterDelegateProxy(
 }
 
 bool FrameTree::InitRenderViewForInnerFrameTree() {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
   FrameTreeNode* inner_root = root();
   RenderFrameHostManager* inner_render_manager = inner_root->render_manager();
   RenderViewHost* rvh =

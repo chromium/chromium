@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "v8/include/v8.h"
@@ -150,6 +151,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreatePlaceholderForEmbeddedFrameTree(
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
     mojom::blink::FrameReplicationStatePtr replicated_state) {
   DCHECK(frame_owner);
+  CHECK(RuntimeEnabledFeatures::PersistentWidgetAPIEnabled(
+      frame_owner->GetExecutionContext()));
   auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
   LocalFrame* host_frame = frame_owner->GetDocument().GetFrame();
   frame->InitializeCoreFrame(
@@ -280,6 +283,8 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
   } else if (owner && owner->IsLocal()) {
     // Never gets to this point unless |owner| is a <persistentwidget> element.
     HTMLFrameOwnerElement* owner_element = To<HTMLFrameOwnerElement>(owner);
+    CHECK(RuntimeEnabledFeatures::PersistentWidgetAPIEnabled(
+        owner_element->GetExecutionContext()));
     DCHECK_EQ(owner_element->OwnerType(),
               FrameOwnerElementType::kPersistentwidget);
     LocalFrame& local_frame =

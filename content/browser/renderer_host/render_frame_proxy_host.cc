@@ -54,6 +54,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
@@ -1223,6 +1224,7 @@ void RenderFrameProxyHost::RebindRemoteFrameInterfaces(
     mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame> remote_frame,
     mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>
         remote_frame_host_receiver) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
   remote_frame_.reset();
   remote_frame_host_receiver_.reset();
   BindRemoteFrameInterfaces(std::move(remote_frame),
