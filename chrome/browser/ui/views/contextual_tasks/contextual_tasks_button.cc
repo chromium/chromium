@@ -613,6 +613,15 @@ void ContextualTasksButton::ExecuteCommand(int command_id, int event_flags) {
   if (std::optional<size_t> index =
           GetPinnedActionMenuIndexForCommand(command_id);
       index.has_value() && pinned_action_menu_model_) {
+    if (command_id == kCommandPinToToolbar) {
+      base::RecordAction(base::UserMetricsAction(
+          "ContextualTasks.EphemeralToolbarButton.UserAction."
+          "PinByContextMenu"));
+      base::UmaHistogramBoolean(
+          "ContextualTasks.EphemeralToolbarButton.UserAction."
+          "PinByContextMenu",
+          true);
+    }
     pinned_action_menu_model_->ActivatedAt(*index, event_flags);
   }
 }

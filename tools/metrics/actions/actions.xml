@@ -10357,6 +10357,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action
+    name="ContextualTasks.EphemeralToolbarButton.UserAction.PinByContextMenu">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user pins the ephemeral contextual tasks toolbar button to
+    the toolbar via its context menu.
+  </description>
+</action>
+
+<action
     name="ContextualTasks.EphemeralToolbarButton.UserAction.RemoveByContextMenu">
   <owner>dianaou@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
