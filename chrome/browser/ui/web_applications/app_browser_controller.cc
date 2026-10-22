@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -168,7 +169,7 @@ BrowserWindowInterface* AppBrowserController::FindForWebApp(
   BrowserWindowInterface* browser_for_web_app = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
-        if (UnloadController::From(browser)->is_attempting_to_close_browser()) {
+        if (IsBrowserClosing(browser)) {
           return true;  // continue iterating
         }
         if (browser->GetType() != BrowserWindowInterface::TYPE_APP) {
@@ -234,7 +235,12 @@ AppBrowserController::FindTopLevelBrowsingContextForWebApp(
       browser_and_tab_index = std::nullopt;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
-        if (UnloadController::From(browser)->is_attempting_to_close_browser()) {
+        if (IsBrowserClosing(browser)) {
+          return true;  // continue iterating
+        }
+        if (browser->GetType() != (for_app_browser
+                                       ? BrowserWindowInterface::TYPE_APP
+                                       : BrowserWindowInterface::TYPE_NORMAL)) {
           return true;  // continue iterating
         }
         if (IsWebApp(browser) != for_app_browser) {

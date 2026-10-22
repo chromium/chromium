@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params_utils.h"
@@ -38,6 +40,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
@@ -1214,6 +1217,185 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
 
   EXPECT_TRUE(closed_app_widget);
   EXPECT_TRUE(browser());
+}
+
+class NavigationCapturingControllableRedirectionBrowserNavigatorTest
+    : public NavigationCapturingWithRedirectionBrowserNavigatorTest {
+ public:
+  void SetUpOnMainThread() override {
+    controllable_redirect_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), kControllableRedirectPath);
+    NavigationCapturingWithRedirectionBrowserNavigatorTest::SetUpOnMainThread();
+  }
+
+  GURL GetControllableRedirectUrl() const {
+    return embedded_test_server()->GetURL(kControllableRedirectPath);
+  }
+
+ protected:
+  static constexpr char kControllableRedirectPath[] =
+      "/web_apps/simple2/controllable_redirect.html";
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      controllable_redirect_response_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationCapturingControllableRedirectionBrowserNavigatorTest,
+    RedirectOutOfScopeInitiatingBrowserClosed) {
+  // Regression test for https://crbug.com/573285920: if the browser specified
+  // in NavigateParams::browser is destroyed while an initially captured
+  // navigation is held mid-request before redirecting out-of-scope,
+  // HandleRedirect must not dereference a dangling pointer and should fall back
+  // to an existing tabbed browser.
+  InstallTestWebApp(GetRedirectFromPage(), mojom::UserDisplayMode::kStandalone);
+
+  BrowserWindowInterface* source_browser =
+      ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
+  chrome::NewTab(source_browser, NewTabTypes::kNoUserAction);
+  base::WeakPtr<BrowserWindowInterface> source_browser_weak =
+      source_browser->GetWeakPtr();
+
+  ui_test_utils::AllBrowserTabAddedWaiter new_tab_observer;
+  NavigateParams params(source_browser, GetControllableRedirectUrl(),
+                        ui::PAGE_TRANSITION_LINK);
+  params.source_contents =
+      source_browser->GetTabStripModel()->GetActiveWebContents();
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  Navigate(&params);
+  content::WebContents* new_tab = new_tab_observer.Wait();
+  ASSERT_TRUE(new_tab);
+
+  controllable_redirect_response_->WaitForRequest();
+  CloseBrowserSynchronously(source_browser);
+  ASSERT_FALSE(source_browser_weak);
+
+  controllable_redirect_response_->Send(
+      base::StrCat({"HTTP/1.1 302 Found\r\nLocation: ", GetLandingPage().spec(),
+                    "\r\nContent-Type: text/html\r\n\r\n"}));
+  controllable_redirect_response_->Done();
+
+  content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+
+  EXPECT_NE(browser()->GetTabStripModel()->GetIndexOfWebContents(new_tab),
+            TabStripModel::kNoTab);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
+                       RedirectOutOfScopeFromDocumentPictureInPictureBrowser) {
+  // Regression test for https://crbug.com/574907939: when
+  // NavigateParams::browser is a Document Picture-in-Picture window, an
+  // out-of-scope redirect that reparents back to a tabbed browser must not
+  // reparent into the PiP window.
+  InstallTestWebApp(GetRedirectFromPage(), mojom::UserDisplayMode::kStandalone);
+
+  BrowserWindowCreateParams pip_params =
+      BrowserWindowCreateParams::CreateForPictureInPicture(
+          /*app_name=*/"", /*trusted_source=*/true, profile(),
+          /*user_gesture=*/true);
+  BrowserWindowInterface* pip_browser =
+      CreateBrowserWindow(std::move(pip_params));
+  ASSERT_TRUE(pip_browser);
+  ASSERT_TRUE(DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(
+      pip_browser));
+  chrome::AddTabAt(pip_browser, GURL(url::kAboutBlankURL), -1, true);
+
+  ui_test_utils::AllBrowserTabAddedWaiter new_tab_observer;
+  NavigateParams params(pip_browser, GetRedirectFromPage(),
+                        ui::PAGE_TRANSITION_LINK);
+  params.source_contents =
+      pip_browser->GetTabStripModel()->GetActiveWebContents();
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  Navigate(&params);
+  content::WebContents* new_tab = new_tab_observer.Wait();
+  ASSERT_TRUE(new_tab);
+
+  content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+
+  EXPECT_NE(browser()->GetTabStripModel()->GetIndexOfWebContents(new_tab),
+            TabStripModel::kNoTab);
+  EXPECT_EQ(pip_browser->GetTabStripModel()->GetIndexOfWebContents(new_tab),
+            TabStripModel::kNoTab);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
+                       RedirectOutOfScopeFromPopupBrowser) {
+  // Regression test for https://crbug.com/574907939 (popup variant): when
+  // NavigateParams::browser is a TYPE_POPUP window, an out-of-scope redirect
+  // that reparents back to a tabbed browser must reparent into a TYPE_NORMAL
+  // browser rather than the popup window.
+  InstallTestWebApp(GetRedirectFromPage(), mojom::UserDisplayMode::kStandalone);
+
+  BrowserWindowCreateParams popup_params(BrowserWindowInterface::TYPE_POPUP,
+                                         *profile(),
+                                         /*from_user_gesture=*/true);
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserWindow(std::move(popup_params));
+  ASSERT_TRUE(popup_browser);
+  ASSERT_EQ(popup_browser->GetType(), BrowserWindowInterface::TYPE_POPUP);
+  chrome::AddTabAt(popup_browser, GURL(url::kAboutBlankURL), -1, true);
+
+  ui_test_utils::AllBrowserTabAddedWaiter new_tab_observer;
+  NavigateParams params(popup_browser, GetRedirectFromPage(),
+                        ui::PAGE_TRANSITION_LINK);
+  params.source_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  Navigate(&params);
+  content::WebContents* new_tab = new_tab_observer.Wait();
+  ASSERT_TRUE(new_tab);
+
+  content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+
+  EXPECT_NE(browser()->GetTabStripModel()->GetIndexOfWebContents(new_tab),
+            TabStripModel::kNoTab);
+  EXPECT_EQ(popup_browser->GetTabStripModel()->GetIndexOfWebContents(new_tab),
+            TabStripModel::kNoTab);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
+                       MiddleClickBrowserAppFromDocumentPictureInPicture) {
+  // Regression test for https://crbug.com/574907939: middle-clicking a kBrowser
+  // web app link when NavigateParams::browser is a Document Picture-in-Picture
+  // window must open the background tab in a normal tabbed browser rather than
+  // the PiP window.
+  const webapps::AppId& app_id = InstallTestWebApp(
+      GetDisplayBrowserUrl(), mojom::UserDisplayMode::kBrowser,
+      blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting);
+  EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
+            base::ok());
+
+  BrowserWindowCreateParams pip_params =
+      BrowserWindowCreateParams::CreateForPictureInPicture(
+          /*app_name=*/"", /*trusted_source=*/true, profile(),
+          /*user_gesture=*/true);
+  BrowserWindowInterface* pip_browser =
+      CreateBrowserWindow(std::move(pip_params));
+  ASSERT_TRUE(pip_browser);
+  ASSERT_TRUE(DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(
+      pip_browser));
+  chrome::AddTabAt(pip_browser, GURL(url::kAboutBlankURL), -1, true);
+
+  ui_test_utils::AllBrowserTabAddedWaiter new_tab_observer;
+  NavigateParams params(pip_browser, GetDisplayBrowserUrl(),
+                        ui::PAGE_TRANSITION_LINK);
+  params.source_contents =
+      pip_browser->GetTabStripModel()->GetActiveWebContents();
+  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  Navigate(&params);
+  content::WebContents* new_tab = new_tab_observer.Wait();
+  ASSERT_TRUE(new_tab);
+
+  content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+
+  EXPECT_NE(browser()->GetTabStripModel()->GetIndexOfWebContents(new_tab),
+            TabStripModel::kNoTab);
+  EXPECT_EQ(pip_browser->GetTabStripModel()->GetIndexOfWebContents(new_tab),
+            TabStripModel::kNoTab);
 }
 
 }  // namespace

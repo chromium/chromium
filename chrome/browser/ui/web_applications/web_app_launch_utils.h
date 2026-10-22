@@ -34,6 +34,15 @@ class WebContents;
 }
 
 namespace web_app {
+// Returns true if `browser` is null, has deletion scheduled, or is currently
+// attempting to close.
+bool IsBrowserClosing(BrowserWindowInterface* browser);
+
+// Returns true if `target_browser` is a live normal tabbed browser or an app
+// browser that can accept a newly added or reparented WebContents.
+bool CanReparentWebContentsIntoBrowser(BrowserWindowInterface* target_browser,
+                                       bool insert_as_pinned_home_tab = false);
+
 // This function moves `contents` from the `source_browser` to the
 // `target_browser`. In doing so, it attempts to ensure that any logic that
 // needs to occur when transitioning between 'app' and 'browser' windows occurs,

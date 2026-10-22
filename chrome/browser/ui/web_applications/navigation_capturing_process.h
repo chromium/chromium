@@ -284,7 +284,7 @@ class NavigationCapturingProcess
   const std::optional<webapps::AppId> source_tab_app_id_;
   const GURL navigation_params_url_;
   const WindowOpenDisposition disposition_;
-  const raw_ptr<BrowserWindowInterface> navigation_params_browser_;
+  const base::WeakPtr<BrowserWindowInterface> navigation_params_browser_;
   std::optional<webapps::AppId> first_navigation_app_id_;
   std::optional<blink::mojom::DisplayMode> first_navigation_app_display_mode_;
 

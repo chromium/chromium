@@ -22,7 +22,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_split.h"
@@ -56,6 +55,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -131,6 +131,8 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
     bool insert_as_pinned_home_tab) {
   CHECK(target_browser->GetType() == BrowserWindowInterface::TYPE_APP,
         base::NotFatalUntil::M162);
+  CHECK(CanReparentWebContentsIntoBrowser(target_browser,
+                                          insert_as_pinned_home_tab));
   BrowserWindowInterface* source_browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
   CHECK(contents);
@@ -189,7 +191,7 @@ std::unique_ptr<AppBrowserController> CreateWebAppBrowserController(
       system_app && system_app->ShouldHaveTabStrip();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   const bool has_tab_strip =
-      browser->GetType() != BrowserWindowInterface::Type::TYPE_APP_POPUP &&
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
       (should_have_tab_strip_for_swa ||
        provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id));
   return std::make_unique<WebAppBrowserController>(*provider, browser, app_id,
@@ -297,6 +299,33 @@ void RecordDiyOrCraftedAppLaunch(const WebApp& web_app) {
 
 }  // namespace
 
+bool IsBrowserClosing(BrowserWindowInterface* browser) {
+  return !browser || browser->IsDeleteScheduled() ||
+         (UnloadController::From(browser) &&
+          UnloadController::From(browser)->is_attempting_to_close_browser());
+}
+
+bool CanReparentWebContentsIntoBrowser(BrowserWindowInterface* target_browser,
+                                       bool insert_as_pinned_home_tab) {
+  if (IsBrowserClosing(target_browser) ||
+      (target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL &&
+       target_browser->GetType() != BrowserWindowInterface::TYPE_APP)) {
+    return false;
+  }
+  if (target_browser->GetType() == BrowserWindowInterface::TYPE_APP) {
+    if (!AppBrowserController::IsWebApp(target_browser)) {
+      return false;
+    }
+    if (!target_browser->GetTabStripModel()->empty() &&
+        !AppBrowserController::From(target_browser)->has_tab_strip() &&
+        !(insert_as_pinned_home_tab &&
+          HasPinnedHomeTab(target_browser->GetTabStripModel()))) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void ReparentWebContentsIntoBrowserImpl(BrowserWindowInterface* source_browser,
                                         content::WebContents* web_contents,
                                         BrowserWindowInterface* target_browser,
@@ -307,6 +336,8 @@ void ReparentWebContentsIntoBrowserImpl(BrowserWindowInterface* source_browser,
   CHECK(AreWebAppsEnabled(target_browser->GetProfile()));
   CHECK(AreWebAppsEnabled(source_browser->GetProfile()));
   CHECK_EQ(source_browser->GetProfile(), target_browser->GetProfile());
+  CHECK(CanReparentWebContentsIntoBrowser(target_browser,
+                                          insert_as_pinned_home_tab));
 
   // In a reparent, the owning session service needs to be told it's tab
   // has been removed, otherwise it will reopen the tab on restoration.
@@ -629,6 +660,12 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
 
   if (registrar.IsTabbedWindowModeEnabled(app_id)) {
     browser = AppBrowserController::FindForWebApp(*profile, app_id);
+    if (!CanReparentWebContentsIntoBrowser(
+            browser,
+            browser && AppBrowserController::From(browser)->IsUrlInHomeTabScope(
+                           launch_url))) {
+      browser = nullptr;
+    }
   }
 
   if (!browser) {
