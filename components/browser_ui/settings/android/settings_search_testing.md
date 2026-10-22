@@ -45,8 +45,8 @@ public void testPreferenceScreenMatchesSearchIndex() {
 Adding a basic 1–2 end-to-end UI tests is recommended to make sure all works well:
 
 ```java
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertHighlighted;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.clickSearchResult;
-import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.highlighted;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.typeSearchQuery;
 
 @Rule
@@ -65,7 +65,7 @@ public void testSearchAndNavigateToSetting() {
     clickSearchResult(R.string.autofill_options_title);
 
     // 3. Assert destination screen opens and target preference is highlighted
-    onView(highlighted(R.string.autofill_options_title)).check(matches(isDisplayed()));
+    assertHighlighted(R.string.autofill_options_title);
 }
 ```
 

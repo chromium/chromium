@@ -6,17 +6,15 @@ package org.chromium.chrome.browser.sync.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertHighlighted;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertNoSearchResultsFound;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.clickSearchResult;
-import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.highlighted;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.typeSearchQuery;
 
 import androidx.test.filters.SmallTest;
@@ -34,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -48,7 +45,6 @@ import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /** Tests for {@link PersonalizeGoogleServicesSettings}. */
@@ -141,7 +137,6 @@ public class PersonalizeGoogleServicesSettingsTest {
     @Test
     @SmallTest
     @Feature({"PersonalizedGoogleServices"})
-    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/573984028
     public void testSearchWebAndAppActivity_signedIn() {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -150,14 +145,12 @@ public class PersonalizeGoogleServicesSettingsTest {
 
         clickSearchResult(R.string.personalized_google_services_waa_title);
 
-        onView(highlighted(R.string.personalized_google_services_waa_title))
-                .check(matches(isDisplayed()));
+        assertHighlighted(R.string.personalized_google_services_waa_title);
     }
 
     @Test
     @SmallTest
     @Feature({"PersonalizedGoogleServices"})
-    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/573984028
     public void testSearchLinkedGoogleServices_signedIn() {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -166,8 +159,7 @@ public class PersonalizeGoogleServicesSettingsTest {
 
         clickSearchResult(R.string.personalized_google_services_linked_services_title);
 
-        onView(highlighted(R.string.personalized_google_services_linked_services_title))
-                .check(matches(isDisplayed()));
+        assertHighlighted(R.string.personalized_google_services_linked_services_title);
     }
 
     @Test

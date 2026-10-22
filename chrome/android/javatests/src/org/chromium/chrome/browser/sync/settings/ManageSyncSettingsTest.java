@@ -29,10 +29,10 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertHighlighted;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertNoSearchResultsFound;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertPreferenceScreenMatchesIndex;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.clickSearchResult;
-import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.highlighted;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.typeSearchQuery;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -1744,7 +1744,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/573984028
     public void testSearchHistoryAndTabs_signedIn() {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -1752,7 +1751,7 @@ public class ManageSyncSettingsTest {
         typeSearchQuery("history and tabs");
         clickSearchResult(R.string.account_section_history_toggle);
 
-        onView(highlighted(R.string.account_section_history_toggle)).check(matches(isDisplayed()));
+        assertHighlighted(R.string.account_section_history_toggle);
     }
 
     @Test
