@@ -264,11 +264,12 @@ void DownloadRequestMaker::Start(
 
 #if BUILDFLAG(IS_WIN)
   // Only add AV status for ESB users that have the AV download telemetry
-  // feature enabled.
+  // feature enabled. Check feature flag after ESB check so that the Finch
+  // experiment groups only include clients that can send telemetry reports.
   bool is_enhanced_protection =
       profile && IsEnhancedProtectionEnabled(*profile->GetPrefs());
-  if (base::FeatureList::IsEnabled(kAntivirusTelemetryForDownloads) &&
-      is_enhanced_protection) {
+  if (is_enhanced_protection &&
+      base::FeatureList::IsEnabled(kAntivirusTelemetryForDownloads)) {
     AntiVirusMetricsProvider provider;
     provider.AsyncInit(
         base::BindOnce(&DownloadRequestMaker::OnGotAntivirusProducts,
