@@ -47,6 +47,9 @@ constexpr size_t kMaxMatches = 5;
 // )
 
 // The maximum relevance of a typed match, below most open tab matches.
+// TODO(crbug.com/575623966): A typed match may be folded into a history
+// duplicate with the same URL, and so shown under History instead, since
+// history can win the deduplication tiebreaker on relevance.
 constexpr int kMaxTypedRelevance = 1000;
 
 bool ShouldSkipUrl(const GURL& url) {
