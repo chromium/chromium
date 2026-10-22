@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -39,6 +38,7 @@
 #include "mojo/public/cpp/bindings/message_metadata_helpers.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace mojo {
 
@@ -255,7 +255,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     std::unique_ptr<MessageReceiver> responder;
   };
 
-  using AsyncResponderMap = std::map<uint64_t, PendingAsyncResponse>;
+  using AsyncResponderMap = absl::flat_hash_map<uint64_t, PendingAsyncResponse>;
 
   struct SyncResponseInfo {
    public:
@@ -273,7 +273,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     raw_ptr<bool> response_received;
   };
 
-  using SyncResponseMap = std::map<uint64_t, std::unique_ptr<SyncResponseInfo>>;
+  using SyncResponseMap =
+      absl::flat_hash_map<uint64_t, std::unique_ptr<SyncResponseInfo>>;
 
   // Used as the sink for |payload_validator_| and forwards messages to
   // HandleValidatedMessage().

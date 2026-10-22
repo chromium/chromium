@@ -612,9 +612,8 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   SyncCallRestrictions::AssertSyncCallAllowed();
 
   bool response_received = false;
-  sync_responses_.insert(std::make_pair(
-      request_id,
-      std::make_unique<SyncResponseInfo>(message_name, &response_received)));
+  sync_responses_.emplace(request_id, std::make_unique<SyncResponseInfo>(
+                                          message_name, &response_received));
 
   base::WeakPtr<InterfaceEndpointClient> weak_self =
       weak_ptr_factory_.GetWeakPtr();
@@ -625,17 +624,18 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   }
   // Make sure that this instance hasn't been destroyed.
   if (weak_self) {
-    DCHECK(sync_responses_.contains(request_id));
     auto iter = sync_responses_.find(request_id);
-    DCHECK_EQ(&response_received, iter->second->response_received);
+    DCHECK(iter != sync_responses_.end());
+    auto response = std::move(iter->second);
+    sync_responses_.erase(iter);
+    DCHECK_EQ(&response_received, response->response_received);
     if (response_received) {
-      std::ignore = responder->Accept(&iter->second->response);
+      std::ignore = responder->Accept(&response->response);
     } else {
       DVLOG(1) << "Mojo sync call returns without receiving a response. "
                << "Typcially it is because the interface has been "
                << "disconnected.";
     }
-    sync_responses_.erase(iter);
   }
 
   return true;
