@@ -93,8 +93,6 @@
 
 - (void)stop {
   [super stop];
-  [self.activeChildCoordinator stop];
-  [self.childCoordinators removeAllObjects];
 
   [_credentialsMediator disconnect];
   _credentialsMediator.consumer = nil;
