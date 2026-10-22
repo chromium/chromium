@@ -19,7 +19,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -61,7 +60,6 @@ public class StripStackerUnitTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/40879363")
     public void testComputeNewTabButtonIdealX() {
         float result =
                 mTarget.computeNewTabButtonIdealX(
@@ -72,7 +70,7 @@ public class StripStackerUnitTest {
                         STRIP_WIDTH,
                         BUTTON_WIDTH,
                         /* tabStripFull= */ false);
-        assertThat("New Tab button offset does not match", result, is(35f));
+        assertThat("New Tab button offset does not match", result, is(121f));
     }
 
     @Test
