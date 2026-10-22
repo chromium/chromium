@@ -108,11 +108,10 @@ void IOSTracingController::Initialize() {
   }
 }
 
-perfetto::TraceConfig IOSTracingController::CreateDeveloperTraceConfig() {
+perfetto::TraceConfig IOSTracingController::CreateDeveloperTraceConfig(
+    std::string_view category_filter_string) {
   base::trace_event::TraceConfig trace_config(
-      "*,disabled-by-default-cpu_profiler,disabled-by-default-system_metrics,"
-      "disabled-by-default-histogram_samples",
-      base::trace_event::RECORD_CONTINUOUSLY);
+      category_filter_string, base::trace_event::RECORD_CONTINUOUSLY);
   trace_config.SetTraceBufferSizeInBytes(base::ByteSize(50 * 1024 * 1024));
 
   perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(

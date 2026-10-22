@@ -197,6 +197,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface startManualTracing];
 }
 
+- (BOOL)startManualTracingWithCategoryFilter:(NSString*)categoryFilter {
+  return [ChromeEarlGreyAppInterface
+      startManualTracingWithCategoryFilter:categoryFilter];
+}
+
 - (NSString*)stopManualTracing {
   return [ChromeEarlGreyAppInterface stopManualTracing];
 }

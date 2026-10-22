@@ -10,6 +10,7 @@
 #import <memory>
 #import <optional>
 #import <string>
+#import <string_view>
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
@@ -46,7 +47,11 @@ class IOSTracingController : public tracing::BackgroundTracingManager {
   // Creates a standard Perfetto TraceConfig tailored for local developer
   // debugging (e.g., Flamegraphs, System Metrics, standard Track Events)
   // using a large 50MB in-memory buffer.
-  perfetto::TraceConfig CreateDeveloperTraceConfig();
+  perfetto::TraceConfig CreateDeveloperTraceConfig(
+      std::string_view category_filter_string =
+          "*,disabled-by-default-cpu_profiler,"
+          "disabled-by-default-system_metrics,"
+          "disabled-by-default-histogram_samples");
 
   // Stops the active startup tracing session and flushes the trace file to
   // disk. Returns the path of the trace file. For testing only.

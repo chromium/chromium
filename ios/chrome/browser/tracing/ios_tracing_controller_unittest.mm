@@ -118,6 +118,39 @@ TEST_F(IOSTracingControllerTest, CreatesValidDeveloperConfig) {
   EXPECT_TRUE(found_histogram);
 }
 
+// Tests that CreateDeveloperTraceConfig respects a custom category filter.
+TEST_F(IOSTracingControllerTest, CreatesFilteredDeveloperConfig) {
+  perfetto::TraceConfig config =
+      IOSTracingController::GetInstance().CreateDeveloperTraceConfig("ui");
+
+  bool found_track_event = false;
+  bool found_sampler_profiler = false;
+  bool found_system_metrics = false;
+  bool found_metadata = false;
+  bool found_histogram = false;
+
+  for (const auto& ds : config.data_sources()) {
+    const std::string& name = ds.config().name();
+    if (name == "track_event") {
+      found_track_event = true;
+    } else if (name == tracing::kSamplerProfilerSourceName) {
+      found_sampler_profiler = true;
+    } else if (name == tracing::kSystemMetricsSourceName) {
+      found_system_metrics = true;
+    } else if (name == tracing::kMetaData2SourceName) {
+      found_metadata = true;
+    } else if (name == tracing::kHistogramSampleSourceName) {
+      found_histogram = true;
+    }
+  }
+
+  EXPECT_TRUE(found_track_event);
+  EXPECT_FALSE(found_sampler_profiler);
+  EXPECT_FALSE(found_system_metrics);
+  EXPECT_TRUE(found_metadata);
+  EXPECT_FALSE(found_histogram);
+}
+
 // Tests that a startup trace session can be started and recorded.
 TEST_F(IOSTracingControllerTest, StartupTraceRecording) {
   base::ScopedTempDir temp_dir;

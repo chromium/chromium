@@ -247,6 +247,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
 }
 
 + (BOOL)startManualTracing {
+  return [self startManualTracingWithCategoryFilter:nil];
+}
+
++ (BOOL)startManualTracingWithCategoryFilter:(NSString*)categoryFilter {
   ManualTracingState& state = GetManualTracingState();
   if (state.session) {
     return NO;
@@ -255,7 +259,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   perfetto::TraceConfig config =
-      IOSTracingController::GetInstance().CreateDeveloperTraceConfig();
+      categoryFilter.length > 0
+          ? IOSTracingController::GetInstance().CreateDeveloperTraceConfig(
+                base::SysNSStringToUTF8(categoryFilter))
+          : IOSTracingController::GetInstance().CreateDeveloperTraceConfig();
   state.trace_file_path =
       base::apple::GetUserDocumentPath().AppendASCII("manual_trace.pftrace");
 

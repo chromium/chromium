@@ -49,6 +49,7 @@ source_set("eg2_tests") {
     ":speedometer_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//base/test:test_trace_processor",
     "//ios/chrome/app/strings",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

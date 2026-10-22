@@ -43,6 +43,10 @@ enum class TipsNotificationType;
 // Starts manual tracing. Returns YES on success.
 + (BOOL)startManualTracing;
 
+// Starts manual tracing with `categoryFilter` (e.g., @"ui"). Returns YES on
+// success.
++ (BOOL)startManualTracingWithCategoryFilter:(NSString*)categoryFilter;
+
 // Stops manual tracing, flushes trace file to disk, and returns trace file
 // path.
 + (NSString*)stopManualTracing;
