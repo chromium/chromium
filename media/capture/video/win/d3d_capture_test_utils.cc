@@ -1009,4 +1009,26 @@ MockDXGIDevice2::MockDXGIDevice2() = default;
 
 MockDXGIDevice2::~MockDXGIDevice2() = default;
 
+FakeDXGIDeviceManager::FakeDXGIDeviceManager()
+    : DXGIDeviceManager(nullptr, 0, CHROME_LUID{.LowPart = 0, .HighPart = 0}) {}
+
+FakeDXGIDeviceManager::~FakeDXGIDeviceManager() = default;
+
+HRESULT FakeDXGIDeviceManager::ResetDevice(
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) {
+  mock_d3d_device_ = MakeComPtrFromRefCounted<MockD3D11Device>();
+  d3d_device = mock_d3d_device_;
+  return S_OK;
+}
+
+Microsoft::WRL::ComPtr<ID3D11Device> FakeDXGIDeviceManager::GetDevice() {
+  Microsoft::WRL::ComPtr<ID3D11Device> device;
+  mock_d3d_device_.As(&device);
+  return device;
+}
+
+Microsoft::WRL::ComPtr<MockD3D11Device> FakeDXGIDeviceManager::GetMockDevice() {
+  return mock_d3d_device_;
+}
+
 }  // namespace media

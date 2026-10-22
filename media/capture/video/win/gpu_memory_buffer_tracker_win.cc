@@ -4,20 +4,17 @@
 
 #include "media/capture/video/win/gpu_memory_buffer_tracker_win.h"
 
-#include <dxgi1_2.h>
-
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_span.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
-#include "media/base/win/mf_helpers.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
+#include "media/capture/video/win/d3d11_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
@@ -45,53 +42,6 @@ class DXGIGMBTrackerHandle : public media::VideoCaptureBufferHandle {
   HANDLE dxgi_handle_;
   raw_ptr<ID3D11Device> d3d11_device_;
 };
-
-base::win::ScopedHandle CreateNV12Texture(ID3D11Device* d3d11_device,
-                                          const gfx::Size& size) {
-  const DXGI_FORMAT dxgi_format = DXGI_FORMAT_NV12;
-  D3D11_TEXTURE2D_DESC desc = {
-      .Width = static_cast<UINT>(size.width()),
-      .Height = static_cast<UINT>(size.height()),
-      .MipLevels = 1,
-      .ArraySize = 1,
-      .Format = dxgi_format,
-      .SampleDesc = {1, 0},
-      .Usage = D3D11_USAGE_DEFAULT,
-      .BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
-      .CPUAccessFlags = 0,
-      .MiscFlags =
-          D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED};
-
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-
-  HRESULT hr = d3d11_device->CreateTexture2D(&desc, nullptr, &d3d11_texture);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create D3D11 texture: "
-                << logging::SystemErrorCodeToString(hr);
-    return base::win::ScopedHandle();
-  }
-  hr = SetDebugName(d3d11_texture.Get(), "Camera_MemoryBufferTracker");
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to label D3D11 texture: "
-                << logging::SystemErrorCodeToString(hr);
-    return base::win::ScopedHandle();
-  }
-
-  Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
-  hr = d3d11_texture.As(&dxgi_resource);
-  CHECK(SUCCEEDED(hr));
-
-  HANDLE texture_handle;
-  hr = dxgi_resource->CreateSharedHandle(
-      nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE, nullptr,
-      &texture_handle);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create shared D3D11 texture handle: "
-                << logging::SystemErrorCodeToString(hr);
-    return base::win::ScopedHandle();
-  }
-  return base::win::ScopedHandle(texture_handle);
-}
 
 }  // namespace
 
@@ -124,8 +74,8 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
                                 std::move(dimensions));
   }
 
-  base::win::ScopedHandle scoped_handle =
-      CreateNV12Texture(d3d_device_.Get(), dimensions);
+  base::win::ScopedHandle scoped_handle = CreateNV12Texture(
+      d3d_device_.Get(), dimensions, "Camera_MemoryBufferTracker");
   if (!scoped_handle.is_valid()) {
     return false;
   }
@@ -172,17 +122,7 @@ bool GpuMemoryBufferTrackerWin::CreateBufferInternal(
 }
 
 bool GpuMemoryBufferTrackerWin::IsD3DDeviceChanged() {
-  // Check for and handle device loss by recreating the texture
-  Microsoft::WRL::ComPtr<ID3D11Device> recreated_d3d_device;
-  HRESULT hr = dxgi_device_manager_->CheckDeviceRemovedAndGetDevice(
-      &recreated_d3d_device);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Detected device loss: "
-               << logging::SystemErrorCodeToString(hr);
-    base::UmaHistogramSparse("Media.VideoCapture.Win.D3DDeviceRemovedReason",
-                             hr);
-  }
-  return recreated_d3d_device != d3d_device_;
+  return HasD3DDeviceChanged(dxgi_device_manager_.get(), d3d_device_.Get());
 }
 
 bool GpuMemoryBufferTrackerWin::IsReusableForFormat(

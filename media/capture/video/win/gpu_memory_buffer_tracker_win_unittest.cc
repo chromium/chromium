@@ -27,43 +27,6 @@ using ::testing::Pointee;
 
 namespace media {
 
-namespace {
-
-class MockDXGIDeviceManager : public DXGIDeviceManager {
- public:
-  MockDXGIDeviceManager()
-      : DXGIDeviceManager(nullptr,
-                          0,
-                          CHROME_LUID{.LowPart = 0, .HighPart = 0}) {}
-
-  // Associates a new D3D device with the DXGI Device Manager
-  // returns it in the parameter, which can't be nullptr.
-  HRESULT ResetDevice(
-      Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) override {
-    mock_d3d_device_ = MakeComPtrFromRefCounted<MockD3D11Device>();
-    d3d_device = mock_d3d_device_;
-    return S_OK;
-  }
-
-  // Directly access D3D device stored in DXGI device manager
-  Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() override {
-    Microsoft::WRL::ComPtr<ID3D11Device> device;
-    mock_d3d_device_.As(&device);
-    return device;
-  }
-
-  Microsoft::WRL::ComPtr<MockD3D11Device> GetMockDevice() {
-    return mock_d3d_device_;
-  }
-
- private:
-  ~MockDXGIDeviceManager() override = default;
-  Microsoft::WRL::ComPtr<MockD3D11Device> mock_d3d_device_ =
-      MakeComPtrFromRefCounted<MockD3D11Device>();
-};
-
-}  // namespace
-
 class GpuMemoryBufferTrackerWinTest : public ::testing::Test {
  protected:
   GpuMemoryBufferTrackerWinTest() = default;
@@ -74,11 +37,11 @@ class GpuMemoryBufferTrackerWinTest : public ::testing::Test {
           << "Media foundation is not supported by the current platform.";
     }
 
-    dxgi_device_manager_ = base::MakeRefCounted<MockDXGIDeviceManager>();
+    dxgi_device_manager_ = base::MakeRefCounted<FakeDXGIDeviceManager>();
   }
 
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<MockDXGIDeviceManager> dxgi_device_manager_;
+  scoped_refptr<FakeDXGIDeviceManager> dxgi_device_manager_;
 };
 
 TEST_F(GpuMemoryBufferTrackerWinTest, TextureCreation) {

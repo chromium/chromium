@@ -9,6 +9,7 @@
 #include <wrl.h>
 
 #include "base/memory/ref_counted.h"
+#include "media/base/win/dxgi_device_manager.h"
 #include "media/base/win/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -786,6 +787,32 @@ class MockD3D11Texture2D final : public MockInterface<ID3D11Texture2D> {
   ~MockD3D11Texture2D() override;
   D3D11_TEXTURE2D_DESC desc_ = {};
   Microsoft::WRL::ComPtr<ID3D11Device> device_;
+};
+
+// A DXGIDeviceManager handing out a MockD3D11Device, for tests of the capture
+// buffer trackers. Note that CheckDeviceRemovedAndGetDevice() is not
+// overridden, so tests exercise the real device-removed logic against the mock
+// device's GetDeviceRemovedReason().
+class FakeDXGIDeviceManager : public DXGIDeviceManager {
+ public:
+  FakeDXGIDeviceManager();
+
+  // Associates a new D3D device with the DXGI Device Manager and returns it in
+  // the parameter, which can't be nullptr.
+  HRESULT ResetDevice(
+      Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) override;
+
+  // Directly access the D3D device stored in the DXGI device manager.
+  Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() override;
+
+  Microsoft::WRL::ComPtr<MockD3D11Device> GetMockDevice();
+
+ protected:
+  ~FakeDXGIDeviceManager() override;
+
+ private:
+  Microsoft::WRL::ComPtr<MockD3D11Device> mock_d3d_device_ =
+      MakeComPtrFromRefCounted<MockD3D11Device>();
 };
 
 }  // namespace media

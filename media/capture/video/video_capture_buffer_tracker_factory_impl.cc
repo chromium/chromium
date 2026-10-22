@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "media/capture/video/shared_image_buffer_tracker.h"
 #include "media/capture/video/shared_memory_buffer_tracker.h"
@@ -17,6 +18,7 @@
 #elif BUILDFLAG(IS_LINUX)
 #include "media/capture/video/linux/v4l2_gpu_memory_buffer_tracker.h"
 #elif BUILDFLAG(IS_WIN)
+#include "media/capture/video/win/d3d11_shared_image_buffer_tracker.h"
 #include "media/capture/video/win/gpu_memory_buffer_tracker_win.h"
 #endif
 
@@ -53,7 +55,16 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
       return nullptr;
 #endif
     case VideoCaptureBufferType::kSharedImage:
+#if BUILDFLAG(IS_WIN)
+      if (!dxgi_device_manager_) {
+        DLOG(ERROR) << "No DXGI device manager for a shared image tracker.";
+        return nullptr;
+      }
+      return std::make_unique<D3D11SharedImageBufferTracker>(
+          dxgi_device_manager_);
+#else
       return nullptr;
+#endif
     default:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       // Since Windows and macOS capturer outputs NV12 only for GMBs and I420

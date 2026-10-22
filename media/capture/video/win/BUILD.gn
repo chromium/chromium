@@ -11,6 +11,10 @@ source_set("win") {
   sources = [
     "capability_list_win.cc",
     "capability_list_win.h",
+    "d3d11_shared_image_buffer_tracker.cc",
+    "d3d11_shared_image_buffer_tracker.h",
+    "d3d11_utils.cc",
+    "d3d11_utils.h",
     "filter_base_win.cc",
     "filter_base_win.h",
     "gpu_memory_buffer_tracker_win.cc",
@@ -37,6 +41,7 @@ source_set("win") {
   public_deps = [
     "//media/capture:capture_base",
     "//media/capture:capture_device_specific",
+    "//media/capture:capture_gpu_channel",
     "//media/capture:capture_switches",
   ]
 
@@ -44,6 +49,9 @@ source_set("win") {
     "//base",
     "//base:i18n",
     "//components/viz/common/resources:shared_image_format",
+    "//gpu/command_buffer/client",
+    "//gpu/config",
+    "//gpu/ipc/client",
     "//media",
     "//media/base/win:color_space_util_win",
     "//media/capture/mojom:image_capture",
@@ -74,6 +82,7 @@ source_set("win") {
 source_set("win_unittests") {
   defines = [ "CAPTURE_IMPLEMENTATION" ]
   sources = [
+    "d3d11_shared_image_buffer_tracker_unittest.cc",
     "d3d_capture_test_utils.cc",
     "d3d_capture_test_utils.h",
     "gpu_memory_buffer_tracker_win_unittest.cc",
@@ -83,6 +92,7 @@ source_set("win_unittests") {
 
   deps = [
     "//base/test:test_support",
+    "//gpu:test_support",
     "//gpu/command_buffer/client",
     "//media:test_support",
     "//media/capture",

@@ -304,8 +304,10 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // If MediaFoundationD3D11VideoCapture or VideoCaptureDeviceAVFoundation fails
   // to produce NV12 as is expected on these platforms when the target buffer
-  // type is `kGpuMemoryBuffer`, a shared memory buffer may be sent instead.
-  if (buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer &&
+  // type is `kGpuMemoryBuffer`, a shared memory buffer may be sent instead. The
+  // same applies to `kSharedImage` pools, whose trackers only support NV12.
+  if ((buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer ||
+       buffer_type == VideoCaptureBufferType::kSharedImage) &&
       pixel_format != PIXEL_FORMAT_NV12
 #if BUILDFLAG(IS_MAC)
       && base::FeatureList::IsEnabled(kFallbackToSharedMemoryIfNotNv12OnMac)
