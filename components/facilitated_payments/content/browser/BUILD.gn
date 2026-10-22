@@ -29,6 +29,7 @@ static_library("browser") {
     "//components/optimization_guide/core",
     "//components/security_state/content",
     "//components/security_state/core",
+    "//services/shape_detection/public/mojom",
   ]
 
   if (!is_android) {
@@ -52,6 +53,7 @@ source_set("unit_tests") {
     "//components/wallet/content/common/mojom",
     "//components/wallet/core/browser",
     "//content/test:test_support",
+    "//services/shape_detection/public/mojom",
     "//testing/gtest",
   ]
 }

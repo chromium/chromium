@@ -27,6 +27,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -71,11 +72,14 @@ namespace {
 // finish the detection when they choose.
 class FakeBarcodeDetector : public wallet::WalletablePassBarcodeDetector {
  public:
-  void Detect(content::WebContents* web_contents,
-              wallet::mojom::ImageExtractionOptionsPtr extraction_options,
-              WalletBarcodeDetectionDetectCallback callback) override {
+  void Detect(
+      content::WebContents* web_contents,
+      wallet::mojom::ImageExtractionOptionsPtr extraction_options,
+      std::vector<shape_detection::mojom::BarcodeFormat> barcode_formats,
+      WalletBarcodeDetectionDetectCallback callback) override {
     ++detect_count_;
     last_options_ = std::move(extraction_options);
+    last_barcode_formats_ = std::move(barcode_formats);
     callback_ = std::move(callback);
   }
 
@@ -88,10 +92,15 @@ class FakeBarcodeDetector : public wallet::WalletablePassBarcodeDetector {
   const wallet::mojom::ImageExtractionOptionsPtr& last_options() const {
     return last_options_;
   }
+  const std::vector<shape_detection::mojom::BarcodeFormat>&
+  last_barcode_formats() const {
+    return last_barcode_formats_;
+  }
 
  private:
   int detect_count_ = 0;
   wallet::mojom::ImageExtractionOptionsPtr last_options_;
+  std::vector<shape_detection::mojom::BarcodeFormat> last_barcode_formats_;
   WalletBarcodeDetectionDetectCallback callback_;
 };
 
@@ -377,7 +386,7 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
 }
 
 // Tests that qualifying signals request images with the QR code size and
-// aspect ratio limits from Finch.
+// aspect ratio limits from Finch, and decode only QR codes.
 TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
        OnHeuristicSignalsReported_DetectsWithQrCodeExtractionOptions) {
   static constexpr uint32_t kMinImageSize = 80;
@@ -396,6 +405,9 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   EXPECT_EQ(barcode_detector_->last_options()->max_aspect_ratio,
             kMaxAspectRatio);
   EXPECT_TRUE(barcode_detector_->last_options()->include_canvas);
+  EXPECT_THAT(
+      barcode_detector_->last_barcode_formats(),
+      testing::ElementsAre(shape_detection::mojom::BarcodeFormat::QR_CODE));
 }
 
 // Tests that signals that fail the rule never start a detection.

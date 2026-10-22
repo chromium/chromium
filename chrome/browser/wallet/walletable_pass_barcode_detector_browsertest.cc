@@ -61,7 +61,8 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBarcodeDetectorBrowserTest,
 
   base::test::TestFuture<std::vector<wallet::WalletBarcode>> future;
   auto detector = std::make_unique<WalletablePassBarcodeDetectorImpl>();
-  detector->Detect(GetWebContents(), WalletOptions(), future.GetCallback());
+  detector->Detect(GetWebContents(), WalletOptions(),
+                   /*barcode_formats=*/{}, future.GetCallback());
 
   // TODO(crbug.com/438364540): Current implementation always return empty list.
   // Need to add another real test for barcode detection.
@@ -77,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBarcodeDetectorBrowserTest,
 
   base::test::TestFuture<std::vector<WalletBarcode>> future;
   auto detector = std::make_unique<WalletablePassBarcodeDetectorImpl>();
-  detector->Detect(GetWebContents(), WalletOptions(), future.GetCallback());
+  detector->Detect(GetWebContents(), WalletOptions(),
+                   /*barcode_formats=*/{}, future.GetCallback());
 
   // Close the tab, which should disconnect the ImageLoader pipe.
   GetWebContents()->Close();

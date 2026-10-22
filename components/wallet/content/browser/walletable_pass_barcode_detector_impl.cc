@@ -13,6 +13,25 @@
 
 namespace wallet {
 
+namespace {
+
+// Returns detector options that decode only `barcode_formats`, or every format
+// if it is empty. Restricting the formats lets the platform detector skip the
+// others.
+shape_detection::mojom::BarcodeDetectorOptionsPtr CreateBarcodeDetectorOptions(
+    const std::vector<shape_detection::mojom::BarcodeFormat>& barcode_formats) {
+  auto options = shape_detection::mojom::BarcodeDetectorOptions::New();
+  for (shape_detection::mojom::BarcodeFormat format : barcode_formats) {
+    if (format == shape_detection::mojom::BarcodeFormat::UNKNOWN) {
+      continue;
+    }
+    options->formats.push_back(format);
+  }
+  return options;
+}
+
+}  // namespace
+
 WalletablePassBarcodeDetectorImpl::WalletablePassBarcodeDetectorImpl() =
     default;
 
@@ -66,12 +85,12 @@ WalletablePassBarcodeDetectorImpl::CreateAndBindImageExtractorRemote(
 }
 
 mojo::Remote<shape_detection::mojom::BarcodeDetection>
-WalletablePassBarcodeDetectorImpl::CreateAndBindBarcodeDetectorRemote() {
+WalletablePassBarcodeDetectorImpl::CreateAndBindBarcodeDetectorRemote(
+    shape_detection::mojom::BarcodeDetectorOptionsPtr options) {
   mojo::Remote<shape_detection::mojom::BarcodeDetection> remote;
   mojo::Remote<shape_detection::mojom::BarcodeDetectionProvider> provider;
   content::GetShapeDetectionService()->BindBarcodeDetectionProvider(
       provider.BindNewPipeAndPassReceiver());
-  auto options = shape_detection::mojom::BarcodeDetectorOptions::New();
   provider->CreateBarcodeDetection(remote.BindNewPipeAndPassReceiver(),
                                    std::move(options));
   return remote;
@@ -80,6 +99,7 @@ WalletablePassBarcodeDetectorImpl::CreateAndBindBarcodeDetectorRemote() {
 void WalletablePassBarcodeDetectorImpl::ExtractImageWithRemote(
     mojo::Remote<mojom::ImageExtractor> remote,
     mojom::ImageExtractionOptionsPtr extraction_options,
+    std::vector<shape_detection::mojom::BarcodeFormat> barcode_formats,
     WalletBarcodeDetectionDetectCallback callback) {
   if (!remote) {
     std::move(callback).Run({});
@@ -103,7 +123,8 @@ void WalletablePassBarcodeDetectorImpl::ExtractImageWithRemote(
   image_extractor_remote_->ExtractImages(
       std::move(extraction_options),
       base::BindOnce(&WalletablePassBarcodeDetectorImpl::OnImagesExtracted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(success_cb)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(barcode_formats),
+                     std::move(success_cb)));
 }
 
 void WalletablePassBarcodeDetectorImpl::OnRemoteDisconnected(
@@ -113,6 +134,7 @@ void WalletablePassBarcodeDetectorImpl::OnRemoteDisconnected(
 }
 
 void WalletablePassBarcodeDetectorImpl::OnImagesExtracted(
+    std::vector<shape_detection::mojom::BarcodeFormat> barcode_formats,
     WalletBarcodeDetectionDetectCallback callback,
     const std::vector<SkBitmap>& images) {
   image_extractor_remote_.reset();
@@ -137,7 +159,8 @@ void WalletablePassBarcodeDetectorImpl::OnImagesExtracted(
   auto [success_callback, failure_callback] =
       base::SplitOnceCallback(std::move(callback));
 
-  barcode_detector_ = CreateAndBindBarcodeDetectorRemote();
+  barcode_detector_ = CreateAndBindBarcodeDetectorRemote(
+      CreateBarcodeDetectorOptions(barcode_formats));
   barcode_detector_.set_disconnect_handler(base::BindOnce(
       &WalletablePassBarcodeDetectorImpl::OnBarcodeDetectorDisconnected,
       weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)));
@@ -184,9 +207,11 @@ void WalletablePassBarcodeDetectorImpl::OnBarcodeDetectorDisconnected(
 void WalletablePassBarcodeDetectorImpl::Detect(
     content::WebContents* web_contents,
     mojom::ImageExtractionOptionsPtr extraction_options,
+    std::vector<shape_detection::mojom::BarcodeFormat> barcode_formats,
     WalletBarcodeDetectionDetectCallback callback) {
   ExtractImageWithRemote(CreateAndBindImageExtractorRemote(web_contents),
-                         std::move(extraction_options), std::move(callback));
+                         std::move(extraction_options),
+                         std::move(barcode_formats), std::move(callback));
 }
 
 }  // namespace wallet

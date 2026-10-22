@@ -51,7 +51,8 @@ void ContentWalletablePassIngestionController::DetectBarcodes(
       web_contents(),
       mojom::ImageExtractionOptions::New(kMinImageSize, kMaxAspectRatio,
                                          /*include_canvas=*/false),
-      std::move(callback));
+      // Passes may use any barcode format.
+      /*barcode_formats=*/{}, std::move(callback));
 }
 
 std::string ContentWalletablePassIngestionController::GetPageTitle() const {

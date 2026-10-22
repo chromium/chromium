@@ -22,6 +22,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "url/gurl.h"
 
 namespace payments::facilitated {
@@ -100,6 +101,7 @@ void ContentFacilitatedPaymentsDriverFactory::OnHeuristicSignalsReported(
       wallet::mojom::ImageExtractionOptions::New(
           base::saturated_cast<uint32_t>(kQrCodeDetectionMinImageSize.Get()),
           kQrCodeDetectionMaxAspectRatio.Get(), /*include_canvas=*/true),
+      {shape_detection::mojom::BarcodeFormat::QR_CODE},
       base::BindOnce(
           &ContentFacilitatedPaymentsDriverFactory::OnBarcodesDetected,
           weak_ptr_factory_.GetWeakPtr(),
@@ -120,7 +122,8 @@ void ContentFacilitatedPaymentsDriverFactory::OnBarcodesDetected(
     return;
   }
 
-  // The detector decodes every barcode format, so only QR codes count.
+  // Only QR codes are requested, but are checked again in case a platform
+  // detector ignores the request.
   const bool has_qr_code =
       std::ranges::any_of(barcodes, [](const wallet::WalletBarcode& barcode) {
         return barcode.format == wallet::WalletBarcodeFormat::QR_CODE;
