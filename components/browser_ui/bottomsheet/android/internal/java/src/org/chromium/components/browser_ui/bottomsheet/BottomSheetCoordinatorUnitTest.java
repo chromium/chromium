@@ -3026,7 +3026,7 @@ public class BottomSheetCoordinatorUnitTest {
         when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
-        // 1. Display-frame fallback (insets == null): e2eBottomInset is subtracted when
+        // Display-frame fallback (insets == null): e2eBottomInset is subtracted when
         // coversBottomControls() is false, and preserved when coversBottomControls() is true.
         doReturn(null).when(mInsetObserver).getLastRawWindowInsets();
         when(mSheetContent.coversBottomControls()).thenReturn(false);
@@ -3041,8 +3041,9 @@ public class BottomSheetCoordinatorUnitTest {
         assertEquals(
                 defaultDisplayFrame.bottom, mBottomSheet.getVisibleViewportRectForTesting().bottom);
 
-        // 2. WindowInsets path: systemBars bottom inset (48) and e2eBottomInset (24) are excluded
-        // from bottomInset when coversBottomControls() is true, while top inset (30) is preserved.
+        // WindowInsets path: navigationBars bottom inset (48) and e2eBottomInset (24) are
+        // excluded from bottomInset when coversBottomControls() is true, while statusBars top
+        // inset (30) is preserved.
         decorView.layout(0, 0, SHEET_CONTAINER_WIDTH, 800);
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, 800);
         mBottomSheet.setSheetContainerForTesting(mSheetContainer);
@@ -3050,7 +3051,8 @@ public class BottomSheetCoordinatorUnitTest {
 
         WindowInsetsCompat windowInsets =
                 new WindowInsetsCompat.Builder()
-                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 30, 0, 48))
+                        .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(0, 30, 0, 0))
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 48))
                         .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 0))
                         .build();
         doReturn(windowInsets).when(mInsetObserver).getLastRawWindowInsets();
@@ -3061,10 +3063,11 @@ public class BottomSheetCoordinatorUnitTest {
         View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
         assertEquals(770, contentContainer.getLayoutParams().height);
 
-        // 3. When IME is visible, IME bottom inset (300) still reduces the viewport bottom.
+        // When IME is visible, IME bottom inset (300) still reduces the viewport bottom.
         WindowInsetsCompat imeInsets =
                 new WindowInsetsCompat.Builder()
-                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 30, 0, 48))
+                        .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(0, 30, 0, 0))
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 48))
                         .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 300))
                         .build();
         doReturn(imeInsets).when(mInsetObserver).getLastRawWindowInsets();

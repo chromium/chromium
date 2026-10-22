@@ -1499,7 +1499,7 @@ class BottomSheetCoordinator
         return (int) getSheetHeightForState(getTargetOrCurrentState());
     }
 
-    private boolean coversBottomControls() {
+    private boolean contentCoversBottomControls() {
         BottomSheetContent content = getCurrentSheetContent();
         return content != null && content.coversBottomControls();
     }
@@ -1519,7 +1519,7 @@ class BottomSheetCoordinator
 
     private void updateViewportFromDisplayFrame(View decorView, @Px int e2eBottomInset) {
         decorView.getWindowVisibleDisplayFrame(mVisibleViewportRect);
-        if (!coversBottomControls()) {
+        if (!contentCoversBottomControls()) {
             mVisibleViewportRect.bottom =
                     Math.min(mVisibleViewportRect.bottom, decorView.getBottom() - e2eBottomInset);
         }
@@ -1530,14 +1530,15 @@ class BottomSheetCoordinator
             View decorView, WindowInsetsCompat insets, @Px int e2eBottomInset) {
         @Px int decorWidth = decorView.getWidth();
         @Px int decorHeight = decorView.getHeight();
-        Insets combinedInsets =
-                insets.getInsets(
-                        WindowInsetsCompat.Type.ime() | WindowInsetsCompat.Type.systemBars());
-        @Px
-        int bottomInset =
-                coversBottomControls()
-                        ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-                        : Math.max(combinedInsets.bottom, e2eBottomInset);
+        int insetTypeMask = WindowInsetsCompat.Type.ime() | WindowInsetsCompat.Type.statusBars();
+        if (!contentCoversBottomControls()) {
+            insetTypeMask |= WindowInsetsCompat.Type.systemBars();
+        }
+        Insets combinedInsets = insets.getInsets(insetTypeMask);
+        @Px int bottomInset = combinedInsets.bottom;
+        if (!contentCoversBottomControls()) {
+            bottomInset = Math.max(bottomInset, e2eBottomInset);
+        }
         bottomInset = Math.min(bottomInset, decorHeight);
 
         mVisibleViewportRect.set(
