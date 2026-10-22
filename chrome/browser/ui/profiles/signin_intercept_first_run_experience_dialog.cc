@@ -20,20 +20,13 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
 #include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
-#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -41,11 +34,8 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
 namespace {
@@ -236,192 +226,6 @@ SigninInterceptFirstRunExperienceDialog::
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-// Delegate class for TurnSyncOnHelper. Determines what will be the next
-// step for the first run based on Sync availabitily.
-class SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate
-    : public TurnSyncOnHelper::Delegate,
-      public LoginUIService::Observer {
- public:
-  explicit InterceptTurnSyncOnHelperDelegate(
-      base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog);
-  ~InterceptTurnSyncOnHelperDelegate() override;
-
-  // TurnSyncOnHelper::Delegate:
-  void ShowLoginError(const SigninUIError& error) override;
-  void ShowMergeSyncDataConfirmation(
-      const std::string& previous_email,
-      const std::string& new_email,
-      signin::SigninChoiceCallback callback) override;
-  void ShowEnterpriseAccountConfirmation(
-      const AccountInfo& account_info,
-      signin::SigninChoiceCallback callback) override;
-  void ShowSyncConfirmation(
-      base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-          callback) override;
-  bool ShouldAbortBeforeShowSyncDisabledConfirmation() override;
-  void ShowSyncDisabledConfirmation(
-      bool is_managed_account,
-      base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-          callback) override;
-  void ShowSyncSettings() override;
-  void SwitchToProfile(Profile* new_profile) override;
-
-  // LoginUIService::Observer:
-  void OnSyncConfirmationUIClosed(
-      LoginUIService::SyncConfirmationUIClosedResult result) override;
-
- private:
-  const base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog_;
-  // Store `browser_` separately as it may outlive `dialog_`.
-  const base::WeakPtr<BrowserWindowInterface> browser_;
-
-  base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-      sync_confirmation_callback_;
-  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
-      scoped_login_ui_service_observation_{this};
-};
-
-SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
-    InterceptTurnSyncOnHelperDelegate(
-        base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog)
-    : dialog_(std::move(dialog)), browser_(dialog_->browser_->GetWeakPtr()) {
-  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-}
-
-SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
-    ~InterceptTurnSyncOnHelperDelegate() = default;
-
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::ShowLoginError(
-        const SigninUIError& error) {
-  // Do not display the sync error since the user hasn't asked for sync
-  // explicitly. Skip to the next step.
-  if (dialog_) {
-    dialog_->DoNextStep(Step::kTurnOnSync, Step::kProfileCustomization);
-  }
-}
-
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
-        const std::string& previous_email,
-        const std::string& new_email,
-        signin::SigninChoiceCallback callback) {
-  NOTREACHED() << "Sign-in intercept shouldn't create a profile for an "
-                  "account known to Chrome";
-}
-
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
-        const AccountInfo& account_info,
-        signin::SigninChoiceCallback callback) {
-  // This is a brand new profile. Skip the enterprise confirmation.
-  // TODO(crbug.com/40209493): Do not show the sync promo if
-  // PromotionsEnabled policy is set to False
-  std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
-}
-
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::ShowSyncConfirmation(
-        base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-            callback) {
-  if (!dialog_) {
-    std::move(callback).Run(LoginUIService::ABORT_SYNC);
-    return;
-  }
-
-  PrefService* local_state = g_browser_process->local_state();
-  if (dialog_->is_forced_intercept_ ||
-      (local_state && !local_state->GetBoolean(prefs::kPromotionsEnabled))) {
-    // Don't show the sync promo if
-    // - the user went through the forced interception, or
-    // - promotional tabs, or promotions in general, are disabled by policy.
-    dialog_->DoNextStep(Step::kTurnOnSync, Step::kProfileCustomization);
-    std::move(callback).Run(LoginUIService::ABORT_SYNC);
-    return;
-  }
-
-  scoped_login_ui_service_observation_.Observe(
-      LoginUIServiceFactory::GetForProfile(browser_->GetProfile()));
-  CHECK(!sync_confirmation_callback_, base::NotFatalUntil::M162);
-  sync_confirmation_callback_ = std::move(callback);
-  dialog_->DoNextStep(Step::kTurnOnSync, Step::kSyncConfirmation);
-}
-
-bool SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::
-        ShouldAbortBeforeShowSyncDisabledConfirmation() {
-  // Abort the sync flow and proceed to profile customization.
-  if (dialog_) {
-    dialog_->DoNextStep(Step::kTurnOnSync, Step::kProfileCustomization);
-  }
-
-  return true;
-}
-
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
-        bool is_managed_account,
-        base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-            callback) {
-  // If Sync is disabled, the `TurnSyncOnHelper` should quit earlier due to
-  // `ShouldAbortBeforeShowSyncDisabledConfirmation()`.
-  NOTREACHED();
-}
-
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::ShowSyncSettings() {
-  // Dialog's step is updated in OnSyncConfirmationUIClosed(). This
-  // function only needs to open the Sync Settings.
-  if (browser_) {
-    chrome::ShowSettingsSubPage(browser_.get(), chrome::kSyncSetupSubPage);
-  }
-}
-
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
-  NOTREACHED() << "Sign-in intercept shouldn't create a new profile for an "
-                  "account known to Chrome";
-}
-
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::OnSyncConfirmationUIClosed(
-        LoginUIService::SyncConfirmationUIClosedResult result) {
-  scoped_login_ui_service_observation_.Reset();
-
-  Step next_step;
-  switch (result) {
-    case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS:
-      RecordDialogEvent(DialogEvent::kSyncConfirmationClickConfirm);
-      next_step = Step::kWaitForSyncedTheme;
-      break;
-    case LoginUIService::ABORT_SYNC:
-      RecordDialogEvent(DialogEvent::kSyncConfirmationClickCancel);
-      next_step = Step::kProfileCustomization;
-      break;
-    case LoginUIService::CONFIGURE_SYNC_FIRST:
-      RecordDialogEvent(DialogEvent::kSyncConfirmationClickSettings);
-      [[fallthrough]];
-    case LoginUIService::UI_CLOSED:
-      next_step = Step::kProfileSwitchIPHAndCloseModal;
-      break;
-  }
-
-  // This may delete `dialog_`.
-  if (dialog_) {
-    dialog_->DoNextStep(Step::kSyncConfirmation, next_step);
-  }
-
-  if (result == LoginUIService::UI_CLOSED) {
-    // Sync must be aborted if the user didn't interact explicitly with the
-    // dialog.
-    result = LoginUIService::ABORT_SYNC;
-  }
-
-  CHECK(sync_confirmation_callback_, base::NotFatalUntil::M162);
-  std::move(sync_confirmation_callback_).Run(result);
-  // `this` may now be deleted.
-}
-
 SigninInterceptFirstRunExperienceDialog::
     SigninInterceptFirstRunExperienceDialog(BrowserWindowInterface* browser,
                                             const CoreAccountId& account_id,
@@ -431,46 +235,43 @@ SigninInterceptFirstRunExperienceDialog::
       browser_(browser),
       account_id_(account_id),
       is_forced_intercept_(is_forced_intercept) {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    // This is a brand new profile. There should be enterprise confirmation
-    // screens offering the option to create another profile. This class handles
-    // management.
-    auto_accept_management_ = enterprise_util::
-        EnabledAutomaticManagementDisclaimerAcceptanceUntilReset(
-            browser_->GetProfile());
+  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
+  // This is a brand new profile. There should be no enterprise confirmation
+  // screens offering the option to create another profile. This class handles
+  // management.
+  auto_accept_management_ =
+      enterprise_util::EnabledAutomaticManagementDisclaimerAcceptanceUntilReset(
+          browser_->GetProfile());
 
-    if (!base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer)) {
-      // Trigger the disclaimer service is to auto-approve the management and
-      // fetch the applicable policies.
-      auto* profile_management_disclaimer_service =
-          ProfileManagementDisclaimerServiceFactory::GetForProfile(
-              browser_->GetProfile());
-      CHECK(profile_management_disclaimer_service);
-      const CoreAccountId account_id_of_ongoing_management_flow =
-          profile_management_disclaimer_service
-              ->GetAccountBeingConsideredForManagementIfAny();
-      // If another account is being made managed then we cannot invoke
-      // `EnsureManagedProfileForAccount` for the present account. However for a
-      // newly created profile this case should not happen.
-      // TODO(crbug.com/418143300): Maybe track this case with a metric.
-      if (account_id_of_ongoing_management_flow.empty() ||
-          account_id_of_ongoing_management_flow == account_id_) {
-        profile_management_disclaimer_service->EnsureManagedProfileForAccount(
-            account_id_,
-            signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience,
-            base::DoNothing());
-      }
+  if (!base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer)) {
+    // Trigger the disclaimer service to auto-approve the management and fetch
+    // the applicable policies.
+    auto* profile_management_disclaimer_service =
+        ProfileManagementDisclaimerServiceFactory::GetForProfile(
+            browser_->GetProfile());
+    CHECK(profile_management_disclaimer_service);
+    const CoreAccountId account_id_of_ongoing_management_flow =
+        profile_management_disclaimer_service
+            ->GetAccountBeingConsideredForManagementIfAny();
+    // If another account is being made managed then we cannot invoke
+    // `EnsureManagedProfileForAccount` for the present account. However for a
+    // newly created profile this case should not happen.
+    // TODO(crbug.com/418143300): Maybe track this case with a metric.
+    if (account_id_of_ongoing_management_flow.empty() ||
+        account_id_of_ongoing_management_flow == account_id_) {
+      profile_management_disclaimer_service->EnsureManagedProfileForAccount(
+          account_id_,
+          signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience,
+          base::DoNothing());
     }
   }
 }
 
 void SigninInterceptFirstRunExperienceDialog::Show() {
   RecordDialogEvent(DialogEvent::kStart);
-  Step next_step =
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
-              base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)
-          ? Step::kStartHistorySyncOptin
-          : Step::kTurnOnSync;
+  Step next_step = base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)
+                       ? Step::kStartHistorySyncOptin
+                       : Step::kWaitForSyncedTheme;
   DoNextStep(Step::kStart, next_step);
 }
 
@@ -516,26 +317,6 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
   switch (step) {
     case Step::kStart:
       NOTREACHED();
-    case Step::kTurnOnSync:
-      if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-        // TODO(crbug.com/418143300): Until we implement the proper flow
-        // (flag `kUnoPhase2FollowUp`) for the History Sync optin screen,
-        // skip entirely the replaced steps
-        // Step::kTurnOnSync and Step::kSyncConfirmation.
-        DoNextStep(Step::kTurnOnSync, Step::kWaitForSyncedTheme);
-        return;
-      }
-      DoTurnOnSync();
-      return;
-    case Step::kSyncConfirmation:
-      if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-        // TODO(crbug.com/418143300): Until we implement the proper flow for the
-        // History Sync optin screen, skip entirely the replaced steps
-        // Step::kTurnOnSync and Step::kSyncConfirmation.
-        NOTREACHED();
-      }
-      DoSyncConfirmation();
-      return;
     case Step::kStartHistorySyncOptin:
       CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
       CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
@@ -555,32 +336,6 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
       DoProfileSwitchIPHAndCloseModal();
       return;
   }
-}
-
-void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
-  const signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience;
-  const signin_metrics::PromoAction promo_action =
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
-  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
-
-  // TurnSyncOnHelper deletes itself once done.
-  new TurnSyncOnHelper(browser_->GetProfile(), access_point, promo_action,
-                       account_id_,
-                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                       std::make_unique<InterceptTurnSyncOnHelperDelegate>(
-                           weak_ptr_factory_.GetWeakPtr()),
-                       base::OnceClosure());
-}
-
-void SigninInterceptFirstRunExperienceDialog::DoSyncConfirmation() {
-  RecordDialogEvent(DialogEvent::kShowSyncConfirmation);
-  SetDialogDelegate(
-      SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
-          browser_, SyncConfirmationStyle::kSigninInterceptModal,
-          /*is_sync_promo=*/true));
-  PreloadProfileCustomizationUI();
 }
 
 void SigninInterceptFirstRunExperienceDialog::DoStartHistorySync() {

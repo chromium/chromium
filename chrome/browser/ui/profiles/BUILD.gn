@@ -107,10 +107,9 @@ source_set("impl") {
       ]
 
       deps += [
-        "//chrome/browser/ui:chrome_pages",
+        "//chrome/browser/enterprise",
         "//chrome/browser/ui/views/profiles:profile_management_types",
         "//chrome/browser/ui/webui/signin",
-        "//chrome/browser/ui/webui/signin:login_ui_service",
 
         # TODO(crbug.com/430804948): This dependency is here because of
         # signin_intercept_first_run_experience_dialog.h listed above - see
@@ -250,7 +249,6 @@ source_set("browser_tests") {
         "//chrome/browser/ui/signin",
         "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
         "//chrome/browser/ui/webui/signin",
-        "//chrome/browser/ui/webui/signin:login_ui_service",
         "//chrome/browser/ui/webui/signin:test_support_ui",
       ]
     }

@@ -1394,12 +1394,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/signin/dice_web_signin_interceptor.h:SigninInterceptEnterprisePolicyDecisionSource) -->
 
+<!-- LINT.IfChange(SigninInterceptFREDialogEvent) -->
+
 <enum name="SigninInterceptFREDialogEvent">
   <int value="0" label="FRE started"/>
-  <int value="1" label="Sync confirmation shown"/>
-  <int value="2" label="The user turned sync on"/>
-  <int value="3" label="The user canceled sync"/>
-  <int value="4" label="The user clicked on sync settings"/>
+  <int value="1" label="(Obsolete) Sync confirmation shown"/>
+  <int value="2" label="(Obsolete) The user turned sync on"/>
+  <int value="3" label="(Obsolete) The user canceled sync"/>
+  <int value="4" label="(Obsolete) The user clicked on sync settings"/>
   <int value="5" label="Profile customization shown"/>
   <int value="6" label="The user completed profile customization"/>
   <int value="7" label="The user skipped profile customization"/>
@@ -1407,6 +1409,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="The user turned on history syncing"/>
   <int value="10" label="The user rejected history syncing"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h:SigninInterceptFREDialogEvent) -->
 
 <!-- LINT.IfChange(SigninInterceptHeuristicOutcome) -->
 
