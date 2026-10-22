@@ -19,6 +19,10 @@ import android.view.Surface;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -35,6 +39,9 @@ import java.util.Queue;
 @JNINamespace("media")
 @NullMarked
 class MediaCodecBridge {
+    @JniType("::media::MediaCodecBridgeImpl")
+    interface NativeMediaCodecBridge extends JniTypeToken {}
+
     private static final String TAG = "MediaCodecBridge";
 
     private static final int MEDIA_CODEC_UNKNOWN_CIPHER_MODE = -1;
@@ -60,7 +67,7 @@ class MediaCodecBridge {
     private boolean mPendingError;
     private int mPendingErrorCode; // only valid if mPendingError = true
     private boolean mPendingStart;
-    private long mNativeMediaCodecBridge;
+    private @Nullable JniRawPtr<NativeMediaCodecBridge> mNativeMediaCodecBridge;
     private int mSequenceCounter;
     private Queue<DequeueInputResult> mPendingInputBuffers;
     private Queue<DequeueOutputResult> mPendingOutputBuffers;
@@ -465,7 +472,9 @@ class MediaCodecBridge {
     }
 
     @CalledByNative
-    private synchronized void setBuffersAvailableListener(long nativeMediaCodecBridge) {
+    private synchronized void setBuffersAvailableListener(
+            JniRawPtr<NativeMediaCodecBridge> nativeMediaCodecBridge) {
+        assert mNativeMediaCodecBridge == null;
         mNativeMediaCodecBridge = nativeMediaCodecBridge;
 
         // If any buffers or errors occurred before this, trigger the callback now.
@@ -475,7 +484,7 @@ class MediaCodecBridge {
     }
 
     private synchronized void notifyBuffersAvailable() {
-        if (mNativeMediaCodecBridge != 0) {
+        if (mNativeMediaCodecBridge != null) {
             MediaCodecBridgeJni.get().onBuffersAvailable(mNativeMediaCodecBridge);
         }
     }
@@ -529,7 +538,10 @@ class MediaCodecBridge {
             // Disconnect from the native code to ensure we don't issue calls
             // into it after its destruction.
             synchronized (this) {
-                mNativeMediaCodecBridge = 0;
+                if (mNativeMediaCodecBridge != null) {
+                    mNativeMediaCodecBridge.release();
+                    mNativeMediaCodecBridge = null;
+                }
             }
         }
         try {
@@ -1132,6 +1144,6 @@ class MediaCodecBridge {
 
     @NativeMethods
     interface Natives {
-        void onBuffersAvailable(long nativeMediaCodecBridge);
+        void onBuffersAvailable(JniPtr<NativeMediaCodecBridge> self);
     }
 }

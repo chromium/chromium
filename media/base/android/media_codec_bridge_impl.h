@@ -152,6 +152,10 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   CodecType GetCodecType() const override;
   size_t GetMaxInputSize() override;
 
+  // When the MediaCodec has been configured in async mode, this is called when
+  // input or output buffers are available.
+  void OnBuffersAvailable(JNIEnv* /* env */);
+
  private:
   friend class MediaCodecBridgeTest;
 
@@ -186,8 +190,6 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
                                           size_t offset,
                                           const uint8_t** addr,
                                           size_t* capacity);
-
-  void OnBuffersAvailable(JNIEnv* /* env */) override;
 
   void ReportAnyErrorToUMA(MediaCodecStatus status);
 

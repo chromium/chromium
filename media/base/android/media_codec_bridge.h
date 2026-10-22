@@ -223,10 +223,6 @@ class MEDIA_EXPORT MediaCodecBridge {
   // level 23 and higher (Marshmallow).
   virtual bool SetSurface(const base::android::JavaRef<jobject>& surface) = 0;
 
-  // When the MediaCodec has been configured in async mode, this is called when
-  // input or output buffers are available.
-  virtual void OnBuffersAvailable(JNIEnv* env) = 0;
-
   // Returns the CodecType this codec was created with.
   virtual CodecType GetCodecType() const = 0;
 

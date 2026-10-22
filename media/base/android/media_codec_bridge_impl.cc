@@ -34,6 +34,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/gfx/android/rect_jni_conversion.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -518,7 +519,7 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
   // Note this should be done last since setBuffersAvailableListener() may
   // immediately invoke the callback if buffers came in during construction.
   Java_MediaCodecBridge_setBuffersAvailableListener(
-      AttachCurrentThread(), j_bridge_, reinterpret_cast<intptr_t>(this));
+      AttachCurrentThread(), j_bridge_, jni_zero::MakeRaw(this));
 }
 
 MediaCodecBridgeImpl::~MediaCodecBridgeImpl() {
