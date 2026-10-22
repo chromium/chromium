@@ -674,12 +674,13 @@ bool SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
   bool did_apply_effects = false;
   bool disable_throttling =
       !RuntimeEnabledFeatures::InvisibleSVGAnimationThrottlingEnabled();
-  for (auto& entry : animated_targets_) {
-    ElementSMILAnimations* animations = entry.key->GetSMILAnimations();
+  HeapVector<Member<SVGElement>> targets(animated_targets_.Values());
+  for (SVGElement* target : targets) {
+    ElementSMILAnimations* animations = target->GetSMILAnimations();
     if (animations && animations->Apply(elapsed)) {
       did_apply_effects = true;
 
-      if (!disable_throttling && !CanThrottleTarget(*entry.key)) {
+      if (!disable_throttling && !CanThrottleTarget(*target)) {
         disable_throttling = true;
       }
     }

@@ -35,12 +35,14 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 #include "third_party/blink/renderer/core/svg/svg_set_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
+#include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -68,6 +70,16 @@ SMILTime ComputeNextRepeatTime(SMILTime interval_begin,
   SMILTime time_until_next_repeat =
       simple_duration - (time_in_interval % simple_duration);
   return presentation_time + time_until_next_repeat;
+}
+
+bool IsDescendantOfSvgUseElement(const Element& element) {
+  for (ShadowRoot* root = element.ContainingShadowRoot(); root;
+       root = root->host().ContainingShadowRoot()) {
+    if (IsA<SVGUseElement>(root->host())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -330,7 +342,7 @@ void SVGSMILElement::BuildPendingResource() {
 
   // Ignore timed elements that are inserted into a <use> shadow tree. This is
   // currently possible via a cloned event handler.
-  if (!isConnected() || InUseShadowTree()) {
+  if (!isConnected() || IsDescendantOfSvgUseElement(*this)) {
     // Reset the target element if we are no longer in the document.
     SetTargetElement(nullptr);
     return;
