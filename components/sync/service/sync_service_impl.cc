@@ -88,9 +88,6 @@ namespace syncer {
 
 namespace {
 
-BASE_FEATURE(kSyncUnsubscribeFromTypesWithPermanentErrors,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 constexpr int kMinGmsVersionCodeWithCustomPassphraseApi = 235204000;
 
@@ -1885,14 +1882,10 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  if (!data_type_manager_->GetDataTypesWithPermanentErrors().empty() &&
-      base::FeatureList::IsEnabled(
-          kSyncUnsubscribeFromTypesWithPermanentErrors)) {
-    // Unsubscribe from data types with permanent errors. Types which are
-    // unready or have crypto errors are intentionally kept because they will
-    // may change their state.
-    types.RemoveAll(data_type_manager_->GetDataTypesWithPermanentErrors());
-  }
+  // Unsubscribe from data types with permanent errors. Types which are
+  // unready or have crypto errors are intentionally kept because they may
+  // change their state.
+  types.RemoveAll(data_type_manager_->GetDataTypesWithPermanentErrors());
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, don't subscribe to HISTORY invalidations, to save network

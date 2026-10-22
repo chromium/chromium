@@ -2069,6 +2069,29 @@ TEST_F(SyncServiceImplTest, ShouldSubscribeToStopAndKeepDataTypes) {
   base::RunLoop().RunUntilIdle();
 }
 
+// Verifies that data types with crypto errors remain subscribed to
+// invalidations, unlike data types with permanent errors.
+TEST_F(SyncServiceImplTest, ShouldSubscribeToDataTypesWithCryptoErrors) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           ContainsDataType(BOOKMARKS))));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           ContainsDataType(BOOKMARKS))));
+  service()->GetEncryptionObserverForTest()->OnEncryptedTypesChanged(
+      EncryptableUserTypes(), /*encrypt_everything=*/true);
+  TriggerPassphraseRequired();
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(SyncServiceImplTest, ShouldUnsubscribeWhenStopAndClear) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
