@@ -68,6 +68,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
 
     virtual bool IsGroupFocused() const = 0;
     virtual bool IsUnfocusButtonFocused() const = 0;
+    virtual bool CanShowEditorBubbleButton() const = 0;
     virtual HorizontalTabClosingHelper* GetTabClosingHelper() const = 0;
   };
 

@@ -81,6 +81,7 @@ class TabGroupView : public TabCollectionZOrderManager,
   void ShiftGroupDown() override;
   bool IsGroupFocused() const override;
   bool IsUnfocusButtonFocused() const override;
+  bool CanShowEditorBubbleButton() const override;
   HorizontalTabClosingHelper* GetTabClosingHelper() const override;
 
   // TabCollectionAnimatingLayoutManager::Delegate:

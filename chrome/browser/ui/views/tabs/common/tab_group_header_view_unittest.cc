@@ -40,6 +40,8 @@ class MockDelegate : public TabGroupHeaderView::Delegate {
  public:
   MockDelegate() {
     ON_CALL(*this, GetTabClosingHelper).WillByDefault(testing::Return(nullptr));
+    ON_CALL(*this, CanShowEditorBubbleButton)
+        .WillByDefault(testing::Return(true));
   }
   MOCK_METHOD(void,
               ToggleCollapsedState,
@@ -69,6 +71,7 @@ class MockDelegate : public TabGroupHeaderView::Delegate {
   MOCK_METHOD(void, ShiftGroupDown, (), (override));
   MOCK_METHOD(bool, IsGroupFocused, (), (const, override));
   MOCK_METHOD(bool, IsUnfocusButtonFocused, (), (const, override));
+  MOCK_METHOD(bool, CanShowEditorBubbleButton, (), (const, override));
   MOCK_METHOD(HorizontalTabClosingHelper*,
               GetTabClosingHelper,
               (),

@@ -461,7 +461,8 @@ void TabGroupHeaderView::OnWillChangeFocus(views::View* focused_before,
     // If navigating upward from below, the button is initially hidden and gets
     // skipped. We detect reverse focus traversal (from a view physically below
     // this one) and manually forward the focus to the button.
-    if (focused_now == this && focused_before &&
+    if (focused_now == this && delegate_->CanShowEditorBubbleButton() &&
+        focused_before &&
         focused_before->GetBoundsInScreen().y() > GetBoundsInScreen().y()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -750,8 +751,12 @@ void TabGroupHeaderView::SetEditorBubbleButtonVisibilityOnHover(
           is_focused ? views::MaximumFlexSizeRule::kUnbounded
                      : views::MaximumFlexSizeRule::kPreferred)
           .WithAlignment(views::LayoutAlignment::kEnd));
+  // In focus mode, the button is always visible. It should never be visible in
+  // the collapsed state. Otherwise it is visible on hover or when the editor
+  // bubble is open.
   editor_bubble_button_->SetVisible(
-      is_focused || editor_bubble_tracker_.is_open() || is_hovered);
+      is_focused || (delegate_->CanShowEditorBubbleButton() &&
+                     (editor_bubble_tracker_.is_open() || is_hovered)));
 }
 
 void TabGroupHeaderView::ShowEditorBubble() {

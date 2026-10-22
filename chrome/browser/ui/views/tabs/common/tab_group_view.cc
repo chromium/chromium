@@ -587,6 +587,13 @@ bool TabGroupView::IsUnfocusButtonFocused() const {
   return unfocus_header_ && unfocus_header_->HasFocus();
 }
 
+bool TabGroupView::CanShowEditorBubbleButton() const {
+  return orientation_ == TabStripOrientation::kVertical &&
+         (GetTabStripCollapseState() ==
+              tabs::VerticalTabStripCollapseState::kExpanded ||
+          width() > tabs::kVerticalTabStripCollapsedWidth);
+}
+
 HorizontalTabClosingHelper* TabGroupView::GetTabClosingHelper() const {
   if (collection_node_ && collection_node_->GetController()) {
     return collection_node_->GetController()->tab_closing_helper();
