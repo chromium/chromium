@@ -127,20 +127,24 @@ class GinJavaBridgeDispatcherHost
   void RemoteDisconnected(const content::GlobalRenderFrameHostId& routing_id);
 
   // Run on any thread.
-  GinJavaBoundObject::ObjectID AddObject(
+  GinJavaBoundObject::ObjectID FindOrAddObject(
       const base::android::JavaRef<jobject>& object,
       const base::android::JavaRef<jclass>& safe_annotation_clazz,
       std::optional<GlobalRenderFrameHostId> holder);
   scoped_refptr<GinJavaBoundObject> FindObject(
       GinJavaBoundObject::ObjectID object_id);
-  bool FindObjectId(const base::android::JavaRef<jobject>& object,
-                    GinJavaBoundObject::ObjectID* object_id);
-  void RemoveFromRetainedObjectSetLocked(const JavaObjectWeakGlobalRef& ref);
-  JavaObjectWeakGlobalRef RemoveHolderLocked(
-      const GlobalRenderFrameHostId& holder,
-      ObjectMap::iterator* iter_ptr) EXCLUSIVE_LOCKS_REQUIRED(objects_lock_);
+  scoped_refptr<GinJavaBoundObject> FindObjectLocked(
+      GinJavaBoundObject::ObjectID object_id)
+      EXCLUSIVE_LOCKS_REQUIRED(objects_lock_);
+  ObjectMap::iterator FindObjectLocked(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& object)
+      EXCLUSIVE_LOCKS_REQUIRED(objects_lock_);
+  void RemoveFromRetainedObjectSetLocked(const JavaObjectWeakGlobalRef& ref)
+      EXCLUSIVE_LOCKS_REQUIRED(objects_lock_);
   void DeleteObjectForRouteLocked(const GlobalRenderFrameHostId& routing_id,
-                                  GinJavaBoundObject::ObjectID object_id);
+                                  GinJavaBoundObject::ObjectID object_id)
+      EXCLUSIVE_LOCKS_REQUIRED(objects_lock_);
 
   // The following objects are used only on the UI thread.
   typedef std::map<std::string, NamedObject> NamedObjectMap;
@@ -148,7 +152,7 @@ class GinJavaBridgeDispatcherHost
 
   // The following objects are used on both threads, so locking must be used.
 
-  GinJavaBoundObject::ObjectID next_object_id_ = 1;
+  GinJavaBoundObject::ObjectID next_object_id_ GUARDED_BY(objects_lock_) = 1;
 
   // Every time a GinJavaBoundObject backed by a real Java object is
   // created/destroyed, we insert/remove a strong ref to that Java object into
@@ -156,9 +160,9 @@ class GinJavaBridgeDispatcherHost
   // potentially in use. Although the set is managed native side, it's owned
   // and defined in Java so that pushing refs into it does not create new GC
   // roots that would prevent WebContents from being garbage collected.
-  JavaObjectWeakGlobalRef retained_object_set_;
-  // Note that retained_object_set_ does not need to be consistent
-  // with objects_.
+  // While retained_object_set_ is alive, it contains the exact set of Java
+  // objects present in objects_.
+  JavaObjectWeakGlobalRef retained_object_set_ GUARDED_BY(objects_lock_);
   ObjectMap objects_ GUARDED_BY(objects_lock_);
   base::Lock objects_lock_;
 

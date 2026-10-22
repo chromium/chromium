@@ -139,7 +139,7 @@ void GinJavaBridgeDispatcherHost::WebContentsDestroyed() {
       base::BindOnce(&GinJavaBridgeDispatcherHost::ClearAllReceivers, this));
 }
 
-GinJavaBoundObject::ObjectID GinJavaBridgeDispatcherHost::AddObject(
+GinJavaBoundObject::ObjectID GinJavaBridgeDispatcherHost::FindOrAddObject(
     const base::android::JavaRef<jobject>& object,
     const base::android::JavaRef<jclass>& safe_annotation_clazz,
     std::optional<GlobalRenderFrameHostId> holder) {
@@ -147,47 +147,45 @@ GinJavaBoundObject::ObjectID GinJavaBridgeDispatcherHost::AddObject(
   // AddNamedObject, and from the background thread, when injected Java
   // object's method returns a Java object.
   JNIEnv* env = base::android::AttachCurrentThread();
-  JavaObjectWeakGlobalRef ref(env, object);
+  base::AutoLock locker(objects_lock_);
+  auto iter = FindObjectLocked(env, object);
+  if (iter != objects_.end()) {
+    if (!holder.has_value()) {
+      iter->second->AddName();
+    } else {
+      iter->second->AddHolder(holder.value());
+    }
+    return iter->first;
+  }
 
   scoped_refptr<GinJavaBoundObject> new_object =
-      !holder ? GinJavaBoundObject::CreateNamed(ref, safe_annotation_clazz)
-              : GinJavaBoundObject::CreateTransient(ref, safe_annotation_clazz,
-                                                    holder.value());
-  GinJavaBoundObject::ObjectID object_id;
-  {
-    base::AutoLock locker(objects_lock_);
-    object_id = next_object_id_++;
-    objects_[object_id] = new_object;
-  }
-#if DCHECK_IS_ON()
-  {
-    GinJavaBoundObject::ObjectID added_object_id;
-    CHECK(FindObjectId(object, &added_object_id), base::NotFatalUntil::M159);
-    CHECK_EQ(object_id, added_object_id, base::NotFatalUntil::M159);
-  }
-#endif  // DCHECK_IS_ON()
+      !holder.has_value()
+          ? GinJavaBoundObject::CreateNamed(
+                JavaObjectWeakGlobalRef(env, object), safe_annotation_clazz)
+          : GinJavaBoundObject::CreateTransient(
+                JavaObjectWeakGlobalRef(env, object), safe_annotation_clazz,
+                holder.value());
+  GinJavaBoundObject::ObjectID object_id = next_object_id_++;
+  objects_.emplace(object_id, std::move(new_object));
   base::android::ScopedJavaLocalRef<jobject> retained_object_set =
-        retained_object_set_.get(env);
+      retained_object_set_.get(env);
   if (!retained_object_set.is_null()) {
-    base::AutoLock locker(objects_lock_);
     jni_zero::CollectionAdd(env, retained_object_set, object);
   }
   return object_id;
 }
 
-bool GinJavaBridgeDispatcherHost::FindObjectId(
-    const base::android::JavaRef<jobject>& object,
-    GinJavaBoundObject::ObjectID* object_id) {
-  // Can be called on any thread.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::AutoLock locker(objects_lock_);
-  for (const auto& pair : objects_) {
-    if (object.IsSameObject(env, pair.second->GetLocalRef(env))) {
-      *object_id = pair.first;
-      return true;
+GinJavaBridgeDispatcherHost::ObjectMap::iterator
+GinJavaBridgeDispatcherHost::FindObjectLocked(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& object) {
+  objects_lock_.AssertAcquired();
+  for (auto iter = objects_.begin(); iter != objects_.end(); ++iter) {
+    if (object.IsSameObject(env, iter->second->GetLocalRef(env))) {
+      return iter;
     }
   }
-  return false;
+  return objects_.end();
 }
 
 JavaObjectWeakGlobalRef GinJavaBridgeDispatcherHost::GetObjectWeakRef(
@@ -197,22 +195,6 @@ JavaObjectWeakGlobalRef GinJavaBridgeDispatcherHost::GetObjectWeakRef(
     return object->GetWeakRef();
   else
     return JavaObjectWeakGlobalRef();
-}
-
-JavaObjectWeakGlobalRef GinJavaBridgeDispatcherHost::RemoveHolderLocked(
-    const GlobalRenderFrameHostId& holder,
-    ObjectMap::iterator* iter_ptr) {
-  objects_lock_.AssertAcquired();
-  JavaObjectWeakGlobalRef result;
-  scoped_refptr<GinJavaBoundObject> object((*iter_ptr)->second);
-  if (!object->IsNamed()) {
-    object->RemoveHolder(holder);
-    if (!object->HasHolders()) {
-      result = object->GetWeakRef();
-      objects_.erase(*iter_ptr);
-    }
-  }
-  return result;
 }
 
 void GinJavaBridgeDispatcherHost::RemoveFromRetainedObjectSetLocked(
@@ -232,24 +214,23 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
     const base::android::JavaRef<jclass>& safe_annotation_clazz,
     origin_matcher::OriginMatcher matcher) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-  GinJavaBoundObject::ObjectID object_id;
   NamedObjectMap::iterator iter = named_objects_.find(name);
-  bool existing_object = FindObjectId(object, &object_id);
-  if (existing_object && iter != named_objects_.end() &&
-      iter->second.object_id == object_id) {
-    // Nothing to do.
-    return;
+  if (iter != named_objects_.end()) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    base::AutoLock locker(objects_lock_);
+    auto obj_iter = objects_.find(iter->second.object_id);
+    if (obj_iter != objects_.end() &&
+        object.IsSameObject(env, obj_iter->second->GetLocalRef(env))) {
+      // Nothing to do.
+      return;
+    }
   }
 
   if (iter != named_objects_.end()) {
     RemoveNamedObject(iter->first);
   }
-  if (existing_object) {
-    base::AutoLock locker(objects_lock_);
-    objects_[object_id]->AddName();
-  } else {
-    object_id = AddObject(object, safe_annotation_clazz, std::nullopt);
-  }
+  GinJavaBoundObject::ObjectID object_id =
+      FindOrAddObject(object, safe_annotation_clazz, std::nullopt);
 
   // We use the serialized string of the matcher and reconstruct it
   // in the render process. We pass this around like this because we can
@@ -284,7 +265,10 @@ void GinJavaBridgeDispatcherHost::RemoveNamedObject(
 
   {
     base::AutoLock locker(objects_lock_);
-    objects_[iter->second.object_id]->RemoveName();
+    auto obj_iter = objects_.find(iter->second.object_id);
+    if (obj_iter != objects_.end()) {
+      obj_iter->second->RemoveName();
+    }
   }
   named_objects_.erase(iter);
 
@@ -328,9 +312,9 @@ void GinJavaBridgeDispatcherHost::PrimaryMainDocumentElementAvailable() {
   // That means, all sub-frames have also been cleared, so only named
   // objects survived.
   JNIEnv* env = base::android::AttachCurrentThread();
+  base::AutoLock locker(objects_lock_);
   base::android::ScopedJavaLocalRef<jobject> retained_object_set =
       retained_object_set_.get(env);
-  base::AutoLock locker(objects_lock_);
   if (!retained_object_set.is_null()) {
     jni_zero::CollectionClear(env, retained_object_set);
   }
@@ -352,9 +336,16 @@ scoped_refptr<GinJavaBoundObject> GinJavaBridgeDispatcherHost::FindObject(
     GinJavaBoundObject::ObjectID object_id) {
   // Can be called on any thread.
   base::AutoLock locker(objects_lock_);
+  return FindObjectLocked(object_id);
+}
+
+scoped_refptr<GinJavaBoundObject> GinJavaBridgeDispatcherHost::FindObjectLocked(
+    GinJavaBoundObject::ObjectID object_id) {
+  objects_lock_.AssertAcquired();
   auto iter = objects_.find(object_id);
-  if (iter != objects_.end())
+  if (iter != objects_.end()) {
     return iter->second;
+  }
   LOG(ERROR) << "WebView: Unknown object: " << object_id;
   return nullptr;
 }
@@ -384,15 +375,9 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
   if (result->HoldsPrimitiveResult()) {
     *wrapped_result = result->GetPrimitiveResult().Clone();
   } else if (!result->GetObjectResult().is_null()) {
-    GinJavaBoundObject::ObjectID returned_object_id;
-    if (FindObjectId(result->GetObjectResult(), &returned_object_id)) {
-      base::AutoLock locker(objects_lock_);
-      objects_[returned_object_id]->AddHolder(routing_id);
-    } else {
-      returned_object_id =
-          AddObject(result->GetObjectResult(), result->GetSafeAnnotationClass(),
-                    routing_id);
-    }
+    GinJavaBoundObject::ObjectID returned_object_id =
+        FindOrAddObject(result->GetObjectResult(),
+                        result->GetSafeAnnotationClass(), routing_id);
     wrapped_result->Append(base::Value::FromUniquePtrValue(
         GinJavaBridgeValue::CreateObjectIDValue(returned_object_id)));
   } else {
@@ -407,9 +392,13 @@ void GinJavaBridgeDispatcherHost::DeleteObjectForRouteLocked(
   auto iter = objects_.find(object_id);
   if (iter == objects_.end())
     return;
-  JavaObjectWeakGlobalRef ref = RemoveHolderLocked(routing_id, &iter);
-  if (!ref.is_uninitialized()) {
-    RemoveFromRetainedObjectSetLocked(ref);
+  scoped_refptr<GinJavaBoundObject> object = iter->second;
+  if (!object->IsNamed()) {
+    object->RemoveHolder(routing_id);
+    if (!object->HasHolders()) {
+      RemoveFromRetainedObjectSetLocked(object->GetWeakRef());
+      objects_.erase(iter);
+    }
   }
 }
 
@@ -430,23 +419,24 @@ void GinJavaBridgeDispatcherHost::GetObject(
     object_receivers_.set_disconnect_handler(base::BindRepeating(
         &GinJavaBridgeDispatcherHost::ObjectDisconnected, this));
   }
-  object_receivers_.Add(
-      this, std::move(receiver),
-      std::make_pair(receivers_.current_context(), object_id));
+  GlobalRenderFrameHostId routing_id = receivers_.current_context();
+  object_receivers_.Add(this, std::move(receiver),
+                        std::make_pair(routing_id, object_id));
 
   // Add a holder reference because the object may become unnamed
   // yet the renderer can still hold a reference to it. See
   // crbug.com/333171288.
-  scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
-  if (object.get()) {
-    object->AddHolder(receivers_.current_context());
+  base::AutoLock locker(objects_lock_);
+  scoped_refptr<GinJavaBoundObject> object = FindObjectLocked(object_id);
+  if (object) {
+    object->AddHolder(routing_id);
   }
 }
 
 void GinJavaBridgeDispatcherHost::ObjectWrapperDeleted(int32_t object_id) {
   CHECK(JavaBridgeThread::CurrentlyOn());
-  base::AutoLock locker(objects_lock_);
-  DeleteObjectForRouteLocked(receivers_.current_context(), object_id);
+  GlobalRenderFrameHostId routing_id = receivers_.current_context();
+  OnObjectWrapperDeleted(routing_id, object_id);
 }
 
 void GinJavaBridgeDispatcherHost::GetMethods(GetMethodsCallback callback) {
@@ -491,7 +481,9 @@ void GinJavaBridgeDispatcherHost::InvokeMethod(const std::string& method_name,
 
 void GinJavaBridgeDispatcherHost::ObjectDisconnected() {
   CHECK(JavaBridgeThread::CurrentlyOn());
-  OnObjectWrapperDeleted(object_receivers_.current_context().first,
+  GlobalRenderFrameHostId routing_id =
+      object_receivers_.current_context().first;
+  OnObjectWrapperDeleted(routing_id,
                          object_receivers_.current_context().second);
 }
 

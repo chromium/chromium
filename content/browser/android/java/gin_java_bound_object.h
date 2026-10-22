@@ -35,16 +35,17 @@ class GinJavaBoundObject
 
   // The following methods can be called on any thread.
   JavaObjectWeakGlobalRef& GetWeakRef() { return ref_; }
-  base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) {
+  base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) const {
     return ref_.get(env);
   }
 
-  bool IsNamed() { return names_count_ > 0; }
+  // The following methods access reference-count state shared between the UI
+  // thread and the background thread, and must only be called while holding
+  // GinJavaBridgeDispatcherHost::objects_lock_.
+  bool IsNamed() const { return names_count_ > 0; }
   void AddName() { ++names_count_; }
   void RemoveName() { --names_count_; }
-
-  // The following methods are called on the background thread.
-  bool HasHolders() { return !holders_.empty(); }
+  bool HasHolders() const { return !holders_.empty(); }
   void AddHolder(const GlobalRenderFrameHostId& holder) {
     holders_.insert(holder);
   }
@@ -52,6 +53,7 @@ class GinJavaBoundObject
     holders_.erase(holder);
   }
 
+  // The following methods are called on the background thread.
   std::set<std::string> GetMethodNames();
   bool HasMethod(const std::string& method_name);
   const JavaMethod* FindMethod(const std::string& method_name,
