@@ -365,6 +365,69 @@ TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_ControlElementsIgnored) {
   EXPECT_TRUE(a11y::IsIgnored(&node, false));
 }
 
+TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_PdfOcrStartAndEndNodes) {
+  static constexpr ui::AXNodeID kRootId = 1;
+  static constexpr ui::AXNodeID kOcrBannerId = 2;
+  static constexpr ui::AXNodeID kOcrBannerTextId = 3;
+  static constexpr ui::AXNodeID kNonOcrBannerId = 4;
+  static constexpr ui::AXNodeID kNonOcrBannerTextId = 5;
+  static constexpr ui::AXNodeID kOcrContentInfoId = 6;
+  static constexpr ui::AXNodeID kOcrContentInfoTextId = 7;
+  static constexpr ui::AXNodeID kNonOcrContentInfoId = 8;
+  static constexpr ui::AXNodeID kNonOcrContentInfoTextId = 9;
+
+  ui::AXTree tree;
+  ui::AXTreeUpdate update;
+  update.root_id = kRootId;
+  update.nodes = {
+      test::GenericContainerNode(
+          kRootId, {kOcrBannerId, kNonOcrBannerId, kOcrContentInfoId,
+                    kNonOcrContentInfoId}),
+      test::ContainerNode(kOcrBannerId, ax::mojom::Role::kBanner,
+                          {kOcrBannerTextId}),
+      test::TextNode(kOcrBannerTextId,
+                     l10n_util::GetStringUTF16(IDS_PDF_OCR_RESULT_BEGIN)),
+      test::ContainerNode(kNonOcrBannerId, ax::mojom::Role::kBanner,
+                          {kNonOcrBannerTextId}),
+      test::TextNode(kNonOcrBannerTextId, u"Regular banner text"),
+      test::ContainerNode(kOcrContentInfoId, ax::mojom::Role::kContentInfo,
+                          {kOcrContentInfoTextId}),
+      test::TextNode(kOcrContentInfoTextId,
+                     l10n_util::GetStringUTF16(IDS_PDF_OCR_RESULT_END)),
+      test::ContainerNode(kNonOcrContentInfoId, ax::mojom::Role::kContentInfo,
+                          {kNonOcrContentInfoTextId}),
+      test::TextNode(kNonOcrContentInfoTextId, u"Regular content info text")};
+  ASSERT_TRUE(tree.Unserialize(update));
+
+  // Both the OCR start `kBanner` and its child text node are ignored in PDFs.
+  EXPECT_TRUE(a11y::IsIgnored(tree.GetFromId(kOcrBannerId), /*is_pdf=*/true));
+  EXPECT_TRUE(
+      a11y::IsIgnored(tree.GetFromId(kOcrBannerTextId), /*is_pdf=*/true));
+  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kOcrBannerId), /*is_pdf=*/false));
+  EXPECT_FALSE(
+      a11y::IsIgnored(tree.GetFromId(kOcrBannerTextId), /*is_pdf=*/false));
+
+  // The OCR end `kContentInfo` is kept (for `<br>` insertion), while its child
+  // text node is ignored in PDFs.
+  EXPECT_FALSE(
+      a11y::IsIgnored(tree.GetFromId(kOcrContentInfoId), /*is_pdf=*/true));
+  EXPECT_TRUE(
+      a11y::IsIgnored(tree.GetFromId(kOcrContentInfoTextId), /*is_pdf=*/true));
+  EXPECT_FALSE(
+      a11y::IsIgnored(tree.GetFromId(kOcrContentInfoTextId), /*is_pdf=*/false));
+
+  // Non-OCR banner, content info, and container nodes are not ignored.
+  EXPECT_FALSE(
+      a11y::IsIgnored(tree.GetFromId(kNonOcrBannerId), /*is_pdf=*/true));
+  EXPECT_FALSE(
+      a11y::IsIgnored(tree.GetFromId(kNonOcrBannerTextId), /*is_pdf=*/true));
+  EXPECT_FALSE(
+      a11y::IsIgnored(tree.GetFromId(kNonOcrContentInfoId), /*is_pdf=*/true));
+  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kNonOcrContentInfoTextId),
+                               /*is_pdf=*/true));
+  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kRootId), /*is_pdf=*/true));
+}
+
 TEST_F(ReadAnythingNodeUtilsTest, IsPdfArtifact_SectionHeaderAndFooter) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

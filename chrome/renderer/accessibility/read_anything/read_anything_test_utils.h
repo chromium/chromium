@@ -41,7 +41,11 @@ ui::AXNodeData TextNodeWithTextFromId(ui::AXNodeID id);
 ui::AXNodeData ExplicitlyEmptyTextNode(ui::AXNodeID id);
 ui::AXNodeData ImageNode(ui::AXNodeID id, const std::string& src);
 ui::AXNodeData LinkNode(ui::AXNodeID id, const std::string& url);
-ui::AXNodeData GenericContainerNode(ui::AXNodeID id);
+ui::AXNodeData ContainerNode(ui::AXNodeID id,
+                             ax::mojom::Role role,
+                             std::vector<ui::AXNodeID> child_ids = {});
+ui::AXNodeData GenericContainerNode(ui::AXNodeID id,
+                                    std::vector<ui::AXNodeID> child_ids = {});
 ui::AXNodeData SuperscriptNode(ui::AXNodeID id,
                                const std::u16string& text_content);
 base::File GetValidModelFile();

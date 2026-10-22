@@ -134,6 +134,13 @@ ReadAnythingAppModel::~ReadAnythingAppModel() = default;
 void ReadAnythingAppModel::InsertIdIfNotIgnored(
     ui::AXNodeID id,
     std::set<ui::AXNodeID>& non_ignored_ids) {
+  // Return early if the node is already known to be not ignored to avoid
+  // redundant work, since nodes can be visited multiple times (e.g. when
+  // recomputing display nodes or walking overlapping subtrees).
+  if (non_ignored_ids.contains(id)) {
+    return;
+  }
+
   // If the node is not in the active tree (this could happen when RM is still
   // loading), ignore it.
   const ui::AXNode* const ax_node = GetAXNode(id);

@@ -66,14 +66,15 @@ bool IsIgnored(const ui::AXNode* const ax_node, bool is_pdf) {
     // The text content of the aforementioned `kBanner` or `kContentInfo` node
     // is the same as the text content of its child static text node.
     const ui::AXNode* const parent = ax_node->GetParent();
-    if (const std::string_view text = ax_node->GetTextContentUTF8();
-        text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN)) {
-      if (role == ax::mojom::Role::kBanner ||
-          (parent && parent->GetRole() == ax::mojom::Role::kBanner)) {
-        return true;
-      }
-    } else if (text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END) &&
-               parent && parent->GetRole() == ax::mojom::Role::kContentInfo) {
+    if ((role == ax::mojom::Role::kBanner ||
+         (parent && parent->GetRole() == ax::mojom::Role::kBanner)) &&
+        ax_node->GetTextContentUTF8() ==
+            l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN)) {
+      return true;
+    }
+    if (parent && parent->GetRole() == ax::mojom::Role::kContentInfo &&
+        ax_node->GetTextContentUTF8() ==
+            l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END)) {
       return true;
     }
   }
