@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
 import static org.junit.Assert.assertEquals;
 
-import android.view.View;
 import android.widget.TextView;
 
 import org.junit.Before;
@@ -21,6 +20,7 @@ import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.TwoLineSuggestionView;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -28,7 +28,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Tests for {@link EntitySuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class EntitySuggestionViewBinderUnitTest {
-    private BaseSuggestionView<View> mView;
+    private BaseSuggestionView<TwoLineSuggestionView> mView;
     private PropertyModel mModel;
 
     @Before
@@ -48,12 +48,12 @@ public class EntitySuggestionViewBinderUnitTest {
     @Test
     public void bind_passesCallsToSuggestionViewBinder() {
         mModel.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, new SuggestionSpannable("abc"));
-        assertEquals("abc", mView.<TextView>findViewById(R.id.line_1).getText().toString());
+        assertEquals("abc", mView.contentView.getLine1().getText().toString());
     }
 
     @Test
     public void bind_line2MaxLines() {
-        TextView line2 = mView.findViewById(R.id.line_2);
+        TextView line2 = mView.contentView.getLine2();
         assertEquals(1, line2.getMaxLines());
 
         mModel.set(SuggestionViewProperties.TEXT_LINE_2_WRAP, true);

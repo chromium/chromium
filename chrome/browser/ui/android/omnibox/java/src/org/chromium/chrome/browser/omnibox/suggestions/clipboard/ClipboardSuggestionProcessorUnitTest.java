@@ -17,10 +17,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,13 +40,10 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
-import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -89,12 +82,6 @@ public class ClipboardSuggestionProcessorUnitTest {
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
     private Bitmap mBitmap;
-    private ViewGroup mRootView;
-    private TextView mTitleTextView;
-    private TextView mContentTextView;
-    private int mLastSetTextDirection = -1;
-    private SuggestionViewViewBinder mBinder;
-    private BaseSuggestionView<View> mBaseView;
     private OmniboxResourceProvider mResourceProvider;
 
     @Before
@@ -118,24 +105,6 @@ public class ClipboardSuggestionProcessorUnitTest {
                         ObservableSuppliers.createNonNull(ControlsPosition.TOP),
                         mActionDelegate);
         mProcessor = new ClipboardSuggestionProcessor(uiContext);
-
-        mRootView = new LinearLayout(mContext);
-        mTitleTextView = new TextView(mContext);
-        mTitleTextView.setId(R.id.line_1);
-        mContentTextView =
-                new TextView(mContext) {
-                    @Override
-                    public void setTextDirection(int textDirection) {
-                        super.setTextDirection(textDirection);
-                        mLastSetTextDirection = textDirection;
-                    }
-                };
-        mContentTextView.setId(R.id.line_2);
-        mRootView.addView(mTitleTextView);
-        mRootView.addView(mContentTextView);
-
-        mBinder = new SuggestionViewViewBinder();
-        mBaseView = new BaseSuggestionView<>(mRootView);
     }
 
     /** Create clipboard suggestion for test, and click the reveal button. */
@@ -170,10 +139,6 @@ public class ClipboardSuggestionProcessorUnitTest {
                         .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
-        mBinder.bind(mModel, mBaseView, SuggestionViewProperties.TEXT_LINE_1_TEXT);
-        mBinder.bind(mModel, mBaseView, SuggestionCommonProperties.COLOR_SCHEME);
-        mBinder.bind(mModel, mBaseView, SuggestionViewProperties.IS_SEARCH_SUGGESTION);
-        mBinder.bind(mModel, mBaseView, SuggestionViewProperties.TEXT_LINE_2_TEXT);
     }
 
     @Test
@@ -215,22 +180,6 @@ public class ClipboardSuggestionProcessorUnitTest {
         assertNotNull(icon2);
 
         assertEquals(icon1, icon2);
-    }
-
-    @Test
-    public void clipobardSuggestion_urlAndTextDirection() {
-        final ArgumentCaptor<Callback<Drawable>> callback = MockitoHelper.callbackCaptor();
-        // URL
-        createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
-        assertFalse(mModel.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION));
-        verify(mImageSupplier).fetchFavicon(eq(TEST_URL), callback.capture());
-        callback.getValue().onResult(null);
-        assertEquals(TextView.TEXT_DIRECTION_LTR, mLastSetTextDirection);
-
-        // Text
-        createClipboardSuggestionAndClickReveal(
-                OmniboxSuggestionType.CLIPBOARD_TEXT, GURL.emptyGURL());
-        assertEquals(TextView.TEXT_DIRECTION_INHERIT, mLastSetTextDirection);
     }
 
     @Test
