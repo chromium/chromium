@@ -245,7 +245,9 @@ public class TabModelImplTest {
                     assertEquals(1, mTabModelJni.getCount());
 
                     GURL url = new GURL("https://www.chromium.org");
-                    Tab tab = mTabModelJni.openTabProgrammatically(url, 0, true);
+                    Tab tab =
+                            mTabModelJni.openTabProgrammatically(
+                                    url, 0, TabLaunchType.FROM_TAB_LIST_INTERFACE);
                     assertNotNull(tab);
                     assertEquals(url, tab.getUrl());
                     assertEquals(2, mTabModelJni.getCount());
@@ -274,7 +276,9 @@ public class TabModelImplTest {
                     assertEquals(1, mTabModelJni.getCount());
 
                     GURL url = new GURL("https://www.chromium.org");
-                    Tab tab = mTabModelJni.openTabProgrammatically(url, 0, false);
+                    Tab tab =
+                            mTabModelJni.openTabProgrammatically(
+                                    url, 0, TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND);
                     assertNotNull(tab);
                     assertEquals(url, tab.getUrl());
                     assertEquals(2, mTabModelJni.getCount());
@@ -302,7 +306,9 @@ public class TabModelImplTest {
                 () -> {
                     assertEquals(1, mTabModelJni.getCount());
 
-                    Tab tab = mTabModelJni.openTabProgrammatically(GURL.emptyGURL(), 0, true);
+                    Tab tab =
+                            mTabModelJni.openTabProgrammatically(
+                                    GURL.emptyGURL(), 0, TabLaunchType.FROM_TAB_LIST_INTERFACE);
                     assertNotNull(tab);
                     GURL expectedUrl =
                             UrlConstantResolverFactory.getForProfile(mTabModelJni.getProfile())

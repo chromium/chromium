@@ -4,6 +4,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_api_injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
@@ -33,7 +34,8 @@ class AndroidTabStripApiBrowserTest : public AndroidBrowserTest {
     model_ = &testing::GetTabModel(GetProfile());
     auto android_injector =
         std::make_unique<tabs_api::AndroidTabStripApiInjector>(
-            model_, /*enable_event_bridge=*/true);
+            model_, TabModel::TabLaunchType::FROM_CHROME_UI,
+            /*enable_event_bridge=*/true);
     service_ = std::make_unique<tabs_api::TabStripServiceImpl>(
         std::move(android_injector));
   }
@@ -150,6 +152,8 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Create) {
 
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(2, model_->GetTabCount());
+  EXPECT_EQ(static_cast<int>(TabModel::TabLaunchType::FROM_CHROME_UI),
+            model_->GetTabAt(1)->GetLaunchType());
 }
 
 IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Activate) {

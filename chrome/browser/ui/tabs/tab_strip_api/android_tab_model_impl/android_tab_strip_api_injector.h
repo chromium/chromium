@@ -29,7 +29,9 @@ class AndroidTabStripApiInjector : public PlatformAdaptersProvider {
   // a loaded WebContents, which fails on Android when background tabs are
   // lazily restored. Callers that don't observe tab strip events can set
   // `enable_event_bridge` to false. Remove the parameter once the bug is fixed.
-  AndroidTabStripApiInjector(TabModel* model, bool enable_event_bridge);
+  AndroidTabStripApiInjector(TabModel* model,
+                             TabModel::TabLaunchType launch_type,
+                             bool enable_event_bridge);
   AndroidTabStripApiInjector(const AndroidTabStripApiInjector&&) = delete;
   AndroidTabStripApiInjector operator=(const AndroidTabStripApiInjector&) =
       delete;

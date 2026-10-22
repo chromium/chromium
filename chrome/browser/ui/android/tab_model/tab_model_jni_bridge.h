@@ -124,6 +124,9 @@ class TabModelJniBridge : public TabModel {
   tabs::TabInterface* OpenTab(const GURL& url,
                               int index,
                               bool foregrond) override;
+  tabs::TabInterface* OpenTab(const GURL& url,
+                              int index,
+                              TabLaunchType launch_type) override;
   void SetOpenerForTab(tabs::TabHandle target, tabs::TabHandle opener) override;
   tabs::TabInterface* GetOpenerForTab(tabs::TabHandle target) override;
   tabs::TabInterface* InsertWebContentsAt(

@@ -54,6 +54,7 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(TabModel* tab_model)
       service_(std::make_unique<tabs_api::TabStripServiceImpl>(
           std::make_unique<tabs_api::AndroidTabStripApiInjector>(
               tab_model,
+              TabModel::TabLaunchType::FROM_CHROME_UI,
               /*enable_event_bridge=*/false))) {
   TabModelList::AddObserver(this);
   const GURL url(chrome::kChromeUITabStripNtbURL);

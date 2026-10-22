@@ -25,9 +25,12 @@ class NoOpEventBridge : public EventBridge {
 
 }  // namespace
 
-AndroidTabStripApiInjector::AndroidTabStripApiInjector(TabModel* model,
-                                                       bool enable_event_bridge)
-    : browser_adapter_(std::make_unique<AndroidBrowserAdapterImpl>(model)),
+AndroidTabStripApiInjector::AndroidTabStripApiInjector(
+    TabModel* model,
+    TabModel::TabLaunchType launch_type,
+    bool enable_event_bridge)
+    : browser_adapter_(
+          std::make_unique<AndroidBrowserAdapterImpl>(model, launch_type)),
       tab_model_adapter_(std::make_unique<AndroidTabStripModelAdapter>(model)),
       translation_adapter_(
           std::make_unique<AndroidTranslationAdapter>(model,

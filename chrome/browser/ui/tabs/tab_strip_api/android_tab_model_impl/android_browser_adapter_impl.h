@@ -12,7 +12,8 @@ namespace tabs_api {
 
 class AndroidBrowserAdapterImpl : public BrowserAdapter {
  public:
-  explicit AndroidBrowserAdapterImpl(TabModel* tab_model);
+  AndroidBrowserAdapterImpl(TabModel* tab_model,
+                            TabModel::TabLaunchType launch_type);
   AndroidBrowserAdapterImpl(const AndroidBrowserAdapterImpl&) = delete;
   AndroidBrowserAdapterImpl operator=(const AndroidBrowserAdapterImpl&) =
       delete;
@@ -29,6 +30,7 @@ class AndroidBrowserAdapterImpl : public BrowserAdapter {
 
  private:
   raw_ref<TabModel> model_;
+  TabModel::TabLaunchType launch_type_;
 };
 
 }  // namespace tabs_api

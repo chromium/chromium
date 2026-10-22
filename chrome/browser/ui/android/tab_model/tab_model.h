@@ -311,6 +311,14 @@ class TabModel : public TabListInterface {
       TabLaunchType type,
       bool should_pin) = 0;
 
+  using TabListInterface::OpenTab;
+  // Opens a new tab at `index` with `launch_type`. Activates the newly created
+  // tab unless `launch_type` is
+  // `TabLaunchType::FROM_TAB_LIST_INTERFACE_BACKGROUND`.
+  virtual tabs::TabInterface* OpenTab(const GURL& url,
+                                      int index,
+                                      TabLaunchType launch_type) = 0;
+
   virtual void HandlePopupNavigation(TabAndroid* parent,
                                      NavigateParams* params) = 0;
 

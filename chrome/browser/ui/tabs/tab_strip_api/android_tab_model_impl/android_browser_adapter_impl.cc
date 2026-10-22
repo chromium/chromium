@@ -10,8 +10,10 @@
 
 namespace tabs_api {
 
-AndroidBrowserAdapterImpl::AndroidBrowserAdapterImpl(TabModel* model)
-    : model_(CHECK_DEREF(model)) {}
+AndroidBrowserAdapterImpl::AndroidBrowserAdapterImpl(
+    TabModel* model,
+    TabModel::TabLaunchType launch_type)
+    : model_(CHECK_DEREF(model)), launch_type_(launch_type) {}
 
 std::vector<std::unique_ptr<TabStripModelAdapter>>
 AndroidBrowserAdapterImpl::CreateAllTabStripModelAdaptersForProfile() {
@@ -25,7 +27,7 @@ tabs::TabHandle AndroidBrowserAdapterImpl::AddTabAt(
     bool pinned) {
   int target_index = index.value_or(model_->GetTabCount());
 
-  auto* result = model_->OpenTab(url, target_index);
+  auto* result = model_->OpenTab(url, target_index, launch_type_);
   CHECK(result);
   tabs::TabHandle handle = result->GetHandle();
 

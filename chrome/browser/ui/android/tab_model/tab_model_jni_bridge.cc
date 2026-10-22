@@ -562,12 +562,24 @@ void TabModelJniBridge::ActivateTab(tabs::TabHandle tab) {
 tabs::TabInterface* TabModelJniBridge::OpenTab(const GURL& url,
                                                int index,
                                                bool foreground) {
+  return OpenTab(url, index,
+                 foreground
+                     ? TabLaunchType::FROM_TAB_LIST_INTERFACE
+                     : TabLaunchType::FROM_TAB_LIST_INTERFACE_BACKGROUND);
+}
+
+tabs::TabInterface* TabModelJniBridge::OpenTab(const GURL& url,
+                                               int index,
+                                               TabLaunchType launch_type) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
 
   tabs::TabInterface* tab = Java_TabModelJniBridge_openTabProgrammatically(
-      env, jobj, url, index, foreground);
-  if (foreground && tab) {
+      env, jobj, url, index, static_cast<int>(launch_type));
+  // Assume that background tabs opened via OpenTab can only come from
+  // FROM_TAB_LIST_INTERFACE_BACKGROUND (all other callers of OpenTab open
+  // foreground tabs).
+  if (launch_type != TabLaunchType::FROM_TAB_LIST_INTERFACE_BACKGROUND && tab) {
     ActivateTab(tab->GetHandle());
   }
   return tab;
