@@ -350,12 +350,6 @@ TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactories(
   return *this;
 }
 
-TestProfileIOS::Builder& TestProfileIOS::Builder::SetName(
-    const std::string& name) {
-  profile_name_ = name;
-  return *this;
-}
-
 TestProfileIOS::Builder& TestProfileIOS::Builder::SetPrefService(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs) {
   pref_service_ = std::move(prefs);
@@ -380,20 +374,23 @@ TestProfileIOS::Builder& TestProfileIOS::Builder::SetWebkitStorageId(
   return *this;
 }
 
-std::string TestProfileIOS::Builder::GetEffectiveName() const {
-  return profile_name_.empty() ? "Test" : profile_name_;
-}
-
 std::unique_ptr<TestProfileIOS> TestProfileIOS::Builder::Build() && {
   return std::move(*this).Build(base::CreateUniqueTempDirectoryScopedToTest());
 }
 
 std::unique_ptr<TestProfileIOS> TestProfileIOS::Builder::Build(
     const base::FilePath& data_dir) && {
+  return std::move(*this).Build(data_dir, "Test");
+}
+
+std::unique_ptr<TestProfileIOS> TestProfileIOS::Builder::Build(
+    const base::FilePath& data_dir,
+    std::string_view profile_name) && {
   CHECK(!data_dir.empty());
+  CHECK(!profile_name.empty());
 
   return base::WrapUnique(new TestProfileIOS(
-      data_dir.Append(GetEffectiveName()), GetEffectiveName(),
+      data_dir.Append(profile_name), profile_name,
       std::move(webkit_storage_id_), std::move(pref_service_),
       std::move(testing_factories_), std::move(policy_connector_),
       std::move(user_cloud_policy_manager_)));

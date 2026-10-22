@@ -176,10 +176,6 @@ class TestProfileIOS final : public ProfileIOS {
     //      }});
     Builder& AddTestingFactories(TestingFactories testing_factories);
 
-    // Sets the name of the ProfileIOS. If not set, the profile will use an
-    // arbitrary name.
-    Builder& SetName(const std::string& name);
-
     // Sets the PrefService to be used by the ProfileIOS.
     Builder& SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs);
@@ -195,10 +191,6 @@ class TestProfileIOS final : public ProfileIOS {
     // Sets the Webkit storage identifier for test.
     Builder& SetWebkitStorageId(const base::Uuid& webkit_storage_id);
 
-    // Returns the name passed to `SetName()`, or if that was not called, an
-    // arbitrary fallback value.
-    std::string GetEffectiveName() const;
-
     // Creates the TestProfileIOS using previously-set settings.
     std::unique_ptr<TestProfileIOS> Build() &&;
 
@@ -207,8 +199,14 @@ class TestProfileIOS final : public ProfileIOS {
     std::unique_ptr<TestProfileIOS> Build(const base::FilePath& data_dir) &&;
 
    private:
+    friend class TestProfileManagerIOS;
+
+    // Creates the TestProfileIOS with `profile_name` using `data_dir` as base
+    // directory for the storage, and other previously-set settings.
+    std::unique_ptr<TestProfileIOS> Build(const base::FilePath& data_dir,
+                                          std::string_view profile_name) &&;
+
     // Various staging variables where values are held until Build() is invoked.
-    std::string profile_name_;
     std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
     base::Uuid webkit_storage_id_;
 

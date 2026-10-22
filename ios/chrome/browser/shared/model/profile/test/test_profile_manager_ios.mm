@@ -60,11 +60,6 @@ TestProfileManagerIOS::~TestProfileManagerIOS() {
     observer.OnProfileManagerDestroyed(this);
   }
 
-  // Notify observers before unregistering from ApplicationContext.
-  for (auto& observer : observers_) {
-    observer.OnProfileManagerDestroyed(this);
-  }
-
   TestingApplicationContext* app_context =
       TestingApplicationContext::GetGlobal();
   app_context->SetProfileManagerAndAccountProfileMapper(nullptr, nullptr);
@@ -188,30 +183,45 @@ base::FilePath TestProfileManagerIOS::GetProfilePath(std::string_view name) {
 
 TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
     TestProfileIOS::Builder builder) {
-  const std::string profile_name = builder.GetEffectiveName();
-  if (profile_attributes_storage_->HasProfileWithName(profile_name)) {
-    CHECK(profile_attributes_storage_
-              ->GetAttributesForProfileWithName(profile_name)
-              .IsNewProfile());
-  } else {
-    // The ProfileAttributesStorage entry needs to be created before the actual
-    // profile initialization gets kicked off, because the AccountProfileMapper
-    // depends on it.
-    profile_attributes_storage_->AddProfile(profile_name);
-  }
+  CHECK(profile_attributes_storage_->GetPersonalProfileName().empty());
+  const std::string profile_name = ReserveNewProfileName();
+  profile_attributes_storage_->SetPersonalProfileName(profile_name);
+  return AddProfileWithBuilderAndName(std::move(builder), profile_name);
+}
 
-  // If this is the first profile ever loaded, mark it as the personal profile.
-  if (profile_attributes_storage_->GetPersonalProfileName().empty()) {
-    profile_attributes_storage_->SetPersonalProfileName(
-        builder.GetEffectiveName());
-  }
+TestProfileIOS* TestProfileManagerIOS::AddManagedProfileForGaiaIDWithBuilder(
+    const GaiaId& gaia_id,
+    TestProfileIOS::Builder builder) {
+  CHECK(!profile_attributes_storage_->GetPersonalProfileName().empty());
+  std::optional<std::string> profile_name =
+      account_profile_mapper_->FindProfileNameForGaiaID(gaia_id);
+  CHECK(profile_name.has_value());
+  CHECK(!profile_name->empty());
+  CHECK_NE(*profile_name,
+           profile_attributes_storage_->GetPersonalProfileName());
+  return AddProfileWithBuilderAndName(std::move(builder), *profile_name);
+}
+
+ScopedProfileKeepAliveIOS TestProfileManagerIOS::CreateScopedProfileKeepAlive(
+    ProfileIOS* profile) {
+  return ScopedProfileKeepAliveIOS(CreatePassKey(), profile, {});
+}
+
+TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilderAndName(
+    TestProfileIOS::Builder builder,
+    std::string_view profile_name) {
+  CHECK(!profile_name.empty());
+  CHECK(profile_attributes_storage_->HasProfileWithName(profile_name));
+  CHECK(
+      profile_attributes_storage_->GetAttributesForProfileWithName(profile_name)
+          .IsNewProfile());
 
   // Ensure that the created Profile will store its data in sub-directory of
   // `profile_data_dir_` (i.e. GetStatePath().DirName() == `profile_data_dir_`).
-  auto profile = std::move(builder).Build(profile_data_dir_);
+  auto profile = std::move(builder).Build(profile_data_dir_, profile_name);
 
-  auto [iterator, insertion_success] =
-      profiles_map_.insert(std::make_pair(profile_name, std::move(profile)));
+  auto [iterator, insertion_success] = profiles_map_.insert(
+      std::make_pair(std::string(profile_name), std::move(profile)));
   DCHECK(insertion_success);
 
   for (auto& observer : observers_) {
@@ -230,23 +240,4 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   }
 
   return iterator->second.get();
-}
-
-TestProfileIOS* TestProfileManagerIOS::AddManagedProfileForGaiaIDWithBuilder(
-    const GaiaId& gaia_id,
-    TestProfileIOS::Builder builder) {
-  CHECK(!profile_attributes_storage_->GetPersonalProfileName().empty());
-  std::optional<std::string> profile_name =
-      account_profile_mapper_->FindProfileNameForGaiaID(gaia_id);
-  CHECK(profile_name.has_value());
-  CHECK(!profile_name->empty());
-  CHECK_NE(*profile_name,
-           profile_attributes_storage_->GetPersonalProfileName());
-  builder.SetName(*profile_name);
-  return AddProfileWithBuilder(std::move(builder));
-}
-
-ScopedProfileKeepAliveIOS TestProfileManagerIOS::CreateScopedProfileKeepAlive(
-    ProfileIOS* profile) {
-  return ScopedProfileKeepAliveIOS(CreatePassKey(), profile, {});
 }

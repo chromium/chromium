@@ -53,21 +53,25 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
   base::FilePath GetProfilePath(std::string_view name) override;
 
-  // Builds and adds a TestProfileIOS using `builder`. Asserts that no Profile
-  // share the same name. Returns a pointer to the new object.
+  // Builds and adds the personal `TestProfileIOS` using `builder`. Must be
+  // called at most once, before adding any managed profiles. Returns a pointer
+  // to the new object.
   TestProfileIOS* AddProfileWithBuilder(TestProfileIOS::Builder builder);
 
   // Builds and adds a `TestProfileIOS` for the managed profile associated with
-  // `gaia_id` using `builder` (overwriting any name set on `builder`). The
-  // personal profile must already have been added, and the managed identity
-  // must already be registered in `SystemIdentityManager` so that
-  // `AccountProfileMapper` has reserved a profile name for `gaia_id`. Returns a
-  // pointer to the new object.
+  // `gaia_id` using `builder`. The personal profile must already have been
+  // added, and the managed identity must already be registered in
+  // `SystemIdentityManager` so that `AccountProfileMapper` has reserved a
+  // profile name for `gaia_id`. Returns a pointer to the new object.
   TestProfileIOS* AddManagedProfileForGaiaIDWithBuilder(
       const GaiaId& gaia_id,
       TestProfileIOS::Builder builder);
 
  private:
+  // Builds and adds a `TestProfileIOS` with `profile_name` using `builder`.
+  TestProfileIOS* AddProfileWithBuilderAndName(TestProfileIOS::Builder builder,
+                                               std::string_view profile_name);
+
   // Returns a ScopedProfileKeepAliveIOS for `profile`.
   ScopedProfileKeepAliveIOS CreateScopedProfileKeepAlive(ProfileIOS* profile);
 

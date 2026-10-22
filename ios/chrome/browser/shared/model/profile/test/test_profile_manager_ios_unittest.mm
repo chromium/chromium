@@ -27,13 +27,18 @@ TEST_F(TestProfileManagerIOSTest, Constructor) {
 }
 
 // Tests that the list of loaded profiles has one element after calling
-// `AddProfileWithBuilder(...)`.
+// `AddProfileWithBuilder(...)` and that it is marked as the personal profile.
 TEST_F(TestProfileManagerIOSTest, AddProfileWithBuilder) {
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
-  profile_manager.AddProfileWithBuilder(TestProfileIOS::Builder());
+  TestProfileIOS* personal_profile =
+      profile_manager.AddProfileWithBuilder(TestProfileIOS::Builder());
+  ASSERT_TRUE(personal_profile);
   EXPECT_EQ(1U, profile_manager.GetLoadedProfiles().size());
+  EXPECT_EQ(
+      personal_profile->GetProfileName(),
+      profile_manager.GetProfileAttributesStorage()->GetPersonalProfileName());
 }
 
 // Tests that `AddManagedProfileForGaiaIDWithBuilder(...)` builds the profile
