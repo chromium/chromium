@@ -18612,8 +18612,7 @@
                     "name": "BackgroundReplaceEnabled",
                     "enable_features": [
                         "CrOSLateBootAudioAPNoiseCancellation",
-                        "FeatureManagementVideoConference",
-                        "VCBackgroundReplace"
+                        "FeatureManagementVideoConference"
                     ]
                 }
             ]
