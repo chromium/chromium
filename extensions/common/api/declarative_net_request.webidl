@@ -196,6 +196,13 @@ dictionary Redirect {
   DOMString regexSubstitution;
 };
 
+// Represents a header condition for matching network requests.
+//
+// Note: Starting in Chrome 158, matching on header values (specifying `values`
+// or `excludedValues`) requires host permissions for the request URL and
+// initiator, except for CORS-safelisted response headers (`cache-control`,
+// `content-language`, `content-length`, `content-type`, `expires`,
+// `last-modified`, `pragma`) and `content-encoding`.
 dictionary HeaderInfo {
   // The name of the header. This condition matches on the name
   // only if both `values` and `excludedValues` are not specified.
