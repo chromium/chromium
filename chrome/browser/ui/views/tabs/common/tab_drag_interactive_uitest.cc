@@ -1052,7 +1052,32 @@ IN_PROC_BROWSER_TEST_P(TabDragFocusModeTest,
                                                    kGroupToDragFrom, 0),
       MoveMouseTo(kGroupToDragFrom),
       DragMouseTo(kNewTabButtonElementId, CenterPoint(), /*release=*/false),
-      RunScheduledLayout(), ReleaseMouse(),
+      RunScheduledLayout(),
+      CheckResult(
+          [&]() {
+            const std::vector<tab_groups::TabGroupId> groups =
+                tab_strip_model->group_model()->ListTabGroups();
+            return !groups.empty() && !tab_strip_model->group_model()
+                                           ->GetTabGroup(groups[0])
+                                           ->visual_data()
+                                           ->is_collapsed();
+          },
+          true),
+      CheckResult([&]() { return tab_strip_model->selection_model().size(); },
+                  1u),
+      ReleaseMouse(),
+      CheckResult(
+          [&]() {
+            const std::vector<tab_groups::TabGroupId> groups =
+                tab_strip_model->group_model()->ListTabGroups();
+            return !groups.empty() && !tab_strip_model->group_model()
+                                           ->GetTabGroup(groups[0])
+                                           ->visual_data()
+                                           ->is_collapsed();
+          },
+          true),
+      CheckResult([&]() { return tab_strip_model->selection_model().size(); },
+                  1u),
 
       CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
                   URLs({url::kAboutBlankURL,

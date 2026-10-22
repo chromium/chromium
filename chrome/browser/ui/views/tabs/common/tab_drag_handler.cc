@@ -697,7 +697,8 @@ void TabDragHandlerImpl::StartedDragging(
     tab_groups::TabGroupId group_id = drag_data.group_header_drag_data_->group;
     const TabGroup* group =
         tab_strip_model_->group_model()->GetTabGroup(group_id);
-    if (group && !group->visual_data()->is_collapsed()) {
+    if (group && !group->visual_data()->is_collapsed() &&
+        tab_strip_model_->GetFocusedGroup() != group_id) {
       drag_controller_->SetGroupHeaderWasCollapsedFromDrag(true);
       tab_groups::TabGroupVisualData new_data(group->visual_data()->title(),
                                               group->visual_data()->color(),
@@ -779,7 +780,9 @@ void TabDragHandlerImpl::StoppedDragging() {
     dragged_view->ClearProperty(kOffsetAtTabDragStart);
   }
 
-  if (!drag_data.group_header_drag_data_.has_value()) {
+  if (!drag_data.group_header_drag_data_.has_value() ||
+      tab_strip_model_->GetFocusedGroup() ==
+          drag_data.group_header_drag_data_->group) {
     return;
   }
 

@@ -2277,6 +2277,13 @@ void TabDragController::RevertDrag() {
 
 void TabDragController::ResetSelection(TabStripModel* model) {
   CHECK(model, base::NotFatalUntil::M162);
+  // In focus mode, dragging the focused group header moves the entire window.
+  // Avoid selecting all tabs in the group so they do not visually highlight
+  // during the drag.
+  if (model->GetFocusedGroup().has_value() &&
+      drag_data_.group_header_id() == model->GetFocusedGroup()) {
+    return;
+  }
   ui::ListSelectionModel selection_model;
   bool has_one_valid_tab = false;
   for (size_t i = 0; i < drag_data_.tab_drag_data_.size(); ++i) {
@@ -2625,6 +2632,9 @@ void TabDragController::CompleteDrag() {
     TabStripModel* model = attached_context_
                                ? attached_context_->GetTabStripModel()
                                : source_context_->GetTabStripModel();
+    if (model->GetFocusedGroup() == drag_data_.group_header_id()) {
+      return;
+    }
     ui::ListSelectionModel selection;
     // Offset by 1 to account for the group header.
     const int drag_data_index = 1 + drag_data_.group_header_drag_data_.value()
