@@ -12433,5 +12433,120 @@ TEST(LayerTreeHostLocalSurfaceIdTest,
   base::trace_event::TraceLog::GetInstance()->SetDisabled();
 }
 
+TEST(LayerTreeHostLocalSurfaceIdTest,
+     SetViewportRectAndScaleCoalescesSetNeedsCommit) {
+  enum class Request {
+    kCommitUrgent,
+    kCommitNonUrgent,
+    kUpdateLayers,
+  };
+  class CommitTrackingProxy : public FakeProxy {
+   public:
+    void SetNeedsCommit(bool urgent) override {
+      requests_.push_back(urgent ? Request::kCommitUrgent
+                                 : Request::kCommitNonUrgent);
+    }
+    void SetNeedsUpdateLayers() override {
+      requests_.push_back(Request::kUpdateLayers);
+    }
+    std::vector<Request> TakeRequests() { return std::exchange(requests_, {}); }
+
+   private:
+    std::vector<Request> requests_;
+  };
+  class TestLayerTreeHost : public LayerTreeHost {
+   public:
+    explicit TestLayerTreeHost(InitParams params)
+        : LayerTreeHost(std::move(params), CompositorMode::SINGLE_THREADED) {}
+    using LayerTreeHost::InitializeForTesting;
+  };
+
+  FakeLayerTreeHostDelegate delegate;
+  TestTaskGraphRunner task_graph_runner;
+  LayerTreeSettings settings;
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
+  LayerTreeHost::InitParams params;
+  params.client = &delegate;
+  params.settings = &settings;
+  params.task_graph_runner = &task_graph_runner;
+  params.mutator_host = animation_host.get();
+  TestLayerTreeHost host(std::move(params));
+  auto proxy = std::make_unique<CommitTrackingProxy>();
+  CommitTrackingProxy* proxy_ptr = proxy.get();
+  host.InitializeForTesting(
+      TaskRunnerProvider::Create(
+          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
+      std::move(proxy));
+
+  const auto token = base::UnguessableToken::CreateForTesting(2u, 3u);
+  const viz::LocalSurfaceId id1(1u, token);
+  const viz::LocalSurfaceId id2(2u, token);
+  const viz::LocalSurfaceId id3(3u, token);
+
+  // Initial viewport + LocalSurfaceId should request an urgent commit first so
+  // the subsequent non-urgent requests from SetPropertyTreesNeedRebuild() and
+  // SetLocalSurfaceIdFromParent() coalesce into it.
+  host.SetViewportRectAndScale(gfx::Rect(100, 100), 1.0f, id1);
+  EXPECT_EQ(id1, host.local_surface_id_from_parent());
+  EXPECT_THAT(
+      proxy_ptr->TakeRequests(),
+      testing::ElementsAre(Request::kCommitUrgent, Request::kUpdateLayers,
+                           Request::kCommitNonUrgent));
+
+  // Changing only LocalSurfaceId should issue a single non-urgent commit.
+  host.SetViewportRectAndScale(gfx::Rect(100, 100), 1.0f, id2);
+  EXPECT_EQ(id2, host.local_surface_id_from_parent());
+  EXPECT_THAT(proxy_ptr->TakeRequests(),
+              testing::ElementsAre(Request::kCommitNonUrgent));
+
+  // Steady-state resize advancing parent sequence number and viewport rect
+  // should issue an urgent SetNeedsCommit(true) before the non-urgent
+  // SetNeedsUpdateLayers() and SetNeedsCommit(false) calls so ProxyMain
+  // deduplicates them into a single urgent commit request.
+  host.SetViewportRectAndScale(gfx::Rect(200, 200), 1.0f, id3);
+  EXPECT_EQ(id3, host.local_surface_id_from_parent());
+  EXPECT_THAT(
+      proxy_ptr->TakeRequests(),
+      testing::ElementsAre(Request::kCommitUrgent, Request::kUpdateLayers,
+                           Request::kCommitNonUrgent));
+
+  // Calling with identical viewport, scale, and LocalSurfaceId should not
+  // request a commit.
+  host.SetViewportRectAndScale(gfx::Rect(200, 200), 1.0f, id3);
+  EXPECT_TRUE(proxy_ptr->TakeRequests().empty());
+}
+
+class LayerTreeHostTestResizeCoalescesProxyMainCommitRequests
+    : public LayerTreeHostTest {
+ public:
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void OnCommitRequested() override { commit_requests_++; }
+
+  void DidCommitAndDrawFrame() override {
+    if (!resized_) {
+      resized_ = true;
+      commit_requests_ = 0;
+      GenerateNewLocalSurfaceId();
+      layer_tree_host()->SetViewportRectAndScale(gfx::Rect(200, 200), 1.0f,
+                                                 GetCurrentLocalSurfaceId());
+      // ProxyMain::SendCommitRequestToImplThreadIfNeeded() invokes
+      // OnCommitRequested() each time it posts a SetNeedsCommitOnImpl task.
+      // A viewport resize + new LocalSurfaceId must coalesce into a single
+      // urgent request rather than posting non-urgent followed by urgent.
+      EXPECT_EQ(1, commit_requests_);
+    } else {
+      EXPECT_EQ(gfx::Rect(200, 200), layer_tree_host()->device_viewport_rect());
+      EndTest();
+    }
+  }
+
+ private:
+  bool resized_ = false;
+  int commit_requests_ = 0;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestResizeCoalescesProxyMainCommitRequests);
+
 }  // namespace
 }  // namespace cc

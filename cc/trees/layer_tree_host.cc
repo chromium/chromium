@@ -1483,9 +1483,6 @@ void LayerTreeHost::SetViewportRectAndScale(
     float device_scale_factor,
     const viz::LocalSurfaceId& local_surface_id_from_parent) {
   TRACE_EVENT("cc", __PRETTY_FUNCTION__);
-  const viz::LocalSurfaceId previous_local_surface_id =
-      pending_commit_state()->local_surface_id_from_parent;
-  SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
 
   const auto size_track =
       perfetto::NamedTrack::FromPointer("LayerTreeHostSize", this);
@@ -1520,19 +1517,24 @@ void LayerTreeHost::SetViewportRectAndScale(
   // If a new viz::LocalSurfaceId has been provided, and the viewport has
   // changed, we need not begin new frames until it has activated.
   if (local_surface_id_from_parent.is_valid() &&
-      previous_local_surface_id != local_surface_id_from_parent &&
+      pending_commit_state()->local_surface_id_from_parent !=
+          local_surface_id_from_parent &&
       device_viewport_rect_changed) {
     SetTargetLocalSurfaceId(local_surface_id_from_parent);
   }
 
   if (device_viewport_rect_changed || painted_device_scale_factor_changed ||
       device_scale_factor_changed) {
-    SetPropertyTreesNeedRebuild();
     // Urgent because we want resize to be reflected immediately. For instance
     // if a side panel is expanding / contracting, we want the content to reflow
-    // as quickly as possible.
+    // as quickly as possible. Request the urgent commit before
+    // SetPropertyTreesNeedRebuild() and SetLocalSurfaceIdFromParent() so their
+    // non-urgent commit/layer-update requests coalesce into this urgent request
+    // rather than dispatching a non-urgent request first.
     SetNeedsCommit(/*urgent=*/true);
+    SetPropertyTreesNeedRebuild();
   }
+  SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
 }
 
 void LayerTreeHost::SetVisualDeviceViewportIntersectionRect(
