@@ -10,4 +10,17 @@ agentic_review: {
     path_expression: "components/sync/protocol/.*\\.proto"
     review_capability_skills: "agents/skills/sync-proto-review/SKILL.md"
   }
+  capability_groups: {
+    path_expression: "components/sync/model/.*\\.(?:h|cc)"
+    review_capability_skills: "agents/skills/sync-model-processor/SKILL.md"
+  }
+  capability_groups: {
+    path_expression: "(?:.*/)?[^/]*sync_bridge[^/]*\\.(?:h|cc)"
+    review_capability_skills: "agents/skills/sync-bridge/SKILL.md"
+  }
+  capability_groups: {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|cc)"
+    content_patterns: "\\b(?:(?:Mock|Fake|Stub|Recording)?DataType(?:SyncBridge|LocalChangeProcessor)|SyncableServiceBasedBridge|DataTypeStore(?:TestUtil)?|MergeFullSyncData|ApplyIncrementalSyncChanges|TrimAllSupportedFieldsFromRemoteSpecifics|GetPossiblyTrimmedRemoteSpecifics|ModelReadyToSync|CreateWriteBatch|change_processor)\\b"
+    review_capability_skills: "agents/skills/sync-bridge/SKILL.md"
+  }
 }
