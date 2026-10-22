@@ -290,8 +290,10 @@ bool MockRenderProcessHost::FastShutdownIfPossible(
     bool ignore_keep_alive,
     bool ignore_pending_reuse,
     bool use_outermost_main_frame_check) {
-  if (GetActiveViewCount() != page_count)
+  if ((page_count || use_outermost_main_frame_check) &&
+      GetActiveViewCount() != page_count) {
     return false;
+  }
   // We aren't actually going to do anything, but set |fast_shutdown_started_|
   // to true so that tests know we've been called.
   fast_shutdown_started_ = true;

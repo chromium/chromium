@@ -3158,4 +3158,41 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, RendererCheckIsTest) {
   EXPECT_TRUE(future.Get());
 }
 
+IN_PROC_BROWSER_TEST_F(DiscardFrameBrowserTest,
+                       DiscardSharedProcessFastShutdown) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+
+  // Navigate the first shell
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  // Create a second shell in the same site instance
+  scoped_refptr<SiteInstance> site_instance =
+      shell()->web_contents()->GetSiteInstance();
+  Shell* shell2 =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             test_url, site_instance, gfx::Size());
+  EXPECT_TRUE(NavigateToURL(shell2, test_url));
+
+  RenderProcessHost* process =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_EQ(process,
+            shell2->web_contents()->GetPrimaryMainFrame()->GetProcess());
+
+  RenderProcessHostWatcher watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  // Discard the first page - process should stay alive
+  base::RunLoop run_loop;
+  shell()->web_contents()->Discard(base::BindLambdaForTesting([&]() {
+    EXPECT_TRUE(process->IsInitializedAndNotDead());
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+
+  // Discard the second page - process should exit
+  shell2->web_contents()->Discard(base::NullCallback());
+  watcher.Wait();
+  EXPECT_FALSE(process->IsInitializedAndNotDead());
+}
 }  // namespace content

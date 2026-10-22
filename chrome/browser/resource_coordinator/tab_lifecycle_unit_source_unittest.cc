@@ -42,6 +42,7 @@
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
@@ -798,4 +799,77 @@ TEST_F(TabLifecycleUnitSourceTest, Freeze) {
   EXPECT_TRUE(ResourceCoordinatorTabHelper::IsFrozen(second_web_contents));
 }
 
+TEST_F(TabLifecycleUnitSourceTest, DiscardSharedProcessFastShutdown) {
+  scoped_refptr<content::SiteInstance> site_instance =
+      content::SiteInstance::Create(profile());
+
+  // Create two WebContents that share the same SiteInstance (and thus process).
+  std::unique_ptr<content::WebContents> first_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(),
+                                                        site_instance);
+  ResourceCoordinatorTabHelper::CreateForWebContents(first_web_contents.get());
+  content::WebContents* raw_first_web_contents = first_web_contents.get();
+
+  std::unique_ptr<content::WebContents> second_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(),
+                                                        site_instance);
+  ResourceCoordinatorTabHelper::CreateForWebContents(second_web_contents.get());
+  content::WebContents* raw_second_web_contents = second_web_contents.get();
+
+  // Append both tabs to the TabStripModel.
+  LifecycleUnit* first_lifecycle_unit = nullptr;
+  EXPECT_CALL(source_observer_, OnLifecycleUnitCreated(_))
+      .WillOnce([&](LifecycleUnit* lifecycle_unit) {
+        first_lifecycle_unit = lifecycle_unit;
+      });
+  tab_strip_model_->AppendWebContents(std::move(first_web_contents), true);
+  ::testing::Mock::VerifyAndClear(&source_observer_);
+
+  LifecycleUnit* second_lifecycle_unit = nullptr;
+  EXPECT_CALL(source_observer_, OnLifecycleUnitCreated(_))
+      .WillOnce([&](LifecycleUnit* lifecycle_unit) {
+        second_lifecycle_unit = lifecycle_unit;
+      });
+  tab_strip_model_->AppendWebContents(std::move(second_web_contents), false);
+  ::testing::Mock::VerifyAndClear(&source_observer_);
+
+  // Verify they share a process.
+  EXPECT_EQ(raw_first_web_contents->GetPrimaryMainFrame()->GetProcess(),
+            raw_second_web_contents->GetPrimaryMainFrame()->GetProcess());
+
+  content::MockRenderProcessHost* process =
+      static_cast<content::MockRenderProcessHost*>(
+          raw_first_web_contents->GetPrimaryMainFrame()->GetProcess());
+
+  // Discard the background tab. Fast shutdown shouldn't start because another
+  // tab is sharing the process.
+  EXPECT_CALL(tab_observer_,
+              MockOnLifecycleUnitStateChanged(
+                  second_lifecycle_unit, ::mojom::LifecycleUnitState::ACTIVE,
+                  ::mojom::LifecycleUnitState::DISCARDED,
+                  LifecycleUnitDiscardReason::PROACTIVE));
+  EXPECT_TRUE(
+      second_lifecycle_unit->Discard(LifecycleUnitDiscardReason::PROACTIVE));
+  EXPECT_FALSE(process->FastShutdownStarted());
+
+  // Hide the first tab so it can be discarded.
+  raw_first_web_contents->WasHidden();
+
+  // Discard the first tab. Now the process only has discarded tabs, so fast
+  // shutdown should start.
+  EXPECT_CALL(tab_observer_,
+              MockOnLifecycleUnitStateChanged(
+                  first_lifecycle_unit, ::mojom::LifecycleUnitState::ACTIVE,
+                  ::mojom::LifecycleUnitState::DISCARDED,
+                  LifecycleUnitDiscardReason::PROACTIVE));
+  EXPECT_TRUE(
+      first_lifecycle_unit->Discard(LifecycleUnitDiscardReason::PROACTIVE));
+  EXPECT_TRUE(process->FastShutdownStarted());
+
+  ::testing::Mock::VerifyAndClear(&tab_observer_);
+
+  // Expect notifications when tabs are closed.
+  CloseTabsAndExpectNotifications(
+      tab_strip_model_.get(), {first_lifecycle_unit, second_lifecycle_unit});
+}
 }  // namespace resource_coordinator

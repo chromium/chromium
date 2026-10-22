@@ -312,12 +312,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   virtual bool ShutdownRequested() = 0;
 
   // Try to shut down the associated renderer process as fast as possible. If a
-  // non-zero |page_count| value is provided, then a fast shutdown will only
+  // non-zero |page_count| value is provided, or if
+  // `use_outermost_main_frame_check` is true, then a fast shutdown will only
   // happen if the count matches the active view count. Returns true if it was
-  // able to do fast shutdown.
-  // If `use_outermost_main_frame_check` is true `page_count` will check
-  // resident counts of outermost main frames, instead of resident
-  // RenderWidgetHosts.
+  // able to do fast shutdown. If `use_outermost_main_frame_check` is true,
+  // `page_count` will check against the number of active, non-discarded
+  // outermost main frames, instead of resident RenderWidgetHosts.
   // TODO(crbug.com/463513005): Make this behavior default and remove
   // `page_count`.
   // If |skip_unload_handlers| is false and this renderer has any RenderViews

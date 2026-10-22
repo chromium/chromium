@@ -1443,10 +1443,12 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
         retries_ * kProcessShutdownRetryDelay >=
             RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout) {
       host_->FastShutdownIfPossible(
-          /*page_count=*/discarded_widgets.size(),
+          /*page_count=*/0u,
           /*skip_unload_handlers=*/true,
           /*ignore_workers=*/true,
-          /*ignore_keep_alive=*/true);
+          /*ignore_keep_alive=*/true,
+          /*ignore_pending_reuse=*/false,
+          /*use_outermost_main_frame_check=*/true);
       return;
     }
 
@@ -1454,10 +1456,12 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
     // attempt a shutdown honoring any existing keep-alive refs. Schedule a
     // retry if fast shutdown is blocked.
     if (!host_->FastShutdownIfPossible(
-            /*page_count=*/discarded_widgets.size(),
+            /*page_count=*/0u,
             /*skip_unload_handlers=*/true,
             /*ignore_workers=*/true,
-            /*ignore_keep_alive=*/false)) {
+            /*ignore_keep_alive=*/false,
+            /*ignore_pending_reuse=*/false,
+            /*use_outermost_main_frame_check=*/true)) {
       retries_++;
       shutdown_attempt_timer_.Start(
           FROM_HERE, kProcessShutdownRetryDelay,
@@ -13656,7 +13660,6 @@ void RenderFrameHostImpl::DiscardFrame(base::OnceClosure on_discarded_cb) {
           if (!self) {
             return;
           }
-          self->MaybeNotifyDiscardedFrame();
           self->GetRenderWidgetHost()->SetIsDiscarding(false);
           // Now that the renderer has committed the empty document and finished
           // running any unload handlers, attempt fast shutdown (skipping unload
@@ -13665,11 +13668,14 @@ void RenderFrameHostImpl::DiscardFrame(base::OnceClosure on_discarded_cb) {
           // terminated dedicated renderer processes after running unload
           // handlers.
           self->GetProcess()->FastShutdownIfPossible(
-              1u, /*skip_unload_handlers=*/true,
+              0u, /*skip_unload_handlers=*/true,
               /*ignore_workers=*/false,
               /*ignore_keep_alive=*/false,
               /*ignore_pending_reuse=*/false,
               /*use_outermost_main_frame_check=*/true);
+          if (self) {
+            self->MaybeNotifyDiscardedFrame();
+          }
         },
         weak_ptr_factory_.GetWeakPtr()));
   }

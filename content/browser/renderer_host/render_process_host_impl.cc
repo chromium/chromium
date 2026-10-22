@@ -1438,7 +1438,8 @@ size_t GetOutermostMainFrameCountForFastShutdown(RenderProcessHost* process) {
         RenderFrameHostImpl* const outermost_rfh =
             static_cast<RenderFrameHostImpl*>(rfh)->GetOutermostMainFrame();
         if (outermost_rfh->lifecycle_state() ==
-            RenderFrameHostLifecycleStateImpl::kActive) {
+                RenderFrameHostLifecycleStateImpl::kActive &&
+            !outermost_rfh->document_associated_data().is_discarded()) {
           outermost_main_frames.insert(outermost_rfh);
         }
       });
@@ -4277,7 +4278,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(
 
   // Do not shut down the process if there are active or pending views other
   // than the ones we're shutting down.
-  if (page_count &&
+  if ((page_count || use_outermost_main_frame_check) &&
       page_count != (view_or_outermost_frame_count + pending_views_)) {
     LogDelayReasonForFastShutdown(
         DelayShutdownReason::kOtherActiveOrPendingViews);
