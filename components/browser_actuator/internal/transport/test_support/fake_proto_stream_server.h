@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "components/browser_actuator/internal/proto/transport_messages.pb.h"
+#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"

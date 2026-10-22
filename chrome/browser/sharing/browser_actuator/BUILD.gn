@@ -15,7 +15,7 @@ source_set("browser_actuator") {
   deps = [
     "//chrome/browser/browser_actuator",
     "//chrome/browser/profiles:profile",
-    "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/internal/transport/proto",
     "//components/browser_actuator/public",
     "//components/browser_actuator/public:payload_type_mapping",
   ]
@@ -30,8 +30,8 @@ source_set("unit_tests") {
     "//chrome/browser/browser_actuator",
     "//chrome/browser/signin",
     "//chrome/test:test_support",
-    "//components/browser_actuator/internal:features",
-    "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/internal/transport:features",
+    "//components/browser_actuator/internal/transport/proto",
     "//components/browser_actuator/internal/transport/test_support",
     "//components/browser_actuator/public",
     "//components/browser_actuator/public:payload_type_mapping",

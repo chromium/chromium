@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Public interfaces of the transport. Nothing here may depend on the rest of
+# //components/browser_actuator; see DEPS and
+# //components/browser_actuator/internal/transport:isolation_check.
+source_set("transport") {
+  sources = [
+    "common.h",
+    "transport_channel.h",
+    "transport_handler.cc",
+    "transport_handler.h",
+    "transport_handler_factory.h",
+    "transport_handler_factory_registry.h",
+    "transport_session.h",
+    "transport_session_registry.h",
+  ]
+
+  deps = [ "//base" ]
+
+  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
+}
+
+# Kept separate from ":transport" so that consumers of the transport interfaces
+# do not pick up a dependency on the wire proto unless they actually translate
+# between PayloadType and the wire enum.
+source_set("payload_type_mapping") {
+  sources = [ "payload_type_mapping.h" ]
+
+  public_deps = [
+    ":transport",
+    "//base",
+    "//components/sharing_message/proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "payload_type_mapping_unittest.cc" ]
+
+  deps = [
+    ":payload_type_mapping",
+    "//components/sharing_message/proto",
+    "//testing/gtest",
+  ]
+}

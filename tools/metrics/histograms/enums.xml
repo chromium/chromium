@@ -1380,7 +1380,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="Dispatch to the handler failed"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/browser_actuator/internal/metrics_utils.h:DownstreamPayloadDropReason) -->
+<!-- LINT.ThenChange(//components/browser_actuator/internal/transport/metrics_utils.h:DownstreamPayloadDropReason) -->
 
 <!-- LINT.IfChange(BrowserProfileType) -->
 

@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals.mojom.h"
-#include "components/browser_actuator/internal/session_stream_recorder.h"
+#include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

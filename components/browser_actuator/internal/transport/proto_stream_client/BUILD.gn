@@ -24,7 +24,7 @@ source_set("proto_stream_client") {
   ]
 
   deps = [
-    "//components/browser_actuator/internal:features",
+    "//components/browser_actuator/internal/transport:features",
     "//services/network/public/mojom",
   ]
 }
@@ -96,8 +96,8 @@ source_set("unit_tests") {
     ":rust_stream_framer",
     "//base",
     "//base/test:test_support",
-    "//components/browser_actuator/internal:features",
     "//components/browser_actuator/internal/transport",
+    "//components/browser_actuator/internal/transport:features",
     "//components/browser_actuator/internal/transport/test_support",
     "//mojo/public/cpp/system",
     "//net",

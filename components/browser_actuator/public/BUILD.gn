@@ -14,9 +14,12 @@ source_set("public") {
   sources = [
     "browser_actuator_service.cc",
     "browser_actuator_service.h",
+
+    # Forwarding headers for the transport interfaces, which moved to
+    # public/transport/.
+    # TODO(crbug.com/568448841): Remove once callers include the new paths.
     "common.h",
     "transport_channel.h",
-    "transport_handler.cc",
     "transport_handler.h",
     "transport_handler_factory.h",
     "transport_handler_factory_registry.h",
@@ -28,32 +31,20 @@ source_set("public") {
 
   public_deps = [
     ":feature_list",
+    "//components/browser_actuator/public/transport",
     "//components/keyed_service/core",
     "//third_party/protobuf:protobuf_lite",
   ]
 }
 
-# Kept separate from ":public" so that consumers of the transport interfaces do
-# not pick up a dependency on the wire proto unless they actually translate
-# between PayloadType and the wire enum.
+# Forwarding target for
+# //components/browser_actuator/public/transport:payload_type_mapping.
+# TODO(crbug.com/568448841): Remove once callers depend on the new target.
 source_set("payload_type_mapping") {
   sources = [ "payload_type_mapping.h" ]
 
   public_deps = [
     ":public",
-    "//base",
-    "//components/sharing_message/proto",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "payload_type_mapping_unittest.cc" ]
-
-  deps = [
-    ":payload_type_mapping",
-    "//components/sharing_message/proto",
-    "//testing/gtest",
+    "//components/browser_actuator/public/transport:payload_type_mapping",
   ]
 }

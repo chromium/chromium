@@ -25,7 +25,7 @@ mojom("mojo_bindings") {
       traits_sources = [ "browser_actuator_internals_mojom_traits.cc" ]
       traits_public_deps = [
         "//base",
-        "//components/browser_actuator/internal:session_stream_recorder",
+        "//components/browser_actuator/internal/transport:session_stream_recorder",
         "//mojo/public/cpp/base",
       ]
     },
@@ -50,7 +50,7 @@ source_set("internals") {
     "//chrome/browser/browser_actuator:factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/browser_actuator_internals:resources",
-    "//components/browser_actuator/internal:session_stream_recorder",
+    "//components/browser_actuator/internal/transport:session_stream_recorder",
     "//components/browser_actuator/public",
     "//content/public/common",
   ]
@@ -69,8 +69,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/browser_actuator:factory",
     "//chrome/test:test_support",
-    "//components/browser_actuator/internal:session_stream_recorder",
-    "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/internal/transport:session_stream_recorder",
+    "//components/browser_actuator/internal/transport/proto",
     "//components/browser_actuator/public",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",

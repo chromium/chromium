@@ -2,10 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Wire-format-agnostic seams of the browser_actuator transport (see
-# README.md): the consumer-facing MessageStreamClient interface and the
-# StreamConnectionDelegate resume/auth policy seam. Concrete transports
-# live in subdirectories.
+# The transport (see README.md). Nothing in internal/transport/ or
+# public/transport/ may depend on the rest of //components/browser_actuator;
+# DEPS and :isolation_check enforce that.
+
+# Wire-format-agnostic seams of the transport: the consumer-facing
+# MessageStreamClient interface and the StreamConnectionDelegate resume/auth
+# policy seam. Concrete transports live in subdirectories.
 source_set("transport") {
   sources = [
     "message_stream_client.h",
@@ -21,23 +24,185 @@ source_set("transport") {
   deps = [ "//services/network/public/cpp" ]
 }
 
+# Utilities internal to the transport.
+source_set("metrics_utils") {
+  sources = [ "metrics_utils.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/public/transport",
+  ]
+
+  visibility = [ "//components/browser_actuator/internal/transport/*" ]
+}
+
+# Features and params of the transport.
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+
+  deps = [
+    # TODO(crbug.com/568448841): The endpoint params still hang off
+    # browser_actuator::kBrowserActuator.
+    "//components/browser_actuator/public:feature_list",
+    "//net",
+  ]
+
+  visibility = [
+    "//chrome/browser/sharing/browser_actuator:*",
+    "//components/browser_actuator/*",
+  ]
+}
+
+source_set("session_stream_recorder") {
+  visibility = [
+    ":*",
+    "//chrome/browser/browser_actuator/internals:*",
+    "//components/browser_actuator/internal:*",
+  ]
+
+  sources = [
+    "session_stream_recorder.cc",
+    "session_stream_recorder.h",
+    "transport_message_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/internal/transport/proto",
+    "//components/browser_actuator/public/transport",
+    "//components/browser_actuator/public/transport:payload_type_mapping",
+    "//components/sharing_message/proto",
+  ]
+
+  deps = [
+    ":metrics_utils",
+    "//components/browser_actuator/internal/transport/proto:transport_messages_extras",
+    "//components/sharing_message/proto:actuator_downstream_message_extras",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+# The channel, sessions and registries that route payloads between the stream
+# and feature handlers.
+source_set("channel") {
+  visibility = [
+    ":*",
+    "//components/browser_actuator/internal:*",
+  ]
+
+  sources = [
+    "control_transport_handler.cc",
+    "control_transport_handler.h",
+    "downstream_message_sequencer.cc",
+    "downstream_message_sequencer.h",
+    "transport_channel_impl.cc",
+    "transport_channel_impl.h",
+    "transport_handler_factory_registry_impl.cc",
+    "transport_handler_factory_registry_impl.h",
+    "transport_session_impl.cc",
+    "transport_session_impl.h",
+    "transport_session_registry_impl.cc",
+    "transport_session_registry_impl.h",
+  ]
+
+  public_deps = [
+    ":session_stream_recorder",
+    ":transport",
+    "//components/browser_actuator/public/transport",
+    "//components/browser_actuator/public/transport:payload_type_mapping",
+    "//components/sharing_message/proto",
+  ]
+
+  deps = [
+    ":features",
+    ":metrics_utils",
+    "//base",
+    "//components/browser_actuator/internal/transport/proto",
+    "//components/browser_actuator/internal/transport/upstream_message_client",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "control_transport_handler_unittest.cc",
+    "downstream_message_sequencer_unittest.cc",
     "resume_body_connection_delegate_unittest.cc",
+    "session_stream_recorder_unittest.cc",
     "stream_connection_delegate_unittest.cc",
+    "transport_channel_impl_unittest.cc",
+    "transport_handler_factory_registry_impl_unittest.cc",
+    "transport_handler_unittest.cc",
+    "transport_session_impl_unittest.cc",
+    "transport_session_registry_impl_unittest.cc",
   ]
 
   deps = [
+    ":channel",
+    ":features",
+    ":metrics_utils",
+    ":session_stream_recorder",
     ":transport",
     "test_support",
     "//base",
     "//base/test:test_support",
+    "//components/browser_actuator/internal/transport/proto",
+    "//components/browser_actuator/internal/transport/proto_stream_client",
+    "//components/browser_actuator/internal/transport/upstream_message_client",
+    "//components/browser_actuator/public/transport",
+    "//components/browser_actuator/public/transport:payload_type_mapping",
+    "//components/browser_actuator/test_support/transport",
+    "//components/sharing_message/proto",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
   visibility = [ "//components/browser_actuator/internal:unit_tests" ]
+}
+
+# Fails `gn gen` if a transport target starts depending on the rest of
+# //components/browser_actuator. Depended on by
+# //components/browser_actuator:unit_tests so that it is always checked.
+group("isolation_check") {
+  testonly = true
+
+  deps = [
+    ":channel",
+    ":features",
+    ":metrics_utils",
+    ":session_stream_recorder",
+    ":transport",
+    "oauth",
+    "proto",
+    "proto:transport_messages_extras",
+    "proto_stream_client",
+    "proto_stream_client:rust_stream_framer",
+    "test_support",
+    "upstream_message_client",
+    "//components/browser_actuator/public/transport",
+    "//components/browser_actuator/public/transport:payload_type_mapping",
+    "//components/browser_actuator/test_support/transport",
+  ]
+
+  assert_no_deps = [
+    "//components/browser_actuator:*",
+    "//components/browser_actuator/internal:*",
+    "//components/browser_actuator/public",
+    "//components/browser_actuator/public:payload_type_mapping",
+    "//components/browser_actuator/test_support:*",
+  ]
 }

@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browser_actuator/internal/proto/transport_messages.pb.h"
+#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/features.h"

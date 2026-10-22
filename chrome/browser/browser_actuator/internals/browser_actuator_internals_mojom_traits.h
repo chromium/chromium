@@ -12,7 +12,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals.mojom-shared.h"
-#include "components/browser_actuator/internal/session_stream_recorder.h"
+#include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {

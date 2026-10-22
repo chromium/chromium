@@ -10,15 +10,15 @@ source_set("upstream_message_client") {
 
   public_deps = [
     "//base",
-    "//components/browser_actuator/public",
+    "//components/browser_actuator/public/transport",
     "//net",
     "//services/network/public/cpp",
     "//url",
   ]
 
   deps = [
-    "//components/browser_actuator/internal:metrics_utils",
-    "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/internal/transport:metrics_utils",
+    "//components/browser_actuator/internal/transport/proto",
     "//components/endpoint_fetcher",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
@@ -34,8 +34,8 @@ source_set("unit_tests") {
     ":upstream_message_client",
     "//base",
     "//base/test:test_support",
-    "//components/browser_actuator/internal/proto",
-    "//components/browser_actuator/public",
+    "//components/browser_actuator/internal/transport/proto",
+    "//components/browser_actuator/public/transport",
     "//components/signin/public/identity_manager:test_support",
     "//net",
     "//net/traffic_annotation:test_support",

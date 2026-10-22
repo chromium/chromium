@@ -1,0 +1,7 @@
+include_rules = [
+  # The transport must not depend on the rest of //components/browser_actuator,
+  # so that other features can use it on its own. "-" has to come first: the
+  # last matching rule in a DEPS file wins.
+  "-components/browser_actuator",
+  "+components/browser_actuator/public/transport",
+]

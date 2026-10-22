@@ -5,35 +5,8 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_SESSION_H_
 #define COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_SESSION_H_
 
-#include <string_view>
-
-#include "base/types/expected.h"
-#include "components/browser_actuator/public/common.h"
-
-namespace google::protobuf {
-class MessageLite;
-}  // namespace google::protobuf
-
-namespace browser_actuator {
-
-// Represents an active session for a task shared between the browser and
-// server.
-class TransportSession {
- public:
-  virtual ~TransportSession() = default;
-
-  virtual std::string_view GetSessionId() const = 0;
-
-  // Sends a message upstream.
-  virtual base::expected<void, SendUpstreamMessageError> SendUpstreamMessage(
-      PayloadType payload_type,
-      const google::protobuf::MessageLite& message) = 0;
-
-  // Dispatches an incoming message to handlers registered for payload_type.
-  virtual void OnMessage(PayloadType payload_type,
-                         const google::protobuf::MessageLite& message) = 0;
-};
-
-}  // namespace browser_actuator
+// This header moved to components/browser_actuator/public/transport/.
+// TODO(crbug.com/568448841): Remove once callers include the new path.
+#include "components/browser_actuator/public/transport/transport_session.h"  // IWYU pragma: export
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_SESSION_H_

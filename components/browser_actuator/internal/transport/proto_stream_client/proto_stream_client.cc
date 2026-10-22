@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/browser_actuator/internal/features.h"
+#include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"

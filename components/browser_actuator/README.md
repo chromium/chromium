@@ -13,10 +13,27 @@ and internal implementations.
   interface (`BrowserActuatorService`), allowing embedders (e.g., `//chrome`,
   `//ios`) to consume the service without depending on internal implementation
   details.
-* `internal/`: Internal service implementations, transport routing logic,
-  session state machines, and protocol handlers.
+* `internal/`: The service implementation, which owns the transport channel.
 * `test_support/`: Fakes, mocks, and test utilities for unit and browser
   integration testing.
+
+### Transport
+
+The bi-directional transport between Chrome and the server lives in the
+`transport/` subdirectories and does not depend on anything else in this
+component, so other features can use it on its own:
+
+* `public/transport/`: interfaces for features and embedders
+  (`TransportChannel`, `TransportSession`, `TransportHandler`,
+  `TransportHandlerFactory`, their registries, and `PayloadType`).
+* `internal/transport/`: the channel, session and registry implementations,
+  control commands, the session stream recorder, the transport protos, and
+  the wire layer (see `internal/transport/README.md`).
+* `test_support/transport/`: mocks for the transport interfaces.
+
+`DEPS` files forbid transport code from including the rest of this component,
+and `//components/browser_actuator/internal/transport:isolation_check` fails
+`gn gen` if a transport target depends on it.
 
 ---
 

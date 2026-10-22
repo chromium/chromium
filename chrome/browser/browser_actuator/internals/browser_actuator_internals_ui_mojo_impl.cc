@@ -11,7 +11,7 @@
 
 #include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browser_actuator/internal/session_stream_recorder.h"
+#include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
 
 namespace browser_actuator {

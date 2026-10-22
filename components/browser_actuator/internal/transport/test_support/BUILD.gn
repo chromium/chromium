@@ -20,8 +20,8 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
-    "//components/browser_actuator/internal/proto",
     "//components/browser_actuator/internal/transport",
+    "//components/browser_actuator/internal/transport/proto",
     "//components/sharing_message/proto",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
