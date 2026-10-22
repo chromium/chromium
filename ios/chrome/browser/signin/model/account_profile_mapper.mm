@@ -1084,9 +1084,14 @@ AccountProfileMapper::FilterIdentitiesForProfile(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (assigner_->FindProfileNameForGaiaID(identity.gaiaId) != profile_name) {
-    // The identity doesn't belong to this profile; skip over it.
-    return SystemIdentityManager::IteratorResult::kContinueIteration;
+  if (profile_manager_) {
+    ProfileAttributesIOS attr =
+        profile_manager_->GetProfileAttributesStorage()
+            ->GetAttributesForProfileWithName(profile_name);
+    if (!attr.GetAttachedGaiaIds().contains(identity.gaiaId)) {
+      // The identity doesn't belong to this profile; skip over it.
+      return SystemIdentityManager::IteratorResult::kContinueIteration;
+    }
   }
 
   switch (callback.Run(identity)) {
