@@ -230,6 +230,7 @@ PUBLIC_PERF_BUILDERS = [
   'mac-m4-mini-processor-perf',
   'mac-m4-pro-perf',
   'mac-m4-pro-processor-perf',
+  'win-10-perf',
   'win-10-processor-perf',
   'win-10_amd_laptop-perf',
   'win-10_laptop_low_end-perf',
