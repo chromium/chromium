@@ -51,7 +51,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
@@ -326,7 +325,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @DisabledTest // This needs to be re-worked for Q.
     public void testImageTileContainerCallback() {
         SharedImageTilesView sharedImageTilesView =
                 new SharedImageTilesView(mActivity, /* attrs= */ null);
