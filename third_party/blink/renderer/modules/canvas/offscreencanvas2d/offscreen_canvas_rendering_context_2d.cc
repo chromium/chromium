@@ -283,13 +283,12 @@ void OffscreenCanvasRenderingContext2D::Reset() {
 
 scoped_refptr<CanvasResource>
 OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
-  if (!InitializeBacking() || !GetSharedImageProvider()) {
+  if (!InitializeBacking()) {
     return nullptr;
   }
 
-  FlushCanvas(reason);
   scoped_refptr<CanvasResource> frame =
-      GetSharedImageProvider()->ProduceCanvasResource(GetSoftwareSurface());
+      PaintRenderingResultsToResource(kBackBuffer, reason);
   if (!frame)
     return nullptr;
 
