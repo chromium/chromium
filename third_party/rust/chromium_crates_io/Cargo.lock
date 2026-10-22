@@ -245,6 +245,7 @@ dependencies = [
  "cxx",
  "cxxbridge-cmd",
  "fend-core",
+ "flate2",
  "font-types",
  "harfrust",
  "hex",
