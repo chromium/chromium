@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Rule;
@@ -153,6 +155,7 @@ public class MultiWindowAppMenuTest {
         ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS
     })
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/576757597")
     public void testAddToGroup_showsGroupsFromOtherWindow() {
         WebPageStation page1InFirstWindow = mCtaTestRule.startOnBlankPage();
         RegularNewTabPageStation pageInSecondWindow =
