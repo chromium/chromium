@@ -721,12 +721,7 @@ std::vector<std::string>
 PersonalDataManagerAndroid::GetEmailVerificationAddresses() {
   const base::DictValue& state =
       prefs_->GetDict(prefs::kAutofillEmailVerificationState);
-  std::vector<std::string> emails;
-  emails.reserve(state.size());
-  for (auto it : state) {
-    emails.push_back(it.first);
-  }
-  return emails;
+  return base::ToVector(state, [](const auto& pair) { return pair.first; });
 }
 
 std::string PersonalDataManagerAndroid::GetEmailVerificationIssuer(

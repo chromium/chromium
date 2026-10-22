@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -115,21 +116,21 @@ JNI_AutofillProfileBridge_GetAddressEditorUiInfo(
 
   AddressValidationType validation_type =
       static_cast<AddressValidationType>(j_validation_type);
-  std::vector<AutofillAddressUiComponentAndroid> components;
-  components.reserve(ui_components.size());
-  for (const auto& ui_component : ui_components) {
-    bool is_required = false;
-    switch (validation_type) {
-      case AddressValidationType::kPaymentRequest:
-        is_required = i18n::IsFieldRequired(ui_component.field, country_code);
-        break;
-      case AddressValidationType::kAccount:
-        is_required = country.IsAddressFieldRequired(ui_component.field);
-    }
-    components.emplace_back(
-        ui_component.field, ui_component.name, is_required,
-        ui_component.length_hint == AutofillAddressUIComponent::HINT_LONG);
-  }
+  std::vector<AutofillAddressUiComponentAndroid> components =
+      base::ToVector(ui_components, [&](const auto& ui_component) {
+        bool is_required = false;
+        switch (validation_type) {
+          case AddressValidationType::kPaymentRequest:
+            is_required =
+                i18n::IsFieldRequired(ui_component.field, country_code);
+            break;
+          case AddressValidationType::kAccount:
+            is_required = country.IsAddressFieldRequired(ui_component.field);
+        }
+        return AutofillAddressUiComponentAndroid(
+            ui_component.field, ui_component.name, is_required,
+            ui_component.length_hint == AutofillAddressUIComponent::HINT_LONG);
+      });
 
   return AutofillAddressEditorUiInfoAndroid(best_language_tag, components);
 }
