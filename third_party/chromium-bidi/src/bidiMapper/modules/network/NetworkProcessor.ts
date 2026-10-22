@@ -26,7 +26,6 @@ import {
 } from '../../../protocol/protocol.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
-import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
@@ -538,97 +537,22 @@ export class NetworkProcessor {
     return {};
   }
 
-  async #getRelatedTopLevelBrowsingContexts(
-    browsingContextIds?: string[],
-    userContextIds?: string[],
-  ): Promise<BrowsingContextImpl[]> {
-    // Duplicated with EmulationProcessor logic. Consider moving to ConfigStorage.
-    if (browsingContextIds === undefined && userContextIds === undefined) {
-      return this.#browsingContextStorage.getTopLevelContexts();
-    }
-
-    if (browsingContextIds !== undefined && userContextIds !== undefined) {
-      throw new InvalidArgumentException(
-        'User contexts and browsing contexts are mutually exclusive',
-      );
-    }
-
-    const result = [];
-    if (userContextIds !== undefined) {
-      if (userContextIds.length === 0) {
-        throw new InvalidArgumentException('user context should be provided');
-      }
-
-      // Verify that all user contexts exist.
-      await this.#userContextStorage.verifyUserContextIdList(userContextIds!);
-
-      for (const userContextId of userContextIds!) {
-        const topLevelBrowsingContexts = this.#browsingContextStorage
-          .getTopLevelContexts()
-          .filter(
-            (browsingContext) => browsingContext.userContext === userContextId,
-          );
-        result.push(...topLevelBrowsingContexts);
-      }
-    }
-    if (browsingContextIds !== undefined) {
-      if (browsingContextIds.length === 0) {
-        throw new InvalidArgumentException(
-          'browsing context should be provided',
-        );
-      }
-
-      for (const browsingContextId of browsingContextIds) {
-        const browsingContext =
-          this.#browsingContextStorage.getContext(browsingContextId);
-        if (!browsingContext.isTopLevelContext()) {
-          throw new InvalidArgumentException(
-            'The command is only supported on the top-level context',
-          );
-        }
-        result.push(browsingContext);
-      }
-    }
-    // Remove duplicates. Compare `BrowsingContextImpl` by reference is correct here, as
-    // `browsingContextStorage` returns the same instance for the same id.
-    return [...new Set(result).values()];
-  }
-
   async setExtraHeaders(
     params: Network.SetExtraHeadersParameters,
   ): Promise<EmptyResult> {
-    const affectedBrowsingContexts =
-      await this.#getRelatedTopLevelBrowsingContexts(
+    const cdpExtraHeaders = parseBiDiHeaders(params.headers);
+
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
+        {
+          extraHeaders: cdpExtraHeaders,
+        },
         params.contexts,
         params.userContexts,
       );
 
-    const cdpExtraHeaders = parseBiDiHeaders(params.headers);
-
-    if (params.userContexts === undefined && params.contexts === undefined) {
-      this.#contextConfigStorage.updateGlobalConfig({
-        extraHeaders: cdpExtraHeaders,
-      });
-    }
-
-    if (params.userContexts !== undefined) {
-      params.userContexts.forEach((userContext) => {
-        this.#contextConfigStorage.updateUserContextConfig(userContext, {
-          extraHeaders: cdpExtraHeaders,
-        });
-      });
-    }
-    if (params.contexts !== undefined) {
-      params.contexts.forEach((browsingContextId) => {
-        this.#contextConfigStorage.updateBrowsingContextConfig(
-          browsingContextId,
-          {extraHeaders: cdpExtraHeaders},
-        );
-      });
-    }
-
     await Promise.all(
-      affectedBrowsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing setting.
         const extraHeaders =

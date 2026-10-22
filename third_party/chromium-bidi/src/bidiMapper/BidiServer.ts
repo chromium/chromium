@@ -96,8 +96,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
-    const contextConfigStorage = new ContextConfigStorage();
     const userContextStorage = new UserContextStorage(browserCdpClient);
+    const contextConfigStorage = new ContextConfigStorage(
+      this.#browsingContextStorage,
+      userContextStorage,
+    );
     this.#eventManager = new EventManager(
       this.#browsingContextStorage,
       userContextStorage,
@@ -141,7 +144,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
             ignore: options.acceptInsecureCerts ?? false,
           },
         );
-        contextConfigStorage.updateGlobalConfig({
+        await contextConfigStorage.updateConfig({
           acceptInsecureCerts: options.acceptInsecureCerts ?? false,
           userPromptHandler: options.unhandledPromptBehavior,
           prerenderingDisabled: options?.['goog:prerenderingDisabled'] ?? false,

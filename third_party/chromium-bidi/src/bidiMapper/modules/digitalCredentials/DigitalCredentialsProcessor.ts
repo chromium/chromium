@@ -61,33 +61,24 @@ export class DigitalCredentialsProcessor {
       }
     }
 
-    if (context === undefined) {
-      if (action === DigitalCredentials.VirtualWalletAction.Clear) {
-        this.#contextConfigStorage.updateGlobalConfig({
-          digitalCredentialsBehavior: null,
-        });
-      } else {
-        this.#contextConfigStorage.updateGlobalConfig({
-          digitalCredentialsBehavior: {action, protocol, response},
-        });
-      }
-    } else {
+    if (context !== undefined) {
       const browsingContext = this.#browsingContextStorage.getContext(context);
       if (browsingContext.parentId !== null) {
         throw new UnsupportedOperationException(
           'Only top-level contexts are supported',
         );
       }
-      if (action === DigitalCredentials.VirtualWalletAction.Clear) {
-        this.#contextConfigStorage.updateBrowsingContextConfig(context, {
-          digitalCredentialsBehavior: null,
-        });
-      } else {
-        this.#contextConfigStorage.updateBrowsingContextConfig(context, {
-          digitalCredentialsBehavior: {action, protocol, response},
-        });
-      }
     }
+
+    await this.#contextConfigStorage.updateConfig(
+      {
+        digitalCredentialsBehavior:
+          action === DigitalCredentials.VirtualWalletAction.Clear
+            ? null
+            : {action, protocol, response},
+      },
+      context === undefined ? undefined : [context],
+    );
 
     await this.#applyToAllTargets();
 

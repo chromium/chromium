@@ -28,6 +28,7 @@ import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
+import {UserContextStorage} from '../browser/UserContextStorage.js';
 
 import {DigitalCredentialsProcessor} from './DigitalCredentialsProcessor.js';
 
@@ -38,7 +39,12 @@ describe('DigitalCredentialsProcessor', () => {
 
   beforeEach(() => {
     browsingContextStorage = sinon.createStubInstance(BrowsingContextStorage);
-    contextConfigStorage = new ContextConfigStorage();
+    browsingContextStorage.getTopLevelContexts.returns([]);
+    const userContextStorage = sinon.createStubInstance(UserContextStorage);
+    contextConfigStorage = new ContextConfigStorage(
+      browsingContextStorage,
+      userContextStorage,
+    );
     processor = new DigitalCredentialsProcessor(
       browsingContextStorage,
       contextConfigStorage,
@@ -156,6 +162,7 @@ describe('DigitalCredentialsProcessor', () => {
       const mockContext = {
         id: 'context_id',
         parentId: null,
+        isTopLevelContext: () => true,
         cdpTarget: mockTarget,
       } as unknown as BrowsingContextImpl;
 
@@ -340,6 +347,7 @@ describe('DigitalCredentialsProcessor', () => {
       const parentContext = {
         id: 'parent_id',
         parentId: null,
+        isTopLevelContext: () => true,
         cdpTarget: mockTarget1,
       } as unknown as BrowsingContextImpl;
 

@@ -119,10 +119,14 @@ export class BrowserProcessor {
       context.browserContextId,
     );
 
-    this.#configStorage.updateUserContextConfig(context.browserContextId, {
-      acceptInsecureCerts: params['acceptInsecureCerts'],
-      userPromptHandler: params['unhandledPromptBehavior'],
-    });
+    await this.#configStorage.updateConfig(
+      {
+        acceptInsecureCerts: params['acceptInsecureCerts'],
+        userPromptHandler: params['unhandledPromptBehavior'],
+      },
+      undefined,
+      [context.browserContextId],
+    );
 
     return {
       userContext: context.browserContextId,
@@ -337,33 +341,20 @@ export class BrowserProcessor {
   async setDownloadBehavior(
     params: Browser.SetDownloadBehaviorParameters,
   ): Promise<EmptyResult> {
-    let userContexts: string[];
-    if (params.userContexts === undefined) {
-      // Global download behavior.
-      userContexts = (await this.#userContextStorage.getUserContexts()).map(
-        (c) => c.userContext,
-      );
-    } else {
-      // Download behavior for the specific user contexts.
-      userContexts = Array.from(
-        await this.#userContextStorage.verifyUserContextIdList(
-          params.userContexts,
-        ),
-      );
-    }
-
-    if (params.userContexts === undefined) {
-      // Store the global setting to be applied for the future user contexts.
-      this.#configStorage.updateGlobalConfig({
+    await this.#configStorage.updateConfig(
+      {
         downloadBehavior: params.downloadBehavior,
-      });
-    } else {
-      params.userContexts.map((userContext) =>
-        this.#configStorage.updateUserContextConfig(userContext, {
-          downloadBehavior: params.downloadBehavior,
-        }),
-      );
-    }
+      },
+      undefined,
+      params.userContexts,
+    );
+
+    const userContexts =
+      params.userContexts === undefined
+        ? (await this.#userContextStorage.getUserContexts()).map(
+            (c) => c.userContext,
+          )
+        : Array.from(new Set(params.userContexts));
 
     await Promise.all(
       userContexts.map(async (userContext) => {

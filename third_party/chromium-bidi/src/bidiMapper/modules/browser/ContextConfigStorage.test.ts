@@ -17,18 +17,44 @@
 
 import {describe, it, beforeEach} from 'node:test';
 import {assert} from 'chai';
+import sinon from 'sinon';
+
+import {
+  InvalidArgumentException,
+  NoSuchFrameException,
+  NoSuchUserContextException,
+} from '../../../protocol/protocol.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
+import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import {ContextConfig} from './ContextConfig.js';
 import {ContextConfigStorage} from './ContextConfigStorage.js';
+import {UserContextStorage} from './UserContextStorage.js';
 
 describe('ContextConfigStorage', () => {
   const USER_CONTEXT = 'some user context';
   const BROWSER_CONTEXT = 'some browsing context';
 
+  let browsingContextStorage: BrowsingContextStorage;
+  let userContextStorage: sinon.SinonStubbedInstance<UserContextStorage>;
   let storage: ContextConfigStorage;
+  let browsingContext: BrowsingContextImpl;
 
   beforeEach(() => {
-    storage = new ContextConfigStorage();
+    browsingContextStorage = new BrowsingContextStorage();
+    browsingContext = {
+      id: BROWSER_CONTEXT,
+      userContext: USER_CONTEXT,
+      isTopLevelContext: () => true,
+    } as unknown as BrowsingContextImpl;
+    browsingContextStorage.addContext(browsingContext);
+
+    userContextStorage = sinon.createStubInstance(UserContextStorage);
+    userContextStorage.verifyUserContextIdList.resolves();
+    storage = new ContextConfigStorage(
+      browsingContextStorage,
+      userContextStorage,
+    );
   });
 
   describe('getActiveConfig', () => {
@@ -186,22 +212,22 @@ describe('ContextConfigStorage', () => {
         name: 'textLayoutMode in browsing context should override null in user context',
       },
     ].forEach(({name, global, user, browsing, expected}) => {
-      it(name, () => {
+      it(name, async () => {
         if (global) {
           for (const config of Array.isArray(global) ? global : [global]) {
-            storage.updateGlobalConfig(config);
+            await storage.updateConfig(config);
           }
         }
         if (user) {
           for (const config of Array.isArray(user) ? user : [user]) {
-            storage.updateUserContextConfig(USER_CONTEXT, config);
+            await storage.updateConfig(config, undefined, [USER_CONTEXT]);
           }
         }
         if (browsing) {
           for (const config of Array.isArray(browsing)
             ? browsing
             : [browsing]) {
-            storage.updateBrowsingContextConfig(BROWSER_CONTEXT, config);
+            await storage.updateConfig(config, [BROWSER_CONTEXT]);
           }
         }
 
@@ -215,6 +241,173 @@ describe('ContextConfigStorage', () => {
 
         assert.deepEqual(activeConfig, expectedConfig);
       });
+    });
+  });
+
+  describe('updateConfig', () => {
+    let topLevelDefault: BrowsingContextImpl;
+    let topLevelCustom: BrowsingContextImpl;
+    let childContext: BrowsingContextImpl;
+
+    beforeEach(() => {
+      browsingContextStorage = new BrowsingContextStorage();
+      storage = new ContextConfigStorage(
+        browsingContextStorage,
+        userContextStorage,
+      );
+
+      topLevelDefault = {
+        id: 'top_default',
+        userContext: 'default',
+        isTopLevelContext: () => true,
+      } as unknown as BrowsingContextImpl;
+      topLevelCustom = {
+        id: 'top_custom',
+        userContext: 'custom_user_context',
+        isTopLevelContext: () => true,
+      } as unknown as BrowsingContextImpl;
+      childContext = {
+        id: 'child_context',
+        userContext: 'default',
+        parentId: 'top_default',
+        isTopLevelContext: () => false,
+      } as unknown as BrowsingContextImpl;
+
+      browsingContextStorage.addContext(topLevelDefault);
+      browsingContextStorage.addContext(topLevelCustom);
+      browsingContextStorage.addContext(childContext);
+    });
+
+    it('returns all top-level contexts by default when neither is provided', async () => {
+      const contexts = await storage.updateConfig({}, undefined, undefined);
+      assert.deepEqual(contexts, [topLevelDefault, topLevelCustom]);
+    });
+
+    it('throws InvalidArgumentException when neither is provided and allowGlobal is false', async () => {
+      try {
+        await storage.updateConfig({}, undefined, undefined, false);
+        assert.fail('Should have thrown');
+      } catch (err) {
+        assert.instanceOf(err, InvalidArgumentException);
+      }
+    });
+
+    it('throws InvalidArgumentException when both contexts and userContexts are provided', async () => {
+      try {
+        await storage.updateConfig({}, ['top_default'], ['default']);
+        assert.fail('Should have thrown');
+      } catch (err) {
+        assert.instanceOf(err, InvalidArgumentException);
+      }
+    });
+
+    it('throws InvalidArgumentException when contexts is empty', async () => {
+      try {
+        await storage.updateConfig({}, [], undefined);
+        assert.fail('Should have thrown');
+      } catch (err) {
+        assert.instanceOf(err, InvalidArgumentException);
+      }
+    });
+
+    it('throws InvalidArgumentException when userContexts is empty', async () => {
+      try {
+        await storage.updateConfig({}, undefined, []);
+        assert.fail('Should have thrown');
+      } catch (err) {
+        assert.instanceOf(err, InvalidArgumentException);
+      }
+    });
+
+    it('throws InvalidArgumentException for non-top-level context', async () => {
+      try {
+        await storage.updateConfig({}, ['child_context'], undefined);
+        assert.fail('Should have thrown');
+      } catch (err) {
+        assert.instanceOf(err, InvalidArgumentException);
+      }
+    });
+
+    it('throws NoSuchFrameException for unknown context', async () => {
+      try {
+        await storage.updateConfig({}, ['unknown_context'], undefined);
+        assert.fail('Should have thrown');
+      } catch (err) {
+        assert.instanceOf(err, NoSuchFrameException);
+      }
+    });
+
+    it('throws NoSuchUserContextException for unknown user context', async () => {
+      userContextStorage.verifyUserContextIdList.rejects(
+        new NoSuchUserContextException('User context unknown not found'),
+      );
+      try {
+        await storage.updateConfig({}, undefined, ['unknown']);
+        assert.fail('Should have thrown');
+      } catch (err) {
+        assert.instanceOf(err, NoSuchUserContextException);
+      }
+    });
+
+    it('deduplicates returned contexts', async () => {
+      const contexts = await storage.updateConfig(
+        {},
+        ['top_default', 'top_default'],
+        undefined,
+      );
+      assert.deepEqual(contexts, [topLevelDefault]);
+    });
+
+    it('updates global config when contexts and userContexts are undefined', async () => {
+      const contexts = await storage.updateConfig(
+        {acceptInsecureCerts: true},
+        undefined,
+        undefined,
+      );
+      assert.deepEqual(contexts, [topLevelDefault, topLevelCustom]);
+      assert.strictEqual(
+        storage.getActiveConfig('top_default', 'default').acceptInsecureCerts,
+        true,
+      );
+      assert.strictEqual(
+        storage.getActiveConfig('top_custom', 'custom_user_context')
+          .acceptInsecureCerts,
+        true,
+      );
+    });
+
+    it('updates user context config when userContexts is provided', async () => {
+      const contexts = await storage.updateConfig(
+        {acceptInsecureCerts: true},
+        undefined,
+        ['custom_user_context'],
+      );
+      assert.deepEqual(contexts, [topLevelCustom]);
+      assert.isUndefined(
+        storage.getActiveConfig('top_default', 'default').acceptInsecureCerts,
+      );
+      assert.strictEqual(
+        storage.getActiveConfig('top_custom', 'custom_user_context')
+          .acceptInsecureCerts,
+        true,
+      );
+    });
+
+    it('updates browsing context config when contexts is provided', async () => {
+      const contexts = await storage.updateConfig(
+        {acceptInsecureCerts: true},
+        ['top_default'],
+        undefined,
+      );
+      assert.deepEqual(contexts, [topLevelDefault]);
+      assert.strictEqual(
+        storage.getActiveConfig('top_default', 'default').acceptInsecureCerts,
+        true,
+      );
+      assert.isUndefined(
+        storage.getActiveConfig('top_custom', 'custom_user_context')
+          .acceptInsecureCerts,
+      );
     });
   });
 });

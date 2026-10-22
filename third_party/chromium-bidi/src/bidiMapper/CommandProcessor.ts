@@ -124,7 +124,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       browserCdpClient,
       browsingContextStorage,
-      userContextStorage,
       contextConfigStorage,
       eventManager,
     );
@@ -134,11 +133,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       cdpConnection,
       browserCdpClient,
     );
-    this.#emulationProcessor = new EmulationProcessor(
-      browsingContextStorage,
-      userContextStorage,
-      contextConfigStorage,
-    );
+    this.#emulationProcessor = new EmulationProcessor(contextConfigStorage);
     this.#inputProcessor = new InputProcessor(browsingContextStorage);
     this.#networkProcessor = new NetworkProcessor(
       browsingContextStorage,

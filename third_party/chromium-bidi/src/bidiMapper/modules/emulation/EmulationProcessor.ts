@@ -25,9 +25,6 @@ import type {
   UAClientHints,
 } from '../../../protocol/protocol.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
-import type {UserContextStorage} from '../browser/UserContextStorage.js';
-import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 // Media features supported by Blink's MediaFeatureOverrides:
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/css/media_feature_overrides.cc;l=124
@@ -42,17 +39,9 @@ const SUPPORTED_MEDIA_FEATURES = new Set([
 ]);
 
 export class EmulationProcessor {
-  #userContextStorage: UserContextStorage;
-  #browsingContextStorage: BrowsingContextStorage;
   #contextConfigStorage: ContextConfigStorage;
 
-  constructor(
-    browsingContextStorage: BrowsingContextStorage,
-    userContextStorage: UserContextStorage,
-    contextConfigStorage: ContextConfigStorage,
-  ) {
-    this.#userContextStorage = userContextStorage;
-    this.#browsingContextStorage = browsingContextStorage;
+  constructor(contextConfigStorage: ContextConfigStorage) {
     this.#contextConfigStorage = contextConfigStorage;
   }
 
@@ -95,27 +84,18 @@ export class EmulationProcessor {
       throw new InvalidArgumentException(`Coordinates or error should be set`);
     }
 
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           geolocation,
         },
+        params.contexts,
+        params.userContexts,
+        false,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        geolocation,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -138,27 +118,18 @@ export class EmulationProcessor {
       throw new InvalidArgumentException(`Invalid locale "${locale}"`);
     }
 
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           locale,
         },
+        params.contexts,
+        params.userContexts,
+        false,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        locale,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -192,34 +163,17 @@ export class EmulationProcessor {
       );
     }
 
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-      true,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           mediaFeatures: params.features,
         },
+        params.contexts,
+        params.userContexts,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        mediaFeatures: params.features,
-      });
-    }
-
-    if (params.contexts === undefined && params.userContexts === undefined) {
-      this.#contextConfigStorage.updateGlobalConfig({
-        mediaFeatures: params.features,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -236,30 +190,18 @@ export class EmulationProcessor {
   async setScriptingEnabled(
     params: Emulation.SetScriptingEnabledParameters,
   ): Promise<EmptyResult> {
-    const scriptingEnabled = params.enabled;
-
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
-          scriptingEnabled,
+          scriptingEnabled: params.enabled,
         },
+        params.contexts,
+        params.userContexts,
+        false,
       );
-    }
-
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        scriptingEnabled,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -276,34 +218,17 @@ export class EmulationProcessor {
   async setScrollbarTypeOverride(
     params: Emulation.SetScrollbarTypeOverrideParameters,
   ): Promise<EmptyResult> {
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-      true,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           scrollbarType: params.scrollbarType,
         },
+        params.contexts,
+        params.userContexts,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        scrollbarType: params.scrollbarType,
-      });
-    }
-
-    if (params.contexts === undefined && params.userContexts === undefined) {
-      this.#contextConfigStorage.updateGlobalConfig({
-        scrollbarType: params.scrollbarType,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -320,27 +245,18 @@ export class EmulationProcessor {
   async setScreenOrientationOverride(
     params: Emulation.SetScreenOrientationOverrideParameters,
   ): Promise<EmptyResult> {
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           screenOrientation: params.screenOrientation,
         },
+        params.contexts,
+        params.userContexts,
+        false,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        screenOrientation: params.screenOrientation,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -361,27 +277,18 @@ export class EmulationProcessor {
   async setScreenSettingsOverride(
     params: Emulation.SetScreenSettingsOverrideParameters,
   ): Promise<EmptyResult> {
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           screenArea: params.screenArea,
         },
+        params.contexts,
+        params.userContexts,
+        false,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        screenArea: params.screenArea,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -399,70 +306,6 @@ export class EmulationProcessor {
     return {};
   }
 
-  /**
-   * Returns a list of top-level browsing contexts.
-   */
-  async #getRelatedTopLevelBrowsingContexts(
-    browsingContextIds?: string[],
-    userContextIds?: string[],
-    allowGlobal = false,
-  ): Promise<BrowsingContextImpl[]> {
-    if (browsingContextIds === undefined && userContextIds === undefined) {
-      if (allowGlobal) {
-        return this.#browsingContextStorage.getTopLevelContexts();
-      }
-      throw new InvalidArgumentException(
-        'Either user contexts or browsing contexts must be provided',
-      );
-    }
-
-    if (browsingContextIds !== undefined && userContextIds !== undefined) {
-      throw new InvalidArgumentException(
-        'User contexts and browsing contexts are mutually exclusive',
-      );
-    }
-
-    const result = [];
-    if (browsingContextIds === undefined) {
-      // userContextIds !== undefined
-      if (userContextIds!.length === 0) {
-        throw new InvalidArgumentException('user context should be provided');
-      }
-
-      // Verify that all user contexts exist.
-      await this.#userContextStorage.verifyUserContextIdList(userContextIds!);
-
-      for (const userContextId of userContextIds!) {
-        const topLevelBrowsingContexts = this.#browsingContextStorage
-          .getTopLevelContexts()
-          .filter(
-            (browsingContext) => browsingContext.userContext === userContextId,
-          );
-        result.push(...topLevelBrowsingContexts);
-      }
-    } else {
-      if (browsingContextIds.length === 0) {
-        throw new InvalidArgumentException(
-          'browsing context should be provided',
-        );
-      }
-
-      for (const browsingContextId of browsingContextIds) {
-        const browsingContext =
-          this.#browsingContextStorage.getContext(browsingContextId);
-        if (!browsingContext.isTopLevelContext()) {
-          throw new InvalidArgumentException(
-            'The command is only supported on the top-level context',
-          );
-        }
-        result.push(browsingContext);
-      }
-    }
-    // Remove duplicates. Compare `BrowsingContextImpl` by reference is correct here, as
-    // `browsingContextStorage` returns the same instance for the same id.
-    return [...new Set(result).values()];
-  }
-
   async setTimezoneOverride(
     params: Emulation.SetTimezoneOverrideParameters,
   ): Promise<EmptyResult> {
@@ -477,27 +320,18 @@ export class EmulationProcessor {
       timezone = `GMT${timezone}`;
     }
 
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           timezone,
         },
+        params.contexts,
+        params.userContexts,
+        false,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        timezone,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -513,36 +347,17 @@ export class EmulationProcessor {
   async setTouchOverride(
     params: Emulation.SetTouchOverrideParameters,
   ): Promise<EmptyResult> {
-    const maxTouchPoints = params.maxTouchPoints;
-
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-      true,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
-          maxTouchPoints,
+          maxTouchPoints: params.maxTouchPoints,
         },
+        params.contexts,
+        params.userContexts,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        maxTouchPoints,
-      });
-    }
-
-    if (params.contexts === undefined && params.userContexts === undefined) {
-      this.#contextConfigStorage.updateGlobalConfig({
-        maxTouchPoints,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -564,34 +379,17 @@ export class EmulationProcessor {
       );
     }
 
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-      true,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           userAgent: params.userAgent,
         },
+        params.contexts,
+        params.userContexts,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        userAgent: params.userAgent,
-      });
-    }
-
-    if (params.contexts === undefined && params.userContexts === undefined) {
-      this.#contextConfigStorage.updateGlobalConfig({
-        userAgent: params.userAgent,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -611,40 +409,17 @@ export class EmulationProcessor {
   async setClientHintsOverride(
     params: UAClientHints.UserAgentClientHints.SetClientHintsOverrideCommand['params'],
   ): Promise<EmptyResult> {
-    const clientHints = params.clientHints ?? null;
-
-    // Get all relevant contexts to update:
-    // 1. Specific browsing contexts (if provided).
-    // 2. All contexts for specific user contexts (if provided).
-    // 3. All top-level contexts (if global).
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-      true,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
-          clientHints,
+          clientHints: params.clientHints ?? null,
         },
+        params.contexts,
+        params.userContexts,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        clientHints,
-      });
-    }
-
-    if (params.contexts === undefined && params.userContexts === undefined) {
-      this.#contextConfigStorage.updateGlobalConfig({
-        clientHints,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -664,32 +439,6 @@ export class EmulationProcessor {
   async setNetworkConditions(
     params: Emulation.SetNetworkConditionsParameters,
   ): Promise<EmptyResult> {
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-      true,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
-        {
-          emulatedNetworkConditions: params.networkConditions,
-        },
-      );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        emulatedNetworkConditions: params.networkConditions,
-      });
-    }
-
-    if (params.contexts === undefined && params.userContexts === undefined) {
-      this.#contextConfigStorage.updateGlobalConfig({
-        emulatedNetworkConditions: params.networkConditions,
-      });
-    }
-
     if (
       params.networkConditions !== null &&
       params.networkConditions.type !== 'offline'
@@ -699,8 +448,17 @@ export class EmulationProcessor {
       );
     }
 
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
+        {
+          emulatedNetworkConditions: params.networkConditions,
+        },
+        params.contexts,
+        params.userContexts,
+      );
+
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -719,34 +477,17 @@ export class EmulationProcessor {
   async setViewportMetaOverride(
     params: Emulation.SetViewportMetaOverrideParameters,
   ): Promise<EmptyResult> {
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-      true,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           viewportMeta: params.viewportMeta,
         },
+        params.contexts,
+        params.userContexts,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        viewportMeta: params.viewportMeta,
-      });
-    }
-
-    if (params.contexts === undefined && params.userContexts === undefined) {
-      this.#contextConfigStorage.updateGlobalConfig({
-        viewportMeta: params.viewportMeta,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
@@ -763,34 +504,17 @@ export class EmulationProcessor {
   async setTextLayoutModeOverride(
     params: Emulation.SetTextLayoutModeOverrideParameters,
   ): Promise<EmptyResult> {
-    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
-      params.contexts,
-      params.userContexts,
-      true,
-    );
-
-    for (const browsingContextId of params.contexts ?? []) {
-      this.#contextConfigStorage.updateBrowsingContextConfig(
-        browsingContextId,
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
         {
           textLayoutMode: params.textLayoutMode,
         },
+        params.contexts,
+        params.userContexts,
       );
-    }
-    for (const userContextId of params.userContexts ?? []) {
-      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
-        textLayoutMode: params.textLayoutMode,
-      });
-    }
-
-    if (params.contexts === undefined && params.userContexts === undefined) {
-      this.#contextConfigStorage.updateGlobalConfig({
-        textLayoutMode: params.textLayoutMode,
-      });
-    }
 
     await Promise.all(
-      browsingContexts.map(async (context) => {
+      relatedBrowsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
         const config = this.#contextConfigStorage.getActiveConfig(
