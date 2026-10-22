@@ -133,6 +133,12 @@
       "platform_app"
     ]
   },
+  "printingMetrics": {
+    "channel": "stable",
+    "platforms": ["chromeos"],
+    "extension_types": ["extension"],
+    "location": "policy"
+  },
   "speechRecognitionPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],

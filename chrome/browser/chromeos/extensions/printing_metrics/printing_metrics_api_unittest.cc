@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
-#include "chrome/common/extensions/api/printing_metrics.h"
+#include "chromeos/ash/experiences/extensions/common/api/printing_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"

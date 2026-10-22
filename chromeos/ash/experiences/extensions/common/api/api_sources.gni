@@ -29,7 +29,10 @@ chromeos_schema_sources_ = [
 ]
 
 if (use_cups) {
-  chromeos_schema_sources_ += [ "printing.idl" ]
+  chromeos_schema_sources_ += [
+    "printing.idl",
+    "printing_metrics.idl",
+  ]
 }
 
 chromeos_extensions_api_schema_sources =

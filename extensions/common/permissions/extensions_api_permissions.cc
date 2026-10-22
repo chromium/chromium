@@ -125,8 +125,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kPrinterProvider, "printerProvider",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermissionID::kPrintingMetrics, "printingMetrics",
-     APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kProxy, "proxy",
      APIPermissionInfo::kFlagImpliesFullURLAccess |
          APIPermissionInfo::kFlagCannotBeOptional},

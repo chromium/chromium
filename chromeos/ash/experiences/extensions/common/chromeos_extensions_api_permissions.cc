@@ -40,6 +40,8 @@ constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kPrinting, "printing",
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
+    {APIPermissionID::kPrintingMetrics, "printingMetrics",
+     APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kSpeechRecognitionPrivate, "speechRecognitionPrivate",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kSystemLog, "systemLog",

@@ -70,7 +70,14 @@ function_registration("api_registration") {
   ]
 
   if (use_cups) {
-    custom_impl_schemas += [ "printing" ]
-    inputs += [ "//chrome/browser/extensions/api/printing/printing_api.h" ]
+    custom_impl_schemas += [
+      "printing",
+      "printing_metrics",
+    ]
+    inputs += [
+      "//chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h",
+      "//chrome/browser/extensions/api/printing/printing_api.h",
+    ]
+    deps += [ "//chrome/browser/chromeos/extensions/printing_metrics" ]
   }
 }

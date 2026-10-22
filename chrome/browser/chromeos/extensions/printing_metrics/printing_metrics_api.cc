@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
-#include "chrome/common/extensions/api/printing_metrics.h"
+#include "chromeos/ash/experiences/extensions/common/api/printing_metrics.h"
 #include "content/public/browser/browser_context.h"
 
 namespace extensions {

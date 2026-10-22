@@ -160,6 +160,11 @@
     "contexts": ["privileged_extension"],
     "required_buildflags": ["use_cups"]
   },
+  "printingMetrics": {
+    "dependencies": ["permission:printingMetrics"],
+    "contexts": ["privileged_extension"],
+    "required_buildflags": ["use_cups"]
+  },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["privileged_extension"]
