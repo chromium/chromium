@@ -64,18 +64,26 @@ if (is_win) {
   # A source set for use by the module in a process that creates the
   # process-wide InstallDetails instance (i.e., chrome_elf.dll).
   source_set("primary_module") {
-    sources = [ "get_install_details_payload.cc" ]
+    sources = [
+      "get_install_details_payload.cc",
+      "get_module_path.cc",
+    ]
     deps = [ ":install_static_util" ]
   }
 
-  # A source set for use by modules in a process that fetch the process-wide
-  # InstallDetails instance from the primary module by way of
-  # GetInstallDetailsPayload (i.e., chrome.exe and chrome.dll).
+  # A source set for use by modules in a process (i.e., chrome.exe and
+  # chrome.dll) that call into the primary module's exports; e.g.,
+  # GetInstallDetailsPayload or GetModulePath.
   source_set("secondary_module") {
-    sources = [
-      "initialize_from_primary_module.cc",
+    public = [
+      "get_primary_module_path.h",
       "initialize_from_primary_module.h",
     ]
+    sources = [
+      "get_primary_module_path.cc",
+      "initialize_from_primary_module.cc",
+    ]
+    public_deps = [ "//base" ]
     deps = [ ":install_static_util" ]
   }
 

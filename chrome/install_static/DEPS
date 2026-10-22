@@ -28,6 +28,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Sources in the `secondary_module` target may use //base since they are
+  # not linked into chrome_elf.dll.
+  "get_primary_module_path\\.": [
+    "+base",
+  ],
   ".*_unittest\\.cc": [
     "+base",
   ],

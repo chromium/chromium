@@ -237,6 +237,7 @@ test("chrome_elf_unittests") {
   output_name = "chrome_elf_unittests"
   sources = [
     "chrome_elf_util_unittest.cc",
+    "get_primary_module_path_unittest.cc",
     "hook_util/test/hook_util_test.cc",
     "nt_registry/nt_registry_unittest.cc",
     "pe_image_safe/pe_image_safe_unittest.cc",
@@ -264,6 +265,7 @@ test("chrome_elf_unittests") {
     "//base/test:test_support",
     "//chrome/common:version_header",
     "//chrome/install_static:install_static_util",
+    "//chrome/install_static:secondary_module",
     "//chrome/install_static/test:test_support",
     "//components/crash/core/app:test_support",
     "//sandbox/policy:win_hook_util",
