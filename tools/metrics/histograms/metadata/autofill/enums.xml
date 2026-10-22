@@ -362,6 +362,18 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h:AutofillAiPersonalContextDeduplicationAgainstRecordType) -->
 
+<!-- LINT.IfChange(AutofillAiPersonalContextPrefetchEntityFunnelOutcome) -->
+
+<enum name="AutofillAiPersonalContextPrefetchEntityFunnelOutcome">
+  <int value="0" label="Parsing failed"/>
+  <int value="1" label="Invalid"/>
+  <int value="2" label="Suppressed"/>
+  <int value="3" label="Deduplicated"/>
+  <int value="4" label="Passed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h:AutofillAiPersonalContextPrefetchEntityFunnelOutcome) -->
+
 <!-- LINT.IfChange(AutofillAiPersonalContextPrefetchEntityValidationResult) -->
 
 <enum name="AutofillAiPersonalContextPrefetchEntityValidationResult">

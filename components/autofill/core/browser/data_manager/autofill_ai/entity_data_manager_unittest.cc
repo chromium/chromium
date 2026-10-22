@@ -763,5 +763,58 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
       PersonalContextDeduplicationAgainstRecordType::kServerWallet, 1);
 }
 
+// Tests that the funnel outcome of prefetched personal context entities depends
+// on whether they are duplicates of a local or Wallet entity.
+TEST_F(EntityDataManagerTest_InitiallyEmpty,
+       OnPrefetchContextComplete_LogsEntityFunnelOutcome) {
+  entity_data_manager().AddOrUpdateEntityInstance(
+      test::GetOrderEntityInstanceWithRandomGuid(
+          {.id = u"123", .record_type = EntityInstance::RecordType::kLocal}));
+  WaitUntilIdle();
+
+  entity_data_manager().OnPrefetchContextComplete(
+      pcontext_manager(),
+      std::vector<EntityInstance>{
+          test::GetOrderEntityInstanceWithRandomGuid(
+              {.id = u"123",
+               .record_type = EntityInstance::RecordType::kPersonalContext}),
+          test::GetOrderEntityInstanceWithRandomGuid(
+              {.id = u"456",
+               .record_type = EntityInstance::RecordType::kPersonalContext})});
+  WaitUntilIdle();
+
+  using enum PersonalContextPrefetchEntityFunnelOutcome;
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel"),
+              BucketsAre(Bucket(kDeduplicated, 1), Bucket(kPassed, 1)));
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel.Order"),
+              BucketsAre(Bucket(kDeduplicated, 1), Bucket(kPassed, 1)));
+}
+
+// Tests that the funnel outcome is only logged for the personal context
+// entities that were just added, not on every deduplication.
+TEST_F(EntityDataManagerTest_InitiallyEmpty,
+       DedupePersonalContextEntities_LogsFunnelOutcomeOnlyForAddedEntities) {
+  // Wait for the database to load, which also triggers a deduplication.
+  WaitUntilIdle();
+  entity_data_manager().OnPrefetchContextComplete(
+      pcontext_manager(),
+      std::vector<EntityInstance>{test::GetOrderEntityInstanceWithRandomGuid(
+          {.id = u"123",
+           .record_type = EntityInstance::RecordType::kPersonalContext})});
+  WaitUntilIdle();
+
+  // The local duplicate causes the removal of the personal context entity.
+  EntityInstance order_local = test::GetOrderEntityInstanceWithRandomGuid(
+      {.id = u"123", .record_type = EntityInstance::RecordType::kLocal});
+  entity_data_manager().AddOrUpdateEntityInstance(order_local);
+  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(order_local));
+
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel",
+      PersonalContextPrefetchEntityFunnelOutcome::kPassed, 1);
+}
+
 }  // namespace
 }  // namespace autofill

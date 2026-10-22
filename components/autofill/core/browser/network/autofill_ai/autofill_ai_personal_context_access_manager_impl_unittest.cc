@@ -2556,5 +2556,106 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       base::StrCat({kSourceCountMetric, ".Vehicle"}), 0, 1);
 }
 
+// Tests that entities that cannot be parsed are recorded in the aggregate
+// entity funnel metric only, since their type is unknown.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       Prefetch_RecordsParsingFailedEntityFunnelOutcome) {
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  // An entity without a known entity case cannot be parsed.
+  response.add_entities();
+
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(IsEmpty())));
+  PrefetchContextSync({kOrderType}, /*expected_spii_types=*/{}, response);
+
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel",
+      PersonalContextPrefetchEntityFunnelOutcome::kParsingFailed, 1);
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
+                  "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel."),
+              IsEmpty());
+}
+
+// Tests that entities that do not satisfy the requirements of Ambient Autofill
+// are recorded as invalid in the entity funnel metric.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       Prefetch_RecordsInvalidEntityFunnelOutcome) {
+  SetClockToDate("2025-06-01 12:00:00");
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  *response.add_entities() =
+      CreateOrderProto({.date = u"2025-01-01"});  // Expired.
+
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(IsEmpty())));
+  PrefetchContextSync({kOrderType}, /*expected_spii_types=*/{}, response);
+
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel",
+      PersonalContextPrefetchEntityFunnelOutcome::kInvalid, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel.Order",
+      PersonalContextPrefetchEntityFunnelOutcome::kInvalid, 1);
+}
+
+// Tests that entities of a type that was not requested are recorded as invalid
+// in the entity funnel metric.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       Prefetch_RecordsUnrequestedTypeAsInvalidEntityFunnelOutcome) {
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  *response.add_entities() = CreateVehicleProto();
+
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(IsEmpty())));
+  PrefetchContextSync({kOrderType}, /*expected_spii_types=*/{}, response);
+
+  // The vehicle is valid and only dropped because its type was not requested.
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityValidationResult",
+      PersonalContextPrefetchEntityValidationResult::kValid, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel",
+      PersonalContextPrefetchEntityFunnelOutcome::kInvalid, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel.Vehicle",
+      PersonalContextPrefetchEntityFunnelOutcome::kInvalid, 1);
+}
+
+// Tests that suppressed entities are recorded in the entity funnel metric.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       Prefetch_RecordsSuppressedEntityFunnelOutcome) {
+  SetClockToDate("2025-06-01 12:00:00");
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  *response.add_entities() = CreateOrderProto({.date = u"2025-06-01"});
+  ASSERT_TRUE(suppression_manager().SuppressEntity(
+      *PersonalContextEntityToEntityInstance(response.entities(0))));
+
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(IsEmpty())));
+  PrefetchContextSync({kOrderType}, /*expected_spii_types=*/{}, response);
+
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel",
+      PersonalContextPrefetchEntityFunnelOutcome::kSuppressed, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel.Order",
+      PersonalContextPrefetchEntityFunnelOutcome::kSuppressed, 1);
+}
+
+// Tests that valid entities are not recorded in the entity funnel metric, since
+// their outcome is recorded by the `EntityDataManager` after deduplication.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       Prefetch_DoesNotRecordEntityFunnelOutcomeForValidEntities) {
+  SetClockToDate("2025-06-01 12:00:00");
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  *response.add_entities() = CreateOrderProto({.date = u"2025-06-01"});
+
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))));
+  PrefetchContextSync({kOrderType}, /*expected_spii_types=*/{}, response);
+
+  histogram_tester().ExpectTotalCount(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel", 0);
+}
+
 }  // namespace
 }  // namespace autofill

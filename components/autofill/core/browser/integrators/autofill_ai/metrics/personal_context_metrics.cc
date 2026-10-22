@@ -141,6 +141,19 @@ void LogPersonalContextDeduplicationAgainstRecordType(
       sample);
 }
 
+void LogPersonalContextPrefetchEntityFunnelOutcome(
+    std::optional<EntityType> type,
+    PersonalContextPrefetchEntityFunnelOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel", outcome);
+  if (type) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Autofill.Ai.PersonalContext.Prefetch.EntityFunnel.",
+                      EntityTypeToMetricsString(*type)}),
+        outcome);
+  }
+}
+
 void LogEntitySuppressionEntitiesFilteredPerPrefetch(size_t count) {
   base::UmaHistogramCounts100(
       "Autofill.Ai.Suppression.EntitiesFilteredPerPrefetch", count);

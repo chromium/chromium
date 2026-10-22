@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
@@ -218,13 +219,20 @@ class EntityDataManager
 
   // Posts a background task to find any cached `kPersonalContext` entities
   // in `entities_` that represent the same entity as any non-pContext entity
-  // in the cache, based on their merge constraints.
-  void DedupePersonalContextEntities();
+  // in the cache, based on their merge constraints. Logs the prefetch funnel
+  // outcome of the entities in `added_pcontext_entity_types`, which maps the
+  // GUIDs of newly added pContext entities to their types.
+  void DedupePersonalContextEntities(
+      base::flat_map<EntityInstance::EntityId, EntityType>
+          added_pcontext_entity_types);
 
-  // Callback for `DedupePersonalContextEntities()`. Removes the entities
-  // identified by `duplicate_guids` from `entities_` and notifies observers if
-  // any entities were removed.
+  // Callback for `DedupePersonalContextEntities()`. Logs the prefetch funnel
+  // outcome of the entities in `added_pcontext_entity_types`. Removes the
+  // entities identified by `duplicate_guids` from `entities_` and notifies
+  // observers if any entities were removed.
   void RemoveDuplicatePersonalContextEntities(
+      const base::flat_map<EntityInstance::EntityId, EntityType>&
+          added_pcontext_entity_types,
       absl::flat_hash_set<EntityInstance::EntityId> duplicate_guids);
 
   // Becomes true after the response of the initial LoadEntitiesFromDatabase()

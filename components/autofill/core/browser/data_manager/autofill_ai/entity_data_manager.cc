@@ -81,9 +81,13 @@ GetPersonalContextDeduplicationAgainstRecordType(
   return std::nullopt;
 }
 
+// Returns the GUIDs of the Personal Context entities in `entities` that are
+// duplicates of a Wallet or local entity in `entities`. Also logs the
+// deduplication outcome of every Personal Context entity.
 absl::flat_hash_set<EntityInstance::EntityId>
 FindDuplicatePersonalContextEntities(
-    base::flat_set<EntityInstance, EntityInstance::CompareByGuid> entities) {
+    const base::flat_set<EntityInstance, EntityInstance::CompareByGuid>&
+        entities) {
   absl::flat_hash_set<EntityInstance::EntityId> duplicate_guids;
   for (const EntityInstance& entity : entities) {
     if (entity.record_type() != EntityInstance::RecordType::kPersonalContext) {
@@ -205,7 +209,8 @@ void EntityDataManager::LoadEntitiesFromDatabase() {
           self->entities_.insert(std::make_move_iterator(entities.begin()),
                                  std::make_move_iterator(entities.end()));
           self->EnforceEntityReauthRequirements();
-          self->DedupePersonalContextEntities();
+          self->DedupePersonalContextEntities(
+              /*added_pcontext_entity_types=*/{});
           self->NotifyEntityInstancesChanged();
 
           if (!self->database_loaded_) {
@@ -244,7 +249,8 @@ void EntityDataManager::AddOrUpdateEntityInstance(
                 // entries.
                 self->entities_.erase(entity.guid());
                 self->entities_.insert(std::move(entity));
-                self->DedupePersonalContextEntities();
+                self->DedupePersonalContextEntities(
+                    /*added_pcontext_entity_types=*/{});
                 self->NotifyEntityInstancesChanged();
               },
               GetWeakPtr()));
@@ -316,7 +322,11 @@ void EntityDataManager::AddPersonalContextEntities(
   // insert() doesn't replace existing values. This suffices, because previously
   // added entities are deduplicated afterwards.
   entities_.insert(entities.begin(), entities.end());
-  DedupePersonalContextEntities();
+  DedupePersonalContextEntities(
+      base::MakeFlatMap<EntityInstance::EntityId, EntityType>(
+          entities, {}, [](const EntityInstance& entity) {
+            return std::pair(entity.guid(), entity.type());
+          }));
   NotifyEntityInstancesChanged();
 }
 
@@ -423,7 +433,9 @@ void EntityDataManager::EnforceEntityReauthRequirements() {
   }
 }
 
-void EntityDataManager::DedupePersonalContextEntities() {
+void EntityDataManager::DedupePersonalContextEntities(
+    base::flat_map<EntityInstance::EntityId, EntityType>
+        added_pcontext_entity_types) {
   // Unlike address deduplication which is run using `BEST_EFFORT`, this runs on
   // every prefetch. `USER_VISIBLE` is used as we want them ready for
   // suggestions.
@@ -431,11 +443,20 @@ void EntityDataManager::DedupePersonalContextEntities() {
       FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&FindDuplicatePersonalContextEntities, entities_),
       base::BindOnce(&EntityDataManager::RemoveDuplicatePersonalContextEntities,
-                     GetWeakPtr()));
+                     GetWeakPtr(), std::move(added_pcontext_entity_types)));
 }
 
 void EntityDataManager::RemoveDuplicatePersonalContextEntities(
+    const base::flat_map<EntityInstance::EntityId, EntityType>&
+        added_pcontext_entity_types,
     absl::flat_hash_set<EntityInstance::EntityId> duplicate_guids) {
+  for (const auto& [guid, type] : added_pcontext_entity_types) {
+    LogPersonalContextPrefetchEntityFunnelOutcome(
+        type, duplicate_guids.contains(guid)
+                  ? PersonalContextPrefetchEntityFunnelOutcome::kDeduplicated
+                  : PersonalContextPrefetchEntityFunnelOutcome::kPassed);
+  }
+
   if (duplicate_guids.empty()) {
     return;
   }
