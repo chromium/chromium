@@ -60,6 +60,12 @@
 #include "third_party/litert/src/litert/core/buffer_error_reporter.h"
 #include "third_party/litert/src/tflite/tools/verifier.h"
 
+#if BUILDFLAG(BUILD_LITERT_WITH_ML_DRIFT)
+#include "third_party/litert/src/litert/c/internal/litert_accelerator_def.h"
+
+extern "C" const LiteRtAcceleratorDef LiteRtAcceleratorImpl;
+#endif
+
 #if BUILDFLAG(BUILD_LITERT_WITH_XNNPACK)
 #include "third_party/litert/src/tflite/delegates/xnnpack/xnnpack_delegate.h"
 #include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
@@ -212,6 +218,11 @@ class GraphImplLiteRt::ComputeResources {
 
     std::vector<::litert::EnvironmentOptions::Option> env_options;
     if (context_device == mojom::Device::kGpu) {
+#if BUILDFLAG(BUILD_LITERT_WITH_ML_DRIFT)
+      env_options.emplace_back(
+          ::litert::EnvironmentOptions::Tag::kSystemGpuAcceleratorHandle,
+          static_cast<const void*>(&LiteRtAcceleratorImpl));
+#endif
       const DawnProcTable* dawn_procs = static_cast<const DawnProcTable*>(
           self->webgpu_properties_.dawn_procs.get());
 
@@ -616,19 +627,19 @@ GraphImplLiteRt::BuildGraphOnBackgroundThread(
     base::flat_map<OperandId, OperationId> operand_to_producing_operation,
     base::File weights_file,
     mojo::SharedRemote<mojom::WeightsFileSession> shared_session) {
-  ASSIGN_OR_RETURN(
-      tflite::GraphBuilderTflite::Result result,
-      tflite::GraphBuilderTflite::CreateAndBuild(
-          context_properties, context_device, *graph_info,
-          std::move(constant_operands),
-          std::move(operand_to_dependent_operations),
-          std::move(operand_to_producing_operation), std::move(weights_file),
-          std::move(shared_session),
-          /*use_external_buffer=*/true),
-      [](std::string error) {
-        return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                                 std::move(error));
-      });
+  ASSIGN_OR_RETURN(tflite::GraphBuilderTflite::Result result,
+                   tflite::GraphBuilderTflite::CreateAndBuild(
+                       context_properties, context_device, *graph_info,
+                       std::move(constant_operands),
+                       std::move(operand_to_dependent_operations),
+                       std::move(operand_to_producing_operation),
+                       std::move(weights_file), std::move(shared_session),
+                       /*use_external_buffer=*/true),
+                   [](std::string error) {
+                     return mojom::Error::New(
+                         mojom::Error::Code::kNotSupportedError,
+                         std::move(error));
+                   });
   return result;
 }
 
