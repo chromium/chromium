@@ -11,11 +11,15 @@ import android.window.InputTransferToken;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Anchor for Off-Main-Thread (OMT) Suggestions Input routing JNI connection.
@@ -28,6 +32,8 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 @JNINamespace("omnibox")
 public class SuggestionsOmtInputAnchor {
+    @JniType("::omnibox::OmtInputReceiverState")
+    interface NativeOmtInputReceiverState extends JniTypeToken {}
 
     /**
      * Transfers active touch gesture from the overlay surface token to the main window token.
@@ -71,21 +77,12 @@ public class SuggestionsOmtInputAnchor {
          * @param mainWindowToken Main window input transfer token to pair with the receiver.
          * @param onTouchTransferred Callback invoked when a touch gesture is transferred from the
          *     overlay surface to the main window.
-         * @return Memory address of the allocated native OmtInputReceiverState instance.
+         * @return Owned handle to the allocated native OmtInputReceiverState instance, or null if
+         *     registration failed. Must be destroyed on the same background HandlerThread.
          */
-        long registerInputReceiver(
+        @Nullable JniUniquePtr<NativeOmtInputReceiverState> registerInputReceiver(
                 SurfaceControl surfaceControl,
                 InputTransferToken mainWindowToken,
                 Runnable onTouchTransferred);
-
-        /**
-         * Releases the native AInputReceiver and frees the associated receiver state.
-         *
-         * <p>Must be invoked on the same background HandlerThread to satisfy NDK thread
-         * constraints.
-         *
-         * @param stateAddress Memory address of the native OmtInputReceiverState to release.
-         */
-        void unregisterInputReceiver(long stateAddress);
     }
 }

@@ -10,6 +10,8 @@
 #include <jni.h>
 
 #include <algorithm>
+#include <memory>
+#include <utility>
 
 #include "base/android/android_input_receiver_compat.h"
 #include "base/android/scoped_input_event.h"
@@ -41,7 +43,15 @@ static pASurfaceControl_fromJava GetASurfaceControl_fromJava() {
 namespace omnibox {
 
 OmtInputReceiverState::OmtInputReceiverState() = default;
-OmtInputReceiverState::~OmtInputReceiverState() = default;
+OmtInputReceiverState::~OmtInputReceiverState() {
+  const auto& compat = base::AndroidInputReceiverCompat::GetInstance();
+  if (input_receiver) {
+    compat.AInputReceiver_releaseFn(input_receiver);
+  }
+  if (callbacks) {
+    compat.AInputReceiverCallbacks_releaseFn(callbacks);
+  }
+}
 
 bool ProcessMotionEvent(void* context,
                         int32_t event_type,
@@ -91,36 +101,13 @@ bool OnMotionEvent(void* context, AInputEvent* motion_event) {
 
 }  // namespace omnibox
 
-// Unregisters the background thread input receiver and releases associated
-// native callbacks and resources. Must be called on the background
-// HandlerThread to satisfy NDK thread constraints.
-static void JNI_SuggestionsOmtInputAnchor_UnregisterInputReceiver(
-    JNIEnv* env,
-    int64_t state_address) {
-  if (!state_address) {
-    return;
-  }
-
-  omnibox::OmtInputReceiverState* state =
-      reinterpret_cast<omnibox::OmtInputReceiverState*>(state_address);
-  const auto& compat = base::AndroidInputReceiverCompat::GetInstance();
-
-  if (state->input_receiver) {
-    compat.AInputReceiver_releaseFn(state->input_receiver);
-  }
-
-  if (state->callbacks) {
-    compat.AInputReceiverCallbacks_releaseFn(state->callbacks);
-  }
-
-  delete state;
-}
-
 // Registers the background thread input receiver to intercept touches on the
 // suggestions overlay. Should be called on the background HandlerThread when
 // the overlay surface is created.
-// Returns a pointer to the allocated OmtInputReceiverState as a long to Java.
-static int64_t JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
+// Returns an owned JniUniquePtr<OmtInputReceiverState> to Java, or nullptr if
+// registration fails.
+static jni_zero::JniUniquePtr<omnibox::OmtInputReceiverState>
+JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
     JNIEnv* env,
     const jni_zero::JavaRef<::android::view::JSurfaceControl>& surface_control,
     const jni_zero::JavaRef<::android::window::JInputTransferToken>&
@@ -128,17 +115,17 @@ static int64_t JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
     const jni_zero::JavaRef<jobject>& on_touch_transferred) {
   const auto& compat = base::AndroidInputReceiverCompat::GetInstance();
   if (!compat.IsSupportAvailable()) {
-    return 0;
+    return nullptr;
   }
 
   auto from_java_sc = GetASurfaceControl_fromJava();
   if (!from_java_sc) {
-    return 0;
+    return nullptr;
   }
 
   ASurfaceControl* native_sc = from_java_sc(env, surface_control.obj());
   if (!native_sc) {
-    return 0;
+    return nullptr;
   }
 
   ALooper* native_looper = ALooper_forThread();
@@ -146,21 +133,21 @@ static int64_t JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
     native_looper = ALooper_prepare(0);
   }
   if (!native_looper) {
-    return 0;
+    return nullptr;
   }
 
   // Heap-allocated to persist across asynchronous input event callbacks on the
-  // background thread until explicitly freed in UnregisterInputReceiver. Its
-  // address is passed as context to AInputReceiverCallbacks and returned to
-  // Java as a lifecycle handle.
-  auto* state = new omnibox::OmtInputReceiverState();
+  // background thread until destroyed via JniUniquePtr. Its address is passed
+  // as context to AInputReceiverCallbacks and returned to Java as an owned
+  // lifecycle handle.
+  auto state = std::make_unique<omnibox::OmtInputReceiverState>();
 
   AInputReceiverCallbacks* callbacks =
-      compat.AInputReceiverCallbacks_createFn(state);
+      compat.AInputReceiverCallbacks_createFn(state.get());
   if (!callbacks) {
-    delete state;
-    return 0;
+    return nullptr;
   }
+  state->callbacks = callbacks;
 
   compat.AInputReceiverCallbacks_setMotionEventCallbackFn(
       callbacks, omnibox::OnMotionEvent);
@@ -169,9 +156,7 @@ static int64_t JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
   AInputTransferToken* native_main_window_token =
       compat.AInputTransferToken_fromJavaFn(env, main_window_token.obj());
   if (!native_main_window_token) {
-    compat.AInputReceiverCallbacks_releaseFn(callbacks);
-    delete state;
-    return 0;
+    return nullptr;
   }
 
   // Create native input receiver.
@@ -184,18 +169,14 @@ static int64_t JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
   compat.AInputTransferToken_releaseFn(native_main_window_token);
 
   if (!receiver) {
-    compat.AInputReceiverCallbacks_releaseFn(callbacks);
-    delete state;
-    return 0;
+    return nullptr;
   }
+  state->input_receiver = receiver;
 
   AInputTransferToken* native_receiver_token =
       compat.AInputReceiver_getInputTransferTokenFn(receiver);
   if (!native_receiver_token) {
-    compat.AInputReceiver_releaseFn(receiver);
-    compat.AInputReceiverCallbacks_releaseFn(callbacks);
-    delete state;
-    return 0;
+    return nullptr;
   }
 
   auto receiver_token_java = jni_zero::AdoptRef(
@@ -206,10 +187,8 @@ static int64_t JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
   state->overlay_token.Reset(env, receiver_token_java);
   state->main_window_token.Reset(env, main_window_token);
   state->transfer_callback.Reset(env, on_touch_transferred);
-  state->input_receiver = receiver;
-  state->callbacks = callbacks;
 
-  return reinterpret_cast<int64_t>(state);
+  return jni_zero::MakeUnique(std::move(state));
 }
 
 DEFINE_JNI(SuggestionsOmtInputAnchor)

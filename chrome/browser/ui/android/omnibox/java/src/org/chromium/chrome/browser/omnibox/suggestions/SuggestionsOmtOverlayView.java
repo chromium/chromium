@@ -21,7 +21,11 @@ import android.window.InputTransferToken;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jni_zero.JniUniquePtr;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsOmtInputAnchor.NativeOmtInputReceiverState;
 import org.chromium.ui.base.DeviceInput;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -89,18 +93,17 @@ class SuggestionsOmtOverlayView extends SurfaceView implements SurfaceHolder.Cal
             };
 
     /**
-     * Native memory address of the allocated {@code OmtInputReceiverState} struct holding the
-     * native {@code AInputReceiver}, input transfer tokens, and touch transfer callback.
+     * Owned handle to the allocated {@code OmtInputReceiverState} struct holding the native {@code
+     * AInputReceiver}, input transfer tokens, and touch transfer callback.
      *
      * <p>Initialized in {@link #surfaceCreated(SurfaceHolder)} via {@link
-     * SuggestionsOmtInputAnchor.Natives#registerInputReceiver} and released in {@link
-     * #surfaceDestroyed(SurfaceHolder)} via {@link
-     * SuggestionsOmtInputAnchor.Natives#unregisterInputReceiver}.
+     * SuggestionsOmtInputAnchor.Natives#registerInputReceiver} and destroyed in {@link
+     * #surfaceDestroyed(SurfaceHolder)} via {@link JniUniquePtr#destroy()}.
      *
      * <p>Threading and Concurrency: Written and cleared exclusively on the background input thread
      * ({@link #mInputHandler}) to serialize native receiver setup and teardown.
      */
-    private long mNativeReceiverState;
+    private @Nullable JniUniquePtr<NativeOmtInputReceiverState> mNativeReceiverState;
 
     /**
      * Constructs a new overlay view and starts its dedicated background input looper thread.
@@ -277,10 +280,9 @@ class SuggestionsOmtOverlayView extends SurfaceView implements SurfaceHolder.Cal
         mSurfaceGeneration.incrementAndGet();
         mInputHandler.post(
                 () -> {
-                    if (mNativeReceiverState != 0) {
-                        SuggestionsOmtInputAnchorJni.get()
-                                .unregisterInputReceiver(mNativeReceiverState);
-                        mNativeReceiverState = 0;
+                    if (mNativeReceiverState != null) {
+                        mNativeReceiverState.destroy();
+                        mNativeReceiverState = null;
                     }
                 });
     }
