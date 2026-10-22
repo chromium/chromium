@@ -161,6 +161,10 @@ public class AutofillProvider {
 
     private void maybeInitializeInputObserver() {
         if (mInputUiObserver != null || mAutofillManager == null) return;
+        // AutofillManagerWrapper calls InputUiObserver.onInputUiShown() when the framework
+        // reports AutofillCallback.EVENT_INPUT_SHOWN, i.e. the autofill dropdown or inline
+        // suggestions were shown. The event is not filtered by view, so it is attributed to
+        // the live session (mRequest) as an approximation.
         mInputUiObserver =
                 () -> {
                     // Not need to report suggestion window displayed if there is no live
@@ -168,6 +172,9 @@ public class AutofillProvider {
                     if (mRequest == null) return;
                     mAutofillUMA.onSuggestionDisplayed(
                             System.currentTimeMillis() - mAutofillTriggeredTimeMillis);
+                    if (mNativeAutofillProvider != 0) {
+                        AutofillProviderJni.get().onDidShowSuggestions(mNativeAutofillProvider);
+                    }
                 };
 
         mAutofillManager.addInputUiObserver(mInputUiObserver);
@@ -1017,6 +1024,8 @@ public class AutofillProvider {
                 long nativeAndroidAutofillProviderBridgeImpl,
                 boolean isShown,
                 boolean providedAutofillStructure);
+
+        void onDidShowSuggestions(long nativeAndroidAutofillProviderBridgeImpl);
 
         void onTriggerPasskeyRequest(long nativeAndroidAutofillProviderBridgeImpl);
     }

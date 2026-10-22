@@ -417,6 +417,11 @@ void AndroidAutofillProvider::OnShowBottomSheetResult(
   was_bottom_sheet_just_shown_ = is_shown;
 
   if (is_shown) {
+    if (session_state_ && session_state_->manager && session_state_->form) {
+      session_state_->manager->OnDidShowSuggestions(
+          session_state_->form->form().global_id(),
+          session_state_->current_field.id);
+    }
     base::UmaHistogramEnumeration(
         kPrefillRequestStateUma,
         PrefillRequestState::kRequestSentStructureProvidedBottomSheetShown);
@@ -437,6 +442,15 @@ void AndroidAutofillProvider::OnShowBottomSheetResult(
           ? PrefillRequestState::
                 kRequestSentStructureProvidedBottomSheetNotShown
           : PrefillRequestState::kRequestSentStructureNotProvided);
+}
+
+void AndroidAutofillProvider::OnDidShowSuggestions() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (session_state_ && session_state_->manager && session_state_->form) {
+    session_state_->manager->OnDidShowSuggestions(
+        session_state_->form->form().global_id(),
+        session_state_->current_field.id);
+  }
 }
 
 bool AndroidAutofillProvider::HasPasskeyRequest() {

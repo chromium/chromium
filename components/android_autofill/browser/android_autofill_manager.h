@@ -79,6 +79,10 @@ class AndroidAutofillManager : public AutofillManager,
     return forms_with_server_predictions_.contains(form);
   }
 
+  // Records that autofill suggestions were displayed for `field_id` in
+  // `form_id`.
+  void OnDidShowSuggestions(const FormGlobalId& form_id,
+                            const FieldGlobalId& field_id);
   // Send the |form| to the renderer for the specified |action|.
   //
   // |triggered_origin| is the origin of the field from which the autofill is

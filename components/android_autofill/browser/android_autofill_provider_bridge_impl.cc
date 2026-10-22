@@ -265,6 +265,10 @@ void AndroidAutofillProviderBridgeImpl::OnShowBottomSheetResult(
   delegate_->OnShowBottomSheetResult(is_shown, provided_autofill_structure);
 }
 
+void AndroidAutofillProviderBridgeImpl::OnDidShowSuggestions(JNIEnv* env) {
+  delegate_->OnDidShowSuggestions();
+}
+
 void AndroidAutofillProviderBridgeImpl::OnTriggerPasskeyRequest(JNIEnv* env) {
   delegate_->OnTriggerPasskeyRequest();
 }

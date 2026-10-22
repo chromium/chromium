@@ -41,6 +41,7 @@ class AndroidAutofillProviderBridge {
                                    const gfx::RectF& bounds) = 0;
     virtual void OnShowBottomSheetResult(bool is_shown,
                                          bool provided_autofill_structure) = 0;
+    virtual void OnDidShowSuggestions() = 0;
 
     // Asks whether passkeys options are available that should be triggered when
     // `OnTriggerPasskeyRequest` is called.

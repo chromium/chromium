@@ -324,6 +324,15 @@ AndroidAutofillManager::GetCreditCardAccessManager() const {
   return nullptr;
 }
 
+void AndroidAutofillManager::OnDidShowSuggestions(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) {
+  for (AndroidFormEventLogger* logger :
+       GetEventFormLoggers(form_id, field_id)) {
+    logger->OnDidShowSuggestions();
+  }
+}
+
 void AndroidAutofillManager::FillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
     FormData form,

@@ -127,6 +127,7 @@ class AndroidAutofillProvider : public AutofillProvider,
                          const gfx::RectF& bounds) override;
   void OnShowBottomSheetResult(bool is_shown,
                                bool provided_autofill_structure) override;
+  void OnDidShowSuggestions() override;
   bool HasPasskeyRequest() override;
   void OnTriggerPasskeyRequest() override;
 

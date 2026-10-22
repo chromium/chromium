@@ -11358,6 +11358,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.WebView.KeyMetrics.FillingAcceptance{AutofillFormType}"
+    enum="BooleanAutofillFillingAcceptance" expires_after="2027-04-11">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts for submitted forms on Android WebView whether users accepted the
+    suggestion to fill values. This is counted as 'yes' if the user accepted
+    such a suggestion at any time, regardless of whether other suggestions were
+    ignored or whether the accepted suggestion was reverted afterwards.
+    {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram
     name="Autofill.WebView.KeyMetrics.FillingAssistance{AutofillFormType}"
     enum="BooleanAutofillFillingAssistance" expires_after="2027-04-11">
   <owner>pkotwicz@chromium.org</owner>

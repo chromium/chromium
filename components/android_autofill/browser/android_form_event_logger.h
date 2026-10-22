@@ -17,6 +17,7 @@ class AndroidFormEventLogger {
 
   void OnDidParseForm();
   void OnDidInteractWithAutofillableForm();
+  void OnDidShowSuggestions();
   void OnDidFillSuggestion();
   void OnWillSubmitForm();
   void OnTypedIntoNonFilledField();
@@ -29,6 +30,7 @@ class AndroidFormEventLogger {
 
   bool has_parsed_form_{false};
   bool has_logged_interacted_{false};
+  bool has_logged_suggestions_shown_{false};
   bool has_logged_suggestion_filled_{false};
   bool has_logged_will_submit_{false};
   bool has_logged_typed_into_non_filled_field_{false};

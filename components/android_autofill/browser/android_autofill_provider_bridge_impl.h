@@ -81,6 +81,10 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
                                bool is_shown,
                                bool provided_autofill_structure);
 
+  // Informs the `Delegate` that the platform Autofill input UI (e.g., dropdown
+  // or keyboard inline suggestions) was displayed for the active session.
+  void OnDidShowSuggestions(JNIEnv* env);
+
   // Informs the `Delegate` that the user explicitly requested passkeys options.
   void OnTriggerPasskeyRequest(JNIEnv* env);
 

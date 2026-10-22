@@ -947,6 +947,68 @@ TEST_F(AndroidAutofillProviderTest,
       "Autofill.WebView.KeyMetrics.FillingAssistance.PostalAddress", 0);
 }
 
+// Tests that FillingAcceptance is recorded as true when platform Autofill
+// suggestions are displayed and accepted before form submission, and not
+// recorded when suggestions were never displayed.
+TEST_F(AndroidAutofillProviderTest,
+       FillingAcceptanceRecordedOnSuggestionsShownAndFilled) {
+  base::HistogramTester histogram_tester;
+
+  FormData postal_form = CreateFormDataForFrame(
+      GetFormData({NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY,
+                   ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP}),
+      main_frame_token());
+  android_autofill_manager().OnFormsSeen({postal_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  android_autofill_manager().OnAskForValuesToFillTest(
+      postal_form, postal_form.fields()[0].global_id());
+  provider_bridge_delegate().OnDidShowSuggestions();
+
+  FormData filled_form = postal_form;
+  test_api(filled_form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(filled_form).field(0).set_value(u"Jane Doe");
+  android_autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                               filled_form,
+                                               postal_form.main_frame_origin());
+
+  android_autofill_manager().OnFormSubmitted(
+      postal_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAcceptance.Address", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAcceptance.PostalAddress", true, 1);
+}
+
+// Tests that FillingAcceptance is recorded as false when platform Autofill
+// suggestions (or the prefill bottom sheet) are shown and ignored before form
+// submission.
+TEST_F(AndroidAutofillProviderTest,
+       FillingAcceptanceRecordedOnBottomSheetShownAndIgnored) {
+  base::HistogramTester histogram_tester;
+
+  FormData login_form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  android_autofill_manager().OnAskForValuesToFillTest(
+      login_form, login_form.fields()[0].global_id());
+  provider_bridge_delegate().OnShowBottomSheetResult(
+      /*is_shown=*/true, /*provided_autofill_structure=*/true);
+
+  android_autofill_manager().OnFormSubmitted(
+      login_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAcceptance.Password", false, 1);
+}
+
 // Tests that a form submission of an ongoing Autofill session with source
 // DOM_MUTATION_AFTER_AUTOFILL is propagated to Java for password forms.
 TEST_F(AndroidAutofillProviderTest,

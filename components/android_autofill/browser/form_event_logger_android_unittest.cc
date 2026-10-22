@@ -150,6 +150,46 @@ TEST_F(AndroidFormEventLoggerTest,
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.WebView.KeyMetrics.FillingAssistance.FormType"),
               BucketsAre(base::Bucket(false, 1)));
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FillingAcceptance.FormType", 0u);
+}
+
+// Test that Autofill.WebView.KeyMetrics.FillingAcceptance is recorded when
+// suggestions are shown and accepted before form submission.
+TEST_F(AndroidFormEventLoggerTest, FillingAcceptanceSuggestionShownAndFilled) {
+  base::HistogramTester histogram_tester;
+
+  {
+    AndroidFormEventLogger logger("FormType");
+    logger.OnDidParseForm();
+    logger.OnDidInteractWithAutofillableForm();
+    logger.OnDidShowSuggestions();
+    logger.OnDidFillSuggestion();
+    logger.OnWillSubmitForm();
+  }
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.WebView.KeyMetrics.FillingAcceptance.FormType"),
+              BucketsAre(base::Bucket(true, 1)));
+}
+
+// Test that Autofill.WebView.KeyMetrics.FillingAcceptance is recorded as false
+// when suggestions are shown and ignored before form submission.
+TEST_F(AndroidFormEventLoggerTest,
+       FillingAcceptanceSuggestionShownAndNotFilled) {
+  base::HistogramTester histogram_tester;
+
+  {
+    AndroidFormEventLogger logger("FormType");
+    logger.OnDidParseForm();
+    logger.OnDidInteractWithAutofillableForm();
+    logger.OnDidShowSuggestions();
+    logger.OnWillSubmitForm();
+  }
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.WebView.KeyMetrics.FillingAcceptance.FormType"),
+              BucketsAre(base::Bucket(false, 1)));
 }
 
 // Test that Autofill.WebView.KeyMetrics.FormSubmission metric is correctly

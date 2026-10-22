@@ -33,6 +33,10 @@ void AndroidFormEventLogger::OnDidInteractWithAutofillableForm() {
   has_logged_interacted_ = true;
 }
 
+void AndroidFormEventLogger::OnDidShowSuggestions() {
+  has_logged_suggestions_shown_ = true;
+}
+
 void AndroidFormEventLogger::OnDidFillSuggestion() {
   has_logged_suggestion_filled_ = true;
 }
@@ -77,6 +81,12 @@ void AndroidFormEventLogger::RecordFunnelAndKeyMetrics() {
   // for the Autofill.KeyMetrics.FormSubmission metrics which measure whether
   // a submission happens).
   if (has_logged_will_submit_) {
+    if (has_logged_suggestions_shown_) {
+      // Whether a submitted form was filled after suggestions were shown.
+      UmaHistogramBoolean(
+          "Autofill.WebView.KeyMetrics.FillingAcceptance." + form_type_name_,
+          has_logged_suggestion_filled_);
+    }
     if (has_logged_suggestion_filled_) {
       // Whether a filled form and submitted form required no fixes to filled
       // fields.
