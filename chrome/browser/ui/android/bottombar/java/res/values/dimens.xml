@@ -19,7 +19,7 @@ found in the LICENSE file.
     <dimen name="bottom_bar_education_bubble_max_width_landscape">600dp</dimen>
     <dimen name="bottom_bar_education_bubble_padding_horizontal">24dp</dimen>
     <dimen name="bottom_bar_education_bubble_padding_top">24dp</dimen>
-    <dimen name="bottom_bar_education_bubble_padding_bottom">12dp</dimen>
+    <dimen name="bottom_bar_education_bubble_padding_bottom">16dp</dimen>
     <!-- Vertical gap between the education bubble arrow tip and the top of the
          bottom bar (or bottom toolbar). Used programmatically by the anchor
          RectProvider in BottomBarEducationCoordinator (follow-up CL). -->
