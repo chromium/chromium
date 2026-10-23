@@ -4,6 +4,12 @@ We’d all like to ensure that the user experience in Chrome is optimal, no matt
 
 ## How to add a translation screenshot
 
+### Automated process
+
+Refer to the skill at [`agents/skills/translation-screenshots/SKILL.md`](../agents/skills/translation-screenshots/SKILL.md) to automate this process. It guides agents in identifying new or modified translatable strings in `.grd` or `.grdp` resource files, capturing UI screenshots with appropriate context, uploading them to Google Cloud Storage via `tools/translation/upload_screenshots.py`, and staging the resulting `.png.sha1` hash files.
+
+### Manual process
+
 1. Take a screenshot of the UI that displays the modified string (e.g. `IDS_NEW_STRING` in `path/to/file.grd`)
 2. Save it under the screenshot directory for the file you are editing: `path/to/file_grd/IDS_NEW_STRING.png`. If `path/to/file_grd` doesn’t exist, create it. Only .png files are supported.
 3. Run `python3 tools/translation/upload_screenshots.py` (without flags) to upload the screenshot to Google Cloud Storage. (You may need to use `python` instead of `python3` depending on your system)
