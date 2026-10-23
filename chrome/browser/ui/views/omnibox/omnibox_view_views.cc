@@ -75,6 +75,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_logging_utils.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -157,48 +158,6 @@ namespace {
 
 using ::metrics::OmniboxEventProto;
 using ::ui::mojom::DragOperation;
-
-// This function provides a logging implementation that aligns with the original
-// definition of the `DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES()` macro, which is
-// currently being used to log the `FocusToOpenTimeAnyPopupState3` Omnibox
-// metric.
-void LogHistogramMediumTimes(const std::string& histogram_name,
-                             base::TimeDelta elapsed) {
-  base::UmaHistogramCustomTimes(histogram_name, elapsed, base::Milliseconds(10),
-                                base::Minutes(3), 50);
-}
-
-void LogOmniboxFocusToCutOrCopyAllTextTime(
-    base::TimeDelta elapsed,
-    bool is_zero_prefix,
-    PageClassification page_classification) {
-  LogHistogramMediumTimes("Omnibox.FocusToCutOrCopyAllTextTime", elapsed);
-
-  const std::string page_context =
-      OmniboxEventProto::PageClassification_Name(page_classification);
-  LogHistogramMediumTimes(
-      base::StrCat(
-          {"Omnibox.FocusToCutOrCopyAllTextTime.ByPageContext.", page_context}),
-      elapsed);
-
-  if (is_zero_prefix) {
-    LogHistogramMediumTimes("Omnibox.FocusToCutOrCopyAllTextTime.ZeroSuggest",
-                            elapsed);
-    LogHistogramMediumTimes(
-        base::StrCat(
-            {"Omnibox.FocusToCutOrCopyAllTextTime.ZeroSuggest.ByPageContext.",
-             page_context}),
-        elapsed);
-  } else {
-    LogHistogramMediumTimes("Omnibox.FocusToCutOrCopyAllTextTime.TypedSuggest",
-                            elapsed);
-    LogHistogramMediumTimes(
-        base::StrCat(
-            {"Omnibox.FocusToCutOrCopyAllTextTime.TypedSuggest.ByPageContext.",
-             page_context}),
-        elapsed);
-  }
-}
 
 }  // namespace
 
@@ -2448,7 +2407,7 @@ void OmniboxViewViews::HandleCutOrCopyAdjustments(
     const auto last_omnibox_focus =
         controller()->edit_model()->last_omnibox_focus();
     if (!last_omnibox_focus.is_null()) {
-      LogOmniboxFocusToCutOrCopyAllTextTime(
+      omnibox::LogFocusToCutOrCopyAllTextTime(
           now - last_omnibox_focus,
           controller()->autocomplete_controller()->input().IsZeroSuggest(),
           controller()->edit_model()->GetPageClassification());

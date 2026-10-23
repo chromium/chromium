@@ -137,6 +137,39 @@ void LogFocusToOpenTime(
   }
 }
 
+void LogFocusToCutOrCopyAllTextTime(
+    base::TimeDelta elapsed,
+    bool is_zero_prefix,
+    ::metrics::OmniboxEventProto::PageClassification page_classification) {
+  LogHistogramMediumTimes("Omnibox.FocusToCutOrCopyAllTextTime", elapsed);
+
+  const std::string page_context =
+      ::metrics::OmniboxEventProto::PageClassification_Name(
+          page_classification);
+  LogHistogramMediumTimes(
+      base::StrCat(
+          {"Omnibox.FocusToCutOrCopyAllTextTime.ByPageContext.", page_context}),
+      elapsed);
+
+  if (is_zero_prefix) {
+    LogHistogramMediumTimes("Omnibox.FocusToCutOrCopyAllTextTime.ZeroSuggest",
+                            elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat(
+            {"Omnibox.FocusToCutOrCopyAllTextTime.ZeroSuggest.ByPageContext.",
+             page_context}),
+        elapsed);
+  } else {
+    LogHistogramMediumTimes("Omnibox.FocusToCutOrCopyAllTextTime.TypedSuggest",
+                            elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat(
+            {"Omnibox.FocusToCutOrCopyAllTextTime.TypedSuggest.ByPageContext.",
+             page_context}),
+        elapsed);
+  }
+}
+
 void RecordActionShownForAllActions(const AutocompleteResult& result,
                                     OmniboxPopupSelection executed_selection) {
   // Record the presence of all actions in the result set.

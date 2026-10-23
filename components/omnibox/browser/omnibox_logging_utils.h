@@ -24,6 +24,13 @@ void LogFocusToOpenTime(
     const AutocompleteMatch& match,
     size_t action_index);
 
+// Logs metrics related to the time elapsed from when the user focused the
+// omnibox until all text is cut or copied.
+void LogFocusToCutOrCopyAllTextTime(
+    base::TimeDelta elapsed,
+    bool is_zero_prefix,
+    ::metrics::OmniboxEventProto::PageClassification page_classification);
+
 // `executed_selection` indicates which OmniboxAction within `result`
 // was executed, and leaving this parameter as the default indicates
 // that no action was executed.
