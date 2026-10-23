@@ -48,8 +48,7 @@ class LocalMouseInputMonitorX11Test : public testing::Test {
     ASSERT_NE(xtest_pointer_id_, kLocalPointerId);
 
     auto task_runner = task_environment_.GetMainThreadTaskRunner();
-    monitor_ =
-        LocalInputMonitor::Create(task_runner, task_runner, task_runner);
+    monitor_ = LocalInputMonitor::Create(task_runner, task_runner);
     monitor_->StartMonitoring(pointer_move_future_.GetRepeatingCallback(),
                               LocalInputMonitor::KeyPressedCallback(),
                               base::DoNothing());

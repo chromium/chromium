@@ -36,9 +36,9 @@ class LocalInputMonitor {
   virtual ~LocalInputMonitor() = default;
 
   // Creates a platform-specific instance of LocalInputMonitor.
-  // |caller_task_runner| is used for all callbacks and notifications.
+  // Callbacks and notifications are invoked on the sequence that calls
+  // StartMonitoring() or StartMonitoringForClientSession().
   static std::unique_ptr<LocalInputMonitor> Create(
-      scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
