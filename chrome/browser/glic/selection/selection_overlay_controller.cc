@@ -471,8 +471,14 @@ void SelectionOverlayController::CaptureRegion(
         // The overlay and the page context are not ready yet, so defer
         // sending the region to the web client.
         selection_overlay_controller->staged_region_needs_render_ = has_region;
-        selection_overlay_controller->interaction_options_
-            ->skip_intro_animation = has_region;
+        if (has_region) {
+          // Same as the other small chip paths: the text selection is fixed,
+          // and a click on the background doesn't start a new region.
+          selection_overlay_controller->interaction_options_ =
+              selection::InteractionOptions::New(
+                  /*hide_handles=*/true, /*disable_multi_select=*/true,
+                  /*skip_intro_animation=*/true);
+        }
         selection_observer->DismissUI(
             GlicSelectionObserver::DismissReason::kActionTaken);
       }

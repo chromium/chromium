@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -52,6 +53,7 @@
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -120,6 +122,34 @@ class ActiveTabObserver : public TabStripModelObserver,
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ActiveTabObserver, kActiveTabChanged);
+
+// Waits for `PrimaryMainFrameWasResized` to settle, matching
+// `StabilizationTask` in `glic_invoke_task.cc`. A resize dismisses the small
+// chip and nothing brings it back, and opening the side panel can land its
+// tab-contents resize after the test selects text (seen on Mac).
+class TabResizeSettledObserver : public content::WebContentsObserver,
+                                 public ui::test::StateObserver<bool> {
+ public:
+  explicit TabResizeSettledObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {
+    ResetTimer();
+  }
+
+  void PrimaryMainFrameWasResized(bool width_changed) override { ResetTimer(); }
+
+ private:
+  void ResetTimer() {
+    timer_.Start(
+        FROM_HERE, base::Milliseconds(300),
+        base::BindOnce(&TabResizeSettledObserver::OnStateObserverStateChanged,
+                       base::Unretained(this), true));
+  }
+
+  base::OneShotTimer timer_;
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(TabResizeSettledObserver,
+                                    kTabResizeSettled);
 
 class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
  public:
@@ -2169,6 +2199,34 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
       OpenExplainCard(kActiveTab, kOverlayWebContentsId),
       WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardShownJs),
       CheckJsResultAt(kOverlayWebContentsId, kRenderer, kHandlesHiddenJs));
+}
+
+// With the side panel open, the small chip starts a capture session through
+// the web client. The session pre-selects the text selection and treats it
+// like the other small chip paths: no handles, no click-to-add-region.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       SmallChipWithSidePanelOpenKeepsTextSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(
+      OpenGlic(),
+      ObserveState(
+          kTabResizeSettled,
+          [this]() {
+            return browser()->tab_strip_model()->GetActiveWebContents();
+          }),
+      WaitForState(kTabResizeSettled, true),
+      StopObservingState(kTabResizeSettled),
+      OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
+      // One region around the text selection.
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
+                      "el => el.hideHandles && el.disableMultiSelect"));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
