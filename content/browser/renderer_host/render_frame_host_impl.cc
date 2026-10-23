@@ -4140,14 +4140,37 @@ PageVisibilityState RenderFrameHostImpl::GetVisibilityState() {
     return PageVisibilityState::kHidden;
   }
 
-  if (base::FeatureList::IsEnabled(features::kRFHHiddenWhenHiddenButPainting)) {
-    RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();
-    return view && view->IsShowing() ? PageVisibilityState::kVisible
-                                     : PageVisibilityState::kHidden;
-  } else {
+  if (!base::FeatureList::IsEnabled(
+          features::kRFHHiddenWhenHiddenButPainting)) {
     return GetRenderWidgetHost()->IsHidden() ? PageVisibilityState::kHidden
                                              : PageVisibilityState::kVisible;
   }
+
+  // Use the view of the nearest local root's own RenderWidgetHost. For main
+  // frames this is the platform RenderWidgetHostView; for cross-process
+  // subframes it is a RenderWidgetHostViewChildFrame. Note that the widget of
+  // `render_view_host_` must not be used here: a RenderViewHost whose main
+  // frame is a RenderFrameProxyHost in its SiteInstanceGroup never gets a
+  // RenderWidgetHostView, so its view is null for every out-of-process iframe.
+  RenderWidgetHostViewBase* view = GetRenderWidgetHost()->GetView();
+  if (!view || !view->IsShowing()) {
+    return PageVisibilityState::kHidden;
+  }
+
+  // RenderWidgetHostViewChildFrame::IsShowing() only reflects whether the child
+  // widget is painting, which is also the case when the page is
+  // kHiddenButPainting (e.g. a background tab that is being captured). Only the
+  // root platform view distinguishes kHiddenButPainting from kVisible, so defer
+  // to it. For platform views GetRootView() returns the view itself, which is
+  // already known to be showing. A child frame view is only ever on screen
+  // through the root view it is embedded in, so if it has none (e.g. it is
+  // speculative and not yet attached, or it was swapped out and is running
+  // unload handlers) it cannot be visible regardless of its widget state.
+  RenderWidgetHostViewBase* root_view = view->GetRootView();
+  if (!root_view || !root_view->IsShowing()) {
+    return PageVisibilityState::kHidden;
+  }
+  return PageVisibilityState::kVisible;
 }
 
 void RenderFrameHostImpl::OnAssociatedInterfaceRequest(

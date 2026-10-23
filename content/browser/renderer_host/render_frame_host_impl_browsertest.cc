@@ -622,6 +622,78 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
             web_contents()->GetPrimaryMainFrame()->GetVisibilityState());
 }
 
+// Test that a cross-process subframe reports the same visibility as the page
+// that embeds it. This is a regression test for a bug where the visibility
+// state was looked up through the subframe's RenderViewHost, whose widget never
+// gets a RenderWidgetHostView for out-of-process iframes, causing them to
+// always report kHidden.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       GetVisibilityState_CrossProcessIframe) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* child_frame =
+      main_frame->child_at(0)->current_frame_host();
+  ASSERT_TRUE(child_frame->IsCrossProcessSubframe());
+
+  web_contents()->WasShown();
+  EXPECT_EQ(PageVisibilityState::kVisible, main_frame->GetVisibilityState());
+  EXPECT_EQ(PageVisibilityState::kVisible, child_frame->GetVisibilityState());
+
+  web_contents()->WasHidden();
+  EXPECT_EQ(PageVisibilityState::kHidden, main_frame->GetVisibilityState());
+  EXPECT_EQ(PageVisibilityState::kHidden, child_frame->GetVisibilityState());
+
+  // A hidden page that is being captured keeps painting (kHiddenButPainting).
+  // A RenderWidgetHostViewChildFrame cannot tell this state apart from being
+  // visible on its own, so the subframe must defer to the root view and report
+  // the same state as the main frame, whatever the platform view reports.
+  base::ScopedClosureRunner capture_handle =
+      web_contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                             /*stay_awake=*/false,
+                                             /*is_activity=*/false);
+  EXPECT_EQ(main_frame->GetVisibilityState(),
+            child_frame->GetVisibilityState());
+  capture_handle.RunAndReset();
+  EXPECT_EQ(PageVisibilityState::kHidden, main_frame->GetVisibilityState());
+  EXPECT_EQ(PageVisibilityState::kHidden, child_frame->GetVisibilityState());
+
+  web_contents()->WasShown();
+  EXPECT_EQ(PageVisibilityState::kVisible, main_frame->GetVisibilityState());
+  EXPECT_EQ(PageVisibilityState::kVisible, child_frame->GetVisibilityState());
+}
+
+// Test that a cross-process subframe whose view is no longer embedded in the
+// page reports kHidden. Here the subframe is swapped out by a cross-process
+// navigation and kept alive to run unload handlers: its widget was never
+// hidden, but its RenderWidgetHostViewChildFrame has been detached from the
+// frame connector, so it cannot be on screen.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       GetVisibilityState_SwappedOutCrossProcessIframe) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = main_frame->child_at(0)->current_frame_host();
+  ASSERT_TRUE(rfh_b->IsCrossProcessSubframe());
+  EXPECT_EQ(PageVisibilityState::kVisible, rfh_b->GetVisibilityState());
+
+  // Keep `rfh_b` alive after it is swapped out.
+  LeaveInPendingDeletionState(rfh_b);
+  EXPECT_TRUE(NavigateIframeToURL(
+      web_contents(), "child-0",
+      embedded_test_server()->GetURL("c.com", "/title1.html")));
+  RenderFrameHostImpl* rfh_c = main_frame->child_at(0)->current_frame_host();
+  ASSERT_NE(rfh_b, rfh_c);
+  ASSERT_TRUE(rfh_b->IsPendingDeletion());
+
+  EXPECT_EQ(PageVisibilityState::kHidden, rfh_b->GetVisibilityState());
+  EXPECT_EQ(PageVisibilityState::kVisible, rfh_c->GetVisibilityState());
+}
+
 // Check that the URLLoaderFactories created by RenderFrameHosts for renderers
 // are not trusted.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
