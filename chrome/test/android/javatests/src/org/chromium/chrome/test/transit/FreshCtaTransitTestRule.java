@@ -7,8 +7,6 @@ package org.chromium.chrome.test.transit;
 import android.app.Activity;
 import android.content.Intent;
 
-import androidx.test.runner.lifecycle.Stage;
-
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.junit.rules.TestRule;
@@ -18,7 +16,6 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.base.test.transit.TripBuilder;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -27,7 +24,6 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,30 +76,10 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
         return mActivityTestRule.apply(thisStatement, description);
     }
 
-    /**
-     * Close all Activities, cleaning up instance and tab state of ChromeTabbedActivities.
-     *
-     * <p>Non-tabbed Activities (e.g. popup Custom Tabs) are closed and destroyed first, since they
-     * may depend on profiles owned by the tabbed windows.
-     */
+    /** Close all Activities, cleaning up instance and tab state of ChromeTabbedActivities. */
     public void closeAllWindowsAndDeleteInstanceAndTabState() {
         List<Activity> allActivities = ApplicationStatus.getRunningActivities();
-        List<Activity> tabbedActivities = new ArrayList<>();
-        List<Activity> otherActivities = new ArrayList<>();
         for (Activity activity : allActivities) {
-            if (activity instanceof ChromeTabbedActivity) {
-                tabbedActivities.add(activity);
-            } else {
-                otherActivities.add(activity);
-            }
-        }
-        for (Activity activity : otherActivities) {
-            finishActivityWithCleanup(activity);
-        }
-        for (Activity activity : otherActivities) {
-            ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
-        }
-        for (Activity activity : tabbedActivities) {
             finishActivityWithCleanup(activity);
         }
     }
