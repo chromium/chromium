@@ -59,7 +59,7 @@ public class AuxiliarySearchControllerImpl
             AuxiliarySearchDonor auxiliarySearchDonor,
             FaviconHelper faviconHelper,
             @AuxiliarySearchHostType int hostType) {
-        mContext = context;
+        mContext = context.getApplicationContext();
         mProfile = profile;
         mAuxiliarySearchProvider = auxiliarySearchProvider;
         mDonor = auxiliarySearchDonor;

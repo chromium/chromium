@@ -85,7 +85,7 @@ public class AuxiliarySearchProvider {
             Profile profile,
             @Nullable TabModelSelector tabModelSelector,
             @AuxiliarySearchHostType int hostType) {
-        mContext = context;
+        mContext = context.getApplicationContext();
         mProfile = profile;
         if (hostType != AuxiliarySearchHostType.BACKGROUND_TASK) {
             mAuxiliarySearchBridge = new AuxiliarySearchBridge(mProfile);

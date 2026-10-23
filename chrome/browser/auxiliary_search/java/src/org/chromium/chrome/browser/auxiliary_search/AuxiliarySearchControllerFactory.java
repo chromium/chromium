@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.os.Build;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
@@ -31,6 +32,7 @@ public class AuxiliarySearchControllerFactory {
     private @TriState int mIsTablet;
 
     private @Nullable AuxiliarySearchController mAuxiliarySearchMultiDataController;
+    private @Nullable AuxiliarySearchController mAuxiliarySearchCustomTabController;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
@@ -104,7 +106,7 @@ public class AuxiliarySearchControllerFactory {
             Profile profile,
             @Nullable TabModelSelector tabModelSelector,
             @AuxiliarySearchHostType int hostType) {
-        if (!isEnabled()) {
+        if (!isEnabled() || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             return null;
         }
 
@@ -115,6 +117,18 @@ public class AuxiliarySearchControllerFactory {
                                 context, profile, AuxiliarySearchHostType.CTA);
             }
             return mAuxiliarySearchMultiDataController;
+        }
+
+        if (hostType == AuxiliarySearchHostType.CUSTOM_TAB) {
+            if (profile.isOffTheRecord()) {
+                return null;
+            }
+            if (mAuxiliarySearchCustomTabController == null) {
+                mAuxiliarySearchCustomTabController =
+                        new AuxiliarySearchControllerImpl(
+                                context, profile, /* tabModelSelector= */ null, hostType);
+            }
+            return mAuxiliarySearchCustomTabController;
         }
 
         return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector, hostType);

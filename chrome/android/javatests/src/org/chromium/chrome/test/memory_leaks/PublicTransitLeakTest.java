@@ -6,6 +6,7 @@ package org.chromium.chrome.test.memory_leaks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
@@ -17,13 +18,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.EnableLeakChecks;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -106,6 +112,30 @@ public class PublicTransitLeakTest {
     @Test
     @LargeTest
     public void customTabActivityTest() throws TimeoutException {
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(),
+                        mChromeTabbedActivityTestRule
+                                .getTestServer()
+                                .getURL("/chrome/test/data/android/google.html")));
+    }
+
+    @Test
+    @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
+    public void chromeTabbedActivityWithAuxiliarySearchTest() {
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, () -> true);
+        AuxiliarySearchControllerFactory.getInstance().setSupportMultiDataSourceForTesting(true);
+        mChromeTabbedActivityTestRule.startOnBlankPage();
+    }
+
+    @Test
+    @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
+    public void customTabActivityWithAuxiliarySearchTest() throws TimeoutException {
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, () -> true);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(),
