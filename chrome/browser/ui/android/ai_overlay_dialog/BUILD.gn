@@ -20,6 +20,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/ai_overlay_dialog/AiOverlayDialogBridge.java" ]
+  deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
 }
 
 # Built on all Android configs: the Java class (and therefore its JNI) is

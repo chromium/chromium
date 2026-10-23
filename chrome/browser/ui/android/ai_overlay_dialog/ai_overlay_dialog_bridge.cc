@@ -27,10 +27,8 @@ namespace ttc {
 static int64_t JNI_AiOverlayDialogBridge_Create(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& caller,
-    int64_t native_browser_window_ptr) {
+    BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
-  auto* browser =
-      reinterpret_cast<BrowserWindowInterface*>(native_browser_window_ptr);
   // Mirrors the guards BrowserWindowFeatures uses on desktop.
   if (!browser ||
       browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
