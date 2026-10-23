@@ -57,3 +57,44 @@ roll. If you believe a compiler roll has slowed down your microbenchmark, please
 reach out to whoever landed the roll for guidance. It may be difficult, but if
 you can reduce your test-case in any way from 'simply build all of Chrome!'
 (even by just providing the before/after assembly), it's a huge help.
+
+## Repeatable benchmarks
+
+Dynamic CPU speed scaling and other compute environment factors can increase
+variance between benchmark runs. Controlling the environment to make benchmarks
+more repeatable will make it easier to see the effect from code changes.
+
+In general, try to lock the CPU at a specific frequency. Avoid letting dynamic
+frequency scaling increase the clock speed and powersaving measures decrease the
+clock speed. Note that this is focused on comparing different code on the same
+CPU, and is not meaningful for benchmarking the same code on different CPUs.
+
+Similarly, lock the process being benchmarked to a single core, or a specific
+set of cores. Oftentime it is better to avoid core 0, which may have more
+contention.
+
+### Linux-specifics
+
+Use the performance governor to set a fixed CPU frequency.
+
+```
+for cpu in /sys/devices/system/cpu/cpu[0-9]*; do
+  sudo sh -c "echo performance > $cpu/cpufreq/scaling_governor";
+done
+```
+
+Disable dynamic CPU speed scaling.
+
+```
+# Intel
+sudo sh -c "echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo"
+
+# AMD/Generic
+sudo sh -c "echo 0 > /sys/devices/system/cpu/cpufreq/boost"
+```
+
+Scheduling execution on specific cores.
+
+```
+taskset -c 3 CMD
+```
