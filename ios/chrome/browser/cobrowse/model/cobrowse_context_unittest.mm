@@ -6,7 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+
 #import "base/strings/sys_string_conversions.h"
+#import "components/contextual_search/mock_contextual_search_session_handle.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "net/base/url_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -114,6 +117,41 @@ TEST_F(CobrowseContextTest, ExtractsServerIDAndTurnID) {
   CobrowseContext* different_turn_context =
       [[CobrowseContext alloc] initWithURL:different_turn_url];
   EXPECT_NSNE(context, different_turn_context);
+}
+
+// Tests transferring ownership of the contextual search session handle and
+// attached tab items.
+TEST_F(CobrowseContextTest, TransfersContextualSearchSessionAndAttachedTabs) {
+  GURL url(kDefaultURL);
+  CobrowseContext* context = [[CobrowseContext alloc] initWithURL:url];
+  CobrowseContext* other_context = [[CobrowseContext alloc] initWithURL:url];
+
+  EXPECT_FALSE(context.hasContextualSearchSession);
+  EXPECT_NSEQ(context, other_context);
+
+  auto session =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+  auto* raw_session = session.get();
+  [context setContextualSearchSession:std::move(session)];
+
+  EXPECT_TRUE(context.hasContextualSearchSession);
+  EXPECT_NSNE(context, other_context);
+
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      taken_session = [context takeContextualSearchSession];
+  EXPECT_EQ(taken_session.get(), raw_session);
+  EXPECT_FALSE(context.hasContextualSearchSession);
+  EXPECT_NSEQ(context, other_context);
+
+  NSArray* items = @[ [[NSObject alloc] init] ];
+  context.attachedTabItems = items;
+  EXPECT_EQ(context.attachedTabItems.count, 1u);
+  EXPECT_NSNE(context, other_context);
+
+  NSArray* taken_items = [context takeAttachedTabItems];
+  EXPECT_EQ(taken_items.count, 1u);
+  EXPECT_EQ(context.attachedTabItems, nil);
+  EXPECT_NSEQ(context, other_context);
 }
 
 }  // namespace

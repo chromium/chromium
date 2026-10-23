@@ -252,6 +252,9 @@ class AssistantAIMUIStateProvider
   CobrowseBrowserAgent* agent = CobrowseBrowserAgent::FromBrowser(self.browser);
   if (agent) {
     agent->SetUIStateProvider(nullptr);
+    if (!agent->IsSessionActive()) {
+      agent->SetCobrowseContext(nil);
+    }
   }
   _uiStateProvider.reset();
 
@@ -508,6 +511,10 @@ class AssistantAIMUIStateProvider
 // Handles user tapping Undo on the close snackbar.
 - (void)didUndoCloseAssistant {
   [_metricsRecorder recordClosedSnackbarResolvedWithUndo:YES];
+  CobrowseBrowserAgent* agent = CobrowseBrowserAgent::FromBrowser(self.browser);
+  if (agent) {
+    agent->SetSessionActive(true);
+  }
   [self revealAssistant];
 }
 
@@ -579,6 +586,7 @@ class AssistantAIMUIStateProvider
     _isHiding = NO;
     return;
   }
+  [_mediator endSession];
   id<SceneCommands> sceneCommands =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [sceneCommands closeAssistant];

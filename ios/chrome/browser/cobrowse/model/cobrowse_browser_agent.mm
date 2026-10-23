@@ -207,7 +207,7 @@ bool CobrowseBrowserAgent::ShouldAcceptContextUpdate(
   }
 
   // Allow contexts that have attached items in memory.
-  if (context.attachedItems.count > 0) {
+  if (context.attachedTabItems.count > 0) {
     return true;
   }
 
@@ -216,7 +216,7 @@ bool CobrowseBrowserAgent::ShouldAcceptContextUpdate(
   // an empty query and no attachments, but the current context had a valid
   // query.
   if ((!context.searchQuery || context.searchQuery.length == 0) &&
-      context.attachedItems.count == 0 && context_ &&
+      context.attachedTabItems.count == 0 && context_ &&
       context_.searchQuery.length > 0) {
     return false;
   }

@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 
+#import <utility>
+
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/contextual_search/contextual_search_session_handle.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -50,9 +53,31 @@ const char kGoogleSearchAppStateValue[] = "4";
 
 @implementation CobrowseContext {
   GURL _url;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      _contextualSearchSession;
 }
 
 @synthesize url = _url;
+
+- (BOOL)hasContextualSearchSession {
+  return _contextualSearchSession != nullptr;
+}
+
+- (void)setContextualSearchSession:
+    (std::unique_ptr<contextual_search::ContextualSearchSessionHandle>)session {
+  _contextualSearchSession = std::move(session);
+}
+
+- (std::unique_ptr<contextual_search::ContextualSearchSessionHandle>)
+    takeContextualSearchSession {
+  return std::move(_contextualSearchSession);
+}
+
+- (NSArray<ComposeboxInputItem*>*)takeAttachedTabItems {
+  NSArray<ComposeboxInputItem*>* items = _attachedTabItems;
+  _attachedTabItems = nil;
+  return items;
+}
 
 - (BOOL)hasServerSessionTokens {
   std::string dummy;
@@ -128,13 +153,14 @@ const char kGoogleSearchAppStateValue[] = "4";
           [self.serverID isEqualToString:otherContext.serverID]) &&
          (self.turnID == otherContext.turnID ||
           [self.turnID isEqualToString:otherContext.turnID]) &&
-         (self.attachedItems == otherContext.attachedItems ||
-          [self.attachedItems isEqual:otherContext.attachedItems]);
+         (self.attachedTabItems == otherContext.attachedTabItems ||
+          [self.attachedTabItems isEqual:otherContext.attachedTabItems]) &&
+         _contextualSearchSession == otherContext->_contextualSearchSession;
 }
 
 - (NSUInteger)hash {
   return [self.searchQuery hash] ^ [self.serverID hash] ^ [self.turnID hash] ^
-         [self.attachedItems hash];
+         [self.attachedTabItems hash];
 }
 
 @end

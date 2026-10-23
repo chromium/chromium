@@ -1975,7 +1975,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   if ([self shouldInvokeAssistantForAIMQuery]) {
     CobrowseContext* context = [[CobrowseContext alloc] initWithURL:URL];
     context.entrypoint = AssistantAimEntrypoint::kAskAboutCurrentPage;
-    context.attachedItems = _items.containedItems;
+    context.attachedTabItems = _items.containedTabItems;
     if (_cobrowseBrowserAgent) {
       _cobrowseBrowserAgent->SetCobrowseContext(context);
       _cobrowseBrowserAgent->SetSessionActive(true);

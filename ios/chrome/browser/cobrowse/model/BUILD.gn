@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/contextual_search:prefs",
+    "//components/contextual_search:test_support",
     "//components/omnibox/browser:test_support",
     "//components/prefs",
     "//components/search_engines",

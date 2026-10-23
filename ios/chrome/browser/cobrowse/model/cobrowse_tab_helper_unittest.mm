@@ -481,7 +481,7 @@ TEST_F(CobrowseTabHelperTest,
   CobrowseContext* empty_query_with_attachment_context =
       [[CobrowseContext alloc] initWithURL:empty_query_url];
   // Mock an attachment item. A non-empty array is sufficient.
-  empty_query_with_attachment_context.attachedItems =
+  empty_query_with_attachment_context.attachedTabItems =
       @[ [[NSObject alloc] init] ];
 
   agent()->SetCobrowseContext(empty_query_with_attachment_context);
