@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -91,6 +92,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -421,6 +423,7 @@ void InProcessBrowserTest::Initialize() {
   // Force all buttons not overflow to prevent test flakiness.
   ToolbarControllerUtil::SetPreventOverflowForTesting(true);
 
+  std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
 
   // Preconnecting can cause non-deterministic test behavior especially with
@@ -449,11 +452,19 @@ void InProcessBrowserTest::Initialize() {
   // (crbug.com/563340729). Dedicated prewarm tests explicitly enable it via
   // ScopedPrewarmFeatureList.
   disabled_features.push_back(features::kPrewarm);
+#if !EXPENSIVE_TEST_LOGIC_IS_ON() && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_MAC)
+  // Running VideoCaptureService in the browser process avoids spawning a
+  // dedicated utility process on every test startup (e.g. via Ash Privacy Hub
+  // CameraPresenceNotifier or MediaDevicesManager). Excluded on macOS where
+  // the service requires a CFRunLoop (https://crbug.com/40572495).
+  enabled_features.push_back(features::kRunVideoCaptureServiceInBrowserProcess);
+#endif
   // In-product help can conflict with tests' expected window activation and
   // focus. Individual tests can re-enable IPH.
   block_all_iph_feature_list_.InitWithNoFeaturesAllowed();
 
-  scoped_feature_list_.InitWithFeatures({}, disabled_features);
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
