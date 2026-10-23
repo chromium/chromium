@@ -180,10 +180,14 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       std::optional<SizingConstraint> sizing_constraint = std::nullopt,
       GridLanesDataVector* out_grid_lanes = nullptr,
       GridLanesGapGeometryState* out_gap_geometry_state = nullptr);
+  // Lays out the items in `grid_lanes` for the current fragment.
+  // `total_intrinsic_block_size` is the intrinsic block size of the complete,
+  // unfragmented container; it is updated if column items expand as a result of
+  // fragmentation.
   void PlaceGridLanesItemsForFragmentation(
       const GridLanesDataVector& grid_lanes,
       const GridLayoutSubtree& layout_subtree,
-      LayoutUnit total_intrinsic_block_size);
+      LayoutUnit* total_intrinsic_block_size);
 
   void SetReadingFlowNodes(const GridItems& grid_items,
                            const GridLanesDataVector& grid_lanes);

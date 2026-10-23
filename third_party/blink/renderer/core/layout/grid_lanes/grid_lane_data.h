@@ -18,13 +18,22 @@ struct GridLanesItemPlacementData
     : public GarbageCollected<GridLanesItemPlacementData> {
   explicit GridLanesItemPlacementData(
       const GridItemPlacementData& placement_data,
+      LayoutUnit margin_block_start,
       LayoutUnit margin_block_end)
-      : placement_data(placement_data), margin_block_end(margin_block_end) {}
+      : placement_data(placement_data),
+        margin_block_start(margin_block_start),
+        margin_block_end(margin_block_end) {}
 
   void Trace(Visitor*) const {}
 
   GridItemPlacementData placement_data;
+  LayoutUnit margin_block_start;
   LayoutUnit margin_block_end;
+
+  // Originally set to the item's total border-box block size before
+  // fragmentation, then reduced by each fragment as the item is fragmented. A
+  // negative value means the item expanded as a result of fragmentation.
+  LayoutUnit total_remaining_block_size;
 
   // Total border-box size for stacking-axis stretch during fragmentation.
   // This size may expand as a result of fragmentation break rules. An unset
@@ -98,6 +107,12 @@ struct GridLaneData : public GarbageCollected<GridLaneData> {
   // Non-start spanner entries are owned by their start lane and do not affect
   // this state.
   bool has_unfinished_items = false;
+
+  // How far unstarted items in this lane are pushed down because earlier items
+  // in the lane expanded as a result of fragmentation. Only used by column
+  // grid-lanes containers.
+  LayoutUnit item_offset_adjustment;
+
   HeapVector<Member<GridLanesItemData>> item_data;
 };
 

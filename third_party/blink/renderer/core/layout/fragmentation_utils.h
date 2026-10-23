@@ -31,6 +31,8 @@ struct ColumnBreakInfo {
   DISALLOW_NEW();
 
   ColumnBreakInfo() = default;
+  explicit ColumnBreakInfo(LayoutUnit column_intrinsic_block_size)
+      : column_intrinsic_block_size(column_intrinsic_block_size) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(early_break); }
 
