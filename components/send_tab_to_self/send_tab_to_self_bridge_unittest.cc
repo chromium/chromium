@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -267,17 +268,14 @@ class SendTabToSelfBridgeTest : public testing::Test {
   // returns an EntityChangeList containing them all. Order is maintained.
   syncer::EntityChangeList EntityAddList(
       const std::vector<sync_pb::SendTabToSelfSpecifics>& specifics_list) {
-    syncer::EntityChangeList changes;
-    for (const auto& specifics : specifics_list) {
-      syncer::EntityData entity_data;
-
-      *entity_data.specifics.mutable_send_tab_to_self() = specifics;
-      entity_data.name = specifics.url();
-
-      changes.push_back(syncer::EntityChange::CreateAdd(
-          specifics.guid(), std::move(entity_data)));
-    }
-    return changes;
+    return base::ToVector(
+        specifics_list, [](const sync_pb::SendTabToSelfSpecifics& specifics) {
+          syncer::EntityData entity_data;
+          *entity_data.specifics.mutable_send_tab_to_self() = specifics;
+          entity_data.name = specifics.url();
+          return syncer::EntityChange::CreateAdd(specifics.guid(),
+                                                 std::move(entity_data));
+        });
   }
 
   // For Model Tests.

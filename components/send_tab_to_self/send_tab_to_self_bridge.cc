@@ -155,22 +155,18 @@ struct DeviceWithTimestamp {
 std::vector<DeviceWithTimestamp> GetDevicesWithLastActiveTime(
     const std::vector<const syncer::DeviceInfo*>& all_devices,
     const base::flat_map<std::string, base::Time>& session_timestamps) {
-  std::vector<DeviceWithTimestamp> devices_with_timestamps;
-  devices_with_timestamps.reserve(all_devices.size());
-
-  for (const syncer::DeviceInfo* device : all_devices) {
-    base::Time last_active = device->last_updated_timestamp();
-    bool has_high_precision = false;
-    auto it = session_timestamps.find(device->guid());
-    if (it != session_timestamps.end()) {
-      last_active = std::max(last_active, it->second);
-      // If the device has a session timestamp, it is highly precise.
-      has_high_precision = true;
-    }
-    devices_with_timestamps.emplace_back(device, last_active,
-                                         has_high_precision);
-  }
-  return devices_with_timestamps;
+  return base::ToVector(
+      all_devices, [&session_timestamps](const syncer::DeviceInfo* device) {
+        base::Time last_active = device->last_updated_timestamp();
+        bool has_high_precision = false;
+        auto it = session_timestamps.find(device->guid());
+        if (it != session_timestamps.end()) {
+          last_active = std::max(last_active, it->second);
+          // If the device has a session timestamp, it is highly precise.
+          has_high_precision = true;
+        }
+        return DeviceWithTimestamp{device, last_active, has_high_precision};
+      });
 }
 
 }  // namespace
@@ -452,12 +448,10 @@ SendTabToSelfBridge::OnCommitAttemptFailed(syncer::SyncCommitError error) {
 }
 
 std::vector<std::string> SendTabToSelfBridge::GetAllGuids() const {
-  std::vector<std::string> keys;
-  for (const auto& it : entries_) {
-    DCHECK_EQ(it.first, it.second->GetGUID());
-    keys.push_back(it.first);
-  }
-  return keys;
+  return base::ToVector(entries_, [](const auto& pair) -> const std::string& {
+    DCHECK_EQ(pair.first, pair.second->GetGUID());
+    return pair.first;
+  });
 }
 
 const SendTabToSelfEntry* SendTabToSelfBridge::GetEntryByGUID(
@@ -722,13 +716,8 @@ void SendTabToSelfBridge::OnHistoryDeletions(
   }
 
   if (!deletion_info.IsAllHistory()) {
-    std::vector<GURL> urls;
-
-    for (const history::URLRow& row : deletion_info.deleted_rows()) {
-      urls.push_back(row.url());
-    }
-
-    DeleteEntries(urls);
+    DeleteEntries(
+        base::ToVector(deletion_info.deleted_rows(), &history::URLRow::url));
     return;
   }
 
