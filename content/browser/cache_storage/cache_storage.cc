@@ -951,8 +951,9 @@ void CacheStorage::CacheSizeUpdated(const CacheStorageCache* cache) {
 void CacheStorage::ReleaseUnreferencedCaches() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& entry : cache_map_) {
-    if (entry.second && entry.second->IsUnreferenced())
-      entry.second.reset();
+    if (entry.second && entry.second->IsUnreferenced()) {
+      CloseCache(std::move(entry.second), /*also_delete_cache_dir=*/false);
+    }
   }
 }
 
@@ -972,10 +973,9 @@ void CacheStorage::CacheUnreferenced(CacheStorageCache* cache,
           base::DoNothing());
     }
 
-    // The last reference to a doomed cache is gone, perform clean up.
-    // TODO(crbug.com/571407510): this will often fail.
-    cache_loader_->CleanUpDeletedCache(cache);
+    auto doomed_cache = std::move(doomed_caches_it->second);
     doomed_caches_.erase(doomed_caches_it);
+    CloseCache(std::move(doomed_cache), /*also_delete_cache_dir=*/true);
     return;
   }
 
@@ -992,7 +992,28 @@ void CacheStorage::CacheUnreferenced(CacheStorageCache* cache,
   auto cache_map_it = cache_map_.find(cache->cache_name());
   CHECK(cache_map_it != cache_map_.end());
 
-  cache_map_it->second.reset();
+  CloseCache(std::move(cache_map_it->second), /*also_delete_cache_dir=*/false);
+}
+
+void CacheStorage::CloseCache(std::unique_ptr<CacheStorageCache> cache,
+                              bool also_delete_cache_dir) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CacheStorageCache* cache_ptr = cache.get();
+  closing_caches_.insert(std::move(cache));
+  cache_ptr->ForceClose(base::BindOnce(&CacheStorage::OnCacheClosed,
+                                       weak_factory_.GetWeakPtr(), cache_ptr,
+                                       also_delete_cache_dir));
+}
+
+void CacheStorage::OnCacheClosed(CacheStorageCache* cache,
+                                 bool also_delete_cache_dir) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (also_delete_cache_dir) {
+    cache_loader_->CleanUpDeletedCache(cache);
+  }
+  auto it = closing_caches_.find(cache);
+  CHECK(it != closing_caches_.end());
+  closing_caches_.erase(it);
 }
 
 CacheStorageSchedulerId CacheStorage::StartAsyncOperationForTesting() {
@@ -1379,6 +1400,10 @@ void CacheStorage::ForceClose(base::OnceClosure callback,
   }
 
   for (auto& [cache, _] : doomed_caches_) {
+    cache->ForceClose(barrier.CreateClosure());
+  }
+
+  for (auto& cache : closing_caches_) {
     cache->ForceClose(barrier.CreateClosure());
   }
 

@@ -35,6 +35,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -1238,6 +1239,8 @@ TEST_P(CacheStorageManagerTestP, DropRefAfterNewCacheWithSameNameCreated) {
   const GURL kTestURL = GURL("http://example.com/foo");
   EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
+  base::FilePath doomed_cache_path =
+      CacheStorageCache::From(cache_handle)->path();
 
   // 2. Doom the cache
   EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
@@ -1247,6 +1250,11 @@ TEST_P(CacheStorageManagerTestP, DropRefAfterNewCacheWithSameNameCreated) {
 
   // 4. Drop handle to A
   cache_handle = CacheStorageCacheHandle();
+  if (!MemoryOnly()) {
+    disk_cache::FlushCacheThreadForTesting();
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return !base::PathExists(doomed_cache_path); }));
+  }
 
   // 5. Verify that B still works
   EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(), kTestURL));
@@ -2913,13 +2921,7 @@ TEST_P(CacheStorageQuotaClientTestP,
   EXPECT_EQ(1u, QuotaGetDefaultStorageKeys());
 }
 
-// TODO(crbug.com/575611984): Re-enable on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_QuotaDeleteBucketData DISABLED_QuotaDeleteBucketData
-#else
-#define MAYBE_QuotaDeleteBucketData QuotaDeleteBucketData
-#endif
-TEST_P(CacheStorageQuotaClientTestP, MAYBE_QuotaDeleteBucketData) {
+TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteBucketData) {
   EXPECT_EQ(0, QuotaGetBucketUsage(bucket_locator1_));
   EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   // Call put to test that initialized caches are properly deleted too.

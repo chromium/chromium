@@ -620,7 +620,7 @@ class CONTENT_EXPORT CacheStorageCache {
   const bool memory_only_;
 
   // Non-null until backend cleanup completes. Initially a no-op; ForceClose()
-  // replaces it with its completion callback.
+  // chains its completion callback onto this via Then().
   base::OnceClosure post_backend_closed_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);

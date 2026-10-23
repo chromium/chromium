@@ -2598,11 +2598,18 @@ void CacheStorageCache::ForceClose(base::OnceClosure callback) {
   // for that to happen. In the case where the backend is still initializing,
   // invalidating the weak pointers leads to the backend being
   // dropped/destroyed, which still leads to the callback being invoked.
-  bool backend_already_closed = post_backend_closed_callback_.is_null();
-  post_backend_closed_callback_ = WrapCallbackWithHandle(std::move(callback));
+  const bool backend_already_closed = post_backend_closed_callback_.is_null();
+  post_backend_closed_callback_ =
+      backend_already_closed
+          ? std::move(callback)
+          : std::move(post_backend_closed_callback_).Then(std::move(callback));
+  // Invalidate weak pointers before releasing `DiskCacheBlobEntry` and
+  // `SideDataWriter` handles so dropping those `CacheStorageCacheHandle`s does
+  // not trigger `DropHandleRef()` -> `CacheStorage::CacheUnreferenced()` while
+  // `CacheStorage::ForceClose()` is iterating over its cache containers.
+  weak_ptr_factory_.InvalidateWeakPtrs();
   cache_entry_handler_->InvalidateDiskCacheBlobEntrys();
   InvalidateSideDataWriters();
-  weak_ptr_factory_.InvalidateWeakPtrs();
   backend_state_ = BACKEND_CLOSED;
   active_blob_to_disk_cache_writers_.Clear();
   backend_.reset();

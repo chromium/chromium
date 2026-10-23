@@ -10,10 +10,12 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -218,6 +220,10 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   // If the CacheStorageCache has been deleted, creates a new one.
   CacheStorageCacheHandle GetLoadedCache(const std::u16string& cache_name);
 
+  void CloseCache(std::unique_ptr<CacheStorageCache> cache,
+                  bool also_delete_cache_dir);
+  void OnCacheClosed(CacheStorageCache* cache, bool also_delete_cache_dir);
+
   // Initializer and its callback are below.
   void LazyInit();
   void LazyInitImpl();
@@ -325,6 +331,11 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   // have been released.
   std::map<CacheStorageCache*, std::unique_ptr<CacheStorageCache>>
       doomed_caches_;
+
+  // Caches that are no longer referenced and are waiting for their backends to
+  // finish closing.
+  std::set<std::unique_ptr<CacheStorageCache>, base::UniquePtrComparator>
+      closing_caches_;
 
   // The cache index data.
   std::unique_ptr<CacheStorageIndex> cache_index_;
