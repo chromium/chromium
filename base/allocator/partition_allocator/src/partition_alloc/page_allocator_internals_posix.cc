@@ -272,7 +272,8 @@ WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions(uintptr_t address_limit) {
   return result;
 }
 
-#elif PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#elif PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS) || \
+    PA_BUILDFLAG(IS_ANDROID)
 
 WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions(uintptr_t address_limit) {
   // TODO(40925855): Support larger `mmap_min_addr`.

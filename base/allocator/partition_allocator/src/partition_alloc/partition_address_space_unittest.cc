@@ -21,7 +21,9 @@ TEST(PartitionAddressSpaceTest, ZeroSegment) {
       static_cast<size_t>(PA_CONFIG(USER_SPACE_ZERO_SEGMENT_SIZE_MB)) * 1024 *
       1024;
   // We assume that we are always able to acquire the configured size when
-  // executing a unit test.
+  // executing a unit test. On Android, this test runs in a raw native
+  // executable (`base_unittests_android_death_tests`) without ART, so it works
+  // even prior to Android 17 (which introduced the Native Zygote).
   EXPECT_GE(size, expected_min_size);
 #else
   EXPECT_EQ(size, 0u);
