@@ -172,6 +172,53 @@ def extract_jdk_sources(dest_dir, prefix='java.base/java/util/'):
     return sorted(ret)
 
 
+# jdk.internal.jrtfs.SystemImage computes the path to lib/modules (used by the
+# jrt:/ filesystem) in its static initializer, from its code source. With
+# Oracle GraalVM, this runs at image build time, and so bakes in the path of
+# the GraalVM used to build the image. Patch it to use java.home instead, and
+# initialize it at run time.
+_FIND_HOME_SIGNATURE = '    private static String findHome() {\n'
+_FIND_HOME_PATCH = (
+    _FIND_HOME_SIGNATURE + '        if (Boolean.TRUE) {\n'
+    '            return System.getProperty("java.home");\n'
+    '        }\n'
+)
+
+
+def _jrt_file_system_args(graal_home, work_dir):
+    """Returns native-image args needed for the jrt:/ filesystem to work."""
+    src_dir = os.path.join(work_dir, 'java.base_src')
+    system_image_java = os.path.join(
+        src_dir, 'jdk', 'internal', 'jrtfs', 'SystemImage.java'
+    )
+    src_zip = os.path.join(graal_home, 'lib', 'src.zip')
+    with zipfile.ZipFile(src_zip) as z:
+        data = z.read('java.base/jdk/internal/jrtfs/SystemImage.java')
+    data = data.decode('utf-8')
+    if _FIND_HOME_SIGNATURE not in data:
+        raise RuntimeError('Failed to patch SystemImage.java')
+    os.makedirs(os.path.dirname(system_image_java))
+    pathlib.Path(system_image_java).write_text(
+        data.replace(_FIND_HOME_SIGNATURE, _FIND_HOME_PATCH, 1),
+        encoding='utf-8',
+    )
+    classes_dir = os.path.join(work_dir, 'java.base_classes')
+    common.run_cmd(
+        [
+            os.path.join(graal_home, 'bin', 'javac'),
+            '--patch-module',
+            f'java.base={src_dir}',
+            '-d',
+            classes_dir,
+            system_image_java,
+        ]
+    )
+    return [
+        f'-J--patch-module=java.base={classes_dir}',
+        '--initialize-at-run-time=jdk.internal.jrtfs.SystemImage',
+    ]
+
+
 def build_native_image(
     jar_path,
     output_path,
@@ -199,6 +246,8 @@ def build_native_image(
       extra_reachability_metadata: Optional dict with 'reflection' and/or
           'resources' lists to merge into reachability-metadata.json.
       extra_native_image_args: Optional list of extra flags for native-image.
+          If this contains -H:+AllowJRTFileSystem, the jrt:/ filesystem reads
+          $java.home/lib/modules.
           Unless this contains a -march= flag, -march=compatibility is used.
       pgo_args_list: Optional list of argv lists to run an instrumented binary
           with in order to collect profiles for profile-guided optimizations.
@@ -298,7 +347,11 @@ def build_native_image(
         # do not pollute output_prefix.
         full_cp = os.pathsep.join([os.path.abspath(wrapper_dir)] + cp_entries)
 
-        extra_native_image_args = extra_native_image_args or []
+        extra_native_image_args = list(extra_native_image_args or [])
+        if '-H:+AllowJRTFileSystem' in extra_native_image_args:
+            extra_native_image_args += _jrt_file_system_args(
+                graal_home, work_dir
+            )
 
         def run_native_image(output, extra_args):
             ni_cmd = [
@@ -356,4 +409,11 @@ def build_native_image(
             os.path.join(work_dir, os.path.basename(output_path))
         )
         run_native_image(temp_output, final_args)
+        # Ensure the path of this GraalVM's lib/modules has not been baked in.
+        modules_path = os.path.join(graal_home, 'lib', 'modules')
+        if (
+            modules_path.encode('utf-8')
+            in pathlib.Path(temp_output).read_bytes()
+        ):
+            raise RuntimeError(f'{output_path} contains {modules_path}')
         shutil.copy(temp_output, output_path)

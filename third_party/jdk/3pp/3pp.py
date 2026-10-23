@@ -54,16 +54,6 @@ public class Sample {
 }
 """
 
-# jdk.internal.jrtfs.SystemImage computes java.home from its code source, which
-# for a native-image is the executable. Make it always use java.home instead,
-# so that the jrt:/ filesystem (needed for --release) reads the JDK that the
-# binary is packaged with.
-_FIND_HOME_SIGNATURE = '    private static String findHome() {\n'
-_FIND_HOME_PATCH = (_FIND_HOME_SIGNATURE + '        if (Boolean.TRUE) {\n'
-                    '            return System.getProperty("java.home");\n'
-                    '        }\n')
-
-
 def _platform():
     return os.environ['_3PP_PLATFORM']
 
@@ -105,28 +95,6 @@ def _build_native_javac(jdk_home):
     os.unlink(os.path.join(jdk_compiler_dir, 'module-info.class'))
 
     src_zip = os.path.join(jdk_home, 'lib', 'src.zip')
-    system_image_src = os.path.join(work_dir, 'java.base_src')
-    system_image_java = os.path.join(system_image_src, 'jdk', 'internal',
-                                     'jrtfs', 'SystemImage.java')
-    with zipfile.ZipFile(src_zip) as z:
-        data = z.read('java.base/jdk/internal/jrtfs/SystemImage.java')
-    data = data.decode('utf-8')
-    if _FIND_HOME_SIGNATURE not in data:
-        raise RuntimeError('Failed to patch SystemImage.java')
-    os.makedirs(os.path.dirname(system_image_java))
-    pathlib.Path(system_image_java).write_text(
-        data.replace(_FIND_HOME_SIGNATURE, _FIND_HOME_PATCH, 1),
-        encoding='utf-8',
-    )
-    java_base_patch_dir = os.path.join(work_dir, 'java.base_classes')
-    common.run_cmd([
-        os.path.join(jdk_home, 'bin', 'javac'),
-        '--patch-module',
-        f'java.base={system_image_src}',
-        '-d',
-        java_base_patch_dir,
-        system_image_java,
-    ])
 
     sample_java = os.path.join(work_dir, 'Sample.java')
     pathlib.Path(sample_java).write_text(_SAMPLE_JAVA, encoding='utf-8')
@@ -170,9 +138,8 @@ def _build_native_javac(jdk_home):
         java_home_relative_to_executable='..',
         extra_native_image_args=[
             f'-J--patch-module=jdk.compiler={jdk_compiler_dir}',
-            f'-J--patch-module=java.base={java_base_patch_dir}',
-            '--initialize-at-run-time=jdk.internal.jrtfs.SystemImage',
-            # Required to read lib/modules (for --release).
+            # Required to read lib/modules (for --release). graalvm.py makes
+            # it read $java.home/lib/modules.
             '-H:+UnlockExperimentalVMOptions',
             '-H:+AllowJRTFileSystem',
         ],
