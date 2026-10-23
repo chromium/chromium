@@ -2120,7 +2120,7 @@ Chromium is unable to recover your settings.
           Select "Pin to toolbar"
         </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3" desc="The body text of the third step of the Contextual Tasks tutorial.">
-          Success! You can now easily ask questions as you browse with Google Search in side panel
+          Success! You can now easily ask questions as you browse with Google Search AI Mode
         </message>
         <!-- Overlay WebUI Strings -->
         <message name="IDS_LENS_OVERLAY_COPY"
@@ -3678,10 +3678,10 @@ If this page isn’t working as expected, try allowing optimization.
 
       <!-- Contextual Tasks -->
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP" desc="The tooltip text used for the contextual task ephemeral toolbar button when the side panel is open.">
-        Close Search in side panel
+        Close Google Search AI Mode
       </message>
       <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP" desc="The tooltip text used for contextual task toolbar button">
-        Reopen Search in side panel
+        Reopen Google Search AI Mode
       </message>
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and hiding the side panel.">
         Hide side panel
