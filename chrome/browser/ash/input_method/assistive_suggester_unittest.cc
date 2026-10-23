@@ -163,49 +163,7 @@ class AssistiveSuggesterTest : public testing::Test {
   std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
 };
 
-TEST_F(AssistiveSuggesterTest, EmojiSuggestion_UserPrefEnabledFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(
-      ash::prefs::kEmojiSuggestionEnterpriseAllowed, true);
-  profile_->GetPrefs()->SetBoolean(ash::prefs::kEmojiSuggestionEnabled, false);
-
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest, EmojiSuggestion_EnterprisePrefEnabledFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(
-      ash::prefs::kEmojiSuggestionEnterpriseAllowed, false);
-  profile_->GetPrefs()->SetBoolean(ash::prefs::kEmojiSuggestionEnabled, true);
-
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest, EmojiSuggestion_BothPrefsEnabledFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(
-      ash::prefs::kEmojiSuggestionEnterpriseAllowed, false);
-  profile_->GetPrefs()->SetBoolean(ash::prefs::kEmojiSuggestionEnabled, false);
-
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest,
-       MultiWordEnabledWhenFeatureFlagEnabledAndPrefEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{});
-
+TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenPrefEnabled) {
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
                         /*diacritics_on_longpress_enabled=*/false);
 
@@ -214,30 +172,10 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-TEST_F(AssistiveSuggesterTest,
-       MultiWordDisabledWhenFeatureFlagEnabledAndPrefDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{});
-
+TEST_F(AssistiveSuggesterTest, MultiWordDisabledWhenPrefDisabled) {
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
 
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest,
-       MultiWordDisabledWhenFeatureFlagDisabledAndPrefDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
-
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
-                        /*diacritics_on_longpress_enabled=*/false);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
@@ -258,17 +196,6 @@ TEST_F(AssistiveSuggesterTest,
                         /*diacritics_on_longpress_enabled=*/false);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest,
-       AssistiveControlVLongpressPrefDisabled_AssistiveFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
-                        /*diacritics_on_longpress_enabled=*/false);
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
@@ -293,10 +220,6 @@ TEST_F(AssistiveSuggesterTest, RecordPKDiacriticsPrefDisabledOnActivate) {
 }
 
 TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -311,10 +234,6 @@ TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
 }
 
 TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsNotAllowed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -334,10 +253,6 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsNotAllowed) {
 }
 
 TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -359,10 +274,6 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
 
 TEST_F(AssistiveSuggesterTest,
        RecordMultiWordTextInputAsDisabledByUnsupportedLang) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -383,10 +294,6 @@ TEST_F(AssistiveSuggesterTest,
 }
 
 TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -773,16 +680,11 @@ class AssistiveSuggesterMultiWordTest : public testing::Test {
             .multi_word_suggestions = true,
         }));
 
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAssistMultiWord},
-        /*disabled_features=*/{});
-
     SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
                           /*diacritics_on_longpress_enabled=*/false);
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AssistiveSuggester> assistive_suggester_;
   std::unique_ptr<FakeSuggestionHandler> suggestion_handler_;
@@ -810,25 +712,6 @@ TEST_F(AssistiveSuggesterMultiWordTest, OnSuggestionExistShowSuggestion) {
 
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"hello there");
-}
-
-TEST_F(AssistiveSuggesterMultiWordTest, OnDisabledFlagShouldNotShowSuggestion) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  std::vector<AssistiveSuggestion> suggestions = {
-      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
-                          .type = AssistiveSuggestionType::kMultiWord,
-                          .text = "hello there"}};
-
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-  assistive_suggester_->OnFocus(5, empty_context);
-  assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
-                                                     TextContext(""));
-
-  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
 }
 
 TEST_F(AssistiveSuggesterMultiWordTest, ShouldNotSuggestWhenSwitchDisabled) {
@@ -868,26 +751,6 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 1);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Match",
                                        AssistiveType::kMultiWordPrediction, 1);
-}
-
-TEST_F(AssistiveSuggesterMultiWordTest,
-       MatchMetricNotRecordedWhenMultiWordFlagDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  std::vector<AssistiveSuggestion> suggestions = {
-      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
-                          .type = AssistiveSuggestionType::kMultiWord,
-                          .text = "hello there"}};
-
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-  assistive_suggester_->OnFocus(5, empty_context);
-  assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
-                                                     TextContext(""));
-
-  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 0);
 }
 
 TEST_F(AssistiveSuggesterMultiWordTest,

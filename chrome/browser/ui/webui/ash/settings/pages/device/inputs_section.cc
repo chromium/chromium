@@ -285,10 +285,8 @@ void AddInputMethodOptionsLoadTimeData(
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("isPhysicalKeyboardAutocorrectAllowed",
                           is_physical_keyboard_autocorrect_allowed);
-  html_source->AddBoolean(
-      "isPhysicalKeyboardPredictiveWritingAllowed",
-      base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
-          is_physical_keyboard_predictive_writing_allowed);
+  html_source->AddBoolean("isPhysicalKeyboardPredictiveWritingAllowed",
+                          is_physical_keyboard_predictive_writing_allowed);
 }
 
 }  // namespace

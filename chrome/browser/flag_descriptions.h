@@ -7952,11 +7952,6 @@ inline constexpr char kIdbSqliteBackingStoreDescription[] =
     "from existing backing stores, including LevelDB stores or SQLite stores "
     "with older schemas; use at your own peril.";
 
-inline constexpr char kImeAssistMultiWordName[] =
-    "Enable assistive multi word suggestions";
-inline constexpr char kImeAssistMultiWordDescription[] =
-    "Enable assistive multi word suggestions for native IME";
-
 inline constexpr char kIppFirstSetupForUsbPrintersName[] =
     "Try to setup USB printers with IPP first";
 inline constexpr char kIppFirstSetupForUsbPrintersDescription[] =

@@ -60,7 +60,6 @@ namespace {
 namespace mojom = ::ash::ime::mojom;
 
 struct InputFieldContext {
-  bool multiword_enabled = false;
   bool multiword_allowed = false;
 };
 
@@ -550,8 +549,6 @@ void OnError() {
 InputFieldContext CreateInputFieldContext(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   return InputFieldContext{
-      .multiword_enabled =
-          base::FeatureList::IsEnabled(features::kAssistMultiWord),
       .multiword_allowed = enabled_suggestions.multi_word_suggestions};
 }
 
@@ -559,7 +556,7 @@ mojom::TextPredictionMode GetTextPredictionMode(
     std::string_view engine_id,
     const InputFieldContext& context,
     PrefService* prefs) {
-  return context.multiword_enabled && context.multiword_allowed &&
+  return context.multiword_allowed &&
                  IsPredictiveWritingEnabled(prefs, engine_id)
              ? mojom::TextPredictionMode::kEnabled
              : mojom::TextPredictionMode::kDisabled;
@@ -814,8 +811,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
       // The FST Mojo engine is only needed if autocorrect is enabled ...
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
       // ... or if predictive writing is enabled.
-      !(base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
-        IsPredictiveWritingEnabled(prefs_, engine_id))) {
+      !IsPredictiveWritingEnabled(prefs_, engine_id)) {
     connection_factory_.reset();
     remote_manager_.reset();
     input_method_.reset();
@@ -926,9 +922,7 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
                             settings);
 
   InputFieldContext input_field_context =
-      base::FeatureList::IsEnabled(features::kAssistMultiWord)
-          ? CreateInputFieldContext(enabled_suggestions)
-          : InputFieldContext{};
+      CreateInputFieldContext(enabled_suggestions);
   const bool is_normal_screen =
       InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
       InputMethodManager::UIStyle::kNormal;

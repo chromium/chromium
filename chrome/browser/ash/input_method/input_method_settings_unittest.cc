@@ -4,12 +4,9 @@
 
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom-shared.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -54,7 +51,6 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsDefault) {
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsWithMultiwordEnabled) {
-  base::test::ScopedFeatureList features;
   TestingPrefServiceSimple prefs;
   base::DictValue dict;
   dict.SetByDottedPath(base::StrCat({kUsEnglishEngineId,
@@ -75,7 +71,6 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsWithMultiwordEnabled) {
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsWithMultiwordDisabled) {
-  base::test::ScopedFeatureList features;
   TestingPrefServiceSimple prefs;
   base::DictValue dict;
   dict.SetByDottedPath(base::StrCat({kUsEnglishEngineId,
@@ -92,35 +87,6 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsWithMultiwordDisabled) {
   ASSERT_TRUE(settings->is_latin_settings());
   const auto& latin_settings = *settings->get_latin_settings();
   EXPECT_TRUE(latin_settings.autocorrect);
-  EXPECT_FALSE(latin_settings.predictive_writing);
-}
-
-TEST(CreateSettingsFromPrefsTest,
-     PredictiveWritingEnabledWhenMultiWordAllowedAndEnabled) {
-  base::test::ScopedFeatureList features;
-  TestingPrefServiceSimple prefs;
-  base::DictValue dict;
-  RegisterTestingPrefs(prefs, dict);
-
-  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
-
-  ASSERT_TRUE(settings->is_latin_settings());
-  const auto& latin_settings = *settings->get_latin_settings();
-  EXPECT_TRUE(latin_settings.predictive_writing);
-}
-
-TEST(CreateSettingsFromPrefsTest,
-     PredictiveWritingDisabledWhenMultiwordDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({}, {features::kAssistMultiWord});
-  TestingPrefServiceSimple prefs;
-  base::DictValue dict;
-  RegisterTestingPrefs(prefs, dict);
-
-  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
-
-  ASSERT_TRUE(settings->is_latin_settings());
-  const auto& latin_settings = *settings->get_latin_settings();
   EXPECT_FALSE(latin_settings.predictive_writing);
 }
 

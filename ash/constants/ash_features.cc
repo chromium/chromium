@@ -66,9 +66,6 @@ BASE_FEATURE(kArcAdbSideloadingFeature,
 BASE_FEATURE(kAshSessionRestoreDeferOccludedActiveTabLoad,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable assistive multi word suggestions.
-BASE_FEATURE(kAssistMultiWord, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable the audio focus enforcement toggle in settings.
 BASE_FEATURE(kAudioFocusSetting, base::FEATURE_DISABLED_BY_DEFAULT);
 

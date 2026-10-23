@@ -285,26 +285,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
         /*disabled_features=*/DisabledFeatures());
   }
 
-  void EnableDefaultFeatureListWithMultiWord() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            features::kAssistMultiWord,
-        },
-        /*disabled_features=*/DisabledFeatures());
-  }
-
-  void EnableDefaultFeatureListWithMultiwordDisabled() {
-    feature_list_.Reset();
-
-    std::vector<base::test::FeatureRef> disabled_features = DisabledFeatures();
-    disabled_features.push_back(features::kAssistMultiWord);
-
-    feature_list_.InitWithFeatures(/*enabled_features=*/{},
-                                   /*disabled_features=*/disabled_features);
-  }
-
   base::test::ScopedFeatureList feature_list_;
 
  private:
@@ -357,32 +337,10 @@ TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
 }
 
 TEST_F(NativeInputMethodEngineTest,
-       PredictiveWritingDoesNotLaunchImeServiceWithMultiWordFlagDisabled) {
-  TestingProfile testing_profile;
-  SetEmptyPrefs(testing_profile);
-  EnableDefaultFeatureListWithMultiwordDisabled();
-  SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
-                        /*predictive_writing_enabled=*/true);
-
-  testing::StrictMock<MockInputMethod> mock_input_method;
-  InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_method));
-  NativeInputMethodEngine engine;
-  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
-                    /*extension_id=*/"", &testing_profile);
-
-  engine.Enable(kEngineIdUs);
-  engine.FlushForTesting();  // ensure input_method is connected.
-  EXPECT_FALSE(engine.IsConnectedForTesting());
-
-  InputMethodManager::Shutdown();
-}
-
-TEST_F(NativeInputMethodEngineTest,
        PredictiveWritingDoesNotLaunchImeServiceWithNonEnUsEngineId) {
   TestingProfile testing_profile;
   SetEmptyPrefs(testing_profile);
-  EnableDefaultFeatureListWithMultiWord();
+  EnableDefaultFeatureList();
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
                         /*predictive_writing_enabled=*/true);
 
@@ -404,7 +362,7 @@ TEST_F(NativeInputMethodEngineTest,
        PredictiveWritingLaunchesImeServiceWithEnglishEngineId) {
   TestingProfile testing_profile;
   SetEmptyPrefs(testing_profile);
-  EnableDefaultFeatureListWithMultiWord();
+  EnableDefaultFeatureList();
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
                         /*predictive_writing_enabled=*/true);
 
@@ -426,11 +384,6 @@ TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
   TestingProfile testing_profile;
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
                         /*predictive_writing_enabled=*/false);
-
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
 
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(
@@ -596,7 +549,7 @@ TEST_F(NativeInputMethodEngineTest,
   SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/true);
-  EnableDefaultFeatureListWithMultiWord();
+  EnableDefaultFeatureList();
 
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(
@@ -644,7 +597,7 @@ TEST_F(
   SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/true);
-  EnableDefaultFeatureListWithMultiWord();
+  EnableDefaultFeatureList();
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
@@ -728,8 +681,7 @@ TEST_P(AutocorrectByDefaultDisabledByInputMethodMetadata,
        DisablesAutocorrectInInputFieldSettingsWhenInvalidModelActivated) {
   const InputMethodMetadataCase& test_case = GetParam();
   feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      {}, {features::kImeRuleConfig, features::kAssistMultiWord});
+  feature_list_.InitWithFeatures({}, {features::kImeRuleConfig});
   TestingProfile testing_profile;
   SetPhysicalKeyboardAutocorrectAsEnabledByDefault(testing_profile.GetPrefs(),
                                                    kEngineIdUs);
@@ -763,7 +715,7 @@ TEST_P(AutocorrectByDefaultDisabledByInputMethodMetadata,
                         *ime::mojom::InputMethodSettings::NewLatinSettings(
                             ime::mojom::LatinSettings::New(
                                 /*autocorrect=*/false,
-                                /*predictive_writing=*/false)));
+                                /*predictive_writing=*/true)));
               std::move(callback).Run(
                   true,
                   ime::mojom::InputMethodMetadata::New(
@@ -790,7 +742,7 @@ TEST_P(AutocorrectByDefaultDisabledByInputMethodMetadata,
                         *ime::mojom::InputMethodSettings::NewLatinSettings(
                             ime::mojom::LatinSettings::New(
                                 /*autocorrect=*/test_case.autocorrect_enabled,
-                                /*predictive_writing=*/false)));
+                                /*predictive_writing=*/true)));
               std::move(callback).Run(
                   true,
                   ime::mojom::InputMethodMetadata::New(

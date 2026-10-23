@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/lobster/lobster_controller.h"
-#include "base/feature_list.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
@@ -71,15 +70,10 @@ void NativeInputMethodEngine::Initialize(
   autocorrect_manager_ = autocorrect_manager.get();
 
   auto suggestions_service_client =
-      base::FeatureList::IsEnabled(features::kAssistMultiWord)
-          ? std::make_unique<SuggestionsServiceClient>()
-          : nullptr;
+      std::make_unique<SuggestionsServiceClient>();
 
-  auto suggestions_collector =
-      base::FeatureList::IsEnabled(features::kAssistMultiWord)
-          ? std::make_unique<SuggestionsCollector>(
-                assistive_suggester_, std::move(suggestions_service_client))
-          : nullptr;
+  auto suggestions_collector = std::make_unique<SuggestionsCollector>(
+      assistive_suggester_, std::move(suggestions_service_client));
 
   EditorMediator* editor_event_sink =
       chromeos::features::IsOrcaEnabled()

@@ -6,9 +6,7 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
@@ -29,31 +27,6 @@ using ime::AssistiveSuggestionMode;
 using ime::AssistiveSuggestionType;
 
 constexpr size_t kMaxNumberCharsSent = 100;
-
-MultiWordExperimentGroup GetExperimentGroup(const std::string& finch_trial) {
-  if (finch_trial == "gboard") {
-    return MultiWordExperimentGroup::kGboard;
-  }
-  if (finch_trial == "gboard_relaxed_a") {
-    return MultiWordExperimentGroup::kGboardRelaxedA;
-  }
-  if (finch_trial == "gboard_relaxed_b") {
-    return MultiWordExperimentGroup::kGboardRelaxedB;
-  }
-  if (finch_trial == "gboard_relaxed_c") {
-    return MultiWordExperimentGroup::kGboardRelaxedC;
-  }
-  if (finch_trial == "gboard_d") {
-    return MultiWordExperimentGroup::kGboardD;
-  }
-  if (finch_trial == "gboard_e") {
-    return MultiWordExperimentGroup::kGboardE;
-  }
-  if (finch_trial == "gboard_f") {
-    return MultiWordExperimentGroup::kGboardF;
-  }
-  return MultiWordExperimentGroup::kGboardE;
-}
 
 chromeos::machine_learning::mojom::TextSuggestionMode ToTextSuggestionModeMojom(
     AssistiveSuggestionMode suggestion_mode) {
@@ -128,9 +101,7 @@ void RecordCandidatesGenerated(AssistiveSuggestionMode suggestion_mode) {
 }  // namespace
 
 SuggestionsServiceClient::SuggestionsServiceClient() {
-  std::string field_trial = base::GetFieldTrialParamValueByFeature(
-      features::kAssistMultiWord, "group");
-  auto spec = TextSuggesterSpec::New(GetExperimentGroup(field_trial));
+  auto spec = TextSuggesterSpec::New(MultiWordExperimentGroup::kGboardE);
 
   chromeos::machine_learning::ServiceConnection::GetInstance()
       ->GetMachineLearningService()

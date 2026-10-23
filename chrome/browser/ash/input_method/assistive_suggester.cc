@@ -6,12 +6,10 @@
 #include <string>
 
 #include "ash/clipboard/clipboard_history_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
@@ -186,8 +184,7 @@ void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
 }
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
-  return base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
-         IsPredictiveWritingPrefEnabled(*profile_->GetPrefs(),
+  return IsPredictiveWritingPrefEnabled(*profile_->GetPrefs(),
                                         active_engine_id_);
 }
 
@@ -199,9 +196,6 @@ bool AssistiveSuggester::IsDiacriticsOnPhysicalKeyboardLongpressEnabled() {
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  if (!base::FeatureList::IsEnabled(features::kAssistMultiWord)) {
-    return DisabledReason::kFeatureFlagOff;
-  }
   if (!profile_->GetPrefs()->GetBoolean(
           prefs::kAssistPredictiveWritingEnabled)) {
     return DisabledReason::kUserSettingsOff;
@@ -408,10 +402,8 @@ void AssistiveSuggester::ProcessExternalSuggestions(
 
 void AssistiveSuggester::RecordTextInputStateMetrics(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  if (base::FeatureList::IsEnabled(features::kAssistMultiWord)) {
-    RecordMultiWordTextInputState(profile_->GetPrefs(), active_engine_id_,
-                                  enabled_suggestions);
-  }
+  RecordMultiWordTextInputState(profile_->GetPrefs(), active_engine_id_,
+                                enabled_suggestions);
 }
 
 bool AssistiveSuggester::WithinGrammarFragment() {
@@ -507,10 +499,8 @@ void AssistiveSuggester::OnActivate(const std::string& engine_id) {
   active_engine_id_ = engine_id;
   longpress_diacritics_suggester_.SetEngineId(engine_id);
 
-  if (base::FeatureList::IsEnabled(features::kAssistMultiWord)) {
-    RecordAssistiveUserPrefForMultiWord(
-        IsPredictiveWritingPrefEnabled(*profile_->GetPrefs(), engine_id));
-  }
+  RecordAssistiveUserPrefForMultiWord(
+      IsPredictiveWritingPrefEnabled(*profile_->GetPrefs(), engine_id));
   if (IsUsEnglishEngine(active_engine_id_)) {
     RecordAssistiveUserPrefForDiacriticsOnLongpress(
         IsDiacriticsOnLongpressPrefEnabled(profile_->GetPrefs(), engine_id));
