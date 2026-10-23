@@ -359,6 +359,7 @@ if (!is_android) {
       "//components/send_tab_to_self",
       "//components/send_tab_to_self:features",
       "//components/send_tab_to_self:test_support",
+      "//components/spellcheck/common",
       "//components/tabs:test_support",
       "//content/public/browser",
       "//content/test:test_support",

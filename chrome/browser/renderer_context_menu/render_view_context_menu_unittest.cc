@@ -93,6 +93,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -3641,6 +3642,53 @@ TEST_F(RenderViewContextMenuOrderTest, EditableTextMenu_WithSelectionOrder) {
 #endif
   expected.push_back(kSeparatorId);
   expected.push_back(IDC_CONTENT_CONTEXT_INSPECTELEMENT);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAreArray(expected));
+}
+
+TEST_F(RenderViewContextMenuOrderTest, EditableTextMenu_MisspelledWordOrder) {
+#if BUILDFLAG(IS_WIN)
+  // On Windows, SpellingMenuObserver defaults to asynchronously querying the OS
+  // spellchecker via SpellcheckService (which is null in TestingProfile,
+  // causing it to return early without adding any spelling items). Disable the
+  // Windows browser spellchecker so it synchronously populates suggestions from
+  // `params.dictionary_suggestions` like other platforms.
+  spellcheck::ScopedDisableBrowserSpellCheckerForTesting
+      disable_browser_spell_checker;
+#endif
+  content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
+  params.page_url = GURL("https://www.example.com/");
+  params.form_control_type = blink::mojom::FormControlType::kInputText;
+  params.misspelled_word = u"teh";
+  params.dictionary_suggestions = {u"the", u"ten"};
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  std::vector<int> expected = {
+      // One menu item is added per entry in `params.dictionary_suggestions`
+      // ("the" and "ten"), using sequential IDs starting at
+      // IDC_SPELLCHECK_SUGGESTION_0.
+      IDC_SPELLCHECK_SUGGESTION_0,
+      IDC_SPELLCHECK_SUGGESTION_0 + 1,
+      kSeparatorId,
+      IDC_SPELLCHECK_ADD_TO_DICTIONARY,
+      IDC_CONTENT_CONTEXT_SPELLING_TOGGLE,
+      kSeparatorId,
+#if BUILDFLAG(IS_MAC)
+      IDC_CONTENT_CONTEXT_UNDO,
+      IDC_CONTENT_CONTEXT_REDO,
+      kSeparatorId,
+#endif
+      IDC_CONTENT_CONTEXT_CUT,
+      IDC_CONTENT_CONTEXT_COPY,
+      IDC_CONTENT_CONTEXT_PASTE,
+#if BUILDFLAG(IS_CHROMEOS)
+      IDC_CONTENT_PASTE_FROM_CLIPBOARD,
+#endif
+      IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+      kSeparatorId,
+      IDC_CONTENT_CONTEXT_INSPECTELEMENT,
+  };
 
   EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
               testing::ElementsAreArray(expected));
