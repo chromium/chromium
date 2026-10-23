@@ -1594,10 +1594,6 @@ TEST_F(SyncServiceImplTest,
 // https://crbug.com/534244680.
 TEST_F(SyncServiceImplTest,
        DisableSyncOnClientCopiesSyncPreferencesToTransportMode) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kSyncCopyPreferencesToTransportModeOnServerForcedDisable);
-
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   std::vector<FakeControllerInitParams> params;

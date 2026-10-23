@@ -200,11 +200,6 @@ BASE_DECLARE_FEATURE(kSyncFixWebSigninSessionDurationForShortLivedSessions);
 // channel labels (e.g., "(Canary)").
 BASE_DECLARE_FEATURE(kSyncDisambiguateDeviceNamesWithChannel);
 
-// If enabled, copies selected types preferences from global profile preferences
-// to account-keyed preferences upon a DISABLE_SYNC_ON_CLIENT protocol error
-// before entering transport mode.
-BASE_DECLARE_FEATURE(kSyncCopyPreferencesToTransportModeOnServerForcedDisable);
-
 // Authenticate the Initialization Vector (IV) in Nigori encryption.
 BASE_DECLARE_FEATURE(kSyncNigoriAuthenticateIV);
 
