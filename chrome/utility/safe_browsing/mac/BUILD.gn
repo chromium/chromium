@@ -16,6 +16,13 @@ rust_static_library("dmg_parser") {
     "rust/lib.rs",
     "rust/udif.rs",
   ]
+  deps = [
+    "//third_party/rust/base64/v0_22:lib",
+    "//third_party/rust/bytemuck/v1:lib",
+    "//third_party/rust/log/v0_4:lib",
+    "//third_party/rust/static_assertions/v1:lib",
+    "//third_party/rust/xml/v1:lib",
+  ]
 }
 
 rust_static_library("dmg_parser_unittests") {
@@ -28,6 +35,8 @@ rust_static_library("dmg_parser_unittests") {
   deps = [
     ":dmg_parser",
     "//testing/rust_gtest_interop",
+    "//third_party/rust/base64/v0_22:lib",
+    "//third_party/rust/bytemuck/v1:lib",
   ]
 }
 

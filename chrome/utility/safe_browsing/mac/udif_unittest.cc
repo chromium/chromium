@@ -32,7 +32,7 @@ namespace {
 constexpr std::array<const std::string_view, 8> kGPTExpectedPartitions = {
     "MBR",
     "Primary GPT Header",
-    "Primary GPT Tabler",
+    "Primary GPT Table",
     "Apple_Free",
     "Apple_HFS",
     "Apple_Free",
@@ -133,10 +133,6 @@ class UDIFParserTest
 };
 
 TEST_P(UDIFParserTest, ParseUDIF) {
-  if (IsRustEnabled()) {
-    GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust UDIFParser "
-                    "is implemented.";
-  }
   const UDIFTestCase& test_case = GetTestCase();
 
   base::File file;
@@ -151,7 +147,18 @@ TEST_P(UDIFParserTest, ParseUDIF) {
   if (!expected_parse_success)
     return;
 
-  EXPECT_EQ(test_case.expected_partitions.size(), udif.GetNumberOfPartitions());
+  ASSERT_EQ(test_case.expected_partitions.size(), udif.GetNumberOfPartitions());
+
+  for (size_t i = 0; i < udif.GetNumberOfPartitions(); ++i) {
+    SCOPED_TRACE(base::StringPrintf("partition %zu", i));
+    EXPECT_EQ(test_case.expected_partitions[i], udif.GetPartitionType(i));
+  }
+
+  if (IsRustEnabled()) {
+    // TODO(crbug.com/575525008): Remove early return once Rust
+    // UDIFPartitionReadStream is implemented.
+    return;
+  }
 
   for (size_t i = 0; i < udif.GetNumberOfPartitions(); ++i) {
     SCOPED_TRACE(base::StringPrintf("partition %zu", i));

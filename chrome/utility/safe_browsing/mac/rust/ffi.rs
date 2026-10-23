@@ -208,7 +208,7 @@ unsafe fn new_udif_parser(stream: *mut ffi::ReadStream) -> Box<RustUdifParser> {
 
 impl RustUdifParser {
     fn parse(&mut self) -> bool {
-        match UdifParser::parse(self.stream.clone()) {
+        match UdifParser::try_new(self.stream.clone()) {
             Ok(parser) => {
                 self.parsed = Some(parser);
                 true
