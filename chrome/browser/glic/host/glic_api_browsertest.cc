@@ -960,9 +960,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetPinCandidatesSingleTab) {
   ExecuteJsTest();
 }
 
-// Flaky on Android and MSan.
-// TODO(crbug.com/554636751): Flaky on Linux.
-#if BUILDFLAG(IS_ANDROID) || defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX)
+// Flaky on MSan.
+// TODO(crbug.com/554636751): On Android, SlimWebView's non-associated
+// PageHandler::CreateGuest pipe can race ahead of the channel-associated
+// GuestViewHost::ViewCreated pipe, failing with "View was not registered".
+// Re-enable on Android once kGlicNoWebview (b/534807813) launches.
+#if BUILDFLAG(IS_ANDROID) || defined(MEMORY_SANITIZER)
 #define MAYBE_testGetPinCandidatesWithPanelClosed \
   DISABLED_testGetPinCandidatesWithPanelClosed
 #else
@@ -1136,8 +1139,16 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
       {second_tab->GetHandle()});
   ContinueJsTest();
 }
-// TODO(crbug.com/554315364): Fix flaky test.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testGetZoomLevel) {
+// TODO(crbug.com/554315364): On Android, SlimWebView's non-associated
+// PageHandler::CreateGuest pipe can race ahead of the channel-associated
+// GuestViewHost::ViewCreated pipe, failing with "View was not registered".
+// Re-enable on Android once kGlicNoWebview (b/534807813) launches.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_testGetZoomLevel DISABLED_testGetZoomLevel
+#else
+#define MAYBE_testGetZoomLevel testGetZoomLevel
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testGetZoomLevel) {
   // Confirm that the observer is notified through getZoomLevel of the initial
   // state, i.e. zoom level of 1.0.
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
