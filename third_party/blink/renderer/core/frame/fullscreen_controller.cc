@@ -366,7 +366,9 @@ void FullscreenController::RestoreBackgroundColorOverride() {
 void FullscreenController::NotifyFramesOfFullscreenEntry(bool granted) {
   // Notify all pending local frames in order whether or not we successfully
   // entered fullscreen.
-  for (LocalFrame* frame : *pending_frames_) {
+  HeapVector<Member<LocalFrame>> pending_frames(*pending_frames_);
+  pending_frames_->clear();
+  for (LocalFrame* frame : pending_frames) {
     if (frame) {
       if (Document* document = frame->GetDocument()) {
         Fullscreen::DidResolveEnterFullscreenRequest(*document, granted);
@@ -384,7 +386,6 @@ void FullscreenController::NotifyFramesOfFullscreenEntry(bool granted) {
       Fullscreen::DidResolveEnterFullscreenRequest(*document, granted);
     }
   }
-  pending_frames_->clear();
 }
 
 void FullscreenController::EnterFullscreenCallback(bool granted) {

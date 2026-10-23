@@ -116,7 +116,8 @@ void DOMTaskSignal::SignalPriorityChange(V8TaskPriority::Enum priority,
   const V8TaskPriority::Enum previous_priority = priority_;
   priority_ = priority;
 
-  for (AlgorithmHandle* handle : priority_change_algorithms_) {
+  HeapVector<Member<AlgorithmHandle>> algorithms(priority_change_algorithms_);
+  for (AlgorithmHandle* handle : algorithms) {
     handle->GetAlgorithm()->Run();
   }
 
@@ -127,12 +128,13 @@ void DOMTaskSignal::SignalPriorityChange(V8TaskPriority::Enum priority,
 
   if (auto* source_signal_manager = DynamicTo<SourceSignalCompositionManager>(
           *priority_composition_manager_.Get())) {
-    // Dependents can be added while dispatching events, but none are removed
-    // since having an active iterator will strongify weak references, making
-    // the following iteration safe. Signaling priority change on newly added
-    // dependent signals has no effect since the new priority is already set.
-    for (auto& abort_signal : source_signal_manager->GetDependentSignals()) {
-      To<DOMTaskSignal>(abort_signal.Get())
+    // Dependents can be added while dispatching events. Signaling priority
+    // change on newly added dependent signals has no effect since the new
+    // priority is already set, so iterating a snapshot is sufficient.
+    HeapVector<Member<AbortSignal>> dependent_signals(
+        source_signal_manager->GetDependentSignals());
+    for (AbortSignal* abort_signal : dependent_signals) {
+      To<DOMTaskSignal>(abort_signal)
           ->SignalPriorityChange(priority, exception_state);
     }
   }

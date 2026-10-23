@@ -821,8 +821,12 @@ void Page::SetVisibilityState(
   if (is_initial_state)
     return;
 
-  for (auto& observer : page_visibility_observer_set_) {
-    observer->PageVisibilityChanged();
+  HeapVector<Member<PageVisibilityObserver>> observers(
+      page_visibility_observer_set_);
+  for (auto& observer : observers) {
+    if (page_visibility_observer_set_.Contains(observer)) {
+      observer->PageVisibilityChanged();
+    }
   }
 
   if (main_frame_) {
