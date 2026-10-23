@@ -46,10 +46,10 @@ interface WebNNContext {
 
   // Similar to CreateTensor() above, except that it creates the tensor from
   // an existing shared image. The tensor must have WebGPUInterop usage.
-  // The mailbox must reference a valid shared image, and the provided SyncToken
-  // must be verified and obtained from the SharedImageInterface.
+  // The mailbox must reference a valid shared image, and the provided
+  // SyncTokens must be verified and obtained from the SharedImageInterface.
   CreateTensorFromMailbox(TensorInfo tensor_info, gpu.mojom.Mailbox mailbox,
-   gpu.mojom.SyncToken fence) => (CreateTensorResult result);
+   array<gpu.mojom.SyncToken> fences) => (CreateTensorResult result);
 
   // Execute the compiled platform graph identified by `graph`. The graph is
   // identified by a token rather than via the WebNNGraph interface to preserve

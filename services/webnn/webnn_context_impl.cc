@@ -429,10 +429,11 @@ mojo_base::BigBuffer WebNNContextImpl::WriteDataToDataPipeOrBigBuffer(
   return mojo_base::BigBuffer(src_span);
 }
 
-void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
-                                               const gpu::Mailbox& mailbox,
-                                               const gpu::SyncToken& fence,
-                                               CreateTensorCallback callback) {
+void WebNNContextImpl::CreateTensorFromMailbox(
+    mojom::TensorInfoPtr tensor_info,
+    const gpu::Mailbox& mailbox,
+    const std::vector<gpu::SyncToken>& fences,
+    CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("WebNNContextImpl::CreateTensorFromMailbox");
@@ -518,7 +519,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
           std::move(tensor_info), mailbox,
           WrapCallbackOnMojoSequence(std::move(callback)),
           std::move(scoped_trace)),
-      fence);
+      fences);
 }
 
 void WebNNContextImpl::Dispatch(
@@ -649,21 +650,23 @@ void WebNNContextImpl::OnLost(const std::string& reason) {
 
 void WebNNContextImpl::RunOrScheduleTaskWithThisContext(
     RunOrScheduleTaskCallback task,
-    const gpu::SyncToken& fence) {
+    std::vector<gpu::SyncToken> fences) {
   // Safe to use std::ref because `this` owns gpu_task_scheduler_ and
   // its deletion drops all pending tasks before the context is destroyed.
-  RunOrScheduleTask(base::BindOnce(std::move(task), std::ref(*this)), fence);
+  RunOrScheduleTask(base::BindOnce(std::move(task), std::ref(*this)),
+                    std::move(fences));
 }
 
 void WebNNContextImpl::RunOrScheduleTask(base::OnceClosure task,
-                                         const gpu::SyncToken& fence,
+                                         std::vector<gpu::SyncToken> fences,
                                          const gpu::SyncToken& release) {
   if (gpu_task_scheduler_) {
-    gpu_task_scheduler_->ScheduleGpuTask(std::move(task), fence, release);
+    gpu_task_scheduler_->ScheduleGpuTask(std::move(task), std::move(fences),
+                                         release);
     return;
   }
 
-  DCHECK(!fence.HasData());
+  DCHECK(fences.empty());
   DCHECK(!release.HasData());
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::move(task).Run();

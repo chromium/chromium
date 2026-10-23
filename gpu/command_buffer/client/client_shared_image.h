@@ -10,6 +10,7 @@
 #include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -86,6 +87,7 @@ class SharedImageTexture;
 class TestSharedImageInterface;
 class WebGPUTextureScopedAccess;
 class WebGPUBufferScopedAccess;
+class WebNNScopedAccess;
 
 struct ExportedSharedImage;
 
@@ -465,6 +467,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       uint64_t usage,
       webgpu::MailboxFlags mailbox_flags);
 
+  void BeginWebNNAccess(
+      base::FunctionRef<void(std::unique_ptr<WebNNScopedAccess>,
+                             const std::vector<SyncToken>&)> begin_access_fn,
+      const SyncToken& sync_token);
+
   // Pack the SharedImageExportResult.
   SharedImageExportResult EndImport(const SyncToken& sync_token);
   SharedImageExportResult EndImport(const std::vector<SyncToken>& sync_tokens);
@@ -505,6 +512,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   friend class media::VideoFrame;
   friend class WebGPUTextureScopedAccess;
   friend class WebGPUBufferScopedAccess;
+  friend class WebNNScopedAccess;
 
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageInfo& info,
@@ -847,6 +855,26 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT WebGPUBufferScopedAccess {
   raw_ptr<gpu::ClientSharedImage> shared_image_;
   uint32_t buffer_id_ = 0;
   uint32_t buffer_generation_ = 0;
+};
+
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT WebNNScopedAccess {
+ public:
+  WebNNScopedAccess(const WebNNScopedAccess&) = delete;
+  WebNNScopedAccess& operator=(const WebNNScopedAccess&) = delete;
+  WebNNScopedAccess(WebNNScopedAccess&&) = delete;
+  WebNNScopedAccess& operator=(WebNNScopedAccess&&) = delete;
+
+  ~WebNNScopedAccess();
+
+  static SyncToken EndAccess(std::unique_ptr<WebNNScopedAccess> scoped_access,
+                             base::FunctionRef<SyncToken()> end_access_fn);
+
+ private:
+  friend class ClientSharedImage;
+  explicit WebNNScopedAccess(scoped_refptr<ClientSharedImage> shared_image);
+
+  scoped_refptr<ClientSharedImage> shared_image_;
+  bool is_access_ended_ = false;
 };
 
 }  // namespace gpu

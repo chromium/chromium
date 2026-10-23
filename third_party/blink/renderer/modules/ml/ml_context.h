@@ -40,6 +40,7 @@
 
 namespace gpu {
 class ClientSharedImage;
+class WebNNScopedAccess;
 }  // namespace gpu
 
 namespace blink {
@@ -153,13 +154,15 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // reconnect; the next CreateWebNNGraphBuilder() triggers reconnection.
   void OnCompilerContextDisconnected();
 
-  void DidCreateWebNNTensor(webnn::ScopedTrace scoped_trace,
-                            ScriptPromiseResolver<blink::MLTensor>* resolver,
-                            webnn::OperandDescriptor validated_descriptor,
-                            webnn::MLTensorUsage usage,
-                            scoped_refptr<gpu::ClientSharedImage> shared_image,
-                            GPUDevice* gpu_device,
-                            webnn::mojom::blink::CreateTensorResultPtr result);
+  void DidCreateWebNNTensor(
+      webnn::ScopedTrace scoped_trace,
+      ScriptPromiseResolver<blink::MLTensor>* resolver,
+      webnn::OperandDescriptor validated_descriptor,
+      webnn::MLTensorUsage usage,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      std::unique_ptr<gpu::WebNNScopedAccess> webnn_scoped_access,
+      GPUDevice* gpu_device,
+      webnn::mojom::blink::CreateTensorResultPtr result);
 
   V8MLDeviceType device_type_;
   V8MLPowerPreference power_preference_;

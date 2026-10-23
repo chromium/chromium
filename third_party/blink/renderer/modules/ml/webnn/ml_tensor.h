@@ -29,6 +29,7 @@
 
 namespace gpu {
 class ClientSharedImage;
+class WebNNScopedAccess;
 }  // namespace gpu
 
 namespace blink {
@@ -54,6 +55,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
            webnn::OperandDescriptor descriptor,
            webnn::MLTensorUsage usage,
            scoped_refptr<gpu::ClientSharedImage> shared_image,
+           std::unique_ptr<gpu::WebNNScopedAccess> webnn_scoped_access,
            GPUDevice* gpu_device,
            webnn::mojom::blink::CreateTensorSuccessPtr create_tensor_success,
            base::PassKey<MLContext> pass_key);
@@ -153,6 +155,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
 
   // Exists when `WebNNTensor` is a tensor created for WebGPUInterop.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  std::unique_ptr<gpu::WebNNScopedAccess> webnn_scoped_access_;
   WeakMember<GPUDevice> gpu_device_;
 
   // Exists when this `WebNNTensor` has been exported to WebGPU.

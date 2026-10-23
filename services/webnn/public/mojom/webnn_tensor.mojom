@@ -79,8 +79,8 @@ interface WebNNTensor {
   // Returns access of an exportable `WebNNTensor` back to WebNN after the
   // renderer is finished with it.
   //
-  // WebNN execution will be deferred asynchronously until the provided fence
-  // has been released, ensuring that any renderer-side work is complete.
+  // WebNN execution will be deferred asynchronously until the provided fences
+  // have been released, ensuring that any renderer-side work is complete.
   //
   // This call is the counterpart to `ExportTensor()`. Ownership of an
   // exportable tensor may be passed back and forth between WebNN and the
@@ -89,5 +89,5 @@ interface WebNNTensor {
   // `flow_id` is the same ID used in `ExportTensor()`. This allows the GPU
   // process to terminate the cross-process trace flow, linking this import
   // back to the renderer-side export.
-  ImportTensor(uint64 flow_id, gpu.mojom.SyncToken fence);
+  ImportTensor(uint64 flow_id, array<gpu.mojom.SyncToken> fences);
 };

@@ -45,10 +45,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GpuTaskScheduler {
     return scheduler_task_runner_;
   }
 
-  // Schedules a task to be executed in this gpu sequence after the given fence
+  // Schedules a task to be executed in this gpu sequence after the given fences
   // and releases the given sync token when the task is completed.
   void ScheduleGpuTask(base::OnceClosure task_closure,
-                       gpu::SyncToken fence = gpu::SyncToken(),
+                       std::vector<gpu::SyncToken> fences = {},
                        gpu::SyncToken release = gpu::SyncToken());
 
   gpu::CommandBufferId command_buffer_id() const { return command_buffer_id_; }

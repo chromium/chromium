@@ -226,7 +226,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // alive for the duration of the task.
   void RunOrScheduleTask(
       base::OnceClosure task,
-      const gpu::SyncToken& fence = gpu::SyncToken(),
+      std::vector<gpu::SyncToken> fences = {},
       const gpu::SyncToken& release_token = gpu::SyncToken());
 
   int tracing_id() const { return tracing_id_; }
@@ -260,7 +260,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
                     CreateTensorCallback callback) override;
   void CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                                const gpu::Mailbox& mailbox,
-                               const gpu::SyncToken& fence,
+                               const std::vector<gpu::SyncToken>& fences,
                                CreateTensorCallback callback) override;
   void Dispatch(
       const blink::WebNNGraphToken& graph_token,
@@ -363,7 +363,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   using RunOrScheduleTaskCallback = base::OnceCallback<void(WebNNContextImpl&)>;
   void RunOrScheduleTaskWithThisContext(
       RunOrScheduleTaskCallback task,
-      const gpu::SyncToken& fence = gpu::SyncToken());
+      std::vector<gpu::SyncToken> fences = {});
 
   // GraphImpls owned by the context. Graphs use a WeakPtr to safely access the
   // context during build operations.

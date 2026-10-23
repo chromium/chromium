@@ -421,7 +421,7 @@ class FakeWebNNTensor : public blink_mojom::WebNNTensor {
   }
 
   void ImportTensor(uint64_t flow_id,
-                    const gpu::SyncToken& sync_token_fence) override {
+                    const Vector<gpu::SyncToken>& sync_token_fences) override {
     NOTIMPLEMENTED();
   }
 
@@ -523,7 +523,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
 
   void CreateTensorFromMailbox(blink_mojom::TensorInfoPtr tensor_info,
                                const ::gpu::Mailbox& mailbox,
-                               const gpu::SyncToken& fence,
+                               const Vector<gpu::SyncToken>& fences,
                                CreateTensorCallback callback) override {
     NOTIMPLEMENTED();
   }

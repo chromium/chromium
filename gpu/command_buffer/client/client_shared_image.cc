@@ -1598,11 +1598,51 @@ SyncToken WebGPUBufferScopedAccess::EndAccess(
 
   // SyncToken must be verified to allow use from another pipe.
   webgpu->GenSyncTokenCHROMIUM(finished_access_token.GetData());
-  return finished_access_token;
+  return scoped_access->shared_image_->StoreSyncTokenInternal(
+      finished_access_token);
 }
 
 const wgpu::Buffer& WebGPUBufferScopedAccess::buffer() {
   return *buffer_.get();
+}
+
+void ClientSharedImage::BeginWebNNAccess(
+    base::FunctionRef<void(std::unique_ptr<WebNNScopedAccess>,
+                           const std::vector<SyncToken>&)> begin_access_fn,
+    const SyncToken& sync_token) {
+  CHECK(metadata_.usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR));
+  std::vector<SyncToken> sync_tokens;
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    // Ignore the input `sync_token` since all SyncTokens that we need to wait
+    // upon are already inside this ClientSharedImage instance.
+    sync_tokens = VerifyAndCollectSyncTokens();
+  } else {
+    sync_tokens.push_back(sync_token);
+  }
+
+  auto scoped_access = base::WrapUnique(new WebNNScopedAccess(this));
+  begin_access_fn(std::move(scoped_access), sync_tokens);
+}
+
+WebNNScopedAccess::WebNNScopedAccess(
+    scoped_refptr<ClientSharedImage> shared_image)
+    : shared_image_(std::move(shared_image)) {
+  shared_image_->BeginAccess(/*readonly=*/false);
+}
+
+WebNNScopedAccess::~WebNNScopedAccess() {
+  if (!is_access_ended_) {
+    shared_image_->EndAccess(/*readonly=*/false);
+  }
+}
+
+SyncToken WebNNScopedAccess::EndAccess(
+    std::unique_ptr<WebNNScopedAccess> scoped_access,
+    base::FunctionRef<SyncToken()> end_access_fn) {
+  scoped_access->is_access_ended_ = true;
+  scoped_access->shared_image_->EndAccess(/*readonly=*/false);
+  return scoped_access->shared_image_->StoreSyncTokenInternal(end_access_fn());
 }
 
 }  // namespace gpu

@@ -38,9 +38,9 @@ GpuTaskScheduler::~GpuTaskScheduler() {
 }
 
 void GpuTaskScheduler::ScheduleGpuTask(base::OnceClosure task_closure,
-                                       gpu::SyncToken fence,
+                                       std::vector<gpu::SyncToken> fences,
                                        gpu::SyncToken release) {
-  ScheduleGpuTaskImpl(std::move(task_closure), {fence}, release);
+  ScheduleGpuTaskImpl(std::move(task_closure), std::move(fences), release);
 }
 
 void GpuTaskScheduler::ScheduleGpuTaskImpl(base::OnceClosure task_closure,

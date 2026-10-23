@@ -1372,7 +1372,9 @@ ScriptPromise<MLTensor> MLContext::createTensor(
       blink::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
                       std::move(scoped_trace), WrapPersistent(resolver),
                       std::move(validated_descriptor), usage,
-                      /*shared_image=*/nullptr, /*gpu_device=*/nullptr));
+                      /*shared_image=*/nullptr,
+                      /*webnn_scoped_access=*/nullptr,
+                      /*gpu_device=*/nullptr));
 
   return resolver->Promise();
 }
@@ -1506,14 +1508,20 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
       script_state, exception_state.GetContext());
   pending_resolvers_.insert(resolver);
 
-  // Use `WebNNContext` to create `WebNNTensor` message pipe.
-  context_remote_->CreateTensorFromMailbox(
-      std::move(tensor_info), shared_image->mailbox(),
-      shared_image_create_finished_token,
-      blink::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
-                      std::move(scoped_trace), WrapPersistent(resolver),
-                      std::move(validated_descriptor), usage, shared_image,
-                      WrapPersistent(device)));
+  shared_image->BeginWebNNAccess(
+      [&](std::unique_ptr<gpu::WebNNScopedAccess> scoped_access,
+          const std::vector<gpu::SyncToken>& sync_tokens) {
+        // Use `WebNNContext` to create `WebNNTensor` message pipe.
+        context_remote_->CreateTensorFromMailbox(
+            std::move(tensor_info), shared_image->mailbox(),
+            Vector<gpu::SyncToken>(sync_tokens),
+            blink::BindOnce(
+                &MLContext::DidCreateWebNNTensor, WrapPersistent(this),
+                std::move(scoped_trace), WrapPersistent(resolver),
+                std::move(validated_descriptor), usage, shared_image,
+                std::move(scoped_access), WrapPersistent(device)));
+      },
+      shared_image_create_finished_token);
 
   return resolver->Promise();
 }
@@ -1710,6 +1718,7 @@ void MLContext::DidCreateWebNNTensor(
     webnn::OperandDescriptor validated_descriptor,
     webnn::MLTensorUsage usage,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
+    std::unique_ptr<gpu::WebNNScopedAccess> webnn_scoped_access,
     GPUDevice* gpu_device,
     webnn::mojom::blink::CreateTensorResultPtr result) {
   pending_resolvers_.erase(resolver);
@@ -1729,8 +1738,8 @@ void MLContext::DidCreateWebNNTensor(
 
   auto* tensor = MakeGarbageCollected<MLTensor>(
       resolver->GetExecutionContext(), this, std::move(validated_descriptor),
-      usage, std::move(shared_image), gpu_device,
-      std::move(result->get_success()), base::PassKey<MLContext>());
+      usage, std::move(shared_image), std::move(webnn_scoped_access),
+      gpu_device, std::move(result->get_success()), base::PassKey<MLContext>());
   tensors_.insert(tensor);
 
   resolver->Resolve(tensor);
