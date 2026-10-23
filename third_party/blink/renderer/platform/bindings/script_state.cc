@@ -26,8 +26,8 @@ ScriptState::ScriptState(v8::Local<v8::Context> context,
   CHECK(isolate_);
   DCHECK(world_);
   context_.SetPhantom();
-  context->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex, this,
-                                           kTypeTag);
+  context->SetAlignedPointerInEmbedderDataV2(kV8ContextPerContextDataIndex,
+                                             this, kTypeTag);
 }
 
 void ScriptState::EnqueueMicrotask(
@@ -88,7 +88,7 @@ void ScriptState::DissociateContext() {
 
   v8::HandleScope scope(GetIsolate());
   // Cut the reference from V8 context to ScriptState.
-  GetContext()->SetAlignedPointerInEmbedderData(
+  GetContext()->SetAlignedPointerInEmbedderDataV2(
       kV8ContextPerContextDataIndex, static_cast<ScriptState*>(nullptr),
       kTypeTag);
 

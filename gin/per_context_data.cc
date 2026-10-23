@@ -22,7 +22,7 @@ constexpr int kGinPerContextDataIndex =
 PerContextData::PerContextData(ContextHolder* context_holder,
                                v8::Local<v8::Context> context)
     : context_holder_(context_holder) {
-  context->SetAlignedPointerInEmbedderData(
+  context->SetAlignedPointerInEmbedderDataV2(
       kGinPerContextDataIndex, this,
       static_cast<v8::CppHeapPointerTag>(gin::kGinPerContextData));
 }
@@ -32,7 +32,7 @@ PerContextData::~PerContextData() = default;
 void PerContextData::Detach() {
   ClearAllUserData();
   CHECK(context_holder_ != nullptr);
-  context_holder_->context()->SetAlignedPointerInEmbedderData(
+  context_holder_->context()->SetAlignedPointerInEmbedderDataV2(
       kGinPerContextDataIndex, static_cast<PerContextData*>(nullptr),
       static_cast<v8::CppHeapPointerTag>(gin::kGinPerContextData));
   context_holder_ = nullptr;
