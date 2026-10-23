@@ -484,9 +484,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   media_client_ = std::make_unique<MediaClientImpl>();
   media_client_->Init();
 
-  // Passes (and continues passing) the current camera count to the PrivacyHub.
-  ash::privacy_hub_util::SetUpCameraCountObserver();
-
   app_access_notifier_ = std::make_unique<AppAccessNotifier>();
   ash::privacy_hub_util::SetAppAccessNotifier(app_access_notifier_.get());
 

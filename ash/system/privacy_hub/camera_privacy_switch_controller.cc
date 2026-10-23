@@ -282,10 +282,6 @@ CameraPrivacySwitchController* CameraPrivacySwitchController::Get() {
                                 : nullptr;
 }
 
-void CameraPrivacySwitchController::OnCameraCountChanged(int new_camera_count) {
-  camera_count_ = new_camera_count;
-}
-
 void CameraPrivacySwitchController::ActiveApplicationsChanged(
     bool application_added) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

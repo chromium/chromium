@@ -333,8 +333,6 @@ TEST_P(PrivacyHubCameraControllerTest,
   CameraPrivacySwitchController& controller =
       *CameraPrivacySwitchController::Get();
 
-  // We have 2 cameras in the system.
-  controller.OnCameraCountChanged(2);
   // Camera is enabled in Privacy Hub.
   SetUserPref(true);
 
@@ -369,8 +367,6 @@ TEST_P(PrivacyHubCameraControllerTest,
        OnCameraHardwarePrivacySwitchChangedOneCamera) {
   CameraPrivacySwitchController& controller =
       *CameraPrivacySwitchController::Get();
-  // We have 1 camera in the system.
-  controller.OnCameraCountChanged(1);
   // Camera is enabled in Privacy Hub.
   SetUserPref(true);
 
@@ -407,7 +403,6 @@ TEST_P(PrivacyHubCameraControllerTest,
   CameraPrivacySwitchController& controller =
       *CameraPrivacySwitchController::Get();
   SetUserPref(true);
-  controller.OnCameraCountChanged(2);
 
   controller.OnCameraHWPrivacySwitchStateChanged(
       "0", cros::mojom::CameraPrivacySwitchState::ON);
@@ -463,7 +458,6 @@ TEST_P(PrivacyHubCameraControllerTest,
 TEST_P(PrivacyHubCameraControllerTest,
        CameraOffNotificationRemoveViaClickOnBody) {
   SetUserPref(false);
-  controller_->OnCameraCountChanged(2);
   message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
   ASSERT_TRUE(message_center);

@@ -50,9 +50,6 @@ bool MicrophoneSwitchState();
 // to the device, irrespective of what this function returns.
 bool ShouldForceDisableCameraSwitch();
 
-// Needs to be called for the Privacy Hub to be aware of the camera count.
-void SetUpCameraCountObserver();
-
 // Notifies the Privacy Hub controller.
 void TrackGeolocationAttempted(const std::string& name);
 

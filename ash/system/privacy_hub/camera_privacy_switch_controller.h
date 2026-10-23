@@ -79,9 +79,6 @@ class ASH_EXPORT CameraPrivacySwitchController
   // Gets the instance from Shell.
   static CameraPrivacySwitchController* Get();
 
-  // Handles the change in the number of cameras.
-  void OnCameraCountChanged(int new_camera_count);
-
   // This is called when the set of applications accessing the camera changes.
   // `application_added` being true means a new applications has started
   // accessing the camera. `application_added` being false means one of the
@@ -126,7 +123,6 @@ class ASH_EXPORT CameraPrivacySwitchController
 
   int GUARDED_BY_CONTEXT(sequence_checker_)
       active_applications_using_camera_count_ = 0;
-  int camera_count_ = -1;
   base::Time GUARDED_BY_CONTEXT(sequence_checker_)
       last_active_notification_update_time_;
 
