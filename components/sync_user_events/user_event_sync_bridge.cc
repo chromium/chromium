@@ -71,14 +71,7 @@ UserEventSyncBridge::UserEventSyncBridge(
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-UserEventSyncBridge::~UserEventSyncBridge() {
-  // TODO(crbug.com/362428820): Remove logging once investigation is complete.
-  if (store_) {
-    VLOG(1) << "UserEvents during destruction: "
-            << store_->in_memory_data().size();
-  }
-}
-
+UserEventSyncBridge::~UserEventSyncBridge() = default;
 
 std::optional<ModelError> UserEventSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,

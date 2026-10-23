@@ -60,13 +60,7 @@ SecurityEventSyncBridgeImpl::SecurityEventSyncBridgeImpl(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-SecurityEventSyncBridgeImpl::~SecurityEventSyncBridgeImpl() {
-  // TODO(crbug.com/362428820): Remove logging once investigation is complete.
-  if (store_) {
-    VLOG(1) << "SecurityEvents during destruction: "
-            << store_->in_memory_data().size();
-  }
-}
+SecurityEventSyncBridgeImpl::~SecurityEventSyncBridgeImpl() = default;
 
 void SecurityEventSyncBridgeImpl::RecordSecurityEvent(
     sync_pb::SecurityEventSpecifics specifics) {
