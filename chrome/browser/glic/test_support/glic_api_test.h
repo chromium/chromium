@@ -345,7 +345,11 @@ class GlicApiBrowserTestMixin : public T {
       GlicInstanceImpl* instance = nullptr) {
     auto end_time = base::TimeTicks::Now() + base::Seconds(30);
     auto next_message_time = base::TimeTicks::Now() + base::Seconds(2);
-    auto sleep_time = base::Milliseconds(200);
+    // Poll frequently at first: the guest typically becomes ready within ~1 s
+    // of the panel opening, and any sleep that overshoots that moment is paid
+    // by every Glic API test. Grow slowly (1.25x) up to 2 s so slow bots that
+    // take many seconds to load are not flooded with EvalJs checks.
+    auto sleep_time = base::Milliseconds(25);
     content::RenderFrameHost* frame = nullptr;
     content::RenderFrameHost* last_frame = nullptr;
     while (base::TimeTicks::Now() < end_time) {
@@ -386,7 +390,7 @@ class GlicApiBrowserTestMixin : public T {
         next_message_time = base::TimeTicks::Now() + base::Seconds(2);
       }
       sleepWithRunLoop(sleep_time);
-      sleep_time = std::min(base::Seconds(2), 2 * sleep_time);
+      sleep_time = std::min(base::Seconds(2), sleep_time * 1.25);
     }
     return base::unexpected(base::StrCat(
         {"Timed out waiting for guest frame. Guest frame: ",
