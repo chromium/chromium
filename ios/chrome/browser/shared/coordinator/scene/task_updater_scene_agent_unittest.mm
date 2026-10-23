@@ -164,33 +164,6 @@ TEST_F(TaskUpdaterSceneAgentTest, TestUIReady) {
             TaskExecutionStage::TaskExecutionUIReady);
 }
 
-// Tests that TaskExecutionUIReady is NOT sent if there is a UI blocker.
-TEST_F(TaskUpdaterSceneAgentTest, TestUIBlocker) {
-  SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
-  scene_state_.UIEnabled = YES;
-
-  // Set a UI blocker before becoming active.
-  FakeSceneState* blocker_target =
-      [[FakeSceneState alloc] initWithProfile:profile_.get()];
-  scene_state_.profileState = profile_state_;
-  scene_state_.sceneSessionID = "scene-2";
-  [profile_state_ incrementBlockingUICounterForTarget:blocker_target];
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  // Should NOT be ready.
-  EXPECT_NE(fake_task_orchestrator_.stage,
-            TaskExecutionStage::TaskExecutionUIReady);
-
-  // Remove UI blocker.
-  [profile_state_ decrementBlockingUICounterForTarget:blocker_target];
-
-  EXPECT_EQ(fake_task_orchestrator_.stage,
-            TaskExecutionStage::TaskExecutionUIReady);
-
-  [blocker_target shutdown];
-}
-
 // Tests that TaskExecutionUIReady is NOT sent if presenting modal overlay.
 TEST_F(TaskUpdaterSceneAgentTest, TestModalOverlay) {
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);

@@ -16,8 +16,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @interface TaskUpdaterSceneAgent () <ProfileStateObserver,
-                                     SceneUIBlockerStateObserver,
-                                     UIBlockerManagerObserver>
+                                     SceneUIBlockerStateObserver>
 @end
 
 @implementation TaskUpdaterSceneAgent {
@@ -29,7 +28,6 @@
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
   [self.sceneState.profileState addObserver:self];
-  [self.sceneState.profileState addUIBlockerManagerObserver:self];
   [self.sceneState.uiBlockerState addObserver:self];
 
   [NSNotificationCenter.defaultCenter
@@ -59,12 +57,6 @@
   }
 }
 
-#pragma mark - UIBlockerManagerObserver
-
-- (void)currentUIBlockerRemoved {
-  [self maybeUpdateToUIReady];
-}
-
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -80,7 +72,6 @@
   [self updateToStageNone];
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
-  [self.sceneState.profileState removeUIBlockerManagerObserver:self];
   [self.sceneState.uiBlockerState removeObserver:self];
   [NSNotificationCenter.defaultCenter removeObserver:self];
 }
@@ -158,9 +149,6 @@
 - (BOOL)canUpdateToUIReady {
   SceneState* sceneState = self.sceneState;
   if (!sceneState.UIEnabled) {
-    return NO;
-  }
-  if (sceneState.profileState.currentUIBlocker) {
     return NO;
   }
   if (sceneState.activationLevel < SceneActivationLevelForegroundActive) {
