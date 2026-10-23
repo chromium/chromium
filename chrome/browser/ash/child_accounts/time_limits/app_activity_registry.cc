@@ -1164,7 +1164,9 @@ void AppActivityRegistry::InitializeAppActivities() {
 PersistedAppInfo AppActivityRegistry::GetPersistedAppInfoForApp(
     const AppId& app_id,
     base::Time timestamp) {
-  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
+  // TODO(crbug.com/576775867): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(activity_registry_.contains(app_id));
 
   AppDetails& details = activity_registry_.at(app_id);
 
