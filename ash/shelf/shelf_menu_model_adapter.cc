@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "ui/aura/env.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -159,8 +160,7 @@ void ShelfMenuModelAdapter::ShowHoverBubble() {
   if (result.has_value()) {
     preview_bubble_ = new ShelfWindowPreviewBubble(
         anchor_view, result.value(),
-        base::BindRepeating(&ShelfMenuModelAdapter::Cancel,
-                            base::Unretained(this)));
+        base::BindOnce(&ShelfMenuModelAdapter::Cancel, base::Unretained(this)));
     bubble = preview_bubble_;
     // Track mouse events to keep the preview bubble open while the mouse is
     // over it. Also track key events to close the preview bubble on 'Esc'
@@ -236,8 +236,11 @@ void ShelfMenuModelAdapter::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void ShelfMenuModelAdapter::OnKeyEvent(ui::KeyEvent* event) {
+  // Only consume unmodified 'Esc' (ignoring lock flags like Caps Lock) so
+  // modified shortcuts (e.g. Shift+Esc) still propagate.
   if (preview_bubble_ && event->type() == ui::EventType::kKeyPressed &&
-      event->key_code() == ui::VKEY_ESCAPE) {
+      event->key_code() == ui::VKEY_ESCAPE &&
+      ui::Accelerator::MaskOutKeyEventFlags(event->flags()) == ui::EF_NONE) {
     CloseHoverBubble(/*animate=*/true);
     event->SetHandled();
     event->StopPropagation();

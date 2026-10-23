@@ -37,6 +37,10 @@ class WindowPreviewView;
 
 // A bubble dialog view that displays a mirror preview of an aura::Window
 // anchored to a shelf tooltip or menu item.
+//
+// Input is handled via pre-target handlers (`set_accept_events(false)`) so
+// events are received while the app menu holds capture, across anchor-preview
+// gaps, and before dismissal deletes the bubble.
 class ASH_EXPORT ShelfWindowPreviewBubble : public ShelfBubble,
                                             public aura::WindowObserver {
   METADATA_HEADER(ShelfWindowPreviewBubble, ShelfBubble)
@@ -44,10 +48,10 @@ class ASH_EXPORT ShelfWindowPreviewBubble : public ShelfBubble,
  public:
   ShelfWindowPreviewBubble(views::MenuItemView* anchor,
                            aura::Window* window,
-                           base::RepeatingClosure dismiss_callback);
+                           base::OnceClosure dismiss_callback);
   ShelfWindowPreviewBubble(ShelfBubble* anchor,
                            aura::Window* window,
-                           base::RepeatingClosure dismiss_callback);
+                           base::OnceClosure dismiss_callback);
 
   ShelfWindowPreviewBubble(const ShelfWindowPreviewBubble&) = delete;
   ShelfWindowPreviewBubble& operator=(const ShelfWindowPreviewBubble&) = delete;
@@ -72,10 +76,10 @@ class ASH_EXPORT ShelfWindowPreviewBubble : public ShelfBubble,
   // finishes.
   void FadeOutAndClose();
 
-  // Returns true if `screen_point` is within the region spanned by this preview
-  // bubble and its anchor (including any intermediate tooltip bubble and the
-  // anchor view on the shelf), so the mouse can travel between them without
-  // closing the preview.
+  // Returns true if `screen_point` is within the pairwise hover bridges
+  // between this preview bubble, its anchor, and (for tooltip-anchored
+  // previews) the underlying shelf item, so the mouse can travel between them
+  // without closing the preview.
   bool IsPointInPreviewRegion(const gfx::Point& screen_point) const;
 
   aura::Window* window() const { return window_; }
@@ -84,10 +88,12 @@ class ASH_EXPORT ShelfWindowPreviewBubble : public ShelfBubble,
   ShelfWindowPreviewBubble(views::View* anchor,
                            aura::Window* window,
                            views::BubbleBorder::Arrow arrow,
-                           base::RepeatingClosure dismiss_callback);
+                           base::OnceClosure dismiss_callback);
 
   void AddPreTargetHandler();
   void RemovePreTargetHandler();
+  // Dismisses the preview and activates `window_` if `event` is over the
+  // bubble. May synchronously delete `this`.
   void ProcessPressedEvent(ui::LocatedEvent* event);
 
   void CreatePreviewView();
@@ -95,7 +101,7 @@ class ASH_EXPORT ShelfWindowPreviewBubble : public ShelfBubble,
 
   raw_ptr<aura::Window> window_ = nullptr;
   raw_ptr<WindowPreviewView> preview_view_ = nullptr;
-  base::RepeatingClosure dismiss_callback_;
+  base::OnceClosure dismiss_callback_;
   bool is_pre_target_handler_ = false;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>

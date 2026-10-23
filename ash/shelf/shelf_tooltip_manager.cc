@@ -4,8 +4,10 @@
 
 #include "ash/shelf/shelf_tooltip_manager.h"
 
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -22,6 +24,7 @@
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "ui/aura/window.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
@@ -61,26 +64,29 @@ void ShelfTooltipManager::Close(bool animate) {
   // Cancel any timer set to show a tooltip after a delay.
   timer_.Stop();
 
+  // Hold `disable_auto_hide_` until both bubbles are closed so
+  // `~ScopedDisableAutoHide()` does not re-enter `Close()` before `bubble_` is
+  // closed with `animate`.
+  std::unique_ptr<Shelf::ScopedDisableAutoHide> disable_auto_hide =
+      std::move(disable_auto_hide_);
+
   // Close the preview bubble first since it is anchored to the tooltip bubble.
   if (preview_bubble_) {
-    ShelfWindowPreviewBubble* preview_bubble = preview_bubble_;
-    preview_bubble_ = nullptr;
     if (animate) {
-      preview_bubble->FadeOutAndClose();
+      preview_bubble_.ExtractAsDangling()->FadeOutAndClose();
     } else {
-      preview_bubble->GetWidget()->CloseNow();
+      preview_bubble_.ExtractAsDangling()->GetWidget()->CloseNow();
     }
   }
 
-  if (!bubble_)
-    return;
-  if (!animate) {
-    // Cancel the typical hiding animation to hide the bubble immediately.
-    ::wm::SetWindowVisibilityAnimationTransition(
-        bubble_->GetWidget()->GetNativeWindow(), ::wm::ANIMATE_NONE);
+  if (bubble_) {
+    if (!animate) {
+      // Cancel the typical hiding animation to hide the bubble immediately.
+      ::wm::SetWindowVisibilityAnimationTransition(
+          bubble_->GetWidget()->GetNativeWindow(), ::wm::ANIMATE_NONE);
+    }
+    bubble_.ExtractAsDangling()->GetWidget()->Close();
   }
-  bubble_->GetWidget()->Close();
-  bubble_ = nullptr;
 }
 
 bool ShelfTooltipManager::IsVisible() const {
@@ -95,6 +101,12 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
   if (!IsVisible()) {
     RecordGrowthCampaignsHoverEvent();
   }
+
+  // Hold any existing `ScopedDisableAutoHide` until the new preview bubble (if
+  // any) is created, so switching directly between items does not transiently
+  // re-enable auto-hide.
+  std::unique_ptr<Shelf::ScopedDisableAutoHide> previous_disable_auto_hide =
+      std::move(disable_auto_hide_);
 
   // Hide the old bubble immediately, skipping the typical closing animation.
   Close(/*animate=*/false);
@@ -142,15 +154,17 @@ void ShelfTooltipManager::ShowPreviewBubble(aura::Window* window) {
   // Anchor the preview bubble to the tooltip bubble so it appears above it.
   preview_bubble_ = new ShelfWindowPreviewBubble(
       bubble_, window,
-      base::BindRepeating(&ShelfTooltipManager::Close,
-                          weak_factory_.GetWeakPtr(), /*animate=*/true));
+      base::BindOnce(&ShelfTooltipManager::Close, weak_factory_.GetWeakPtr(),
+                     /*animate=*/true));
   preview_bubble_->RegisterWindowClosingCallback(
       base::BindOnce(&ShelfTooltipManager::OnPreviewBubbleClosing,
                      weak_factory_.GetWeakPtr()));
+  disable_auto_hide_ = std::make_unique<Shelf::ScopedDisableAutoHide>(shelf_);
 }
 
 void ShelfTooltipManager::OnPreviewBubbleClosing() {
   preview_bubble_ = nullptr;
+  disable_auto_hide_.reset();
 }
 
 void ShelfTooltipManager::ShowTooltipWithDelay(views::View* view) {
@@ -233,9 +247,12 @@ void ShelfTooltipManager::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void ShelfTooltipManager::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() == ui::EventType::kKeyPressed &&
+  // Only consume unmodified 'Esc' when a preview bubble is open so modified
+  // shortcuts (e.g. Shift+Esc for Task Manager) still propagate while lock
+  // flags like Caps Lock are ignored.
+  if (preview_bubble_ && event->type() == ui::EventType::kKeyPressed &&
       event->key_code() == ui::VKEY_ESCAPE &&
-      (IsVisible() || preview_bubble_)) {
+      ui::Accelerator::MaskOutKeyEventFlags(event->flags()) == ui::EF_NONE) {
     Close();
     event->SetHandled();
     event->StopPropagation();

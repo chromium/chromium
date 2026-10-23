@@ -4762,6 +4762,26 @@ TEST_F(ShelfViewWindowPreviewTest, ClickOnPreviewActivatesWindow) {
   EXPECT_TRUE(wm::IsActiveWindow(window1_.get()));
 }
 
+TEST_F(ShelfViewWindowPreviewTest, RightClickOnPreviewDoesNotActivateWindow) {
+  ASSERT_FALSE(wm::IsActiveWindow(window1_.get()));
+
+  GetEventGenerator()->MoveMouseTo(item0_->GetBoundsInScreen().CenterPoint());
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kShowPreviewDelay);
+  ASSERT_TRUE(menu_adapter()->preview_bubble());
+
+  const gfx::Point preview_center = menu_adapter()
+                                        ->preview_bubble()
+                                        ->GetWidget()
+                                        ->GetWindowBoundsInScreen()
+                                        .CenterPoint();
+  title_item_ = nullptr;
+  item0_ = nullptr;
+  item1_ = nullptr;
+  GetEventGenerator()->MoveMouseTo(preview_center);
+  GetEventGenerator()->ClickRightButton();
+  EXPECT_FALSE(wm::IsActiveWindow(window1_.get()));
+}
+
 TEST_F(ShelfViewWindowPreviewTest,
        PressingEscapeClosesPreviewAndKeepsMenuOpen) {
   GetEventGenerator()->MoveMouseTo(item0_->GetBoundsInScreen().CenterPoint());
@@ -4780,6 +4800,21 @@ TEST_F(ShelfViewWindowPreviewTest,
   item1_ = nullptr;
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_FALSE(menu_adapter());
+}
+
+TEST_F(ShelfViewWindowPreviewTest, ShiftEscapeCancelsMenuWithPreviewOpen) {
+  GetEventGenerator()->MoveMouseTo(item0_->GetBoundsInScreen().CenterPoint());
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kShowPreviewDelay);
+  ASSERT_TRUE(menu_adapter()->preview_bubble());
+
+  // Modified 'Esc' (Shift+Esc) is not swallowed by the preview bubble, so the
+  // menu's pre-target handler cancels the menu on key press.
+  title_item_ = nullptr;
+  item0_ = nullptr;
+  item1_ = nullptr;
+  GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(menu_adapter());
+  GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN);
 }
 
 TEST_F(ShelfViewWindowPreviewTest, TooltipBubbleAfterDelay) {

@@ -5,7 +5,10 @@
 #ifndef ASH_SHELF_SHELF_TOOLTIP_MANAGER_H_
 #define ASH_SHELF_SHELF_TOOLTIP_MANAGER_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -26,7 +29,6 @@ class View;
 
 namespace ash {
 class ShelfBubble;
-class Shelf;
 class ShelfTooltipDelegate;
 class ShelfWindowPreviewBubble;
 
@@ -102,6 +104,8 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   // TODO(oshima): Migrate to CLIENT_OWNS_WIDGET and own the widget via
   // std::unique_ptr<views::Widget>.
   raw_ptr<ShelfWindowPreviewBubble> preview_bubble_ = nullptr;
+  // Keeps the auto-hide shelf shown while `preview_bubble_` is open.
+  std::unique_ptr<Shelf::ScopedDisableAutoHide> disable_auto_hide_;
 
   raw_ptr<ShelfTooltipDelegate> shelf_tooltip_delegate_ = nullptr;
 

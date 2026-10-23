@@ -5,6 +5,7 @@
 #include "ash/shelf/shelf_window_preview_bubble.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "ash/public/cpp/shelf_config.h"
@@ -96,7 +97,7 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(150);
 ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(
     views::MenuItemView* anchor,
     aura::Window* window,
-    base::RepeatingClosure dismiss_callback)
+    base::OnceClosure dismiss_callback)
     : ShelfWindowPreviewBubble(anchor,
                                window,
                                GetArrowForMenuItem(anchor),
@@ -105,7 +106,7 @@ ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(
 ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(
     ShelfBubble* anchor,
     aura::Window* window,
-    base::RepeatingClosure dismiss_callback)
+    base::OnceClosure dismiss_callback)
     : ShelfWindowPreviewBubble(anchor,
                                window,
                                GetArrowForShelf(anchor),
@@ -115,7 +116,7 @@ ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(
     views::View* anchor,
     aura::Window* window,
     views::BubbleBorder::Arrow arrow,
-    base::RepeatingClosure dismiss_callback)
+    base::OnceClosure dismiss_callback)
     : ShelfBubble(anchor,
                   ShelfAlignment::kBottom,
                   /*for_tooltip=*/false,
@@ -187,7 +188,8 @@ bool ShelfWindowPreviewBubble::ShouldCloseOnMouseExit() {
 }
 
 void ShelfWindowPreviewBubble::OnEvent(ui::Event* event) {
-  if (event->type() == ui::EventType::kMousePressed ||
+  if ((event->type() == ui::EventType::kMousePressed &&
+       event->AsMouseEvent()->IsOnlyLeftMouseButton()) ||
       event->type() == ui::EventType::kTouchPressed ||
       event->type() == ui::EventType::kGestureTap) {
     ProcessPressedEvent(event->AsLocatedEvent());
@@ -259,18 +261,29 @@ bool ShelfWindowPreviewBubble::IsPointInPreviewRegion(
   if (!GetWidget()) {
     return false;
   }
-  gfx::Rect region = GetWidget()->GetWindowBoundsInScreen();
-  if (views::View* anchor = GetAnchorView()) {
-    if (views::Widget* anchor_widget = anchor->GetWidget()) {
-      region.Union(anchor_widget->GetWindowBoundsInScreen());
-    }
-    if (auto* anchor_bubble = views::AsViewClass<ShelfBubble>(anchor)) {
-      if (views::View* root_anchor = anchor_bubble->GetAnchorView()) {
-        region.Union(root_anchor->GetBoundsInScreen());
-      }
+  // Check `(preview or anchor)` and `(anchor or shelf item)` separately rather
+  // than a single 3-way union so a wide preview does not keep the tooltip open
+  // over neighboring empty shelf space.
+  gfx::Rect preview_to_anchor = GetWidget()->GetWindowBoundsInScreen();
+  const views::View* anchor = GetAnchorView();
+  if (!anchor) {
+    return preview_to_anchor.Contains(screen_point);
+  }
+  const gfx::Rect anchor_bounds =
+      anchor->GetWidget() ? anchor->GetWidget()->GetWindowBoundsInScreen()
+                          : anchor->GetBoundsInScreen();
+  preview_to_anchor.Union(anchor_bounds);
+  if (preview_to_anchor.Contains(screen_point)) {
+    return true;
+  }
+  if (const auto* anchor_bubble = views::AsViewClass<ShelfBubble>(anchor)) {
+    if (const views::View* root_anchor = anchor_bubble->GetAnchorView()) {
+      gfx::Rect anchor_to_root = anchor_bounds;
+      anchor_to_root.Union(root_anchor->GetBoundsInScreen());
+      return anchor_to_root.Contains(screen_point);
     }
   }
-  return region.Contains(screen_point);
+  return false;
 }
 
 void ShelfWindowPreviewBubble::CreatePreviewView() {
@@ -293,6 +306,7 @@ void ShelfWindowPreviewBubble::ProcessPressedEvent(ui::LocatedEvent* event) {
   if (!IsPointOverBubble(event->target()->GetScreenLocation(*event))) {
     return;
   }
+  CHECK(dismiss_callback_);
   aura::Window* window = window_;
   aura::WindowTracker tracker({window});
   event->SetHandled();
@@ -301,7 +315,7 @@ void ShelfWindowPreviewBubble::ProcessPressedEvent(ui::LocatedEvent* event) {
   // Running `dismiss_callback_` may synchronously close the widget and delete
   // `this` (e.g. via `ShelfMenuModelAdapter::Cancel`), so do not access any
   // members after this call.
-  dismiss_callback_.Run();
+  std::move(dismiss_callback_).Run();
   if (tracker.Contains(window)) {
     ::wm::ActivateWindow(window);
   }
@@ -309,8 +323,8 @@ void ShelfWindowPreviewBubble::ProcessPressedEvent(ui::LocatedEvent* event) {
 
 void ShelfWindowPreviewBubble::AddPreTargetHandler() {
   if (!is_pre_target_handler_ && Shell::HasInstance()) {
-    // Use `kSystem` priority so this handler is prepended ahead of
-    // `ShelfTooltipManager` (`kDefault`).
+    // Use `kSystem` priority so this handler runs ahead of `MenuHost` capture
+    // and `ShelfTooltipManager` (`kDefault`).
     Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
     is_pre_target_handler_ = true;
   }
