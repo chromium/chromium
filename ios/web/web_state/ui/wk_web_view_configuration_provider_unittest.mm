@@ -84,18 +84,26 @@ TEST_F(WKWebViewConfigurationProviderTest, OffTheRecordConfiguration) {
 }
 
 // Tests that SetUniversalOptOutEnabled updates defaultWebpagePreferences for
-// iOS 27+.
+// iOS 27+, including on configurations copied before Universal Opt-Out is
+// enabled.
 #if defined(__IPHONE_27_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_0
 TEST_F(WKWebViewConfigurationProviderTest, UniversalOptOutConfiguration)
 API_AVAILABLE(ios(27)) {
   if (@available(iOS 27, *)) {
     FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+    GetWebClient()->SetUniversalOptOutState(UniversalOptOutState::kEligible);
     WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
+    WKWebViewConfiguration* existing_config =
+        provider.GetWebViewConfiguration();
     provider.SetUniversalOptOutEnabled(false);
+    EXPECT_FALSE(
+        existing_config.defaultWebpagePreferences.globalPrivacyControlEnabled);
     EXPECT_FALSE(provider.GetWebViewConfiguration()
                      .defaultWebpagePreferences.globalPrivacyControlEnabled);
 
     provider.SetUniversalOptOutEnabled(true);
+    EXPECT_TRUE(
+        existing_config.defaultWebpagePreferences.globalPrivacyControlEnabled);
     EXPECT_TRUE(provider.GetWebViewConfiguration()
                     .defaultWebpagePreferences.globalPrivacyControlEnabled);
   }

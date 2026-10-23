@@ -242,6 +242,15 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
       configuration_.userContentController);
 
   if (@available(iOS 27, *)) {
+    // Materialize `defaultWebpagePreferences` before `configuration_` is copied
+    // by `GetWebViewConfiguration()`. `-[WKWebViewConfiguration
+    // defaultWebpagePreferences]` lazily allocates its `WKWebpagePreferences`
+    // instance on first access, and `-[WKWebViewConfiguration copyWithZone:]`
+    // copies the underlying ivar directly without invoking the getter. Ensuring
+    // `defaultWebpagePreferences` is initialized here guarantees that copied
+    // configurations share the same `WKWebpagePreferences` instance when
+    // `SetUniversalOptOutEnabled()` is called later in the session.
+    std::ignore = [configuration_ defaultWebpagePreferences];
     bool is_universal_opt_out_enabled =
         GetWebClient()->GetUniversalOptOutState(browser_state_) ==
         UniversalOptOutState::kEnabled;
