@@ -549,10 +549,17 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
                        registration_params.TakeAuthorization()));
 
     if (aik_required) {
+      base::WeakPtr<RegistrationFetcherImpl> weak_this = GetWeakPtr();
       key_service_->GenerateAttestationKeySlowlyAsync(
           supported_algos, priority_,
           base::BindOnce(&RegistrationFetcherImpl::OnAttestationKeyGenerated,
-                         GetWeakPtr(), barrier_closure));
+                         weak_this, barrier_closure));
+      // The key service can fail synchronously, e.g. when its Mojo pipe is
+      // disconnected. That runs `callback_`, which may delete `this`. If it
+      // doesn't, the fetch has already failed, so skip the signing key.
+      if (!weak_this || !callback_) {
+        return;
+      }
     }
 
     key_service_->GenerateSigningKeySlowlyAsync(

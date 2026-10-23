@@ -760,13 +760,9 @@ TEST_F(RegistrationTest, SigningKeyGenerationFailure) {
 TEST_F(RegistrationTest, AttestationKeyGenerationFailure) {
   unexportable_keys::MockUnexportableKeyService mock_service;
 
-  // Required because StartCreateTokenAndFetch concurrently calls both
-  // GenerateSigningKeySlowlyAsync and GenerateAttestationKeySlowlyAsync.
-  // Expecting it without invoking its callback is enough because the
-  // attestation failure immediately aborts the fetch flow, and omitting
-  // real service delegation prevents dispatching background tasks to the
-  // thread pool that could outlive the test.
-  EXPECT_CALL(mock_service, GenerateSigningKeySlowlyAsync);
+  // The attestation key fails synchronously, so the fetch has already failed
+  // and the fetcher must not start generating a signing key.
+  EXPECT_CALL(mock_service, GenerateSigningKeySlowlyAsync).Times(0);
 
   // Mock attestation key generation to fail
   EXPECT_CALL(mock_service, GenerateAttestationKeySlowlyAsync)
@@ -791,6 +787,43 @@ TEST_F(RegistrationTest, AttestationKeyGenerationFailure) {
   callback.WaitForCall();
 
   EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kAttestationKeyGenerationError);
+}
+
+// `UnexportableKeyServiceProxied` fails requests synchronously once its Mojo
+// pipe is disconnected, and `SessionServiceImpl` deletes the fetcher from the
+// completion callback. The fetcher must not be used after that.
+TEST_F(RegistrationTest, AttestationKeyGenerationFailureDeletesFetcher) {
+  unexportable_keys::MockUnexportableKeyService mock_service;
+  EXPECT_CALL(mock_service, GenerateAttestationKeySlowlyAsync)
+      .WillOnce(RunOnceCallback<2>(base::unexpected(
+          unexportable_keys::ServiceError::kOperationCancelled)));
+  EXPECT_CALL(mock_service, GenerateSigningKeySlowlyAsync).Times(0);
+
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GURL("https://a.test"), /*session_identifier=*/std::nullopt, kChallenge,
+      /*authorization=*/std::nullopt, AttestationMode::kRequired);
+
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          request_param, session_service(), mock_service, context_.get(),
+          isolation_info, isolation_info.site_for_cookies(),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  std::optional<RegistrationResult> result;
+  fetcher->StartCreateTokenAndFetch(
+      request_param, CreateAlgArray(),
+      base::BindLambdaForTesting(
+          [&](RegistrationFetcher*, RegistrationResult registration_result) {
+            fetcher.reset();
+            result = std::move(registration_result);
+          }));
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->SessionErrorForTesting()->type,
             SessionError::kAttestationKeyGenerationError);
 }
 
