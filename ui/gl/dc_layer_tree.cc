@@ -46,9 +46,9 @@ bool NeedSwapChainPresenter(const DCLayerOverlayParams& overlay) {
 //
 // See: https://crbug.com/1455666
 Microsoft::WRL::ComPtr<IDCompositionVisual3> CheckedCastToVisual3(
-    const Microsoft::WRL::ComPtr<IDCompositionVisual2>& visual2) {
+    IDCompositionVisual2* visual2) {
   Microsoft::WRL::ComPtr<IDCompositionVisual3> visual3;
-  HRESULT hr = visual2.As(&visual3);
+  HRESULT hr = visual2->QueryInterface(IID_PPV_ARGS(&visual3));
   CHECK_EQ(hr, S_OK);
   CHECK(visual3);
   return visual3;
@@ -477,7 +477,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
 
   if (opacity_changed) {
     if (opacity_ != 1) {
-      hr = CheckedCastToVisual3(clip_visual_)->SetOpacity(opacity_);
+      hr = CheckedCastToVisual3(clip_visual_.Get())->SetOpacity(opacity_);
       CHECK_EQ(hr, S_OK);
 
       // Let all of this subtree's visuals blend as one, instead of
@@ -485,7 +485,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
       hr = clip_visual_->SetOpacityMode(DCOMPOSITION_OPACITY_MODE_LAYER);
       CHECK_EQ(hr, S_OK);
     } else {
-      hr = CheckedCastToVisual3(clip_visual_)->SetOpacity(1.0);
+      hr = CheckedCastToVisual3(clip_visual_.Get())->SetOpacity(1.0);
       CHECK_EQ(hr, S_OK);
       hr = clip_visual_->SetOpacityMode(DCOMPOSITION_OPACITY_MODE_MULTIPLY);
       CHECK_EQ(hr, S_OK);
@@ -563,7 +563,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     } else {
       const D2D_MATRIX_4X4_F matrix =
           TransformToD2D_MATRIX_4X4_F(quad_to_root_transform_);
-      hr = CheckedCastToVisual3(transform_visual_)->SetTransform(matrix);
+      hr = CheckedCastToVisual3(transform_visual_.Get())->SetTransform(matrix);
       CHECK_EQ(hr, S_OK);
     }
   }
@@ -676,7 +676,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
           background_color_visual_->SetContent(background_color_content_.Get());
       CHECK_EQ(hr, S_OK);
 
-      hr = CheckedCastToVisual3(background_color_visual_)
+      hr = CheckedCastToVisual3(background_color_visual_.Get())
                ->SetOpacity(background_color.fA);
       CHECK_EQ(hr, S_OK);
     }
