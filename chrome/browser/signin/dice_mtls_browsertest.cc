@@ -19,11 +19,13 @@
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -31,6 +33,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/cert/test_root_certs.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/client_cert_store.h"
@@ -219,9 +222,27 @@ class DiceMtlsBrowserTest : public InProcessBrowserTest {
     embedded_https_test_server().StartAcceptingConnections();
     Profile* profile = browser()->GetProfile();
     SetupMtlsEnvironment(profile);
+
+    // The fake Gaia doesn't set Gaia cookies, so with
+    // kSkipListAccountsWithoutGaiaCookies the cookie jar is known to be empty.
+    // Once the reconcilor is unblocked (1 s after the /Signin request
+    // completes), it would remove the refresh token added by the DICE sign-in
+    // and cancel any in-flight access token request. Reconciliation is not
+    // under test, so keep the reconcilor blocked for the duration of the test.
+    reconcilor_lock_ = std::make_unique<AccountReconcilor::Lock>(
+        AccountReconcilorFactory::GetForProfile(profile));
+
+    // Refresh token key binding is skipped if refresh tokens aren't loaded yet
+    // when the DICE response is processed, so wait for them to load to make
+    // the binding outcome independent of timing.
+    signin::WaitForRefreshTokensLoaded(
+        IdentityManagerFactory::GetForProfile(profile));
   }
 
   void TearDownOnMainThread() override {
+    // Releasing the lock may let the reconcilor remove the test account during
+    // teardown, which is expected once the test body has finished.
+    reconcilor_lock_.reset();
     second_server_.reset();
     gaia_urls_overrider_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
@@ -237,6 +258,7 @@ class DiceMtlsBrowserTest : public InProcessBrowserTest {
   void SetupMtlsEnvironment(Profile* profile);
 
   std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
+  std::unique_ptr<AccountReconcilor::Lock> reconcilor_lock_;
 };
 
 void DiceMtlsBrowserTest::SetupMtlsEnvironment(Profile* profile) {
@@ -326,6 +348,9 @@ IN_PROC_BROWSER_TEST_F(DiceMtlsBrowserTest, DiceSigninWithMtlsTokenBinding) {
           future.GetCallback(), signin::AccessTokenFetcher::Mode::kImmediate);
 
   ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(future.Get<GoogleServiceAuthError>(),
+            GoogleServiceAuthError::AuthErrorNone())
+      << future.Get<GoogleServiceAuthError>().ToString();
   ASSERT_EQ(future.Get<signin::AccessTokenInfo>().token, "test_access_token");
 
   EXPECT_TRUE(access_token_fetched_with_cert_);
