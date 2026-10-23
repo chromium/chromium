@@ -2557,6 +2557,88 @@ class RollProtobufStartTest(unittest.TestCase):
             ],
         )
 
+    def testGetRollStatusReportsIdlePreparedConflictAndReplayedStates(self):
+        idle_status = roll_protobuf.GetRollStatus(
+            self.fixture.protobuf_directory)
+        prepared_state = roll_protobuf.PrepareRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        prepared_status = roll_protobuf.GetRollStatus(
+            self.fixture.protobuf_directory)
+        conflict_state = roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        conflict_status = roll_protobuf.GetRollStatus(
+            self.fixture.protobuf_directory)
+        roll_protobuf._SaveRollState(
+            roll_protobuf._ResolveCheckoutPaths(
+                self.fixture.protobuf_directory),
+            dataclasses.replace(conflict_state, phase='replayed'))
+        replayed_status = roll_protobuf.GetRollStatus(
+            self.fixture.protobuf_directory)
+
+        self.assertEqual(
+            ('idle', 'prepared', 'conflict', 'replayed', 5),
+            (idle_status.state, prepared_status.state, conflict_status.state,
+             replayed_status.state, replayed_status.index))
+        self.assertEqual(
+            {
+                'state':
+                'conflict',
+                'index':
+                3,
+                'total':
+                5,
+                'patch':
+                _PLAN_CONFLICT_PATCH,
+                'files': [f'third_party/protobuf/{_PLAN_CONFLICT_PATH}'],
+                'next': [
+                    'roll_protobuf.py continue',
+                    'roll_protobuf.py drop --reason <why>',
+                    'roll_protobuf.py abort',
+                ],
+            },
+            conflict_status.ToDictionary(),
+        )
+        self.assertIn('Prepared roll',
+                      roll_protobuf.FormatRollStateReport(prepared_state))
+        self.assertIn(f'Stopped at [3/5] patches/{_PLAN_CONFLICT_PATCH}.',
+                      roll_protobuf.FormatRollStateReport(conflict_state))
+        self.assertIn(f'  third_party/protobuf/{_PLAN_CONFLICT_PATH}\nNext: ',
+                      roll_protobuf.FormatRollStatusReport(conflict_status))
+
+    def testAbortRollRestoresExactStartingCommitAndDeletesRollState(self):
+        start_commit = _RunGitCommand(self.repository_root,
+                                      ['rev-parse', 'HEAD'])
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/untracked.orig': 'leftover\n'})
+
+        roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
+
+        self.assertEqual(
+            (start_commit, '', None),
+            (
+                _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD']),
+                _RunGitCommand(self.repository_root,
+                               ['status', '--porcelain', '-uall']),
+                roll_protobuf.LoadRollState(self.fixture.protobuf_directory),
+            ),
+        )
+
+    def testAbortRollRaisesWhenNoRollIsInProgress(self):
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'No protobuf roll is in progress'):
+            roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
+
 
 if __name__ == '__main__':
     unittest.main()

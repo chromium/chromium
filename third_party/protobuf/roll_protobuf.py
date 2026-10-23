@@ -1462,6 +1462,122 @@ def StartRoll(to_revision: str,
     return _ReplayRemainingPatches(checkout, state)
 
 
+@dataclasses.dataclass(frozen=True)
+class RollStatus:
+    """Current state of a checkout roll and the valid next commands."""
+
+    state: str  # 'idle', 'prepared', 'conflict', or 'replayed'.
+    index: int  # 1-based patch index when in conflict, total when replayed.
+    total: int
+    patch: str | None = None
+    files: tuple[str, ...] = ()
+    next_commands: tuple[str, ...] = ()
+
+    def ToDictionary(self) -> dict[str, object]:
+        return {
+            'state': self.state,
+            'index': self.index,
+            'total': self.total,
+            'patch': self.patch,
+            'files': list(self.files),
+            'next': list(self.next_commands),
+        }
+
+
+def GetRollStatus(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollStatus:
+    roll_state = LoadRollState(protobuf_directory)
+    if roll_state is None:
+        return RollStatus(
+            state='idle',
+            index=0,
+            total=0,
+            next_commands=('roll_protobuf.py plan --to <version>',
+                           'roll_protobuf.py start --to <version>'))
+    total = len(roll_state.patches)
+    if roll_state.phase == 'prepared':
+        return RollStatus(
+            state='prepared',
+            index=0,
+            total=total,
+            next_commands=(
+                f'roll_protobuf.py start --to {roll_state.new_revision}',
+                'roll_protobuf.py abort'))
+    if roll_state.phase == 'conflict':
+        return RollStatus(
+            state='conflict',
+            index=roll_state.current_index + 1,
+            total=total,
+            patch=roll_state.patches[roll_state.current_index].patch_name,
+            files=roll_state.conflict_files,
+            next_commands=('roll_protobuf.py continue',
+                           'roll_protobuf.py drop --reason <why>',
+                           'roll_protobuf.py abort'))
+    return RollStatus(state='replayed',
+                      index=total,
+                      total=total,
+                      next_commands=('roll_protobuf.py check',
+                                     'roll_protobuf.py abort'))
+
+
+def AbortRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
+    """Resets the branch to start_commit and removes GITDIR/protobuf-roll/."""
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    roll_state = LoadRollState(checkout.protobuf_directory)
+    if roll_state is None:
+        raise RollProtobufError('No protobuf roll is in progress (missing '
+                                f'{checkout.state_file_path}).')
+    _RunScratchGit(checkout.repository_root, 'reset', '--quiet', '--hard',
+                   roll_state.start_commit)
+    _RunScratchGit(checkout.protobuf_directory, 'clean', '-fdq')
+    shutil.rmtree(checkout.roll_state_directory)
+    return roll_state
+
+
+def FormatRollStateReport(state: RollState) -> str:
+    if state.phase == 'prepared':
+        return (f'Prepared roll from {state.old_revision} to '
+                f'{state.new_revision} ({state.new_commit}): '
+                f'{len(state.patches)} patch(es), copied '
+                f'{state.copied_blob_count} preimage blob(s).')
+    total = len(state.patches)
+    lines = [
+        f'Rolling //third_party/protobuf from {state.old_revision} to '
+        f'{state.new_revision} ({state.new_commit}):', ''
+    ]
+    lines += [
+        f'  [{index}/{total}] {result.status.value}  {result.patch_name}: '
+        f'{_DescribePatchReplayResult(result)}'
+        for index, result in enumerate(state.patch_results, start=1)
+    ]
+    if state.phase == 'conflict':
+        lines += [
+            '',
+            f'Stopped at [{state.current_index + 1}/{total}] '
+            f'patches/{state.patches[state.current_index].patch_name}.',
+            'Resolve the conflict in the checkout (see "Doing it by hand" in '
+            'README.chromium), or run `roll_protobuf.py abort` to reset to '
+            f'{state.start_commit}.',
+        ]
+    else:
+        lines += ['', f'Replayed all {total} patch(es).']
+    return '\n'.join(lines)
+
+
+def FormatRollStatusReport(status: RollStatus) -> str:
+    if status.state == 'idle':
+        header = 'No protobuf roll in progress.'
+    elif status.state == 'prepared':
+        header = f'State: prepared ({status.total} patch(es)).'
+    elif status.state == 'conflict':
+        header = (f'State: conflict [{status.index}/{status.total}] in '
+                  f'patches/{status.patch}')
+    else:
+        header = f'State: replayed ({status.total}/{status.total} patch(es)).'
+    lines = [header, *[f'  {path}' for path in status.files]]
+    lines.append('Next: ' + ', '.join(status.next_commands))
+    return '\n'.join(lines)
+
+
 def main(command_line_arguments: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description='Verifies //third_party/protobuf against upstream plus '
