@@ -721,7 +721,7 @@ PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
 gfx::Size PaintLayerScrollableArea::ContentsSize() const {
   // We need to take into account of the border/scrollbar/padding for
   // PaintLayerScrollableAreaTest.NotScrollsOverflowWithScrollableScrollbar.
-  // TODO(crbug.com/962299): The pixel snapping is incorrect in some cases.
+  // TODO(crbug.com/40105990): The pixel snapping is incorrect in some cases.
   return PixelSnappedContentsSize(
       GetLayoutBox()->PhysicalPaddingBoxRect().offset);
 }
@@ -3382,12 +3382,11 @@ CompositorElementId PaintLayerScrollableArea::GetScrollElementId() const {
 }
 
 gfx::Size PaintLayerScrollableArea::PixelSnappedBorderBoxSize() const {
-  // TODO(crbug.com/1020913): We use this method during
+  // TODO(crbug.com/40105990): We use this method during
   // PositionOverflowControls() even before the paint offset is updated.
   // This can be fixed only after we support subpixels in overflow control
   // geometry. For now we ensure correct pixel snapping of overflow controls by
   // calling PositionOverflowControls() again when paint offset is updated.
-  // TODO(crbug.com/962299): Only correct if the paint offset is correct.
   return PhysicalRect(GetLayoutBox()->FirstFragment().PaintOffset(),
                       GetLayoutBox()->StitchedSize())
       .PixelSnappedSize();

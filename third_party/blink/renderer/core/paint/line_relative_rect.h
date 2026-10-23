@@ -61,8 +61,6 @@ struct CORE_EXPORT LineRelativeOffset {
   }
 };
 
-// TODO(crbug.com/962299): These functions should upgraded to force correct
-// pixel snapping in a type-safe way.
 inline gfx::Point ToRoundedPoint(const LineRelativeOffset& o) {
   return {o.line_left.Round(), o.line_over.Round()};
 }
@@ -149,8 +147,6 @@ struct CORE_EXPORT LineRelativeRect {
     offset.line_over += other.line_over;
   }
 
-  // TODO(crbug.com/962299): These functions should upgraded to force correct
-  // pixel snapping in a type-safe way.
   gfx::Point PixelSnappedOffset() const { return ToRoundedPoint(offset); }
   int PixelSnappedInlineSize() const {
     return SnapSizeToPixel(size.inline_size, offset.line_left);
@@ -181,8 +177,6 @@ struct CORE_EXPORT LineRelativeRect {
   void AdjustLineEndToInkOverflow(const FragmentItem& fragment);
 };
 
-// TODO(crbug.com/962299): These functions should upgraded to force correct
-// pixel snapping in a type-safe way.
 inline gfx::Rect ToPixelSnappedRect(const LineRelativeRect& r) {
   return {r.PixelSnappedOffset(), r.PixelSnappedSize()};
 }

@@ -126,8 +126,6 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalSize&);
 // closest PhysicalSize representation.
 PLATFORM_EXPORT PhysicalSize LayoutRatioFromSizeF(gfx::SizeF ratio);
 
-// TODO(crbug.com/41458361): These functions should upgraded to force correct
-// pixel snapping in a type-safe way.
 inline gfx::Size ToRoundedSize(const PhysicalSize& s) {
   return {s.width.Round(), s.height.Round()};
 }

@@ -19,8 +19,8 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
   const StyleReflection* reflect_style = style.BoxReflect();
 
   const LayoutBox* layout_box = layer.GetLayoutBox();
-  // TODO(crbug.com/962299): Only correct if the paint offset is correct.
   PhysicalSize stitched_size = layout_box->StitchedSize();
+  // Note: This is correct only if the paint offset is up-to-date.
   gfx::Size frame_size =
       PhysicalRect(layout_box->FirstFragment().PaintOffset(), stitched_size)
           .PixelSnappedSize();

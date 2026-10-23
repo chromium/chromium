@@ -102,8 +102,6 @@ struct PLATFORM_EXPORT PhysicalFixedOffset {
 
 using PhysicalOffset = PhysicalFixedOffset<LayoutUnit>;
 
-// TODO(crbug.com/41458361): These functions should upgraded to force correct
-// pixel snapping in a type-safe way.
 template <typename ValueType>
 inline gfx::Point ToRoundedPoint(const PhysicalFixedOffset<ValueType>& o) {
   return {o.left.Round(), o.top.Round()};
