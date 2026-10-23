@@ -280,7 +280,6 @@ chromium_luci.configure_targets(
             "no_xvfb_for_real_hardware": True,
             "nvidia_geforce_gtx_1660": True,
             "out_dir_arg": True,
-            "skia_gold_bypass": True,
             "skia_gold_test": True,
             "skylab-tauto-chromium-graphics": True,
             "skylab-20-tests-per-shard": True,

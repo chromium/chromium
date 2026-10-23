@@ -84,7 +84,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "pixel",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_integration_test_common_args",
         "gpu_integration_test_pixel_args",
@@ -1141,7 +1140,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "expected_color",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_metal",
@@ -1157,7 +1155,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "expected_color",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_skia_ganesh",
@@ -1172,7 +1169,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "expected_color",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_skia_graphite",
@@ -1187,7 +1183,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "expected_color",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_integration_test_expected_color_args",
@@ -1201,7 +1196,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "expected_color",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_validating",
         "gpu_integration_test_expected_color_args",
@@ -2185,7 +2179,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "pixel",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_angle_metal",
@@ -2201,7 +2194,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "pixel",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_skia_ganesh",
@@ -2216,7 +2208,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "pixel",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_force_skia_graphite",
@@ -2231,7 +2222,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "pixel",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_passthrough",
         "gpu_integration_test_pixel_args",
@@ -2245,7 +2235,6 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "pixel",
     mixins = [
         "skia_gold_test",
-        "skia_gold_bypass",
         "has_native_resultdb_integration",
         "gpu_force_command_decoder_validating",
         "gpu_integration_test_pixel_args",
@@ -2830,7 +2819,6 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
         "legacy_gpu_vulkan_pixel_skia_gold_test_args",
         "skia_gold_test",
-        "skia_gold_bypass",
     ],
     module_scheme = "flat",
 )

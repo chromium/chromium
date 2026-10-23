@@ -850,11 +850,6 @@
       '${ISOLATED_OUTDIR}',
     ],
   },
-  'skia_gold_bypass': {
-    'args': [
-      '--bypass-skia-gold-functionality',
-    ],
-  },
   'skia_gold_test': {
     'args': [
       '--git-revision=${got_revision}',

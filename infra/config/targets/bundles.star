@@ -3446,7 +3446,6 @@ targets.bundle(
                 ],
             ),
             "skia_gold_test",
-            "skia_gold_bypass",
         ],
     },
 )
@@ -3468,7 +3467,6 @@ targets.bundle(
         ),
         "gl_unittests": [
             "skia_gold_test",
-            "skia_gold_bypass",
         ],
     },
 )
@@ -3506,7 +3504,6 @@ targets.bundle(
                 ],
             ),
             "skia_gold_test",
-            "skia_gold_bypass",
         ],
     },
 )

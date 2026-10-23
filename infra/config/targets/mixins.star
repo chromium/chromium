@@ -1918,16 +1918,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    # TODO(crbug.com/568399534): Remove (along with the gl_unittests replacement
-    # in chromium.gpu.star) once Skia Gold is re-enabled across all remaining
-    # suites.
-    name = "skia_gold_bypass",
-    args = [
-        "--bypass-skia-gold-functionality",
-    ],
-)
-
-targets.mixin(
     name = "skia_gold_test",
     args = [
         "--git-revision=${got_revision}",

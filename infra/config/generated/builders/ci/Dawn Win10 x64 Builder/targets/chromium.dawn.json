@@ -72,7 +72,6 @@
         "args": [
           "--use-gpu-in-tests",
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--test-launcher-filter-file=../../testing/buildbot/filters/win.nvidia.gtx.1660.gl_unittests.filter"
         ],
         "merge": {
@@ -890,8 +889,7 @@
       {
         "args": [
           "--use-gpu-in-tests",
-          "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality"
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1516,8 +1514,7 @@
       {
         "args": [
           "--use-gpu-in-tests",
-          "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality"
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1865,8 +1862,7 @@
       {
         "args": [
           "--use-gpu-in-tests",
-          "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality"
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

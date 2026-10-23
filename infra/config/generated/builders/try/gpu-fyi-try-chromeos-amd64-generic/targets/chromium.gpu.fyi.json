@@ -52,7 +52,6 @@
           "--stop-ui",
           "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.gl_unittests.filter",
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
@@ -157,7 +156,6 @@
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
@@ -379,7 +377,6 @@
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
