@@ -51,6 +51,7 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
@@ -188,6 +189,10 @@ void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
   //    try to install from the app info factory as a last resort.
   GetMutableDebugValue().Set("load_url_result", base::ToString(result));
   if (result == webapps::WebAppUrlLoaderResult::kUrlLoaded) {
+    if (IsCrossOriginCommittedDocument()) {
+      RejectCrossOriginInstallInfo();
+      return;
+    }
     data_retriever_->GetWebAppInstallInfo(
         web_contents_.get(),
         base::BindOnce(
@@ -196,9 +201,47 @@ void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
     return;
   }
 
-  // If we could not load the URL and we are supposed to install a placeholder
-  // as fallback, acquire with the app id derived from the install url and lock
-  // this app id to see if this placeholder is already installed.
+  // Avoid counting an error if we are shutting down. This matches later
+  // stages of install where if the WebContents is destroyed we return early.
+  if (result == webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed &&
+      !install_options_.install_placeholder) {
+    Abort(webapps::InstallResultCode::kWebContentsDestroyed);
+    return;
+  }
+
+  webapps::InstallResultCode code =
+      webapps::InstallResultCode::kInstallURLLoadFailed;
+
+  switch (result) {
+    case webapps::WebAppUrlLoaderResult::kUrlLoaded:
+      // Handled above.
+      NOTREACHED();
+    case webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed:
+      code = webapps::InstallResultCode::kWebContentsDestroyed;
+      break;
+    case webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded:
+      code = webapps::InstallResultCode::kInstallURLRedirected;
+      break;
+    case webapps::WebAppUrlLoaderResult::kFailedUnknownReason:
+      code = webapps::InstallResultCode::kInstallURLLoadFailed;
+      break;
+    case webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong:
+      code = webapps::InstallResultCode::kInstallURLLoadTimeOut;
+      break;
+    case webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded:
+      code = webapps::InstallResultCode::kInstallURLLoadFailed;
+      break;
+  }
+
+  MaybeInstallPlaceholderOrFallback(code);
+}
+
+void ExternalAppResolutionCommand::MaybeInstallPlaceholderOrFallback(
+    webapps::InstallResultCode code) {
+  // If we could not load the URL (or the resolved install info was rejected)
+  // and we are supposed to install a placeholder as fallback, acquire with the
+  // app id derived from the install url and lock this app id to see if this
+  // placeholder is already installed.
   if (install_options_.install_placeholder) {
     if (installed_placeholder_app_id_.has_value() &&
         !install_options_.force_reinstall) {
@@ -226,36 +269,21 @@ void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
     return;
   }
 
-  // Avoid counting an error if we are shutting down. This matches later
-  // stages of install where if the WebContents is destroyed we return early.
-  if (result == webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed) {
-    Abort(webapps::InstallResultCode::kWebContentsDestroyed);
-    return;
-  }
-
-  webapps::InstallResultCode code =
-      webapps::InstallResultCode::kInstallURLLoadFailed;
-
-  switch (result) {
-    case webapps::WebAppUrlLoaderResult::kUrlLoaded:
-    case webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed:
-      // Handled above.
-      NOTREACHED();
-    case webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded:
-      code = webapps::InstallResultCode::kInstallURLRedirected;
-      break;
-    case webapps::WebAppUrlLoaderResult::kFailedUnknownReason:
-      code = webapps::InstallResultCode::kInstallURLLoadFailed;
-      break;
-    case webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong:
-      code = webapps::InstallResultCode::kInstallURLLoadTimeOut;
-      break;
-    case webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded:
-      code = webapps::InstallResultCode::kInstallURLLoadFailed;
-      break;
-  }
-
   TryAppInfoFactoryOnFailure(ExternallyManagedAppManager::InstallResult(code));
+}
+
+bool ExternalAppResolutionCommand::IsCrossOriginCommittedDocument() const {
+  content::RenderFrameHost* main_frame = web_contents_->GetPrimaryMainFrame();
+  return !main_frame->GetLastCommittedURL().is_empty() &&
+         main_frame->GetLastCommittedOrigin() !=
+             url::Origin::Create(install_options_.install_url);
+}
+
+void ExternalAppResolutionCommand::RejectCrossOriginInstallInfo() {
+  GetMutableDebugValue().Set("cross_origin_install_info_rejected", true);
+  web_app_info_.reset();
+  MaybeInstallPlaceholderOrFallback(
+      webapps::InstallResultCode::kInstallURLInvalid);
 }
 
 void ExternalAppResolutionCommand::OnGetWebAppInstallInfoInCommand(
@@ -318,6 +346,13 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
   }
 
   GetMutableDebugValue().Set("had_manifest", opt_manifest ? true : false);
+  if (IsCrossOriginCommittedDocument() ||
+      (opt_manifest && !url::IsSameOriginWith(install_options_.install_url,
+                                              opt_manifest->id))) {
+    RejectCrossOriginInstallInfo();
+    return;
+  }
+
   if (install_params_->install_as_diy) {
     *web_app_info_ = CreateInstallInfoForCreateDiy(
         web_contents_->GetLastCommittedURL(), web_contents_->GetTitle(),
@@ -487,6 +522,12 @@ void ExternalAppResolutionCommand::OnCustomIconDecodedPopulateBitmaps(
 
 void ExternalAppResolutionCommand::ContinueUpdateInfoWithParamsAndUpgradeLock(
     bool icon_download_failed) {
+  if (!url::IsSameOriginWith(install_options_.install_url,
+                             web_app_info_->manifest_id().value())) {
+    RejectCrossOriginInstallInfo();
+    return;
+  }
+
   // TODO(b/300878868): Reject installation if the manifest id provided in the
   // WebAppInstallForceList does not match the final manifest id.
   app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id());

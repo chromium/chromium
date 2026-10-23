@@ -393,7 +393,7 @@ class WebAppPolicyManagerTest : public WebAppPolicyManagerTestBase,
 };
 
 TEST_F(WebAppPolicyManagerTest, GetPolicyIdsForWebApp) {
-  const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
+  const GURL kWebAppUrl = GURL("https://www.example.com/path/index.html");
   const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
   const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
 

@@ -9,12 +9,13 @@
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/net_errors.h"
@@ -29,6 +30,10 @@ using ::testing::IsEmpty;
 
 class WebAppUrlLoaderTest : public content::RenderViewHostTestHarness {
  public:
+  WebAppUrlLoaderTest()
+      : content::RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     loader_ = std::make_unique<WebAppUrlLoader>();
@@ -61,17 +66,37 @@ class WebAppUrlLoaderTest : public content::RenderViewHostTestHarness {
     loader().LoadUrl(desired, web_contents(),
                      WebAppUrlLoader::UrlComparison::kExact,
                      result.GetCallback());
-    web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+    web_contents_tester().CommitPendingNavigation();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
+          auto simulator = content::NavigationSimulator::CreateFromPending(
+              web_contents()->GetController());
+          if (actual != desired) {
+            simulator->Redirect(actual);
+          }
           if (error_code) {
+            simulator->SetKeepLoading(true);
+            simulator->Commit();
             web_contents_tester().TestDidFailLoadWithError(actual,
                                                            error_code.value());
           } else {
-            web_contents_tester().TestDidFinishLoad(actual);
+            simulator->Commit();
           }
         }));
     return result.Get();
+  }
+
+  void FlushTaskRunner() {
+    base::test::TestFuture<void> flushed;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, flushed.GetCallback());
+    EXPECT_TRUE(flushed.Wait());
+  }
+
+  void CommitPrepareForLoadAndWaitForPendingTarget() {
+    web_contents_tester().CommitPendingNavigation();
+    FlushTaskRunner();
+    ASSERT_NE(nullptr, web_contents()->GetController().GetPendingEntry());
   }
 
  private:
@@ -117,10 +142,11 @@ TEST_F(WebAppUrlLoaderTest, PrepareForLoad_ExcessiveDidFinishLoad) {
   // it's flushing all url1-related noisy events so url2 loading will start
   // clean later.
   web_contents_tester().TestDidFinishLoad(url1);
-  web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+  web_contents_tester().CommitPendingNavigation();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting(
-                     [&]() { web_contents_tester().TestDidFinishLoad(url2); }));
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        web_contents_tester().CommitPendingNavigation();
+      }));
   ASSERT_TRUE(result.Wait());
 
   // Expect successful navigation to url2.
@@ -143,14 +169,151 @@ TEST_F(WebAppUrlLoaderTest, PrepareForLoad_ExcessiveDidFailLoad) {
   // it's flushing all url1-related noisy events so url2 loading will start
   // clean later.
   web_contents_tester().TestDidFailLoadWithError(url1, /*error_code=*/1);
-  web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+  web_contents_tester().CommitPendingNavigation();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting(
-                     [&]() { web_contents_tester().TestDidFinishLoad(url2); }));
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        web_contents_tester().CommitPendingNavigation();
+      }));
   ASSERT_TRUE(result.Wait());
 
   // Expect successful navigation to url2.
   EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded, result.Get());
+}
+
+TEST_F(WebAppUrlLoaderTest,
+       DidFinishLoadBeforeNavigationCommits_DoesNotSucceed) {
+  const GURL url1{"https://example.com"};
+  const GURL url2{"https://example.org"};
+
+  EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded,
+            LoadUrl(/*desired=*/url1, /*actual=*/url1));
+
+  base::test::TestFuture<WebAppUrlLoader::Result> result;
+  loader().LoadUrl(url2, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                   result.GetCallback());
+
+  // Spoofed DidFinishLoad for about:blank and url2 before PrepareForLoad
+  // actually commits about:blank must be ignored.
+  web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+  web_contents_tester().TestDidFinishLoad(url2);
+  FlushTaskRunner();
+  EXPECT_FALSE(result.IsReady());
+
+  // Commit about:blank to complete PrepareForLoad and start LoadUrlInternal.
+  CommitPrepareForLoadAndWaitForPendingTarget();
+
+  // Spoofed DidFinishLoad for url2 while navigation to url2 is still pending
+  // (has not committed) must be ignored while url1/about:blank is committed.
+  web_contents_tester().TestDidFinishLoad(url2);
+  web_contents_tester().TestDidFinishLoad(url1);
+  FlushTaskRunner();
+  EXPECT_FALSE(result.IsReady());
+
+  // Once the real navigation to url2 commits, the load succeeds.
+  web_contents_tester().CommitPendingNavigation();
+  EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded, result.Get());
+}
+
+TEST_F(WebAppUrlLoaderTest, NavigationAbortedWithoutCommit_Fails) {
+  const GURL url1{"https://example.com"};
+  const GURL url2{"https://example.org"};
+
+  EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded,
+            LoadUrl(/*desired=*/url1, /*actual=*/url1));
+
+  base::test::TestFuture<WebAppUrlLoader::Result> result;
+  loader().LoadUrl(url2, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                   result.GetCallback());
+  CommitPrepareForLoadAndWaitForPendingTarget();
+
+  // Abort the pending navigation to url2 without committing, then fire
+  // DidFinishLoad for the old page and for url2.
+  auto simulator = content::NavigationSimulator::CreateFromPending(
+      web_contents()->GetController());
+  simulator->AbortCommit();
+  web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+  web_contents_tester().TestDidFinishLoad(url1);
+  web_contents_tester().TestDidFinishLoad(url2);
+
+  EXPECT_EQ(WebAppUrlLoader::Result::kFailedUnknownReason, result.Get());
+}
+
+TEST_F(WebAppUrlLoaderTest,
+       DidFinishLoadAfterDocumentChangedUrl_ReturnsRedirected) {
+  const GURL url1{"https://example.com/app"};
+  const GURL url2{"https://example.com/other"};
+
+  base::test::TestFuture<WebAppUrlLoader::Result> result;
+  loader().LoadUrl(url1, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                   result.GetCallback());
+  CommitPrepareForLoadAndWaitForPendingTarget();
+
+  // Commit url1 while keeping the document loading, then perform a
+  // renderer-initiated same-document navigation (`history.pushState`) to url2
+  // before DidFinishLoad fires.
+  auto simulator = content::NavigationSimulator::CreateFromPending(
+      web_contents()->GetController());
+  simulator->SetKeepLoading(true);
+  simulator->Commit();
+
+  content::NavigationSimulator::CreateRendererInitiated(url2, main_rfh())
+      ->CommitSameDocument();
+  web_contents_tester().TestDidFinishLoad(url1);
+
+  EXPECT_EQ(WebAppUrlLoader::Result::kRedirectedUrlLoaded, result.Get());
+}
+
+TEST_F(WebAppUrlLoaderTest, LoadUrlTimeout_FailsOnceWithTookTooLong) {
+  base::HistogramTester histogram_tester;
+  const GURL url{"https://example.com"};
+
+  base::test::TestFuture<WebAppUrlLoader::Result> result;
+  loader().LoadUrl(url, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                   result.GetCallback());
+  CommitPrepareForLoadAndWaitForPendingTarget();
+
+  // Leave `url` pending and fast-forward past the load timeout. `Stop()`
+  // synchronously aborts the pending navigation, which must not double-post
+  // after `OnLoadUrlTimeout` already posted `kFailedPageTookTooLong`.
+  task_environment()->FastForwardBy(
+      WebAppUrlLoader::kSecondsToWaitForWebContentsLoad);
+
+  EXPECT_EQ(WebAppUrlLoader::Result::kFailedPageTookTooLong, result.Get());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Webapp.WebAppUrlLoaderResult"),
+      BucketsAre(Bucket(WebAppUrlLoader::Result::kFailedPageTookTooLong, 1)));
+}
+
+TEST_F(WebAppUrlLoaderTest, OverlappingLoadUrlTasksOnSameWebContents_Succeeds) {
+  const GURL url1{"https://example.com"};
+  const GURL url2{"https://example.org"};
+
+  // Start a first `LoadUrl` call that commits `url1` but stays loading
+  // (`SetKeepLoading(true)`) so its `LoaderTask` remains alive on
+  // `web_contents()`.
+  base::test::TestFuture<WebAppUrlLoader::Result> result1;
+  loader().LoadUrl(url1, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                   result1.GetCallback());
+  CommitPrepareForLoadAndWaitForPendingTarget();
+  {
+    auto simulator1 = content::NavigationSimulator::CreateFromPending(
+        web_contents()->GetController());
+    simulator1->SetKeepLoading(true);
+    simulator1->Commit();
+  }
+  EXPECT_FALSE(result1.IsReady());
+
+  // Start a second `LoadUrl` call on the same `web_contents()` while the first
+  // `LoaderTask` is still alive. Its `PrepareForLoad(about:blank)` and `url2`
+  // navigations must not be hijacked by the older `LoaderTask` or stall waiting
+  // for `kSecondsToWaitForWebContentsLoad`.
+  base::test::TestFuture<WebAppUrlLoader::Result> result2;
+  loader().LoadUrl(url2, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                   result2.GetCallback());
+  CommitPrepareForLoadAndWaitForPendingTarget();
+  web_contents_tester().CommitPendingNavigation();
+
+  EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded, result2.Get());
 }
 
 TEST_F(WebAppUrlLoaderTest, RecordsHistogram) {
@@ -175,7 +338,7 @@ TEST_F(WebAppUrlLoaderTest, RecordsPrepareForLoadHistogram) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> future;
   loader().PrepareForLoad(web_contents(), future.GetCallback());
-  web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+  web_contents_tester().CommitPendingNavigation();
   EXPECT_TRUE(future.Wait());
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Webapp.WebAppUrlLoaderPrepareForLoadResult"),

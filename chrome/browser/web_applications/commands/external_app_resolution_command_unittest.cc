@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -49,6 +50,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
+#include "content/public/test/navigation_simulator.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -1247,6 +1249,89 @@ TEST_F(ExternalAppResolutionCommandTest, WriteDataToDiskFailed) {
   auto result = InstallAndWait(install_options);
   EXPECT_EQ(result.code, webapps::InstallResultCode::kWriteDataFailed);
   ASSERT_FALSE(result.app_id.has_value());
+}
+
+TEST_F(ExternalAppResolutionCommandTest, CrossOriginManifestRejected) {
+  base::HistogramTester tester;
+  const GURL kCrossOriginStartUrl("https://other-origin.com/path/index.html");
+  const GURL kCrossOriginManifestId("https://other-origin.com/path/custom_id");
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kBrowser,
+      ExternalInstallSource::kExternalPolicy);
+  install_options.install_placeholder = false;
+
+  SetPageState(install_options);
+  auto& state = fake_web_contents_manager().GetOrCreatePageState(
+      install_options.install_url);
+  state.manifest_before_default_processing->start_url = kCrossOriginStartUrl;
+  state.manifest_before_default_processing->id = kCrossOriginManifestId;
+
+  auto result = InstallAndWait(install_options);
+  EXPECT_EQ(result.code, webapps::InstallResultCode::kInstallURLInvalid);
+  EXPECT_FALSE(result.app_id.has_value());
+  EXPECT_TRUE(registrar().GetAppIds().empty());
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Result"),
+              BucketsAre(base::Bucket(false, 1)));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Source.Failure"),
+              BucketsAre(base::Bucket(
+                  webapps::WebappInstallSource::EXTERNAL_POLICY, 1)));
+}
+
+TEST_F(ExternalAppResolutionCommandTest,
+       CrossOriginManifestInstallsPlaceholderWhenConfigured) {
+  base::HistogramTester tester;
+  const GURL kCrossOriginStartUrl("https://other-origin.com/path/index.html");
+  const GURL kCrossOriginManifestId("https://other-origin.com/path/custom_id");
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kBrowser,
+      ExternalInstallSource::kExternalPolicy);
+  install_options.install_placeholder = true;
+
+  SetPageState(install_options);
+  auto& state = fake_web_contents_manager().GetOrCreatePageState(
+      install_options.install_url);
+  state.manifest_before_default_processing->start_url = kCrossOriginStartUrl;
+  state.manifest_before_default_processing->id = kCrossOriginManifestId;
+
+  auto result = InstallAndWait(install_options);
+  EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
+  ASSERT_TRUE(result.app_id.has_value());
+  EXPECT_TRUE(IsPlaceholderAppUrl(kWebAppUrl));
+  EXPECT_FALSE(registrar().GetAppById(GenerateAppIdFromManifestId(
+      webapps::ManifestId(kCrossOriginManifestId))));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Result"),
+              BucketsAre(base::Bucket(true, 1)));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Source.Success"),
+              BucketsAre(base::Bucket(
+                  webapps::WebappInstallSource::EXTERNAL_POLICY, 1)));
+}
+
+TEST_F(ExternalAppResolutionCommandTest, CrossOriginCommittedOriginRejected) {
+  base::HistogramTester tester;
+  const GURL kCrossOriginUrl("https://other-origin.com/path/index.html");
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kBrowser,
+      ExternalInstallSource::kExternalPolicy);
+  install_options.install_placeholder = false;
+
+  SetPageState(install_options);
+  auto& state = fake_web_contents_manager().GetOrCreatePageState(
+      install_options.install_url);
+  state.on_manifest_fetch = base::BindLambdaForTesting([&]() {
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        provider()->command_manager().web_contents_for_testing(),
+        kCrossOriginUrl);
+  });
+
+  auto result = InstallAndWait(install_options);
+  EXPECT_EQ(result.code, webapps::InstallResultCode::kInstallURLInvalid);
+  EXPECT_FALSE(result.app_id.has_value());
+  EXPECT_TRUE(registrar().GetAppIds().empty());
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Result"),
+              BucketsAre(base::Bucket(false, 1)));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Source.Failure"),
+              BucketsAre(base::Bucket(
+                  webapps::WebappInstallSource::EXTERNAL_POLICY, 1)));
 }
 
 }  // namespace

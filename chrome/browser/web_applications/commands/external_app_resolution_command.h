@@ -98,6 +98,9 @@ class ExternalAppResolutionCommand
   // is configured as fallback).
   // * offline installation from install info (in all other cases).
   void OnUrlLoadedAndBranchInstallation(webapps::WebAppUrlLoaderResult result);
+  void MaybeInstallPlaceholderOrFallback(webapps::InstallResultCode code);
+  bool IsCrossOriginCommittedDocument() const;
+  void RejectCrossOriginInstallInfo();
 
   // Regular installation path:
   void OnGetWebAppInstallInfoInCommand(

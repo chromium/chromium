@@ -322,23 +322,23 @@ TEST_F(FileHandlingSubManagerConfigureTest,
        PolicyDefinedFileHandlerOverUserChoice) {
   const GURL kInstallUrl =
       GURL("https://www.example.com/path/install_url.html");
-  const GURL kStartUrl = GURL("https://example.com/path/");
+  const GURL kStartUrl = GURL("https://www.example.com/path/");
   const GURL kManifestUrl = GURL("https://www.example.com/path/manifest.json");
   const webapps::AppId app_id = web_app::GenerateAppId(std::nullopt, kStartUrl);
   const std::string file_extension = ".txt";
 
   {
     fake_provider().GetFakeWebContentsManager()->CreateBasicInstallPageState(
-        kInstallUrl, kManifestUrl, kWebAppUrl);
+        kInstallUrl, kManifestUrl, kStartUrl);
     auto& page_state =
         fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
             kInstallUrl);
 
     auto manifest = blink::mojom::Manifest::New();
+    manifest->start_url = kStartUrl;
     manifest->id = manifest->start_url.GetWithoutRef();
     manifest->scope = manifest->start_url.GetWithoutFilename();
     manifest->manifest_url = page_state.manifest_url;
-    manifest->start_url = kStartUrl;
 
     auto handler = blink::mojom::ManifestFileHandler::New();
     handler->action = kStartUrl;
@@ -418,23 +418,23 @@ TEST_F(FileHandlingSubManagerConfigureTest,
        PolicyRemovedMidSessionRevertsToUserChoice) {
   const GURL kInstallUrl =
       GURL("https://www.example.com/path/install_url.html");
-  const GURL kStartUrl = GURL("https://example.com/path/");
+  const GURL kStartUrl = GURL("https://www.example.com/path/");
   const GURL kManifestUrl = GURL("https://www.example.com/path/manifest.json");
   const webapps::AppId app_id = web_app::GenerateAppId(std::nullopt, kStartUrl);
   const std::string file_extension = ".txt";
 
   {
     fake_provider().GetFakeWebContentsManager()->CreateBasicInstallPageState(
-        kInstallUrl, kManifestUrl, kWebAppUrl);
+        kInstallUrl, kManifestUrl, kStartUrl);
     auto& page_state =
         fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
             kInstallUrl);
 
     auto manifest = blink::mojom::Manifest::New();
+    manifest->start_url = kStartUrl;
     manifest->id = manifest->start_url.GetWithoutRef();
     manifest->scope = manifest->start_url.GetWithoutFilename();
     manifest->manifest_url = page_state.manifest_url;
-    manifest->start_url = kStartUrl;
 
     auto handler = blink::mojom::ManifestFileHandler::New();
     handler->action = kStartUrl;
@@ -508,7 +508,7 @@ TEST_F(FileHandlingSubManagerConfigureTest,
 TEST_F(FileHandlingSubManagerConfigureTest,
        PolicyDefinedFileHandlerAddedMidSessionToManifest) {
   const GURL kInstallUrl("https://www.example.com/install.html");
-  const GURL kStartUrl("https://example.com/path/");
+  const GURL kStartUrl("https://www.example.com/path/");
   const GURL kManifestUrl("https://www.example.com/manifest.json");
   const webapps::AppId app_id = web_app::GenerateAppId(std::nullopt, kStartUrl);
   const std::string file_extension = ".txt";

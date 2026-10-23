@@ -28,8 +28,10 @@ enum class WebAppUrlLoaderResult {
   // The provided URL (matched using |UrlComparison|) was loaded.
   kUrlLoaded = 0,
   // The provided URL redirected to another URL (that did not match using
-  // |UrlComparison|) and the final URL was loaded.
+  // |UrlComparison|), committed a URL that did not match, or changed its URL
+  // after commit before `DidFinishLoad`.
   kRedirectedUrlLoaded = 1,
+  // The navigation failed or aborted before committing for an unknown reason.
   kFailedUnknownReason = 2,
   kFailedPageTookTooLong = 3,
   kFailedWebContentsDestroyed = 4,
