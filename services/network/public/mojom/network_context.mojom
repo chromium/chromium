@@ -1584,6 +1584,11 @@ interface NetworkContext {
   // Clears the list of bad proxy servers that has been cached.
   ClearBadProxiesCache() => ();
 
+  // Retrieves the current proxy settings (original and effective
+  // configurations), the cached list of bad proxies, and the time tick offset
+  // as a NetLog-formatted dictionary.
+  GetProxySettings() => (mojo_base.mojom.DictionaryValue proxy_settings);
+
   // Creates a WebSocket connection to |url|. |requested_protocols| is a
   // list of tokens identifying sub-protocols the renderer would like to use,
   // as described in RFC6455 "Subprotocols Using the WebSocket Protocol".

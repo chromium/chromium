@@ -25,10 +25,43 @@ found in the LICENSE file.
       </div>
 
       <div id="proxy-view-tab-content" class="content-box">
-       <input type="button" value="Re-apply settings"
-           id="proxy-view-reload-settings">
-       <input type="button" value="Clear bad proxies"
-           id="proxy-view-clear-bad-proxies">
+        <input type="button" value="Re-apply settings"
+            id="proxy-view-reload-settings">
+        <input type="button" value="Clear bad proxies"
+            id="proxy-view-clear-bad-proxies">
+        <p>Proxy settings for the current profile's network context:</p>
+        <div id="proxy-view-effective-content">
+          <h4>Effective proxy settings
+            <button id="proxy-view-copy-effective-settings" class="copy-button"
+                title="Copy effective proxy settings"
+                aria-label="Copy effective proxy settings">
+              <img src="chrome://resources/images/icon_copy_content.svg" alt="">
+            </button>
+          </h4>
+          <pre id="proxy-view-effective-settings"></pre>
+        </div>
+        <div id="proxy-view-original-content">
+          <h4>Original proxy settings
+            <button id="proxy-view-copy-original-settings" class="copy-button"
+                title="Copy original proxy settings"
+                aria-label="Copy original proxy settings">
+              <img src="chrome://resources/images/icon_copy_content.svg" alt="">
+            </button>
+          </h4>
+          <pre id="proxy-view-original-settings"></pre>
+        </div>
+        <div id="proxy-view-bad-proxies-div" style="display: none">
+          <h4>Recently failed proxies, marked as bad</h4>
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Bad proxy chain</th>
+                <th>Time for next retry</th>
+              </tr>
+            </thead>
+            <tbody id="proxy-view-bad-proxies-tbody"></tbody>
+          </table>
+        </div>
       </div>
 
       <div id="dns-view-tab-content" class="content-box">

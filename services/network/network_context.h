@@ -423,6 +423,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       override;
   void ForceReloadProxyConfig(ForceReloadProxyConfigCallback callback) override;
   void ClearBadProxiesCache(ClearBadProxiesCacheCallback callback) override;
+  void GetProxySettings(GetProxySettingsCallback callback) override;
   void CreateWebSocket(
       const GURL& url,
       const std::vector<std::string>& requested_protocols,

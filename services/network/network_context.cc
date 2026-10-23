@@ -68,6 +68,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/net_info_source_list.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_delegate.h"
 #include "net/base/network_isolation_key.h"
@@ -2159,6 +2160,28 @@ void NetworkContext::ClearBadProxiesCache(
     ClearBadProxiesCacheCallback callback) {
   url_request_context()->proxy_resolution_service()->ClearBadProxiesCache();
   std::move(callback).Run();
+}
+
+void NetworkContext::GetProxySettings(GetProxySettingsCallback callback) {
+  base::DictValue net_log_values =
+      url_request_context()->proxy_resolution_service()->GetProxyNetLogValues();
+  base::DictValue result;
+  if (base::DictValue* proxy_settings =
+          net_log_values.FindDict(net::kNetInfoProxySettings)) {
+    result = std::move(*proxy_settings);
+  }
+  if (base::ListValue* bad_proxies =
+          net_log_values.FindList(net::kNetInfoBadProxies)) {
+    result.Set(net::kNetInfoBadProxies, std::move(*bad_proxies));
+  }
+  base::TimeDelta time_since_epoch =
+      base::Time::Now() - base::Time::UnixEpoch();
+  base::TimeDelta reference_time_ticks =
+      base::TimeTicks::Now() - base::TimeTicks();
+  result.Set("timeTickOffset",
+             base::NumberToString(
+                 (time_since_epoch - reference_time_ticks).InMilliseconds()));
+  std::move(callback).Run(std::move(result));
 }
 
 void NetworkContext::CreateWebSocket(

@@ -168,3 +168,39 @@ IN_PROC_BROWSER_TEST_F(NetInternalsUtilitiesViewTest, InvalidMatcher) {
 IN_PROC_BROWSER_TEST_F(NetInternalsUtilitiesViewTest, InvalidUrl) {
   RunTestCase("InvalidUrl");
 }
+
+class NetInternalsProxyViewTest : public NetInternalsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    RunTestWithoutTestLoader(
+        "net_internals/proxy_view_test.js",
+        base::StringPrintf("runMochaTest('NetInternalsProxyViewTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NetInternalsProxyViewTest, DirectSettings) {
+  RunTestCase("DirectSettings");
+}
+
+IN_PROC_BROWSER_TEST_F(NetInternalsProxyViewTest, ManualSingleProxyAndBypass) {
+  RunTestCase("ManualSingleProxyAndBypass");
+}
+
+IN_PROC_BROWSER_TEST_F(NetInternalsProxyViewTest, ProxyPerScheme) {
+  RunTestCase("ProxyPerScheme");
+}
+
+IN_PROC_BROWSER_TEST_F(NetInternalsProxyViewTest,
+                       AutoDetectAndPacUrlWithOriginalDifferentFromEffective) {
+  RunTestCase("AutoDetectAndPacUrlWithOriginalDifferentFromEffective");
+}
+
+IN_PROC_BROWSER_TEST_F(NetInternalsProxyViewTest,
+                       OverrideRulesAndDynamicRouting) {
+  RunTestCase("OverrideRulesAndDynamicRouting");
+}
+
+IN_PROC_BROWSER_TEST_F(NetInternalsProxyViewTest, BadProxies) {
+  RunTestCase("BadProxies");
+}

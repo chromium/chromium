@@ -100,3 +100,57 @@ input + label {
 .content-box > *:first-child {
   margin-top:0;
 }
+
+.copy-button {
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-inline-start: 4px;
+  opacity: 0.7;
+  padding: 2px 4px;
+  vertical-align: middle;
+}
+
+.copy-button:hover {
+  background-color: rgba(128, 128, 128, 0.15);
+  opacity: 1;
+}
+
+.copy-button:active {
+  background-color: rgba(128, 128, 128, 0.3);
+}
+
+.copy-button img {
+  height: 16px;
+  vertical-align: middle;
+  width: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .copy-button img {
+    filter: invert(1);
+  }
+}
+
+table.styled-table {
+  border-collapse: collapse;
+}
+
+table.styled-table,
+.styled-table th,
+.styled-table td {
+  border: 1px solid #777;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.styled-table th {
+  background: rgb(224, 236, 255);
+}
+
+@media (prefers-color-scheme: dark) {
+  .styled-table th {
+    background: rgb(32, 48, 72);
+  }
+}

@@ -188,6 +188,7 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
 
   void OnReloadProxySettings(const base::ListValue& list);
   void OnClearBadProxies(const base::ListValue& list);
+  void OnGetProxySettings(const base::ListValue& list);
   void OnResolveHost(const base::ListValue& list);
   void OnClearHostResolverCache(const base::ListValue& list);
   void OnDomainSecurityPolicyDelete(const base::ListValue& list);
@@ -236,6 +237,10 @@ void NetInternalsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "clearBadProxies",
       base::BindRepeating(&NetInternalsMessageHandler::OnClearBadProxies,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getProxySettings",
+      base::BindRepeating(&NetInternalsMessageHandler::OnGetProxySettings,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "resolveHost",
@@ -303,6 +308,17 @@ void NetInternalsMessageHandler::OnReloadProxySettings(
 void NetInternalsMessageHandler::OnClearBadProxies(
     const base::ListValue& list) {
   GetNetworkContext()->ClearBadProxiesCache(base::NullCallback());
+}
+
+void NetInternalsMessageHandler::OnGetProxySettings(
+    const base::ListValue& list) {
+  const std::string* callback_id = list[0].GetIfString();
+  DCHECK(callback_id);
+
+  AllowJavascript();
+  GetNetworkContext()->GetProxySettings(
+      base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
+                     weak_factory_.GetWeakPtr(), *callback_id));
 }
 
 void NetInternalsMessageHandler::OnResolveHost(const base::ListValue& list) {

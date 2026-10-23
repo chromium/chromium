@@ -7894,6 +7894,40 @@ TEST_F(NetworkContextTest, ClearBadProxiesCache) {
   EXPECT_EQ(0UL, proxy_resolution_service->proxy_retry_info().size());
 }
 
+TEST_F(NetworkContextTest, GetProxySettings) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  net::ProxyConfig proxy_config;
+  proxy_config.proxy_rules().ParseFromString("http=proxy.example.com:8080");
+  proxy_config.proxy_rules().bypass_rules.ParseFromString("*.local");
+  context_params->initial_proxy_config = net::ProxyConfigWithAnnotation(
+      proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  base::test::TestFuture<void> reload_future;
+  network_context->ForceReloadProxyConfig(reload_future.GetCallback());
+  ASSERT_TRUE(reload_future.Wait());
+
+  base::test::TestFuture<base::DictValue> future;
+  network_context->GetProxySettings(future.GetCallback());
+  const base::DictValue& proxy_settings = future.Get();
+
+  base::Value expected_config_value = proxy_config.ToValue();
+  const base::DictValue* effective = proxy_settings.FindDict("effective");
+  ASSERT_TRUE(effective);
+  EXPECT_EQ(expected_config_value, *effective);
+
+  const base::DictValue* original = proxy_settings.FindDict("original");
+  ASSERT_TRUE(original);
+  EXPECT_EQ(expected_config_value, *original);
+
+  const base::ListValue* bad_proxies = proxy_settings.FindList("badProxies");
+  ASSERT_TRUE(bad_proxies);
+  EXPECT_TRUE(bad_proxies->empty());
+  EXPECT_TRUE(proxy_settings.FindString("timeTickOffset"));
+}
+
 // This is a test ProxyErrorClient that records the sequence of calls made to
 // OnPACScriptError() and OnRequestMaybeFailedDueToProxySettings().
 class TestProxyErrorClient final : public mojom::ProxyErrorClient {
