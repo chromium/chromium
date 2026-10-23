@@ -2120,8 +2120,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.AddPageContentResult"
-    enum="BooleanSuccess" expires_after="2027-03-21">
-  <owner>ssid@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records whether the AddPageContent database operation was successful.
@@ -2130,8 +2130,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.AvgPageSize" units="KB"
-    expires_after="2027-01-17">
-  <owner>ssid@chromium.org</owner>
+    expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the average size of a cached page. Recorded after a delay
@@ -2140,8 +2140,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.CachedTabsCount"
-    units="tabs" expires_after="2027-01-17">
-  <owner>ssid@chromium.org</owner>
+    units="tabs" expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the number of tabs that have cached content. Recorded after a delay
@@ -2207,8 +2207,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage"
-    units="%" expires_after="2027-01-17">
-  <owner>ssid@chromium.org</owner>
+    units="%" expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the percentage of eligible tabs (tabs within last 7 days) that are
@@ -2218,8 +2218,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.ExtractionAndCachingStatus"
-    enum="PageContentExtractionAndCachingStatus" expires_after="2027-01-17">
-  <owner>ssid@chromium.org</owner>
+    enum="PageContentExtractionAndCachingStatus" expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the status of page content extraction and caching. Recorded each
@@ -2273,8 +2273,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.NotCachedTabsCount"
-    units="tabs" expires_after="2027-01-17">
-  <owner>ssid@chromium.org</owner>
+    units="tabs" expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the number of tabs that do not have cached content. Recorded after a
@@ -2296,8 +2296,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentCache.RemovePageContentForTabResult"
-    enum="BooleanSuccess" expires_after="2027-03-21">
-  <owner>ssid@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records whether the RemovePageContentForTab database operation was
@@ -2306,8 +2306,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.StaleCacheEntriesCount"
-    units="entries" expires_after="2027-01-17">
-  <owner>ssid@chromium.org</owner>
+    units="entries" expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the number of stale cache entries without active tabs. Recorded
@@ -2316,8 +2316,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.TotalCacheSize" units="KB"
-    expires_after="2027-01-17">
-  <owner>ssid@chromium.org</owner>
+    expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the total size of the page content cache on disk. Recorded after a
