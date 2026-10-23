@@ -10,7 +10,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
@@ -18,11 +23,14 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
 namespace {
 
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::testing::Test;
 
 Suggestion CreateAutocompleteSuggestion(const std::u16string& value,
@@ -61,10 +69,12 @@ TEST_F(AutocompleteKeyMetricsLoggerTest, SuggestionsShown_NotAccepted) {
   };
 
   logger().OnSuggestionsShown(field_id, suggestions);
-  logger().OnFormSubmitted(form);
+  logger().OnFormSubmitted(form, /*form_structure=*/nullptr);
 
   histogram_tester().ExpectUniqueSample(
       "Autocomplete.KeyMetrics.FillingAcceptance", false, 1);
+  histogram_tester().ExpectTotalCount(
+      "Autocomplete.KeyMetrics.FillingAcceptance.ByFieldType", 0);
   histogram_tester().ExpectUniqueSample(
       "Autocomplete.KeyMetrics.FillingAcceptance.Name", false, 1);
   histogram_tester().ExpectUniqueSample(
@@ -99,7 +109,7 @@ TEST_F(AutocompleteKeyMetricsLoggerTest, SuggestionAccepted_SubmittedUnedited) {
 
   // Field was submitted with the exact filled value.
   test_api(form).field(0).set_value(u"John");
-  logger().OnFormSubmitted(form);
+  logger().OnFormSubmitted(form, /*form_structure=*/nullptr);
 
   histogram_tester().ExpectUniqueSample(
       "Autocomplete.KeyMetrics.FillingAcceptance", true, 1);
@@ -139,7 +149,7 @@ TEST_F(AutocompleteKeyMetricsLoggerTest,
   logger().OnSuggestionSelected(field_id, suggestions[1]);
 
   test_api(form).field(0).set_value(u"John Doe");
-  logger().OnFormSubmitted(form);
+  logger().OnFormSubmitted(form, /*form_structure=*/nullptr);
 
   histogram_tester().ExpectUniqueSample(
       "Autocomplete.KeyMetrics.FillingAcceptance", true, 1);
@@ -175,7 +185,7 @@ TEST_F(AutocompleteKeyMetricsLoggerTest, SuggestionAccepted_SubmittedEdited) {
 
   // User edited the field to "Apt 4C" before submission.
   test_api(form).field(0).set_value(u"Apt 4C");
-  logger().OnFormSubmitted(form);
+  logger().OnFormSubmitted(form, /*form_structure=*/nullptr);
 
   histogram_tester().ExpectUniqueSample(
       "Autocomplete.KeyMetrics.FillingAcceptance", true, 1);
@@ -204,7 +214,7 @@ TEST_F(AutocompleteKeyMetricsLoggerTest, MultipleFocusesDeduplicated) {
 
   logger().OnSuggestionsShown(field_id, suggestions1);
   logger().OnSuggestionsShown(field_id, suggestions2);
-  logger().OnFormSubmitted(form);
+  logger().OnFormSubmitted(form, /*form_structure=*/nullptr);
 
   histogram_tester().ExpectUniqueSample(
       "Autocomplete.KeyMetrics.FillingAcceptance", false, 1);
@@ -228,9 +238,9 @@ TEST_F(AutocompleteKeyMetricsLoggerTest, StateClearedAfterFormSubmission) {
   logger().OnSuggestionSelected(field_id, suggestions[0]);
   test_api(form).field(0).set_value(u"John");
 
-  logger().OnFormSubmitted(form);
+  logger().OnFormSubmitted(form, /*form_structure=*/nullptr);
   // Submitting the same form again without new interactions should be a no-op.
-  logger().OnFormSubmitted(form);
+  logger().OnFormSubmitted(form, /*form_structure=*/nullptr);
 
   histogram_tester().ExpectUniqueSample(
       "Autocomplete.KeyMetrics.FillingAcceptance", true, 1);
@@ -260,7 +270,7 @@ TEST_F(AutocompleteKeyMetricsLoggerTest, FeatureDisabled_OnlyTotalEmitted) {
   logger().OnSuggestionSelected(field_id, suggestion);
 
   test_api(form).field(0).set_value(u"Val");
-  logger().OnFormSubmitted(form);
+  logger().OnFormSubmitted(form, /*form_structure=*/nullptr);
 
   histogram_tester().ExpectUniqueSample(
       "Autocomplete.KeyMetrics.FillingAcceptance", true, 1);
@@ -292,12 +302,47 @@ TEST_F(AutocompleteKeyMetricsLoggerTest, NonAutocompleteSuggestionsIgnored) {
   };
 
   logger().OnSuggestionsShown(field_id, suggestions);
-  logger().OnFormSubmitted(form);
+  logger().OnFormSubmitted(form, /*form_structure=*/nullptr);
 
   histogram_tester().ExpectTotalCount(
       "Autocomplete.KeyMetrics.FillingAcceptance", 0);
   histogram_tester().ExpectTotalCount(
       "Autocomplete.KeyMetrics.FillingCorrectness", 0);
+}
+
+// Verifies that when a parsed FormStructure is provided on form submission,
+// Autocomplete.KeyMetrics.FillingAcceptance.ByFieldType is emitted for each
+// predicted FieldType of fields where autocomplete suggestions were shown.
+TEST_F(AutocompleteKeyMetricsLoggerTest, FillingAcceptanceByFieldType) {
+  FormData form = test::GetFormData({
+      .fields = {{.role = NAME_FIRST}, {.role = PASSPORT_NUMBER}},
+  });
+  FormStructure form_structure(form);
+  test_api(form_structure).SetFieldTypes({NAME_FIRST, PASSPORT_NUMBER});
+
+  std::vector<Suggestion> suggestions = {
+      CreateAutocompleteSuggestion(u"Val", MatchingType::kName),
+  };
+
+  // Field 0 (NAME_FIRST): shown and accepted.
+  logger().OnSuggestionsShown(form.fields()[0].global_id(), suggestions);
+  logger().OnSuggestionSelected(form.fields()[0].global_id(), suggestions[0]);
+  test_api(form).field(0).set_value(u"Val");
+
+  // Field 1 (PASSPORT_NUMBER): shown and ignored.
+  logger().OnSuggestionsShown(form.fields()[1].global_id(), suggestions);
+
+  logger().OnFormSubmitted(form, &form_structure);
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          "Autocomplete.KeyMetrics.FillingAcceptance.ByFieldType"),
+      BucketsAre(Bucket(GetBucketForAcceptanceMetricsGroupedByFieldType(
+                            NAME_FIRST, /*suggestion_accepted=*/true),
+                        1),
+                 Bucket(GetBucketForAcceptanceMetricsGroupedByFieldType(
+                            PASSPORT_NUMBER, /*suggestion_accepted=*/false),
+                        1)));
 }
 
 }  // namespace

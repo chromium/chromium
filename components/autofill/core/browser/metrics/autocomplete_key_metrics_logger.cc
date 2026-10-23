@@ -12,6 +12,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -99,7 +103,9 @@ void AutocompleteKeyMetricsLogger::OnSuggestionSelected(
   }
 }
 
-void AutocompleteKeyMetricsLogger::OnFormSubmitted(const FormData& form) {
+void AutocompleteKeyMetricsLogger::OnFormSubmitted(
+    const FormData& form,
+    const FormStructure* form_structure) {
   const bool is_label_sensitive_enabled = base::FeatureList::IsEnabled(
       features::kAutofillLabelSensitiveAutocomplete);
   for (const FormFieldData& field : form.fields()) {
@@ -113,6 +119,16 @@ void AutocompleteKeyMetricsLogger::OnFormSubmitted(const FormData& form) {
     if (state.any_suggestion_shown) {
       base::UmaHistogramBoolean("Autocomplete.KeyMetrics.FillingAcceptance",
                                 any_suggestion_accepted);
+      if (const AutofillField* autofill_field =
+              form_structure ? form_structure->GetFieldById(field.global_id())
+                             : nullptr) {
+        for (FieldType field_type : autofill_field->Type().GetTypes()) {
+          base::UmaHistogramSparse(
+              "Autocomplete.KeyMetrics.FillingAcceptance.ByFieldType",
+              GetBucketForAcceptanceMetricsGroupedByFieldType(
+                  field_type, any_suggestion_accepted));
+        }
+      }
       if (is_label_sensitive_enabled) {
         for (MatchingType matching_type : state.shown_matching_types) {
           bool is_accepted = any_suggestion_accepted &&

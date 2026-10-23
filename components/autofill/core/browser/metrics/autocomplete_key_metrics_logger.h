@@ -17,13 +17,14 @@
 namespace autofill {
 
 class FormData;
+class FormStructure;
 struct Suggestion;
 
 namespace autofill_metrics {
 
 // Tracks and records key metrics (FillingAcceptance and FillingCorrectness) for
-// autocomplete suggestions per field, both in aggregate and broken down by
-// MatchingType.
+// autocomplete suggestions per field, in aggregate, broken down by
+// MatchingType, and grouped by field type.
 //
 // One instance per `BrowserAutofillManager`, owned by
 // `BrowserAutofillManager::MetricsState` and recreated when
@@ -52,8 +53,11 @@ class AutocompleteKeyMetricsLogger {
                             const Suggestion& suggestion);
 
   // Called upon form submission to emit FillingAcceptance and
-  // FillingCorrectness metrics for each field in `form`.
-  void OnFormSubmitted(const FormData& form);
+  // FillingCorrectness metrics for each field in `form`. If `form_structure` is
+  // non-null, also emits FillingAcceptance by field type for fields present in
+  // `form_structure`.
+  void OnFormSubmitted(const FormData& form,
+                       const FormStructure* form_structure);
 
  private:
   struct FieldState {

@@ -986,7 +986,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
   CHECK(!client().IsOffTheRecord() || !submitted_form);
 
-  metrics_->autocomplete_key_metrics_logger.OnFormSubmitted(form);
+  metrics_->autocomplete_key_metrics_logger.OnFormSubmitted(
+      form, submitted_form.get());
 
   if (!submitted_form) {
     // We always give Autocomplete a chance to save the data.
