@@ -665,7 +665,7 @@
 <translation id="2126374524350484896">PDF 변환 프로그램:</translation>
 <translation id="2127090458081644412">비밀번호가 이 기기에 저장됨</translation>
 <translation id="2127747486437921899">기울임꼴</translation>
-<translation id="2129163794581571479">개인 인텔리전스가 적용된 Gemini에 기반합니다. 향상된 자동 완성을 개선하기 위해 요청, 페이지 제목, URL이 검토될 수 있습니다. <ph name="BEGIN_LINK" />설정 관리<ph name="END_LINK" /></translation>
+<translation id="2129163794581571479">개인 인텔리전스가 적용된 Gemini에 기반합니다. 향상된 자동 완성 기능을 개선하기 위해 사용자 요청, 페이지 제목, URL이 검토될 수 있습니다. <ph name="BEGIN_LINK" />설정 관리<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode 정책이 설정되지 않았기 때문에 지정한 템플릿이 적용되지 않을 수 있습니다.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">결제 자동 완성 사용 설정 창이 전체 높이로 열렸습니다.</translation>
@@ -1901,7 +1901,7 @@
 <translation id="4185037616931963178">안전하게 리드레스 번호 업데이트하기</translation>
 <translation id="4186035307311647330">가격 추적 취소</translation>
 <translation id="4191334393248735295">길이</translation>
-<translation id="4192770747482479191">더 많은 정보를 찾아서 입력하려면 웹 어디서나 ⌘를 두 번 누르세요</translation>
+<translation id="4192770747482479191">더 많은 정보를 찾아서 입력하려면 웹 어디서나 ⌘ 키를 두 번 누르세요</translation>
 <translation id="4195459680867822611">Chrome 도움말 보기 버튼, Chrome 기능에 관해 자세히 알아보려면 활성화하세요.</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4196861286325780578">이동 다시 실행(&amp;R)</translation>
@@ -2850,7 +2850,7 @@
 <translation id="573974402615125334">탭 그룹을 공유하고, 탭 그룹에 참여하고, 탭 그룹에서 공동작업하려면 방문 기록과 탭을 동기화하세요.</translation>
 <translation id="5740911612628596808">봉투 C9</translation>
 <translation id="574392208103952083">보통</translation>
-<translation id="5744350700955456407">향상된 자동 완성 기능으로 이제 Gmail, 포토 등의 앱에서 주문 번호, 항공편 예약 확인 코드 등의 정보를 찾아서 입력할 수 있습니다</translation>
+<translation id="5744350700955456407">향상된 자동 완성 기능으로 이제 Gmail, 포토 등의 앱에서 주문 번호, 항공편 예약 확인 코드 등의 정보를 찾아 입력할 수 있습니다.</translation>
 <translation id="5745586894920491759">Chrome은 페이지 제목과 URL을 클라우드에서 처리합니다.</translation>
 <translation id="5745733273847572235">위치를 요청할 수 있음</translation>
 <translation id="5750869797196646528">손 추적</translation>

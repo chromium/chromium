@@ -163,7 +163,7 @@
 <translation id="1109482864356262001">需要動作或光源感應器的功能將無法運作</translation>
 <translation id="1110155001042129815">等一下</translation>
 <translation id="1110965959145884739">選擇要在這部裝置上安裝的語言。為節省磁碟空間，語言檔案會由裝置的所有使用者共用。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="111168944932507021">將焦點移至分頁群組</translation>
+<translation id="111168944932507021">聚焦分頁群組</translation>
 <translation id="1112227834592480032">選取 Google 智慧鏡頭按鈕，然後按住並拖曳框住問題所在處</translation>
 <translation id="1112420131909513020">背景分頁正在使用藍牙</translation>
 <translation id="1112998165730922436">已暫停投放</translation>
@@ -269,7 +269,7 @@
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178093605842850860">允許讀取及變更這個網站</translation>
 <translation id="1178357842179817577">防範危險的網站、下載內容和擴充功能</translation>
-<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />系統會分享分頁內容，以提供更符合需求的答案。<ph name="END_BOLD" />當你發起新對話，Google 會使用開啟的分頁內容和網址。你隨時可以變更這項設定。</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />系統會分享分頁內容，以提供更符合需求的答案。<ph name="END_BOLD" />你發起新對話後，Google 會使用已開啟分頁的內容和網址。你隨時可以變更這項設定。</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="117916940443676133">你的安全金鑰未受 PIN 碼保護。如要管理登入資料，請先建立 PIN 碼。</translation>
 <translation id="1179400851034021914">IBAN 無效</translation>
@@ -703,7 +703,7 @@
 <translation id="1535753739390684432">讓系統大聲朗讀特定文字內容。請先選取畫面底部的「隨選朗讀」圖示，然後醒目顯示所需文字。</translation>
 <translation id="1536754031901697553">正在中斷連線…</translation>
 <translation id="1536883206862903762">這麼做會停用擴充功能，並將設定重設為安全預設值。系統會保留分頁、檔案和 Cookie。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />系統會分享分頁內容，以提供更符合需求的答案。<ph name="END_BOLD_1" />當你發起新對話，Google 會使用開啟的分頁內容和網址。你隨時可以變更這項設定。<ph name="BEGIN_BOLD_2" />我們會確保貴機構的資料隱私與安全，<ph name="END_BOLD_2" />也不會用於改善生成式 AI 模型。</translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />系統會分享分頁內容，以提供更符合需求的答案。<ph name="END_BOLD_1" />你發起新對話後，Google 會使用已開啟分頁的內容和網址。你隨時可以變更這項設定。<ph name="BEGIN_BOLD_2" />貴機構的資料會受到隱私與安全防護，<ph name="END_BOLD_2" />也不會用於改善生成式 AI 模型。</translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="1538808328818992871">不能少於 <ph name="MIN_LENGTH" /> 個半形字元</translation>
 <translation id="1539248305642687917">禁止網站覆寫鍵盤輸入內容</translation>
@@ -1899,7 +1899,7 @@
 <translation id="2457246892030921239">「<ph name="APP_NAME" />」要求複製 <ph name="VOLUME_NAME" /> 中的檔案。</translation>
 <translation id="2457842160081795172">目前為<ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">更新帳戶 (<ph name="EMAIL" />)</translation>
-<translation id="2458545895994128057">系統會分享分頁內容，以提供更符合需求的答案當你發起新對話，Google 會使用開啟的分頁內容和網址。你隨時可以變更這項設定。我們會確保貴機構的資料隱私與安全。也不會用於改善生成式 AI 模型。</translation>
+<translation id="2458545895994128057">系統會分享分頁內容，以提供更符合需求的答案你發起新對話後，Google 會使用已開啟分頁的內容和網址。你隨時可以變更這項設定。貴機構的資料會受到隱私與安全防護，也不會用於改善生成式 AI 模型。</translation>
 <translation id="2459703812219683497">已偵測到啟用代碼</translation>
 <translation id="2459706890611560967">繼續將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="245979889539926662">分享螢幕截圖</translation>
@@ -2229,7 +2229,7 @@
 <translation id="2701960282717219666">網路 MAC 位址</translation>
 <translation id="2702720509009999256">請檢查網際網路連線並選擇「再試一次」。你也可以選擇「在基本編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
 <translation id="2702801445560668637">閱讀清單</translation>
-<translation id="2703151507515080771">{NUM_TABS,plural, =1{將焦點移出分頁}other{將焦點移出分頁}}</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{取消聚焦分頁}other{取消聚焦分頁}}</translation>
 <translation id="270414148003105978">行動網路</translation>
 <translation id="2704184184447774363">Microsoft 文件簽署</translation>
 <translation id="2704606927547763573">已複製</translation>
@@ -3142,7 +3142,7 @@
 <translation id="3379268272734690">沙漠</translation>
 <translation id="3382737653173267704">查看家庭群組</translation>
 <translation id="338323348408199233">封鎖沒有 VPN 連線的流量</translation>
-<translation id="3384827779079384219">{NUM_TABS,plural, =1{將焦點移至分頁}other{將焦點移至分頁}}</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{聚焦分頁}other{聚焦分頁}}</translation>
 <translation id="3385053436247851142">使用 Microsoft 帳戶登入</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">「定位精確度」可為各種應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 整體的服務，以滿足使用者需求。</translation>
@@ -4526,7 +4526,7 @@
 <translation id="4406308048672435032">你可以將這個分頁設為閒置，或重新整理以便再次查看完整清單</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406963243402726564">資料未儲存</translation>
-<translation id="4408595563209996725">{NUM_TABS,plural, =1{將焦點移出分頁}other{將焦點移出分頁}}</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{取消聚焦分頁}other{取消聚焦分頁}}</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{管理員可以使用「<ph name="APP0_NAME" />」錄製你的螢幕畫面，開始錄製時，你會收到通知。}=2{管理員可以使用「<ph name="APP0_NAME" />」和「<ph name="APP1_NAME" />」錄製你的螢幕畫面，開始錄製時，你會收到通知。}=3{系統管理員可以使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 1 個應用程式錄製你的螢幕畫面。開始錄製時，你會收到通知。}other{管理員可以使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 # 個應用程式錄製你的螢幕畫面，開始錄製時，你會收到通知。}}</translation>
 <translation id="4409697491990005945">邊界</translation>
@@ -6202,7 +6202,7 @@
 <translation id="5724723163580775373">聚焦範圍：大</translation>
 <translation id="5725112283692663422">請提供你對「使用 AI 建立主題」的意見</translation>
 <translation id="5727728807527375859">擴充功能、應用程式及主題可能損害你的電腦，確定要繼續？</translation>
-<translation id="5727872803091928075">系統會分享分頁內容，以提供更符合需求的答案當你發起新對話，Google 會使用開啟的分頁內容和網址。你隨時可以變更這項設定。</translation>
+<translation id="5727872803091928075">系統會分享分頁內容，以提供更符合需求的答案。你發起新對話後，Google 會使用已開啟分頁的內容和網址。你隨時可以變更這項設定。</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
 <translation id="5729712731028706266">檢視(&amp;V)</translation>
 <translation id="5731247495086897348">貼上並前往(&amp;S)</translation>
@@ -7344,7 +7344,7 @@
 <translation id="661266467055912436">可為你和所有網路使用者提供更完善的安全防護。</translation>
 <translation id="6613231539539868591">保留的資料</translation>
 <translation id="6613267708691765962">正在掃描惡意軟體...</translation>
-<translation id="6614219106064338118">發起即時通訊</translation>
+<translation id="6614219106064338118">開始對話</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6616000047939888167">對使用其他語言的網站和 PDF 提供 Google 翻譯功能</translation>
 <translation id="6618013221808317456">禁止網站使用 JavaScript 最佳化功能</translation>
@@ -7397,7 +7397,7 @@
 <translation id="6651762277693024112">自動在你每次造訪這個網站時執行</translation>
 <translation id="6654509035557065241">偏好網路</translation>
 <translation id="6655190889273724601">開發人員模式</translation>
-<translation id="6656413384508017053">{NUM_TABS,plural, =1{將焦點移至分頁}other{將焦點移至分頁}}</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{聚焦分頁}other{聚焦分頁}}</translation>
 <translation id="6657180931610302174">要新增使用者名稱嗎？</translation>
 <translation id="6657240842932274095">要允許系統服務使用你的位置資訊嗎？</translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -10034,7 +10034,7 @@
 <translation id="8652400352452647993">封裝擴充功能錯誤</translation>
 <translation id="8654151524613148204">很抱歉，檔案過大，你的電腦無法處理。</translation>
 <translation id="8655295600908251630">版本</translation>
-<translation id="8656101380279383244">將焦點移至分頁群組</translation>
+<translation id="8656101380279383244">聚焦分頁群組</translation>
 <translation id="8656888282555543604">啟用點字記錄功能</translation>
 <translation id="8657393004602556571">你要捨棄這則意見嗎？</translation>
 <translation id="8657542881463614516">使用滑動手勢瀏覽不同頁面</translation>

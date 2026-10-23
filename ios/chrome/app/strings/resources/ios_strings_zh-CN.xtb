@@ -1374,7 +1374,7 @@
 <translation id="5250371859659394278">来自未知来源</translation>
 <translation id="525510229763628836">已最小化</translation>
 <translation id="5260842098960755113">已关闭会话串</translation>
-<translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
+<translation id="5271265092610673171">{count,plural, =1{请先填写所有必填字段，然后再保存。}other{请先填写所有必填字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀请您加入一个标签页分组。知道链接的任何人都能修改所有标签页，因此请谨慎加入。链接将在 48 小时后失效。</translation>
 <translation id="5275953427913009986">附加的标签页“{title}”</translation>

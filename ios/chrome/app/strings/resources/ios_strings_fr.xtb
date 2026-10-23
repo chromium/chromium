@@ -1932,7 +1932,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="6938212956536472404">Impossible de partager cet onglet</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6946722113367118030">Penser</translation>
-<translation id="6947751977892029882">Un problème est survenu avec ce paramètre. Mettez à jour et redémarrez Chrome et iPadOS, puis réessayez. Si cette erreur persiste, il est possible que votre iPhone ne soit pas compatible avec ce paramètre.</translation>
+<translation id="6947751977892029882">Un problème est survenu avec ce paramètre. Mettez à jour et redémarrez Chrome et iOS, puis réessayez. Si cette erreur persiste, il est possible que votre iPhone ne soit pas compatible avec ce paramètre.</translation>
 <translation id="6950522403736391608">Masqué</translation>
 <translation id="695965663642079255">Enregistrez et gérez vos infos de paiement pour payer plus vite</translation>
 <translation id="6962809930976936328">Obtenez des informations avec Gemini</translation>
@@ -2160,7 +2160,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7696316012653762532">Options de traduction de la page</translation>
 <translation id="7700527812567437847">Rechercher sur l'écran avec Google Lens</translation>
 <translation id="7701040980221191251">Désactivé</translation>
-<translation id="7702428539671224160">Saisie automatique des infos de paiement sur <ph name="URL" /></translation>
+<translation id="7702428539671224160">Compléter automatiquement les infos de paiement sur <ph name="URL" /></translation>
 <translation id="7708994397325774423">Obtenez tous vos mots de passe</translation>
 <translation id="7710096647785049958">Gagnez du temps sur chaque lien</translation>
 <translation id="7711440461521638739">Tous vos mots de passe sont uniques</translation>
@@ -2182,7 +2182,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7767651976342854115">Une erreur s'est produite au niveau du paramètre d'utilisation des données.</translation>
-<translation id="7768507955883790804">Les sites se basent automatiquement sur ce paramètre lorsque vous les consultez</translation>
+<translation id="7768507955883790804">Les sites appliquent automatiquement ce paramètre lors de votre visite</translation>
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772948288262733182">Heureux de vous retrouver</translation>
 <translation id="777637629667389858">Lorsque vous êtes connecté, vous êtes protégé dans tous les services Google.</translation>
@@ -2457,7 +2457,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
 <translation id="8577056989960190117">Saisir automatiquement l'année d'expiration <ph name="YEAR" /></translation>
 <translation id="8582026929965253036">Échangez de vive voix avec Gemini</translation>
-<translation id="8585841788766257444">Les sites répertoriés ci-dessous appliquent un paramètre personnalisé au lieu du paramètre par défaut</translation>
+<translation id="8585841788766257444">Les sites ci-dessous appliquent un paramètre personnalisé au lieu du paramètre par défaut</translation>
 <translation id="8587001564479545614">Créer un code de récupération</translation>
 <translation id="8588404856427128947">Éteinte</translation>
 <translation id="8590286732816598906">Groupe d'onglets, <ph name="GROUP_TITLE" />, menu.</translation>
