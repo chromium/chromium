@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.metrics;
 
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,9 +28,9 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.metrics.MetricsSwitches;
 
 /** Android UKM tests. */
@@ -60,7 +61,8 @@ public class UkmTest {
         // chrome/browser/metrics/ukm_browsertest.cc.
 
         // Start by closing all tabs.
-        ChromeTriggers.closeAllTabsProgrammatically(mPage);
+        ChromeTabUtils.closeAllTabs(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

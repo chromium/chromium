@@ -45,8 +45,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarView;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.ChromeTriggers;
-import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
@@ -163,7 +161,8 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tab.CloseUndoBar.Undone", Snackbar.UMA_TAB_CLOSE_ALL_UNDO);
 
-        ChromeTriggers.closeAllTabsProgrammatically(mPage, new UndoSnackbarFacility<>("Closed"));
+        ChromeTabUtils.closeAllTabs(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("Closed about:blank");
@@ -188,7 +187,8 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tab.CloseUndoBar.Dismissed", Snackbar.UMA_TAB_CLOSE_ALL_UNDO);
 
-        ChromeTriggers.closeAllTabsProgrammatically(mPage, new UndoSnackbarFacility<>("Closed"));
+        ChromeTabUtils.closeAllTabs(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("Closed about:blank");
@@ -216,8 +216,8 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tab.CloseUndoBar.Undone", Snackbar.UMA_TAB_CLOSE_ALL_UNDO);
 
-        ChromeTriggers.closeAllTabsProgrammatically(
-                mPage, new UndoSnackbarFacility<>("2 tabs closed"));
+        ChromeTabUtils.closeAllTabs(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tabs closed");
@@ -245,8 +245,8 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tab.CloseUndoBar.Dismissed", Snackbar.UMA_TAB_CLOSE_ALL_UNDO);
 
-        ChromeTriggers.closeAllTabsProgrammatically(
-                mPage, new UndoSnackbarFacility<>("2 tabs closed"));
+        ChromeTabUtils.closeAllTabs(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tabs closed");
@@ -1478,7 +1478,8 @@ public class UndoBarControllerTest {
                 1,
                 ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
-        ChromeTriggers.closeAllTabsProgrammatically(mPage, new UndoSnackbarFacility<>("Closed"));
+        ChromeTabUtils.closeAllTabs(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("Closed about:blank");

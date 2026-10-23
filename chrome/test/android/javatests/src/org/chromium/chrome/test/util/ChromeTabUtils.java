@@ -580,6 +580,76 @@ public class ChromeTabUtils {
         Log.d(TAG, "closeTabWithAction <<");
     }
 
+    /** Close all tabs and waits for all tabs pending closure to be observed. */
+    public static void closeAllTabs(
+            Instrumentation instrumentation,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+        final CallbackHelper closeCallback = new CallbackHelper();
+        final TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void onTabClosePending(
+                            List<Tab> tabs,
+                            boolean isAllTabs,
+                            @TabClosingSource int closingSource) {
+                        closeCallback.notifyCalled();
+                    }
+                };
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        TabModelSelector selector = tabModelSelectorSupplier.get();
+                        for (TabModel tabModel : selector.getModels()) {
+                            tabModel.addObserver(observer);
+                        }
+                    }
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabClosureParams params =
+                            TabClosureParams.closeAllTabs()
+                                    .uponExit(false)
+                                    .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                    .build();
+                    TabModelSelector selector = tabModelSelectorSupplier.get();
+                    selector.getModel(false)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
+                    selector.getModel(true)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
+                });
+
+        try {
+            closeCallback.waitForCallback(0);
+        } catch (TimeoutException e) {
+            throw new AssertionError("All tabs pending closure event was never received", e);
+        }
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        TabModelSelector selector = tabModelSelectorSupplier.get();
+                        for (TabModel tabModel : selector.getModels()) {
+                            tabModel.removeObserver(observer);
+                        }
+                    }
+                });
+        instrumentation.waitForIdleSync();
+    }
+
+    /**
+     * @deprecated Transitory method, use {@link #closeAllTabs(Instrumentation,
+     *     MonotonicObservableSupplier <TabModelSelector>)} instead. TODO(crbug.com/40191386): Remove this
+     *     after the usages are migrated.
+     */
+    public static void closeAllTabs(
+            Instrumentation instrumentation, final ChromeTabbedActivity activity) {
+        closeAllTabs(instrumentation, activity.getTabModelSelectorSupplier());
+    }
+
     /** Selects a tab with the given action and waits for the selection event to be observed. */
     public static void selectTabWithAction(
             Instrumentation instrumentation, final ChromeTabbedActivity activity, Runnable action) {

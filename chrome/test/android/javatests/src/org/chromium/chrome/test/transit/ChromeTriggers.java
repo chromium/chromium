@@ -8,16 +8,12 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
-import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
-import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
 import org.chromium.chrome.test.util.MenuUtils;
 
 /** Collection of Chrome-specific Triggers to start Transitions. */
@@ -41,34 +37,21 @@ public class ChromeTriggers {
                                 menuId));
     }
 
-    /**
-     * Closes all regular and incognito tabs programmatically and arrives at the regular tab
-     * switcher.
-     *
-     * @param station The current Station.
-     * @param facilities Facilities expected after closing, e.g. an {@link UndoSnackbarFacility}.
-     */
-    public static RegularTabSwitcherStation closeAllTabsProgrammatically(
-            Station<ChromeTabbedActivity> station, Facility<?>... facilities) {
-        TabModelSelector selector = station.getActivity().getTabModelSelector();
+    /** Close all tabs in the current tab model programmatically. */
+    @CheckReturnValue
+    public static TripBuilder closeAllTabsProgrammaticallyTo(
+            Station<? extends ChromeTabbedActivity> station) {
         return station.runOnUiThreadTo(
-                        () -> {
-                            TabClosureParams params =
-                                    TabClosureParams.closeAllTabs()
-                                            .uponExit(false)
-                                            .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
-                                            .build();
-                            selector.getModel(/* incognito= */ false)
-                                    .getTabRemover()
-                                    .closeTabs(params, /* allowDialog= */ false);
-                            selector.getModel(/* incognito= */ true)
-                                    .getTabRemover()
-                                    .closeTabs(params, /* allowDialog= */ false);
-                        })
-                .arriveAt(
-                        new RegularTabSwitcherStation(
-                                /* regularTabsExist= */ false, /* incognitoTabsExist= */ false),
-                        facilities);
+                () ->
+                        station.getActivity()
+                                .getCurrentTabModel()
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeAllTabs()
+                                                .tabClosingSource(
+                                                        TabClosingSource.GRID_TAB_SWITCHER)
+                                                .build(),
+                                        /* allowDialog= */ false));
     }
 
     /**

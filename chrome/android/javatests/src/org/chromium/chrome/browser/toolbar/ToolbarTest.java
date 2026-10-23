@@ -89,7 +89,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
@@ -766,7 +765,9 @@ public class ToolbarTest {
                         .build();
 
         // Close all tabs to make current tab null
-        ChromeTriggers.closeAllTabsProgrammatically(mPage);
+        ChromeTabUtils.closeAllTabs(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivity.getTabModelSelectorSupplier());
 
         // Verify metric
         watcher.assertExpected();
