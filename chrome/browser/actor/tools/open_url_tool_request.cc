@@ -4,15 +4,18 @@
 
 #include "chrome/browser/actor/tools/open_url_tool_request.h"
 
+#include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
 #include "chrome/browser/actor/actor_surface.h"
-#include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/open_url_tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "url/origin.h"
 
 namespace actor {
 
@@ -52,10 +55,9 @@ ToolRequest::CreateToolResult OpenUrlToolRequest::CreateTool(
                                          "The tab is no longer present.")};
   }
 
-  // TODO(b/573158576): Create an OpenUrlTool once it is implemented.
-  return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kToolUnknown,
-                                       /*requires_page_stabilization=*/false,
-                                       "OpenUrl is not implemented yet.")};
+  return {std::make_unique<OpenUrlTool>(task_id, tool_delegate, *actor_surface,
+                                        url_, open_in_new_tab_),
+          MakeOkResult()};
 }
 
 void OpenUrlToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
@@ -64,6 +66,12 @@ void OpenUrlToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 
 std::string_view OpenUrlToolRequest::Name() const {
   return kName;
+}
+
+std::optional<url::Origin> OpenUrlToolRequest::AssociatedOriginGrant() const {
+  // The navigation to `url_` runs as a follow-up `NavigateToolRequest`, which
+  // doesn't get its implicit grant applied, so grant the origin up front.
+  return url::Origin::Create(url_);
 }
 
 }  // namespace actor
