@@ -459,8 +459,15 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
       // Except in Mac Immersive Fullscreen where the tabstrip is hosted in
       // `overlay_widget` or `tab_overlay_widget`, each have their own root
       // view.
-      ConvertRectToTarget(tab_strip_view,
+      ConvertRectToTarget(tab_view->parent(),
                           tab_strip_view->GetWidget()->GetRootView(), &bounds);
+
+      // If `tab_strip_view` paints to its own layer, there is no need to clip
+      // under the active tab.
+      if (tab_strip_view->layer()) {
+        bounds.set_y(bounds.bottom());
+        bounds.set_height(0);
+      }
 
       // Extend the bounds to cover the curve at the end of the toolbar.
       bounds.set_height(
