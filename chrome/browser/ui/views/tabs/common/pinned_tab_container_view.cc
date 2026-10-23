@@ -124,11 +124,11 @@ bool PinnedTabContainerView::ShouldSnapToTarget(
   return views::IsViewClass<SplitTabView>(&child_view);
 }
 
-bool PinnedTabContainerView::IsAnimationAllowed() {
+bool PinnedTabContainerView::ShouldAnimateLayout() {
   if (!collection_node_) {
     return false;
   }
-  return collection_node_->GetController()->IsAnimationAllowed();
+  return collection_node_->GetController()->ShouldAnimateLayout();
 }
 
 std::optional<BrowserRootView::DropIndex>

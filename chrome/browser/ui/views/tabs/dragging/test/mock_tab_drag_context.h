@@ -34,6 +34,7 @@ class MockTabDragContext : public TabDragContext {
               IsTabDetachable,
               (const views::View* view),
               (const, override));
+  MOCK_METHOD(void, SetTabDetached, (views::View * view), (override));
   MOCK_METHOD(views::View*,
               GetTabGroupHeader,
               (const tab_groups::TabGroupId& group),

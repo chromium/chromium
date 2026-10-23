@@ -422,7 +422,7 @@ bool TabDragHandler::IsViewDragging(const views::View& view) const {
   for (const TabDragData& tab_data :
        drag_controller_->GetSessionData().tab_drag_data_) {
     if (tab_data.attached_view &&
-        &view == ViewFromTabSlot(tab_data.attached_view)) {
+        &view == GetDraggedViewForAttachedView(tab_data.attached_view)) {
       return true;
     }
   }
@@ -451,7 +451,8 @@ std::optional<tab_groups::TabGroupId> TabDragHandler::GetDraggingGroupHeaderId()
                           : std::nullopt;
 }
 
-views::View* TabDragHandler::ViewFromTabSlot(views::View* view) const {
+views::View* TabDragHandler::GetDraggedViewForAttachedView(
+    views::View* view) const {
   CHECK(drag_controller_);
   if (auto* tab_view = views::AsViewClass<TabView>(view)) {
     const tabs::TabInterface* tab = tab_view->GetTabInterface();
@@ -646,6 +647,8 @@ bool TabDragHandler::IsTabDetachable(const views::View* view) const {
   return true;
 }
 
+void TabDragHandler::SetTabDetached(views::View* view) {}
+
 views::View* TabDragHandler::GetTabGroupHeader(
     const tab_groups::TabGroupId& group_id) {
   TabCollectionNode* node = GetNodeForTabGroup(group_id);
@@ -728,15 +731,16 @@ void TabDragHandler::StartedDragging(const std::vector<views::View*>& views) {
   }
 
   CHECK(drag_controller_);
-  auto* source_dragged_view = ViewFromTabSlot(drag_controller_->GetSessionData()
-                                                  .source_view_drag_data()
-                                                  ->attached_view);
+  auto* source_dragged_view =
+      GetDraggedViewForAttachedView(drag_controller_->GetSessionData()
+                                        .source_view_drag_data()
+                                        ->attached_view);
   CHECK(source_dragged_view);
   gfx::Point source_view_origin_in_screen =
       source_dragged_view->GetBoundsInScreen().origin();
 
   for (auto* view : views) {
-    views::View* dragged_view = ViewFromTabSlot(view);
+    views::View* dragged_view = GetDraggedViewForAttachedView(view);
     CHECK(dragged_view);
     dragged_view->SetPaintToLayer();
     dragged_view->layer()->SetFillsBoundsOpaquely(false);
@@ -763,7 +767,7 @@ void TabDragHandler::StoppedDragging() {
 
   const DragSessionData& drag_data = drag_controller_->GetSessionData();
   for (views::View* view : drag_data.attached_views()) {
-    views::View* dragged_view = ViewFromTabSlot(view);
+    views::View* dragged_view = GetDraggedViewForAttachedView(view);
     CHECK(dragged_view);
     // If the dragged view's parent is animating, its animating layout manager
     // will be responsible for destroying the layer once the animation
@@ -822,7 +826,7 @@ TabDragPositioningDelegate* TabDragHandler::GetPositioningDelegate() {
 bool TabDragHandler::NotifyCustomEvent(ui::CustomElementEventType event_type,
                                        views::View* view) {
   return views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-      event_type, ViewFromTabSlot(view));
+      event_type, GetDraggedViewForAttachedView(view));
 }
 
 TabCollectionNode* TabDragHandler::GetNodeForContents(

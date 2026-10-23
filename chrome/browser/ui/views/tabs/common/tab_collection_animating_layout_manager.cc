@@ -90,7 +90,7 @@ bool TabCollectionAnimatingLayoutManager::Delegate::
 
 void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
 
-bool TabCollectionAnimatingLayoutManager::Delegate::IsAnimationAllowed() {
+bool TabCollectionAnimatingLayoutManager::Delegate::ShouldAnimateLayout() {
   return true;
 }
 
@@ -599,7 +599,7 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   const bool started_in_current_turn =
       is_animating_ && animation_coordinator_->current_offset() ==
                            animation_coordinator_->starting_offset();
-  if ((!delegate_->IsAnimationAllowed() && !started_in_current_turn) ||
+  if ((!delegate_->ShouldAnimateLayout() && !started_in_current_turn) ||
       cross_axis_changed) {
     current_layout_ = new_target;
     SetStartingLayout(new_target);

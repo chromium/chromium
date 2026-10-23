@@ -99,7 +99,7 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
     virtual bool ShouldAnimateOpacityForAddAndRemove(
         const views::View& child_view) const;
     virtual void OnAnimationEnded();
-    virtual bool IsAnimationAllowed();
+    virtual bool ShouldAnimateLayout();
 
    protected:
     virtual ~Delegate() = default;

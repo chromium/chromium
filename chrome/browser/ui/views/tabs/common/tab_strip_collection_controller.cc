@@ -950,7 +950,7 @@ base::AutoReset<bool> TabStripCollectionController::ScopedAnimateLayout() {
   return base::AutoReset<bool>(&is_animating_layout_change_, true);
 }
 
-bool TabStripCollectionController::IsAnimationAllowed() const {
+bool TabStripCollectionController::ShouldAnimateLayout() const {
   if (StartupBrowserCreator::InSynchronousProfileLaunch()) {
     return false;
   }

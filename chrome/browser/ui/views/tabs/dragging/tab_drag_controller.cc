@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
-#include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -85,7 +84,6 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
@@ -933,10 +931,7 @@ std::unique_ptr<tabs::TabModel> TabDragController::DetachTabAtForInsertion(
   // We can't move the tab if `contents` was destroyed during the drag, or if
   // this is a group header.
   CHECK(tab_data.contents);
-  if (auto* slot_view =
-          views::AsViewClass<TabSlotView>(tab_data.attached_view)) {
-    slot_view->set_detached();
-  }
+  attached_context_->SetTabDetached(tab_data.attached_view);
   tab_data.attached_view = nullptr;
 
   const int from_idx =
@@ -1692,10 +1687,7 @@ TabDragController::Detach(ReleaseCapture release_capture) {
     // TODO(tbergquist): Is this the right path for this bit to take? Would it
     // make more sense for the model notification to have this information, and
     // for the tabstrip to use that instead?
-    if (auto* slot_view =
-            views::AsViewClass<TabSlotView>(tab_drag_datum.attached_view)) {
-      slot_view->set_detached();
-    }
+    attached_context_->SetTabDetached(tab_drag_datum.attached_view);
     // Detaching may end up deleting the view, drop references to it.
     tab_drag_datum.attached_view = nullptr;
   }
@@ -2202,10 +2194,7 @@ void TabDragController::RevertDrag() {
 
   if (attached_context_ != source_context_) {
     for (TabDragData& tab_datum : drag_data_.tab_drag_data_) {
-      if (auto* slot_view =
-              views::AsViewClass<TabSlotView>(tab_datum.attached_view)) {
-        slot_view->set_detached();
-      }
+      attached_context_->SetTabDetached(tab_datum.attached_view);
       tab_datum.attached_view = nullptr;
     }
   }

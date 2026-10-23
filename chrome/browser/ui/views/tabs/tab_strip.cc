@@ -431,6 +431,12 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
              GetIndexOf(view) == 0);
   }
 
+  void SetTabDetached(views::View* view) override {
+    if (auto* slot_view = views::AsViewClass<TabSlotView>(view)) {
+      slot_view->set_detached();
+    }
+  }
+
   views::View* GetTabGroupHeader(const tab_groups::TabGroupId& group) override {
     return std::as_const(*this).GetTabGroupHeader(group);
   }

@@ -32,11 +32,11 @@ class MockAnimatingLayoutManagerDelegate
     : public TabCollectionAnimatingLayoutManager::Delegate {
  public:
   MockAnimatingLayoutManagerDelegate() {
-    ON_CALL(*this, IsAnimationAllowed).WillByDefault(testing::Return(true));
+    ON_CALL(*this, ShouldAnimateLayout).WillByDefault(testing::Return(true));
   }
   MOCK_METHOD(bool, IsViewDragging, (const views::View&), (const, override));
   MOCK_METHOD(void, OnAnimationEnded, (), (override));
-  MOCK_METHOD(bool, IsAnimationAllowed, (), (override));
+  MOCK_METHOD(bool, ShouldAnimateLayout, (), (override));
 };
 
 class TestLayoutManager : public views::LayoutManagerBase {
@@ -805,17 +805,17 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   EXPECT_EQ(prev_pos_in_host, 20);
 }
 
-TEST_P(TabCollectionAnimatingLayoutManagerTest, IsAnimationAllowed) {
+TEST_P(TabCollectionAnimatingLayoutManagerTest, ShouldAnimateLayout) {
   if (!IsAnimationDurationEnabled()) {
     GTEST_SKIP();
   }
-  ON_CALL(*layout_manager_delegate(), IsAnimationAllowed)
+  ON_CALL(*layout_manager_delegate(), ShouldAnimateLayout)
       .WillByDefault(testing::Return(false));
 
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
   widget()->LayoutRootViewIfNecessary();
 
-  // When `IsAnimationAllowed()` is false, new layouts snap immediately to
+  // When `ShouldAnimateLayout()` is false, new layouts snap immediately to
   // target without animating.
   host_view()->AddChildView(std::make_unique<views::View>());
   host_view()->InvalidateLayout();
@@ -823,8 +823,8 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest, IsAnimationAllowed) {
 
   EXPECT_FALSE(layout_manager()->is_animating());
 
-  // Once `IsAnimationAllowed()` is true, a new layout starts an animation.
-  ON_CALL(*layout_manager_delegate(), IsAnimationAllowed)
+  // Once `ShouldAnimateLayout()` is true, a new layout starts an animation.
+  ON_CALL(*layout_manager_delegate(), ShouldAnimateLayout)
       .WillByDefault(testing::Return(true));
 
   host_view()->AddChildView(std::make_unique<views::View>());

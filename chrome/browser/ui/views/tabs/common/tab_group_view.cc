@@ -280,11 +280,11 @@ void TabGroupView::OnAnimationEnded() {
   }
 }
 
-bool TabGroupView::IsAnimationAllowed() {
+bool TabGroupView::ShouldAnimateLayout() {
   if (!collection_node_) {
     return false;
   }
-  return collection_node_->GetController()->IsAnimationAllowed();
+  return collection_node_->GetController()->ShouldAnimateLayout();
 }
 
 bool TabGroupView::IsValid() const {
@@ -356,7 +356,7 @@ void TabGroupView::OnDataChanged() {
 
   // If the tab group is not collapsed (or if we are not animating the collapse)
   // update child visibility immediately.
-  if (!tab_group_visual_data_.is_collapsed() || !IsAnimationAllowed()) {
+  if (!tab_group_visual_data_.is_collapsed() || !ShouldAnimateLayout()) {
     UpdateChildVisibilityForCollapseState(
         tab_group_visual_data_.is_collapsed());
   }

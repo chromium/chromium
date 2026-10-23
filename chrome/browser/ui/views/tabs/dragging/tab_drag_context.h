@@ -133,6 +133,7 @@ class TabDragContext : public views::View {
   virtual views::View* GetTabForContents(content::WebContents* contents) = 0;
   virtual content::WebContents* GetContentsForTab(views::View* view) = 0;
   virtual bool IsTabDetachable(const views::View* view) const = 0;
+  virtual void SetTabDetached(views::View* view) = 0;
   virtual views::View* GetTabGroupHeader(
       const tab_groups::TabGroupId& group) = 0;
   virtual std::optional<tab_groups::TabGroupId> GetTabGroupForHeader(

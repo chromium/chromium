@@ -280,7 +280,7 @@ void DraggedTabsContainer::InitializeDragStartAnimation(
   gfx::Rect dragged_bounds_in_container =
       GetDraggingViewsBoundsAtPointClamped(point_in_container);
 
-  const auto* source_dragged_view = drag_handler.ViewFromTabSlot(
+  const auto* source_dragged_view = drag_handler.GetDraggedViewForAttachedView(
       controller.GetSessionData().source_view_drag_data()->attached_view);
 
   const auto source_view_target_position = GetDraggingViewPositionForBounds(
@@ -333,7 +333,7 @@ void DraggedTabsContainer::InitializeDragStartAnimation(
 
 void DraggedTabsContainer::BuildDragLayout(
     const DragSessionData& session_data) {
-  auto* source_dragged_view = GetDragHandler().ViewFromTabSlot(
+  auto* source_dragged_view = GetDragHandler().GetDraggedViewForAttachedView(
       session_data.source_view_drag_data()->attached_view);
   CHECK(source_dragged_view);
 
@@ -346,7 +346,8 @@ void DraggedTabsContainer::BuildDragLayout(
       session_data.attached_views();
 
   auto add_view_to_layout = [&](views::View* attached_view) {
-    auto* dragging_view = GetDragHandler().ViewFromTabSlot(attached_view);
+    auto* dragging_view =
+        GetDragHandler().GetDraggedViewForAttachedView(attached_view);
     CHECK(dragging_view);
 
     if (dragging_view->parent() != base::to_address(host_view_)) {

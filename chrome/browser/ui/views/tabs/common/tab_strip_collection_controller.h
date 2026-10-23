@@ -150,7 +150,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   [[nodiscard]] base::AutoReset<bool> ScopedAnimateLayout();
-  bool IsAnimationAllowed() const;
+  bool ShouldAnimateLayout() const;
 
  private:
   // TabContextMenuController::Delegate:

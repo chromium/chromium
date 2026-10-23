@@ -91,7 +91,7 @@ class TabGroupView : public TabCollectionZOrderManager,
       const views::View& child_view) const override;
   bool ShouldSnapToTarget(const views::View& child_view) const override;
   void OnAnimationEnded() override;
-  bool IsAnimationAllowed() override;
+  bool ShouldAnimateLayout() override;
 
   bool IsCollapsed() const;
 

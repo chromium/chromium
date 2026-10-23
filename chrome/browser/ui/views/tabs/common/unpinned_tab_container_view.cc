@@ -286,11 +286,11 @@ bool UnpinnedTabContainerView::ShouldSnapToTarget(
   return views::IsViewClass<SplitTabView>(&child_view);
 }
 
-bool UnpinnedTabContainerView::IsAnimationAllowed() {
+bool UnpinnedTabContainerView::ShouldAnimateLayout() {
   if (!collection_node_) {
     return false;
   }
-  return collection_node_->GetController()->IsAnimationAllowed();
+  return collection_node_->GetController()->ShouldAnimateLayout();
 }
 
 gfx::Size UnpinnedTabContainerView::GetTargetPreferredSize() const {

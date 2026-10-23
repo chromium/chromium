@@ -93,7 +93,7 @@ class TabDragHandler : public TabDragContext,
   // For some tabs (e.g. split tabs or tabs in a dragged group), the attached
   // view in `TabDragData` doesn't represent the actual container view being
   // dragged. This method converts `view` to the actual view being dragged.
-  views::View* ViewFromTabSlot(views::View* view) const;
+  views::View* GetDraggedViewForAttachedView(views::View* view) const;
 
   // Returns the starting position of the view when dragging started.
   // The position is in screen coordinates.
@@ -130,6 +130,7 @@ class TabDragHandler : public TabDragContext,
   views::View* GetTabForContents(content::WebContents* contents) override;
   content::WebContents* GetContentsForTab(views::View* tab) override;
   bool IsTabDetachable(const views::View* view) const override;
+  void SetTabDetached(views::View* view) override;
   views::View* GetTabGroupHeader(
       const tab_groups::TabGroupId& group_id) override;
   std::optional<tab_groups::TabGroupId> GetTabGroupForHeader(
