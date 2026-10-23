@@ -21,7 +21,6 @@
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -35,7 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/enterprise/platform_auth/platform_auth_features.h"
+#include "components/enterprise/platform_auth/url_session_helper.h"
 #include "components/enterprise/platform_auth/url_session_test_util.h"
 #include "components/enterprise/platform_auth/url_session_url_loader.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -172,7 +171,7 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
   }
 
   std::string CreateSsoRequest(std::string_view domain) {
-    std::string path = enterprise_auth::kOktaSsoURLPattern.Get();
+    std::string path = url_session_helper::kOktaSsoURLPattern;
 
     // Replace all wildcard segments in the path.
     base::ReplaceChars(path, "*", "123", &path);
@@ -263,7 +262,6 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
 
   std::vector<std::string> configured_hosts_{kDomain1};
   base::RepeatingClosure config_update_callback_;
-  base::test::ScopedFeatureList feature_list_{enterprise_auth::kOktaSSO};
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   policy::ScopedManagementServiceOverrideForTesting platform_management_{
       policy::ManagementServiceFactory::GetForPlatform(),

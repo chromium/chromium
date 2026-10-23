@@ -23,6 +23,11 @@ class TimeDelta;
 // and Apple's native objects to ease the use of the aforementioned API.
 namespace url_session_helper {
 
+// The pattern for a SSO URL request path specific to the Okta IdP.
+// Format: segments separated with |/|. * is a wildcard matching 1 segment.
+inline constexpr char kOktaSsoURLPattern[] =
+    "/idp/idx/authenticators/sso_extension/transactions/*/verify";
+
 // This function only takes care of: URL, headers, method, body and timeout.
 //
 // Sets the Origin header with |request.request_initiator|, which must be set

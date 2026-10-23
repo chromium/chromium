@@ -497,7 +497,6 @@
 #include "chrome/browser/browser_process_platform_part_mac.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
 #include "chrome/common/chrome_version.h"
-#include "components/enterprise/platform_auth/platform_auth_features.h"
 #include "components/soda/constants.h"
 #include "sandbox/mac/sandbox_serializer.h"
 #include "sandbox/policy/mac/params.h"
@@ -6975,12 +6974,10 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(enterprise_auth::kOktaSSO)) {
-    // WARNING: This factory blocks certain requests from going out via the
-    // final network bound factory.
-    enterprise_auth::ProxyingURLLoaderFactory::MaybeProxyRequest(
-        request_initiator, type, browser_context, factory_builder);
-  }
+  // WARNING: This factory blocks certain requests from going out via the
+  // final network bound factory.
+  enterprise_auth::ProxyingURLLoaderFactory::MaybeProxyRequest(
+      request_initiator, type, browser_context, factory_builder);
 #endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)

@@ -8,8 +8,6 @@ component("enterprise_platform_auth") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
-    "platform_auth_features.cc",
-    "platform_auth_features.h",
     "url_session_helper.h",
     "url_session_helper.mm",
     "url_session_test_util.h",

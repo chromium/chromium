@@ -66,7 +66,7 @@ constexpr char kValidHeaderValue1[] = "value";
 constexpr char kValidHeaderValue2[] = "another_value";
 constexpr char kInvalidHeaderName[] = "Invalid@Name";
 
-// This accounts for the size of kOktaSsoFixedRequestHeaders + 1 for the Origin.
+// This accounts for the size of kFixedRequestHeaders + 1 for the Origin.
 constexpr size_t kFixedHeadersCount = 7;
 
 url::Origin GetInitiator() {

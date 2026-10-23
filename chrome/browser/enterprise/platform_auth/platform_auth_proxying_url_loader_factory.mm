@@ -20,7 +20,6 @@
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/common/pref_names.h"
-#include "components/enterprise/platform_auth/platform_auth_features.h"
 #include "components/enterprise/platform_auth/url_session_helper.h"
 #include "components/enterprise/platform_auth/url_session_url_loader.h"
 #include "components/policy/core/common/policy_logger.h"

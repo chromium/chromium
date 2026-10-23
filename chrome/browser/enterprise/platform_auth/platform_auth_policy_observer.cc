@@ -25,7 +25,6 @@
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
-#include "components/enterprise/platform_auth/platform_auth_features.h"
 #include "components/policy/core/common/management/management_service.h"
 #endif  //  BUILFLAG(IS_MAC)
 
@@ -94,7 +93,6 @@ void PlatformAuthPolicyObserver::OnPrefChanged() {
 #if BUILDFLAG(IS_MAC)
 void PlatformAuthPolicyObserver::UpdateSsoPrefsHandler() {
   const bool should_be_enabled =
-      base::FeatureList::IsEnabled(enterprise_auth::kOktaSSO) &&
       base::FeatureList::IsEnabled(
           enterprise_auth::kEnableExtensibleEnterpriseSSO) &&
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
