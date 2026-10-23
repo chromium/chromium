@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/map_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -345,12 +346,8 @@ bool DnsTaskResultsManager::IsMetadataReady() const {
 DnsTaskResultsManager::PerDomainResult&
 DnsTaskResultsManager::GetOrCreatePerDomainResult(
     const std::string& domain_name) {
-  auto it = per_domain_results_.find(domain_name);
-  if (it == per_domain_results_.end()) {
-    it = per_domain_results_.try_emplace(it, domain_name,
-                                         std::make_unique<PerDomainResult>());
-  }
-  return *it->second;
+  return *base::GetOrCreate(per_domain_results_, domain_name,
+                            [] { return std::make_unique<PerDomainResult>(); });
 }
 
 void DnsTaskResultsManager::OnAaaaResolutionTimedout() {
