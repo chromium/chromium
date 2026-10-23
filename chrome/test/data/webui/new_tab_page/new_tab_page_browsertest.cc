@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, RealboxNext) {
 }
 
 // TODO(crbug.com/554367777): Disabled by Gardener due to flakiness.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_ActionChips DISABLED_ActionChips
 #else
 #define MAYBE_ActionChips ActionChips
