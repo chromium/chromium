@@ -153,6 +153,44 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
   _view->SetActive(true);
 }
 
+- (void)willMoveToWindow:(UIWindow*)newWindow {
+  [super willMoveToWindow:newWindow];
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center removeObserver:self
+                    name:UISceneDidEnterBackgroundNotification
+                  object:nil];
+  [center removeObserver:self
+                    name:UISceneWillEnterForegroundNotification
+                  object:nil];
+}
+
+- (void)didMoveToWindow {
+  [super didMoveToWindow];
+  if (self.window) {
+    UIWindowScene* scene = self.window.windowScene;
+    if (scene) {
+      NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+      [center addObserver:self
+                 selector:@selector(sceneDidEnterBackground:)
+                     name:UISceneDidEnterBackgroundNotification
+                   object:scene];
+      [center addObserver:self
+                 selector:@selector(sceneWillEnterForeground:)
+                     name:UISceneWillEnterForegroundNotification
+                   object:scene];
+    }
+    [self becomeFirstResponder];
+  }
+}
+
+- (void)sceneDidEnterBackground:(NSNotification*)notification {
+  [self resignFirstResponder];
+}
+
+- (void)sceneWillEnterForeground:(NSNotification*)notification {
+  [self becomeFirstResponder];
+}
+
 - (UIView*)inputAccessoryView {
   return _inputAccessoryContainerView;
 }
@@ -238,6 +276,11 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   CHECK(_view);
+  // Workaround for focus corner cases, like Android's Action::DOWN in
+  // RenderWidgetHostViewAndroid::OnTouchEvent.
+  if (!self.isFirstResponder) {
+    [self becomeFirstResponder];
+  }
   for (UITouch* touch in touches) {
     blink::WebTouchEvent webTouchEvent = input::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchStart, touch, event, self,
