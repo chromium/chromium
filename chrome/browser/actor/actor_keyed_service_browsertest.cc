@@ -431,20 +431,18 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   // "Some extra info".
   auto ok_result = MakeOkResultWithMessage(/*requires_page_stabilization=*/true,
                                            "Some extra info");
-  action_results.emplace_back(base::TimeTicks::Now(), base::TimeTicks::Now(),
-                              std::move(ok_result));
+  const base::TimeTicks now = base::TimeTicks::Now();
+  action_results.emplace_back(now, now, std::move(ok_result));
 
   // Add a failed result.
   auto fail_result = mojom::ActionResult::New(
       mojom::ActionResultCode::kFormFillingDialogError,
       /*requires_page_stabilization=*/false, "Error message",
       /*script_tool_response=*/nullptr,
-      /*execution_end_time=*/base::TimeTicks::Now(),
-      mojom::ScreenshotPolicy::kRequested,
+      /*execution_end_time=*/now, mojom::ScreenshotPolicy::kRequested,
       mojom::PageContentExtractionPolicy::kRequested,
       /*attempt_login_status=*/std::nullopt);
-  action_results.emplace_back(base::TimeTicks::Now(), base::TimeTicks::Now(),
-                              std::move(fail_result));
+  action_results.emplace_back(now, now, std::move(fail_result));
 
   TestFuture<base::TimeTicks, std::vector<actor::ActionResultWithLatencyInfo>,
              actor::TaskId, bool,
