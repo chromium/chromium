@@ -607,25 +607,30 @@ class GitHubRepo(object):
             return self.pr_with_link(link)
         return None
 
-    def pr_with_change_id(self, target_change_id):
-        if not target_change_id:
-            return None
-        all_prs = self.all_pull_requests()
-        for pull_request in all_prs:
-            change_id = parse_footers(pull_request.body).get(CHANGE_ID_KEY)
-            if change_id == target_change_id:
-                return pull_request
-        return None
+    def pr_with_change_id(self, target_change_id: str) -> PullRequest | None:
+        return self._pr_with_footer(CHANGE_ID_KEY, target_change_id)
 
-    def pr_with_link(self, target_link):
-        if not target_link:
+    def pr_with_link(self, target_link: str) -> PullRequest | None:
+        return self._pr_with_footer(LINK_KEY, target_link)
+
+    def _pr_with_footer(
+        self, footer_key: str, target_value: str
+    ) -> PullRequest | None:
+        if not target_value:
             return None
-        all_prs = self.all_pull_requests()
-        for pull_request in all_prs:
-            link = parse_footers(pull_request.body).get(LINK_KEY)
-            if link == target_link:
-                return pull_request
-        return None
+        closed_pr = None
+        for pull_request in self.all_pull_requests():
+            if parse_footers(pull_request.body).get(footer_key) == target_value:
+                if pull_request.state != PullRequestState.CLOSED:
+                    return pull_request
+                # Because PRs are sorted by descending update time, a closed PR
+                # may appear before an open one (e.g. if it was closed recently
+                # when an in-flight CL stopped touching WPT). Continue scanning
+                # to prioritize any open PR before falling back to the newest
+                # closed PR.
+                if not closed_pr:
+                    closed_pr = pull_request
+        return closed_pr
 
 
 class WPTGitHub(GitHubRepo):

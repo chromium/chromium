@@ -2,7 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from blinkpy.w3c.wpt_github import MergeError
+from blinkpy.w3c.common import CHANGE_ID_KEY, LINK_KEY, parse_footers
+from blinkpy.w3c.wpt_github import (
+    MergeError,
+    PullRequest,
+    PullRequestState,
+)
 
 
 class MockWPTGitHub(object):
@@ -106,14 +111,37 @@ class MockWPTGitHub(object):
 
     def pr_for_chromium_commit(self, commit):
         self.calls.append('pr_for_chromium_commit')
-        for pr in self.pull_requests:
-            if commit.change_id() in pr.body:
-                return pr
+        if not self.pull_requests:
+            return None
+        if change_id := commit.change_id():
+            return self._pr_with_footer(CHANGE_ID_KEY, change_id)
+        if link := commit.link():
+            return self._pr_with_footer(LINK_KEY, link)
         return None
 
-    def pr_with_change_id(self, change_id):
+    def pr_with_change_id(self, target_change_id: str) -> PullRequest | None:
         self.calls.append('pr_with_change_id')
-        for pr in self.pull_requests:
-            if change_id in pr.body:
-                return pr
-        return None
+        return self._pr_with_footer(CHANGE_ID_KEY, target_change_id)
+
+    def pr_with_link(self, target_link: str) -> PullRequest | None:
+        self.calls.append('pr_with_link')
+        return self._pr_with_footer(LINK_KEY, target_link)
+
+    def _pr_with_footer(
+        self, footer_key: str, target_value: str
+    ) -> PullRequest | None:
+        if not self.pull_requests or not target_value:
+            return None
+        closed_pr = None
+        for pull_request in self.pull_requests:
+            footers = parse_footers(pull_request.body)
+            matches_footer = footers.get(footer_key) == target_value
+            matches_body = target_value in pull_request.body
+            if matches_footer or matches_body:
+                if pull_request.state != PullRequestState.CLOSED:
+                    return pull_request
+                # Prioritize open PRs before falling back to the latest closed
+                # PR.
+                if not closed_pr:
+                    closed_pr = pull_request
+        return closed_pr

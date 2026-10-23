@@ -473,3 +473,83 @@ class WPTGitHubTest(unittest.TestCase):
         )
         pull_request = self.wpt_github.pr_for_chromium_commit(chromium_commit)
         self.assertEqual(pull_request.number, 1)
+
+    def test_pr_for_chromium_commit_prefers_open_pr(self):
+        self.wpt_github.all_pull_requests = lambda: [
+            PullRequest(
+                'PR1',
+                1,
+                'body\nChange-Id: I00decade',
+                PullRequestState.CLOSED,
+                'PR_kwDOADc1Vc5jhje_',
+                [],
+            ),
+            PullRequest(
+                'PR2',
+                2,
+                'body\nChange-Id: I00decade',
+                PullRequestState.OPEN,
+                'PR_kwDOADc1Vc5jhje_',
+                [],
+            ),
+        ]
+        chromium_commit = MockChromiumCommit(
+            MockHost(),
+            change_id='I00decade',
+        )
+        pull_request = self.wpt_github.pr_for_chromium_commit(chromium_commit)
+        self.assertEqual(pull_request.number, 2)
+
+    def test_pr_for_chromium_commit_prefers_newest_closed_pr(self):
+        self.wpt_github.all_pull_requests = lambda: [
+            PullRequest(
+                'PR1',
+                1,
+                'body\nChange-Id: I00decade',
+                PullRequestState.CLOSED,
+                'PR_kwDOADc1Vc5jhje_',
+                [],
+            ),
+            PullRequest(
+                'PR2',
+                2,
+                'body\nChange-Id: I00decade',
+                PullRequestState.CLOSED,
+                'PR_kwDOADc1Vc5jhje_',
+                [],
+            ),
+        ]
+        chromium_commit = MockChromiumCommit(
+            MockHost(),
+            change_id='I00decade',
+        )
+        pull_request = self.wpt_github.pr_for_chromium_commit(chromium_commit)
+        self.assertEqual(pull_request.number, 1)
+
+    def test_pr_for_chromium_commit_link_prefers_open_pr(self):
+        link = 'https://chromium-review.googlesource.com/id/I0123456789abcdef0123456789abcdef01234567'
+        self.wpt_github.all_pull_requests = lambda: [
+            PullRequest(
+                'PR1',
+                1,
+                f'body\nLink: {link}',
+                PullRequestState.CLOSED,
+                'PR_kwDOADc1Vc5jhje_',
+                [],
+            ),
+            PullRequest(
+                'PR2',
+                2,
+                f'body\nLink: {link}',
+                PullRequestState.OPEN,
+                'PR_kwDOADc1Vc5jhje_',
+                [],
+            ),
+        ]
+        chromium_commit = MockChromiumCommit(
+            MockHost(),
+            change_id='',
+            link=link,
+        )
+        pull_request = self.wpt_github.pr_for_chromium_commit(chromium_commit)
+        self.assertEqual(pull_request.number, 2)
