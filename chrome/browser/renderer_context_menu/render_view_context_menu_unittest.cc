@@ -3524,6 +3524,23 @@ TEST_F(RenderViewContextMenuOrderTest, SelectedTextMenu_SearchTextOrder) {
                   kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, SelectedTextMenu_UrlTextOrder) {
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.page_url = GURL("https://www.example.com/");
+  params.selection_text = u"https://www.chromium.org";
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAre(
+                  IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
+                  IDC_CONTENT_CONTEXT_GOTOURL, IDC_PRINT,
+                  IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+#if !BUILDFLAG(IS_CHROMEOS)
+                  IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+#endif
+                  kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
@@ -3595,6 +3612,24 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest,
               testing::ElementsAre(
                   IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
                   IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
+                  IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+#if !BUILDFLAG(IS_CHROMEOS)
+                  IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+#endif
+                  kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+TEST_F(RenderViewContextMenuSimplifiedOrderTest,
+       SelectedTextMenu_UrlTextOrder) {
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.page_url = GURL("https://www.example.com/");
+  params.selection_text = u"https://www.chromium.org";
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAre(
+                  IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
+                  IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_GOTOURL,
                   IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
 #if !BUILDFLAG(IS_CHROMEOS)
                   IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
