@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor;
+package org.chromium.chrome.browser.actor.background_tabs;
 
 import android.content.pm.PackageManager;
 import android.os.Process;
@@ -256,7 +256,7 @@ public class OffscreenRenderingManager {
         if (webContents == null || webContents.isDestroyed()) {
             throw new IllegalStateException(
                     "WebContents should not be null or destroyed when stopping offscreen"
-                        + " rendering.");
+                            + " rendering.");
         }
 
         assert mNativePtr != null;

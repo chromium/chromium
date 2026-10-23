@@ -42,7 +42,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/android/offscreen_rendering_manager_android.h"
+#include "chrome/browser/actor/android/background_tabs/offscreen_rendering_manager_android.h"
 #endif
 
 namespace glic {

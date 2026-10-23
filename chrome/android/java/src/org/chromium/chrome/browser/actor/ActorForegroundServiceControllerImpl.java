@@ -24,6 +24,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.actor.background_tabs.ActorTabStateHelper;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicIntentConstants;

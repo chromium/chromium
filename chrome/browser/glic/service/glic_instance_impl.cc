@@ -90,7 +90,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/android/offscreen_rendering_manager_android.h"
+#include "chrome/browser/actor/android/background_tabs/offscreen_rendering_manager_android.h"
 #include "chrome/browser/glic/host/context/glic_empty_pinned_tab_manager.h"
 #include "chrome/browser/glic/widget/conversions.h"
 #include "chrome/browser/glic/widget/glic_floating_ui_android.h"

@@ -93,7 +93,7 @@ import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.accessibility.settings.CaretBrowsingDialog;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceController;
 import org.chromium.chrome.browser.actor.ActorNotificationService;
-import org.chromium.chrome.browser.actor.ActorTabStateHelper;
+import org.chromium.chrome.browser.actor.background_tabs.ActorTabStateHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;

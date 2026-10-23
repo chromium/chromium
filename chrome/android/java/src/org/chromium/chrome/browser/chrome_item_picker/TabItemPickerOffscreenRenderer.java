@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.Window;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.actor.OffscreenRenderingManager;
+import org.chromium.chrome.browser.actor.background_tabs.OffscreenRenderingManager;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxTabUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.utilities.OnDemandBackgroundTabCaptureConfig;

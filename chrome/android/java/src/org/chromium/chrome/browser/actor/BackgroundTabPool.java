@@ -365,7 +365,7 @@ public class BackgroundTabPool
     }
 
     @VisibleForTesting
-    void notifyIfEmptied() {
+    public void notifyIfEmptied() {
         if (isEmpty() && !mIsDestroyed) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, mOnEmptyCallback);
         }

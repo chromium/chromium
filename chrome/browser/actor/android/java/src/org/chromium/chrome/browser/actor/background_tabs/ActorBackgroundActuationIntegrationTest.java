@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor;
+package org.chromium.chrome.browser.actor.background_tabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -36,6 +36,18 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.actor.ActorBackgroundActuationManager;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceController;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceControllerImpl;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceImpl;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.actor.ActorUtils;
+import org.chromium.chrome.browser.actor.BackgroundTabPool;
+import org.chromium.chrome.browser.actor.BackgroundTabPoolManager;
+import org.chromium.chrome.browser.actor.BackgroundTabRestorationHelper;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;

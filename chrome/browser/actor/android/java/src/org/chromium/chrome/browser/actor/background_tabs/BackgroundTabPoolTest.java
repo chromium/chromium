@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor;
+package org.chromium.chrome.browser.actor.background_tabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,6 +33,11 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.actor.ActorTaskId;
+import org.chromium.chrome.browser.actor.BackgroundPoolTab;
+import org.chromium.chrome.browser.actor.BackgroundTabPool;
+import org.chromium.chrome.browser.actor.ColdBackgroundTab;
+import org.chromium.chrome.browser.actor.LiveBackgroundTab;
 import org.chromium.chrome.browser.app.tabmodel.TabCacheManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;

@@ -31,6 +31,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.background_tabs.OffscreenRenderingManager;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.notifications.NotificationConstants;

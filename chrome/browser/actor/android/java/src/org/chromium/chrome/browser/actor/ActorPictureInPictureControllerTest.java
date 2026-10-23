@@ -42,6 +42,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.actor.background_tabs.OffscreenRenderingManager;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
