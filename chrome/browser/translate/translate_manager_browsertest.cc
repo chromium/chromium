@@ -1969,8 +1969,16 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   EXPECT_FALSE(language_state->pending_target_language().has_value());
 }
 
+// TODO(crbug.com/568700021): Fix test failure on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_TogglePresentationKeepsPdfTranslation \
+  DISABLED_TogglePresentationKeepsPdfTranslation
+#else
+#define MAYBE_TogglePresentationKeepsPdfTranslation \
+  TogglePresentationKeepsPdfTranslation
+#endif
 IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
-                       TogglePresentationKeepsPdfTranslation) {
+                       MAYBE_TogglePresentationKeepsPdfTranslation) {
   ChromeTranslateClient* chrome_translate_client = OpenFrenchPage();
   TranslateManager* manager = chrome_translate_client->GetTranslateManager();
   ASSERT_TRUE(manager);
