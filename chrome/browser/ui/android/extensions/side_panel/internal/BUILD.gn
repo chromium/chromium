@@ -79,6 +79,7 @@ generate_jni("jni") {
     "java/src/org/chromium/chrome/browser/ui/extensions/side_panel/ExtensionSidePanelContents.java",
     "java/src/org/chromium/chrome/browser/ui/extensions/side_panel/ExtensionSidePanelManagerBridgeImpl.java",
   ]
+  deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
 }
 
 robolectric_library("junit") {

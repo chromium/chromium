@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.ui.extensions.side_panel;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
 /** Implements {@link ExtensionSidePanelManagerBridge}. */
@@ -26,7 +29,7 @@ final class ExtensionSidePanelManagerBridgeImpl implements ExtensionSidePanelMan
 
         mNativeExtensionSidePanelManagerBridge =
                 ExtensionSidePanelManagerBridgeImplJni.get()
-                        .create(/* caller= */ this, initInfo.nativeBrowserWindowPtr);
+                        .create(/* caller= */ this, initInfo.nativeBrowserWindow);
     }
 
     @Override
@@ -49,7 +52,9 @@ final class ExtensionSidePanelManagerBridgeImpl implements ExtensionSidePanelMan
 
     @NativeMethods
     interface Natives {
-        long create(ExtensionSidePanelManagerBridgeImpl caller, long nativeBrowserWindowPtr);
+        long create(
+                ExtensionSidePanelManagerBridgeImpl caller,
+                @Nullable JniPtr<NativeBrowserWindowInterface> browserWindow);
 
         void destroy(long nativeExtensionSidePanelManagerBridge);
     }
