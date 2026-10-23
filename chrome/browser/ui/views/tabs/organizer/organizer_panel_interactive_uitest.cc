@@ -616,13 +616,18 @@ class OrganizerPanelAnimationUiTest : public OrganizerPanelUiTest {
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelAnimationUiTest,
                        PanelSlidesAcrossVerticalTabStrip) {
+  gfx::Rect original_tab_strip_bounds;
   gfx::Rect region_bounds;
   gfx::Rect tab_strip_bounds;
   gfx::Rect organizer_panel_bounds;
 
   RunTestSequence(
-      SetVerticalTabsEnabled(true), PressButton(kTabSearchButtonElementId),
-      Do([this]() {
+      SetVerticalTabsEnabled(true),
+      WithElement(kTabStripElementId,
+                  [&](ui::TrackedElement* el) {
+                    original_tab_strip_bounds = el->GetScreenBounds();
+                  }),
+      PressButton(kTabSearchButtonElementId), Do([this]() {
         animation_test_api_->IncrementTime(
             base::Milliseconds(browser_animations::kFlyoutShowMs / 2));
       }),
@@ -645,11 +650,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelAnimationUiTest,
             "Tab strip bounds not empty."),
       Check([&]() { return !organizer_panel_bounds.IsEmpty(); },
             "Organizer panel bounds not empty."),
-      Check(
-          [&]() {
-            return organizer_panel_bounds.x() == tab_strip_bounds.right();
-          },
-          "Organizer and tab strip touch."),
+      Check([&]() { return original_tab_strip_bounds == tab_strip_bounds; },
+            "Tab strip bounds don't change."),
       Check(
           [&]() {
             return organizer_panel_bounds.width() == region_bounds.width();
@@ -657,13 +659,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelAnimationUiTest,
           "Organizer and region have same width."),
       Check([&]() { return tab_strip_bounds.width() == region_bounds.width(); },
             "Tab strip and region have same width."),
-      Check([&]() { return tab_strip_bounds.x() < region_bounds.x(); },
-            "Tab strip is clipped on the left."),
-      Check(
-          [&]() {
-            return organizer_panel_bounds.right() > region_bounds.right();
-          },
-          "Tab strip is clipped on the left."));
+      Check([&]() { return organizer_panel_bounds.x() < region_bounds.x(); },
+            "Organizer panel is clipped on the left."));
 }
 
 class OrganizerPanelPixelTest : public OrganizerPanelUiTest {

@@ -480,18 +480,15 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
   if (blending_with_organizer_tray) {
     available.set_width(blend_target_width);
   }
-  gfx::Rect contents_bounds = available;
-  gfx::Rect organizer_bounds = available;
-  const int adjustment =
-      blending_with_organizer_tray
-          ? 0
-          : base::ClampRound(available.width() * organizer_panel_show_percent_);
-  contents_bounds.Offset(-adjustment, 0);
-  organizer_bounds.Offset(available.width() - adjustment, 0);
-  layout.child_layouts.push_back({.child_view = content_area_view_.get(),
-                                  .visible = adjustment < available.width(),
-                                  .bounds = contents_bounds});
+  layout.child_layouts.push_back(
+      {.child_view = content_area_view_.get(),
+       .visible = organizer_panel_show_percent_ < 1.0,
+       .bounds = available});
   if (organizer_panel_view_) {
+    gfx::Rect organizer_bounds = available;
+    const int adjustment =
+        base::ClampRound(available.width() * organizer_panel_show_percent_);
+    organizer_bounds.Offset(adjustment - available.width(), 0);
     layout.child_layouts.push_back({.child_view = organizer_panel_view_.get(),
                                     .visible = adjustment > 0,
                                     .bounds = organizer_bounds});
@@ -619,6 +616,9 @@ std::unique_ptr<views::View>
 VerticalTabStripRegionView::TakeOrganizerPanelView() {
   CHECK(organizer_panel_view_);
   organizer_panel_show_percent_ = 0.0;
+  // Since we mess with the opacity when animating the panel in/out, return it
+  // to 100%.
+  organizer_panel_view_->layer()->SetOpacity(1.0f);
   return RemoveChildViewT(std::exchange(organizer_panel_view_, nullptr));
 }
 
@@ -840,12 +840,13 @@ void VerticalTabStripRegionView::SetOrganizerPanelShowPercent(double percent) {
   InvalidateLayout(/*avoid_propagate_during_layout=*/true);
 }
 
-void VerticalTabStripRegionView::UpdatePanelClips() {
-  auto* const bg = background()->AsA<CustomCornersBackground>();
+void VerticalTabStripRegionView::UpdatePanelClipAndOpacity() {
   if (organizer_panel_view_) {
+    auto* const bg = background()->AsA<CustomCornersBackground>();
     bg->ClipViewToBackground(organizer_panel_view_);
+    organizer_panel_view_->layer()->SetOpacity(organizer_panel_show_percent_);
   }
-  bg->ClipViewToBackground(content_area_view_);
+  content_area_view_->layer()->SetOpacity(1.0 - organizer_panel_show_percent_);
 }
 
 VerticalTabStripRegionView::RegionViewFocusListener::RegionViewFocusListener(
