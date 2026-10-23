@@ -2565,7 +2565,7 @@ enum CssPosition {
 }
 
 // The reason why a node is clickable.
-// Next ID: 17
+// Next ID: 19
 enum ClickabilityReason {
   // The node is a native form control.
   CLICKABILITY_REASON_CLICKABLE_CONTROL = 0;
@@ -2615,8 +2615,11 @@ enum ClickabilityReason {
   // The node has mouse event handlers like mouseup and mousedown.
   CLICKABILITY_REASON_MOUSE_CLICK = 12;
 
-  // The node has mouse event handlers like mouseover and mouseenter.
-  CLICKABILITY_REASON_MOUSE_HOVER = 13;
+  // DEPRECATED: Replaced by CLICKABILITY_REASON_MOUSE_ENTER and
+  // CLICKABILITY_REASON_MOUSE_OVER. Maintained to interpret legacy snapshots
+  // extracted by older Chrome versions (Chrome <= 157).
+  // TODO(crbug.com/576774954): Remove once legacy snapshots are no longer evaluated.
+  CLICKABILITY_REASON_MOUSE_HOVER = 13 [deprecated = true];
 
   // The node has a CSS :hover pseudo-class, which indicates that it changes
   // state when a mouse hovers over it. This should be relatively low-priority
@@ -2632,6 +2635,16 @@ enum ClickabilityReason {
   // The node has the aria-selected attribute indicating it can be selected or
   // unselected.
   CLICKABILITY_REASON_ARIA_SELECTABLE = 16;
+
+  // The node has an explicit mouseenter event listener. Unlike mouseover,
+  // mouseenter does not bubble, indicating a targeted component hover contract.
+  CLICKABILITY_REASON_MOUSE_ENTER = 17;
+
+  // The node has an explicit mouseover event listener. Because mouseover
+  // bubbles to document/root containers, this may be attached to high-level
+  // framework containers (e.g. #root, #app, or document wrappers) for delegated
+  // event dispatch.
+  CLICKABILITY_REASON_MOUSE_OVER = 18;
 }
 
 // Provides hints that indicate that interaction with this node is disabled.
