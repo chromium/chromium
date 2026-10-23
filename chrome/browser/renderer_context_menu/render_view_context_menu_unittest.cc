@@ -3771,6 +3771,28 @@ TEST_F(RenderViewContextMenuOrderTest, ImageMenu_BrokenImageOrder) {
           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, LinkedImageMenu_Order) {
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::LINK | MenuItem::IMAGE);
+  params.page_url = GURL("https://www.example.com/");
+  params.has_image_contents = true;
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+          IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+          IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+          IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, kSeparatorId,
+          IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, IDC_CONTENT_CONTEXT_SAVELINKAS,
+          IDC_CONTENT_CONTEXT_COPYLINKLOCATION, kSeparatorId,
+          IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB, IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
+          IDC_CONTENT_CONTEXT_COPYIMAGE, IDC_CONTENT_CONTEXT_COPYIMAGELOCATION,
+          IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE, kSeparatorId,
+          IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
