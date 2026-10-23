@@ -227,8 +227,7 @@ const blink::Color ComputedStyleUtils::BorderSideColor(
              border_style == EBorderStyle::kOutset ||
              border_style == EBorderStyle::kRidge ||
              border_style == EBorderStyle::kGroove) {
-    if (RuntimeEnabledFeatures::TableDefaultBorderColorCurrentColorEnabled() &&
-        style.IsDisplayTableType()) {
+    if (style.IsDisplayTableType()) {
       current_color = style.GetCurrentColor();
     } else {
       // FIXME: Treating styled borders with initial color differently causes

@@ -251,9 +251,6 @@ table {
     border-spacing: 2px;
     border-collapse: separate;
     text-indent: initial;
-    @supports not blink-feature(TableDefaultBorderColorCurrentColor) {
-        border-color: gray;
-    }
 }
 
 thead {
