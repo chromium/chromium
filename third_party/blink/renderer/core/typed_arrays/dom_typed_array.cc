@@ -23,13 +23,8 @@ v8::Local<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
   v8::Local<v8::Object> wrapper;
   {
     v8::Context::Scope context_scope(script_state->GetContext());
-    if (IsShared()) {
-      wrapper = V8TypedArray::New(v8_buffer.As<v8::SharedArrayBuffer>(),
-                                  byteOffset(), length());
-    } else {
-      wrapper = V8TypedArray::New(v8_buffer.As<v8::ArrayBuffer>(), byteOffset(),
-                                  length());
-    }
+    wrapper = V8TypedArray::New(v8_buffer.As<v8::ArrayBufferBase>(),
+                                byteOffset(), length());
   }
 
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,

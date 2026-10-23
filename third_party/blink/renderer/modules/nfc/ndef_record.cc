@@ -63,8 +63,7 @@ bool MaybeIsBufferSource(const ScriptValue& script_value) {
   if (script_value.IsEmpty())
     return false;
   const auto v8_value = script_value.V8Value();
-  return v8_value->IsArrayBuffer() || v8_value->IsSharedArrayBuffer() ||
-         v8_value->IsArrayBufferView();
+  return v8_value->IsArrayBufferBase() || v8_value->IsArrayBufferView();
 }
 
 bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,

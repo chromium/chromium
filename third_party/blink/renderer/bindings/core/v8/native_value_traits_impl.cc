@@ -169,21 +169,13 @@ void NativeValueTraitsInterfaceNotOfType(
       argument_index, wrapper_type_info->interface_name));
 }
 
-bool ThrowIfResizable(v8::Local<v8::ArrayBuffer> array_buffer,
+bool ThrowIfResizable(v8::Local<v8::ArrayBufferBase> array_buffer,
                       ExceptionState& exception_state) {
   if (array_buffer->IsResizableByUserJavaScript()) {
     exception_state.ThrowTypeError(
-        "The provided ArrayBuffer value must not be resizable");
-    return false;
-  }
-  return true;
-}
-
-bool ThrowIfResizable(v8::Local<v8::SharedArrayBuffer> shared_array_buffer,
-                      ExceptionState& exception_state) {
-  if (shared_array_buffer->GetBackingStore()->IsResizableByUserJavaScript()) {
-    exception_state.ThrowTypeError(
-        "The provided SharedArrayBuffer value must not be resizable");
+        array_buffer->IsShared()
+            ? "The provided SharedArrayBuffer value must not be resizable"
+            : "The provided ArrayBuffer value must not be resizable");
     return false;
   }
   return true;

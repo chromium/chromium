@@ -339,11 +339,11 @@ DOMViewType* ToDOMViewType(v8::Isolate* isolate, v8::Local<v8::Value> value) {
     return blink_view;
   }
 
-  v8::Local<v8::Object> v8_buffer = v8_view->Buffer();
+  v8::Local<v8::ArrayBufferBase> v8_buffer = v8_view->GetBuffer();
   DOMArrayBufferBase* blink_buffer = nullptr;
-  if (v8_buffer->IsArrayBuffer()) {
+  if (!v8_buffer->IsShared()) {
     blink_buffer = ToDOMArrayBuffer(isolate, v8_buffer);
-  } else {  // must be IsSharedArrayBuffer()
+  } else {
     blink_buffer = ToDOMSharedArrayBuffer(isolate, v8_buffer);
   }
 

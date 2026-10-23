@@ -90,7 +90,7 @@ void ArrayBufferAllocator::InitializePartition() {
 // ArrayBuffer ----------------------------------------------------------------
 ArrayBuffer::ArrayBuffer() = default;
 
-ArrayBuffer::ArrayBuffer(v8::Local<v8::ArrayBuffer> array)
+ArrayBuffer::ArrayBuffer(v8::Local<v8::ArrayBufferBase> array)
     : backing_store_(array->GetBackingStore()) {}
 
 ArrayBuffer::~ArrayBuffer() = default;
@@ -132,7 +132,7 @@ ArrayBufferView::ArrayBufferView()
 }
 
 ArrayBufferView::ArrayBufferView(v8::Local<v8::ArrayBufferView> view)
-    : array_buffer_(view->Buffer()),
+    : array_buffer_(view->GetBuffer()),
       offset_(view->ByteOffset()),
       num_bytes_(view->ByteLength()) {}
 

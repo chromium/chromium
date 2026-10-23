@@ -309,7 +309,7 @@ bool ParamValueMapMatchesToParamsObject(
     v8::Local<v8::Float32Array> float32_array =
         param_array_value.As<v8::Float32Array>();
     if (float32_array->Length() != param_values.size() ||
-        float32_array->Buffer()->ByteLength() == 0) {
+        float32_array->GetBuffer()->ByteLength() == 0) {
       return false;
     }
   }
@@ -387,13 +387,14 @@ bool CopyParamValueMapToObject(
 
     // The `float32_array` length does not match or the array buffer is
     // transferred/detached, do not proceed.
+    v8::Local<v8::ArrayBufferBase> array_buffer = float32_array->GetBuffer();
     if (array_length != param_values.size() ||
-        float32_array->Buffer()->ByteLength() == 0) {
+        array_buffer->ByteLength() == 0) {
       return false;
     }
 
     base::subtle::reinterpret_span<float>(
-        ArrayBufferContents(float32_array->Buffer()->GetBackingStore())
+        ArrayBufferContents(array_buffer->GetBackingStore())
             .ByteSpan()
             .subspan(float32_array->ByteOffset(), array_length * sizeof(float)))
         .copy_from(param_values);

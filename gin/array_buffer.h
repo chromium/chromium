@@ -49,7 +49,7 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
 class GIN_EXPORT ArrayBuffer {
  public:
   ArrayBuffer();
-  explicit ArrayBuffer(v8::Local<v8::ArrayBuffer> buffer);
+  explicit ArrayBuffer(v8::Local<v8::ArrayBufferBase> buffer);
   ArrayBuffer(const ArrayBuffer&) = delete;
   ~ArrayBuffer();
   ArrayBuffer& operator=(const ArrayBuffer& other);

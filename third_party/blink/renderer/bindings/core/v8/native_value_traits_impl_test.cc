@@ -511,7 +511,7 @@ TEST(NativeValueTraitsImplTest, PassAsSpanResizable) {
 
     ASSERT_TRUE(v8_object->IsArrayBufferView());
     EXPECT_TRUE(v8_object.As<v8::ArrayBufferView>()
-                    ->Buffer()
+                    ->GetBuffer()
                     ->IsResizableByUserJavaScript());
     DummyExceptionStateForTesting exception_state;
     std::ignore = NativeValueTraits<PassAsSpanShared>::ArgumentValue(
@@ -525,7 +525,6 @@ TEST(NativeValueTraitsImplTest, PassAsSpanResizable) {
 
     ASSERT_TRUE(v8_object->IsSharedArrayBuffer());
     EXPECT_TRUE(v8_object.As<v8::SharedArrayBuffer>()
-                    ->GetBackingStore()
                     ->IsResizableByUserJavaScript());
     DummyExceptionStateForTesting exception_state;
     std::ignore = NativeValueTraits<PassAsSpanShared>::ArgumentValue(
