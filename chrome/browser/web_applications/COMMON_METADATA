@@ -23,4 +23,24 @@ agentic_review {
     path_expression_exclusion: [".*_(unittest|browsertest)\\.(cc|h)"]
     review_capability_skills: ["chrome/browser/web_applications/_agents/skills/webapps-app-service-review/SKILL.md"]
   }
+  # Web apps commands, locks, and provider usage in non-test desktop files.
+  capability_groups {
+    path_expression: "chrome/browser/(web_applications|ui/web_applications|ui/views/web_apps)/.*\\.(cc|h|mm)"
+    path_expression_exclusion: [
+      ".*/test(s|_support)?/.*",
+      ".*/(test|fake|mock)_[^/]*",
+      ".*_(unittest|browsertest|interactive_uitest|perftest|ui_test|fuzzer|test)(_[a-z0-9_]+)?\\.(cc|h|mm)"
+    ]
+    review_capability_skills: ["components/webapps/_agents/skills/webapps-command-and-lock-review/SKILL.md"]
+  }
+  # Web apps Mojo security and origin validation in non-test files.
+  capability_groups {
+    path_expression: "chrome/browser/(web_applications|ui/web_applications)/.*\\.(cc|h|mm)"
+    path_expression_exclusion: [
+      ".*/test(s|_support)?/.*",
+      ".*/(test|fake|mock)_[^/]*",
+      ".*_(unittest|browsertest|interactive_uitest|perftest|ui_test|fuzzer|test)(_[a-z0-9_]+)?\\.(cc|h|mm)"
+    ]
+    review_capability_skills: ["components/webapps/_agents/skills/webapps-layering-and-security-review/SKILL.md"]
+  }
 }

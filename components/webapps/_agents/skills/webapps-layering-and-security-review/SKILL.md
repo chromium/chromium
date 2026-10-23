@@ -1,9 +1,10 @@
 ---
 name: webapps-layering-and-security-review
 description: >-
-  Reviews changes in components/webapps/ and chrome/browser/web_applications/
-  for browser-process Mojo origin validation via RenderFrameHost and bad-message
-  reporting. Use when reviewing Web Apps Mojo services or origin checks.
+  Reviews changes in components/webapps/, chrome/browser/web_applications/, and
+  chrome/browser/ui/web_applications/ for browser-process Mojo origin validation
+  via RenderFrameHost and bad-message reporting. Use when reviewing Web Apps
+  Mojo services or origin checks.
 ---
 
 ### `WEBAPPS_DERIVE_MOJO_ORIGIN_FROM_RENDER_FRAME_HOST`: Derive caller origin from `RenderFrameHost` in Mojo services and report bad messages
@@ -16,10 +17,10 @@ description: >-
 - **Look for**:
   - Browser-process Mojo service implementations (`content::DocumentService`
     subclasses such as `WebInstallServiceImpl` and `SubAppsServiceImpl`) in
-    `chrome/browser/web_applications/` or `components/webapps/` that trust a
-    renderer-supplied `url::Origin` or `GURL` for caller identity or same-origin
-    checks instead of using `origin()` or
-    `render_frame_host().GetLastCommittedOrigin()`.
+    `chrome/browser/web_applications/`, `chrome/browser/ui/web_applications/`,
+    or `components/webapps/` that trust a renderer-supplied `url::Origin` or
+    `GURL` for caller identity or same-origin checks instead of using `origin()`
+    or `render_frame_host().GetLastCommittedOrigin()`.
   - Missing `mojo::ReportBadMessage()` / `ReportBadMessageAndDeleteThis()` when
     a renderer sends malformed arguments or invokes a Mojo method from a
     disallowed frame or origin context that Blink should have prevented.
