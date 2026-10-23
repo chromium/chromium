@@ -1,6 +1,7 @@
 <?php
-if ($_GET['mime']) {
-  header("Content-Type: " . $_GET['mime']);
+$mime = $_GET['mime'] ?? '';
+if ($mime) {
+  header("Content-Type: " . $mime);
 } else {
   // Set a header and remove it to override the default 'text/html'.
   header("Content-Type:");

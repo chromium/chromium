@@ -1,7 +1,8 @@
 <?php
     $code = $_GET['code'];
-    $request_origin_value = $_SERVER["HTTP_ORIGIN"];
-    $access_control_request_headers = $_SERVER["HTTP_ACCESS_CONTROL_REQUEST_HEADERS"];
+    $request_origin_value = $_SERVER["HTTP_ORIGIN"] ?? null;
+    $access_control_request_headers =
+        $_SERVER["HTTP_ACCESS_CONTROL_REQUEST_HEADERS"] ?? null;
 
     if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
         if ($code == "400") {

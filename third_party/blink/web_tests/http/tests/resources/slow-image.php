@@ -1,6 +1,4 @@
 <?php
-$name = $_GET['name'];
-$mimeType = $_GET['mimeType'];
 $sleepTime = $_GET['sleep'];
 
 usleep($sleepTime*1000);
@@ -10,6 +8,9 @@ if (isset($_GET['redirect_name'])) {
     header('Location: ' . $_GET['redirect_name']);
     exit;
 }
+
+$name = $_GET['name'];
+$mimeType = $_GET['mimeType'] ?? '';
 
 header('Content-Type: ' . $mimeType);
 header('Content-Length: ' . filesize($name));

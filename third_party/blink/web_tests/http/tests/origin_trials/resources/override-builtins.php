@@ -1,5 +1,5 @@
 <?php
-$override_arg = strtolower($_GET["apply"]);
+$override_arg = strtolower($_GET["apply"] ?? '');
 if ($override_arg == 'none') {
   $override_arg = '';
 }

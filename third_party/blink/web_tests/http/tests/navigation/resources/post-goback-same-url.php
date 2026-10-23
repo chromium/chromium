@@ -12,7 +12,7 @@ function submitForm()
 <body>
 
 <?
-IF ($_POST['textdata'] == "foo") {
+IF (($_POST['textdata'] ?? "") == "foo") {
     ECHO "You should not be seeing this text!";
 }
 ?>

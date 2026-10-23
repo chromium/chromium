@@ -1,5 +1,5 @@
 <?php
-$cors_arg = strtolower($_GET['cors'] ?? null);
+$cors_arg = strtolower($_GET['cors'] ?? '');
 if ($cors_arg != 'false') {
   if ($cors_arg == '' || $cors_arg == 'true') {
     header('Access-Control-Allow-Origin: http://127.0.0.1:8000');
@@ -47,7 +47,7 @@ if ($value || $cookie) {
   }
 
   echo $result_var . " = \"" . $value . "\";";
-} else if (strtolower($_GET['fail'] ?? null) == 'true') {
+} else if (strtolower($_GET['fail'] ?? '') == 'true') {
   echo "throw({toString: function(){ return 'SomeError' }});";
 } else {
   echo "alert('script ran.');";

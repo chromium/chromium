@@ -3,7 +3,7 @@
 
   // Extract the cookie information.
   $headers = getallheaders();
-  $cookieHeader = $headers['Cookie'];
+  $cookieHeader = $headers['Cookie'] ?? '';
 
   // Append the cookieHeader to the destination url
   // as a query parameter.

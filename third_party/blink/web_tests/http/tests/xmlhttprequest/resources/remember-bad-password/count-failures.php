@@ -25,7 +25,7 @@ function getState($file)
 
 $stateFile = sys_get_temp_dir() . "/remember-bad-password-status";
 
-$command = $_GET['command'];
+$command = $_GET['command'] ?? null;
 if ($command) {
     if ($command == "status")
         echo getState($stateFile);

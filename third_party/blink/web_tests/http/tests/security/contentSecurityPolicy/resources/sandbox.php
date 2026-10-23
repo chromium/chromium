@@ -1,8 +1,9 @@
 <?php
+$sandbox = $_GET["sandbox"] ?? "";
 if (isset($_GET["report-only"])) {
-    header("Content-Security-Policy-Report-Only: sandbox " . $_GET["sandbox"]);
+    header("Content-Security-Policy-Report-Only: sandbox " . $sandbox);
 } else {
-    header("Content-Security-Policy: sandbox " . $_GET["sandbox"]);
+    header("Content-Security-Policy: sandbox " . $sandbox);
 }
 ?>
 <!DOCTYPE html>

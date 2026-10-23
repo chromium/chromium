@@ -17,7 +17,8 @@ $output = fopen("php://output", 'r+');
 $file = fopen($name, "rb");
 $buffer = fread($file, 16);
 fwrite($output, $buffer, 16);
-ob_flush();
+if (ob_get_level() > 0)
+  ob_flush();
 flush();
 
 usleep($sleepTime*1000);

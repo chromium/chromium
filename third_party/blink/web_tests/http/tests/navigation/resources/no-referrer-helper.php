@@ -7,7 +7,7 @@
 <html><body>
 <div id="console"></div>
 <div id="referrer">
-Referrer: <?php echo $_SERVER['HTTP_REFERER']; ?>
+Referrer: <?php echo $_SERVER['HTTP_REFERER'] ?? ""; ?>
 </div>
 <br/>
 <script>

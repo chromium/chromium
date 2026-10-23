@@ -13,6 +13,6 @@ if (isset($_GET['coep'])) {
   header("Cross-Origin-Embedder-Policy: require-corp");
 }
 
-console.log("Hello from script");
+echo 'console.log("Hello from script");';
 
 ?>

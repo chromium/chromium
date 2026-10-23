@@ -2,26 +2,22 @@
   header("Expires: Thu, 01 Dec 2003 16:00:00 GMT");
   header("Cache-Control: no-cache, must-revalidate");
   header("Pragma: no-cache");
-  if ($_GET["csp"]) {
-    $csp = $_GET["csp"];
-    // If the magic quotes option is enabled, the CSP could be escaped and
-    // the test would fail.
-    if (get_magic_quotes_gpc()) {
-      $csp = stripslashes($csp);
-    }
+  $csp = $_GET["csp"] ?? "";
+  $type = $_GET["type"] ?? "";
+  if ($csp) {
     header("Content-Security-Policy: " . $csp);
-  } else if ($_GET["type"] == "multiple-headers") {
+  } else if ($type == "multiple-headers") {
     header("Content-Security-Policy: connect-src 'none'");
     header("Content-Security-Policy: script-src 'self'", false);
   }
 
-  if ($_GET["referrerpolicy"]) {
+  if (!empty($_GET["referrerpolicy"])) {
     header("Referrer-Policy: " . $_GET["referrerpolicy"]);
   }
 ?>
 
 <?php
-if ($_GET["type"] == "eval") {
+if ($type == "eval") {
 ?>
 
 var id = 0;
@@ -34,7 +30,7 @@ catch (e) {
 postMessage(id === 0 ? "eval blocked" : "eval allowed");
 
 <?php
-} else if ($_GET["type"] == "function-function") {
+} else if ($type == "function-function") {
 ?>
 
 var fn = function() {
@@ -48,7 +44,7 @@ catch(e) {
 fn();
 
 <?php
-} else if ($_GET["type"] == "importscripts") {
+} else if ($type == "importscripts") {
 ?>
 
 try {
@@ -59,7 +55,7 @@ try {
 }
 
 <?php
-} else if ($_GET["type"] == "make-xhr") {
+} else if ($type == "make-xhr") {
 ?>
 
 try {
@@ -71,7 +67,7 @@ try {
 }
 
 <?php
-} else if ($_GET["type"] == "shared-make-xhr") {
+} else if ($type == "shared-make-xhr") {
 ?>
 
 onconnect = function (e) {
@@ -89,7 +85,7 @@ onconnect = function (e) {
 }
 
 <?php
-} else if ($_GET["type"] == "set-timeout") {
+} else if ($type == "set-timeout") {
 ?>
 
 var id = 0;
@@ -100,13 +96,13 @@ try {
 postMessage(id === 0 ? "setTimeout blocked" : "setTimeout allowed");
 
 <?php
-} else if ($_GET["type"] == "alert-pass") {
+} else if ($type == "alert-pass") {
 ?>
 
 alert('PASS');
 
 <?php
-} else if ($_GET["type"] == "report-referrer") {
+} else if ($type == "report-referrer") {
 ?>
 
 var xhr = new XMLHttpRequest;
@@ -117,7 +113,7 @@ xhr.onload = function () {
 xhr.send();
 
 <?php
-} else if ($_GET["type"] == "shared-report-referrer") {
+} else if ($type == "shared-report-referrer") {
 ?>
 
 onconnect = function (e) {
@@ -134,7 +130,7 @@ onconnect = function (e) {
 };
 
 <?php
-} else if ($_GET["type"] == "multiple-headers") {
+} else if ($type == "multiple-headers") {
 ?>
 
 try {
