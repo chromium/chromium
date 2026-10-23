@@ -14,12 +14,13 @@ from blinkpy.w3c.wpt_github import (
     GitHubError,
     MergeError,
     PullRequest,
+    PullRequestState,
     WPTGitHub,
 )
 
 
 class WPTGitHubTest(unittest.TestCase):
-    def generate_pr_item(self, pr_number, state='closed'):
+    def generate_pr_item(self, pr_number, state=PullRequestState.CLOSED):
         return {
             'title': 'Foobar',
             'number': pr_number,

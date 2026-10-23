@@ -6,6 +6,7 @@ import logging
 
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.known_exported_change_ids import KNOWN_EXPORTED_CHANGE_IDS
+from blinkpy.w3c.wpt_github import PullRequestState
 
 _log = logging.getLogger(__name__)
 
@@ -181,7 +182,7 @@ def _is_commit_exported(
         )
         return False
 
-    if pull_request.state != 'closed':
+    if pull_request.state != PullRequestState.CLOSED:
         _log.info(
             'Checking if commit is exported: pull request is not closed. '
             'Commit: %s, PR number: %s, PR state: %s',

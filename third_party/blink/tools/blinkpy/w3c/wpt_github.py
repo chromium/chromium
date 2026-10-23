@@ -5,6 +5,7 @@
 import base64
 import dataclasses
 import datetime
+import enum
 import json
 import logging
 import re
@@ -31,6 +32,26 @@ _log = logging.getLogger(__name__)
 API_BASE = 'https://api.github.com'
 MAX_PER_PAGE = 100
 MAX_PR_HISTORY_WINDOW = 1000
+
+
+class PullRequestState(enum.StrEnum):
+    OPEN = 'open'
+    CLOSED = 'closed'
+
+
+@dataclasses.dataclass(frozen=True)
+class PullRequest:
+    """Represents a GitHub pull request."""
+
+    title: str
+    number: int
+    body: str
+    state: PullRequestState | str
+    node_id: str
+    labels: List[str]
+    requested_teams: List[Dict[str, Any]] = dataclasses.field(
+        default_factory=list
+    )
 
 
 class GitHubRepo(object):
@@ -280,7 +301,7 @@ class GitHubRepo(object):
             title=item['title'],
             number=item['number'],
             body=item['body'],
-            state=item['state'],
+            state=PullRequestState(item['state']),
             node_id=item['node_id'],
             labels=labels,
             requested_teams=item.get('requested_teams', []),
@@ -682,18 +703,3 @@ class MergeError(GitHubError):
 
     def __init__(self, pr_number):
         super(MergeError, self).__init__(200, 405, 'merge PR %d' % pr_number)
-
-
-@dataclasses.dataclass(frozen=True)
-class PullRequest:
-    """Represents a GitHub pull request."""
-
-    title: str
-    number: int
-    body: str
-    state: str
-    node_id: str
-    labels: List[str]
-    requested_teams: List[Dict[str, Any]] = dataclasses.field(
-        default_factory=list
-    )

@@ -24,7 +24,7 @@ from blinkpy.w3c.export_notifier import ExportNotifier, ExportNotifierError
 from blinkpy.w3c.gerrit import GerritAPI, GerritCL, GerritError
 from blinkpy.w3c.graphql import GraphQL
 from blinkpy.w3c.pr_cleanup_tool import PrCleanupTool
-from blinkpy.w3c.wpt_github import MergeError
+from blinkpy.w3c.wpt_github import MergeError, PullRequestState
 
 _log = logging.getLogger(__name__)
 
@@ -289,7 +289,7 @@ class TestExporter:
             pr_url = f'{self.github.url}pull/{pull_request.number}'
             _log.info('In-flight PR found: %s', pr_url)
 
-            if pull_request.state != 'open':
+            if pull_request.state != PullRequestState.OPEN:
                 _log.info('Pull request is %s. Skipping.', pull_request.state)
                 return None
 
