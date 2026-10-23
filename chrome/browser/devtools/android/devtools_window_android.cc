@@ -13,6 +13,8 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #endif  // BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 
+class BrowserWindowInterface;
+
 static void JNI_DevToolsWindowAndroid_OpenDevTools(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& java_web_contents) {
@@ -73,7 +75,7 @@ static bool JNI_DevToolsWindowAndroid_IsDevToolsAllowedFor(
 static void JNI_DevToolsWindowAndroid_AttachToBrowser(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& java_web_contents,
-    int64_t nativeBrowserWindowPtr) {
+    BrowserWindowInterface* browser_window) {
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
@@ -81,8 +83,7 @@ static void JNI_DevToolsWindowAndroid_AttachToBrowser(
   if (!window) {
     return;
   }
-  window->AttachToBrowser(
-      reinterpret_cast<BrowserWindowInterface*>(nativeBrowserWindowPtr));
+  window->AttachToBrowser(browser_window);
 #endif
 }
 

@@ -80,7 +80,7 @@ public class DevToolsActivity extends BaseCustomTabActivity {
         // because there is no tab in the tab model after the closerTabs() call below.
         if (webContents != null && task != null && profile != null) {
             DevToolsWindowAndroid.attachToBrowser(
-                    webContents, task.getOrCreateNativeBrowserWindowPtr(profile));
+                    webContents, task.getOrCreateNativeBrowserWindow(profile));
         }
 
         // Remove the existing blank page tab.

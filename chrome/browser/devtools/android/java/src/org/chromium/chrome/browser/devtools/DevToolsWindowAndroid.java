@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.devtools;
 
 import android.content.Context;
 
+import org.jni_zero.JniPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
@@ -71,10 +73,11 @@ public class DevToolsWindowAndroid {
      * Attaches the DevTools frontend web contents to the browser window.
      *
      * @param webContents DevTools frontend web contents.
-     * @param nativeBrowserWindowPtr Browser window to host the DevTools frontend.
+     * @param browserWindow Browser window to host the DevTools frontend.
      */
-    public static void attachToBrowser(WebContents webContents, long nativeBrowserWindowPtr) {
-        DevToolsWindowAndroidJni.get().attachToBrowser(webContents, nativeBrowserWindowPtr);
+    public static void attachToBrowser(
+            WebContents webContents, JniPtr<NativeBrowserWindowInterface> browserWindow) {
+        DevToolsWindowAndroidJni.get().attachToBrowser(webContents, browserWindow);
     }
 
     @NativeMethods
@@ -87,6 +90,7 @@ public class DevToolsWindowAndroid {
 
         boolean isDevToolsAllowedFor(Profile profile, @Nullable WebContents webContents);
 
-        void attachToBrowser(WebContents webContents, long nativeBrowserWindowPtr);
+        void attachToBrowser(
+                WebContents webContents, JniPtr<NativeBrowserWindowInterface> browserWindow);
     }
 }
