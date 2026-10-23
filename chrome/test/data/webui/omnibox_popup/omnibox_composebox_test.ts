@@ -50,7 +50,6 @@ suite('OmniboxComposeboxTest', () => {
 
     loadTimeData.overrideValues({
       composeboxShowZps: true,
-      askGBlockAutoTabZeroStateSuggestions: false,
       // Read by the cr-omnibox-composebox constructor; pinned so the tests do
       // not depend on the page's flag defaults.
       searchboxLayoutMode: 'TallBottomContext',
@@ -509,12 +508,8 @@ suite('OmniboxComposeboxTest', () => {
   });
 
   test(
-      'addSearchContext skips autocomplete query for tab when flag is enabled' +
-          ' and source is auto-added',
+      'addSearchContext skips autocomplete query for an auto-added tab',
       async () => {
-        loadTimeData.overrideValues(
-            {askGBlockAutoTabZeroStateSuggestions: true});
-
         const initialCallCount =
             testProxy.handler.getCallCount('queryAutocomplete');
         const context = {
@@ -541,11 +536,10 @@ suite('OmniboxComposeboxTest', () => {
       });
 
   test(
-      'addSearchContext does NOT skip autocomplete query for tab when flag' +
-          ' is disabled',
+      'addSearchContext skips autocomplete query for a context menu tab',
       async () => {
-        loadTimeData.overrideValues(
-            {askGBlockAutoTabZeroStateSuggestions: false});
+        testProxy.handler.setPromiseResolveFor(
+            'addTabContext', 'mock-tab-token');
 
         const initialCallCount =
             testProxy.handler.getCallCount('queryAutocomplete');
@@ -556,7 +550,7 @@ suite('OmniboxComposeboxTest', () => {
               tabId: 42,
               title: 'Google',
               url: 'https://google.com',
-              source: TabAttachmentSource.kAutoAdded,
+              source: TabAttachmentSource.kContextMenu,
             },
           }],
           toolMode: 0,
@@ -566,18 +560,16 @@ suite('OmniboxComposeboxTest', () => {
         omniboxComposebox.addSearchContext(context as unknown as SearchContext);
         await microtasksFinished();
 
-        // Verify query was NOT skipped
+        // The tab's upload fetches the contextual suggestions itself, so
+        // nothing is queried up front.
         assertEquals(
-            initialCallCount + 1,
+            initialCallCount,
             testProxy.handler.getCallCount('queryAutocomplete'));
       });
 
   test(
       'contextual suggestions animate in after a blocked zero state',
       async () => {
-        loadTimeData.overrideValues(
-            {askGBlockAutoTabZeroStateSuggestions: true});
-
         const context = {
           input: '',
           attachments: [{
@@ -616,11 +608,42 @@ suite('OmniboxComposeboxTest', () => {
       'contextual suggestions do not animate when the zero state query was' +
           ' not blocked',
       async () => {
-        loadTimeData.overrideValues(
-            {askGBlockAutoTabZeroStateSuggestions: false});
-
+        const initialCallCount =
+            testProxy.handler.getCallCount('queryAutocomplete');
         const context = {
           input: '',
+          attachments: [],
+          toolMode: 0,
+        };
+        omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+        await microtasksFinished();
+
+        // Without a tab the zero state query goes out right away.
+        assertEquals(
+            initialCallCount + 1,
+            testProxy.handler.getCallCount('queryAutocomplete'));
+
+        testProxy.page.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: omniboxComposebox.activeQueryId,
+              matches: [createSearchMatchForTesting({
+                allowedToBeDefaultMatch: false,
+              })],
+            }));
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+
+        // Suggestions were never withheld, so the dropdown appearing is the
+        // ordinary zero state and must not animate.
+        assertTrue(omniboxComposebox.showDropdown);
+        assertEquals(0, loadInAnimationCount());
+      });
+
+  test(
+      'contextual suggestions do not animate when the context has input',
+      async () => {
+        const context = {
+          input: 'query',
           attachments: [{
             tabAttachment: {
               tabId: 42,
@@ -645,18 +668,19 @@ suite('OmniboxComposeboxTest', () => {
         await testProxy.page.$.flushForTesting();
         await microtasksFinished();
 
-        // Suggestions were never withheld, so the dropdown appearing is the
-        // ordinary zero state and must not animate.
+        // The box opened with text in it, so it never was the empty zero state
+        // that the animation expands from.
         assertTrue(omniboxComposebox.showDropdown);
         assertEquals(0, loadInAnimationCount());
       });
 
   test(
-      'addSearchContext does NOT skip autocomplete query for tab when source' +
-          ' is NOT auto-added',
+      'context menu tab queries once its upload is ready for suggest and' +
+          ' animates the suggestions in',
       async () => {
-        loadTimeData.overrideValues(
-            {askGBlockAutoTabZeroStateSuggestions: true});
+        // Must be a well-formed token: it is sent over a real Mojo pipe below.
+        const mockToken = '12345678901234567890123456789104';
+        testProxy.handler.setPromiseResolveFor('addTabContext', mockToken);
 
         const initialCallCount =
             testProxy.handler.getCallCount('queryAutocomplete');
@@ -673,14 +697,39 @@ suite('OmniboxComposeboxTest', () => {
           toolMode: 0,
           modelMode: 0,
         };
-
         omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+        await testProxy.handler.whenCalled('addTabContext');
         await microtasksFinished();
 
-        // Verify query was NOT skipped
+        // Nothing is queried or shown while the upload is in flight.
+        assertEquals(
+            initialCallCount,
+            testProxy.handler.getCallCount('queryAutocomplete'));
+        assertFalse(omniboxComposebox.showDropdown);
+        assertEquals(0, loadInAnimationCount());
+
+        // The upload becoming ready for suggest triggers the one query.
+        testProxy.page.onContextualInputStatusChanged(
+            mockToken, ContextUploadStatus.kProcessingSuggestSignalsReady,
+            null);
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
         assertEquals(
             initialCallCount + 1,
             testProxy.handler.getCallCount('queryAutocomplete'));
+
+        testProxy.page.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: omniboxComposebox.activeQueryId,
+              matches: [createSearchMatchForTesting({
+                allowedToBeDefaultMatch: false,
+              })],
+            }));
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(omniboxComposebox.showDropdown);
+        assertNotEquals(0, loadInAnimationCount());
       });
 
   test(

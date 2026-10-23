@@ -16,7 +16,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_components/composebox/composebox_lens_search.js';
 import '/strings.m.js';
 
-import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabAttachments, hasOnlyAutoAddedTabs, mapUploadErrorToProcessFilesError, ProcessFilesError, SingleTabType} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabs, mapUploadErrorToProcessFilesError, ProcessFilesError, SingleTabType} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -193,11 +193,12 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private listenerIds_: number[] = [];
   /**
-   * Whether this session opened the composebox without suggestions and is
-   * waiting for contextual ones. Set in `addSearchContext()` and consumed
-   * exactly once, on the `showDropdown` when the results come in.
+   * Whether this session opened the composebox without suggestions and should
+   * animate the contextual suggestions when they arrive. Set in
+   * `addSearchContext()` and consumed exactly once, on the `showDropdown` when
+   * the results come in.
    */
-  private awaitingBlockedZeroStateSuggestions_: boolean = false;
+  private shouldAnimateContextualSuggestions_: boolean = false;
 
   constructor() {
     super();
@@ -313,14 +314,14 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     // Animate once, when the contextual suggestions arrive. Consuming
-    // `awaitingBlockedZeroStateSuggestions_` stops later results from
+    // `shouldAnimateContextualSuggestions_` stops later results from
     // retriggering the animation.
     // `lastQueriedInput` is empty only on the zero state path. A typed query
     // can open the dropdown too and we want to make sure we are not animating
     // that.
-    if (this.awaitingBlockedZeroStateSuggestions_ && !this.lastQueriedInput &&
+    if (this.shouldAnimateContextualSuggestions_ && !this.lastQueriedInput &&
         changedPrivateProperties.has('showDropdown') && this.showDropdown) {
-      this.awaitingBlockedZeroStateSuggestions_ = false;
+      this.shouldAnimateContextualSuggestions_ = false;
       this.animateContextualSuggestions_();
     }
   }
@@ -487,18 +488,14 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    const blockZeroState =
-        getLoadTimeBoolean('askGBlockAutoTabZeroStateSuggestions', false);
-    const hasOnlyAutoAdded =
-        context ? hasOnlyAutoAddedTabAttachments(context.attachments) : false;
-    const skipImmediateQuery = blockZeroState && hasOnlyAutoAdded;
+    const hasTab = !!context &&
+        context.attachments.some(attachment => !!attachment.tabAttachment);
 
-    // Query for ZPS even if there's no context.
-    // Skip immediate query if askGBlockAutoTabZeroStateSuggestions is enabled for
-    // auto added tab attachments.
-    // This is to prevent historical suggestions from being shown while waiting
-    // for contextual suggestions from the uploaded tab during zero state.
-    if (this.showZps && !skipImmediateQuery) {
+    // Query for ZPS even if there's no context. Skip it when a tab was just
+    // added: `onContextualInputStatusChanged()` queries once the tab's upload
+    // is ready for suggest, so querying now would only flash non-contextual
+    // suggestions until then.
+    if (this.showZps && !hasTab) {
       // Clear the autocomplete matches here, as failure to do so triggers a
       // DCHECK in `ZpsSection::InitMatches()` whenever the user tries to upload
       // a file after having uploaded an invalid file earlier in the session.
@@ -506,11 +503,9 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     // Skipping the query is what makes the composebox open empty and expand
-    // later, so it is the precondition for the animation. This requires both
-    // `askGBlockAutoTabZeroStateSuggestions` to be enabled AND the tab
-    // attachment to be auto-added (context-menu-added tabs query immediately
-    // and do not animate).
-    this.awaitingBlockedZeroStateSuggestions_ = skipImmediateQuery;
+    // later, so it is the precondition for the animation. With input the box
+    // isn't empty, so the typed query must not arm the animation.
+    this.shouldAnimateContextualSuggestions_ = hasTab && !this.input.trim();
   }
 
   playGlowAnimation() {
