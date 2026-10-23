@@ -75,6 +75,10 @@
 #include "base/test/android/url_utils.h"
 #endif
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+#include "net/cert/key_pinning_state_chrome_test_util.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -565,10 +569,20 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
       bool enable_unittest_source,
       SetTransportSecurityStateTestSourceCallback callback) override {
     if (enable_unittest_source) {
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+      // TODO(crbug.com/497882860): once key pinning is done in the cert
+      // verifier, the ScopedKeyPinningStateChromeDefaults can be removed.
+      // Tests can then just use a mock cert verifier to simulate a PKP error.
+      key_pinning_state_defaults_ =
+          std::make_unique<net::ScopedKeyPinningStateChromeDefaults>();
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
       transport_security_state_source_ =
           std::make_unique<net::ScopedTransportSecurityStateSource>();
     } else {
       transport_security_state_source_.reset();
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+      key_pinning_state_defaults_.reset();
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
     }
     std::move(callback).Run();
   }
@@ -875,6 +889,10 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;
   std::unique_ptr<net::ScopedTransportSecurityStateSource>
       transport_security_state_source_;
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+  std::unique_ptr<net::ScopedKeyPinningStateChromeDefaults>
+      key_pinning_state_defaults_;
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
   std::optional<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
   base::MemoryPressureLevel latest_memory_pressure_level_ =

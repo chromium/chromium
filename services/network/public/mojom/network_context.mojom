@@ -1868,8 +1868,11 @@ interface NetworkContext {
       ProxyServer proxy_server, string auth_scheme, string realm)
       => (AuthCredentials? credentials);
 
-  // Enables the checking of static PKP records.
-  EnableStaticKeyPinningForTesting() => ();
+  // Re-initialize the key pinning state in the network context's
+  // TransportSecurityState. This can pick up changes in the test's default key
+  // pinning configuration that were made after the TransportSecurityState was
+  // already created.
+  ReinitializeKeyPinningForTesting() => ();
 
   // Verifies the given certificate using the context's CertVerifier.
   VerifyCertificateForTesting(X509Certificate certificate,

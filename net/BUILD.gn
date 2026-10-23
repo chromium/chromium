@@ -143,6 +143,12 @@ source_set("net_features") {
 source_set("chrome_root_store_types") {
   visibility = [ ":*" ]
   sources = [ "cert/internal/chrome_root_store_data.h" ]
+  if (chrome_key_pinning_supported) {
+    sources += [
+      "cert/key_pinning_state_chrome_data.h",
+      "http/transport_security_state_pins_source.h",
+    ]
+  }
   public_deps = [ "//base" ]
 }
 
@@ -169,6 +175,10 @@ source_set("chrome_root_store_data") {
   if (chrome_root_store_supported) {
     sources += [ "cert/internal/trust_store_chrome_data.cc" ]
     deps += [ "//net/data/ssl/chrome_root_store:gen_signer_set_inc" ]
+  }
+  if (chrome_key_pinning_supported) {
+    sources += [ "cert/key_pinning_state_chrome_data.cc" ]
+    deps += [ "//net/http:generate_transport_security_state_pins" ]
   }
 }
 
@@ -405,6 +415,8 @@ component("net") {
     "cert/internal/revocation_checker.h",
     "cert/internal/system_trust_store.cc",
     "cert/internal/system_trust_store.h",
+    "cert/key_pinning_state.cc",
+    "cert/key_pinning_state.h",
     "cert/known_roots.cc",
     "cert/known_roots.h",
     "cert/merkle_audit_proof.cc",
@@ -774,7 +786,6 @@ component("net") {
     "http/transport_security_persister.cc",
     "http/transport_security_persister.h",
     "http/transport_security_state.h",
-    "http/transport_security_state_pins_source.h",
     "http/transport_security_state_source.h",
     "http/url_security_manager.cc",
     "http/url_security_manager.h",
@@ -1703,6 +1714,14 @@ component("net") {
     }
   }
 
+  if (chrome_key_pinning_supported) {
+    sources += [
+      "cert/key_pinning_state_chrome.cc",
+      "cert/key_pinning_state_chrome.h",
+    ]
+    deps += [ "//build:branding_buildflags" ]
+  }
+
   if (use_nss_certs) {
     sources += [
       "cert/nss_cert_database.cc",
@@ -1932,7 +1951,12 @@ component("net") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  if (!is_cronet_build) {
+  if (is_cronet_build) {
+    sources += [
+      "cert/key_pinning_state_dynamic.cc",
+      "cert/key_pinning_state_dynamic.h",
+    ]
+  } else {
     deps += [ "//mojo/public/cpp/bindings:default_construct_tag" ]
   }
 
@@ -2476,7 +2500,6 @@ static_library("test_support") {
   deps = [
     ":quic_test_flags_utils",
     ":simple_quic_tools",
-    "//net/http:transport_security_state_pins_unittest_data_default",
     "//net/http:transport_security_state_unittest_data_default",
     "//third_party/zlib",
   ]
@@ -2487,6 +2510,14 @@ static_library("test_support") {
       "test/chrome_root_store_test_util.h",
     ]
     deps += [ "//net/cert:root_store_proto_lite" ]
+  }
+
+  if (chrome_key_pinning_supported) {
+    sources += [
+      "cert/key_pinning_state_chrome_test_util.cc",
+      "cert/key_pinning_state_chrome_test_util.h",
+    ]
+    deps += [ "//net/http:transport_security_state_pins_unittest_data_default" ]
   }
 
   allow_circular_includes_from = [ "//net/dns:test_support" ]
@@ -2989,6 +3020,7 @@ target(_test_target_type, "net_unittests") {
     "cert/internal/cert_issuer_source_sync_unittest.cc",
     "cert/internal/revocation_checker_unittest.cc",
     "cert/internal/system_trust_store_unittest.cc",
+    "cert/key_pinning_state_unittest.cc",
     "cert/known_roots_unittest.cc",
     "cert/merkle_audit_proof_unittest.cc",
     "cert/merkle_tree_leaf_unittest.cc",
@@ -3407,7 +3439,6 @@ target(_test_target_type, "net_unittests") {
     "//net/cert:root_store_proto_lite",
     "//net/dns:tests",
     "//net/dns/public:tests",
-    "//net/http:transport_security_state_pins_unittest_data_default",
     "//net/http:transport_security_state_unittest_data_default",
     "//net/third_party/quiche:quiche_tests",
     "//net/third_party/uri_template:uri_template_tests",
@@ -3438,7 +3469,9 @@ target(_test_target_type, "net_unittests") {
     }
   }
 
-  if (!is_cronet_build) {
+  if (is_cronet_build) {
+    sources += [ "cert/key_pinning_state_dynamic_unittest.cc" ]
+  } else {
     sources += [
       "extras/sqlite/sqlite_persistent_cookie_store_unittest.cc",
       "extras/sqlite/sqlite_persistent_shared_dictionary_store_unittest.cc",
@@ -3752,6 +3785,10 @@ target(_test_target_type, "net_unittests") {
       sources += [ "cert/internal/path_builder_trust_store_win_unittest.cc" ]
       libs += [ "crypt32.lib" ]
     }
+  }
+
+  if (chrome_key_pinning_supported) {
+    sources += [ "cert/key_pinning_state_chrome_unittest.cc" ]
   }
 
   # Include transport_security_state_generator tests.
@@ -4444,6 +4481,7 @@ fuzzer_test("net_http_transport_security_state_static_fuzzer") {
   sources = [ "http/transport_security_state_static_fuzzer.cc" ]
   deps = [
     ":net_fuzzer_test_support",
+    ":test_support",
     "//net",
   ]
   dict =
