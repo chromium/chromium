@@ -36,6 +36,8 @@ export function getHtml(this: ActionChipsElement) {
                         html`<img class='action-chip-recent-tab-favicon'
                     src="${this.getMostRecentTabFaviconUrl_(chip)}">` :
                         ''}
+              ${this.getIcon_(chip) ? html`
+                <cr-icon icon="${this.getIcon_(chip)}"></cr-icon>` : ''}
             </div>
             <div class="action-chip-text-container">
               ${chip.suggestTemplateInfo.primaryText.text ?

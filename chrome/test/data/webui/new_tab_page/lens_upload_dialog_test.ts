@@ -66,6 +66,17 @@ suite('LensUploadDialogTest', () => {
   test('creating ntp lens dialog opens containing dialog element', () => {
     // Assert.
     assertFalse(uploadDialog.$.dialog.hidden);
+    const illustration = uploadDialog.shadowRoot.querySelector<HTMLElement>(
+        '#dragDropIllustration');
+    assertTrue(!!illustration);
+    assertEquals(
+        'ntp-lens-upload-dialog:drag-drop-illustration',
+        illustration.getAttribute('icon'));
+    // <cr-icon> only renders an <svg> if its iconset defines the icon.
+    assertTrue(!!illustration.shadowRoot!.querySelector('svg'));
+    // Same size as the image it replaces, rather than <cr-icon>'s default.
+    assertEquals(59, illustration.offsetWidth);
+    assertEquals(45, illustration.offsetHeight);
     assertEquals(
         1,
         metrics.count(
@@ -216,6 +227,14 @@ suite('LensUploadDialogTest', () => {
     // Assert.
     assertTrue(
         isVisible(uploadDialog.shadowRoot.querySelector('#offlineContainer')));
+    const offlineImage =
+        uploadDialog.shadowRoot.querySelector<HTMLElement>('#offlineImage');
+    assertTrue(!!offlineImage);
+    assertEquals(
+        'ntp-lens-upload-dialog:offline', offlineImage.getAttribute('icon'));
+    assertTrue(!!offlineImage.shadowRoot!.querySelector('svg'));
+    assertEquals(55, offlineImage.offsetWidth);
+    assertEquals(51, offlineImage.offsetHeight);
 
     // Reset.
     windowProxy.setResultFor('onLine', true);

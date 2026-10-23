@@ -18,6 +18,7 @@ all_ts_files = [
                  "lazy_load.ts",
                  "left_hand_side.html.ts",
                  "left_hand_side.ts",
+                 "lens_upload_dialog_icons.html.ts",
                  "metrics_utils.ts",
                  "new_tab_page_proxy.ts",
                  "new_tab_page.ts",

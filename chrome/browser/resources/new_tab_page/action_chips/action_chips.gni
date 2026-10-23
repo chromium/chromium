@@ -6,6 +6,7 @@ action_chips_ts_files = [
   "action_chips/action_chips_proxy.ts",
   "action_chips/action_chips.html.ts",
   "action_chips/action_chips.ts",
+  "action_chips/icons.html.ts",
 ]
 
 action_chips_css_files = [ "action_chips/action_chips.css" ]

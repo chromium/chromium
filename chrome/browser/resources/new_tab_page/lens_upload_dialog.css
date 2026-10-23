@@ -144,7 +144,6 @@
 }
 
 #dragDropIllustration {
-  background: url(icons/drag_drop_illustration.svg) no-repeat center;
   display: inline-flex;
   height: 45px;
   margin-inline-end: 18px;
@@ -332,7 +331,6 @@
 }
 
 #offlineImage {
-  background: url(icons/offline_dialog.svg) no-repeat center;
   height: 51px;
   margin-bottom: 24px;
   width: 55px;

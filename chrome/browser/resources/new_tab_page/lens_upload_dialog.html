@@ -23,7 +23,9 @@
       <!-- Normal state -->
       ${this.isNormalOrError_ ? html`
         <div class="drag-drop-title-container">
-          <div id="dragDropIllustration"></div>
+          <cr-icon id="dragDropIllustration"
+              icon="ntp-lens-upload-dialog:drag-drop-illustration">
+          </cr-icon>
           <div class="drag-drop-title">
             <span id="dragText">$i18n{lensSearchUploadDialogDragTitle}</span>
             <span tabindex="0" role="button" id="uploadText"
@@ -74,7 +76,8 @@
       <!-- Offline state -->
       ${this.isOffline_ ? html`
         <div id="offlineContainer">
-          <div id="offlineImage"></div>
+          <cr-icon id="offlineImage" icon="ntp-lens-upload-dialog:offline">
+          </cr-icon>
           <div id="offlineTitle" class="drag-drop-title">
             $i18n{lensSearchUploadDialogOfflineText}
           </div>

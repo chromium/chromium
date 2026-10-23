@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from './i18n_setup.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
 import {checkTransparency} from './transparency.js';
 
 export const SUPPORTED_FILE_TYPES = [

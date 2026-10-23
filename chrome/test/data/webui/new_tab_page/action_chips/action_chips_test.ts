@@ -245,6 +245,12 @@ suite('NewTabPageActionChipsTest', () => {
     const recentTabChipIcon = chips.shadowRoot.querySelector<HTMLImageElement>(
         '.action-chip-recent-tab-favicon');
     assertTrue(!!recentTabChipIcon);
+    assertTrue(recentTabChipIcon.src.startsWith('chrome://favicon2/?'));
+    const faviconUrl = new URL(recentTabChipIcon.src);
+    assertEquals('https://example.com', faviconUrl.searchParams.get('pageUrl'));
+    assertEquals('24', faviconUrl.searchParams.get('size'));
+    assertEquals('1x', faviconUrl.searchParams.get('scaleFactor'));
+    assertTrue(faviconUrl.searchParams.has('showFallbackMonogram'));
   });
 
   test('deep dive chip renders correct format', async () => {
@@ -278,6 +284,67 @@ suite('NewTabPageActionChipsTest', () => {
     const deepDiveChipTitle =
         chips.shadowRoot.querySelector<HTMLImageElement>('.chip-title');
     assertEquals(null, deepDiveChipTitle);
+  });
+
+  [true, false].forEach(roundedIcons => {
+    test(`chips render icons with rounded icons ${roundedIcons}`, async () => {
+      loadTimeData.overrideValues({webuiRoundedIconsEnabled: roundedIcons});
+      await initializeChips({});
+
+      const icons =
+          Array.from(chips.shadowRoot.querySelectorAll('.action-chip'))
+              .map(chip => chip.querySelector('cr-icon')?.getAttribute('icon'));
+      assertDeepEquals(
+          [
+            // Favicon chips show the tab's favicon instead of an icon.
+            undefined,
+            'composebox:nanoBanana-custom',
+            roundedIcons ? 'ntp-action-chips:globe-with-search-loop' :
+                           'ntp-action-chips:globe-with-search-loop-old',
+          ],
+          icons);
+    });
+
+    test(
+        `all chip icons exist with rounded icons ${roundedIcons}`, async () => {
+          loadTimeData.overrideValues({webuiRoundedIconsEnabled: roundedIcons});
+          const iconTypes = [
+            IconType.kBanana,
+            IconType.kGlobeWithSearchLoop,
+            IconType.kSubArrowRight,
+            IconType.kDraftSpark,
+            IconType.kSearchLoopWithSparkle,
+            IconType.kLightbulb,
+            IconType.kAttachFile,
+            IconType.kSchool,
+            IconType.kInkPen,
+            IconType.kTab,
+            IconType.kPhotoSpark,
+            IconType.kBolt,
+            IconType.kImageCreate,
+          ];
+          await initializeChips({
+            actionChips: iconTypes.map(typeIcon => ({
+                                         suggestTemplateInfo: {
+                                           typeIcon,
+                                           primaryText: 'Title',
+                                           secondaryText: '',
+                                         },
+                                         suggestion: 'Suggestion',
+                                         tab: null,
+                                       })),
+          });
+
+          const icons =
+              chips.shadowRoot.querySelectorAll('.action-chip cr-icon');
+          assertEquals(iconTypes.length, icons.length);
+          for (const icon of icons) {
+            // <cr-icon> only renders an <svg> if its iconset defines the icon.
+            assertTrue(
+                !!icon.shadowRoot!.querySelector('svg'),
+                icon.getAttribute('icon')!);
+          }
+        });
   });
 
   test('click routing based on queryActionOverride', async () => {
