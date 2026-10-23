@@ -246,12 +246,9 @@ def run_test(
     if os.path.exists(system_log_path):
       with open(system_log_path, 'r') as f:
         stack = f.read()
-      print(stack)
     else:
+      stack = ''
       print('Warning: system_log not found at %s' % system_log_path)
-    # TODO(crbug.com/40821367): Re-enable stack check once symbolization is
-    # stable.
-    return
   elif platform == 'win32':
     cdb_exe = os.path.join(options.build_dir, 'cdb', 'cdb.exe')
     cmd = [
