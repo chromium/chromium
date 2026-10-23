@@ -38,9 +38,8 @@ def _FindParameterListParen(name):
         else:
           template_balance_count += 1
 
-    paren_balance_count += name.count('(', start_idx, idx) - name.count(
-      ')', start_idx, idx
-    )
+    # No need to count "(" since |idx| is the first one after |start_idx|.
+    paren_balance_count -= name.count(')', start_idx, idx)
     if template_balance_count == 0 and paren_balance_count == 0:
       # Special case: skip "(anonymous namespace)".
       if -1 != name.find('(anonymous namespace)', idx, idx + 21):
@@ -58,18 +57,24 @@ def _FindLastCharOutsideOfBrackets(name, target_char, prev_idx=None):
   """Returns the last index of |target_char| that is not within ()s nor <>s."""
   paren_balance_count = 0
   template_balance_count = 0
+  has_parens = ')' in name
+  is_lt = target_char == '<'
   while True:
     idx = name.rfind(target_char, 0, prev_idx)
     if idx == -1:
       return -1
     # It is much faster to use.find() and.count() than to loop over each
     # character.
-    template_balance_count += name.count('<', idx, prev_idx) - name.count(
-      '>', idx, prev_idx
-    )
-    paren_balance_count += name.count('(', idx, prev_idx) - name.count(
-      ')', idx, prev_idx
-    )
+    if is_lt:
+      template_balance_count += 1 - name.count('>', idx, prev_idx)
+    else:
+      template_balance_count += name.count('<', idx, prev_idx) - name.count(
+        '>', idx, prev_idx
+      )
+    if has_parens:
+      paren_balance_count += name.count('(', idx, prev_idx) - name.count(
+        ')', idx, prev_idx
+      )
     if template_balance_count == 0 and paren_balance_count == 0:
       return idx
     prev_idx = idx
