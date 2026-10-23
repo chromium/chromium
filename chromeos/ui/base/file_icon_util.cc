@@ -12,7 +12,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -48,7 +47,7 @@ enum class ColorId {
 };
 
 struct IconParams {
-  const raw_ref<const gfx::VectorIcon> icon;
+  raw_ref<const gfx::VectorIcon> icon;
   ColorId color_id;
 };
 
@@ -87,72 +86,60 @@ SkColor ResolveColor(ColorId color_id, bool dark_background) {
   }
 }
 
-const std::map<IconType, IconParams>& GetIconTypeToIconParamsMap() {
-  // Changes to this map should be reflected in
-  // ui/file_manager/file_manager/common/js/file_type.js.
-  static const base::NoDestructor<std::map<IconType, IconParams>>
-      icon_type_to_icon_params(
-          {{IconType::kArchive,
-            IconParams{raw_ref(kFiletypeArchiveIcon), ColorId::kGrey}},
-           {IconType::kAudio,
-            IconParams{raw_ref(kFiletypeAudioIcon), ColorId::kRed}},
-           {IconType::kChart,
-            IconParams{raw_ref(kFiletypeChartIcon), ColorId::kGreen}},
-           {IconType::kDrive,
-            IconParams{raw_ref(kFiletypeTeamDriveIcon), ColorId::kGrey}},
-           {IconType::kExcel,
-            IconParams{raw_ref(kFiletypeExcelIcon), ColorId::kFiletypeExcel}},
-           {IconType::kFolder,
-            IconParams{raw_ref(kFiletypeFolderIcon), ColorId::kGrey}},
-           {IconType::kFolderShared,
-            IconParams{raw_ref(kFiletypeSharedIcon), ColorId::kGrey}},
-           {IconType::kGdoc,
-            IconParams{raw_ref(kFiletypeGdocIcon), ColorId::kBlue}},
-           {IconType::kGdraw,
-            IconParams{raw_ref(kFiletypeGdrawIcon), ColorId::kRed}},
-           {IconType::kGeneric,
-            IconParams{raw_ref(kFiletypeGenericIcon), ColorId::kGrey}},
-           {IconType::kGform,
-            IconParams{raw_ref(kFiletypeGformIcon), ColorId::kFiletypeGform}},
-           {IconType::kGmap,
-            IconParams{raw_ref(kFiletypeGmapIcon), ColorId::kRed}},
-           {IconType::kGproject, IconParams{raw_ref(kFiletypeGprojectIcon),
-                                            ColorId::kFiletypeGproject}},
-           {IconType::kGsheet,
-            IconParams{raw_ref(kFiletypeGsheetIcon), ColorId::kGreen}},
-           {IconType::kGsite,
-            IconParams{raw_ref(kFiletypeGsiteIcon), ColorId::kFiletypeGsite}},
-           {IconType::kGmaillayout,
-            IconParams{raw_ref(kFiletypeGmaillayoutIcon), ColorId::kRed}},
-           {IconType::kGslide,
-            IconParams{raw_ref(kFiletypeGslidesIcon), ColorId::kYellow}},
-           {IconType::kGtable,
-            IconParams{raw_ref(kFiletypeGtableIcon), ColorId::kGreen}},
-           {IconType::kImage,
-            IconParams{raw_ref(kFiletypeImageIcon), ColorId::kRed}},
-           {IconType::kLinux,
-            IconParams{raw_ref(kFiletypeLinuxIcon), ColorId::kGrey}},
-           {IconType::kPdf,
-            IconParams{raw_ref(kFiletypePdfIcon), ColorId::kRed}},
-           {IconType::kPpt,
-            IconParams{raw_ref(kFiletypePptIcon), ColorId::kFiletypePpt}},
-           {IconType::kScript,
-            IconParams{raw_ref(kFiletypeScriptIcon), ColorId::kBlue}},
-           {IconType::kSites,
-            IconParams{raw_ref(kFiletypeSitesIcon), ColorId::kFiletypeSites}},
-           {IconType::kTini,
-            IconParams{raw_ref(kFiletypeTiniIcon), ColorId::kBlue}},
-           {IconType::kVideo,
-            IconParams{raw_ref(kFiletypeVideoIcon), ColorId::kRed}},
-           {IconType::kWord,
-            IconParams{raw_ref(kFiletypeWordIcon), ColorId::kFiletypeWord}}});
-  return *icon_type_to_icon_params;
-}
+// Changes to this map should be reflected in
+// ui/file_manager/file_manager/common/js/file_type.js.
+constexpr auto kIconTypeToIconParams = base::MakeFixedFlatMap<IconType,
+                                                              IconParams>({
+    {IconType::kArchive,
+     IconParams{raw_ref(kFiletypeArchiveIcon), ColorId::kGrey}},
+    {IconType::kAudio, IconParams{raw_ref(kFiletypeAudioIcon), ColorId::kRed}},
+    {IconType::kChart,
+     IconParams{raw_ref(kFiletypeChartIcon), ColorId::kGreen}},
+    {IconType::kDrive,
+     IconParams{raw_ref(kFiletypeTeamDriveIcon), ColorId::kGrey}},
+    {IconType::kExcel,
+     IconParams{raw_ref(kFiletypeExcelIcon), ColorId::kFiletypeExcel}},
+    {IconType::kFolder,
+     IconParams{raw_ref(kFiletypeFolderIcon), ColorId::kGrey}},
+    {IconType::kFolderShared,
+     IconParams{raw_ref(kFiletypeSharedIcon), ColorId::kGrey}},
+    {IconType::kGdoc, IconParams{raw_ref(kFiletypeGdocIcon), ColorId::kBlue}},
+    {IconType::kGdraw, IconParams{raw_ref(kFiletypeGdrawIcon), ColorId::kRed}},
+    {IconType::kGeneric,
+     IconParams{raw_ref(kFiletypeGenericIcon), ColorId::kGrey}},
+    {IconType::kGform,
+     IconParams{raw_ref(kFiletypeGformIcon), ColorId::kFiletypeGform}},
+    {IconType::kGmap, IconParams{raw_ref(kFiletypeGmapIcon), ColorId::kRed}},
+    {IconType::kGproject,
+     IconParams{raw_ref(kFiletypeGprojectIcon), ColorId::kFiletypeGproject}},
+    {IconType::kGsheet,
+     IconParams{raw_ref(kFiletypeGsheetIcon), ColorId::kGreen}},
+    {IconType::kGsite,
+     IconParams{raw_ref(kFiletypeGsiteIcon), ColorId::kFiletypeGsite}},
+    {IconType::kGmaillayout,
+     IconParams{raw_ref(kFiletypeGmaillayoutIcon), ColorId::kRed}},
+    {IconType::kGslide,
+     IconParams{raw_ref(kFiletypeGslidesIcon), ColorId::kYellow}},
+    {IconType::kGtable,
+     IconParams{raw_ref(kFiletypeGtableIcon), ColorId::kGreen}},
+    {IconType::kImage, IconParams{raw_ref(kFiletypeImageIcon), ColorId::kRed}},
+    {IconType::kLinux, IconParams{raw_ref(kFiletypeLinuxIcon), ColorId::kGrey}},
+    {IconType::kPdf, IconParams{raw_ref(kFiletypePdfIcon), ColorId::kRed}},
+    {IconType::kPpt,
+     IconParams{raw_ref(kFiletypePptIcon), ColorId::kFiletypePpt}},
+    {IconType::kScript,
+     IconParams{raw_ref(kFiletypeScriptIcon), ColorId::kBlue}},
+    {IconType::kSites,
+     IconParams{raw_ref(kFiletypeSitesIcon), ColorId::kFiletypeSites}},
+    {IconType::kTini, IconParams{raw_ref(kFiletypeTiniIcon), ColorId::kBlue}},
+    {IconType::kVideo, IconParams{raw_ref(kFiletypeVideoIcon), ColorId::kRed}},
+    {IconType::kWord,
+     IconParams{raw_ref(kFiletypeWordIcon), ColorId::kFiletypeWord}},
+});
 
 const IconParams& GetIconParamsFromIconType(IconType icon) {
-  const auto& icon_type_to_icon_params = GetIconTypeToIconParamsMap();
-  const auto& it = icon_type_to_icon_params.find(icon);
-  CHECK(it != icon_type_to_icon_params.end());
+  const auto it = kIconTypeToIconParams.find(icon);
+  CHECK(it != kIconTypeToIconParams.end());
 
   return it->second;
 }
@@ -377,9 +364,8 @@ gfx::ImageSkia GetIconFromType(IconType icon_type,
 SkColor GetIconColorForPath(const base::FilePath& filepath,
                             bool dark_background) {
   const auto& icon_type = internal::GetIconTypeForPath(filepath);
-  const auto& icon_type_to_icon_params = GetIconTypeToIconParamsMap();
-  const auto& it = icon_type_to_icon_params.find(icon_type);
-  CHECK(it != icon_type_to_icon_params.end());
+  const auto it = kIconTypeToIconParams.find(icon_type);
+  CHECK(it != kIconTypeToIconParams.end());
 
   return ResolveColor(it->second.color_id, dark_background);
 }
