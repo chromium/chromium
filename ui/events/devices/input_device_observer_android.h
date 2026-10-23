@@ -7,7 +7,10 @@
 
 #include <jni.h>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 namespace base {
@@ -41,9 +44,11 @@ class EVENTS_DEVICES_EXPORT InputDeviceObserverAndroid {
   // Returns the singleton instance of InputDeviceObserverAndroid.
   static InputDeviceObserverAndroid* GetInstance();
 
-  // Initializes the DeviceDataManager instance and fetches initial input
-  // devices from Java. This should be called on the UI thread before using
-  // DeviceDataManager or displaying UI.
+  // Initializes the DeviceDataManager instance and asynchronously fetches
+  // initial input devices from Java on the thread pool (so
+  // DeviceDataManager::AreDeviceListsComplete() is populated asynchronously
+  // rather than synchronously on return). This should be called on the UI
+  // thread before using DeviceDataManager or displaying UI.
   void Initialize();
 
   // Destroys the DeviceDataManager instance and cleans up resources.
@@ -58,15 +63,34 @@ class EVENTS_DEVICES_EXPORT InputDeviceObserverAndroid {
   // the Java-side listener.
   void RemoveObserver(ui::InputDeviceEventObserver* observer);
 
-  // Refreshes the active input devices list from the Java side and notifies
-  // all registered observers of the changes. Called from Java JNI when the
-  // system reports an input device configuration change.
+  // Asynchronously refreshes the active input devices list from the Java side
+  // on the thread pool and notifies all registered observers of the changes on
+  // the UI thread. Called from Java JNI when the system reports an input device
+  // configuration change.
   void UpdateAndNotifyDeviceConfigurationChanged();
 
  private:
+  struct InputDeviceLists;
+
   InputDeviceObserverAndroid();
 
-  base::ObserverList<ui::InputDeviceEventObserver>::Unchecked observers_;
+  static InputDeviceLists FetchInputDeviceLists();
+
+  void ScheduleUpdateInputDevices(bool notify_observers);
+  void OnInputDevicesFetched(InputDeviceLists lists);
+  void ApplyInputDeviceLists(InputDeviceLists lists, bool notify_observers);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  bool update_in_flight_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool update_pending_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool notify_observers_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  base::ObserverList<ui::InputDeviceEventObserver>::Unchecked observers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<InputDeviceObserverAndroid> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   friend struct base::DefaultSingletonTraits<InputDeviceObserverAndroid>;
 };

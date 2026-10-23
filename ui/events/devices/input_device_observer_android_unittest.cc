@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/singleton.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
@@ -32,15 +33,21 @@ class FakeInputDeviceEventObserver : public ui::InputDeviceEventObserver {
 
   void OnInputDeviceConfigurationChanged(uint8_t types) override {
     notified_types_ = types;
+    ++notification_count_;
   }
 
   const std::optional<uint8_t>& notified_types() const {
     return notified_types_;
   }
-  void reset() { notified_types_.reset(); }
+  int notification_count() const { return notification_count_; }
+  void reset() {
+    notified_types_.reset();
+    notification_count_ = 0;
+  }
 
  private:
   std::optional<uint8_t> notified_types_;
+  int notification_count_ = 0;
 };
 
 }  // namespace
@@ -50,7 +57,13 @@ class InputDeviceObserverAndroidTest : public testing::Test {
   InputDeviceObserverAndroidTest() = default;
   ~InputDeviceObserverAndroidTest() override = default;
 
-  void TearDown() override { DeviceDataManager::DeleteInstance(); }
+  void TearDown() override {
+    InputDeviceObserverAndroid::GetInstance()->Shutdown();
+    task_environment_.RunUntilIdle();
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(InputDeviceObserverAndroidTest, InitializesDeviceDataManager) {
@@ -66,6 +79,7 @@ TEST_F(InputDeviceObserverAndroidTest, InitializesDeviceDataManager) {
   DeviceDataManager* manager = DeviceDataManager::GetInstance();
   ASSERT_TRUE(manager);
 
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(manager->AreDeviceListsComplete());
 }
 
@@ -74,6 +88,7 @@ TEST_F(InputDeviceObserverAndroidTest, AddObserverNotification) {
       InputDeviceObserverAndroid::GetInstance();
   ASSERT_TRUE(observer);
   observer->Initialize();
+  task_environment_.RunUntilIdle();
 
   FakeInputDeviceEventObserver mock_observer;
   observer->AddObserver(&mock_observer);
@@ -81,6 +96,7 @@ TEST_F(InputDeviceObserverAndroidTest, AddObserverNotification) {
   EXPECT_FALSE(mock_observer.notified_types().has_value());
 
   observer->UpdateAndNotifyDeviceConfigurationChanged();
+  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(mock_observer.notified_types().has_value());
   EXPECT_EQ(*mock_observer.notified_types(),
@@ -88,6 +104,54 @@ TEST_F(InputDeviceObserverAndroidTest, AddObserverNotification) {
                 InputDeviceEventObserver::kKeyboard |
                 InputDeviceEventObserver::kTouchpad |
                 InputDeviceEventObserver::kTouchscreen);
+  EXPECT_EQ(mock_observer.notification_count(), 1);
+
+  observer->RemoveObserver(&mock_observer);
+}
+
+TEST_F(InputDeviceObserverAndroidTest, CoalescesInFlightUpdates) {
+  InputDeviceObserverAndroid* observer =
+      InputDeviceObserverAndroid::GetInstance();
+  ASSERT_TRUE(observer);
+
+  FakeInputDeviceEventObserver mock_observer;
+  observer->AddObserver(&mock_observer);
+
+  // Trigger an update while Initialize()'s initial fetch is still in flight.
+  observer->Initialize();
+  observer->UpdateAndNotifyDeviceConfigurationChanged();
+  observer->UpdateAndNotifyDeviceConfigurationChanged();
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(DeviceDataManager::GetInstance()->AreDeviceListsComplete());
+  EXPECT_EQ(mock_observer.notification_count(), 1);
+  EXPECT_TRUE(mock_observer.notified_types().has_value());
+
+  observer->RemoveObserver(&mock_observer);
+}
+
+TEST_F(InputDeviceObserverAndroidTest, ShutdownWhileUpdateInFlight) {
+  InputDeviceObserverAndroid* observer =
+      InputDeviceObserverAndroid::GetInstance();
+  ASSERT_TRUE(observer);
+
+  FakeInputDeviceEventObserver mock_observer;
+  observer->AddObserver(&mock_observer);
+
+  observer->Initialize();
+  observer->UpdateAndNotifyDeviceConfigurationChanged();
+  // Shut down before the in-flight update completes.
+  observer->Shutdown();
+  EXPECT_FALSE(DeviceDataManager::HasInstance());
+
+  // Re-initializing immediately should not inherit stale pending notifications.
+  observer->Initialize();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(DeviceDataManager::HasInstance());
+  EXPECT_TRUE(DeviceDataManager::GetInstance()->AreDeviceListsComplete());
+  EXPECT_EQ(mock_observer.notification_count(), 0);
 
   observer->RemoveObserver(&mock_observer);
 }
