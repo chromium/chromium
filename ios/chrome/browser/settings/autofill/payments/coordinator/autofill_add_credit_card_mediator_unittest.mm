@@ -323,10 +323,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 }
 
 // Tests that the metric is recorded when adding a card with a CVC.
-//
-// TODO(crbug.com/485860889): The test is failing across all simulators.
-TEST_F(AutofillAddCreditCardMediatorTest,
-       DISABLED_TestAddCardWithCvcRecordsUserAction) {
+TEST_F(AutofillAddCreditCardMediatorTest, TestAddCardWithCvcRecordsUserAction) {
   base::UserActionTester user_action_tester;
 
   // Verify that the action has not been logged yet.
@@ -335,12 +332,12 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 
   // Simulate adding a card with a CVC.
   [add_credit_card_mediator_ addCreditCardViewController:nil
-                             addCreditCardWithHolderName:@"John Doe"
-                                              cardNumber:@"4111111111111111"
-                                         expirationMonth:@"10"
-                                          expirationYear:@"2026"
-                                            cardNickname:@"My Card"
-                                                 cardCvc:@"123"];
+                             addCreditCardWithHolderName:kTestCardName
+                                              cardNumber:kTestCardNumber
+                                         expirationMonth:kTestExpirationMonth
+                                          expirationYear:TestExpirationYear()
+                                            cardNickname:kTestCardNickname
+                                                 cardCvc:kTestCardCvc];
 
   // Verify that the action was logged exactly once.
   EXPECT_EQ(
@@ -358,11 +355,11 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 
   // Simulate adding a card without a CVC (passing an empty string).
   [add_credit_card_mediator_ addCreditCardViewController:nil
-                             addCreditCardWithHolderName:@"Jane Doe"
-                                              cardNumber:@"4111111111111112"
-                                         expirationMonth:@"11"
-                                          expirationYear:@"2026"
-                                            cardNickname:@"Another Card"
+                             addCreditCardWithHolderName:kTestCardName
+                                              cardNumber:kTestCardNumber
+                                         expirationMonth:kTestExpirationMonth
+                                          expirationYear:TestExpirationYear()
+                                            cardNickname:kTestCardNickname
                                                  cardCvc:@""];
 
   // Verify that the action was still not logged.
