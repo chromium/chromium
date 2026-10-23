@@ -128,7 +128,7 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
     if (loading_page_voter_v1 ||
         base::FeatureList::IsEnabled(features::kPMLoadingPageVoterV2)) {
       priority_voting_system->AddPriorityVoter<priority::LoadingPageVoter>(
-          /*boost_only_requested_background_loads=*/!loading_page_voter_v1);
+          /*restrict_background_votes=*/!loading_page_voter_v1);
     }
 
 #if BUILDFLAG(IS_MAC)

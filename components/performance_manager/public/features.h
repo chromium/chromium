@@ -133,8 +133,9 @@ extern const base::FeatureParam<bool> kRendererHighInitialPriority;
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
 
 // Same as kPMLoadingPageVoter, but only boosts background loads that are user-
-// or browser-initiated (see PageNode::IsUserOrBrowserInitiatedLoad()), and
-// also boosts loads in the kLoadingTimedOut state.
+// or browser-initiated (see PageNode::IsUserOrBrowserInitiatedLoad()) while no
+// load is in progress in an active tab, and doesn't consider kLoadedBusy as
+// loading.
 BASE_DECLARE_FEATURE(kPMLoadingPageVoterV2);
 
 // Whether tabs are discarded under high memory pressure.

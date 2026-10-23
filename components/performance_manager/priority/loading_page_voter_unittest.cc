@@ -16,15 +16,16 @@ using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
 namespace {
 
-class LoadingPageVoterTest : public GraphTestHarness {
+class LoadingPageVoterTestBase : public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
 
-  LoadingPageVoterTest() = default;
-  ~LoadingPageVoterTest() override = default;
+  explicit LoadingPageVoterTestBase(bool restrict_background_votes)
+      : loading_page_voter_(restrict_background_votes) {}
+  ~LoadingPageVoterTestBase() override = default;
 
-  LoadingPageVoterTest(const LoadingPageVoterTest&) = delete;
-  LoadingPageVoterTest& operator=(const LoadingPageVoterTest&) = delete;
+  LoadingPageVoterTestBase(const LoadingPageVoterTestBase&) = delete;
+  LoadingPageVoterTestBase& operator=(const LoadingPageVoterTestBase&) = delete;
 
   void SetUp() override {
     Super::SetUp();
@@ -43,10 +44,28 @@ class LoadingPageVoterTest : public GraphTestHarness {
 
   VoterId voter_id() const { return loading_page_voter_.voter_id(); }
 
+  static void SetIsActiveTab(const PageNode* page_node, bool is_active_tab) {
+    PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+        ->SetIsActiveTabForTesting(is_active_tab);
+  }
+
  private:
   DummyVoteObserver observer_;
-  LoadingPageVoter loading_page_voter_{
-      /*boost_only_requested_background_loads=*/true};
+  LoadingPageVoter loading_page_voter_;
+};
+
+class LoadingPageVoterTest : public LoadingPageVoterTestBase {
+ public:
+  LoadingPageVoterTest()
+      : LoadingPageVoterTestBase(/*restrict_background_votes=*/true) {}
+};
+
+// Fixture for tests of the original behavior (features::kPMLoadingPageVoter),
+// where background loads are boosted during active tab loads.
+class LoadingPageVoterV1Test : public LoadingPageVoterTestBase {
+ public:
+  LoadingPageVoterV1Test()
+      : LoadingPageVoterTestBase(/*restrict_background_votes=*/false) {}
 };
 
 }  // namespace
@@ -77,13 +96,16 @@ TEST_F(LoadingPageVoterTest, VoteIfLoading) {
 
   mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoading);
 
-  // Still voting when the page is in the state kLoadedBusy.
-  mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
-
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(voter_id(), page_node,
                                  base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
+
+  // Not voting when the page is busy after the load event.
+  mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+  EXPECT_FALSE(observer().HasVote(voter_id(), page_node));
 
   // Finish loading.
   mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
@@ -511,6 +533,249 @@ TEST_F(LoadingPageVoterTest, EmbeddedPageUsesOwnInitiator) {
   EXPECT_EQ(observer().GetVoteCount(), 0u);
 
   embedded_page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+// Tests that background loads aren't boosted while a load is in progress in
+// the active tab, and are boosted again once it's done.
+TEST_F(LoadingPageVoterTest, BackgroundLoadsNotBoostedDuringActiveTabLoad) {
+  auto active_page = CreateNode<PageNodeImpl>();
+  SetIsActiveTab(active_page.get(), true);
+  auto background_page = CreateNode<PageNodeImpl>();
+  auto unsolicited_background_page = CreateNode<PageNodeImpl>();
+  unsolicited_background_page->SetIsUserOrBrowserInitiatedLoad(false);
+
+  // Boosted when no active tab is loading.
+  background_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  unsolicited_background_page->SetLoadingState(
+      PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), background_page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  // Not boosted while the active tab is loading.
+  active_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), active_page.get(),
+                                 base::Process::Priority::kUserBlocking,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  // Boosted again once the active tab finished loading. The unsolicited load
+  // stays unboosted.
+  active_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), background_page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  background_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  unsolicited_background_page->SetLoadingState(
+      PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+// Tests that background loads aren't boosted until all active tabs (e.g. one
+// per window) finished loading.
+TEST_F(LoadingPageVoterTest,
+       BackgroundLoadsNotBoostedUntilAllActiveTabsLoaded) {
+  auto active_page_1 = CreateNode<PageNodeImpl>();
+  SetIsActiveTab(active_page_1.get(), true);
+  auto active_page_2 = CreateNode<PageNodeImpl>();
+  SetIsActiveTab(active_page_2.get(), true);
+  auto background_page = CreateNode<PageNodeImpl>();
+
+  active_page_1->SetLoadingState(PageNode::LoadingState::kLoading);
+  active_page_2->SetLoadingState(PageNode::LoadingState::kLoading);
+  background_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_FALSE(observer().HasVote(voter_id(), background_page.get()));
+
+  active_page_1->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_FALSE(observer().HasVote(voter_id(), background_page.get()));
+
+  active_page_2->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), background_page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  background_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+}
+
+// Tests that switching between two loading tabs stops boosting background
+// loads again once the new tab is activated, even though the previous active
+// tab is deactivated first.
+TEST_F(LoadingPageVoterTest, SwitchingBetweenLoadingTabs) {
+  auto page_1 = CreateNode<PageNodeImpl>();
+  SetIsActiveTab(page_1.get(), true);
+  auto page_2 = CreateNode<PageNodeImpl>();
+  auto background_page = CreateNode<PageNodeImpl>();
+
+  page_1->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_2->SetLoadingState(PageNode::LoadingState::kLoading);
+  background_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+
+  // Switch to the other loading tab, in the same order as the tab strip.
+  // Deactivating the loading tab briefly boosts background loads, including
+  // the previous active tab.
+  SetIsActiveTab(page_1.get(), false);
+  EXPECT_EQ(observer().GetVoteCount(), 3u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), page_1.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+  // Activating the other loading tab stops boosting them again.
+  SetIsActiveTab(page_2.get(), true);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), page_2.get(),
+                                 base::Process::Priority::kUserBlocking,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  // Background loads are boosted once the new active tab finished loading.
+  page_2->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), page_1.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+  EXPECT_TRUE(observer().HasVote(voter_id(), background_page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  page_1->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  background_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+}
+
+// Tests that closing a loading active tab boosts background loads.
+TEST_F(LoadingPageVoterTest, ClosingLoadingActiveTab) {
+  auto active_page = CreateNode<PageNodeImpl>();
+  SetIsActiveTab(active_page.get(), true);
+  auto background_page = CreateNode<PageNodeImpl>();
+
+  active_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  background_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+
+  active_page.reset();
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), background_page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  background_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+}
+
+// Tests that background loads aren't boosted while a page embedded in the
+// active tab is loading.
+TEST_F(LoadingPageVoterTest,
+       BackgroundLoadsNotBoostedDuringEmbeddedPageLoadInActiveTab) {
+  MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
+  SetIsActiveTab(mock_graph.page.get(), true);
+
+  auto embedded_page_node = CreateNode<PageNodeImpl>();
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(
+      embedded_page_node.get());
+  embedded_page_node->SetEmbedderFrameNode(mock_graph.frame.get());
+  auto embedded_frame_node =
+      CreateFrameNodeAutoId(mock_graph.process.get(), embedded_page_node.get());
+
+  auto background_page = CreateNode<PageNodeImpl>();
+  background_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+
+  embedded_page_node->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), embedded_page_node.get(),
+                                 base::Process::Priority::kUserBlocking,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+  EXPECT_FALSE(observer().HasVote(voter_id(), background_page.get()));
+
+  embedded_page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), background_page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  background_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+}
+
+// Tests that background loads are boosted again after an active tab load
+// timed out, but that the active tab keeps its kUserBlocking vote.
+TEST_F(LoadingPageVoterTest, BackgroundLoadsBoostedAfterActiveTabLoadTimeout) {
+  const base::TimeDelta timeout = LoadingPageVoter::kActiveTabLoadTimeout;
+  auto active_page = CreateNode<PageNodeImpl>();
+  SetIsActiveTab(active_page.get(), true);
+  auto background_page = CreateNode<PageNodeImpl>();
+
+  active_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  background_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+
+  AdvanceClock(timeout - base::Milliseconds(1));
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_FALSE(observer().HasVote(voter_id(), background_page.get()));
+
+  AdvanceClock(base::Milliseconds(1));
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), active_page.get(),
+                                 base::Process::Priority::kUserBlocking,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+  EXPECT_TRUE(observer().HasVote(voter_id(), background_page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  // The active tab finishing its load doesn't affect background loads.
+  active_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), background_page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  background_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+}
+
+// Tests that with the original behavior, background loads are boosted during
+// active tab loads.
+TEST_F(LoadingPageVoterV1Test, BackgroundLoadsBoostedDuringActiveTabLoad) {
+  auto active_page = CreateNode<PageNodeImpl>();
+  SetIsActiveTab(active_page.get(), true);
+  auto background_page = CreateNode<PageNodeImpl>();
+
+  active_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  background_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), active_page.get(),
+                                 base::Process::Priority::kUserBlocking,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+  EXPECT_TRUE(observer().HasVote(voter_id(), background_page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  active_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  background_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+// Tests that with the original behavior, a page in the kLoadedBusy state is
+// considered loading, but not a page in the kLoadingTimedOut state.
+TEST_F(LoadingPageVoterV1Test, LoadingStates) {
+  auto page = CreateNode<PageNodeImpl>();
+
+  page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+
+  page->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+
+  page->SetLoadingState(PageNode::LoadingState::kLoading);
+  page->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), page.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   EXPECT_EQ(observer().GetVoteCount(), 0u);
 }
 
