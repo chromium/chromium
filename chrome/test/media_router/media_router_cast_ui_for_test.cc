@@ -64,7 +64,7 @@ CastDialogView::SourceType MediaRouterCastUiForTest::GetChosenSourceType()
     const {
   const CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
-  return dialog_view->selected_source_;
+  return dialog_view->selected_source_for_test();
 }
 
 void MediaRouterCastUiForTest::StartCasting(const std::string& sink_name) {

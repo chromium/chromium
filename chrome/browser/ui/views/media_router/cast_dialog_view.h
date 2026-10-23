@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -99,15 +98,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   views::MenuRunner* sources_menu_runner_for_test() {
     return sources_menu_runner_.get();
   }
+  SourceType selected_source_for_test() const { return selected_source_; }
 
  private:
-  // TODO(crbug.com/1346127): Remove friend classes.
-  friend class CastDialogViewTest;
-  friend class MediaRouterCastUiForTest;
-  FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, DisableUnsupportedSinks);
-  FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, ShowAndHideDialog);
-  FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, ShowSourcesMenu);
-
   // views::BubbleDialogDelegateView:
   void Init() override;
   void WindowClosing() override;
