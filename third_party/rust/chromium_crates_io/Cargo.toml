@@ -126,7 +126,7 @@ default-features = false
 features = ["bmp", "ico"]
 
 [dependencies.jxl]
-version = "0.7.0"
+version = "0.8.0"
 features = ["all-simd"]
 
 [dependencies.llguidance]

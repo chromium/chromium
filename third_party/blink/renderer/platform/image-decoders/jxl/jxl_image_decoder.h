@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_JXL_JXL_IMAGE_DECODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_JXL_JXL_IMAGE_DECODER_H_
 
+#include <cstdint>
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +15,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-#include "third_party/rust/jxl/v0_7/wrapper/lib.rs.h"
+#include "third_party/rust/jxl/v0_8/wrapper/lib.rs.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace blink {
@@ -99,13 +100,16 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   // reached by decoding forward from the decoder's current position with less
   // work than a seek would do. True only when the decoder is positioned
   // between frames and already holds everything `index` depends on.
-  bool CanDecodeForwardTo(wtf_size_t index) const;
+  bool CanDecodeForwardTo(wtf_size_t index);
 
   // Lightweight frame scanner -- discovers frame count, durations, and seek
   // offsets without decoding any pixels.
   std::optional<JxlRsDecoderPtr> scanner_;
   size_t scanner_input_offset_ = 0;
   bool scanner_done_ = false;
+  // Set when a decode-start probe rewound the scanner's parser state; the
+  // scanner is recreated and replayed from the start on the next scan.
+  bool scanner_needs_replay_ = false;
 
   // Full pixel decoder with state machine.
   std::optional<JxlRsDecoderPtr> decoder_;
@@ -122,6 +126,10 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   // Blink-specific cumulative timestamps.
   Vector<jxl_rs::JxlRsVisibleFrameInfo> frame_infos_;
   Vector<FrameTiming> frame_timings_;
+
+  // Per-frame file offset that a seek to that frame rewinds to, populated
+  // lazily by CanDecodeForwardTo().
+  Vector<std::optional<uint64_t>> frame_decode_start_offsets_;
 
   // Cumulative wall time spent inside the jxl-rs decoder for the frame
   // currently being decoded. Used to log decode throughput (MP/s).

@@ -1,0 +1,11 @@
+Name: jxl_macros
+URL: https://crates.io/crates/jxl_macros
+Version: 0.8.0
+Revision: 9a08ca643fd2d01f803dd0be6a5bebc9cc11e597
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/jxl_macros-v0_8/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: High performance Rust implementation of a JPEG XL decoder - supporting macros
