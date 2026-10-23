@@ -153,15 +153,13 @@ class DownloadTaskInfo {
   }
 
   // Analyze the response code. Treat non http 200 as failure downloads.
-  NSURLResponse* response = [downloadTask response];
-  if (response && [response isKindOfClass:[NSHTTPURLResponse class]]) {
-    NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-    if ([httpResponse statusCode] != 200) {
-      [self onDownloadCompletion:/*success=*/false
-                    downloadTask:downloadTask
-                        fileSize:0];
-      return;
-    }
+  NSHTTPURLResponse* httpResponse =
+      base::apple::ObjCCast<NSHTTPURLResponse>([downloadTask response]);
+  if (!httpResponse || [httpResponse statusCode] != 200) {
+    [self onDownloadCompletion:/*success=*/false
+                  downloadTask:downloadTask
+                      fileSize:0];
+    return;
   }
 
   auto it = _downloadTaskInfos.find(downloadTask);
