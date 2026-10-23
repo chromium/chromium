@@ -2574,6 +2574,10 @@ int HttpCache::Transaction::DoNetworkReadCacheWriteComplete(int result) {
 int HttpCache::Transaction::DoPartialNetworkReadCompleted(int result) {
   DCHECK(partial_);
 
+  if (result > 0 && handling_206_ && !partial_->IsNetworkReadOK(result)) {
+    result = ERR_CONTENT_LENGTH_MISMATCH;
+  }
+
   // Go to the next range if nothing returned or return the result.
   // TODO(shivanisha) Simplify this condition if possible. It was introduced
   // in https://codereview.chromium.org/545101
