@@ -257,6 +257,19 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestWebGpuProjectionLayer) {
   t->EndTest();
 }
 
+#if BUILDFLAG(ENABLE_CARDBOARD)
+IN_PROC_BROWSER_TEST_F(WebXrVrCardboardBrowserTest, TestWebGpuProjectionLayer) {
+  LoadFileAndAwaitInitialization("test_openxr_webgpu_projection_layer");
+  EnterSessionWithUserGestureOrFail();
+
+  WaitOnJavaScriptStep();
+  AssertNoJavaScriptErrors();
+
+  EndSessionOrFail();
+  EndTest();
+}
+#endif  // BUILDFLAG(ENABLE_CARDBOARD)
+
 }  // namespace vr
 
 #endif  // BUILDFLAG(ENABLE_OPENXR)

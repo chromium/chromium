@@ -96,6 +96,14 @@ class WebXrVrOpenXrBrowserTestWebXrDisabled
 };
 #endif  // BUIDFLAG(ENABLE_OPENXR)
 
+#if BUILDFLAG(ENABLE_CARDBOARD)
+class WebXrVrCardboardBrowserTest : public WebXrVrBrowserTestBase {
+ public:
+  WebXrVrCardboardBrowserTest();
+  ~WebXrVrCardboardBrowserTest() override;
+};
+#endif  // BUILDFLAG(ENABLE_CARDBOARD)
+
 }  // namespace vr
 
 #endif  // CHROME_BROWSER_VR_TEST_WEBXR_VR_BROWSER_TEST_H_

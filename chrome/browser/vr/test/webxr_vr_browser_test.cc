@@ -18,6 +18,10 @@
 #include "device/vr/public/cpp/features.h"
 #endif
 
+#if BUILDFLAG(ENABLE_CARDBOARD)
+#include "device/vr/android/cardboard/cardboard_device_params.h"
+#endif
+
 using testing::_;
 
 namespace vr {
@@ -151,5 +155,15 @@ WebXrVrOpenXrBrowserTestWebXrDisabled::WebXrVrOpenXrBrowserTestWebXrDisabled() {
   disable_features_.push_back(features::kWebXr);
 }
 #endif  // BUIDFLAG(ENABLE_OPENXR)
+
+#if BUILDFLAG(ENABLE_CARDBOARD)
+WebXrVrCardboardBrowserTest::WebXrVrCardboardBrowserTest() {
+  forced_runtime_ = switches::kWebXrRuntimeCardboard;
+  device::CardboardDeviceParams::set_use_cardboard_v1_device_params_for_testing(
+      true);
+}
+
+WebXrVrCardboardBrowserTest::~WebXrVrCardboardBrowserTest() = default;
+#endif  // BUILDFLAG(ENABLE_CARDBOARD)
 
 }  // namespace vr

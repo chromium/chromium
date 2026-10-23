@@ -64,7 +64,20 @@ Tests WebXR WebGPU projection layer rendering.
         }
         gpuDevice.queue.submit([commandEncoder.finish()]);
 
-        if (++frameCount === 3) {
+        if (++frameCount === 1) {
+          // Verify that a scaleFactor producing a half-pixel per-eye width
+          // floors the per-eye width before multiplying by the layer count.
+          const halfPixelScale =
+              (projectionLayer.textureWidth - 0.5) /
+              projectionLayer.textureWidth;
+          const scaledLayer = gpuBinding.createProjectionLayer({
+            colorFormat: gpuBinding.getPreferredColorFormat(),
+            scaleFactor: halfPixelScale,
+          });
+          assert_equals(
+              scaledLayer.textureWidth, projectionLayer.textureWidth - 1,
+              'Per-eye width should be floored before multiplying by layers');
+        } else if (frameCount === 3) {
           done();
         }
       };

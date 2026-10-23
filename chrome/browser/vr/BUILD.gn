@@ -123,6 +123,10 @@ source_set("xr_browser_tests_common") {
     deps += [ "//device/vr" ]
   }
 
+  if (enable_cardboard) {
+    deps += [ "//device/vr/android/cardboard:vr_cardboard" ]
+  }
+
   if (enable_vr && is_win) {
     deps += [ "//device/vr:directx_helpers" ]
   }
