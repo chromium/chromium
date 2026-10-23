@@ -79,6 +79,15 @@ class ChromeJavaScriptAppModalDialogViews
 };
 
 void AdjustWidgetBoundsIfOffscreen(views::Widget* widget) {
+  // Without global screen coordinates (e.g. Wayland), the screen origin of
+  // the browser window is unknown, so the dialog bounds cannot be compared
+  // with a display's work area. Moving the dialog into that work area can
+  // place it outside its parent window, where it stays invisible while it
+  // blocks input to every browser window.
+  if (!constrained_window::SupportsGlobalScreenCoordinates()) {
+    return;
+  }
+
   gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
   gfx::Rect screen_rect =
       display::Screen::Get()
