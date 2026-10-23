@@ -671,6 +671,7 @@ void ContextualTasksSidePanelCoordinator::Close() {
   UpdateOpenState(/*is_open=*/false);
   contextual_tasks_panel_host_->Close(
       ContextualTasksPanelHost::AnimationStyle::kStandard);
+  MaybeRemoveImplicitTabContext();
   Observe(nullptr);
 
   if (active_task_context_provider_) {
@@ -733,6 +734,7 @@ void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
     active_task_context_provider_->ClearAllLocalTabUnderlines();
   }
 
+  MaybeRemoveImplicitTabContext();
   if (content::WebContents* active_contents = GetActiveWebContents()) {
     MaybeDetachWebContents(active_contents);
   }
@@ -786,6 +788,11 @@ void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(
     return;
   }
   AttachTabsToTask(task->GetTaskId(), tabs_to_attach);
+  if (content::WebContents* panel_contents = GetActiveWebContents()) {
+    ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+        panel_contents)
+        ->PreservePreStagedContext();
+  }
 }
 
 void ContextualTasksSidePanelCoordinator::ShareTabsWithExistingThread(
@@ -1046,6 +1053,7 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
   }
   UpdateOpenState(/*is_open=*/true);
   UpdateWebContentsForActiveTab();
+  UpdateContextualTaskUI();
 }
 
 void ContextualTasksSidePanelCoordinator::DidStartNavigation(
@@ -1118,6 +1126,8 @@ ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
   if (it != task_id_to_web_contents_cache_.end()) {
     std::unique_ptr<content::WebContents> web_contents =
         std::move(it->second->web_contents);
+    MaybeDetachWebContents(web_contents.get());
+    MaybeRemoveImplicitTabContext(web_contents.get());
     // Reset the association with the BrowserWindow since the WebContents will
     // soon be associated with a tab.
     webui::SetBrowserWindowInterface(web_contents.get(),
@@ -1125,7 +1135,6 @@ ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
     if (permission_controller_) {
       permission_controller_->UnregisterWebContents(web_contents.get());
     }
-    MaybeDetachWebContents(web_contents.get());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Set ViewType to kTabContents so `ChromeSpeechRecognitionManagerDelegate`
     // allows speech recognition in `CheckRenderFrameType()`.
@@ -1493,6 +1502,9 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
       next_cache_item->last_active_time_ticks = base::TimeTicks::Now();
     }
     contextual_tasks_panel_host_->SetWebContents(web_contents);
+    if (prev_web_contents) {
+      MaybeRemoveImplicitTabContext(prev_web_contents);
+    }
     NotifyExpandToFullTabStateChanged();
   }
 
@@ -1661,6 +1673,7 @@ void ContextualTasksSidePanelCoordinator::CreateCachedWebContentsForTesting(
 void ContextualTasksSidePanelCoordinator::Hide() {
   contextual_tasks_panel_host_->Close(
       ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
+  MaybeRemoveImplicitTabContext();
   Observe(nullptr);
 
   NotifyActiveTaskContextProvider();
@@ -1702,7 +1715,11 @@ void ContextualTasksSidePanelCoordinator::UpdateContextualTaskUI() {
     return;
   }
 
-  if (auto* web_ui_interface = GetWebUiInterface(web_contents)) {
+  if (IsContextualTasksRearchitectureEnabled() ||
+      IsContextualTasksSidePanelRearchitectureEnabled()) {
+    ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents)
+        ->UpdateImplicitTabContext();
+  } else if (auto* web_ui_interface = GetWebUiInterface(web_contents)) {
     web_ui_interface->OnActiveTabContextStatusChanged();
   }
 
@@ -1724,6 +1741,21 @@ void ContextualTasksSidePanelCoordinator::MaybeDetachWebContents(
       extensions_container_->SetWebContents(nullptr);
     }
 #endif
+  }
+}
+
+void ContextualTasksSidePanelCoordinator::MaybeRemoveImplicitTabContext(
+    content::WebContents* web_contents) {
+  if (!IsContextualTasksRearchitectureEnabled() &&
+      !IsContextualTasksSidePanelRearchitectureEnabled()) {
+    return;
+  }
+  content::WebContents* target =
+      web_contents ? web_contents : GetActiveWebContents();
+  if (auto* user_data =
+          target ? ContextualTasksWebContentsUserData::FromWebContents(target)
+                 : nullptr) {
+    user_data->RemoveImplicitTabContext();
   }
 }
 
@@ -2011,6 +2043,11 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
 
     const int32_t tab_handle_id = tab_handle.raw_value();
     if (session_handle) {
+      if (panel_contents) {
+        ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+            panel_contents)
+            ->OnManualTabContextAdded(url, session_id);
+      }
       // If this tab is already staged/selected in the composebox (either
       // pending delayed upload or uploaded) but not yet committed in a query,
       // remove the existing uncommitted file/token to avoid duplicating it.
@@ -2064,9 +2101,14 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
         active_task_context_provider_->AddLocalTabUnderline(tab_handle);
       }
       if (panel_contents) {
-        ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
-            panel_contents)
-            ->RecordTabIdMapping(tab_handle_id, session_id.id());
+        auto* user_data =
+            ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+                panel_contents);
+        user_data->RecordTabIdMapping(tab_handle_id, session_id.id());
+        if (result.has_value()) {
+          user_data->AssociateTabWithTask(session_id);
+          user_data->OnTabContextUploadStarted(*result);
+        }
       }
       session_handle->AttachTabPendingUpload(
           token, session_id.id(), url,
@@ -2102,11 +2144,13 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
   if (state == ContextualTasksPanelHost::SurfaceState::kVisible &&
       reason == ContextualTasksPanelHost::StateChangeReason::kSystemAction) {
     UpdateWebContentsForActiveTab();
+    UpdateContextualTaskUI();
   } else {
     NotifyActiveTaskContextProvider();
   }
 
   if (state == ContextualTasksPanelHost::SurfaceState::kClosed) {
+    MaybeRemoveImplicitTabContext();
     if (reason == ContextualTasksPanelHost::StateChangeReason::kUserAction) {
       if (closing_entry_source_.has_value()) {
         EntrySource entry_source = *closing_entry_source_;
@@ -2173,6 +2217,14 @@ void ContextualTasksSidePanelCoordinator::MoveTaskUiToNewTab() {
 std::optional<tabs::TabHandle>
 ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
   auto* web_contents = GetActiveWebContents();
+  if (IsContextualTasksRearchitectureEnabled() ||
+      IsContextualTasksSidePanelRearchitectureEnabled()) {
+    auto* user_data =
+        web_contents
+            ? ContextualTasksWebContentsUserData::FromWebContents(web_contents)
+            : nullptr;
+    return user_data ? user_data->GetAutoSuggestedTabHandle() : std::nullopt;
+  }
   auto* web_ui_interface = GetWebUiInterface(web_contents);
   if (!web_ui_interface ||
       !web_ui_interface->IsActiveTabContextSuggestionShowing()) {

@@ -508,6 +508,10 @@ void ContextualTasksExtensionHandler::AddTabContext(
       tab_contents ? sessions::SessionTabHelper::IdForTab(tab_contents)
                    : SessionID::InvalidValue();
   if (session_id.is_valid()) {
+    if (!delay_upload && tab && tab_contents) {
+      user_data->OnManualTabContextAdded(tab_contents->GetLastCommittedURL(),
+                                         session_id);
+    }
     for (const auto& selected_tab : user_data->GetSelectedTabs()) {
       if (selected_tab.tab_id == session_id.id()) {
         user_data->OnTabContextRemoved(selected_tab.context_token);
@@ -594,7 +598,7 @@ void ContextualTasksExtensionHandler::DeleteTabContext(int32_t tab_id) {
 void ContextualTasksExtensionHandler::ClearFiles(
     bool should_block_auto_suggested_tabs) {
   if (auto* user_data = GetOrCreateWebContentsUserData()) {
-    user_data->ClearFiles();
+    user_data->ClearFiles(should_block_auto_suggested_tabs);
   }
 }
 void ContextualTasksExtensionHandler::SubmitQuery(const std::string& query_text,
@@ -826,6 +830,7 @@ void ContextualTasksExtensionHandler::SendTabContextToExtensionPage(
     }
     tabs.push_back(CreateMojomTab(tab, tab_handler_id));
     const bool is_submitted =
+        !tab.pending_delayed_upload &&
         !std::ranges::contains(uploaded_tokens, tab.context_token);
     if (is_submitted) {
       submitted_tab_ids.push_back(tab_handler_id);

@@ -30,6 +30,7 @@
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
@@ -97,15 +98,14 @@ class ContextualTasksWebContentsUserData
   }
   void set_input_state_model(
       std::unique_ptr<contextual_search::InputStateModel> input_state_model);
+  static void UpdateInputStateModelIdentity(
+      content::WebContents* web_contents,
+      contextual_search::InputStateModel* input_state_model);
 
   base::WeakPtr<contextual_search::InputStateModel> GetOrCreateInputStateModel(
       contextual_search::ContextualSearchSessionHandle& session_handle);
   base::WeakPtr<contextual_search::InputStateModel>
   GetOrCreateInputStateModel();
-
-  static void UpdateInputStateModelIdentity(
-      content::WebContents* web_contents,
-      contextual_search::InputStateModel* input_state_model);
 
   const std::optional<base::Uuid>& pending_task_id() const {
     return pending_task_id_;
@@ -116,6 +116,7 @@ class ContextualTasksWebContentsUserData
 
   const std::optional<base::Uuid>& task_id() const { return task_id_; }
   void SetTaskId(std::optional<base::Uuid> task_id);
+  void OnTaskChanged();
   // Returns `task_id_` if valid, else the task of this WebContents'
   // `ContextualSearchWebContentsHelper` (e.g. the side panel's task).
   // `task_id_` is set for full-tab AI Mode (see
@@ -200,8 +201,16 @@ class ContextualTasksWebContentsUserData
   std::vector<contextual_search::TabInfo> GetSelectedTabs();
   void DeleteContext(const base::UnguessableToken& file_token);
   void DeleteTabContext(int32_t tab_id);
-  void ClearFiles();
+  void ClearFiles(bool should_block_auto_suggested_tabs = false);
   void ClearInputPlateState();
+
+  // Syncs the zero-state active-tab delayed attachment with panel/tab state.
+  void UpdateImplicitTabContext();
+  // Unblocks `url` and clears `implicit_tab_` when manually attaching a tab.
+  void OnManualTabContextAdded(const GURL& url, SessionID tab_session_id);
+  std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle() const;
+  void RemoveImplicitTabContext();
+  void PreservePreStagedContext();
 
   // Associates `tab_session_id` with the task, if any, so the task knows which
   // tabs have been attached as context.
@@ -277,6 +286,7 @@ class ContextualTasksWebContentsUserData
   void OnSubmitQueryContextualized(
       std::optional<lens::AddedContext> lens_added_context,
       std::optional<base::UnguessableToken> overlay_token);
+  void OnPageChanged(bool is_zero_state);
   void AppendTabContextsToOnSubmitQueryResponse(
       lens::ClientToSearchMessage* response_message,
       contextual_search::ContextualSearchSessionHandle* session_handle,
@@ -287,6 +297,14 @@ class ContextualTasksWebContentsUserData
       const std::vector<uint8_t>& message_bytes);
   PageSearchState& GetPrimaryPageSearchState();
   const PageSearchState* GetPrimaryPageSearchState() const;
+
+  struct ImplicitTab {
+    base::UnguessableToken token;
+    tabs::TabHandle handle;
+  };
+  std::optional<ImplicitTab> implicit_tab_;
+  base::flat_set<GURL> dismissed_implicit_urls_;
+  bool preserve_prestaged_context_ = false;
 
   base::flat_map<base::UnguessableToken,
                  std::unique_ptr<contextual_search::InputStateModel>>

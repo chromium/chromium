@@ -43,6 +43,7 @@ source_set("contextual_tasks") {
     "search_journey_tab_feature.h",
     "search_journey_tracker.h",
     "search_journey_tracker_factory.h",
+    "site_exclusion_detail.h",
     "smart_tab_sharing_metrics.h",
     "smart_tab_sharing_settings_policy_handler.h",
     "task_info_delegate.h",
@@ -137,7 +138,6 @@ source_set("impl") {
     "search_journey_tracker.cc",
     "search_journey_tracker_factory.cc",
     "site_exclusion_detail.cc",
-    "site_exclusion_detail.h",
     "smart_tab_sharing_metrics.cc",
   ]
 

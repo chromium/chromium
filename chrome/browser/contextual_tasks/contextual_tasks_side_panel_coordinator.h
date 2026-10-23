@@ -301,6 +301,11 @@ class ContextualTasksSidePanelCoordinator
   // Update the status of active tab context on the panel.
   void UpdateContextualTaskUI();
 
+  // Removes any zero-state implicit tab context on `web_contents` (or the
+  // active panel `WebContents` when null).
+  void MaybeRemoveImplicitTabContext(
+      content::WebContents* web_contents = nullptr);
+
   // Disassociate the tab from the task if it's associated with it.
   void DisassociateTabFromTask(content::WebContents* web_contents);
 
