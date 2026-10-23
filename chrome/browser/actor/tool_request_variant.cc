@@ -99,6 +99,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const OpenKnownPageToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
+  void Apply(const OpenUrlToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
   void Apply(const PauseMediaToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }

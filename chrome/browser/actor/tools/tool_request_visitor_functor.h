@@ -19,6 +19,7 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
+#include "chrome/browser/actor/tools/open_url_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
@@ -72,6 +73,7 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const MoveMouseToolRequest&) = 0;
   virtual void Apply(const NavigateToolRequest&) = 0;
   virtual void Apply(const OpenKnownPageToolRequest&) = 0;
+  virtual void Apply(const OpenUrlToolRequest&) = 0;
   virtual void Apply(const PauseMediaToolRequest&) = 0;
   virtual void Apply(const PerformSearchToolRequest&) = 0;
   virtual void Apply(const PlayMediaToolRequest&) = 0;

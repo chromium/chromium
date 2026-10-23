@@ -92,6 +92,7 @@ chromium-metrics-reviews@google.com.
   <variant name="MoveMouse" summary="MoveMouse"/>
   <variant name="Navigate" summary="Navigate"/>
   <variant name="OpenKnownPage" summary="Open Known Page"/>
+  <variant name="OpenUrl" summary="Open URL"/>
   <variant name="PauseMedia" summary="Pause Media"/>
   <variant name="PerformSearch" summary="Perform Search"/>
   <variant name="PlayMedia" summary="Play Media"/>

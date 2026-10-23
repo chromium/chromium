@@ -1119,6 +1119,7 @@ constexpr absl::Overload kGetCapabilityFn{
     ToUnknown<ExitFullscreenToolRequest>,
     ToUnknown<FindAndHighlightToolRequest>,
     ToUnknown<OpenKnownPageToolRequest>,
+    ToUnknown<OpenUrlToolRequest>,
     ToUnknown<PerformSearchToolRequest>,
     ToUnknown<PromptGeminiPanelToolRequest>,
     ToUnknown<ReloadPageToolRequest>,
