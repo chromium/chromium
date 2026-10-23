@@ -125,6 +125,12 @@ public class NtpCustomizationConfigManager {
 
     private final ObserverList<HomepageStateListener> mHomepageStateListeners;
     private @Nullable NtpBackgroundDataBase mSyncedNtpBackgroundData;
+    // Whether a synced theme has replaced the persisted theme in this process and hasn't been
+    // applied yet. An Activity computes its dynamic colors from the persisted theme when it is
+    // created, so it is stale until maybeApplyBackgroundUpdateFromDeviceSync() recreates it. This
+    // can't be derived from the in-memory state: a color theme is initialized lazily from
+    // SharedPreferences, which the synced theme may have replaced by then.
+    private boolean mIsPersistedThemeReplacedBySync;
 
     /** Returns the singleton instance of NtpCustomizationConfigManager. */
     public static NtpCustomizationConfigManager getInstance() {
@@ -476,9 +482,8 @@ public class NtpCustomizationConfigManager {
      * <p>Note: We only persist the synced image file path, background type, and background metadata
      * (CustomBackgroundInfo, matrices, and primary color) to SharedPreferences and disk, and cache
      * the synced theme data in {@code mSyncedNtpBackgroundData} here without modifying the active
-     * in-memory state ({@code mNtpBackgroundData}). This cached {@code mSyncedNtpBackgroundData} is
-     * used later by {@link #maybeApplyBackgroundUpdateFromDeviceSync(Context)} to check for
-     * mismatches against {@code mNtpBackgroundData} before applying changes when the NTP becomes
+     * in-memory state ({@code mNtpBackgroundData}). The cached {@code mSyncedNtpBackgroundData} is
+     * applied by {@link #maybeApplyBackgroundUpdateFromDeviceSync(Context)} when the NTP becomes
      * active.
      *
      * @param context The context for managing synced background image files.
@@ -492,9 +497,9 @@ public class NtpCustomizationConfigManager {
                 NtpBackgroundType.THEME_COLLECTION);
         saveThemeCollectionInfoToSharedPreference(themeCollectionData);
 
-        // Caches the synced theme data for mismatch comparison in
-        // maybeApplyBackgroundUpdateFromDeviceSync().
+        // Caches the synced theme data to apply it in maybeApplyBackgroundUpdateFromDeviceSync().
         mSyncedNtpBackgroundData = themeCollectionData;
+        mIsPersistedThemeReplacedBySync = true;
     }
 
     /**
@@ -512,6 +517,7 @@ public class NtpCustomizationConfigManager {
         saveChromeColorInfoToSharedPreference(colorData);
 
         mSyncedNtpBackgroundData = colorData;
+        mIsPersistedThemeReplacedBySync = true;
     }
 
     /**
@@ -521,7 +527,9 @@ public class NtpCustomizationConfigManager {
      * @param context The context for managing background theme resources.
      */
     public void onSyncedDefaultThemeReset(Context context) {
-        maybeClearForSyncedBackground(context, /* syncedBackgroundData= */ null);
+        if (!maybeClearForSyncedBackground(context, /* syncedBackgroundData= */ null)) return;
+
+        mIsPersistedThemeReplacedBySync = true;
     }
 
     /**
@@ -564,6 +572,7 @@ public class NtpCustomizationConfigManager {
             getNtpBackgroundDataManager(context).maybeCleanUpUnusedSyncedImageData(imageBaseData);
         }
         mSyncedNtpBackgroundData = null;
+        mIsPersistedThemeReplacedBySync = false;
         NtpCustomizationUtils.removeAllNtpBackgroundDataFromSharedPreference();
     }
 
@@ -925,6 +934,7 @@ public class NtpCustomizationConfigManager {
         mBackgroundType = NtpBackgroundType.DEFAULT;
         mNtpBackgroundData = null;
         mSyncedNtpBackgroundData = null;
+        mIsPersistedThemeReplacedBySync = false;
         mBackgroundImageInfo = null;
         mOriginalBitmap = null;
         mCustomBackgroundInfo = null;
@@ -934,8 +944,9 @@ public class NtpCustomizationConfigManager {
     }
 
     /**
-     * Called when the NTP comes to the foreground to compare standard SharedPreferences with our
-     * active in-memory cached state.
+     * Called when the NTP comes to the foreground. Applies the synced theme that replaced the
+     * persisted theme since the Activity was created, if any, and recreates the Activity so that
+     * its dynamic colors follow.
      *
      * @param context The context used for applying background data and saving history.
      */
@@ -944,16 +955,8 @@ public class NtpCustomizationConfigManager {
             return;
         }
 
-        // Check to ensure memory reflects disk state for synced backgrounds
-        boolean isThemeMismatch =
-                (mSyncedNtpBackgroundData != null
-                                && !mSyncedNtpBackgroundData.hasSameThemeAndColor(
-                                        mNtpBackgroundData))
-                        || (mBackgroundType != NtpBackgroundType.DEFAULT
-                                && NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference()
-                                        == NtpBackgroundType.DEFAULT);
-
-        if (isThemeMismatch) {
+        if (mIsPersistedThemeReplacedBySync) {
+            // Applies the staged synced background, or resets to default if there is none.
             onBackgroundDataChanged(
                     context, mSyncedNtpBackgroundData, /* shouldNotifySyncedThemeManager= */ false);
             maybeSaveUserSelectedBackgroundTypeToSharedPreference(context);
@@ -965,6 +968,7 @@ public class NtpCustomizationConfigManager {
         }
 
         mSyncedNtpBackgroundData = null;
+        mIsPersistedThemeReplacedBySync = false;
     }
 
     void setCustomBackgroundInfoForTesting(CustomBackgroundInfo customBackgroundInfo) {
