@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/map_util.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
@@ -80,15 +81,15 @@ const std::string& CountryNames::GetCountryCode(
     std::u16string_view country) const {
   // First, check common country names, including 2- and 3-letter country codes.
   std::string country_utf8 = base::UTF16ToUTF8(base::ToUpperASCII(country));
-  const auto result = common_names_.find(country_utf8);
-  if (result != common_names_.end())
-    return result->second;
+  if (const std::string* result =
+          base::FindOrNull(common_names_, country_utf8)) {
+    return *result;
+  }
 
   // Next, check country native names.
-  const auto native_result =
-      kCountryNativeNames.find(base::i18n::ToUpper(country));
-  if (native_result != kCountryNativeNames.end()) {
-    return native_result->second;
+  if (const std::string* native_result =
+          base::FindOrNull(kCountryNativeNames, base::i18n::ToUpper(country))) {
+    return *native_result;
   }
 
   // Next, check country names localized to the current locale.

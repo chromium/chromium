@@ -8,9 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/map_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/types/optional_util.h"
 #include "components/autofill/core/browser/proto/states.pb.h"
 
 namespace autofill {
@@ -78,12 +80,9 @@ AlternativeStateNameMap::GetCanonicalStateName(
     normalized_state_name = NormalizeStateName(state_name);
 
   base::AutoLock lock(lock_);
-  auto it = localized_state_names_reverse_lookup_map_.find(
-      {country_code, normalized_state_name});
-  if (it != localized_state_names_reverse_lookup_map_.end())
-    return it->second;
-
-  return std::nullopt;
+  return base::OptionalFromPtr(
+      base::FindOrNull(localized_state_names_reverse_lookup_map_,
+                       {country_code, normalized_state_name}));
 }
 
 std::optional<StateEntry> AlternativeStateNameMap::GetEntry(
@@ -97,10 +96,9 @@ std::optional<StateEntry> AlternativeStateNameMap::GetEntry(
 
   if (canonical_state_name) {
     base::AutoLock lock(lock_);
-    auto it = localized_state_names_map_.find(
-        {country_code, canonical_state_name.value()});
-    if (it != localized_state_names_map_.end())
-      return it->second;
+    return base::OptionalFromPtr(
+        base::FindOrNull(localized_state_names_map_,
+                         {country_code, canonical_state_name.value()}));
   }
 
   return std::nullopt;

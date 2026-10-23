@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/singleton.h"
@@ -84,9 +85,10 @@ bool CountryDataMap::HasRequiredFieldsForAddressImport(
 RequiredFieldsForAddressImport
 CountryDataMap::GetRequiredFieldsForAddressImport(
     std::string_view country_code) const {
-  auto lookup = required_fields_for_address_import_map_.find(country_code);
-  if (lookup != required_fields_for_address_import_map_.end())
-    return lookup->second;
+  if (const auto* required_fields = base::FindOrNull(
+          required_fields_for_address_import_map_, country_code)) {
+    return *required_fields;
+  }
   // If there is no entry for country_code return the entry for the US.
   return required_fields_for_address_import_map_.find("US")->second;
 }
@@ -98,10 +100,10 @@ bool CountryDataMap::HasCountryCodeAlias(
 
 std::string_view CountryDataMap::GetCountryCodeForAlias(
     std::string_view country_code_alias) const {
-  auto lookup = kCountryCodeAliases.find(country_code_alias);
-  if (lookup != kCountryCodeAliases.end()) {
-    DCHECK(HasRequiredFieldsForAddressImport(lookup->second));
-    return lookup->second;
+  if (const auto* country_code =
+          base::FindOrNull(kCountryCodeAliases, country_code_alias)) {
+    DCHECK(HasRequiredFieldsForAddressImport(*country_code));
+    return *country_code;
   }
   return {};
 }

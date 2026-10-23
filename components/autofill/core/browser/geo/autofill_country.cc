@@ -16,6 +16,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
@@ -191,9 +192,10 @@ AutofillCountry::address_format_extensions() const {
       base::flat_map<std::string, base::span<const AddressFormatExtension>>(
           std::move(overrides));
 
-  auto it = extensions.find(country_code_);
-  if (it != extensions.end())
-    return it->second;
+  if (const auto* country_extensions =
+          base::FindOrNull(extensions, country_code_)) {
+    return *country_extensions;
+  }
   return {};
 }
 
@@ -211,8 +213,7 @@ bool AutofillCountry::IsAddressFieldSettingAccessible(
 }
 
 bool AutofillCountry::IsAddressFieldRequired(FieldType field_type) const {
-  auto mapping_it = kRequiredFieldMapping.find(field_type);
-  return mapping_it != kRequiredFieldMapping.end() &&
-         (required_fields_for_address_import_ & mapping_it->second);
+  const auto* mapping = base::FindOrNull(kRequiredFieldMapping, field_type);
+  return mapping && (required_fields_for_address_import_ & *mapping);
 }
 }  // namespace autofill
