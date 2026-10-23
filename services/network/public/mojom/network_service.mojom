@@ -146,6 +146,12 @@ struct NetworkServiceParams {
   // A SystemDnsResolver to provide out-of-process system DNS resolution, in
   // case the system DNS resolver cannot always run sandboxed.
   pending_remote<SystemDnsResolver>? system_dns_resolver;
+
+  // Initial mode of operation of the insecure portion of the built-in DNS
+  // resolver. Can be updated later via `ConfigureStubHostResolver()`. Platform
+  // modes (`ENABLED_PLATFORM` and `ENABLED_PLATFORM_NO_SYSTEM`) may only be
+  // used if `net::features::IsDnsPlatformSupported()` is true.
+  InsecureDnsMode initial_insecure_dns_mode = InsecureDnsMode.DISABLED;
 };
 
 // Configuration settings for SCT Auditing.

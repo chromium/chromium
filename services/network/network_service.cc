@@ -507,8 +507,10 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   dns_config_change_manager_ = std::make_unique<DnsConfigChangeManager>();
 
+  net::HostResolver::ManagerOptions host_resolver_options;
+  host_resolver_options.insecure_dns_mode = params->initial_insecure_dns_mode;
   host_resolver_manager_ = std::make_unique<net::HostResolverManager>(
-      net::HostResolver::ManagerOptions(),
+      std::move(host_resolver_options),
       net::NetworkChangeNotifier::GetSystemDnsConfigNotifier(), net_log_);
   host_resolver_factory_ = std::make_unique<net::HostResolver::Factory>();
 

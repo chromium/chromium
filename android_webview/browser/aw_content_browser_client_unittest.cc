@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "android_webview/browser/aw_feature_list_creator.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/yield_to_looper_checker.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -17,8 +18,11 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -167,6 +171,41 @@ TEST_F(AwContentBrowserClientTest, IsHandledURL) {
   EXPECT_TRUE(client_.IsHandledURL(GURL("file:///android_asset/test.html")));
   EXPECT_TRUE(client_.IsHandledURL(GURL("file:///android_res/raw/test.png")));
   EXPECT_FALSE(client_.IsHandledURL(GURL("custom-scheme://example")));
+}
+
+TEST_F(AwContentBrowserClientTest, GetInitialInsecureDnsModeDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWebViewEnableDnsPlatform);
+
+  EXPECT_EQ(client_.GetInitialInsecureDnsMode(),
+            net::InsecureDnsMode::kDisabled);
+}
+
+TEST_F(AwContentBrowserClientTest, GetInitialInsecureDnsModeEnabledDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebViewEnableDnsPlatform);
+
+  if (net::features::IsDnsPlatformSupported()) {
+    EXPECT_EQ(client_.GetInitialInsecureDnsMode(),
+              net::InsecureDnsMode::kEnabledPlatform);
+  } else {
+    EXPECT_EQ(client_.GetInitialInsecureDnsMode(),
+              net::InsecureDnsMode::kDisabled);
+  }
+}
+
+TEST_F(AwContentBrowserClientTest, GetInitialInsecureDnsModeEnabledNoSystem) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kWebViewEnableDnsPlatform, {{"no_system", "true"}});
+
+  if (net::features::IsDnsPlatformSupported()) {
+    EXPECT_EQ(client_.GetInitialInsecureDnsMode(),
+              net::InsecureDnsMode::kEnabledPlatformNoSystem);
+  } else {
+    EXPECT_EQ(client_.GetInitialInsecureDnsMode(),
+              net::InsecureDnsMode::kDisabled);
+  }
 }
 
 }  // namespace

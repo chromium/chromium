@@ -134,6 +134,7 @@
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "net/http/http_util.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -295,26 +296,24 @@ void AwContentBrowserClient::OnNetworkServiceCreated(
   network_service->SetUpHttpAuth(network::mojom::HttpAuthStaticParams::New());
   network_service->ConfigureHttpAuthPrefs(
       AwBrowserProcess::GetInstance()->CreateHttpAuthDynamicParams());
+}
 
+net::InsecureDnsMode AwContentBrowserClient::GetInitialInsecureDnsMode() {
   if (net::features::IsDnsPlatformSupported() &&
       base::FeatureList::IsEnabled(features::kWebViewEnableDnsPlatform)) {
     // Using the platform DNS APIs requires:
     // 1. Enabling the built-in DNS in platform mode
-    // (net::InsecureDnsMode::kEnabledPlatform or
-    // net::InsecureDnsMode::kEnabledPlatformNoSystem)
+    //    (net::InsecureDnsMode::kEnabledPlatform or
+    //    net::InsecureDnsMode::kEnabledPlatformNoSystem)
     // 2. Disabling DoH queries, these do not yet use the platform DNS APIs
     //    (net::SecureDnsMode::kOff)
-    net::InsecureDnsMode insecure_dns_mode =
-        features::kWebViewEnableDnsPlatformNoSystem.Get()
-            ? net::InsecureDnsMode::kEnabledPlatformNoSystem
-            : net::InsecureDnsMode::kEnabledPlatform;
-    network_service->ConfigureStubHostResolver(
-        insecure_dns_mode,
-        /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kOff,
-        net::DnsOverHttpsConfig(),
-        /*additional_dns_types_enabled=*/true,
-        /*fallback_doh_nameservers=*/std::vector<net::IPEndPoint>());
+    // For #2, WebView relies on the default net::DnsConfig having
+    // SecureDnsMode::kOff.
+    return features::kWebViewEnableDnsPlatformNoSystem.Get()
+               ? net::InsecureDnsMode::kEnabledPlatformNoSystem
+               : net::InsecureDnsMode::kEnabledPlatform;
   }
+  return net::InsecureDnsMode::kDisabled;
 }
 
 void AwContentBrowserClient::ConfigureNetworkContextParams(

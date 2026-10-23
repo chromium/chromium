@@ -69,6 +69,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -2532,6 +2533,22 @@ class CONTENT_EXPORT ContentBrowserClient {
   // service. This is useful if the network service is sandboxed but system DNS
   // resolution cannot run sandboxed.
   virtual bool ShouldRunOutOfProcessSystemDnsResolution();
+
+  // Returns the initial InsecureDnsMode to configure on the NetworkService's
+  // HostResolverManager at initialization time.
+  //
+  // This is the "initial" mode because it can be updated later via
+  // `network::mojom::NetworkService::ConfigureStubHostResolver()`. Embedders
+  // whose DNS configuration depends on user preferences, enterprise policies,
+  // or asynchronous platform checks (e.g., Chrome) cannot determine their mode
+  // at NetworkService creation time, so they leave this as `kDisabled` and
+  // call `ConfigureStubHostResolver()` once ready. Embedders with a static
+  // startup configuration (e.g., WebView) can override this to configure the
+  // resolver at initialization time and avoid an extra post-creation IPC.
+  //
+  // Platform modes (`kEnabledPlatform` and `kEnabledPlatformNoSystem`) may only
+  // be returned if `net::features::IsDnsPlatformSupported()` is true.
+  virtual net::InsecureDnsMode GetInitialInsecureDnsMode();
 
   // Browser-side API to log blink UseCounters for events that don't occur in
   // the renderer.

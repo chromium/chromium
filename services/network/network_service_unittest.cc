@@ -760,6 +760,30 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
             dns_client_ptr->GetEffectiveConfig().secure_dns_mode);
 }
 
+TEST_F(NetworkServiceTest, InitialInsecureDnsMode) {
+  EXPECT_EQ(service()->host_resolver_manager()->GetDnsConfigAsValue().FindBool(
+                "can_use_insecure_dns_transactions"),
+            false);
+
+  if (!net::features::IsDnsPlatformSupported()) {
+    return;
+  }
+
+  DestroyService();
+  mojom::NetworkServiceParamsPtr params = mojom::NetworkServiceParams::New();
+  params->initial_insecure_dns_mode =
+      net::InsecureDnsMode::kEnabledPlatformNoSystem;
+  auto custom_service = std::make_unique<NetworkService>(
+      /*registry=*/nullptr, mojo::NullReceiver(),
+      /*delay_initialization_until_set_client=*/true);
+  custom_service->Initialize(std::move(params),
+                             /*mock_network_change_notifier=*/true);
+  EXPECT_EQ(
+      custom_service->host_resolver_manager()->GetDnsConfigAsValue().FindBool(
+          "can_use_insecure_dns_transactions"),
+      true);
+}
+
 TEST_F(NetworkServiceTest, HandlesAdditionalDnsQueryTypesEnableDisable) {
   // Create valid DnsConfig.
   net::DnsConfig config;

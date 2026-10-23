@@ -386,6 +386,8 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
           net::NetworkChangeNotifier::GetConnectionSubtype());
   network_service_params->default_observer =
       g_client->BindURLLoaderNetworkServiceObserver();
+  network_service_params->initial_insecure_dns_mode =
+      GetContentClient()->browser()->GetInitialInsecureDnsMode();
 #if BUILDFLAG(IS_LINUX)
   if (IsOutOfProcessNetworkService()) {
     auto [address_map, online_links] =

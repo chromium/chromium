@@ -72,6 +72,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   // content::ContentBrowserClient:
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
+  net::InsecureDnsMode GetInitialInsecureDnsMode() override;
   void ConfigureNetworkContextParams(
       content::BrowserContext* context,
       bool in_memory,

@@ -1444,6 +1444,10 @@ bool ContentBrowserClient::ShouldRunOutOfProcessSystemDnsResolution() {
 #endif
 }
 
+net::InsecureDnsMode ContentBrowserClient::GetInitialInsecureDnsMode() {
+  return net::InsecureDnsMode::kDisabled;
+}
+
 std::string ContentBrowserClient::GetProduct() {
   return std::string();
 }
