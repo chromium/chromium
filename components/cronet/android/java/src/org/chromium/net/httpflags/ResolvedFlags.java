@@ -131,6 +131,7 @@ public final class ResolvedFlags {
             mValue = value;
         }
 
+        @SuppressWarnings("IfChainToSwitch")
         public @Type int getType() {
             if (mValue instanceof Boolean) {
                 return Type.BOOL;

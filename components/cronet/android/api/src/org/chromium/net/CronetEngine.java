@@ -655,7 +655,7 @@ public abstract class CronetEngine {
                         public int compare(
                                 CronetProvider.ProviderInfo p1, CronetProvider.ProviderInfo p2) {
                             // A provider with higher score should go first.
-                            return -Integer.compare(p1.providerScore, p2.providerScore);
+                            return Integer.compare(p2.providerScore, p1.providerScore);
                         }
                     });
             for (Iterator<CronetProvider.ProviderInfo> i = providers.iterator(); i.hasNext(); ) {

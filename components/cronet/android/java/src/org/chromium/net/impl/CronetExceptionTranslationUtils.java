@@ -57,6 +57,7 @@ class CronetExceptionTranslationUtils {
         throw new UnsupportedOperationException("Unchecked exception translation discrepancy", e);
     }
 
+    @SuppressWarnings("IfChainToSwitch")
     public static CronetException translateCheckedAndroidCronetException(Exception e) {
         if (!isCheckedAndroidCronetException(e)) {
             throw new IllegalArgumentException("Not an Android Cronet exception", e);
