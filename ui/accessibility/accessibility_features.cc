@@ -442,7 +442,7 @@ bool IsReadAnythingWithReadabilityEnabled() {
 }
 
 BASE_FEATURE(kReadAnythingDistillationQualityEvaluation,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingDistillationQualityEvaluationEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kReadAnythingDistillationQualityEvaluation);
