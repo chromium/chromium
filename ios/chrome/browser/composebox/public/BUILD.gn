@@ -108,5 +108,8 @@ source_set("focus_params") {
     "//ios/web/public",
     "//third_party/omnibox_proto",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/contextual_search:public",
+  ]
 }

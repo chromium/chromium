@@ -210,21 +210,31 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 
-  auto query_controller_config_params = std::make_unique<
-      contextual_search::ContextualSearchContextController::ConfigParams>();
-  query_controller_config_params->send_lns_surface = false;
-  query_controller_config_params->enable_viewport_images = true;
-  query_controller_config_params
-      ->prioritize_suggestions_for_the_first_attached_document = true;
-
   _contextualService =
       ContextualSearchServiceFactory::GetForProfile(self.profile);
 
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-      contextualSearchSession = _contextualService->CreateSession(
-          std::move(query_controller_config_params),
-          ContextualSearchSourceFromEntrypoint(_entrypoint),
-          lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+      contextualSearchSession;
+  if (_focusParams.hasContextualSearchSession) {
+    contextualSearchSession = [_focusParams takeContextualSearchSession];
+    if (contextual_search::ContextualSearchMetricsRecorder* metricsRecorder =
+            contextualSearchSession->GetMetricsRecorder()) {
+      metricsRecorder->UpdateContextualSearchSource(
+          ContextualSearchSourceFromEntrypoint(_entrypoint));
+    }
+  } else {
+    auto query_controller_config_params = std::make_unique<
+        contextual_search::ContextualSearchContextController::ConfigParams>();
+    query_controller_config_params->send_lns_surface = false;
+    query_controller_config_params->enable_viewport_images = true;
+    query_controller_config_params
+        ->prioritize_suggestions_for_the_first_attached_document = true;
+
+    contextualSearchSession = _contextualService->CreateSession(
+        std::move(query_controller_config_params),
+        ContextualSearchSourceFromEntrypoint(_entrypoint),
+        lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+  }
   _metricsRecorder.contextualSearchMetricsRecorder =
       contextualSearchSession->GetMetricsRecorder();
 

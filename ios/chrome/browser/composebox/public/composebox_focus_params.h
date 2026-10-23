@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <memory>
 #import <set>
 
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
@@ -16,8 +17,13 @@
 #import "ios/web/public/web_state_id.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
 
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+}  // namespace contextual_search
+
 @class AssistantAIMMetricsRecorder;
 @class ComposeboxAttachmentSelection;
+@class ComposeboxInputItem;
 
 // Parameters used to focus and initialize the composebox with specific state.
 @interface ComposeboxFocusParams : NSObject
@@ -36,6 +42,24 @@
 
 // The initial attachments to preload.
 @property(nonatomic, readonly) ComposeboxAttachmentSelection* attachmentList;
+
+// Pre-attached and already-uploaded tab items transferred from a previous
+// composebox session (e.g., when transitioning into Cobrowse).
+@property(nonatomic, copy) NSArray<ComposeboxInputItem*>* attachedTabItems;
+
+// Returns whether this focus params instance holds a transferable contextual
+// search session handle.
+@property(nonatomic, assign, readonly) BOOL hasContextualSearchSession;
+
+// Sets the contextual search session handle transferred from a previous
+// composebox session.
+- (void)setContextualSearchSession:
+    (std::unique_ptr<contextual_search::ContextualSearchSessionHandle>)session;
+
+// Transfers ownership of the stored contextual search session handle to the
+// caller, leaving the stored handle empty.
+- (std::unique_ptr<contextual_search::ContextualSearchSessionHandle>)
+    takeContextualSearchSession;
 
 /// Initial tab identifiers to attach.
 @property(nonatomic, assign) std::set<web::WebStateID>

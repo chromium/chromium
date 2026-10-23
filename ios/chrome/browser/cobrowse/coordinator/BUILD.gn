@@ -10,6 +10,7 @@ source_set("coordinator") {
     "assistant_aim_mediator.mm",
   ]
   deps = [
+    "//components/contextual_search:public",
     "//components/contextual_tasks/public",
     "//components/contextual_tasks/public:feature_list",
     "//components/search_engines",

@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+components/contextual_search/contextual_search_session_handle.h",
   "+ios/chrome/browser/assistant/coordinator",
   "+ios/chrome/browser/assistant/ui",
   "+ios/chrome/browser/composebox/coordinator",

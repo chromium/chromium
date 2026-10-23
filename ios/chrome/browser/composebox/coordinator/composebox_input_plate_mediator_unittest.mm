@@ -27,6 +27,7 @@
 #import "components/contextual_search/internal/test_composebox_query_controller.h"
 #import "components/contextual_search/mock_contextual_search_context_controller.h"
 #import "components/contextual_search/mock_contextual_search_session_handle.h"
+#import "components/contextual_tasks/public/features.h"
 #import "components/lens/lens_overlay_mime_type.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
@@ -40,6 +41,9 @@
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_client.h"
 #import "components/version_info/channel.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
@@ -59,9 +63,12 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -114,6 +121,7 @@
                        identifier:(base::UnguessableToken)identifier;
 - (void)reloadSuggestions;
 - (void)sendAIMFollowup:(NSString*)text;
+- (void)didCreateSearchURL:(GURL)URL;
 @end
 
 // Mock delegate for the mediator.
@@ -438,7 +446,10 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   ComposeboxInputPlateMediator* CreateMediator(
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle> session,
       ComposeboxEntrypoint entrypoint = ComposeboxEntrypoint::kCobrowse,
-      ComposeboxMode mode = ComposeboxMode::kRegularSearch) {
+      ComposeboxMode mode = ComposeboxMode::kRegularSearch,
+      CobrowseBrowserAgent* cobrowse_browser_agent = nullptr,
+      id<BrowserCoordinatorCommands> browser_coordinator_handler = nil,
+      id<SceneCommands> scene_handler = nil) {
     ComposeboxModeHolder* mode_holder = [[ComposeboxModeHolder alloc] init];
     mode_holder.mode = mode;
     return [[ComposeboxInputPlateMediator alloc]
@@ -452,9 +463,9 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                   aimEligibilityService:aim_eligibility_service_.get()
                             prefService:&pref_service_
                                 profile:profile_.get()
-                   cobrowseBrowserAgent:nil
-              browserCoordinatorHandler:nil
-                           sceneHandler:nil
+                   cobrowseBrowserAgent:cobrowse_browser_agent
+              browserCoordinatorHandler:browser_coordinator_handler
+                           sceneHandler:scene_handler
                              entrypoint:entrypoint];
   }
 
@@ -2845,5 +2856,173 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   ASSERT_EQ(consumer.items.count, 1U);
   EXPECT_EQ(consumer.items[0].tabURL, page_b_url);
   EXPECT_FALSE([mediator isWebStateIDRemoved:active_id]);
+}
+
+// Tests that `didCreateSearchURL:` in AIM mode with the active tab attached
+// transfers the `ContextualSearchSessionHandle` and attached tab items into
+// `CobrowseBrowserAgent`'s `CobrowseContext`.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DidCreateSearchURLTransfersSessionAndTabItemsToCobrowseContext) {
+  base::test::ScopedFeatureList cobrowse_features;
+  cobrowse_features.InitWithFeatures(
+      {contextual_tasks::kContextualTasks, kAimCobrowse}, {});
+
+  SetAIMEligible(true);
+  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+      .WillRepeatedly(testing::Return(true));
+  SetDSEGoogle(true);
+
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(active_web_state);
+  PrepareForAutoAttachment(active_web_state);
+
+  TestBrowser browser(profile_.get());
+  CobrowseBrowserAgent::CreateForBrowser(&browser);
+  CobrowseBrowserAgent* cobrowse_agent =
+      CobrowseBrowserAgent::FromBrowser(&browser);
+
+  id mock_browser_coordinator_handler =
+      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session), ComposeboxEntrypoint::kOther,
+                     ComposeboxMode::kAIM, cobrowse_agent,
+                     mock_browser_coordinator_handler, mock_scene_handler);
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  base::UnguessableToken identifier = [mediator
+      createInputItemForWebState:active_web_state
+                          source:ComposeboxInputItemSource::kCurrentTab];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* tab_item = consumer.items.firstObject;
+  EXPECT_EQ(tab_item.identifier, identifier);
+  EXPECT_EQ(tab_item.webStateID, active_web_state->GetUniqueIdentifier());
+
+  base::UnguessableToken expected_server_token =
+      base::UnguessableToken::Create();
+  tab_item.serverToken = expected_server_token;
+  [mediator setState:ComposeboxInputItemState::kLoaded onItem:tab_item];
+
+  OCMExpect([mock_browser_coordinator_handler hideComposebox]);
+  OCMExpect([mock_scene_handler showAssistantWithNewSession]);
+
+  GURL search_url("https://www.google.com/search?q=test&udm=50");
+  [mediator didCreateSearchURL:search_url];
+
+  EXPECT_OCMOCK_VERIFY(mock_browser_coordinator_handler);
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler);
+
+  CobrowseContext* context = cobrowse_agent->GetCobrowseContext();
+  ASSERT_TRUE(context);
+  EXPECT_TRUE(cobrowse_agent->IsSessionActive());
+  EXPECT_EQ(context.entrypoint, AssistantAimEntrypoint::kAskAboutCurrentPage);
+  EXPECT_TRUE(context.hasContextualSearchSession);
+  ASSERT_EQ(context.attachedTabItems.count, 1U);
+  EXPECT_EQ(context.attachedTabItems.firstObject.serverToken,
+            expected_server_token);
+  EXPECT_EQ(context.attachedTabItems.firstObject.webStateID,
+            active_web_state->GetUniqueIdentifier());
+
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      transferred_session = [context takeContextualSearchSession];
+  EXPECT_EQ(transferred_session.get(), raw_mock_session);
+}
+
+// Tests that applying `ComposeboxFocusParams` with `attachedTabItems` in a
+// `kCobrowse` mediator restores the tabs, prevents duplicate auto-attachment on
+// focus, and deletes the file from the session handle when removed.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       ApplyFocusParamsRestoresTransferredTabItemsAndAllowsDeletion) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(active_web_state);
+  PrepareForAutoAttachment(active_web_state);
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+  contextual_search::ContextualSearchMetricsRecorder metrics_recorder(
+      contextual_search::ContextualSearchSource::kOmnibox);
+  ON_CALL(*raw_mock_session, GetMetricsRecorder())
+      .WillByDefault(testing::Return(&metrics_recorder));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session), ComposeboxEntrypoint::kCobrowse,
+                     ComposeboxMode::kAIM);
+  EXPECT_EQ(metrics_recorder.source(),
+            contextual_search::ContextualSearchSource::kContextualTasks);
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  base::UnguessableToken expected_server_token =
+      base::UnguessableToken::Create();
+  ComposeboxInputItem* transferred_tab = [[ComposeboxInputItem alloc]
+      initWithComposeboxInputItemType:ComposeboxInputItemType::
+                                          kComposeboxInputItemTypeTab
+                               source:ComposeboxInputItemSource::kCurrentTab];
+  transferred_tab.title = @"Example";
+  transferred_tab.tabURL = GURL(kExtractablePageURL);
+  transferred_tab.webStateID = active_web_state->GetUniqueIdentifier();
+  transferred_tab.serverToken = expected_server_token;
+  transferred_tab.state = ComposeboxInputItemState::kLoaded;
+
+  ComposeboxFocusParams* focus_params = [[ComposeboxFocusParams alloc]
+      initWithEntrypoint:ComposeboxEntrypoint::kCobrowse];
+  focus_params.attachedTabItems = @[ transferred_tab ];
+  [mediator applyFocusParams:focus_params];
+
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* restored_item = consumer.items.firstObject;
+  EXPECT_EQ(restored_item.identifier, transferred_tab.identifier);
+  EXPECT_EQ(restored_item.serverToken, expected_server_token);
+  EXPECT_EQ(restored_item.webStateID, active_web_state->GetUniqueIdentifier());
+  EXPECT_EQ(restored_item.state, ComposeboxInputItemState::kLoaded);
+  EXPECT_FALSE(restored_item.isAutoAdded);
+  EXPECT_TRUE([mediator attachedWebStateIDsInCurrentContext].contains(
+      active_web_state->GetUniqueIdentifier()));
+
+  // Focusing the omnibox must not attach a duplicate chip for the active tab.
+  [mediator setOmniboxFocused:YES];
+  EXPECT_EQ(consumer.items.count, 1U);
+
+  // Removing the shared tab deletes the file from the session handle and marks
+  // the WebStateID as user-removed.
+  contextual_search::FileInfo file_info;
+  file_info.file_token = expected_server_token;
+  ON_CALL(mock_controller, GetFileInfo(expected_server_token))
+      .WillByDefault(testing::Return(&file_info));
+  EXPECT_CALL(mock_controller, DeleteFile(expected_server_token))
+      .WillOnce(testing::Return(true));
+  [mediator removeSharedTabWithInputItemIdentifier:restored_item.identifier];
+  EXPECT_EQ(consumer.items.count, 0U);
+  EXPECT_TRUE(
+      [mediator isWebStateIDRemoved:active_web_state->GetUniqueIdentifier()]);
 }
 }  // namespace
