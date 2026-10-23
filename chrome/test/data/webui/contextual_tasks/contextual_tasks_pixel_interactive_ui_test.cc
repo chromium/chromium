@@ -36,7 +36,6 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_extension_bridge.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
@@ -48,7 +47,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/contextual_tasks_extension_resources.h"
 #include "chrome/test/data/webui/webui_composebox_pixel_test.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
@@ -830,13 +828,12 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
 
 struct LensChipPixelTestParams {
   bool dark_mode = false;
-  bool rtl = false;
+  bool show_close_button = false;
 
   std::string ToString() const {
-    std::string name;
-    name += dark_mode ? "Dark" : "Light";
-    if (rtl) {
-      name += "_RTL";
+    std::string name = dark_mode ? "Dark" : "Light";
+    if (show_close_button) {
+      name += "_CloseButton";
     }
     return name;
   }
@@ -867,21 +864,8 @@ class ContextualTasksLensChipPixelTest
   }
 
   void SetUpOnMainThread() override {
-    SetRTL(GetParam().rtl);
     SetDarkMode(GetParam().dark_mode);
     ContextualTasksPixelTestBase::SetUpOnMainThread();
-
-    extensions::ComponentLoader* component_loader =
-        extensions::ComponentLoader::Get(browser()->GetProfile());
-    if (component_loader) {
-      component_loader->set_ignore_allowlist_for_testing(true);
-      component_loader->Add(
-          IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST_JSON,
-          base::FilePath(FILE_PATH_LITERAL("contextual_tasks_extension")));
-    }
-
-    contextual_tasks::ContextualTasksExtensionBridge::Get(
-        browser()->GetProfile());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -894,23 +878,28 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ContextualTasksLensChipPixelTest,
     testing::ValuesIn<LensChipPixelTestParams>({
-        // Light mode LTR
-        {.dark_mode = false, .rtl = false},
-        // Dark mode LTR
-        {.dark_mode = true, .rtl = false},
-        // Light mode RTL
-        {.dark_mode = false, .rtl = true},
-        // Dark mode RTL
-        {.dark_mode = true, .rtl = true},
+        {.dark_mode = false, .show_close_button = false},
+        {.dark_mode = true, .show_close_button = false},
+        {.dark_mode = false, .show_close_button = true},
+        {.dark_mode = true, .show_close_button = true},
     }),
     [](const testing::TestParamInfo<LensChipPixelTestParams>& info) {
       return info.param.ToString();
     });
 
-// TODO(crbug.com/575977688): Fix and re-enable.
-IN_PROC_BROWSER_TEST_P(ContextualTasksLensChipPixelTest, DISABLED_Screenshots) {
+IN_PROC_BROWSER_TEST_P(ContextualTasksLensChipPixelTest, Screenshots) {
+  // Deterministic 104x104 synthetic webpage region crop preview PNG.
+  constexpr char kSyntheticCropDataUri[] =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGgAAABoCAIAAACSfiL2AAAA"
+      "9klEQVR42u3dvwnCQBTA4RROYWXAvSxs7LNFRrCyygQpM9CVloIQBRcQQv7cvXyP3wRf9Y"
+      "47uCo9R02oQgAOHDhwAgcuU7iP+Q04cODAgQO3BNyxSeEDBw4cOHDgwIHbE9x7OPwNHDhw"
+      "4MCBAwcOXBS4tn9tGDhw4MAte8gHBw4cOHDgwIED57LGLRc4cODAgQMHDpzH0+DAgQMHDh"
+      "w4cPHgTvW56MCBAwcOHDhw4PYKZwEGBw4cOHBmLrjL9RYycODAgQMHbn046wg4cOAiw90f"
+      "XbaBAwcOHDhwZcFZR8CBAwcOnAEHrgQ4+QkOHDhw4AQOXNZ9AZA0GY0ljuiyAAAAAElFTk"
+      "SuQmCC";
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  const DeepQuery kChipIframe = {"#lens-chip-iframe"};
+  const DeepQuery kChipContainer = {"#chip-container"};
 
   const GURL chip_url(
       base::StringPrintf("chrome-extension://%s/lens_chip.html?cs=%s",
@@ -934,50 +923,41 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksLensChipPixelTest, DISABLED_Screenshots) {
   const GURL host_url("https://www.google.com/title1.html");
 
   RunTestSequence(
-      Do([&]() {
-        content::WebContents* tab_contents =
-            browser()->GetTabStripModel()->GetActiveWebContents();
-        auto session_handle = std::make_unique<testing::NiceMock<
-            contextual_search::MockContextualSearchSessionHandle>>();
-        auto* user_data = contextual_tasks::ContextualTasksWebContentsUserData::
-            FromWebContents(tab_contents);
-        if (!user_data) {
-          contextual_tasks::ContextualTasksWebContentsUserData::
-              CreateForWebContents(tab_contents);
-          user_data = contextual_tasks::ContextualTasksWebContentsUserData::
-              FromWebContents(tab_contents);
-        }
-        auto model = user_data->GetOrCreateInputStateModel(*session_handle);
-        ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-            tab_contents)
-            ->SetTaskSession(std::nullopt, std::move(session_handle),
-                             /*input_state_model=*/nullptr);
-        ASSERT_TRUE(model != nullptr);
-        model->RemoveLensCrop();
-        model->SetLensCrop(
-            "data:image/"
-            "png;base64,"
-            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUl"
-            "EQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
-      }),
       InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, host_url),
       WaitForWebContentsReady(kActiveTab, host_url), Do([&]() {
         content::WebContents* tab_contents =
             browser()->GetTabStripModel()->GetActiveWebContents();
-        EXPECT_TRUE(content::ExecJs(
+        auto session_handle = std::make_unique<testing::NiceMock<
+            contextual_search::MockContextualSearchSessionHandle>>();
+        ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+            tab_contents)
+            ->SetTaskSession(std::nullopt, std::move(session_handle),
+                             /*input_state_model=*/nullptr);
+        auto model = contextual_tasks::ContextualTasksWebContentsUserData::
+                         GetOrCreateForWebContents(tab_contents)
+                             ->GetOrCreateInputStateModel();
+        ASSERT_TRUE(model != nullptr);
+        model->SetLensCrop(kSyntheticCropDataUri);
+
+        ASSERT_TRUE(content::ExecJs(
             tab_contents, base::StringPrintf(
                               R"(
-                  document.body.style.margin = '0';
-                  document.body.style.backgroundColor = '%s';
+                  const container = document.createElement('div');
+                  container.id = 'chip-container';
+                  container.style.display = 'inline-flex';
+                  container.style.padding = '8px';
+                  container.style.backgroundColor = '%s';
                   const iframe = document.createElement('iframe');
                   iframe.id = 'lens-chip-iframe';
-                  iframe.style.width = '200px';
-                  iframe.style.height = '60px';
+                  iframe.style.width = '52px';
+                  iframe.style.height = '52px';
                   iframe.style.border = 'none';
-                  document.body.appendChild(iframe);
+                  iframe.style.pointerEvents = 'none';
+                  container.appendChild(iframe);
+                  document.body.appendChild(container);
                 )",
                               GetParam().dark_mode ? "#1f1f1f" : "#ffffff")));
-        EXPECT_TRUE(content::NavigateIframeToURL(tab_contents,
+        ASSERT_TRUE(content::NavigateIframeToURL(tab_contents,
                                                  "lens-chip-iframe", chip_url));
 
         content::RenderFrameHost* chip_rfh =
@@ -989,29 +969,58 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksLensChipPixelTest, DISABLED_Screenshots) {
                 }));
         ASSERT_TRUE(chip_rfh != nullptr);
 
-        EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
-          return content::EvalJs(chip_rfh, R"(
-            (() => {
-              const app = document.querySelector('lens-chip-app');
-              if (!app || !app.shadowRoot) return false;
-              const img = app.shadowRoot.querySelector('#cropImage');
-              return img && img.src && img.src.startsWith('data:image/');
-            })()
-          )") == true;
+        ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+          return content::EvalJs(chip_rfh, content::JsReplace(
+                                               R"(
+                           (async () => {
+                             const app =
+                                 document.querySelector('lens-chip-app');
+                             await app?.updateComplete;
+                             const img =
+                                 app?.shadowRoot?.querySelector('#cropImage');
+                             const closeButton =
+                                 app?.shadowRoot?.querySelector('#closeButton');
+                             await closeButton?.updateComplete;
+                             const svg = closeButton?.shadowRoot
+                                 ?.querySelector('cr-icon')
+                                 ?.shadowRoot?.querySelector('svg');
+                             if (!img?.src || !svg) {
+                               return false;
+                             }
+                             closeButton.style.cssText =
+                                 'transition: none; ' +
+                                 '--cr-icon-button-transition: 0s;';
+                             if ($1) {
+                               closeButton.focus({focusVisible: false});
+                             }
+                             await img.decode();
+                             return img.complete && img.naturalWidth > 0 &&
+                                    img.getBoundingClientRect().width === 52 &&
+                                    svg.getBoundingClientRect().width === 20 &&
+                                    getComputedStyle(closeButton).opacity ===
+                                        ($1 ? '1' : '0');
+                           })()
+                         )",
+                                               GetParam().show_close_button)) ==
+                 true;
         }));
 
-        if (GetParam().rtl) {
-          EXPECT_TRUE(content::ExecJs(chip_rfh, R"(
-            document.documentElement.setAttribute('dir', 'rtl');
-            document.body.setAttribute('dir', 'rtl');
-            document.querySelector('lens-chip-app').setAttribute('dir', 'rtl');
-          )"));
-        }
+        // `getBoundingClientRect()` and `getComputedStyle()` flush style and
+        // layout on `chip_rfh`'s main thread, but `ScreenshotWebUi` only waits
+        // on the top-level browser `ui::Compositor`—not the cross-process
+        // `chrome-extension://` OOPIF's `cc::LayerTreeHost`. Because `rAF`
+        // callbacks run at the start of `BeginMainFrame` before paint and
+        // `SubmitCompositorFrame`, waiting until the second `rAF` callback in
+        // `chip_rfh` ensures the first frame with the decoded image and focused
+        // scrim has been painted and submitted to Viz.
+        ASSERT_TRUE(
+            content::ExecJs(chip_rfh,
+                            "new Promise(r => requestAnimationFrame(() => "
+                            "requestAnimationFrame(r)))"));
       }),
-      WaitForWebContentsPainted(kActiveTab),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshots not captured on this platform."),
-      ScreenshotWebUi(kActiveTab, kChipIframe,
+      ScreenshotWebUi(kActiveTab, kChipContainer,
                       /*screenshot_name=*/"ContextualTasksLensChip",
-                      /*baseline_cl=*/"8408192"));
+                      /*baseline_cl=*/"8613642"));
 }
