@@ -104,11 +104,15 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
@@ -128,6 +132,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/devtools_agent_host_client.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/test/browser_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -482,6 +487,66 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateTargetWithFocus) {
       *error()->FindString("message"));
   EXPECT_EQ(4, browser()->tab_strip_model()->count());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// `ProfileManager::GetLastUsedProfile()` returns nullptr if the last used
+// profile can't be loaded, in which case Chrome's UI falls back to the profile
+// picker. The Target domain must report an error rather than crash in this
+// situation (https://crbug.com/576322189). Not applicable to ChromeOS, where
+// `GetLastUsedProfile()` returns the active user's profile instead.
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       TargetDomainHandlesUnloadableLastUsedProfile) {
+  AttachToBrowserTarget();
+  Profile* const profile = browser()->GetProfile();
+  const std::string default_context_id = profile->UniqueId();
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // The `ProfileManager` refuses to load profiles that aren't direct children
+  // of the user data directory, so this makes the last used profile
+  // unloadable.
+  profiles::SetLastUsedProfile(base::FilePath(FILE_PATH_LITERAL("unloadable"))
+                                   .Append(FILE_PATH_LITERAL("profile")));
+  base::ScopedClosureRunner restore_last_used_profile(
+      base::BindOnce(&profiles::SetLastUsedProfile, profile->GetBaseName()));
+  ASSERT_FALSE(ProfileManager::GetLastUsedProfile());
+
+  SendCommandSync("Target.createTarget",
+                  base::DictValue().Set("url", "about:blank"));
+  ASSERT_TRUE(error());
+  EXPECT_EQ("Failed to load default browser context",
+            *error()->FindString("message"));
+
+  SendCommandSync("Target.createTarget",
+                  base::DictValue()
+                      .Set("url", "about:blank")
+                      .Set("browserContextId", default_context_id));
+  ASSERT_TRUE(error());
+  EXPECT_EQ("Failed to find browser context with id " + default_context_id,
+            *error()->FindString("message"));
+
+  SendCommandSync("Target.createBrowserContext");
+  ASSERT_TRUE(error());
+  EXPECT_EQ("Failed to create browser context.",
+            *error()->FindString("message"));
+
+  // Used to handle `/json/new` requests.
+  content::DevToolsManagerDelegate* const delegate =
+      ChromeDevToolsManagerDelegate::GetInstance();
+  ASSERT_TRUE(delegate);
+  EXPECT_FALSE(delegate->CreateNewTarget(
+      GURL("about:blank"), content::DevToolsManagerDelegate::kFrame,
+      /*new_window=*/false));
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Creating targets works again once the last used profile can be loaded.
+  restore_last_used_profile.RunAndReset();
+  SendCommandSync("Target.createTarget",
+                  base::DictValue().Set("url", "about:blank"));
+  EXPECT_FALSE(error());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 // On ChromeOS and MacOS, the tabs are not backgrounded and unloaded in the same way as

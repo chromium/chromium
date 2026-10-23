@@ -121,10 +121,13 @@ protocol::Response TargetHandler::CreateTarget(
           "Failed to find browser context with id " + profile_id);
     }
   } else {
+    // This fails if the last used profile can't be loaded, for example because
+    // its directory can't be created or is scheduled for deletion.
     profile = ProfileManager::GetLastUsedProfile();
-    // TODO(crbug.com/576322189): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK(profile);
+    if (!profile) {
+      return protocol::Response::ServerError(
+          "Failed to load default browser context");
+    }
   }
 
   bool create_new_window = new_window.value_or(false);

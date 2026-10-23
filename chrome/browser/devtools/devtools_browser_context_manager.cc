@@ -51,6 +51,14 @@ void CloseAndroidTabsForProfile(Profile* profile) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Returns the profile backing the default browser context, or nullptr if the
+// last used profile can't be loaded (for example because its directory can't
+// be created or is scheduled for deletion).
+Profile* GetDefaultProfile() {
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  return profile ? profile->GetOriginalProfile() : nullptr;
+}
+
 }  // namespace
 
 DevToolsBrowserContextManager::DevToolsBrowserContextManager() = default;
@@ -65,9 +73,8 @@ DevToolsBrowserContextManager& DevToolsBrowserContextManager::GetInstance() {
 
 Profile* DevToolsBrowserContextManager::GetProfileById(
     const std::string& context_id) {
-  Profile* default_profile =
-      ProfileManager::GetLastUsedProfile()->GetOriginalProfile();
-  if (context_id == default_profile->UniqueId()) {
+  if (Profile* default_profile = GetDefaultProfile();
+      default_profile && context_id == default_profile->UniqueId()) {
     return default_profile;
   }
   auto it = otr_profiles_.find(context_id);
@@ -77,8 +84,10 @@ Profile* DevToolsBrowserContextManager::GetProfileById(
 }
 
 content::BrowserContext* DevToolsBrowserContextManager::CreateBrowserContext() {
-  Profile* original_profile =
-      ProfileManager::GetLastUsedProfile()->GetOriginalProfile();
+  Profile* original_profile = GetDefaultProfile();
+  if (!original_profile) {
+    return nullptr;
+  }
 
   Profile* otr_profile = original_profile->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForDevTools(),

@@ -443,8 +443,12 @@ scoped_refptr<DevToolsAgentHost> ChromeDevToolsManagerDelegate::CreateNewTarget(
     const GURL& url,
     DevToolsManagerDelegate::TargetType target_type,
     bool new_window) {
-  NavigateParams params(ProfileManager::GetLastUsedProfile(), url,
-                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  if (!profile) {
+    // The last used profile can't be loaded.
+    return nullptr;
+  }
+  NavigateParams params(profile, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   if (!params.navigated_or_inserted_contents)
