@@ -601,6 +601,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxPopupUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxScrollView.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxViewBinderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/fusebox/ViewportRectProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/consent/DriveConsentDialogUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/consent/DriveConsentKitClientUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeaderUnitTest.java",

@@ -23,16 +23,11 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.window.layout.WindowMetricsCalculator;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,7 +42,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -92,8 +86,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.insets.InsetObserver;
-import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
@@ -117,12 +109,9 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private FuseboxMetrics mMetrics;
-    @Mock private RectProvider.Observer mRectProviderObserver;
     @Mock private BackPressManager mBackPressManager;
     @Mock private PrefService mPrefService;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
-    @Mock private InsetObserver mInsetObserver;
-    @Mock private WindowInsetsCompat mWindowInsetsCompat;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Callback<Boolean> mOnInteractionCompletedCallback;
 
@@ -173,10 +162,6 @@ public class FuseboxCoordinatorUnitTest {
         mParent = new ConstraintLayout(activity);
         activity.setContentView(mParent);
         LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, mParent, true);
-
-        lenient().doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
-        lenient().doReturn(mWindowInsetsCompat).when(mInsetObserver).getLastRawWindowInsets();
-        lenient().doReturn(Insets.NONE).when(mWindowInsetsCompat).getInsets(anyInt());
 
         mResourceProvider =
                 new OmniboxResourceProvider(
@@ -418,28 +403,6 @@ public class FuseboxCoordinatorUnitTest {
 
         mCoordinator.beginInput(mSession);
         verify(mMediator).beginInput(any());
-    }
-
-    @Test
-    @Config(qualifiers = "sw400dp")
-    public void viewportRectProvider() {
-        Activity activity = mActivityController.get();
-        View view = new View(activity);
-        doReturn(Insets.of(0, 40, 0, 0)).when(mWindowInsetsCompat).getInsets(anyInt());
-
-        ViewportRectProvider viewportRectProvider =
-                new ViewportRectProvider(activity, mInsetObserver, view);
-        viewportRectProvider.startObserving(mRectProviderObserver);
-
-        org.robolectric.RuntimeEnvironment.setQualifiers("w1000dp-h800dp");
-        viewportRectProvider.onConfigurationChanged(new Configuration());
-        var windowMetrics =
-                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
-        var bounds = windowMetrics.getBounds();
-        assertEquals(
-                new Rect(0, 40, bounds.width(), bounds.height()), viewportRectProvider.getRect());
-        verify(mRectProviderObserver).onRectChanged();
-        org.robolectric.shadows.ShadowLooper.idleMainLooper();
     }
 
     @Test
