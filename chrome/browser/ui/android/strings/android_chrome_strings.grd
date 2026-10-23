@@ -8037,6 +8037,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_GLIC_MIC_PERMISSION_DIALOG_ALLOW" desc="Positive button text to allow microphone permission for Gemini.">
         Allow
       </message>
+      <message name="IDS_GLIC_EXPERIMENTAL_OPT_IN_NOTIFICATION_TITLE" desc="Title of the notification shown when Gemini needs the user's permission to use Chrome on this device to complete a task, and Chrome is not open. Tapping the notification opens Chrome, where the user can give permission.">
+        Gemini needs permission to use Chrome
+      </message>
+      <message name="IDS_GLIC_EXPERIMENTAL_OPT_IN_NOTIFICATION_BODY" desc="Body text of the notification shown when Gemini needs the user's permission to use Chrome on this device to complete a task. 'Chrome auto browse' is the feature that lets Gemini browse and take actions in Chrome for the user.">
+        To work on your tasks, let Gemini use Chrome auto browse on this device
+      </message>
+      <message name="IDS_GLIC_EXPERIMENTAL_OPT_IN_NOTIFICATION_ACTION" desc="Action button on the notification shown when Gemini needs the user's permission to use Chrome. Tapping it opens Chrome, where the user can give permission. [CHAR_LIMIT=20]">
+        Go to Chrome
+      </message>
 
       <!-- TTC strings -->
       <message name="IDS_TTC_SESSION_ERROR" desc="Status shown on the TTC session pill when the session failed." translateable="false">
