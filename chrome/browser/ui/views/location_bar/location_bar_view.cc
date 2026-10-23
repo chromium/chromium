@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -610,15 +611,19 @@ void LocationBarView::FocusLocation(bool is_user_initiated,
     if (IsFullWebUiOmniboxReady()) {
       // In Full WebUI mode, `LocationBarView` is the focusable Views proxy for
       // the WebUI omnibox and `omnibox_view_` has `FocusBehavior::NEVER`.
-      // Route Views focus to `LocationBarView` and forward to `popup_view` so
-      // that subsequent layout passes don't trigger
-      // `FocusManager::AdvanceFocusIfNecessary()`.
+      // Route Views focus to `LocationBarView` so that subsequent layout
+      // passes don't trigger `FocusManager::AdvanceFocusIfNecessary()`, and
+      // forward to WebUI with the caller's intent.
       if (auto* focus_manager = GetFocusManager()) {
+        // `SetFocusedView(this)` may synchronously invoke
+        // `LocationBarView::OnFocus()`. Suppress its default WebUI focus
+        // forwarding so `ForwardFocusToWebUI()` below only runs once with the
+        // caller's intent.
+        base::AutoReset<bool> moving_focus(&moving_focus_to_webui_, true);
         focus_manager->SetFocusedView(this);
       }
-      if (auto* popup_view = GetOmniboxPopupView()) {
-        popup_view->OnFocus(/*query_zps=*/is_user_initiated);
-      }
+      ForwardFocusToWebUI(/*query_zps=*/is_user_initiated,
+                          /*select_all=*/is_user_initiated);
       return;
     }
   }
@@ -1718,19 +1723,24 @@ void LocationBarView::OnVisibleBoundsChanged() {
 void LocationBarView::OnFocus() {
   if (is_full_webui_omnibox_) {
     // In Full WebUI mode, `LocationBarView` is the focusable Views proxy for
-    // the WebUI omnibox. FocusManager calls `OnFocus()` during tab traversal
-    // and focus restoration. Pass `is_user_initiated = false` to match native
-    // `views::Textfield::OnFocus()` behavior so traversal focuses the omnibox
-    // and selects text without triggering an unexpected Zero-Prefix Suggestion
-    // (ZPS) query.
-    omnibox_view_->SetFocus(/*is_user_initiated=*/false);
-    if (auto* popup_view = GetOmniboxPopupView()) {
-      popup_view->OnFocus(/*query_zps=*/false);
+    // the WebUI omnibox. When `FocusManager` moves focus here on its own (tab
+    // traversal, focus restoration), forward to WebUI without triggering an
+    // unexpected Zero-Prefix Suggestion (ZPS) query.
+    if (!moving_focus_to_webui_) {
+      ForwardFocusToWebUI(/*query_zps=*/false, /*select_all=*/false);
     }
-  } else {
-    // This is only called when the user explicitly focuses the location bar.
-    // Renderer-initiated focuses go through the `FocusLocation()` call instead.
-    omnibox_view_->SetFocus(/*is_user_initiated=*/true);
+    return;
+  }
+  // This is only called when the user explicitly focuses the location bar.
+  // Renderer-initiated focuses go through the `FocusLocation()` call instead.
+  omnibox_view_->SetFocus(/*is_user_initiated=*/true);
+}
+
+void LocationBarView::ForwardFocusToWebUI(bool query_zps, bool select_all) {
+  if (auto* popup_view = GetOmniboxPopupView()) {
+    popup_view->OnFocus(
+        query_zps,
+        select_all || !GetOmniboxController()->edit_model()->has_focus());
   }
 }
 
@@ -1866,11 +1876,14 @@ void LocationBarView::OnFullWebUiOmniboxReady() {
     // it. `OmniboxViewViews::OnBlur()` treats this as a handoff to WebUI, not
     // a real blur.
     if (focus_manager) {
+      // `SetFocusedView(this)` may synchronously invoke
+      // `LocationBarView::OnFocus()`. Suppress its default WebUI focus
+      // forwarding so `ForwardFocusToWebUI()` below only runs once with the
+      // caller's intent.
+      base::AutoReset<bool> moving_focus(&moving_focus_to_webui_, true);
       focus_manager->SetFocusedView(this);
     }
-    if (auto* popup_view = GetOmniboxPopupView()) {
-      popup_view->OnFocus(query_zps);
-    }
+    ForwardFocusToWebUI(query_zps, /*select_all=*/false);
   }
 
   // Switch native focus behavior.
