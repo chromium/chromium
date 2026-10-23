@@ -119,6 +119,47 @@ TEST_P(HTMLCanvasElementTest, CanvasResizeClearsFrameBuffer) {
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 5, 5), fill_flags))));
 }
 
+TEST_P(HTMLCanvasElementTest, ContextCreationErrorReentrancyPreservesContext) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  // Enable printing so that flushes preserve the last recording.
+  GetDocument().SetPrinting(Document::kBeforePrinting);
+  SetBodyInnerHTML("<canvas id='c' width='10' height='20'></canvas>");
+
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setTextContent(R"JS(
+    var canvas = document.getElementById('c');
+    var ctx1 = null;
+    canvas.addEventListener('webglcontextcreationerror', function() {
+      ctx1 = canvas.getContext('2d');
+      ctx1.fillStyle = 'red';
+      ctx1.fillRect(0, 0, 10, 10);
+      ctx1.getImageData(0, 0, 1, 1);  // Force a frame to be rendered.
+    });
+    var gl = canvas.getContext('webgl');
+    var ctx2 = canvas.getContext('2d');
+    canvas.width = 10;
+    if (gl === null && ctx1 !== null && ctx1 === ctx2) {
+      ctx1.fillStyle = 'blue';
+      ctx1.fillRect(0, 0, 5, 5);
+    }
+  )JS");
+  GetDocument().body()->appendChild(script);
+  RunDocumentLifecycle();
+
+  auto* canvas =
+      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+  ASSERT_NE(canvas->RenderingContext(), nullptr);
+
+  cc::PaintFlags fill_flags = FillFlags();
+  fill_flags.setColor(SkColors::kBlue);
+  EXPECT_THAT(
+      canvas->RenderingContext()->GetLastRecording(),
+      Optional(RecordedOpsAre(
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 20),
+                                ClearRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 5, 5), fill_flags))));
+}
+
 TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
   // Enable script so that the canvas will create a LayoutHTMLCanvas.
   GetDocument().GetSettings()->SetScriptEnabled(true);

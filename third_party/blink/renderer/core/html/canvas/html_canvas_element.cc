@@ -556,10 +556,21 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
         CanvasContextCreationAttributesCore::PowerPreference::kLowPower;
   }
 
-  context_ = factory->Create(execution_context, this, recomputed_attributes);
-  if (!context_)
+  // Do not assign `context_` directly: `factory->Create()` can synchronously
+  // dispatch events (such as `webglcontextcreationerror`), allowing an event
+  // listener to reentrantly call `getContext()` or
+  // `transferControlToOffscreen()` while `Create()` is still on the stack.
+  CanvasRenderingContext* context =
+      factory->Create(execution_context, this, recomputed_attributes);
+  if (!context) {
     return nullptr;
+  }
+  if (context_ || IsOffscreenCanvasRegistered() || disposing_) {
+    context->Dispose();
+    return nullptr;
+  }
 
+  context_ = context;
   context_->RecordUKMCanvasRenderingAPI();
   context_->RecordUMACanvasRenderingAPI();
 

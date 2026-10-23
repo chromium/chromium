@@ -597,8 +597,9 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     const CanvasContextCreationAttributesCore& attributes) {
   DCHECK_EQ(execution_context, GetTopExecutionContext());
 
-  if (execution_context->IsContextDestroyed())
+  if (execution_context->IsContextDestroyed()) {
     return nullptr;
+  }
 
   // Unknown type.
   if (rendering_api == CanvasRenderingContext::CanvasRenderingAPI::kUnknown)
@@ -620,24 +621,36 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
           this, "OffscreenCanvas has an existing context of a different type");
       return nullptr;
     }
-  } else {
-    // Tell the debugger about the attempt to create an offscreen
-    // canvas context even if it will fail, to ease debugging.
-    probe::DidCreateOffscreenCanvasContext(this);
-
-    CanvasContextCreationAttributesCore recomputed_attributes = attributes;
-    if (!allow_high_performance_power_preference_) {
-      recomputed_attributes.power_preference =
-          CanvasContextCreationAttributesCore::PowerPreference::kLowPower;
-    }
-
-    context_ = factory->Create(execution_context, this, recomputed_attributes);
-    if (context_) {
-      context_->RecordUKMCanvasRenderingAPI();
-      context_->RecordUMACanvasRenderingAPI();
-    }
+    return context_.Get();
   }
 
+  // Tell the debugger about the attempt to create an offscreen
+  // canvas context even if it will fail, to ease debugging.
+  probe::DidCreateOffscreenCanvasContext(this);
+
+  CanvasContextCreationAttributesCore recomputed_attributes = attributes;
+  if (!allow_high_performance_power_preference_) {
+    recomputed_attributes.power_preference =
+        CanvasContextCreationAttributesCore::PowerPreference::kLowPower;
+  }
+
+  // Do not assign `context_` directly: `factory->Create()` can synchronously
+  // dispatch events (such as "webglcontextcreationerror"), allowing an event
+  // listener to reentrantly call `getContext()` or transfer (neuter) this
+  // OffscreenCanvas while `Create()` is still on the stack.
+  CanvasRenderingContext* context =
+      factory->Create(execution_context, this, recomputed_attributes);
+  if (!context) {
+    return nullptr;
+  }
+  if (context_ || is_neutered_ || disposing_) {
+    context->Dispose();
+    return nullptr;
+  }
+
+  context_ = context;
+  context_->RecordUKMCanvasRenderingAPI();
+  context_->RecordUMACanvasRenderingAPI();
   return context_.Get();
 }
 

@@ -4085,4 +4085,66 @@ TEST_P(CanvasRenderingContext2DTest,
               Pointee(PatternSizeIs(20, 10)));
 }
 
+TEST_P(CanvasRenderingContext2DTest, ContextCreationErrorEventReentrancy) {
+  HTMLCanvasElement& canvas = CanvasElement();
+  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
+  CanvasRenderingContext2D* reentrant_context = nullptr;
+
+  canvas.addEventListener(
+      event_type_names::kWebglcontextcreationerror,
+      MakeGarbageCollected<CallbackEventListener>(
+          base::BindLambdaForTesting([&]() {
+            reentrant_context = static_cast<CanvasRenderingContext2D*>(
+                canvas.GetCanvasRenderingContext(execution_context, "2d", {}));
+          })));
+
+  CanvasRenderingContext* webgl_context =
+      canvas.GetCanvasRenderingContext(execution_context, "webgl", {});
+  EXPECT_EQ(webgl_context, nullptr);
+  ASSERT_NE(reentrant_context, nullptr);
+  EXPECT_EQ(canvas.RenderingContext(), reentrant_context);
+
+  auto* subsequent_context = static_cast<CanvasRenderingContext2D*>(
+      canvas.GetCanvasRenderingContext(execution_context, "2d", {}));
+  EXPECT_EQ(subsequent_context, reentrant_context);
+
+  FakeImageSource cross_origin_source({
+      .size = gfx::Size(10, 10),
+      .would_taint_origin = true,
+  });
+
+  reentrant_context->drawImage(&cross_origin_source, 0, 0, 10, 10, 0, 0, 10, 10,
+                               ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(canvas.OriginClean());
+  EXPECT_FALSE(reentrant_context->OriginClean());
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    reentrant_context->getImageData(0, 0, 1, 1, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kSecurityError);
+  }
+
+  // Resizing the canvas resets the active 2D context and restores origin-clean.
+  canvas.setWidth(64, ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(canvas.OriginClean());
+  EXPECT_TRUE(reentrant_context->OriginClean());
+
+  // Drawing another cross-origin image after resize must taint the canvas
+  // again and prevent readback.
+  reentrant_context->drawImage(&cross_origin_source, 0, 0, 10, 10, 0, 0, 10, 10,
+                               ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(canvas.OriginClean());
+  EXPECT_FALSE(reentrant_context->OriginClean());
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    reentrant_context->getImageData(0, 0, 1, 1, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kSecurityError);
+  }
+}
+
 }  // namespace blink

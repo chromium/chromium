@@ -142,6 +142,7 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternalWebGPU(
 
   String init_error;
   if (!context->Initialize(execution_context, &init_error)) {
+    context->Dispose();
     host->HostDispatchEvent(WebGLContextEvent::Create(
         event_type_names::kWebglcontextcreationerror,
         StrCat({"Failed to create ", GetContextName(), ": ", init_error})));

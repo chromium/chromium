@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
@@ -12,6 +13,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -364,6 +367,91 @@ TEST_F(OffscreenCanvasTest, VisibilityPropagation) {
     offscreen_canvas().SetParentVisibility(true);
     EXPECT_TRUE(offscreen_canvas().IsPageVisible());
   }
+}
+
+TEST_F(OffscreenCanvasTest, ContextCreationErrorEventReentrancy) {
+  class CallbackEventListener final : public NativeEventListener {
+   public:
+    explicit CallbackEventListener(base::RepeatingClosure callback)
+        : callback_(std::move(callback)) {}
+    void Invoke(ExecutionContext*, Event*) override { callback_.Run(); }
+
+   private:
+    base::RepeatingClosure callback_;
+  };
+
+  auto* canvas = OffscreenCanvas::Create(GetScriptState(), 100, 100);
+  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
+  OffscreenCanvasRenderingContext2D* reentrant_context = nullptr;
+
+  canvas->addEventListener(
+      event_type_names::kWebglcontextcreationerror,
+      MakeGarbageCollected<CallbackEventListener>(
+          base::BindLambdaForTesting([&]() {
+            reentrant_context = static_cast<OffscreenCanvasRenderingContext2D*>(
+                canvas->GetCanvasRenderingContext(
+                    execution_context,
+                    CanvasRenderingContext::CanvasRenderingAPI::k2D, {}));
+          })));
+
+  // In unit tests without a WebGL context provider, WebGL context creation
+  // fails and synchronously dispatches webglcontextcreationerror.
+  CanvasRenderingContext* webgl_context = canvas->GetCanvasRenderingContext(
+      execution_context, CanvasRenderingContext::CanvasRenderingAPI::kWebgl,
+      {});
+  EXPECT_EQ(webgl_context, nullptr);
+  ASSERT_NE(reentrant_context, nullptr);
+  EXPECT_EQ(canvas->RenderingContext(), reentrant_context);
+
+  auto* subsequent_context = static_cast<OffscreenCanvasRenderingContext2D*>(
+      canvas->GetCanvasRenderingContext(
+          execution_context, CanvasRenderingContext::CanvasRenderingAPI::k2D,
+          {}));
+  EXPECT_EQ(subsequent_context, reentrant_context);
+
+  // Draw a cross-origin image into the 2D context and verify origin tainting.
+  SkImageInfo info = SkImageInfo::MakeN32Premul(10, 10);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(info);
+  surface->getCanvas()->clear(SK_ColorRED);
+  auto image =
+      UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
+  image->SetOriginClean(false);
+  auto* tainted_bitmap = MakeGarbageCollected<ImageBitmap>(image);
+  ASSERT_FALSE(tainted_bitmap->OriginClean());
+
+  reentrant_context->drawImage(tainted_bitmap, 0, 0, 10, 10, 0, 0, 10, 10,
+                               ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(canvas->OriginClean());
+  EXPECT_FALSE(reentrant_context->OriginClean());
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    reentrant_context->getImageData(0, 0, 1, 1, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kSecurityError);
+  }
+
+  // Resizing the canvas resets the active 2D context and restores origin-clean.
+  canvas->setWidth(64);
+  EXPECT_TRUE(canvas->OriginClean());
+  EXPECT_TRUE(reentrant_context->OriginClean());
+
+  // Drawing another cross-origin image after resize must taint the canvas
+  // again and prevent readback.
+  reentrant_context->drawImage(tainted_bitmap, 0, 0, 10, 10, 0, 0, 10, 10,
+                               ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(canvas->OriginClean());
+  EXPECT_FALSE(reentrant_context->OriginClean());
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    reentrant_context->getImageData(0, 0, 1, 1, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kSecurityError);
+  }
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
 }
 
 const TestParams kTestCases[] = {

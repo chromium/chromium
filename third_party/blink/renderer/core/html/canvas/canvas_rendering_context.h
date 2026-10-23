@@ -338,6 +338,7 @@ class CORE_EXPORT CanvasRenderingContext
 
   void Trace(Visitor*) const override;
   virtual void Stop() = 0;
+  virtual void Dispose();
 
   static CanvasPerformanceMonitor& GetCanvasPerformanceMonitor();
 
@@ -349,8 +350,6 @@ class CORE_EXPORT CanvasRenderingContext
   CanvasRenderingContext(CanvasRenderingContextHost*,
                          const CanvasContextCreationAttributesCore&,
                          CanvasRenderingAPI);
-
-  virtual void Dispose();
 
   bool IsDrawElementImageEligible(Element* element,
                                   const String& func_name,

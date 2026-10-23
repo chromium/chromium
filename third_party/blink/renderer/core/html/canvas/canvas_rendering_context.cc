@@ -164,7 +164,9 @@ void CanvasRenderingContext::Dispose() {
   // an error when CanvasRenderingContext::DidProcessTask() is invoked
   // after the HTMLCanvasElement is destroyed.
   if (CanvasRenderingContextHost* host = Host()) [[likely]] {
-    host->DetachContext();
+    if (host->RenderingContext() == this) {
+      host->DetachContext();
+    }
     host_ = nullptr;
   }
 }
