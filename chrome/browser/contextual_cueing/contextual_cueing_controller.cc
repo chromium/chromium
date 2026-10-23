@@ -1525,7 +1525,9 @@ void ContextualCueingController::MaybeLaunchDismissHatsSurvey(
   hats_service->LaunchSurveyForWebContents(
       kHatsSurveyTriggerContextualCueingDismissed, web_contents,
       /*product_specific_bits_data=*/{},
-      /*product_specific_string_data=*/{{"CUJ", GetSurveyCujName(cuj)}},
+      /*product_specific_string_data=*/
+      {{"CUJ", GetSurveyCujName(cuj)},
+       {"hostname", web_contents->GetLastCommittedURL().GetHost()}},
       /*success_callback=*/
       base::BindOnce(
           [](base::WeakPtr<Profile> weak_profile,

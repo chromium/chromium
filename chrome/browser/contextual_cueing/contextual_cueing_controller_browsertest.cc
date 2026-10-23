@@ -3314,13 +3314,14 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   auto* cue = &response.contextual_cues(0);
 
   base::OnceClosure edu_success_callback;
-  EXPECT_CALL(
-      *mock_hats_service,
-      LaunchSurveyForWebContents(
-          kHatsSurveyTriggerContextualCueingDismissed, testing::_,
-          testing::IsEmpty(),
-          testing::UnorderedElementsAre(testing::Pair("CUJ", "LEARNING")),
-          testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_hats_service,
+              LaunchSurveyForWebContents(
+                  kHatsSurveyTriggerContextualCueingDismissed, testing::_,
+                  testing::IsEmpty(),
+                  testing::UnorderedElementsAre(
+                      testing::Pair("CUJ", "LEARNING"),
+                      testing::Pair("hostname", "www.activetab.com")),
+                  testing::_, testing::_, testing::_, testing::_))
       .WillOnce([&](const std::string& trigger,
                     content::WebContents* web_contents,
                     const SurveyBitsData& product_specific_bits_data,
@@ -3362,13 +3363,14 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   // Dismissing a Shopping cue SHOULD launch the survey because Shopping is
   // tracked independently from EDU.
   base::OnceClosure shopping_success_callback;
-  EXPECT_CALL(
-      *mock_hats_service,
-      LaunchSurveyForWebContents(
-          kHatsSurveyTriggerContextualCueingDismissed, testing::_,
-          testing::IsEmpty(),
-          testing::UnorderedElementsAre(testing::Pair("CUJ", "SHOPPING")),
-          testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_hats_service,
+              LaunchSurveyForWebContents(
+                  kHatsSurveyTriggerContextualCueingDismissed, testing::_,
+                  testing::IsEmpty(),
+                  testing::UnorderedElementsAre(
+                      testing::Pair("CUJ", "SHOPPING"),
+                      testing::Pair("hostname", "www.activetab.com")),
+                  testing::_, testing::_, testing::_, testing::_))
       .WillOnce([&](const std::string& trigger,
                     content::WebContents* web_contents,
                     const SurveyBitsData& product_specific_bits_data,
@@ -3412,13 +3414,14 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   auto* cue = &response.contextual_cues(0);
 
   base::OnceClosure indigo_success_callback;
-  EXPECT_CALL(
-      *mock_hats_service,
-      LaunchSurveyForWebContents(
-          kHatsSurveyTriggerContextualCueingDismissed, testing::_,
-          testing::IsEmpty(),
-          testing::UnorderedElementsAre(testing::Pair("CUJ", "TRY_ON_YOU")),
-          testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_hats_service,
+              LaunchSurveyForWebContents(
+                  kHatsSurveyTriggerContextualCueingDismissed, testing::_,
+                  testing::IsEmpty(),
+                  testing::UnorderedElementsAre(
+                      testing::Pair("CUJ", "TRY_ON_YOU"),
+                      testing::Pair("hostname", "www.activetab.com")),
+                  testing::_, testing::_, testing::_, testing::_))
       .WillOnce([&](const std::string& trigger,
                     content::WebContents* web_contents,
                     const SurveyBitsData& product_specific_bits_data,

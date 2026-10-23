@@ -718,7 +718,8 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerContextualCueingDismissed,
       /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/std::vector<std::string>{"CUJ"});
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"CUJ", "hostname"});
 
 #else  // BUILDFLAG(IS_ANDROID)
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
