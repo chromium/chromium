@@ -1042,3 +1042,20 @@ TEST_F(NewTabPageCoordinatorTest, TestIsNTPBypassed) {
 
   [coordinator_ stop];
 }
+
+// Tests that opening the main customization menu from a Tip logs
+// `HomeCustomizationEntrypoint::kPromo` to `IOS.HomeCustomization.Opened`.
+TEST_F(NewTabPageCoordinatorTest,
+       TestOpenMainCustomizationMenuFromTipLogsOpenedMetric) {
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+
+  [coordinator_ openMainCustomizationMenuWithIconBubbleOnDismiss:YES
+                                                  scrollToBottom:NO];
+  histogram_tester_->ExpectUniqueSample(kHomeCustomizationOpenedHistogram,
+                                        HomeCustomizationEntrypoint::kPromo, 1);
+
+  OCMStub([snackbar_commands_handler_mock_ dismissAllSnackbars]);
+  [coordinator_ stop];
+}

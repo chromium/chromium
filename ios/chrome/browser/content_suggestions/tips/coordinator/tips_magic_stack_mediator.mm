@@ -247,6 +247,8 @@ using segmentation_platform::TipIdentifier;
         GURL(background.attribution_action_url()), background.collection_id());
   }
   _backgroundCustomizationService->StoreCurrentTheme();
+  [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
+  [self.presentationAudience didSelectNTPThemeOption];
 }
 
 - (void)didToggleTipsNotificationsSwitch:(BOOL)enabled {

@@ -46,6 +46,10 @@ enum class TipIdentifier;
 // NTP Theme tip.
 - (void)didSelectNTPThemePhotoPicker;
 
+// Indicates that the user has tapped a theme option in the actionable NTP Theme
+// tip.
+- (void)didSelectNTPThemeOption;
+
 // Notifies the audience that a user-uploaded background photo was saved from
 // the actionable NTP Theme tip.
 - (void)didSaveNTPThemeBackgroundPhoto;

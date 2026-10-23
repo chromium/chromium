@@ -9098,6 +9098,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TipsMagicStack.NTPCustomizationPromo.Action"
+    enum="IOSTipsNTPCustomizationPromoAction" expires_after="2027-04-22">
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logged when the user interacts with the actionable NTP Customization
+    (Focused NTP) promo sheet or taps Undo on its confirmation snackbar.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TipsNotification.{PromoType}.PromoAction"
     enum="IOSTipsNotificationPromoAction" expires_after="2027-03-17">
   <owner>bmcclure@google.com</owner>

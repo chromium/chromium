@@ -170,8 +170,9 @@ TEST_F(TipsMagicStackMediatorTest,
   EXPECT_EQ(mediator_.config, mediator_.activeConfig);
 }
 
-// Tests that selecting an NTP theme swatch updates `selectedIndex` and applies
-// the theme to `HomeBackgroundCustomizationService`.
+// Tests that selecting an NTP theme swatch updates `selectedIndex`, applies
+// the theme to `HomeBackgroundCustomizationService`, logs Magic Stack
+// engagement, and notifies `presentationAudience`.
 TEST_F(TipsMagicStackMediatorTest, AppliesSelectedNTPThemeAtIndex) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -186,11 +187,48 @@ TEST_F(TipsMagicStackMediatorTest, AppliesSelectedNTPThemeAtIndex) {
       static_cast<NTPThemeActionableTipConfig*>(mediator_.activeConfig);
   HomeBackgroundCustomizationService* service =
       HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_.get());
+  id delegate =
+      OCMStrictProtocolMock(@protocol(TipsMagicStackMediatorDelegate));
+  mediator_.delegate = delegate;
+  id audience = OCMStrictProtocolMock(
+      @protocol(ContentSuggestionsViewControllerAudience));
+  mediator_.presentationAudience = audience;
 
+  OCMExpect(
+      [delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                                   kTipsNTPThemeActionable]);
+  OCMExpect([audience didSelectNTPThemeOption]);
   [(id<TipsModuleAudience>)mediator_ didSelectNTPThemeAtIndex:1];
   EXPECT_EQ(1, actionableConfig.selectedIndex);
   EXPECT_TRUE(service->GetCurrentColorTheme().has_value());
+  EXPECT_OCMOCK_VERIFY(delegate);
+  EXPECT_OCMOCK_VERIFY(audience);
+
+  OCMExpect(
+      [delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                                   kTipsNTPThemeActionable]);
+  OCMExpect([audience didSelectNTPThemeOption]);
   [(id<TipsModuleAudience>)mediator_ didSelectNTPThemeAtIndex:0];
   EXPECT_EQ(0, actionableConfig.selectedIndex);
   EXPECT_FALSE(service->GetCurrentColorTheme().has_value());
+  EXPECT_OCMOCK_VERIFY(delegate);
+  EXPECT_OCMOCK_VERIFY(audience);
+}
+
+// Tests that the mediator logs Magic Stack engagement and forwards
+// `-didToggleTipsNotificationsSwitch:` to its `presentationAudience`.
+TEST_F(TipsMagicStackMediatorTest, ForwardsDidToggleTipsNotificationsSwitch) {
+  id delegate =
+      OCMStrictProtocolMock(@protocol(TipsMagicStackMediatorDelegate));
+  mediator_.delegate = delegate;
+  id audience = OCMStrictProtocolMock(
+      @protocol(ContentSuggestionsViewControllerAudience));
+  mediator_.presentationAudience = audience;
+
+  OCMExpect([delegate
+      logMagicStackEngagementForType:ContentSuggestionsModuleType::kTips]);
+  OCMExpect([audience didToggleTipsNotificationsSwitch:YES]);
+  [(id<TipsModuleAudience>)mediator_ didToggleTipsNotificationsSwitch:YES];
+  EXPECT_OCMOCK_VERIFY(delegate);
+  EXPECT_OCMOCK_VERIFY(audience);
 }

@@ -183,6 +183,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/magic_stack/ui",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui:cells",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator",
+    "//ios/chrome/browser/content_suggestions/tips/model",
     "//ios/chrome/browser/content_suggestions/ui:commands",
     "//ios/chrome/browser/content_suggestions/ui:ui_util",
     "//ios/chrome/browser/context_menu/ui_bundled/link_preview",

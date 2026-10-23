@@ -12,6 +12,21 @@ extern const char kTipsMagicStackModuleDisplayedTypeHistogram[];
 // Logged when the user taps on the Tips (Magic Stack) module. The enumeration
 // indicates which tip was interacted with.
 extern const char kTipsMagicStackModuleTappedTypeHistogram[];
+// Logged when the user interacts with the actionable NTP Customization promo
+// sheet or its Undo snackbar.
+extern const char kTipsNTPCustomizationPromoActionHistogram[];
+
+// Enum for the IOS.TipsMagicStack.NTPCustomizationPromo.Action histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+//
+// LINT.IfChange(IOSTipsNTPCustomizationPromoAction)
+enum class IOSTipsNTPCustomizationPromoAction {
+  kAccepted = 0,
+  kCancelled = 1,
+  kUndone = 2,
+  kMaxValue = kUndone,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSTipsNTPCustomizationPromoAction)
 
 // User action names.
 // Logged when the Save Passwords promo is dismissed.

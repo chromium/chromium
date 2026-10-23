@@ -902,7 +902,13 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didSelectNTPThemePhotoPicker {
+  [self didSelectNTPThemeOption];
   [self.delegate openNTPBackgroundPhotoPicker];
+}
+
+- (void)didSelectNTPThemeOption {
+  base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram,
+                                TipIdentifier::kNTPTheme);
   [self.NTPActionsDelegate tipsOpened];
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
@@ -1022,6 +1028,9 @@ using segmentation_platform::TipIdentifier;
       break;
     }
     case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
+      [_magicStackRankingModel
+          logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                             kTipsNTPThemeActionable];
       [self didSelectTip:segmentation_platform::TipIdentifier::kNTPTheme];
       break;
     default:
@@ -1517,6 +1526,10 @@ using segmentation_platform::TipIdentifier;
                     didFinishWithAccept:(BOOL)didAccept {
   [_tipsNTPCustomizationCoordinator stop];
   _tipsNTPCustomizationCoordinator = nil;
+  base::UmaHistogramEnumeration(
+      kTipsNTPCustomizationPromoActionHistogram,
+      didAccept ? IOSTipsNTPCustomizationPromoAction::kAccepted
+                : IOSTipsNTPCustomizationPromoAction::kCancelled);
   if (didAccept) {
     [self.delegate applyFocusedNTPWithUndoSnackbar];
   }

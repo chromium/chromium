@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
+#import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
@@ -1489,7 +1490,12 @@ using ntp_tiles::AimButtonRefactorArm;
 - (void)openMainCustomizationMenuWithIconBubbleOnDismiss:
             (BOOL)withIconBubbleOnDismiss
                                           scrollToBottom:(BOOL)scrollToBottom {
+  if (_customizationCoordinator) {
+    return;
+  }
   _presentCustomizationButtonBubbleOnDismiss = withIconBubbleOnDismiss;
+  [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
+                               HomeCustomizationEntrypoint::kPromo];
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
   if (scrollToBottom) {
     [_customizationCoordinator scrollMainPageToBottom];
@@ -2609,6 +2615,8 @@ using ntp_tiles::AimButtonRefactorArm;
   if (!self.started || !self.prefService || !self.browser) {
     return;
   }
+  base::UmaHistogramEnumeration(kTipsNTPCustomizationPromoActionHistogram,
+                                IOSTipsNTPCustomizationPromoAction::kUndone);
   self.prefService->SetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
                                magicStackEnabled);
   DiscoverFeedVisibilityBrowserAgent::FromBrowser(self.browser)

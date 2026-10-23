@@ -2348,6 +2348,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/tips_notifications/model/utils.h:TipsNotificationUserType) -->
 
+<!-- LINT.IfChange(IOSTipsNTPCustomizationPromoAction) -->
+
+<enum name="IOSTipsNTPCustomizationPromoAction">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Undone"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h:IOSTipsNTPCustomizationPromoAction) -->
+
 <!-- LINT.IfChange(TrustedVaultNotificationEvents) -->
 
 <enum name="IOSTipsTrustedVaultNotificationEvents">
