@@ -277,10 +277,18 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                      features::IsPageActionsElevatedToolbarEnabled());
 
   // Omnibox config:
-  source->AddBoolean("reportMetrics", true);
-  source->AddBoolean("isTopChromeSearchbox", true);
+  // Don't add the values that depend on the profile: the toolbar doesn't read
+  // them, and in TopChromeWebUIProfile, this data source is shared by the
+  // windows of all profiles.
   source->AddLocalizedStrings(
-      SearchboxHandler::GetWebUIDataSourceDict(profile));
+      SearchboxHandler::GetProfileIndependentWebUIDataSourceDict({}));
+  // Set after the searchbox values above, which have the defaults for other
+  // searchboxes.
+  source->AddBoolean("isTopChromeSearchbox", true);
+  // Don't report the searchbox paint metrics: the toolbar doesn't set their
+  // names, e.g. charTypedToPaintMetricName, and has no dropdown, which reports
+  // them.
+  source->AddBoolean("reportMetrics", false);
 
   source->AddBoolean(
       "initialWebUISurfaceSyncEnabled",

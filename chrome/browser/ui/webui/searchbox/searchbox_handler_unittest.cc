@@ -258,6 +258,26 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictKeywordSpaceTriggering) {
   EXPECT_TRUE(*strings.FindBool("keywordSpaceTriggeringEnabled"));
 }
 
+TEST_F(SearchboxHandlerTest,
+       GetWebUIDataSourceDictHasProfileIndependentAndDependentValues) {
+  base::DictValue independent_strings =
+      SearchboxHandler::GetProfileIndependentWebUIDataSourceDict({});
+  base::DictValue dependent_strings =
+      SearchboxHandler::GetProfileDependentWebUIDataSourceDict(profile(), {});
+  EXPECT_TRUE(independent_strings.contains("searchBoxHint"));
+  EXPECT_TRUE(dependent_strings.contains("keywordSpaceTriggeringEnabled"));
+
+  // Each value is in exactly one of them.
+  base::DictValue strings = SearchboxHandler::GetWebUIDataSourceDict(profile());
+  EXPECT_EQ(strings.size(),
+            independent_strings.size() + dependent_strings.size());
+  for (const auto item : strings) {
+    EXPECT_NE(independent_strings.contains(item.first),
+              dependent_strings.contains(item.first))
+        << item.first;
+  }
+}
+
 TEST_F(SearchboxHandlerTest, KeywordSpaceTriggeringDynamicPrefChange) {
   auto web_contents = content::WebContents::Create(
       content::WebContents::CreateParams(profile()));

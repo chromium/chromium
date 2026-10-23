@@ -104,13 +104,41 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
     bool is_lens = false;
   };
 
+  // The options of WebUIDataSourceOptions that
+  // GetProfileIndependentWebUIDataSourceDict() uses.
+  struct ProfileIndependentWebUIDataSourceOptions {
+    bool enable_voice_search = false;
+    bool enable_lens_search = false;
+  };
+
+  // The options of WebUIDataSourceOptions that
+  // GetProfileDependentWebUIDataSourceDict() uses.
+  struct ProfileDependentWebUIDataSourceOptions {
+    bool session_allows_drag_and_drop = false;
+    bool is_lens = false;
+  };
+
   static bool GetAllVoiceSearchCoherenceComposeboxesEnabled();
   static bool GetVoiceSearchCoherenceAnySearchboxExperimentEnabled();
   static bool GetVoiceSearchCoherenceCobrowsingComposeboxEnabled();
 
+  // Returns the values for the WebUIDataSource of a WebUI that uses the
+  // searchbox, i.e. both GetProfileIndependentWebUIDataSourceDict() and
+  // GetProfileDependentWebUIDataSourceDict().
   static base::DictValue GetWebUIDataSourceDict(Profile* profile);
   static base::DictValue GetWebUIDataSourceDict(Profile* profile,
                                                 WebUIDataSourceOptions options);
+
+  // Returns the values of GetWebUIDataSourceDict() that don't depend on the
+  // profile.
+  static base::DictValue GetProfileIndependentWebUIDataSourceDict(
+      ProfileIndependentWebUIDataSourceOptions options);
+
+  // Returns the values of GetWebUIDataSourceDict() that depend on `profile`,
+  // e.g. on its prefs.
+  static base::DictValue GetProfileDependentWebUIDataSourceDict(
+      Profile* profile,
+      ProfileDependentWebUIDataSourceOptions options);
 
   // Computes URL emphasis metadata for the given `text`.
   // Based on `OmniboxView::UpdateTextStyle()` (for URL component parsing and
