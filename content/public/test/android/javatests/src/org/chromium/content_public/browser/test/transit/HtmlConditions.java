@@ -6,11 +6,13 @@ package org.chromium.content_public.browser.test.transit;
 
 import android.graphics.Rect;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.InstrumentationThreadCondition;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
@@ -20,6 +22,8 @@ import java.util.function.Supplier;
 /** {@link Condition}s related to HTML DOM Elements. */
 public class HtmlConditions {
     /** Fulfilled when a single DOM Element with the given id exists and has non-zero bounds. */
+    // TODO(crbug.com/574535551): Wait for the WebContents to be visible; currently a hidden
+    // WebContents is still reported as displayed.
     public static class DisplayedCondition extends ConditionWithResult<Rect> {
         private final String mHtmlId;
         private final Supplier<WebContents> mWebContentsSupplier;
@@ -102,6 +106,17 @@ public class HtmlConditions {
             WebContents webContents = mWebContentsSupplier.get();
             if (webContents == null) {
                 return fulfilled("null webContents");
+            }
+
+            // A hidden WebContents (e.g. the opener after a link opened a new tab) still lays out
+            // its DOM.
+            boolean isDestroyedOrHidden =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () ->
+                                    webContents.isDestroyed()
+                                            || webContents.getVisibility() == Visibility.HIDDEN);
+            if (isDestroyedOrHidden) {
+                return fulfilled("WebContents destroyed or hidden");
             }
 
             Rect bounds;
