@@ -13,7 +13,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -254,12 +257,21 @@ class MockToolbarUIDelegate
 class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
                                   public WebUIToolbarUI::DependencyProvider {
  public:
-  WebUIToolbarUIBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton,
-         features::kWebUIInProcessResourceLoadingV2,
-         features::kWebUIPinnedToolbarActions, features::kDebugTopChromeWebUI},
-        {});
+  explicit WebUIToolbarUIBrowserTest(bool enable_location_bar = false) {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kInitialWebUI,
+        features::kWebUIReloadButton,
+        features::kWebUIInProcessResourceLoadingV2,
+        features::kWebUIPinnedToolbarActions,
+        features::kDebugTopChromeWebUI,
+    };
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (enable_location_bar) {
+      enabled_features.push_back(features::kWebUILocationBar);
+    } else {
+      disabled_features.push_back(features::kWebUILocationBar);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~WebUIToolbarUIBrowserTest() override = default;
 
@@ -555,6 +567,112 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest,
   EXPECT_TRUE(dict->contains("isFallbackPrewarming"));
 
   EXPECT_TRUE(dict->contains("initialWebUISurfaceSyncEnabled"));
+}
+
+// Verifies that when `features::kWebUILocationBar` is disabled,
+// `WebUIToolbarUI` does not populate Searchbox-specific `loadTimeData` keys
+// while keeping `omniboxResizingPrioritizationEnabled` populated.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest,
+                       LoadTimeData_LocationBarDisabled) {
+  ASSERT_FALSE(features::IsWebUILocationBarEnabled());
+  EXPECT_TRUE(ui()->is_initialized());
+
+  content::RenderFrameHost* rfh =
+      web_ui()->GetWebContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  EXPECT_EQ(
+      false,
+      content::EvalJs(
+          rfh,
+          "import('/strings.m.js').then(() => "
+          "import('//resources/js/load_time_data.js')).then(({"
+          "loadTimeData}) => loadTimeData.getBoolean('enableLocationBar'))"));
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          rfh,
+          "import('//resources/js/load_time_data.js').then(({"
+          "loadTimeData}) => "
+          "loadTimeData.valueExists('omniboxResizingPrioritizationEnabled'))"));
+  EXPECT_EQ(
+      false,
+      content::EvalJs(
+          rfh,
+          "import('//resources/js/load_time_data.js').then(({"
+          "loadTimeData}) => loadTimeData.valueExists('reportMetrics'))"));
+  EXPECT_EQ(false, content::EvalJs(
+                       rfh,
+                       "import('//resources/js/load_time_data.js').then(({"
+                       "loadTimeData}) => "
+                       "loadTimeData.valueExists('isTopChromeSearchbox'))"));
+  EXPECT_EQ(
+      false,
+      content::EvalJs(
+          rfh,
+          "import('//resources/js/load_time_data.js').then(({"
+          "loadTimeData}) => loadTimeData.valueExists('searchBoxHint'))"));
+}
+
+class WebUIToolbarUILocationBarEnabledBrowserTest
+    : public WebUIToolbarUIBrowserTest {
+ public:
+  WebUIToolbarUILocationBarEnabledBrowserTest()
+      : WebUIToolbarUIBrowserTest(/*enable_location_bar=*/true) {}
+
+  OmniboxController* GetOmniboxController() override {
+    auto* browser_window = BrowserWindow::FromBrowser(browser());
+    auto* location_bar =
+        browser_window ? browser_window->GetLocationBar() : nullptr;
+    return location_bar ? location_bar->GetOmniboxController() : nullptr;
+  }
+};
+
+// Verifies that when `features::kWebUILocationBar` is enabled, Searchbox
+// `loadTimeData` keys are populated as expected.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUILocationBarEnabledBrowserTest,
+                       LoadTimeData_LocationBarEnabled) {
+  ASSERT_TRUE(features::IsWebUILocationBarEnabled());
+  EXPECT_TRUE(ui()->is_initialized());
+
+  content::RenderFrameHost* rfh =
+      web_ui()->GetWebContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          rfh,
+          "import('/strings.m.js').then(() => "
+          "import('//resources/js/load_time_data.js')).then(({"
+          "loadTimeData}) => loadTimeData.getBoolean('enableLocationBar'))"));
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          rfh,
+          "import('//resources/js/load_time_data.js').then(({"
+          "loadTimeData}) => "
+          "loadTimeData.valueExists('omniboxResizingPrioritizationEnabled'))"));
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          rfh,
+          "import('//resources/js/load_time_data.js').then(({"
+          "loadTimeData}) => loadTimeData.valueExists('reportMetrics'))"));
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          rfh,
+          "import('//resources/js/load_time_data.js').then(({"
+          "loadTimeData}) => "
+          "loadTimeData.getBoolean('isTopChromeSearchbox'))"));
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          rfh,
+          "import('//resources/js/load_time_data.js').then(({"
+          "loadTimeData}) => loadTimeData.valueExists('searchBoxHint') && "
+          "loadTimeData.getString('searchBoxHint').length > 0)"));
 }
 
 }  // namespace

@@ -276,19 +276,25 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   source->AddBoolean("enablePageActionsElevatedToolbar",
                      features::IsPageActionsElevatedToolbarEnabled());
 
-  // Omnibox config:
-  // Don't add the values that depend on the profile: the toolbar doesn't read
-  // them, and in TopChromeWebUIProfile, this data source is shared by the
-  // windows of all profiles.
-  source->AddLocalizedStrings(
-      SearchboxHandler::GetProfileIndependentWebUIDataSourceDict({}));
-  // Set after the searchbox values above, which have the defaults for other
-  // searchboxes.
-  source->AddBoolean("isTopChromeSearchbox", true);
-  // Don't report the searchbox paint metrics: the toolbar doesn't set their
-  // names, e.g. charTypedToPaintMetricName, and has no dropdown, which reports
-  // them.
-  source->AddBoolean("reportMetrics", false);
+  if (features::IsWebUILocationBarEnabled()) {
+    // Omnibox config:
+    // Don't add the values that depend on the profile: the toolbar doesn't read
+    // them, and in TopChromeWebUIProfile, this data source is shared by the
+    // windows of all profiles.
+    source->AddLocalizedStrings(
+        SearchboxHandler::GetProfileIndependentWebUIDataSourceDict({}));
+    // Set after the searchbox values above, which have the defaults for other
+    // searchboxes.
+    source->AddBoolean("isTopChromeSearchbox", true);
+    // Don't report the searchbox paint metrics: the toolbar doesn't set their
+    // names, e.g. charTypedToPaintMetricName, and has no dropdown, which
+    // reports them.
+    source->AddBoolean("reportMetrics", false);
+
+    content::URLDataSource::Add(
+        profile, std::make_unique<FaviconSource>(
+                     profile, chrome::FaviconUrlFormat::kFavicon2));
+  }
 
   source->AddBoolean(
       "initialWebUISurfaceSyncEnabled",
@@ -314,10 +320,6 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
 
   // Handles chrome.send() calls that records non-timestamp histograms.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
-
-  content::URLDataSource::Add(
-      profile, std::make_unique<FaviconSource>(
-                   profile, chrome::FaviconUrlFormat::kFavicon2));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebUIToolbarUI)
