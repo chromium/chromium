@@ -755,6 +755,7 @@ if (!is_chromeos_device) {
 
     if (is_mac) {
       deps += [
+        "//chrome/browser/ui/side_panel",
         "//chrome/browser/ui/tabs:tabs_public",
         "//chrome/browser/ui/views/frame:contents_web_view",
         "//ui/base",

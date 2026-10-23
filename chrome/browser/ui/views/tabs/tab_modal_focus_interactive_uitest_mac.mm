@@ -7,6 +7,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -187,6 +189,39 @@ IN_PROC_BROWSER_TEST_F(TabModalFocusInteractiveUITestMac,
       // The modal should be key window again.
       PollUntil([&]() { return IsKeyWindow(modal_widget.get()); },
                 "Verify modal is key again"));
+}
+
+// Tests that clicking a WebView outside of the blocked tab contents, such as a
+// side panel, still reaches its web contents while a tab-modal dialog is
+// showing. Regression test for crbug.com/514188393.
+IN_PROC_BROWSER_TEST_F(TabModalFocusInteractiveUITestMac,
+                       ClickOnSidePanelWebViewIsNotBlocked) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+  static constexpr char kCountPointerDownsJs[] = R"(
+      () => {
+        window.pointerDownCount = 0;
+        window.addEventListener('pointerdown', () => window.pointerDownCount++,
+                                {capture: true});
+      })";
+
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  // Keeps the side panel from moving after the click target is computed.
+  side_panel_ui->DisableAnimationsForTesting();
+
+  std::unique_ptr<views::Widget> modal_widget;
+  RunTestSequence(
+      Do([&]() { side_panel_ui->Show(SidePanelEntryId::kBookmarks); }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              kBookmarkSidePanelWebViewElementId),
+      WaitForWebContentsPainted(kSidePanelWebContentsId),
+      ExecuteJs(kSidePanelWebContentsId, kCountPointerDownsJs),
+      Do([&]() { modal_widget = CreateAndShowTestDialog(); }),
+      WaitForShow(kDialogId),
+      PollUntil([&]() { return IsKeyWindow(modal_widget.get()); },
+                "Verify modal is key"),
+      MoveMouseTo(kBookmarkSidePanelWebViewElementId), ClickMouse(),
+      WaitForJsResult(kSidePanelWebContentsId, "() => window.pointerDownCount",
+                      1));
 }
 
 }  // namespace
