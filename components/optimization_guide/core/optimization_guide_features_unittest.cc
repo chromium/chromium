@@ -17,7 +17,6 @@
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -30,9 +29,7 @@ namespace {
 
 class OptimizationGuideFeaturesTest : public testing::Test {
  public:
-  void SetUp() override {
-    model_execution::prefs::RegisterProfilePrefs(prefs_.registry());
-  }
+  void SetUp() override { RegisterGenAiFeatures(prefs_.registry()); }
 
  private:
   TestingPrefServiceSimple prefs_;

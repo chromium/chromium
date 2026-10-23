@@ -28,7 +28,6 @@
 #include "components/multistep_filter/core/switches.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -63,8 +62,7 @@ class MultistepFilterServiceTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
     RegisterRetentionProfilePrefs(pref_service_.registry());
-    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-        pref_service_.registry());
+    optimization_guide::RegisterGenAiFeatures(pref_service_.registry());
     sync_service_.GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kHistory, true);
   }

@@ -9,7 +9,6 @@
 #include "chrome/browser/finds/core/finds_service.h"
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -67,8 +66,7 @@ TEST_F(FindsUtilsTest, MarkModelExecutionLastTimestamp) {
 }
 
 TEST_F(FindsUtilsTest, IsAllowedByEnterprisePolicy) {
-  optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-      prefs()->registry());
+  optimization_guide::RegisterGenAiFeatures(prefs()->registry());
 
   EXPECT_TRUE(IsAllowedByEnterprisePolicy(prefs()));
 

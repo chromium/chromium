@@ -23,10 +23,6 @@ enum class GenAILocalFoundationalModelEnterprisePolicySettings {
   kMaxValue = kDisallowed,
 };
 
-// TODO: crbug.com/514743962 - This is a remote model execution thing.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
 namespace localstate {
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

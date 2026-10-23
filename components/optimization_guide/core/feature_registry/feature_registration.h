@@ -73,6 +73,7 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kFindsMqlsLogging);
 }  // namespace features
 
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterGenAiFeatures(PrefRegistrySimple* registry);
 
 }  // namespace optimization_guide

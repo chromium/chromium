@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -45,8 +45,7 @@ class AtMemoryMetricsRecorderTest : public testing::Test {
   AtMemoryMetricsRecorderTest() {
     optimization_guide::RegisterModelQualityLocalStatePrefs(
         local_state_.registry());
-    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-        local_state_.registry());
+    optimization_guide::RegisterGenAiFeatures(local_state_.registry());
     uploader_service_ =
         std::make_unique<optimization_guide::TestModelQualityLogsUploaderService>(
             &local_state_);

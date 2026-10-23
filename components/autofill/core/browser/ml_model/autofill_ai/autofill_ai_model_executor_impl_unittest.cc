@@ -25,7 +25,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
@@ -81,8 +80,7 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
     features.InitAndDisableFeature(features::kAutofillAiPrivateAiShadowMetric);
     optimization_guide::RegisterModelQualityLocalStatePrefs(
         local_state_.registry());
-    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-        local_state_.registry());
+    optimization_guide::RegisterGenAiFeatures(local_state_.registry());
     engine_ = std::make_unique<AutofillAiModelExecutorImpl>(
         &model_cache_, &model_executor_, &mqls_uploader_);
   }

@@ -19,7 +19,6 @@
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,8 +41,7 @@ class FindsClientTest : public testing::Test {
 
   void SetUp() override {
     finds::FindsService::RegisterProfilePrefs(pref_service_.registry());
-    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-        pref_service_.registry());
+    optimization_guide::RegisterGenAiFeatures(pref_service_.registry());
     auto mock_finds_agent = std::make_unique<MockFindsAgent>();
     mock_finds_agent_ = mock_finds_agent.get();
     finds_client_ = std::make_unique<FindsClient>(std::move(mock_finds_agent),

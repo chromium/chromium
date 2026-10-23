@@ -12,7 +12,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
@@ -76,8 +76,7 @@ class ActorLoginQualityLoggerTest : public testing::Test {
         &pref_service_);
     optimization_guide::RegisterModelQualityLocalStatePrefs(
         pref_service_.registry());
-    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-        pref_service_.registry());
+    optimization_guide::RegisterGenAiFeatures(pref_service_.registry());
   }
 
   void TearDown() override { logs_uploader_ = nullptr; }

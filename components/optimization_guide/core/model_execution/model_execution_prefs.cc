@@ -4,16 +4,10 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 
-#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
-#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace optimization_guide::model_execution::prefs {
-
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  RegisterGenAiFeatures(registry);
-}
 
 namespace localstate {
 

@@ -16,7 +16,6 @@
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/feature_registry/settings_ui_registry.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -52,7 +51,7 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
 
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    model_execution::prefs::RegisterProfilePrefs(pref_service_->registry());
+    RegisterGenAiFeatures(pref_service_->registry());
   }
 
   void CreateController(

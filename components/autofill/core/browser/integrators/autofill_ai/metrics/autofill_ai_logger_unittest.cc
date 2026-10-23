@@ -45,7 +45,6 @@
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
@@ -1101,8 +1100,7 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
 
     optimization_guide::RegisterModelQualityLocalStatePrefs(
         local_state_.registry());
-    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-        local_state_.registry());
+    optimization_guide::RegisterGenAiFeatures(local_state_.registry());
     ON_CALL(autofill_client(), GetMqlsUploadService)
         .WillByDefault(testing::Return(logs_uploader_.get()));
   }

@@ -17,7 +17,6 @@
 #include "base/test/test.pb.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -93,9 +92,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
 
   ~ModelQualityLogsUploaderServiceTest() override = default;
 
-  void SetUp() override {
-    model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
-  }
+  void SetUp() override { RegisterGenAiFeatures(pref_service_.registry()); }
 
   void UploadModelQualityLogs(
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request) {

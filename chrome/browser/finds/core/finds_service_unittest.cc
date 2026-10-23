@@ -21,7 +21,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -64,8 +63,7 @@ class FindsServiceTest : public testing::Test {
   ~FindsServiceTest() override = default;
 
   void SetUp() override {
-    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-        prefs_.registry());
+    optimization_guide::RegisterGenAiFeatures(prefs_.registry());
     FindsService::RegisterProfilePrefs(prefs_.registry());
     prefs_.registry()->RegisterBooleanPref(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
