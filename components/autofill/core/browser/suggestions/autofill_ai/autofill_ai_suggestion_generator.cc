@@ -23,6 +23,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -137,11 +138,11 @@ class AttributeTypeAssignment {
 
   base::span<const AutofillFieldWithAttributeType> Find(EntityType entity) const
       LIFETIME_BOUND {
-    auto it = map_.find(entity);
-    if (it == map_.end()) {
-      return {};
+    if (const std::vector<AutofillFieldWithAttributeType>* fields =
+            base::FindOrNull(map_, entity)) {
+      return *fields;
     }
-    return it->second;
+    return {};
   }
 
   const base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>&

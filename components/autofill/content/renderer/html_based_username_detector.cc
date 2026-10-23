@@ -135,12 +135,12 @@ bool CheckFieldWithDictionary(
   for (std::u16string_view word : dictionary) {
     if (word.length() < kMinimumWordLength) {
       // Treat short words by looking them up in the tokens set.
-      if (short_tokens.find(word) != short_tokens.end()) {
+      if (short_tokens.contains(word)) {
         return true;
       }
     } else {
       // Treat long words by looking them up as a substring in |value|.
-      if (value.find(word) != std::string::npos) {
+      if (value.contains(word)) {
         return true;
       }
     }

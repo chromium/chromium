@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notimplemented.h"
@@ -236,9 +237,9 @@ FakeWalletPassAccessManager::RunGetUnmaskedCallback(
     return std::nullopt;
   }
 
-  auto it = fake_entities_cache_.find(entity_id);
-  if (it != fake_entities_cache_.end()) {
-    return it->second;
+  if (const EntityInstance* entity =
+          base::FindOrNull(fake_entities_cache_, entity_id)) {
+    return *entity;
   }
 
   NOTIMPLEMENTED();

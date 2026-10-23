@@ -1090,9 +1090,9 @@ void RemoveDuplicatesAndLimitTotalLength(ButtonTitleList* result) {
   int total_length = 0;
   for (const auto& immutable_title : *result) {
     auto title = immutable_title;
-    if (already_added.find(title) != already_added.end())
+    if (!already_added.insert(title).second) {
       continue;
-    already_added.insert(title);
+    }
 
     total_length += title.first.length();
     if (total_length > kMaxLengthForAllButtonTitles) {
