@@ -102,6 +102,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/text_utils.h"
@@ -1780,6 +1781,68 @@ TEST_F(ActionAppMenuTest, ZoomButtonsInkDropAtLimits) {
             views::InkDropHost::InkDropMode::OFF);
 
   menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, TappingDisabledZoomButtonDoesNotCrash) {
+#if BUILDFLAG(IS_MAC)
+  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* const root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+
+  // Directly calling ExecuteCommand on custom rows should be a safe no-op.
+  menu.ExecuteCommand(kActionZoomSubmenu, ui::EF_NONE);
+
+  auto* zoom_view =
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+
+  auto* minus_button = zoom_view->zoom_minus_button_for_testing();
+  ASSERT_TRUE(minus_button);
+
+  actions::ActionItem* minus_action =
+      actions::ActionManager::Get().FindAction(kActionZoomMinus, nullptr);
+  ASSERT_TRUE(minus_action);
+
+  // Disable the minus button (as happens at minimum zoom).
+  minus_action->SetEnabled(false);
+  ASSERT_FALSE(minus_button->GetEnabled());
+
+  views::Widget* menu_widget = root->GetSubmenu()->GetWidget();
+  ASSERT_TRUE(menu_widget);
+
+  views::MenuItemView* last_item = root->GetSubmenu()->GetLastItem();
+  ASSERT_TRUE(last_item);
+  last_item->ScrollRectToVisible(last_item->GetLocalBounds());
+  menu_widget->LayoutRootViewIfNecessary();
+  zoom_item->ScrollRectToVisible(zoom_item->GetLocalBounds());
+  menu_widget->LayoutRootViewIfNecessary();
+
+  const gfx::Point tap_location = views::View::ConvertPointToTarget(
+      minus_button, menu_widget->GetRootView(),
+      minus_button->GetLocalBounds().CenterPoint());
+  ui::GestureEvent tap_down(
+      tap_location.x(), tap_location.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
+  root->GetMenuController()->OnGestureEvent(root->GetSubmenu(), &tap_down);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  ui::GestureEvent tap(tap_location.x(), tap_location.y(), 0,
+                       ui::EventTimeForNow(),
+                       ui::GestureEventDetails(ui::EventType::kGestureTap));
+  root->GetMenuController()->OnGestureEvent(root->GetSubmenu(), &tap);
+  views::test::WaitForMenuClosureAnimation();
+
+  EXPECT_FALSE(menu.IsShowing());
 }
 
 TEST_F(ActionAppMenuTest, SearchBarDisabledByDefault) {

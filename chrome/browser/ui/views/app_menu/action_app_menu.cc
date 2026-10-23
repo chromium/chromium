@@ -389,6 +389,13 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
   CHECK(action_iterator != command_to_action_map_.end());
 
   actions::BaseAction* base_action = action_iterator->second;
+  if (base_action->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+      AppMenuActionItem::DisplayType::kCustom) {
+    // Custom rows are represented by child views and do not have a row-level
+    // action to execute.
+    return;
+  }
+
   actions::ActionItem* action_ptr = base_action->GetActionItem();
   CHECK(action_ptr);
 
