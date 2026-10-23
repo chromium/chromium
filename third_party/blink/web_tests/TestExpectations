@@ -8602,9 +8602,6 @@ crbug.com/570886829 [ Mac ] external/wpt/css/css-contain/contain-size-flexbox-00
 # Gardener 2026-10-21
 crbug.com/568614666 [ Linux ] fast/events/middleClickAutoscroll-nested-divs.html [ Failure Pass Timeout ]
 
-# Temporarily disabled to unblock https://webrtc-review.googlesource.com/c/src/+/510800
-crbug.com/576554678 external/wpt/webrtc/protocol/av1-profile-asymmetry.https.html [ Pass Failure ]
-
 # Expectations for chrome_wpt_tests entries in chrome.filter
 crbug.com/558819229 [ Win ] external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure ]
 crbug.com/558819229 [ Win ] virtual/unified-autoplay/external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure ]
