@@ -11,7 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/android/sys_utils.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/trace_event/trace_event.h"
@@ -25,9 +24,6 @@
 #include "content/public/common/content_switches.h"
 
 namespace {
-// Whether to use the process start time for startup metrics.
-BASE_FEATURE(kUseProcessStartTimeForMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
-
 class ChromePreFreezeDelegate
     : public base::android::PreFreezeBackgroundMemoryTrimmer::Delegate {
  public:
@@ -100,19 +96,12 @@ ChromeMainDelegateAndroid::RunProcess(
   // start time of the application, and will be same for all requests.
   if (!browser_runner_) {
     base::TimeTicks process_start_time = chrome::android::GetProcessStartTime();
-    base::TimeTicks application_start_time =
-        chrome::android::GetApplicationStartTime();
     if (!process_start_time.is_null()) {
       startup_metric_utils::GetCommon().RecordStartupProcessCreationTime(
           process_start_time);
-      // TODO(crbug.com/40719075): Perf bots should add support for measuring
-      // Startup.LoadTime.ProcessCreateToApplicationStart, then the
-      // kUseProcessStartTimeForMetrics feature can be removed.
-      if (base::FeatureList::IsEnabled(kUseProcessStartTimeForMetrics))
-        application_start_time = process_start_time;
     }
     startup_metric_utils::GetCommon().RecordApplicationStartTime(
-        application_start_time);
+        chrome::android::GetApplicationStartTime());
     browser_runner_ = content::BrowserMainRunner::Create();
   }
 
