@@ -387,7 +387,10 @@ if (enable_extensions_core || enable_webui_ntp ||
     # webui_util_desktop.h is included only under #if !BUILDFLAG(IS_ANDROID);
     # the util target itself is desktop-only.
     if (is_win || is_mac || is_linux || is_chromeos) {
-      deps += [ "//chrome/browser/ui/webui/util" ]
+      deps += [
+        "//chrome/browser/ui/webui/top_chrome",
+        "//chrome/browser/ui/webui/util",
+      ]
     }
 
     # InstantService (//chrome/browser/search) constructs FaviconSource, so it
@@ -425,6 +428,12 @@ if (!is_android || enable_webui_ntp) {
       "//ui/resources",
       "//ui/webui:buildflags",
     ]
+
+    # The tests of FaviconSource in TopChromeWebUIProfile are only under
+    # #if !BUILDFLAG(IS_ANDROID).
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/webui/top_chrome" ]
+    }
   }
 }
 

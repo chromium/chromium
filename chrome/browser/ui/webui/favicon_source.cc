@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -42,6 +43,7 @@
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -90,7 +92,12 @@ bool IsOriginAllowedServerFallback(const GURL& url) {
 FaviconSource::FaviconSource(Profile* profile,
                              chrome::FaviconUrlFormat url_format,
                              bool serve_untrusted)
-    : profile_(profile->GetOriginalProfile()),
+    // TopChromeWebUIProfile is shared by the windows of all profiles and has
+    // no favicons of its own. Each request uses the user profile of its
+    // contents instead.
+    : profile_(profile->IsTopChromeWebUIProfile()
+                   ? nullptr
+                   : profile->GetOriginalProfile()),
       url_format_(url_format),
       serve_untrusted_(serve_untrusted) {}
 
@@ -114,8 +121,9 @@ void FaviconSource::StartDataRequest(
     content::URLDataSource::GotDataCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const std::string path = content::URLDataSource::URLToRequestPath(url);
+  Profile* profile = GetProfileForRequest(wc_getter);
   favicon::FaviconService* favicon_service =
-      FaviconServiceFactory::GetForProfile(profile_,
+      FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (!favicon_service) {
     SendDefaultResponse(std::move(callback), wc_getter);
@@ -167,7 +175,7 @@ void FaviconSource::StartDataRequest(
   } else {
     // Intercept requests for prepopulated pages if TopSites exists.
     scoped_refptr<history::TopSites> top_sites =
-        TopSitesFactory::GetForProfile(profile_);
+        TopSitesFactory::GetForProfile(profile);
     if (top_sites) {
       for (const auto& prepopulated_page : top_sites->GetPrepopulatedPages()) {
         if (page_url == prepopulated_page.most_visited.url) {
@@ -203,7 +211,7 @@ void FaviconSource::StartDataRequest(
     favicon::HistoryUiFaviconRequestHandler*
         history_ui_favicon_request_handler =
             HistoryUiFaviconRequestHandlerFactory::GetForBrowserContext(
-                profile_);
+                profile);
     if (!history_ui_favicon_request_handler) {
       SendDefaultResponse(std::move(callback), parsed, wc_getter);
       return;
@@ -265,6 +273,25 @@ ui::NativeTheme* FaviconSource::GetNativeTheme(
 #else
   return webui::GetNativeThemeDeprecated(wc_getter.Run());
 #endif
+}
+
+Profile* FaviconSource::GetProfileForRequest(
+    const content::WebContents::Getter& wc_getter) {
+  if (profile_) {
+    return profile_;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  // A source created for TopChromeWebUIProfile, see the constructor.
+  content::WebContents* web_contents = wc_getter.Run();
+  CHECK(web_contents);
+  // The user profile is set when the WebContents is created in
+  // TopChromeWebUIProfile, and outlives it.
+  Profile* user_profile = webui::GetUserProfile(web_contents);
+  CHECK(user_profile);
+  return user_profile->GetOriginalProfile();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void FaviconSource::OnFaviconDataAvailable(
@@ -385,7 +412,7 @@ void FaviconSource::LogFaviconResult(
 
   bool is_dse = false;
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
+      TemplateURLServiceFactory::GetForProfile(GetProfileForRequest(wc_getter));
   if (template_url_service && template_url_service->loaded()) {
     const TemplateURL* default_provider =
         template_url_service->GetDefaultSearchProvider();

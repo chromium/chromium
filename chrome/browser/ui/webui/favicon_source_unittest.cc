@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,6 +48,11 @@
 #include "chrome/browser/search/instant_service_factory.h"
 #include "components/search/ntp_features.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using GotDataCallback = content::URLDataSource::GotDataCallback;
 using WebContentsGetter = content::WebContents::Getter;
@@ -593,3 +599,40 @@ TEST_F(FaviconResultReportingTest,
 
   tester.ExpectTotalCount("Settings.SearchEngines.GoogleIconMismatches", 0);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class FaviconSourceTopChromeWebUIProfileTest : public FaviconSourceTestBase {
+ public:
+  FaviconSourceTopChromeWebUIProfileTest()
+      : FaviconSourceTestBase(chrome::FaviconUrlFormat::kFavicon2) {}
+
+ protected:
+  NiceMock<TestFaviconSource>& top_chrome_webui_profile_source() {
+    return top_chrome_webui_profile_source_;
+  }
+
+ private:
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_webui_profile_;
+  NiceMock<TestFaviconSource> top_chrome_webui_profile_source_{
+      webui::GetTopChromeWebUIProfile(), chrome::FaviconUrlFormat::kFavicon2};
+};
+
+// A source created for TopChromeWebUIProfile serves the favicons of the user
+// profile of the requesting contents.
+TEST_F(FaviconSourceTopChromeWebUIProfileTest,
+       UsesUserProfileOfRequestingContents) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          webui::GetTopChromeWebUIProfile(), /*instance=*/nullptr);
+  webui::SetUserProfile(web_contents.get(), &profile());
+
+  EXPECT_CALL(
+      mock_favicon_service(),
+      GetRawFaviconForPageURL(GURL("https://www.google.com"), _, _, _, _, _));
+  top_chrome_webui_profile_source().StartDataRequest(
+      GURL(base::StrCat(
+          {kDummyPrefix, "?pageUrl=https%3A%2F%2Fwww.google.com"})),
+      base::BindLambdaForTesting([&] { return web_contents.get(); }),
+      base::DoNothing());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

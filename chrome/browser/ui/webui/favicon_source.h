@@ -40,6 +40,10 @@ class FaviconSource : public content::URLDataSource {
   // |serve_untrusted| is set to true, favicons will be served via
   // chrome-untrusted://. Note that chrome-untrusted:// only supports the
   // favicon2 URL format and does not support the legacy URL format.
+  //
+  // If `profile` is TopChromeWebUIProfile, which is shared by the windows of
+  // all profiles and has no favicons of its own, the favicons of the user
+  // profile of the requesting contents are served instead.
   explicit FaviconSource(Profile* profile,
                          chrome::FaviconUrlFormat format,
                          bool serve_untrusted = false);
@@ -70,6 +74,7 @@ class FaviconSource : public content::URLDataSource {
       float scale_factor,
       int resource_id);
 
+  // Null if the source was created for TopChromeWebUIProfile.
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
  private:
@@ -80,6 +85,10 @@ class FaviconSource : public content::URLDataSource {
 
   ui::NativeTheme* GetNativeTheme(
       const content::WebContents::Getter& wc_getter);
+
+  // Returns the profile whose favicons are served for a request from
+  // `wc_getter`.
+  Profile* GetProfileForRequest(const content::WebContents::Getter& wc_getter);
 
   // Called when favicon data is available from the history backend. If
   // |bitmap_result| is valid, returns it to caller using |callback|. Otherwise
