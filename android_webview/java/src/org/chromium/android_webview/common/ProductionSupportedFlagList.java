@@ -184,6 +184,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 GpuFeatures.USE_STRONG_REF_TO_SHARED_IMAGE_INTERFACE,
                 "Allows ClientSharedImage to store a strong reference to SharedImageInterface."),
+        Flag.baseFeature(
+                GpuFeatures.USE_AUTOMATIC_SYNC_TOKEN_MANAGEMENT,
+                "Lets ClientSharedImage handle all SyncToken management internally."),
         Flag.baseFeature(VizFeatures.WEBVIEW_VULKAN_INTERMEDIATE_BUFFER, "For debugging vulkan"),
         Flag.baseFeature(
                 VizFeatures.WEBVIEW_ENABLE_ADPF, "Pass WebView threads to HWUI ADPF session"),
