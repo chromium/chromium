@@ -2481,4 +2481,139 @@ TEST_P(ViewTransitionTest, ScopedViewTransitionRemoveChildDuringCallback) {
   EXPECT_EQ(GetState(transition), State::kAnimating);
 }
 
+TEST_P(ViewTransitionTest, ClearPseudoElementsWithNestedStyleUpdate) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #a { view-transition-name: a; }
+      #b { view-transition-name: b; }
+      #c { view-transition-name: c; }
+      #d { view-transition-name: d; }
+      html.hide-vt::view-transition { display: none; }
+    </style>
+    <input id="inp" list="dl">
+    <datalist id="dl"><option id="opt" value="x" disabled></option></datalist>
+    <div id="a"></div>
+    <div id="b"></div>
+    <div id="c"></div>
+    <div id="d"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+  auto start_setup_callback =
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+
+  ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(),
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  Element* html = GetDocument().documentElement();
+  PseudoElement* vt = html->GetPseudoElement(kPseudoIdViewTransition);
+  ASSERT_TRUE(vt);
+
+  Element* inp = GetDocument().getElementById(AtomicString("inp"));
+  Element* opt = GetDocument().getElementById(AtomicString("opt"));
+  ASSERT_TRUE(inp);
+  ASSERT_TRUE(opt);
+
+  inp->Focus();
+
+  for (const char* name : {"root", "a", "b", "c", "d"}) {
+    PseudoElement* group =
+        vt->GetPseudoElement(kPseudoIdViewTransitionGroup, AtomicString(name));
+    ASSERT_TRUE(group);
+    group->setAttribute(html_names::kIdAttr, AtomicString("dl"));
+  }
+
+  opt->removeAttribute(html_names::kDisabledAttr);
+  html->classList().Add(AtomicString("hide-vt"));
+
+  // Disposing a pseudo-element with id="dl" notifies IdTargetObserverRegistry,
+  // which triggers a synchronous nested style and layout update from
+  // TextFieldInputType::ListAttributeTargetChanged while ClearPseudoElements
+  // is iterating over transition_containers_.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(html->GetPseudoElement(kPseudoIdViewTransition));
+}
+
+TEST_P(ViewTransitionTest, ContentVisibilityHiddenOnNewlyCreatedGroup) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #a { view-transition-name: a; }
+      #b.transitioned { view-transition-name: b; }
+      ::view-transition-group(*) { content-visibility: hidden; }
+      html.unhide::view-transition-group(*) { content-visibility: visible; }
+    </style>
+    <div id="a"></div>
+    <div id="b"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+        auto* document =
+            static_cast<Document*>(info.DataV2().As<v8::External>()->Value(
+                gin::kViewTransitionTestDocumentTag));
+        document->getElementById(AtomicString("b"))
+            ->classList()
+            .Add(AtomicString("transitioned"));
+      };
+  auto start_setup_callback =
+      v8::Function::New(
+          script_state->GetContext(), start_setup_lambda,
+          v8::External::New(script_state->GetIsolate(), &GetDocument(),
+                            gin::kViewTransitionTestDocumentTag))
+          .ToLocalChecked();
+
+  ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(),
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  Element* html = GetDocument().documentElement();
+  PseudoElement* vt = html->GetPseudoElement(kPseudoIdViewTransition);
+  ASSERT_TRUE(vt);
+
+  PseudoElement* group_b =
+      vt->GetPseudoElement(kPseudoIdViewTransitionGroup, AtomicString("b"));
+  ASSERT_TRUE(group_b);
+  // While locked by content-visibility: hidden, child transition pseudos should
+  // not be created.
+  EXPECT_FALSE(group_b->GetPseudoElement(kPseudoIdViewTransitionImagePair,
+                                         AtomicString("b")));
+
+  // Unlocking content-visibility should create and attach the child transition
+  // pseudo-elements.
+  html->classList().Add(AtomicString("unhide"));
+  UpdateAllLifecyclePhasesForTest();
+
+  PseudoElement* image_pair_b = group_b->GetPseudoElement(
+      kPseudoIdViewTransitionImagePair, AtomicString("b"));
+  ASSERT_TRUE(image_pair_b);
+  EXPECT_TRUE(image_pair_b->GetLayoutObject());
+  PseudoElement* new_b = image_pair_b->GetPseudoElement(
+      kPseudoIdViewTransitionNew, AtomicString("b"));
+  ASSERT_TRUE(new_b);
+  EXPECT_TRUE(new_b->GetLayoutObject());
+}
+
 }  // namespace blink

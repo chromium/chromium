@@ -109,7 +109,11 @@ std::optional<PositionWithAffinity> PositionForDisplayLock(
   if (!locked) {
     return std::nullopt;
   }
-  return PositionWithAffinity(Position(*locked, 0), TextAffinity::kDefault);
+  const Node* anchor = locked;
+  if (const auto* pseudo = DynamicTo<PseudoElement>(locked)) {
+    anchor = &pseudo->UltimateOriginatingElement();
+  }
+  return PositionWithAffinity(Position(*anchor, 0), TextAffinity::kDefault);
 }
 
 }  // namespace
@@ -282,8 +286,10 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
   }
 
   PositionWithAffinity position = layout_object->PositionForPoint(LocalPoint());
-  if (position.IsNull())
-    return PositionWithAffinity(FirstPositionInOrBeforeNode(*node));
+  if (position.IsNull()) {
+    return PositionWithAffinity(
+        FirstPositionInOrBeforeNode(*InnerNodeOrImageMapImage()));
+  }
   return position;
 }
 

@@ -163,15 +163,15 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdScrollButtonInlineEnd, nullptr);
   SetPseudoElement(kPseudoIdScrollButtonBlockEnd, nullptr);
   SetPseudoElement(kPseudoIdOverscrollAreaParent, nullptr);
-  if (column_pseudo_elements_) {
-    for (ColumnPseudoElement* column_pseudo_element : *column_pseudo_elements_) {
+  if (ColumnPseudoElementsVector* columns = column_pseudo_elements_.Release()) {
+    for (ColumnPseudoElement* column_pseudo_element : *columns) {
       column_pseudo_element->Dispose();
     }
-    column_pseudo_elements_->clear();
+    columns->clear();
   }
-  if (transition_data_) {
-    transition_data_->ClearPseudoElements();
-    transition_data_ = nullptr;
+  if (TransitionPseudoElementData* transition_data =
+          transition_data_.Release()) {
+    transition_data->ClearPseudoElements();
   }
 }
 
