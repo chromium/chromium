@@ -46,6 +46,7 @@
 #include "net/device_bound_sessions/session_service.h"
 #include "net/device_bound_sessions/url_fetcher.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
@@ -992,14 +993,18 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
           SessionError(SessionError::kPersistentHttpError)));
       // `this` may be deleted.
       return;
+    } else if (response_code == HTTP_TOO_MANY_REQUESTS ||
+               response_code >= 500) {
+      // The server is rate limiting or temporarily failing. Keep the session
+      // and back off on refresh, see
+      // https://w3c.github.io/webappsec-dbsc/#algo-session-request.
+      RunCallback(CreateErrorRegistrationResult(
+          SessionError(SessionError::kTransientHttpError)));
+      // `this` may be deleted.
+      return;
     } else if (300 <= response_code && response_code < 500) {
       RunCallback(CreateErrorRegistrationResult(
           SessionError(SessionError::kPersistentHttpError)));
-      // `this` may be deleted.
-      return;
-    } else if (response_code >= 500) {
-      RunCallback(CreateErrorRegistrationResult(
-          SessionError(SessionError::kTransientHttpError)));
       // `this` may be deleted.
       return;
     }

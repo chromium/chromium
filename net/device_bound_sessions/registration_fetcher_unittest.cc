@@ -25,6 +25,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "components/unexportable_keys/background_task_origin.h"
@@ -1995,6 +1996,69 @@ TEST_F(RegistrationTest, ServerError500) {
 
   EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kTransientHttpError);
+}
+
+TEST_F(RegistrationTest, ServerError429) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponse, HTTP_TOO_MANY_REQUESTS, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+
+  RegistrationRequestParam param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kTransientHttpError);
+}
+
+// A 429 on refresh is a transient error that does not terminate the session
+// and is not retried immediately.
+TEST_F(RegistrationTest, ServerError429OnRefresh) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kDeviceBoundSessionsRetryTransientRefreshErrors);
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  int request_count = 0;
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&request_count](const test_server::HttpRequest& request) {
+        request_count++;
+        return ReturnResponse(HTTP_TOO_MANY_REQUESTS, "", request);
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = RegistrationRequestParam::CreateForTesting(
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartFetchWithExistingKey(param, CreateSigningKey(),
+                                     callback.callback());
+  callback.WaitForCall();
+
+  const SessionError* error = callback.outcome().SessionErrorForTesting();
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error->type, SessionError::kTransientHttpError);
+  EXPECT_FALSE(error->GetDeletionReason().has_value());
+  EXPECT_EQ(request_count, 1);
 }
 
 TEST_F(RegistrationTest, ServerErrorReturnOne403ThenSuccess) {
