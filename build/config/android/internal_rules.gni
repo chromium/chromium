@@ -22,9 +22,6 @@ assert(is_android)
 
 default_android_sdk_dep = "//third_party/android_sdk:android_sdk_java"
 _kotlin_stdlib_dep = "//third_party/android_deps:kotlin_stdlib_java"
-
-# TODO(agrieve): Remove once there are no remaining references to it.
-_legacy_kotlin_stdlib_dep = "//third_party/kotlin_stdlib:kotlin_stdlib_java"
 _jacoco_dep = "//third_party/jacoco:jacocoagent_java"
 _robolectric_libs_dir =
     rebase_path(
@@ -4041,11 +4038,7 @@ if (enable_java_templates) {
         _kotlinc_jar_path = "$target_out_dir/$_output_name.kotlinc.jar"
         _kotlin_interface_jar_path =
             "$target_out_dir/$_output_name.kt-jvm-abi.jar"
-        assert(filter_include(_lib_deps,
-                              [
-                                _kotlin_stdlib_dep,
-                                _legacy_kotlin_stdlib_dep,
-                              ]) != [],
+        assert(filter_include(_lib_deps, [ _kotlin_stdlib_dep ]) != [],
                "${_main_target_name} is missing dep: $_kotlin_stdlib_dep")
 
         compile_kt(_compile_kt_target_name) {

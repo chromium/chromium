@@ -2543,17 +2543,6 @@ deps = {
       'condition': 'checkout_android',
   },
 
-  'src/third_party/kotlin_stdlib/cipd': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/kotlin_stdlib',
-              'version': 'Z1Ehltb6MPbGAv5X5WACnoRneacBIvfr5thDO9QA4KQC',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/kotlinc/current': {
       'packages': [
           {
