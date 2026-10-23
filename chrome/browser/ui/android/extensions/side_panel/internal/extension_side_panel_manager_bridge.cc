@@ -6,34 +6,24 @@
 
 #include <jni.h>
 
-#include "base/android/jni_android.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "chrome/browser/ui/android/extensions/side_panel/internal/jni/ExtensionSidePanelManagerBridgeImpl_jni.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
-
-namespace {
-using base::android::AttachCurrentThread;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
-}  // namespace
+#include "third_party/jni_zero/jni_zero.h"
 
 // Implements Java |ExtensionSidePanelManagerBridgeImpl.Natives#create|.
-static int64_t JNI_ExtensionSidePanelManagerBridgeImpl_Create(
+static jni_zero::JniUniquePtr<ExtensionSidePanelManagerBridge>
+JNI_ExtensionSidePanelManagerBridgeImpl_Create(
     JNIEnv* env,
-    const JavaRef<jobject>& caller,
     BrowserWindowInterface* browser_window) {
-  return reinterpret_cast<intptr_t>(
-      new ExtensionSidePanelManagerBridge(env, caller, browser_window));
+  return jni_zero::MakeUnique<ExtensionSidePanelManagerBridge>(browser_window);
 }
 
 ExtensionSidePanelManagerBridge::ExtensionSidePanelManagerBridge(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& java_bridge,
     BrowserWindowInterface* browser_window)
-    : java_bridge_(env, java_bridge), browser_window_(browser_window) {
+    : browser_window_(browser_window) {
   CHECK(browser_window_);
 
   SidePanelRegistry* registry = SidePanelRegistry::From(browser_window_);
@@ -44,18 +34,6 @@ ExtensionSidePanelManagerBridge::ExtensionSidePanelManagerBridge(
                                                               registry);
 }
 
-ExtensionSidePanelManagerBridge::~ExtensionSidePanelManagerBridge() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_bridge = java_bridge_.get(env);
-  CHECK(java_bridge)
-      << "Java ExtensionSidePanelManagerBridge is the sole owner of "
-         "C++ ExtensionSidePanelManagerBridge, so the Java object "
-         "shouldn't be destroyed before the C++ object";
-  Java_ExtensionSidePanelManagerBridgeImpl_clearNativePtr(env, java_bridge);
-}
-
-void ExtensionSidePanelManagerBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
+ExtensionSidePanelManagerBridge::~ExtensionSidePanelManagerBridge() = default;
 
 DEFINE_JNI(ExtensionSidePanelManagerBridgeImpl)
