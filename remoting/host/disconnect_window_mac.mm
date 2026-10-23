@@ -390,7 +390,11 @@ std::unique_ptr<HostWindow> HostWindow::CreateAutoHidingDisconnectWindow(
   if (!_disconnect_window) {
     return;
   }
-  NSRect screenRect = NSScreen.mainScreen.frame;
+  NSScreen* primaryScreen = NSScreen.screens.firstObject;
+  if (!primaryScreen) {
+    return;
+  }
+  NSRect screenRect = primaryScreen.frame;
   NSRect windowRect = self.window.frame;
   CGFloat x = std::round(NSMinX(screenRect) +
                          (NSWidth(screenRect) - NSWidth(windowRect)) / 2.0);
