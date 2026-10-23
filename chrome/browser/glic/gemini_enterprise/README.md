@@ -29,8 +29,10 @@ for Gemini Enterprise features.
 - **Auth Tab Management**: `OpenAuthTab` / `CloseAuthTab` open and close a
   top-level browser tab on behalf of the web client for a fixed
   `AuthTabPurpose`:
-  - `kSignIn`: GEiC sign-in. The URL must be HTTPS on the Gaia or configured
-    guest origin.
+  - `kSignIn`: GEiC sign-in. The URL must be HTTPS on the Gaia
+    (`accounts.google.com`), Google Cloud Workforce Identity
+    (`auth.<domain>.google`, e.g. `auth.cloud.google`,
+    `auth.business.gemini.google`), or configured guest origin.
   - `kConnectorOauth`: 3P connector OAuth consent. The URL must be the GE OAuth
     redirector (`/oauth-redirect`) on the default GE redirector origin
     (`vertexaisearch.cloud.google.com`, `DEFAULT_REDIRECT_ORIGIN` in the GE web

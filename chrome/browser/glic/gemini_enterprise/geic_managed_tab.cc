@@ -4,10 +4,12 @@
 
 #include "chrome/browser/glic/gemini_enterprise/geic_managed_tab.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -25,6 +28,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace glic {
 
@@ -38,6 +42,29 @@ namespace {
 // be updated first. See README.md.
 constexpr std::string_view kDefaultConnectorOAuthRedirectorOrigin =
     "https://vertexaisearch.cloud.google.com";
+
+// Returns true if `url` is on a Google Cloud Workforce Identity (BYOID)
+// authentication portal origin (`https://auth.<domain>.google`, e.g.
+// `auth.cloud.google`, `auth.business.gemini.google`, `auth.gemini-us.google`,
+// `auth.agentspace.google`, or `auth-{staging,autopush}.<domain>.google` when
+// `--glic-dev` is enabled).
+bool IsWorkforceSignInOrigin(const GURL& url) {
+  if (!url.SchemeIs(url::kHttpsScheme) || url.has_port() ||
+      !url.DomainIs("google")) {
+    return false;
+  }
+  const std::string_view host = url.host();
+  if (std::ranges::count(host, '.') < 2) {
+    return false;
+  }
+  if (host.starts_with("auth.")) {
+    return true;
+  }
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ::switches::kGlicDev) &&
+         (host.starts_with("auth-staging.") ||
+          host.starts_with("auth-autopush."));
+}
 
 }  // namespace
 
@@ -62,7 +89,7 @@ bool GeicManagedTab::IsExpectedOrigin(const GURL& url) const {
   }
   switch (purpose_) {
     case mojom::AuthTabPurpose::kSignIn:
-      return origin == gaia_origin_;
+      return origin == gaia_origin_ || IsWorkforceSignInOrigin(url);
     case mojom::AuthTabPurpose::kConnectorOauth:
       return origin.Serialize() == kDefaultConnectorOAuthRedirectorOrigin;
     case mojom::AuthTabPurpose::kUnknown:

@@ -87,6 +87,39 @@ IN_PROC_BROWSER_TEST_F(GlicGeminiEnterpriseManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicGeminiEnterpriseManagerBrowserTest,
+                       OpenAndCloseWorkforceSignInTabLifecycle) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_EQ(tab_list->GetTabCount(), 1);
+  tabs::TabInterface* initial_tab = tab_list->GetActiveTab();
+  ASSERT_TRUE(initial_tab);
+
+  // Open Workforce Identity (BYOID) sign-in tab.
+  GURL signin_url(
+      "https://auth.cloud.google/select-session?continueUrl="
+      "https%3A%2F%2Fbusiness.gemini.google%2Fside-panel");
+  base::test::TestFuture<mojom::OpenSignInTabResult> open_future;
+  auto options = mojom::OpenSignInTabOptions::New();
+  options->signin_url = signin_url;
+  handler_remote_->OpenSignInTab(std::move(options), open_future.GetCallback());
+  EXPECT_EQ(open_future.Take(), mojom::OpenSignInTabResult::kSuccess);
+
+  EXPECT_EQ(tab_list->GetTabCount(), 2);
+  EXPECT_EQ(tab_list->GetActiveIndex(), 1);
+  EXPECT_EQ(tab_list->GetActiveTab()->GetContents()->GetVisibleURL(),
+            signin_url);
+
+  // Close sign-in tab.
+  base::test::TestFuture<mojom::CloseSignInTabResult> close_future;
+  handler_remote_->CloseSignInTab(nullptr, close_future.GetCallback());
+  EXPECT_EQ(close_future.Take(), mojom::CloseSignInTabResult::kSuccess);
+
+  // Verify sign-in tab is closed and focus is restored to the original tab.
+  EXPECT_EQ(tab_list->GetTabCount(), 1);
+  EXPECT_EQ(tab_list->GetActiveIndex(), 0);
+  EXPECT_EQ(tab_list->GetActiveTab(), initial_tab);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicGeminiEnterpriseManagerBrowserTest,
                        OpenSignInTabReusesExistingSignInTab) {
   TabListInterface* tab_list = GetTabListInterface();
   ASSERT_EQ(tab_list->GetTabCount(), 1);

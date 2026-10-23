@@ -100,11 +100,69 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
       OpenAuthTab(kSignIn, GURL("https://accounts.google.com/o/oauth2/auth")),
       mojom::OpenAuthTabResult::kErrorFailure);
 
-  // Disallowed HTTP scheme (must be HTTPS):
+  // Valid HTTPS Google Cloud Workforce Identity (BYOID) origins
+  // (`https://auth.<domain>.google`) pass URL validation:
+  EXPECT_EQ(
+      OpenAuthTab(kSignIn,
+                  GURL("https://auth.cloud.google/select-session?continueUrl="
+                       "https%3A%2F%2Fbusiness.gemini.google%2Fside-panel")),
+      mojom::OpenAuthTabResult::kErrorFailure);
+  EXPECT_EQ(
+      OpenAuthTab(kSignIn, GURL("https://auth.cloud.google/signin/continue")),
+      mojom::OpenAuthTabResult::kErrorFailure);
+  EXPECT_EQ(
+      OpenAuthTab(
+          kSignIn,
+          GURL("https://auth.business.gemini.google/select-session?continueUrl="
+               "https%3A%2F%2Fbusiness.gemini.google%2Fside-panel")),
+      mojom::OpenAuthTabResult::kErrorFailure);
+  EXPECT_EQ(OpenAuthTab(kSignIn,
+                        GURL("https://auth.gemini-us.google/select-session")),
+            mojom::OpenAuthTabResult::kErrorFailure);
+  EXPECT_EQ(OpenAuthTab(kSignIn,
+                        GURL("https://auth.agentspace.google/select-session")),
+            mojom::OpenAuthTabResult::kErrorFailure);
+
+  // Non-prod Workforce Identity origins require --glic-dev:
+  EXPECT_EQ(
+      OpenAuthTab(kSignIn,
+                  GURL("https://auth-staging.business-staging.gemini.google/"
+                       "select-session")),
+      mojom::OpenAuthTabResult::kErrorDisallowedUrl);
+  EXPECT_EQ(OpenAuthTab(kSignIn, GURL("https://auth-autopush.corp.cloud.google/"
+                                      "select-session")),
+            mojom::OpenAuthTabResult::kErrorDisallowedUrl);
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        ::switches::kGlicDev);
+    EXPECT_EQ(
+        OpenAuthTab(kSignIn,
+                    GURL("https://auth-staging.business-staging.gemini.google/"
+                         "select-session")),
+        mojom::OpenAuthTabResult::kErrorFailure);
+    EXPECT_EQ(
+        OpenAuthTab(kSignIn, GURL("https://auth-autopush.corp.cloud.google/"
+                                  "select-session")),
+        mojom::OpenAuthTabResult::kErrorFailure);
+  }
+
+  // Disallowed HTTP scheme, non-default port, or bare `auth.google` host:
   EXPECT_EQ(OpenAuthTab(kSignIn, GURL("http://accounts.google.com/signin")),
             mojom::OpenAuthTabResult::kErrorDisallowedUrl);
+  EXPECT_EQ(
+      OpenAuthTab(kSignIn, GURL("http://auth.cloud.google/select-session")),
+      mojom::OpenAuthTabResult::kErrorDisallowedUrl);
+  EXPECT_EQ(OpenAuthTab(kSignIn,
+                        GURL("https://auth.cloud.google:8443/select-session")),
+            mojom::OpenAuthTabResult::kErrorDisallowedUrl);
+  EXPECT_EQ(OpenAuthTab(kSignIn, GURL("https://auth.google/select-session")),
+            mojom::OpenAuthTabResult::kErrorDisallowedUrl);
+  EXPECT_EQ(
+      OpenAuthTab(kSignIn, GURL("https://auth.cloud.google.evil.com/signin")),
+      mojom::OpenAuthTabResult::kErrorDisallowedUrl);
 
-  // Disallowed non-Gaia, non-guest HTTPS origin:
+  // Disallowed non-Gaia, non-Workforce, non-guest HTTPS origin:
   EXPECT_EQ(OpenAuthTab(kSignIn, GURL("https://evil.com/signin")),
             mojom::OpenAuthTabResult::kErrorDisallowedUrl);
   EXPECT_EQ(OpenAuthTab(kSignIn, GURL("https://example.com/login")),
@@ -116,6 +174,10 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
             mojom::OpenAuthTabResult::kErrorDisallowedUrl);
   EXPECT_EQ(
       OpenAuthTab(kSignIn, GURL("https://user@accounts.google.com/signin")),
+      mojom::OpenAuthTabResult::kErrorDisallowedUrl);
+  EXPECT_EQ(
+      OpenAuthTab(kSignIn,
+                  GURL("https://user:pass@auth.cloud.google/select-session")),
       mojom::OpenAuthTabResult::kErrorDisallowedUrl);
 
   // Disallowed URLs exceeding maximum allowed length (64KB):
@@ -264,9 +326,13 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
       OpenAuthTab(kConnectorOauth, GURL("https://evil.com/oauth-redirect")),
       mojom::OpenAuthTabResult::kErrorDisallowedUrl);
 
-  // Gaia is allowed for sign-in, but not as a connector auth start URL:
+  // Gaia and Workforce Identity are allowed for sign-in, but not as a
+  // connector auth start URL:
   EXPECT_EQ(OpenAuthTab(kConnectorOauth,
                         GURL("https://accounts.google.com/oauth-redirect")),
+            mojom::OpenAuthTabResult::kErrorDisallowedUrl);
+  EXPECT_EQ(OpenAuthTab(kConnectorOauth,
+                        GURL("https://auth.cloud.google/oauth-redirect")),
             mojom::OpenAuthTabResult::kErrorDisallowedUrl);
 
   // Basic shape checks:
