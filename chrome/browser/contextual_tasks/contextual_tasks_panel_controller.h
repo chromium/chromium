@@ -117,6 +117,11 @@ class ContextualTasksPanelController {
   // feature might also show panel.
   virtual bool IsPanelOpenForContextualTask() const = 0;
 
+  // Returns true if the active tab's side panel task is showing results (i.e.
+  // an AIM thread that is not in zero state, a task waiting for its search URL,
+  // or a Search Results Page / Lens SRP loaded in the side panel).
+  virtual bool IsShowingResults() const = 0;
+
   // Returns the entry source of the currently active panel.
   virtual EntrySource GetActiveEntrySource() const = 0;
 

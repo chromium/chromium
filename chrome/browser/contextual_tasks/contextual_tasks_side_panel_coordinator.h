@@ -92,9 +92,11 @@ class ContextualTasksSidePanelCoordinator
   class SidePanelWebContentsObserver;
 
   struct WebContentsCacheItem {
-    WebContentsCacheItem(std::unique_ptr<content::WebContents> wc,
-                         bool open,
-                         PaintCallback on_fcp_callback = base::NullCallback());
+    WebContentsCacheItem(
+        std::unique_ptr<content::WebContents> wc,
+        bool open,
+        PaintCallback on_fcp_callback = base::NullCallback(),
+        base::RepeatingClosure on_navigation_callback = base::NullCallback());
     ~WebContentsCacheItem();
     WebContentsCacheItem(const WebContentsCacheItem&) = delete;
     WebContentsCacheItem& operator=(const WebContentsCacheItem&) = delete;
@@ -170,6 +172,7 @@ class ContextualTasksSidePanelCoordinator
       omnibox::ChromeAimEntryPoint entry_point) override;
   std::vector<RecentThreadInfo> GetRecentThreads() const override;
   bool IsPanelOpenForContextualTask() const override;
+  bool IsShowingResults() const override;
   ContextualTasksPanelController::EntrySource GetActiveEntrySource()
       const override;
   std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle() override;
@@ -327,6 +330,15 @@ class ContextualTasksSidePanelCoordinator
 
   // Get the open state of the panel.
   bool ShouldBeOpen();
+
+  // Returns true if the side panel is currently open and showing Lens results
+  // (e.g. a task waiting for its search URL, or a non-AIM Search Results Page /
+  // Lens SRP).
+  bool IsShowingLensResults() const;
+
+  // Returns true if the side panel is currently open and showing AIM results
+  // (i.e. an AIM page that is not in zero state).
+  bool IsShowingAimResults() const;
 
   // Closes any active Lens sessions for tabs associated with the given task.
   void CloseLensSessionsForTask(const ContextualTask& task);

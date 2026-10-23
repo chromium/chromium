@@ -409,6 +409,10 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
 
   bool ShouldBeOpen() { return coordinator_->ShouldBeOpen(); }
 
+  bool IsShowingLensResults() { return coordinator_->IsShowingLensResults(); }
+
+  bool IsShowingAimResults() { return coordinator_->IsShowingAimResults(); }
+
   void SetActiveTab(tabs::TabInterface* tab) {
     ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab));
   }
@@ -2794,6 +2798,57 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
   EXPECT_FALSE(permission_request_manager->IsRequestInProgress());
   EXPECT_FALSE(prompt_factory.is_visible());
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest, IsShowingResults) {
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_FALSE(IsShowingLensResults());
+  EXPECT_FALSE(IsShowingAimResults());
+
+  // 1. Open panel in AIM zero state -> false.
+  base::Uuid zero_state_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      zero_state_id, /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50"));
+  content::WebContents* zero_state_wc =
+      GetWebContentsForTaskForTesting(zero_state_id);
+  mock_panel_host_->SetWebContents(zero_state_wc);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_FALSE(IsShowingLensResults());
+  EXPECT_FALSE(IsShowingAimResults());
+
+  // 2. Open panel in non-zero-state AIM thread -> true (showing AIM results).
+  base::Uuid active_thread_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      active_thread_id, /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50&mtid=1&q=hello"));
+  mock_panel_host_->SetWebContents(
+      GetWebContentsForTaskForTesting(active_thread_id));
+  EXPECT_TRUE(coordinator_->IsShowingResults());
+  EXPECT_FALSE(IsShowingLensResults());
+  EXPECT_TRUE(IsShowingAimResults());
+
+  // 3. Open panel with a Lens SRP loaded -> true (showing Lens results).
+  base::Uuid lens_srp_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      lens_srp_id, /*is_open=*/true,
+      GURL("https://www.google.com/search?lns_mode=un&vsrid=123"));
+  mock_panel_host_->SetWebContents(
+      GetWebContentsForTaskForTesting(lens_srp_id));
+  EXPECT_TRUE(coordinator_->IsShowingResults());
+  EXPECT_TRUE(IsShowingLensResults());
+  EXPECT_FALSE(IsShowingAimResults());
+
+  // 4. Closed panel with an active thread -> false.
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_FALSE(IsShowingLensResults());
+  EXPECT_FALSE(IsShowingAimResults());
 }
 
 }  // namespace contextual_tasks

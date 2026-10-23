@@ -282,9 +282,11 @@ class ContextualTasksSidePanelCoordinator::SidePanelWebContentsObserver
     : public content::WebContentsObserver {
  public:
   SidePanelWebContentsObserver(content::WebContents* web_contents,
-                               PaintCallback on_fcp_callback)
+                               PaintCallback on_fcp_callback,
+                               base::RepeatingClosure on_navigation_callback)
       : content::WebContentsObserver(web_contents),
-        on_fcp_callback_(std::move(on_fcp_callback)) {}
+        on_fcp_callback_(std::move(on_fcp_callback)),
+        on_navigation_callback_(std::move(on_navigation_callback)) {}
   ~SidePanelWebContentsObserver() override = default;
 
   // content::WebContentsObserver:
@@ -294,23 +296,34 @@ class ContextualTasksSidePanelCoordinator::SidePanelWebContentsObserver
     }
   }
 
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (navigation_handle->HasCommitted() &&
+        navigation_handle->IsInPrimaryMainFrame() && on_navigation_callback_) {
+      on_navigation_callback_.Run();
+    }
+  }
+
  private:
   PaintCallback on_fcp_callback_;
+  base::RepeatingClosure on_navigation_callback_;
 };
 
 ContextualTasksSidePanelCoordinator::WebContentsCacheItem::WebContentsCacheItem(
     std::unique_ptr<content::WebContents> wc,
     bool open,
-    PaintCallback on_fcp_callback)
+    PaintCallback on_fcp_callback,
+    base::RepeatingClosure on_navigation_callback)
     : web_contents(std::move(wc)),
       is_open(open),
       last_active_time_ticks(base::TimeTicks::Now()),
       open_time_ticks(base::TimeTicks::Now()),
       web_contents_observer(
-          web_contents && on_fcp_callback
+          web_contents && (on_fcp_callback || on_navigation_callback)
               ? std::make_unique<SidePanelWebContentsObserver>(
                     web_contents.get(),
-                    std::move(on_fcp_callback))
+                    std::move(on_fcp_callback),
+                    std::move(on_navigation_callback))
               : nullptr) {}
 ContextualTasksSidePanelCoordinator::WebContentsCacheItem::
     ~WebContentsCacheItem() = default;
@@ -911,6 +924,67 @@ ContextualTasksSidePanelCoordinator::GetRecentThreads() const {
 
 bool ContextualTasksSidePanelCoordinator::IsPanelOpenForContextualTask() const {
   return contextual_tasks_panel_host_->IsPanelOpenForContextualTask();
+}
+
+bool ContextualTasksSidePanelCoordinator::IsShowingResults() const {
+  return IsShowingLensResults() || IsShowingAimResults();
+}
+
+bool ContextualTasksSidePanelCoordinator::IsShowingLensResults() const {
+  if (!IsPanelOpenForContextualTask()) {
+    return false;
+  }
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  ContextualTasksUiService* ui_service = GetUiService();
+  if (!ui_service) {
+    return false;
+  }
+
+  for (const auto& [task_id, cache_item] : task_id_to_web_contents_cache_) {
+    if (cache_item && cache_item->web_contents.get() == web_contents) {
+      if (ui_service->IsTaskWaitingForUrl(task_id)) {
+        return true;
+      }
+      break;
+    }
+  }
+
+  const GURL& url = web_contents->GetLastCommittedURL();
+  if (url.is_empty() || url.IsAboutBlank()) {
+    return false;
+  }
+
+  return !ui_service->IsAiUrl(url) &&
+         ui_service->IsValidSearchResultsPage(url);
+}
+
+bool ContextualTasksSidePanelCoordinator::IsShowingAimResults() const {
+  if (!IsPanelOpenForContextualTask()) {
+    return false;
+  }
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  ContextualTasksUiService* ui_service = GetUiService();
+  if (!ui_service) {
+    return false;
+  }
+
+  const GURL& url = web_contents->GetLastCommittedURL();
+  if (url.is_empty() || url.IsAboutBlank()) {
+    return false;
+  }
+
+  return ui_service->IsAiUrl(url) &&
+         !ContextualTasksUI::IsZeroState(url, ui_service);
 }
 
 ContextualTasksPanelController::EntrySource
