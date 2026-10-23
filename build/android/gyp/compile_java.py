@@ -11,6 +11,7 @@ import logging
 import argparse
 import os
 import pathlib
+import platform
 import re
 import shlex
 import shutil
@@ -34,6 +35,11 @@ _JAVAC_EXTRACTOR = os.path.join(
     'common',
     'framework',
     'javac_extractor.jar',
+)
+
+# A GraalVM native-image of javac. Exists only for linux-x64 hosts.
+_JAVAC_GRAALVM_PATH = os.path.join(
+    build_utils.JAVA_HOME, 'bin', 'javac-graalvm'
 )
 
 # These warnings cannot be suppressed even for third party code. Deprecation
@@ -708,7 +714,22 @@ def main(
     argv = build_utils.ExpandFileArgs(argv)
     options, java_files, kt_files = _ParseOptions(argv)
 
-    javac_cmd = [build_utils.JAVAC_PATH]
+    # The native-image javac does not support plugins (Error Prone), and
+    # --print-javac-command-line is used by tools that expect a JVM javac.
+    use_javac_graalvm = (
+        sys.platform == 'linux'
+        and platform.machine() == 'x86_64'
+        and not use_errorprone
+        and not options.print_javac_command_line
+    )
+    if use_javac_graalvm:
+        javac_cmd = [_JAVAC_GRAALVM_PATH]
+    else:
+        javac_cmd = [
+            build_utils.JAVAC_PATH,
+            # https://crbug.com/1441023
+            '-J-XX:+PerfDisableSharedMem',
+        ]
 
     javac_args = [
         '-g',
@@ -739,8 +760,6 @@ def main(
         # Do not warn about finalize() methods. Android still intends to support
         # them.
         '-Xlint:-removal',
-        # https://crbug.com/1441023
-        '-J-XX:+PerfDisableSharedMem',
         # Disable all annotation processors (we run them via Turbine).
         '-proc:none',
     ]
@@ -809,7 +828,7 @@ def main(
     else:
         # Files that are already inputs in GN should go in input_paths.
         input_paths = (
-            [build_utils.JAVAC_PATH]
+            [javac_cmd[0]]
             + classpath_jars
             + options.java_srcjars
             + java_files

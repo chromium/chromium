@@ -505,6 +505,9 @@ if (is_android) {
 
   javac_paths_for_inputs =
       [ "//third_party/jdk/current/bin/javac" ] + _common_inputs_for_jre_jdk
+  if (host_os == "linux" && host_cpu == "x64") {
+    javac_paths_for_inputs += [ "//third_party/jdk/current/bin/javac-graalvm" ]
+  }
 
   kotlinc_paths_for_inputs = [
     "//third_party/kotlinc",
