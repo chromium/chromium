@@ -52,6 +52,7 @@ GlicView::GlicView(Profile* profile,
   SetSize(initial_size);
   // As there is no WebContents yet, this will apply the default background.
   UpdateBackgroundColor();
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 }
 
 GlicView::~GlicView() {
@@ -61,8 +62,7 @@ GlicView::~GlicView() {
 
 bool GlicView::HandleKeyboardEvent(content::WebContents* source,
                                    const input::NativeWebKeyboardEvent& event) {
-  return GetWidget() && unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-                            event, GetWidget()->GetFocusManager());
+  return WebView::HandleKeyboardEvent(source, event);
 }
 
 void GlicView::RequestMediaAccessPermission(

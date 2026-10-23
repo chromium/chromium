@@ -17,7 +17,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -118,7 +117,6 @@ class GlicView : public views::WebView,
   SkRegion webview_draggable_region_;
 
   ZoomCallback zoom_changed_callback_;
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   base::WeakPtrFactory<GlicView> weak_ptr_factory_{this};
 };
 
