@@ -2134,9 +2134,9 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   LayoutResult::EStatus status = LayoutResult::kSuccess;
   LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
 
-  HeapVector<FlexColumnBreakInfo> column_break_info;
+  HeapVector<ColumnBreakInfo> column_break_info;
   if (is_column_) {
-    column_break_info = HeapVector<FlexColumnBreakInfo>(flex_lines->size());
+    column_break_info = HeapVector<ColumnBreakInfo>(flex_lines->size());
   }
 
   LayoutUnit previously_consumed_block_size;
@@ -2396,7 +2396,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         flex_item->block_node.Layout(child_space, fragmentation);
 
     BreakStatus break_status = BreakStatus::kContinue;
-    FlexColumnBreakInfo* current_column_break_info = nullptr;
+    ColumnBreakInfo* current_column_break_info = nullptr;
     if (!early_break_ && GetConstraintSpace().HasBlockFragmentation()) {
       bool has_container_separation = false;
       if (!is_column_) {
@@ -3081,7 +3081,7 @@ LayoutUnit FlexLayoutAlgorithm::FragmentainerSpaceAvailable(
 void FlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
     LayoutUnit offset_in_stitched_container,
     FlexLine* flex_line,
-    const FlexColumnBreakInfo* column_break_info) {
+    const ColumnBreakInfo* column_break_info) {
   if (To<BlockBreakToken>(container_builder_.LastChildBreakToken())
           ->IsForcedBreak()) {
     // This will be further adjusted by the total consumed block size once we

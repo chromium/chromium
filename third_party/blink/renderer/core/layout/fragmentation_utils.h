@@ -24,12 +24,13 @@ namespace blink {
 class EarlyBreak;
 class LayoutResult;
 
-// Each column in a flex container is fragmented independently, so we need to
-// track early break and break-after info for each column separately.
-struct FlexColumnBreakInfo {
+// Each column in a flex or column grid-lanes container is fragmented
+// independently, so we need to track early break and break-after info for each
+// column separately.
+struct ColumnBreakInfo {
   DISALLOW_NEW();
 
-  FlexColumnBreakInfo() = default;
+  ColumnBreakInfo() = default;
 
   void Trace(Visitor* visitor) const { visitor->Trace(early_break); }
 
@@ -427,7 +428,7 @@ bool HasBreakOpportunityBeforeNextChild(
 // class C breakpoints. Those occur if there's a positive gap between the
 // block-start content edge of the container and the block-start margin edge of
 // the first in-flow child. https://www.w3.org/TR/css-break-3/#possible-breaks
-// If |flex_column_break_info| is supplied, we are running layout for a column
+// If |column_break_info| is supplied, we are running layout for a column
 // flex container, in which case, we may be tracking certain break behavior at
 // the column level.
 BreakStatus BreakBeforeChildIfNeeded(
@@ -438,7 +439,7 @@ BreakStatus BreakBeforeChildIfNeeded(
     bool has_container_separation,
     BoxFragmentBuilder*,
     bool is_row_item = false,
-    FlexColumnBreakInfo* flex_column_break_info = nullptr);
+    ColumnBreakInfo* column_break_info = nullptr);
 
 // Insert a break before the child, and propagate space shortage if needed.
 // |block_size_override| should only be supplied when you wish to propagate a
@@ -493,7 +494,7 @@ void UpdateMinimalSpaceShortage(std::optional<LayoutUnit> space_shortage,
 // update the appeal of breaking before or inside the child (if we're not going
 // to break before it). If false is returned, it means that we need to break
 // before the child (or even earlier). See BreakBeforeChildIfNeeded() for
-// details on `flex_column_break_info`. Note that `builder` is nullptr in cases
+// details on `column_break_info`. Note that `builder` is nullptr in cases
 // where the builder shouldn't be updated. This is the case for e.g. floats.
 bool MovePastBreakpoint(const ConstraintSpace& space,
                         LayoutInputNode child,
@@ -503,7 +504,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
                         BreakAppeal appeal_before,
                         BoxFragmentBuilder* builder,
                         bool is_row_item = false,
-                        FlexColumnBreakInfo* flex_column_break_info = nullptr);
+                        ColumnBreakInfo* column_break_info = nullptr);
 
 // Same as above, but without the parts that require an LayoutInputNode.
 bool MovePastBreakpoint(const ConstraintSpace& space,
@@ -513,25 +514,24 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
                         BreakAppeal appeal_before,
                         BoxFragmentBuilder* builder,
                         bool is_row_item = false,
-                        FlexColumnBreakInfo* flex_column_break_info = nullptr);
+                        ColumnBreakInfo* column_break_info = nullptr);
 
 // If the appeal of breaking before or inside the child is the same or higher
 // than any previous breakpoint we've found, set a new breakpoint in the
 // builder, and update appeal accordingly. See BreakBeforeChildIfNeeded() for
-// details on |flex_column_break_info|.
-void UpdateEarlyBreakAtBlockChild(
-    BlockNode child,
-    const LayoutResult&,
-    BreakAppeal appeal_before,
-    BoxFragmentBuilder*,
-    FlexColumnBreakInfo* flex_column_break_info = nullptr);
+// details on |column_break_info|.
+void UpdateEarlyBreakAtBlockChild(BlockNode child,
+                                  const LayoutResult&,
+                                  BreakAppeal appeal_before,
+                                  BoxFragmentBuilder*,
+                                  ColumnBreakInfo* column_break_info = nullptr);
 
 // Attempt to insert a soft break before the child, and return true if we did.
 // If false is returned, it means that the desired breakpoint is earlier in the
 // container, and that we need to abort and re-layout to that breakpoint.
 // |block_size_override| should only be supplied when you wish to propagate a
 // different block-size than that of the provided layout result. See
-// BreakBeforeChildIfNeeded() for details on |flex_column_break_info|.
+// BreakBeforeChildIfNeeded() for details on |column_break_info|.
 bool AttemptSoftBreak(
     LayoutInputNode child,
     const LayoutResult*,
@@ -540,7 +540,7 @@ bool AttemptSoftBreak(
     BreakAppeal appeal_before,
     BoxFragmentBuilder*,
     std::optional<LayoutUnit> block_size_override = std::nullopt,
-    FlexColumnBreakInfo* flex_column_break_info = nullptr);
+    ColumnBreakInfo* column_break_info = nullptr);
 
 // Before layout of a child, set up fragmentation layout input.
 FragmentationLayoutInput GetFragmentationLayoutInputForChild(
@@ -651,6 +651,6 @@ bool CanPaintMultipleFragments(const LayoutObject&);
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::FlexColumnBreakInfo)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ColumnBreakInfo)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENTATION_UTILS_H_
