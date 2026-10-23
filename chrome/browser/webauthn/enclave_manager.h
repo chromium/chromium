@@ -507,18 +507,6 @@ class EnclaveManager : public EnclaveManagerInterface {
   unsigned renewal_checks_for_testing() const;
   unsigned renewal_attempts_for_testing() const;
 
-  // Create a wrapped PIN, suitable for putting into a simulated security domain
-  // member.
-  static std::string MakeWrappedPINForTesting(
-      base::span<const uint8_t> security_domain_secret,
-      std::string_view pin);
-
-  // Encrypts `cbor_bytes` representing a wrapped PIN with
-  // `security_domain_secret`.
-  static std::vector<uint8_t> EncryptWrappedPIN(
-      base::span<const uint8_t> security_domain_secret,
-      base::span<const uint8_t> cbor_bytes);
-
   base::WeakPtr<EnclaveManager> GetWeakPtr();
 
  private:

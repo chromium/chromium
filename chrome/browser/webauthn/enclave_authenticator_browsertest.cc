@@ -63,6 +63,7 @@
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/fake_magic_arch.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
+#include "chrome/browser/webauthn/gpm_pin_crypto.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/test_util.h"
@@ -1454,7 +1455,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   registration_state_result.key_version = kSecretVersion;
   registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
       "public key", trusted_vault::UsableRecoveryPinMetadata(
-                        EnclaveManager::MakeWrappedPINForTesting(
+                        webauthn::MakeWrappedPINForTesting(
                             kSecurityDomainSecret, "123456"),
                         /*expiry=*/base::Time::Now() + base::Seconds(10000)));
   SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
@@ -1679,7 +1680,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   registration_state_result.key_version = kSecretVersion;
   registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
       "public key", trusted_vault::UsableRecoveryPinMetadata(
-                        EnclaveManager::MakeWrappedPINForTesting(
+                        webauthn::MakeWrappedPINForTesting(
                             kSecurityDomainSecret, "123456"),
                         /*expiry=*/base::Time::Now() + base::Seconds(10000)));
   SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
@@ -4032,7 +4033,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   registration_state_result.key_version = kSecretVersion;
   registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
       "public key", trusted_vault::UsableRecoveryPinMetadata(
-                        EnclaveManager::MakeWrappedPINForTesting(
+                        webauthn::MakeWrappedPINForTesting(
                             *security_domain_secret, newpin),
                         /*expiry=*/base::Time::Now() + base::Seconds(10000)));
   SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));

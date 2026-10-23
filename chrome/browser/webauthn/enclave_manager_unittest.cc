@@ -46,6 +46,7 @@
 #include "chrome/browser/webauthn/fake_magic_arch.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
+#include "chrome/browser/webauthn/gpm_pin_crypto.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
@@ -1576,7 +1577,7 @@ TEST_F(EnclaveManagerTest, RenewPINAddsCohortDetails) {
         const_cast<cbor::Value::MapValue&>(cbor->GetMap());
     wrapped_pin_cbor.erase(wrapped_pin_cbor.find(cbor::Value(6)));
     wrapped_pin_cbor.erase(wrapped_pin_cbor.find(cbor::Value(7)));
-    std::vector<uint8_t> encrypted_pin = EnclaveManager::EncryptWrappedPIN(
+    std::vector<uint8_t> encrypted_pin = webauthn::EncryptWrappedPIN(
         security_domain_secret,
         *cbor::Writer::Write(cbor::Value(std::move(wrapped_pin_cbor))));
     wrapped_pin_proto->set_wrapped_pin(
