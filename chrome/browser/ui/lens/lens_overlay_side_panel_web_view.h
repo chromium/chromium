@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "content/public/browser/file_select_listener.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace lens {

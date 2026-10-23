@@ -25,6 +25,7 @@ ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
       contents_wrapper_(std::move(contents_wrapper)) {
   SetWebContents(contents_wrapper_->web_contents());
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 }
 
 ReadAnythingImmersiveWebView::~ReadAnythingImmersiveWebView() = default;
@@ -60,10 +61,7 @@ bool ReadAnythingImmersiveWebView::HandleKeyboardEvent(
       glue->controller()->HandleEscapeKey(event)) {
     return true;
   }
-  // Call the unhandled keyboard event handler to allow for default handling
-  // and propagation.
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
+  return WebView::HandleKeyboardEvent(source, event);
 }
 
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>

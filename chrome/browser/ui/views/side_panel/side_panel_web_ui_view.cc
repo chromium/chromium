@@ -50,6 +50,7 @@ SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
   contents_wrapper->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper->web_contents());
   CHECK_EQ(contents_wrapper->web_contents(), web_contents());
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 
   // The mechanism that ensure the Side Panel will load at high priority even
   // while it is still not visible requires the WebContents to be tagged.
@@ -131,13 +132,6 @@ void SidePanelWebUIView::HideCustomContextMenu() {
   if (context_menu_runner_) {
     context_menu_runner_->Cancel();
   }
-}
-
-bool SidePanelWebUIView::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
 }
 
 BEGIN_METADATA(SidePanelWebUIView)

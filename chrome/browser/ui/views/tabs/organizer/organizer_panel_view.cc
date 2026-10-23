@@ -34,7 +34,6 @@
 #include "ui/gfx/draggable_region.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
@@ -48,11 +47,6 @@
 
 namespace {
 
-// Custom WebView which forwards accelerators to the browser.
-//
-// This is required because on Mac, keypresses are routed directly to the
-// WebContents without touching the normal browser event handling logic unless
-// they're forwarded (for example, by an UnhandledKeyboardEventHandler).
 class OrganizerPanelWebView : public views::WebView {
   METADATA_HEADER(OrganizerPanelWebView, views::WebView)
  public:
@@ -60,13 +54,6 @@ class OrganizerPanelWebView : public views::WebView {
   ~OrganizerPanelWebView() override = default;
 
   // views::WebView:
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const input::NativeWebKeyboardEvent& event) override {
-    return keyboard_event_handler_.HandleKeyboardEvent(event,
-                                                       GetFocusManager());
-  }
-
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override {
@@ -78,7 +65,6 @@ class OrganizerPanelWebView : public views::WebView {
   }
 
  private:
-  views::UnhandledKeyboardEventHandler keyboard_event_handler_;
   SkRegion draggable_region_;
 };
 
@@ -94,6 +80,8 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
     SetLayoutManager(std::make_unique<views::FillLayout>());
     web_view_ = AddChildView(
         std::make_unique<OrganizerPanelWebView>(browser.GetProfile()));
+    web_view_->SetAcceleratorHandling(
+        views::WebContentsAcceleratorHandling::kEnabled);
     webui::SetBrowserWindowInterface(web_view_->GetWebContents(), &browser);
     web_view_->GetWebContents()->SetSupportsDraggableRegions(true);
     views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(

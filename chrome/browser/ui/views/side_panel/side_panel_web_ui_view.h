@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace ui {
@@ -54,8 +53,6 @@ class SidePanelWebUIView : public views::WebView,
       gfx::Point point,
       std::unique_ptr<ui::MenuModel> menu_model) override;
   void HideCustomContextMenu() override;
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
 
  private:
   base::RepeatingClosure on_show_cb_;
@@ -69,7 +66,6 @@ class SidePanelWebUIView : public views::WebView,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   base::CallbackListSubscription tab_will_discard_subscription_;
   base::WeakPtrFactory<SidePanelWebUIView> weak_factory_{this};
 };

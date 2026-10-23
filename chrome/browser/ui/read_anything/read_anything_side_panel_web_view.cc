@@ -63,7 +63,7 @@ bool ReadAnythingSidePanelWebView::HandleKeyboardEvent(
       glue->controller()->HandleEscapeKey(event)) {
     return true;
   }
-  return SidePanelWebUIViewT::HandleKeyboardEvent(source, event);
+  return views::WebView::HandleKeyboardEvent(source, event);
 }
 
 base::WeakPtr<ReadAnythingSidePanelWebView>
