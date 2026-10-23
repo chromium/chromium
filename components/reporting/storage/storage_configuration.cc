@@ -104,12 +104,10 @@ StorageOptions::QueuesOptionsList StorageOptions::ProduceQueuesOptions() const {
                          .set_subdirectory(kImmediateQueueSubdir)
                          .set_file_prefix(kImmediateQueuePrefix)
                          .set_upload_retry_delay(kFailedUploadRetryDelay)),
-      std::make_pair(SECURITY,
-                     QueueOptions(*this)
-                         .set_subdirectory(kSecurityQueueSubdir)
-                         .set_file_prefix(kSecurityQueuePrefix)
-                         .set_upload_retry_delay(kFailedUploadRetryDelay)
-                         .set_can_shed_records(false)),
+      std::make_pair(SECURITY, QueueOptions(*this)
+                                   .set_subdirectory(kSecurityQueueSubdir)
+                                   .set_file_prefix(kSecurityQueuePrefix)
+                                   .set_upload_period(kSecurityUploadPeriod)),
   };
 }
 

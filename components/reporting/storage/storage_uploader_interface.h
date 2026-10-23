@@ -32,7 +32,7 @@ class UploaderInterface {
     MANUAL = 1,            // Upload triggered by manual Flush call
     KEY_DELIVERY = 2,      // Upload requesting encryption key delivery/update
     PERIODIC = 3,          // Upload triggered by periodic queue timer
-    IMMEDIATE_FLUSH = 4,   // Upload after IMMEDIATE/SECURITY event is enqueued
+    IMMEDIATE_FLUSH = 4,   // Upload after IMMEDIATE event is enqueued
     FAILURE_RETRY = 5,     // Retry after any upload failure
     INCOMPLETE_RETRY = 6,  // Retry when some time after upload the events
                            // are still not confirmed by the server

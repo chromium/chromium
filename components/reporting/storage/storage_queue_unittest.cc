@@ -838,7 +838,7 @@ class StorageQueueTest
   // Can be set only if before that it is zero.
   // Needs to be set to a positive number (usually 1) before executing an action
   // that would trigger upload (e.g., advancing time or FLUSH or calling write
-  // to IMMEDIATE/SECURITY queue). As long as the counter is positive, uploads
+  // to IMMEDIATE queue). As long as the counter is positive, uploads
   // will be permitted, and the counter will decrement by 1. Once the counter
   // becomes zero, upload calls will be ignored (they may be caused by mocked
   // time being advanced more than requested).

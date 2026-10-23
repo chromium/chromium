@@ -137,7 +137,7 @@ class EncryptedReportingClient {
   FRIEND_TEST_ALL_PREFIXES(EncryptedReportingClientTest,
                            UploadsSequenceThrottled);
   FRIEND_TEST_ALL_PREFIXES(EncryptedReportingClientTest,
-                           SecurityUploadsSequenceNotThrottled);
+                           SecurityUploadsSequenceThrottled);
   FRIEND_TEST_ALL_PREFIXES(EncryptedReportingClientTest,
                            FailedUploadsSequenceThrottled);
 

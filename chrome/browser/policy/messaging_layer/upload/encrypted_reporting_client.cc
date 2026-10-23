@@ -133,13 +133,12 @@ std::unique_ptr<::net::BackoffEntry> GetBackoffEntry(Priority priority) {
 
       /*always_use_initial_delay=*/true,
   };
-  // Maximum backoff is set per priority. Current proposal is to set SECURITY
-  // and IMMEDIATE events to be backed off only slightly: max delay is set
+  // Maximum backoff is set per priority. Current proposal is to set IMMEDIATE
+  // events to be backed off only slightly: max delay is set
   // to 1 minute. For all other priorities max delay is set to 24 hours.
   auto backoff_entry = std::make_unique<::net::BackoffEntry>(
-      (priority == Priority::SECURITY || priority == Priority::IMMEDIATE)
-          ? &kImmediateUploadBackoffPolicy
-          : &kDefaultUploadBackoffPolicy);
+      priority == Priority::IMMEDIATE ? &kImmediateUploadBackoffPolicy
+                                      : &kDefaultUploadBackoffPolicy);
   return backoff_entry;
 }
 
@@ -859,10 +858,6 @@ base::TimeDelta EncryptedReportingClient::WhenIsAllowedToProceed(
   if (state->last_sequence_id > state->cached_records.rbegin()->first) {
     // Sequence id decreased, the upload is outdated, reject it forever.
     return base::TimeDelta::Max();
-  }
-  if (priority == Priority::SECURITY) {
-    // For SECURITY events the request is allowed.
-    return base::TimeDelta();  // 0 - allowed right away.
   }
 
   // Allow upload only if earliest retry time has passed.
