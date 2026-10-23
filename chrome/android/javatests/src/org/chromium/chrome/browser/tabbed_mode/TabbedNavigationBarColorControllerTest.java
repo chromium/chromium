@@ -375,6 +375,7 @@ public class TabbedNavigationBarColorControllerTest {
     @EnableAnimations
     @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    @DisabledTest(message = "https://crbug.com/576880040")
     public void testNavBarColorAnimationsEdgeToEdgeBottomChin() throws InterruptedException {
         initialize();
 
@@ -391,6 +392,7 @@ public class TabbedNavigationBarColorControllerTest {
     @EnableAnimations
     @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    @DisabledTest(message = "https://crbug.com/576880040")
     public void testNavBarColorAnimationsEdgeToEdgeEverywhere() throws InterruptedException {
         initialize();
         testNavBarColorAnimations();
