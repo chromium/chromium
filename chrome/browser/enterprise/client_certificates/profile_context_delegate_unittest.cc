@@ -6,17 +6,24 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/features.h"
+#include "components/enterprise/client_certificates/core/metrics_util.h"
 #include "components/enterprise/client_certificates/core/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cert/x509_certificate.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -28,12 +35,21 @@ namespace client_certificates {
 
 namespace {
 
-constexpr char kFakeProfileId[] = "fake-profile-id";
+constexpr char kTestProfileId[] = "test_profile_id";
 
 scoped_refptr<net::X509Certificate> LoadTestCert() {
   static constexpr char kTestCertFileName[] = "client_1.pem";
   return net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                  kTestCertFileName);
+}
+
+scoped_refptr<net::X509Certificate> CreateCert(const std::string& common_name,
+                                               base::Time not_before,
+                                               base::Time not_after) {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  leaf->SetSubjectCommonName(common_name);
+  leaf->SetValidity(not_before, not_after);
+  return leaf->GetX509Certificate();
 }
 
 class MockNetworkContext : public network::TestNetworkContext {
@@ -62,16 +78,21 @@ class ProfileContextDelegateTest : public testing::Test {
     auto* storage_partition = profile_->GetDefaultStoragePartition();
     storage_partition->SetNetworkContextForTesting(
         std::move(network_context_remote));
-    delegate_ = std::make_unique<ProfileContextDelegate>(profile_.get(),
-                                                         &profile_id_service_);
+    profile_id_service_ =
+        std::make_unique<enterprise::ProfileIdService>(kTestProfileId);
+  }
+
+  ProfileContextDelegate CreateDelegate() {
+    return ProfileContextDelegate(profile_.get(), profile_id_service_.get());
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kClientCertCommonNameAttribute};
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<MockNetworkContext> mock_network_context_;
   std::unique_ptr<TestingProfile> profile_;
-  enterprise::ProfileIdService profile_id_service_{kFakeProfileId};
-  std::unique_ptr<ProfileContextDelegate> delegate_;
+  std::unique_ptr<enterprise::ProfileIdService> profile_id_service_;
 };
 
 TEST_F(ProfileContextDelegateTest,
@@ -85,7 +106,7 @@ TEST_F(ProfileContextDelegateTest,
       .WillOnce(testing::DoAll(testing::SaveArg<0>(&flushed_cert),
                                [&run_loop] { run_loop.Quit(); }));
 
-  delegate_->OnClientCertificateDeleted(test_cert);
+  CreateDelegate().OnClientCertificateDeleted(test_cert);
   run_loop.Run();
 
   std::vector<std::string> test_cert_pem;
@@ -96,22 +117,134 @@ TEST_F(ProfileContextDelegateTest,
   EXPECT_EQ(test_cert_pem, flushed_cert_pem);
 }
 
-TEST_F(ProfileContextDelegateTest, GetExpectedCommonName) {
-  EXPECT_EQ(kFakeProfileId, delegate_->GetExpectedCommonName());
-}
-
 TEST_F(ProfileContextDelegateTest, GetIdentityName) {
-  EXPECT_EQ(kManagedProfileIdentityName, delegate_->GetIdentityName());
+  EXPECT_EQ(kManagedProfileIdentityName, CreateDelegate().GetIdentityName());
 }
 
 TEST_F(ProfileContextDelegateTest, GetTemporaryIdentityName) {
   EXPECT_EQ(kTemporaryManagedProfileIdentityName,
-            delegate_->GetTemporaryIdentityName());
+            CreateDelegate().GetTemporaryIdentityName());
 }
 
 TEST_F(ProfileContextDelegateTest, GetPolicyPref) {
   EXPECT_EQ(prefs::kProvisionManagedClientCertificateForUserPrefs,
-            delegate_->GetPolicyPref());
+            CreateDelegate().GetPolicyPref());
+}
+
+TEST_F(ProfileContextDelegateTest, GetConfigPolicyPref) {
+  EXPECT_EQ(prefs::kManagedClientCertificateForUserConfigPrefs,
+            CreateDelegate().GetConfigPolicyPref());
+}
+
+TEST_F(ProfileContextDelegateTest, GetExpectedCommonName_DefaultIdentifier) {
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey, kCommonNameSourceProfileId));
+  EXPECT_EQ(kTestProfileId, CreateDelegate().GetExpectedCommonName());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ProfileContextDelegateTest,
+       GetExpectedCommonName_ComputerNameFallbackToProfileIdOnChromeOS) {
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey,
+                            kCommonNameSourceComputerName));
+  auto delegate = CreateDelegate();
+  delegate.SetComputerNameForTesting("custom-workstation");
+  EXPECT_EQ(kTestProfileId, delegate.GetExpectedCommonName());
+}
+#else
+TEST_F(ProfileContextDelegateTest, GetExpectedCommonName_ComputerName) {
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey,
+                            kCommonNameSourceComputerName));
+  auto delegate = CreateDelegate();
+  delegate.SetComputerNameForTesting("custom-workstation");
+  EXPECT_EQ("custom-workstation", delegate.GetExpectedCommonName());
+}
+#endif
+
+TEST_F(ProfileContextDelegateTest,
+       GetExpectedCommonName_ComputerNameEmptyFallbackToProfileId) {
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey,
+                            kCommonNameSourceComputerName));
+  auto delegate = CreateDelegate();
+  delegate.SetComputerNameForTesting("   \t\r\n   ");
+  EXPECT_EQ(kTestProfileId, delegate.GetExpectedCommonName());
+}
+
+TEST_F(ProfileContextDelegateTest,
+       GetExpectedCommonName_FeatureDisabledIgnoresComputerNamePolicy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kClientCertCommonNameAttribute);
+
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey,
+                            kCommonNameSourceComputerName));
+  auto delegate = CreateDelegate();
+  delegate.SetComputerNameForTesting("custom-workstation");
+  EXPECT_EQ(kTestProfileId, delegate.GetExpectedCommonName());
+}
+
+TEST_F(ProfileContextDelegateTest,
+       ShouldCertificateBeRenewed_MatchingProfileId) {
+  base::HistogramTester histogram_tester;
+  auto delegate = CreateDelegate();
+  auto cert = CreateCert(kTestProfileId, base::Time::Now() - base::Days(1),
+                         base::Time::Now() + base::Days(30));
+  EXPECT_FALSE(delegate.ShouldCertificateBeRenewed(
+      *cert, delegate.GetExpectedCommonName()));
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CertificateValidation.Result",
+      CertificateValidationResult::kValid, 1);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ProfileContextDelegateTest,
+       ShouldCertificateBeRenewed_MatchingDeviceName) {
+  constexpr char kTestDeviceName[] = "custom-workstation";
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey,
+                            kCommonNameSourceComputerName));
+  auto delegate = CreateDelegate();
+  delegate.SetComputerNameForTesting(kTestDeviceName);
+
+  base::HistogramTester histogram_tester;
+  auto cert = CreateCert(kTestDeviceName, base::Time::Now() - base::Days(1),
+                         base::Time::Now() + base::Days(30));
+  EXPECT_FALSE(delegate.ShouldCertificateBeRenewed(
+      *cert, delegate.GetExpectedCommonName()));
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CertificateValidation.Result",
+      CertificateValidationResult::kValid, 1);
+}
+#endif
+
+TEST_F(
+    ProfileContextDelegateTest,
+    ShouldCertificateBeRenewed_DeviceNameRejectedWhenPolicyIsDefaultIdentifier) {
+  constexpr char kTestDeviceName[] = "custom-workstation";
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey, kCommonNameSourceProfileId));
+  auto delegate = CreateDelegate();
+  delegate.SetComputerNameForTesting(kTestDeviceName);
+
+  base::HistogramTester histogram_tester;
+  auto cert = CreateCert(kTestDeviceName, base::Time::Now() - base::Days(1),
+                         base::Time::Now() + base::Days(30));
+  EXPECT_TRUE(delegate.ShouldCertificateBeRenewed(
+      *cert, delegate.GetExpectedCommonName()));
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CertificateValidation.Result",
+      CertificateValidationResult::kIdentityMismatch, 1);
 }
 
 }  // namespace client_certificates

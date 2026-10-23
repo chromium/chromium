@@ -6,10 +6,14 @@
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_CONTEXT_DELEGATE_H_
 
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+
+class PrefService;
 
 namespace net {
 class X509Certificate;
@@ -34,6 +38,7 @@ std::string SanitizeAndTruncateCommonName(std::string_view raw_name);
 // a specific Profile).
 class ContextDelegate {
  public:
+  ContextDelegate();
   virtual ~ContextDelegate();
 
   // Will notify the rest of the current context that `certificate` should no
@@ -68,6 +73,23 @@ class ContextDelegate {
 
   // Returns the logging context used by histogram variants.
   virtual std::string GetLoggingContext() = 0;
+
+  void SetComputerNameForTesting(std::optional<std::string> computer_name);
+
+ protected:
+  // If `kClientCertCommonNameAttribute` is enabled and `prefs` configures
+  // `GetConfigPolicyPref()` with `common_name_source` set to `"computer_name"`,
+  // returns the sanitized device hostname (or `std::nullopt` if the sanitized
+  // hostname is empty, or on ChromeOS where computer name is not supported).
+  std::optional<std::string> GetConfiguredComputerName(
+      const PrefService* prefs) const;
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+  std::optional<std::string> computer_name_for_testing_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  mutable std::optional<std::string> cached_computer_name_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace client_certificates

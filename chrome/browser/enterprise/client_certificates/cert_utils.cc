@@ -90,13 +90,15 @@ CreateBrowserCertificateProvisioningService(
     client_certificates::CertificateStore* certificate_store,
     policy::DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  if (!url_loader_factory || !device_management_service || !certificate_store) {
+  if (!local_state || !url_loader_factory || !device_management_service ||
+      !certificate_store) {
     return nullptr;
   }
 
   return client_certificates::CertificateProvisioningService::Create(
       local_state, certificate_store,
-      std::make_unique<client_certificates::BrowserContextDelegate>(),
+      std::make_unique<client_certificates::BrowserContextDelegate>(
+          local_state),
       client_certificates::KeyUploadClient::Create(
           std::make_unique<
               enterprise_attestation::BrowserCloudManagementDelegate>(

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CLIENT_CERTIFICATES_PROFILE_CONTEXT_DELEGATE_H_
 #define CHROME_BROWSER_ENTERPRISE_CLIENT_CERTIFICATES_PROFILE_CONTEXT_DELEGATE_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/client_certificates/core/context_delegate.h"
 
@@ -29,6 +31,7 @@ class ProfileContextDelegate : public ContextDelegate {
   std::string GetIdentityName() override;
   std::string GetTemporaryIdentityName() override;
   std::string GetPolicyPref() override;
+  std::string GetConfigPolicyPref() const override;
   std::string GetLoggingContext() override;
 
  private:

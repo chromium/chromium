@@ -5,13 +5,18 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CLIENT_CERTIFICATES_BROWSER_CONTEXT_DELEGATE_H_
 #define CHROME_BROWSER_ENTERPRISE_CLIENT_CERTIFICATES_BROWSER_CONTEXT_DELEGATE_H_
 
+#include <string>
+
+#include "base/memory/raw_ptr.h"
 #include "components/enterprise/client_certificates/core/context_delegate.h"
+
+class PrefService;
 
 namespace client_certificates {
 
 class BrowserContextDelegate : public ContextDelegate {
  public:
-  BrowserContextDelegate();
+  explicit BrowserContextDelegate(PrefService* local_state);
   ~BrowserContextDelegate() override;
 
   // ContextDelegate:
@@ -21,7 +26,11 @@ class BrowserContextDelegate : public ContextDelegate {
   std::string GetIdentityName() override;
   std::string GetTemporaryIdentityName() override;
   std::string GetPolicyPref() override;
+  std::string GetConfigPolicyPref() const override;
   std::string GetLoggingContext() override;
+
+ private:
+  const raw_ptr<PrefService> local_state_;
 };
 
 }  // namespace client_certificates

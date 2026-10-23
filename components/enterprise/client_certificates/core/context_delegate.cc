@@ -4,6 +4,7 @@
 
 #include "components/enterprise/client_certificates/core/context_delegate.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -12,10 +13,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/client_certificates/core/metrics_util.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/prefs/pref_service.h"
 #include "net/cert/x509_certificate.h"
 
 namespace client_certificates {
@@ -97,7 +102,50 @@ std::string SanitizeAndTruncateCommonName(std::string_view raw_name) {
   return result;
 }
 
+ContextDelegate::ContextDelegate() = default;
 ContextDelegate::~ContextDelegate() = default;
+
+void ContextDelegate::SetComputerNameForTesting(
+    std::optional<std::string> computer_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  computer_name_for_testing_ = std::move(computer_name);
+  cached_computer_name_.reset();
+}
+
+std::optional<std::string> ContextDelegate::GetConfiguredComputerName(
+    const PrefService* prefs) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Computer name is not supported on ChromeOS (where policy::GetDeviceName()
+  // returns the hardware serial number rather than a hostname).
+  return std::nullopt;
+#else
+  if (!prefs || !features::IsClientCertCommonNameAttributeEnabled()) {
+    return std::nullopt;
+  }
+  std::string config_pref = GetConfigPolicyPref();
+  if (config_pref.empty() || !prefs->FindPreference(config_pref)) {
+    return std::nullopt;
+  }
+  const std::string* common_name_source =
+      prefs->GetDict(config_pref).FindString(kCommonNameSourceKey);
+  if (!common_name_source ||
+      *common_name_source != kCommonNameSourceComputerName) {
+    return std::nullopt;
+  }
+  if (!cached_computer_name_.has_value()) {
+    std::string raw_name = computer_name_for_testing_.has_value()
+                               ? *computer_name_for_testing_
+                               : policy::GetDeviceName();
+    std::string sanitized = SanitizeAndTruncateCommonName(raw_name);
+    if (sanitized.empty()) {
+      return std::nullopt;
+    }
+    cached_computer_name_ = std::move(sanitized);
+  }
+  return cached_computer_name_;
+#endif
+}
 
 bool ContextDelegate::ShouldCertificateBeRenewed(
     const net::X509Certificate& certificate,

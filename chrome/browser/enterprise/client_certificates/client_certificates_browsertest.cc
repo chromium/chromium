@@ -12,6 +12,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -21,12 +22,17 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
+#include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/context_delegate.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/test_support/client_storage.h"
@@ -59,8 +65,10 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
                                      public testing::WithParamInterface<bool> {
  protected:
   ClientCertificateBrowserTest() : scoped_key_converter_(true) {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kLazyKeyedServiceInstantiation);
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kLazyKeyedServiceInstantiation,
+         features::kClientCertCommonNameAttribute},
+        {});
     management_mixin_ = ManagementContextMixin::Create(
         &mixin_host_, this,
         {
@@ -146,20 +154,35 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
     return response;
   }
 
-  void SetUserPolicy(bool enable_provisioning) {
+  void SetUserPolicy(
+      int policy_value,
+      std::optional<std::string> common_name_source = std::nullopt) {
     base::flat_map<std::string, std::optional<base::Value>> policy_values;
     policy_values.insert(
         {policy::key::kProvisionManagedClientCertificateForUser,
-         base::Value(enable_provisioning ? 1 : 0)});
+         base::Value(policy_value)});
+    if (common_name_source.has_value()) {
+      policy_values.insert({policy::key::kManagedClientCertificateForUserConfig,
+                            base::Value(base::DictValue().Set(
+                                kCommonNameSourceKey, *common_name_source))});
+    }
 
     management_mixin()->SetCloudUserPolicies(std::move(policy_values));
   }
 
-  void SetBrowserPolicy(bool enable_provisioning) {
+  void SetBrowserPolicy(
+      int policy_value,
+      std::optional<std::string> common_name_source = std::nullopt) {
     base::flat_map<std::string, std::optional<base::Value>> policy_values;
     policy_values.insert(
         {policy::key::kProvisionManagedClientCertificateForBrowser,
-         base::Value(enable_provisioning ? 1 : 0)});
+         base::Value(policy_value)});
+    if (common_name_source.has_value()) {
+      policy_values.insert(
+          {policy::key::kManagedClientCertificateForBrowserConfig,
+           base::Value(base::DictValue().Set(kCommonNameSourceKey,
+                                             *common_name_source))});
+    }
 
     management_mixin()->SetCloudMachinePolicies(std::move(policy_values));
   }
@@ -188,14 +211,15 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
     }
   }
 
-  void EnablePolicyAndWaitForIdentity() {
+  void EnablePolicyAndWaitForIdentity(
+      std::optional<std::string> common_name_source = std::nullopt) {
     CertificateProvisioningService* provisioning_service;
     if (is_profile_scenario()) {
-      SetUserPolicy(true);
+      SetUserPolicy(1, std::move(common_name_source));
       provisioning_service =
           CertificateProvisioningServiceFactory::GetForProfile(GetProfile());
     } else {
-      SetBrowserPolicy(true);
+      SetBrowserPolicy(1, std::move(common_name_source));
       provisioning_service = g_browser_process->browser_policy_connector()
                                  ->chrome_browser_cloud_management_controller()
                                  ->GetCertificateProvisioningService();
@@ -222,6 +246,15 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
     EXPECT_EQ(client_certificate->issuer().common_name, GetIssuerCommonName());
   }
 
+  std::string GetDefaultExpectedCommonName() {
+    if (is_profile_scenario()) {
+      return enterprise::ProfileIdServiceFactory::GetForProfile(GetProfile())
+          ->GetProfileId()
+          .value_or(std::string());
+    }
+    return policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+  }
+
   std::string_view GetIssuerCommonName() {
     return is_profile_scenario() ? kProfileIssuerCommonName
                                  : kBrowserIssuerCommonName;
@@ -237,11 +270,11 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
   std::optional<CapturedRequest> captured_request_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<policy::EmbeddedPolicyTestServer> test_dm_server_;
   client_certificates::ScopedSSLKeyConverter scoped_key_converter_;
   std::unique_ptr<ManagementContextMixin> management_mixin_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, CreateNewIdentity) {
@@ -252,6 +285,25 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, CreateNewIdentity) {
           "Outcome",
           is_profile_scenario() ? "Profile" : "Browser"),
       true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest,
+                       CreateNewIdentityWithComputerName) {
+  EnablePolicyAndWaitForIdentity(kCommonNameSourceComputerName);
+  std::string expected_device_name =
+      SanitizeAndTruncateCommonName(policy::GetDeviceName());
+  CertificateProvisioningService* provisioning_service =
+      is_profile_scenario()
+          ? CertificateProvisioningServiceFactory::GetForProfile(GetProfile())
+          : g_browser_process->browser_policy_connector()
+                ->chrome_browser_cloud_management_controller()
+                ->GetCertificateProvisioningService();
+  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  provisioning_service->GetManagedIdentity(test_future.GetCallback());
+  ASSERT_TRUE(test_future.Get());
+  EXPECT_EQ(test_future.Get()->certificate->subject().common_name,
+            expected_device_name.empty() ? GetDefaultExpectedCommonName()
+                                         : expected_device_name);
 }
 
 IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, PRE_LoadExistingIdentity) {
@@ -272,9 +324,9 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, UseIdentityInMtls) {
   // Enable the necessary policies and trigger a navigation.
   SetCertificateAutoselectionPolicy();
   if (is_profile_scenario()) {
-    SetUserPolicy(true);
+    SetUserPolicy(1);
   } else {
-    SetBrowserPolicy(true);
+    SetBrowserPolicy(1);
   }
 
   ASSERT_TRUE(content::NavigateToURL(
@@ -306,6 +358,29 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest,
   const KeyedServiceBaseFactory* factory =
       CertificateProvisioningServiceFactory::GetInstance();
   EXPECT_TRUE(factory->IsServiceCreated(GetProfile()));
+}
+
+IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest,
+                       UseIdentityInMtlsWithComputerName) {
+  // Enable the necessary policies and trigger a navigation.
+  SetCertificateAutoselectionPolicy();
+  if (is_profile_scenario()) {
+    SetUserPolicy(1, kCommonNameSourceComputerName);
+  } else {
+    SetBrowserPolicy(1, kCommonNameSourceComputerName);
+  }
+
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this),
+      embedded_https_test_server().GetURL("mtls.google.com", "/mtls")));
+
+  ASSERT_TRUE(captured_request_);
+  VerifyClientCert(captured_request_->client_certificate);
+  std::string expected_device_name =
+      SanitizeAndTruncateCommonName(policy::GetDeviceName());
+  EXPECT_EQ(captured_request_->client_certificate->subject().common_name,
+            expected_device_name.empty() ? GetDefaultExpectedCommonName()
+                                         : expected_device_name);
 }
 
 INSTANTIATE_TEST_SUITE_P(

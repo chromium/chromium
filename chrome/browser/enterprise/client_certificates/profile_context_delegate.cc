@@ -4,6 +4,9 @@
 
 #include "chrome/browser/enterprise/client_certificates/profile_context_delegate.h"
 
+#include <optional>
+#include <string>
+
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +19,12 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace client_certificates {
+
+namespace {
+
+constexpr char kLoggingContext[] = "Profile";
+
+}  // namespace
 
 ProfileContextDelegate::ProfileContextDelegate(
     Profile* profile,
@@ -37,6 +46,10 @@ void ProfileContextDelegate::OnClientCertificateDeleted(
 }
 
 std::string ProfileContextDelegate::GetExpectedCommonName() const {
+  if (std::optional<std::string> computer_name =
+          GetConfiguredComputerName(profile_->GetPrefs())) {
+    return *computer_name;
+  }
   return profile_id_service_->GetProfileId().value_or(std::string());
 }
 
@@ -52,8 +65,12 @@ std::string ProfileContextDelegate::GetPolicyPref() {
   return prefs::kProvisionManagedClientCertificateForUserPrefs;
 }
 
+std::string ProfileContextDelegate::GetConfigPolicyPref() const {
+  return prefs::kManagedClientCertificateForUserConfigPrefs;
+}
+
 std::string ProfileContextDelegate::GetLoggingContext() {
-  return "Profile";
+  return kLoggingContext;
 }
 
 }  // namespace client_certificates
