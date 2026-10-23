@@ -68,6 +68,34 @@ template("ios_create_signed_bundle") {
                              "xcode_extra_attributes",
                            ])
     platform_sdk_name = ios_sdk_name
+
+    # Binaries built against the iOS 26+ SDK that reference `Swift.Span` while
+    # targeting iOS < 26.0 link against `@rpath/libswiftCompatibilitySpan.dylib`
+    # via `$ld$previous$` directives in `libswiftCore.tbd`. On iOS 26+, this
+    # library is in the OS shared cache (`/usr/lib/swift/`), but on iOS 18 it
+    # must be packaged in the app bundle's `Frameworks/` directory.
+    # Note: `swift-6.2` is the fixed directory name where Xcode 26+ (including
+    # Xcode 27 / Swift 6.4) ships the Swift 6.2 `Span` back-deployment library,
+    # similar to `swift-5.0` and `swift-5.5`.
+    # TODO(crbug.com/574458204): Remove once iOS 18 support is dropped.
+    _deployment_target_parts = string_split(ios_deployment_target, ".")
+    _pre_ios26_major_versions = [
+      "15",
+      "16",
+      "17",
+      "18",
+    ]
+    _targets_pre_ios26 = filter_include([ _deployment_target_parts[0] ],
+                                        _pre_ios26_major_versions) != []
+    if (_targets_pre_ios26 &&
+        invoker.product_type == apple_mobile_xcode_app_bundle_id &&
+        xcode_version_int >= 2600 && target_environment != "catalyst" &&
+        (!defined(invoker.transparent) || !invoker.transparent)) {
+      if (!defined(extra_system_frameworks)) {
+        extra_system_frameworks = []
+      }
+      extra_system_frameworks += [ "$ios_toolchains_path/usr/lib/swift-6.2/$ios_sdk_name/libswiftCompatibilitySpan.dylib" ]
+    }
     xcode_extra_attributes = {
       IPHONEOS_DEPLOYMENT_TARGET = ios_deployment_target
 
