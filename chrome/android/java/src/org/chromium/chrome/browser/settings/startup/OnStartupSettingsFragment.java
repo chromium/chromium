@@ -35,6 +35,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
     private @Nullable CallbackController mCallbackController;
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable FaviconHelper mFaviconHelper;
+    private @Nullable OnStartupUrlDialogCoordinator mUrlDialogCoordinator;
     private @Nullable RadioButtonGroupOnStartupPreference mRadioGroupPref;
 
     // ChromeBaseSettingsFragment implementation.
@@ -81,8 +84,14 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
                                         getProfile(), startupType),
                         new RadioButtonGroupOnStartupPreference.StartupPageItemActionListener() {
                             @Override
+                            public void onAddNewStartupPage() {
+                                showUrlDialog(
+                                        prefService, /* editIndex= */ -1, /* initialUrl= */ null);
+                            }
+
+                            @Override
                             public void onEditStartupPage(int index, String url) {
-                                // TODO(crbug.com/571155672): Launch edit startup page dialog.
+                                showUrlDialog(prefService, index, url);
                             }
 
                             @Override
@@ -123,6 +132,9 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
         mPrefChangeRegistrar.addObserver(
                 Pref.URLS_TO_RESTORE_ON_STARTUP,
                 () -> {
+                    if (mUrlDialogCoordinator != null) {
+                        mUrlDialogCoordinator.dismissIfEditing();
+                    }
                     if (mRadioGroupPref != null) {
                         mRadioGroupPref.setStartupUrls(
                                 TabbedStartupCoordinator.getSessionStartupUrls(prefService));
@@ -136,6 +148,10 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
+        }
+        if (mUrlDialogCoordinator != null) {
+            mUrlDialogCoordinator.destroy();
+            mUrlDialogCoordinator = null;
         }
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
@@ -160,6 +176,40 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
     @Override
     public @Nullable String getMainMenuKey() {
         return "on_startup";
+    }
+
+    private void showUrlDialog(
+            PrefService prefService, int editIndex, @Nullable String initialUrl) {
+        if (mUrlDialogCoordinator == null) {
+            ModalDialogManager modalDialogManager =
+                    assertNonNull(
+                            ((ModalDialogManagerHolder) requireActivity()).getModalDialogManager());
+            mUrlDialogCoordinator =
+                    new OnStartupUrlDialogCoordinator(requireContext(), modalDialogManager);
+        }
+        mUrlDialogCoordinator.show(
+                initialUrl,
+                validatedUrl ->
+                        saveStartupPageUrl(prefService, editIndex, initialUrl, validatedUrl));
+    }
+
+    private static void saveStartupPageUrl(
+            PrefService prefService,
+            int editIndex,
+            @Nullable String initialUrl,
+            String validatedUrl) {
+        List<String> urls =
+                new ArrayList<>(TabbedStartupCoordinator.getSessionStartupUrls(prefService));
+        if (initialUrl == null) {
+            urls.add(validatedUrl);
+        } else if (editIndex >= 0
+                && editIndex < urls.size()
+                && TextUtils.equals(urls.get(editIndex), initialUrl)) {
+            urls.set(editIndex, validatedUrl);
+        } else {
+            return;
+        }
+        TabbedStartupCoordinator.setSessionStartupUrls(prefService, urls);
     }
 
     private void loadTitleForUrl(String url, Callback<String> callback) {

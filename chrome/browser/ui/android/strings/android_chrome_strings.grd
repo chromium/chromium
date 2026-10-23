@@ -1054,6 +1054,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_ON_STARTUP_PREF_URLS" desc="Label for the option to open a specific page or set of pages on startup.">
         Open a specific page or set of pages
       </message>
+      <message name="IDS_ON_STARTUP_ADD_NEW_PAGE" desc="Label and dialog title for adding a new startup page URL.">
+        Add a new page
+      </message>
+      <message name="IDS_ON_STARTUP_EDIT_PAGE" desc="Dialog title for editing an existing startup page URL.">
+        Edit page
+      </message>
       <if expr="enable_extensions_core">
         <message name="IDS_EXTENSIONS_PIN_TO_TOOLBAR_SETTING" desc="Title Text of the button that pins the extensions menu icon (the puzzle piece icon) to the toolbar.">
           Pin to toolbar

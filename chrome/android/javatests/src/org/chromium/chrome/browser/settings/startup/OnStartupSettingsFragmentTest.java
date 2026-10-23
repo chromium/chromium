@@ -11,12 +11,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,6 +52,11 @@ import org.chromium.components.browser_ui.widget.containment.ContainedLinearLayo
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
@@ -180,6 +188,9 @@ public class OnStartupSettingsFragmentTest {
                                 new RadioButtonGroupOnStartupPreference
                                         .StartupPageItemActionListener() {
                                     @Override
+                                    public void onAddNewStartupPage() {}
+
+                                    @Override
                                     public void onEditStartupPage(int index, String url) {}
 
                                     @Override
@@ -269,6 +280,195 @@ public class OnStartupSettingsFragmentTest {
         assertEquals(1, container.getChildCount());
         TextView urlView = container.getChildAt(0).findViewById(R.id.startup_page_url);
         assertEquals("https://docs.google.com/document/u/0/", urlView.getText().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testAddNewStartupUrl_savesValidatedUrlWithModalDialog() {
+        // Setup URLS startup mode with one existing URL.
+        setRestoreOnStartupPref(SessionStartupPref.URLS);
+        setRestoreOnStartupUrls(List.of(URL_ESPN));
+        RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
+        LinearLayout container = pref.getStartupPagesContainerForTesting();
+        assertNotNull(container);
+        assertEquals(1, container.getChildCount());
+
+        // Act: Open the modal dialog via "Add a new page" and enter an unnormalized domain.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    pref.getAddNewPageButtonForTesting().performClick();
+                    ModalDialogManager modalDialogManager =
+                            mSettingsTestRule.getActivity().getModalDialogManager();
+                    PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+                    assertNotNull(dialogModel);
+                    assertTrue(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+
+                    EditText urlEditText =
+                            dialogModel
+                                    .get(ModalDialogProperties.CUSTOM_VIEW)
+                                    .findViewById(R.id.url_edit_text);
+                    urlEditText.setText("  wikipedia.org  ");
+                    assertFalse(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+                    dialogModel
+                            .get(ModalDialogProperties.CONTROLLER)
+                            .onClick(dialogModel, ButtonType.POSITIVE);
+                    assertNull(modalDialogManager.getCurrentDialogForTest());
+                });
+
+        // Verify the normalized URL is appended to the UI list and PrefService.
+        assertEquals(2, container.getChildCount());
+        TextView addedUrlView = container.getChildAt(1).findViewById(R.id.startup_page_url);
+        assertEquals("http://wikipedia.org", addedUrlView.getText().toString());
+        List<String> savedUrls =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                TabbedStartupCoordinator.getSessionStartupUrls(
+                                        UserPrefs.get(mProfile)));
+        assertEquals(List.of(URL_ESPN, "http://wikipedia.org/"), savedUrls);
+    }
+
+    @Test
+    @SmallTest
+    public void testEditStartupUrl_updatesExistingUrlInPlace() {
+        // Setup URLS startup mode with two existing URLs.
+        setRestoreOnStartupPref(SessionStartupPref.URLS);
+        setRestoreOnStartupUrls(List.of(URL_ESPN, URL_WIKIPEDIA));
+        RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
+        LinearLayout container = pref.getStartupPagesContainerForTesting();
+        assertNotNull(container);
+        assertEquals(2, container.getChildCount());
+
+        // Act: Open the overflow menu on the first row and click "Edit".
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ListMenuButton moreButton =
+                            container.getChildAt(0).findViewById(R.id.startup_page_more_button);
+                    moreButton.callOnClick();
+                });
+        onView(withText(R.string.edit)).perform(click());
+
+        // Verify the Edit dialog is pre-populated and Save is enabled, then update the URL and
+        // submit via the keyboard Done action.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ModalDialogManager modalDialogManager =
+                            mSettingsTestRule.getActivity().getModalDialogManager();
+                    PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+                    assertNotNull(dialogModel);
+                    assertEquals(
+                            mSettingsTestRule
+                                    .getFragment()
+                                    .getString(R.string.on_startup_edit_page),
+                            dialogModel.get(ModalDialogProperties.TITLE));
+                    assertFalse(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+
+                    EditText urlEditText =
+                            dialogModel
+                                    .get(ModalDialogProperties.CUSTOM_VIEW)
+                                    .findViewById(R.id.url_edit_text);
+                    assertEquals(URL_ESPN, urlEditText.getText().toString());
+                    urlEditText.setText(URL_DOCS);
+                    assertFalse(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+                    urlEditText.onEditorAction(EditorInfo.IME_ACTION_DONE);
+                    assertNull(modalDialogManager.getCurrentDialogForTest());
+                });
+
+        // Verify row 0 is updated in place while row 1 remains unchanged.
+        assertEquals(2, container.getChildCount());
+        TextView firstUrl = container.getChildAt(0).findViewById(R.id.startup_page_url);
+        TextView secondUrl = container.getChildAt(1).findViewById(R.id.startup_page_url);
+        assertEquals("https://docs.google.com/document/u/0/", firstUrl.getText().toString());
+        assertEquals("https://www.wikipedia.org", secondUrl.getText().toString());
+        List<String> savedUrls =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                TabbedStartupCoordinator.getSessionStartupUrls(
+                                        UserPrefs.get(mProfile)));
+        assertEquals(List.of(URL_DOCS, URL_WIKIPEDIA), savedUrls);
+    }
+
+    @Test
+    @SmallTest
+    public void testUrlDialog_validationAndDismissal_leavesStartupUrlsUnchanged() {
+        // Setup URLS startup mode with one existing URL.
+        setRestoreOnStartupPref(SessionStartupPref.URLS);
+        setRestoreOnStartupUrls(List.of(URL_ESPN));
+        RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
+        LinearLayout container = pref.getStartupPagesContainerForTesting();
+        assertNotNull(container);
+
+        // Act & Verify: Invalid inputs keep positive button disabled and ignore the keyboard Done
+        // action; Cancel and Back/touch-outside dismissals leave stored URLs unchanged.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ModalDialogManager modalDialogManager =
+                            mSettingsTestRule.getActivity().getModalDialogManager();
+                    pref.getAddNewPageButtonForTesting().performClick();
+                    PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+                    assertNotNull(dialogModel);
+                    EditText urlEditText =
+                            dialogModel
+                                    .get(ModalDialogProperties.CUSTOM_VIEW)
+                                    .findViewById(R.id.url_edit_text);
+
+                    for (String invalidInput :
+                            List.of("", "   ", "chrome://flags", "about:blank")) {
+                        urlEditText.setText(invalidInput);
+                        assertTrue(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+                        urlEditText.onEditorAction(EditorInfo.IME_ACTION_DONE);
+                        assertNotNull(modalDialogManager.getCurrentDialogForTest());
+                    }
+
+                    urlEditText.setText(URL_WIKIPEDIA);
+                    assertFalse(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+                    dialogModel
+                            .get(ModalDialogProperties.CONTROLLER)
+                            .onClick(dialogModel, ButtonType.NEGATIVE);
+                    assertNull(modalDialogManager.getCurrentDialogForTest());
+
+                    pref.getAddNewPageButtonForTesting().performClick();
+                    PropertyModel secondDialogModel = modalDialogManager.getCurrentDialogForTest();
+                    assertNotNull(secondDialogModel);
+                    EditText secondEditText =
+                            secondDialogModel
+                                    .get(ModalDialogProperties.CUSTOM_VIEW)
+                                    .findViewById(R.id.url_edit_text);
+                    secondEditText.setText(URL_WIKIPEDIA);
+                    modalDialogManager.dismissDialog(
+                            secondDialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                    assertNull(modalDialogManager.getCurrentDialogForTest());
+                });
+
+        List<String> savedUrls =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                TabbedStartupCoordinator.getSessionStartupUrls(
+                                        UserPrefs.get(mProfile)));
+        assertEquals(List.of(URL_ESPN), savedUrls);
+
+        // Act & Verify: External startup URLs pref update while Edit dialog is open dismisses it.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ListMenuButton moreButton =
+                            container.getChildAt(0).findViewById(R.id.startup_page_more_button);
+                    moreButton.callOnClick();
+                });
+        onView(withText(R.string.edit)).perform(click());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertNotNull(
+                                mSettingsTestRule
+                                        .getActivity()
+                                        .getModalDialogManager()
+                                        .getCurrentDialogForTest()));
+        setRestoreOnStartupUrls(List.of(URL_DOCS));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertNull(
+                                mSettingsTestRule
+                                        .getActivity()
+                                        .getModalDialogManager()
+                                        .getCurrentDialogForTest()));
     }
 
     private RadioButtonGroupOnStartupPreference launchAndGetRadioGroupPreference() {

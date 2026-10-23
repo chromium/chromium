@@ -33,6 +33,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,6 +60,7 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
     private @Nullable RadioButtonWithDescription mUrlsPref;
     private @Nullable LinearLayout mStartupPagesSection;
     private @Nullable LinearLayout mStartupPagesContainer;
+    private @Nullable ButtonCompat mAddNewPageButton;
     private @SessionStartupPref int mStartupType = SessionStartupPref.LAST;
     private List<String> mStartupUrls = new ArrayList<>();
     private @Nullable OnStartupTypeChangeListener mOnStartupTypeChangeListener;
@@ -82,6 +84,15 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
         mUrlsPref = (RadioButtonWithDescription) holder.findViewById(R.id.pref_urls);
         mStartupPagesSection = (LinearLayout) holder.findViewById(R.id.startup_pages_section);
         mStartupPagesContainer = (LinearLayout) holder.findViewById(R.id.startup_pages_container);
+        mAddNewPageButton = (ButtonCompat) holder.findViewById(R.id.add_new_page_button);
+        if (mAddNewPageButton != null) {
+            mAddNewPageButton.setOnClickListener(
+                    v -> {
+                        if (mItemActionListener != null) {
+                            mItemActionListener.onAddNewStartupPage();
+                        }
+                    });
+        }
 
         ContainedLinearLayout urlsPrefSection =
                 (ContainedLinearLayout) holder.findViewById(R.id.urls_pref_section);
@@ -287,11 +298,17 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
         return mStartupPagesContainer;
     }
 
+    /* package */ @Nullable ButtonCompat getAddNewPageButtonForTesting() {
+        return mAddNewPageButton;
+    }
+
     /* package */ interface OnStartupTypeChangeListener {
         void onStartupTypeChanged(@SessionStartupPref int startupType);
     }
 
     /* package */ interface StartupPageItemActionListener {
+        void onAddNewStartupPage();
+
         void onEditStartupPage(int index, String url);
 
         void onRemoveStartupPage(int index, String url);
