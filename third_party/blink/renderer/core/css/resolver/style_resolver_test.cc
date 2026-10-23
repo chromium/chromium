@@ -4899,11 +4899,36 @@ TEST_F(StyleResolverTest, PrecomputeHover) {
       #t3:hover { color: red; }
       #t4 { color: red; }
       :hover #t4:hover { color: green; }
+      #t5 { text-decoration-line: underline; }
+      #t5:hover { text-decoration-line: overline; }
+      #t6 { text-decoration-line: underline; }
+      #t6:hover { text-decoration-style: dotted; }
+      #t7 { text-decoration-line: underline; }
+      #t7:hover { text-decoration-thickness: 100px; }
+      #t8 { text-decoration-line: underline; }
+      #t8:hover { text-decoration-line: none; }
+      #t9 {
+        text-decoration-line: underline;
+        text-decoration-style: dotted;
+        text-decoration-thickness: 5px;
+        text-decoration-color: transparent;
+      }
+      #t9:hover {
+        text-decoration-line: overline;
+        text-decoration-style: dashed;
+        text-decoration-thickness: 10px;
+        text-decoration-color: currentcolor;
+      }
     </style>
     <div id="t1"></div>
     <div id="t2"></div>
     <div id="t3"></div>
     <div id="t4"></div>
+    <div id="t5"></div>
+    <div id="t6"></div>
+    <div id="t7"></div>
+    <div id="t8"></div>
+    <div id="t9"></div>
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
@@ -4912,6 +4937,11 @@ TEST_F(StyleResolverTest, PrecomputeHover) {
   const ComputedStyle* t2_style = GetElementById("t2")->GetComputedStyle();
   const ComputedStyle* t3_style = GetElementById("t3")->GetComputedStyle();
   const ComputedStyle* t4_style = GetElementById("t4")->GetComputedStyle();
+  const ComputedStyle* t5_style = GetElementById("t5")->GetComputedStyle();
+  const ComputedStyle* t6_style = GetElementById("t6")->GetComputedStyle();
+  const ComputedStyle* t7_style = GetElementById("t7")->GetComputedStyle();
+  const ComputedStyle* t8_style = GetElementById("t8")->GetComputedStyle();
+  const ComputedStyle* t9_style = GetElementById("t9")->GetComputedStyle();
   const ComputedStyle* t1_hover =
       t1_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
   const ComputedStyle* t2_hover =
@@ -4920,6 +4950,16 @@ TEST_F(StyleResolverTest, PrecomputeHover) {
       t3_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
   const ComputedStyle* t4_hover =
       t4_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+  const ComputedStyle* t5_hover =
+      t5_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+  const ComputedStyle* t6_hover =
+      t6_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+  const ComputedStyle* t7_hover =
+      t7_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+  const ComputedStyle* t8_hover =
+      t8_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+  const ComputedStyle* t9_hover =
+      t9_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
 
   EXPECT_EQ(t1_style->VisitedDependentColor(GetCSSPropertyColor()),
             Color(255, 0, 0));
@@ -4941,6 +4981,16 @@ TEST_F(StyleResolverTest, PrecomputeHover) {
   EXPECT_EQ(t4_style->VisitedDependentColor(GetCSSPropertyColor()),
             Color(255, 0, 0));
   EXPECT_FALSE(t4_hover);
+
+  EXPECT_FALSE(t5_hover);
+  EXPECT_FALSE(t6_hover);
+  EXPECT_FALSE(t7_hover);
+
+  EXPECT_EQ(t8_style->GetTextDecorationLine(), TextDecorationLine::kUnderline);
+  ASSERT_TRUE(t8_hover);
+  EXPECT_EQ(t8_hover->GetTextDecorationLine(), TextDecorationLine::kNone);
+
+  EXPECT_TRUE(t9_hover);
 }
 
 }  // namespace blink

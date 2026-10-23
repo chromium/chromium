@@ -394,6 +394,12 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   void PropagateStyleBuilderFlags(const StyleResolverState& state);
 
+  // Inspect the difference of properties supported for precomputing :hover
+  // styles and return true if the compositor can update the differences.
+  // Otherwise, return false.
+  bool ValidPrecomputedHoverDiff(const ComputedStyleBuilder& builder,
+                                 const ComputedStyle& style);
+
   enum UASheetCacheKeyIndex {
     kHTMLUASheet,
     kSVGUASheet,
