@@ -248,6 +248,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.BookmarkBar.ClickModifier"
+    enum="BookmarkBarClickModifier" expires_after="2027-03-07">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Emitted when users click on a bookmark URL or folder on the bookmarks bar or
+    in its anchored pop-up menus. Emits an enum corresponding to the modifier
+    used (no modifier, Ctrl, middle-click, or Shift).
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.BookmarkBar.ContextMenu.{Entrypoint}.Action"
     enum="BookmarkBarContextMenuAction" expires_after="2027-03-07">
   <owner>wylieb@google.com</owner>

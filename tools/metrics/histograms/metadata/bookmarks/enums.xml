@@ -26,6 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(BookmarkBarClickModifier)-->
+
+<enum name="BookmarkBarClickModifier">
+  <int value="0" label="No modifier"/>
+  <int value="1" label="Ctrl"/>
+  <int value="2" label="Middle-click"/>
+  <int value="3" label="Shift"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java:BookmarkBarClickModifier) -->
+
 <!-- LINT.IfChange(BookmarkBarClickType)-->
 
 <enum name="BookmarkBarClickType">

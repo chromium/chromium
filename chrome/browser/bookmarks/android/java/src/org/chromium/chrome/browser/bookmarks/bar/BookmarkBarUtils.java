@@ -72,6 +72,25 @@ public class BookmarkBarUtils {
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarClickType)
 
+    // LINT.IfChange(BookmarkBarClickModifier)
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        BookmarkBarClickModifier.NO_MODIFIER,
+        BookmarkBarClickModifier.CTRL,
+        BookmarkBarClickModifier.MIDDLE_CLICK,
+        BookmarkBarClickModifier.SHIFT,
+        BookmarkBarClickModifier.NUM_ENTRIES
+    })
+    public @interface BookmarkBarClickModifier {
+        int NO_MODIFIER = 0;
+        int CTRL = 1;
+        int MIDDLE_CLICK = 2;
+        int SHIFT = 3;
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarClickModifier)
+
     /**
      * Enum that defines the possible reasons the bookmark bar may be shown or hidden. These values
      * are persisted to logs. Entries should not be renumbered and numeric values should never be
@@ -179,6 +198,7 @@ public class BookmarkBarUtils {
 
     // Common histogram names:
     public static final String BOOKMARK_BAR_CLICK = "Bookmarks.BookmarkBar.Click";
+    public static final String BOOKMARK_BAR_CLICK_MODIFIER = "Bookmarks.BookmarkBar.ClickModifier";
 
     /**
      * Whether the bookmark bar feature is considered compatible with the current activity state
@@ -872,6 +892,41 @@ public class BookmarkBarUtils {
     public static void recordClick(@BookmarkBarClickType int clickType) {
         RecordHistogram.recordEnumeratedHistogram(
                 BOOKMARK_BAR_CLICK, clickType, BookmarkBarClickType.NUM_ENTRIES);
+    }
+
+    /**
+     * Resolves the {@link BookmarkBarClickModifier} based on pointer button and keyboard meta
+     * states. Precedence is given to middle-click, followed by Ctrl, then Shift. When multiple
+     * modifiers are active simultaneously (e.g. Ctrl+Shift), the higher-precedence modifier is
+     * recorded.
+     *
+     * @param isCtrlPressed Whether the Ctrl key was pressed.
+     * @param isShiftPressed Whether the Shift key was pressed.
+     * @param isMiddleClick Whether the click was performed with the middle mouse button.
+     * @return The resolved {@link BookmarkBarClickModifier}.
+     */
+    public static @BookmarkBarClickModifier int getClickModifier(
+            boolean isCtrlPressed, boolean isShiftPressed, boolean isMiddleClick) {
+        if (isMiddleClick) {
+            return BookmarkBarClickModifier.MIDDLE_CLICK;
+        } else if (isCtrlPressed) {
+            return BookmarkBarClickModifier.CTRL;
+        } else if (isShiftPressed) {
+            return BookmarkBarClickModifier.SHIFT;
+        }
+        return BookmarkBarClickModifier.NO_MODIFIER;
+    }
+
+    /** Records the modifier used when clicking a bookmark item or folder. */
+    public static void recordClickModifier(@BookmarkBarClickModifier int modifier) {
+        RecordHistogram.recordEnumeratedHistogram(
+                BOOKMARK_BAR_CLICK_MODIFIER, modifier, BookmarkBarClickModifier.NUM_ENTRIES);
+    }
+
+    /** Resolves and records the click modifier from pointer button and keyboard meta states. */
+    public static void recordClickModifier(
+            boolean isCtrlPressed, boolean isShiftPressed, boolean isMiddleClick) {
+        recordClickModifier(getClickModifier(isCtrlPressed, isShiftPressed, isMiddleClick));
     }
 
     public static void recordStartUpMetrics(

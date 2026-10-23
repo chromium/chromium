@@ -396,24 +396,30 @@ class BookmarkBarMediator
         final boolean isMiddleClick = (buttonState & MotionEvent.BUTTON_TERTIARY) != 0;
 
         if (item.isFolder()) {
-            if (!openBookmarkItem(item, isCtrlPressed, isShiftPressed, isMiddleClick)) {
-                // Get the view of the folder that was clicked.
-                View anchorView = getAnchorViewForBookmark(item);
-                if (anchorView == null) return;
-                runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                        (profileAfterLoading, model) -> {
-                            // Build the entire model list for this folder. The grandchildren are
-                            // stored in SUBMENU_PROVIDER.
-                            ModelList menuModel = buildMenuModelListForFolder(model, item.getId());
-                            BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_FOLDER);
-                            mPopupCoordinator.showFolderItemsPopup(
-                                    anchorView, menuModel, profileAfterLoading.isOffTheRecord());
-                        });
+            if (openBookmarkItem(item, isCtrlPressed, isShiftPressed, isMiddleClick)) {
+                BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_FOLDER);
+                BookmarkBarUtils.recordClickModifier(isCtrlPressed, isShiftPressed, isMiddleClick);
+                return;
             }
+            // Get the view of the folder that was clicked.
+            View anchorView = getAnchorViewForBookmark(item);
+            if (anchorView == null) return;
+            runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                    (profileAfterLoading, model) -> {
+                        // Build the entire model list for this folder. The grandchildren are
+                        // stored in SUBMENU_PROVIDER.
+                        ModelList menuModel = buildMenuModelListForFolder(model, item.getId());
+                        BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_FOLDER);
+                        BookmarkBarUtils.recordClickModifier(
+                                isCtrlPressed, isShiftPressed, isMiddleClick);
+                        mPopupCoordinator.showFolderItemsPopup(
+                                anchorView, menuModel, profileAfterLoading.isOffTheRecord());
+                    });
             return;
         }
 
         BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_URL);
+        BookmarkBarUtils.recordClickModifier(isCtrlPressed, isShiftPressed, isMiddleClick);
         openBookmarkItem(item, isCtrlPressed, isShiftPressed, isMiddleClick);
     }
 
@@ -1047,6 +1053,9 @@ class BookmarkBarMediator
         boolean isCtrlPressed = (mLastTouchMetaState & KeyEvent.META_CTRL_ON) != 0;
         boolean isShiftPressed = (mLastTouchMetaState & KeyEvent.META_SHIFT_ON) != 0;
 
+        BookmarkBarUtils.recordClickModifier(
+                isCtrlPressed, isShiftPressed, /* isMiddleClick= */ false);
+
         if (openBookmarkItem(
                 bookmarkItem, isCtrlPressed, isShiftPressed, /* isMiddleClick= */ false)) {
             mPopupCoordinator.dismiss();
@@ -1066,6 +1075,8 @@ class BookmarkBarMediator
                 bookmarkItem.isFolder()
                         ? BookmarkBarClickType.POP_UP_FOLDER
                         : BookmarkBarClickType.POP_UP_URL);
+        BookmarkBarUtils.recordClickModifier(
+                /* isCtrlPressed= */ false, /* isShiftPressed= */ false, /* isMiddleClick= */ true);
         if (openBookmarkItem(
                 bookmarkItem,
                 /* isCtrlPressed= */ false,
@@ -1147,6 +1158,10 @@ class BookmarkBarMediator
                     if (clickListener != null) {
                         // Calls ListMenuUtils#onItemWithSubmenuClicked.
                         BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_FOLDER);
+                        BookmarkBarUtils.recordClickModifier(
+                                event.isCtrlPressed(),
+                                event.isShiftPressed(),
+                                /* isMiddleClick= */ false);
                         clickListener.onClick(view);
                     }
                     // We've handled the right arrow, so consume the event.
@@ -1162,6 +1177,10 @@ class BookmarkBarMediator
                     if (clickListener != null) {
                         // Calls ListMenuUtils#onItemWithSubmenuClicked.
                         BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_FOLDER);
+                        BookmarkBarUtils.recordClickModifier(
+                                event.isCtrlPressed(),
+                                event.isShiftPressed(),
+                                /* isMiddleClick= */ false);
                         clickListener.onClick(view);
                     }
                     return true;
@@ -1170,6 +1189,8 @@ class BookmarkBarMediator
                 // When not a folder, this must be a URL, which will be opened in either the current
                 // tab, a new window when Shift is pressed, or a new tab when Ctrl is also pressed.
                 BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
+                BookmarkBarUtils.recordClickModifier(
+                        event.isCtrlPressed(), event.isShiftPressed(), /* isMiddleClick= */ false);
                 if (openBookmarkItem(
                         bookmarkItem,
                         event.isCtrlPressed(),

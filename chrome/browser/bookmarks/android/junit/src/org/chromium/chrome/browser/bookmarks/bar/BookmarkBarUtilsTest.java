@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarClickModifier;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarShownReason;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarVisibilityStateOnStartUpReason;
@@ -1218,5 +1219,83 @@ public class BookmarkBarUtilsTest {
                         .build();
         BookmarkBarUtils.recordStartUpMetricsForVisibilityState(mProfile);
         watcher4.assertExpected();
+    }
+
+    @Test
+    public void testGetClickModifier() {
+        assertEquals(
+                BookmarkBarClickModifier.MIDDLE_CLICK,
+                BookmarkBarUtils.getClickModifier(
+                        /* isCtrlPressed= */ false,
+                        /* isShiftPressed= */ false,
+                        /* isMiddleClick= */ true));
+        assertEquals(
+                BookmarkBarClickModifier.MIDDLE_CLICK,
+                BookmarkBarUtils.getClickModifier(
+                        /* isCtrlPressed= */ true,
+                        /* isShiftPressed= */ false,
+                        /* isMiddleClick= */ true));
+        assertEquals(
+                BookmarkBarClickModifier.MIDDLE_CLICK,
+                BookmarkBarUtils.getClickModifier(
+                        /* isCtrlPressed= */ true,
+                        /* isShiftPressed= */ true,
+                        /* isMiddleClick= */ true));
+        assertEquals(
+                BookmarkBarClickModifier.CTRL,
+                BookmarkBarUtils.getClickModifier(
+                        /* isCtrlPressed= */ true,
+                        /* isShiftPressed= */ false,
+                        /* isMiddleClick= */ false));
+        assertEquals(
+                BookmarkBarClickModifier.CTRL,
+                BookmarkBarUtils.getClickModifier(
+                        /* isCtrlPressed= */ true,
+                        /* isShiftPressed= */ true,
+                        /* isMiddleClick= */ false));
+        assertEquals(
+                BookmarkBarClickModifier.SHIFT,
+                BookmarkBarUtils.getClickModifier(
+                        /* isCtrlPressed= */ false,
+                        /* isShiftPressed= */ true,
+                        /* isMiddleClick= */ false));
+        assertEquals(
+                BookmarkBarClickModifier.NO_MODIFIER,
+                BookmarkBarUtils.getClickModifier(
+                        /* isCtrlPressed= */ false,
+                        /* isShiftPressed= */ false,
+                        /* isMiddleClick= */ false));
+    }
+
+    @Test
+    public void testRecordClickModifier() {
+        var watcher =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.BOOKMARK_BAR_CLICK_MODIFIER,
+                                BookmarkBarClickModifier.CTRL)
+                        .expectIntRecord(
+                                BookmarkBarUtils.BOOKMARK_BAR_CLICK_MODIFIER,
+                                BookmarkBarClickModifier.SHIFT)
+                        .expectIntRecord(
+                                BookmarkBarUtils.BOOKMARK_BAR_CLICK_MODIFIER,
+                                BookmarkBarClickModifier.MIDDLE_CLICK)
+                        .expectIntRecord(
+                                BookmarkBarUtils.BOOKMARK_BAR_CLICK_MODIFIER,
+                                BookmarkBarClickModifier.NO_MODIFIER)
+                        .build();
+
+        BookmarkBarUtils.recordClickModifier(
+                /* isCtrlPressed= */ true, /* isShiftPressed= */ false, /* isMiddleClick= */ false);
+        BookmarkBarUtils.recordClickModifier(
+                /* isCtrlPressed= */ false, /* isShiftPressed= */ true, /* isMiddleClick= */ false);
+        BookmarkBarUtils.recordClickModifier(
+                /* isCtrlPressed= */ false, /* isShiftPressed= */ false, /* isMiddleClick= */ true);
+        BookmarkBarUtils.recordClickModifier(
+                /* isCtrlPressed= */ false,
+                /* isShiftPressed= */ false,
+                /* isMiddleClick= */ false);
+
+        watcher.assertExpected();
     }
 }
