@@ -55,11 +55,12 @@ class OnboardingManager {
 
   std::unique_ptr<OnboardingDialogController> dialog_controller_;
 
-  // TODO(bokan): Wrap these up into a struct so they're all cleared or set
-  // together.
-  base::WeakPtr<tabs::TabInterface> pending_tab_;
-  std::optional<TargetDetails> pending_target_details_;
-  std::optional<DictationSessionEntryPoint> pending_entry_point_;
+  struct PendingSession {
+    base::WeakPtr<tabs::TabInterface> tab;
+    TargetDetails target_details;
+    DictationSessionEntryPoint entry_point;
+  };
+  std::optional<PendingSession> pending_session_;
 
   base::WeakPtrFactory<OnboardingManager> weak_ptr_factory_{this};
 };
