@@ -457,7 +457,9 @@ void DeleteProfileHelper::OnNewActiveProfileInitialized(
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     Profile* loaded_profile) {
   CHECK(keep_alive, base::NotFatalUntil::M162);
-  CHECK(loaded_profile, base::NotFatalUntil::M162);
+  // TODO(crbug.com/576495582): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(loaded_profile);
   if (IsProfileDirectoryMarkedForDeletion(new_active_profile_path)) {
     // If the profile we tried to load as the next active profile has been
     // deleted, then retry deleting this profile to redo the logic to load
