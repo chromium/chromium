@@ -3735,27 +3735,51 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerContextLibraryBrowserTest,
-    OnWebviewMessage_UpdateThreadContextLibrary_NoTaskIdOrNoSessionHandleReturnsEarly) {
+    OnWebviewMessage_UpdateThreadContextLibrary_WithoutTaskIdStillRestoresTabs) {
   auto* tasks_service =
       ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_NE(tasks_service, nullptr);
   ContextualTask task = tasks_service->CreateTask();
   SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(web_contents_);
   tasks_service->AssociateTabWithTask(task.GetTaskId(), active_tab_id);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  const SessionID tab_a = OpenBackgroundTab(url_a);
 
   base::UnguessableToken submitted_token = base::UnguessableToken::Create();
   mock_session_handle_->SetSubmittedContextTokens({submitted_token});
 
   lens::SearchToClientMessage::UpdateThreadContextLibrary library;
-  AddWebpageContext(library, 1, "https://example.com/a", "Tab A");
+  AddWebpageContext(library, 1, url_a.spec(), "Tab A");
 
-  // 1. Before SetTaskId() is called, the update is ignored.
+  // Before a task ID is set (e.g. full-tab AI Mode before `mtid` is in the
+  // URL), the session handle's restored tabs are still updated and the context
+  // library mounts, while `ContextualTasksService` is untouched.
+  base::RunLoop mount_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_inject_chrome_input());
+        EXPECT_EQ(
+            message->inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+        EXPECT_TRUE(message->inject_chrome_input().is_active());
+        mount_run_loop.Quit();
+      });
   SendUpdateThreadContextLibrary(library);
-  EXPECT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
-  EXPECT_THAT(mock_session_handle_->GetSubmittedContextTokens(),
-              testing::ElementsAre(submitted_token));
+  mount_run_loop.Run();
 
-  // 2. With task_id set but no session handle in the helper, the update returns
+  const auto& restored = mock_session_handle_->GetTabContextState().restored;
+  ASSERT_EQ(restored.size(), 1u);
+  EXPECT_EQ(restored[0].tab_id, tab_a.id());
+  EXPECT_TRUE(mock_session_handle_->GetSubmittedContextTokens().empty());
+  std::optional<ContextualTask> updated_task =
+      tasks_service->GetContextualTaskForTab(active_tab_id);
+  ASSERT_TRUE(updated_task.has_value());
+  EXPECT_TRUE(updated_task->GetUrlResources().empty());
+
+  // With task_id set but no session handle in the helper, the update returns
   // early without updating ContextualTasksService.
   handler_->SetTaskId(task.GetTaskId());
   mock_session_handle_ = nullptr;
@@ -3764,8 +3788,7 @@ IN_PROC_BROWSER_TEST_F(
                        /*input_state_model=*/nullptr);
 
   SendUpdateThreadContextLibrary(library);
-  std::optional<ContextualTask> updated_task =
-      tasks_service->GetContextualTaskForTab(active_tab_id);
+  updated_task = tasks_service->GetContextualTaskForTab(active_tab_id);
   ASSERT_TRUE(updated_task.has_value());
   EXPECT_TRUE(updated_task->GetUrlResources().empty());
 }

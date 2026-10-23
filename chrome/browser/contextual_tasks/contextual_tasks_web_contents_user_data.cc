@@ -1014,17 +1014,9 @@ void ContextualTasksWebContentsUserData::
           contextual_tasks::kContextualTasksContextLibrary)) {
     return;
   }
-  std::optional<base::Uuid> task_id = GetEffectiveTaskId();
-  if (!task_id) {
-    return;
-  }
-
-  auto* service =
-      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
   contextual_search::ContextualSearchSessionHandle* session_handle =
       GetOrCreateContextualSessionHandle();
-  if (!service || !session_handle) {
+  if (!session_handle) {
     return;
   }
 
@@ -1069,7 +1061,7 @@ void ContextualTasksWebContentsUserData::
       auto open_tab =
           std::ranges::find_if(open_tabs, [&](const OpenTabInfo& tab) {
             return session_handle->AreUrlsEquivalent(resource.url, title,
-                                                     tab.url, tab.title);
+                                                      tab.url, tab.title);
           });
       if (open_tab != open_tabs.end()) {
         tab_id = open_tab->session_id;
@@ -1103,11 +1095,20 @@ void ContextualTasksWebContentsUserData::
   // needs to track their tokens.
   session_handle->ClearSubmittedContextTokens();
 
-  // Save the context list on the task in `ContextualTasksService` (outlives the
-  // session). This notifies `ActiveTaskContextProvider`, which recomputes tab
-  // strip underlines from the task's context (these underlines are in addition
-  // to any underlines placed by other handlers).
-  service->SetUrlResourcesFromServer(*task_id, std::move(committed_context));
+  // Save the server-reported URL resources only if task ID exists to trigger
+  // recomputation of tab strip underlines. Task ID might not exist since this
+  // postMessage (that triggered this function) can arrive before `mtid` is in
+  // the URL and a task is created. However, restored tabs etc. should be set
+  // when this postMessage is sent, even if task ID does not exist.
+  if (std::optional<base::Uuid> task_id = GetEffectiveTaskId()) {
+    if (auto* service =
+            contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+                Profile::FromBrowserContext(
+                    GetWebContents().GetBrowserContext()))) {
+      service->SetUrlResourcesFromServer(*task_id,
+                                         std::move(committed_context));
+    }
+  }
 
   // The restored tabs may be the only tabs in the session (e.g. when reopening
   // a previous thread), so mount the context library if it is not mounted.
