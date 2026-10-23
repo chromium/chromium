@@ -82,12 +82,7 @@ class _Writer:
 
   def WriteNumberList(self, gen):
     """Writes numbers from |gen| separated by space, in one line."""
-    sep = b''
-    for num in gen:
-      self.WriteBytes(sep)
-      self.WriteString(str(num))
-      sep = b' '
-    self.WriteBytes(b'\n')
+    self.WriteLine(' '.join(map(str, gen)))
 
   def LogSize(self, desc):
     self.file_obj_.flush()
@@ -274,16 +269,16 @@ def _SaveSizeInfoToFile(size_info, file_obj):
   )
   path_tuples = {tup: i for i, tup in enumerate(unique_path_tuples)}
   w.WriteLine(str(len(unique_path_tuples)))
-  for pair in unique_path_tuples:
-    w.WriteLine('%s\t%s' % pair)
+  if unique_path_tuples:
+    w.WriteLine('\n'.join('%s\t%s' % pair for pair in unique_path_tuples))
   w.LogSize('paths')  # For libchrome, adds 200kb.
 
   # Store a single copy of all components and have them referenced by index.
   unique_components = sorted(set(s.component for s in raw_symbols))
   components = {comp: i for i, comp in enumerate(unique_components)}
   w.WriteLine(str(len(unique_components)))
-  for comp in unique_components:
-    w.WriteLine(comp)
+  if unique_components:
+    w.WriteLine('\n'.join(unique_components))
   w.LogSize('components')
 
   # Symbol counts by "segments", defined as (container, section) tuples.
@@ -344,17 +339,20 @@ def _SaveSizeInfoToFile(size_info, file_obj):
   symbols_with_disassembly = []
   disassembly_idx = 0
   for group in symbol_group_by_segment:
+    lines = []
     for symbol in group:
       if symbol.disassembly:
         symbols_with_disassembly.append((disassembly_idx, symbol.disassembly))
-      w.WriteString(symbol.full_name)
+      line = symbol.full_name
       if symbol.aliases and symbol.aliases is not prev_aliases:
-        w.WriteString('\t0%x' % symbol.num_aliases)
+        line += '\t0%x' % symbol.num_aliases
       prev_aliases = symbol.aliases
       if symbol.flags:
-        w.WriteString('\t%x' % symbol.flags)
-      w.WriteBytes(b'\n')
+        line += '\t%x' % symbol.flags
+      lines.append(line)
       disassembly_idx += 1
+    if lines:
+      w.WriteLine('\n'.join(lines))
   w.LogSize('names (final)')  # For libchrome: adds 3.5mb.
 
   w.WriteNumberList(x[0] for x in symbols_with_disassembly)
@@ -635,12 +633,18 @@ def _LoadSizeInfoFromFile(file_obj, size_path, is_sparse):
 @contextlib.contextmanager
 def _OpenGzipForWrite(path, file_obj=None):
   # Open in a way that doesn't set any gzip header fields.
+  # Use compresslevel=6 (standard gzip/zlib default) rather than Python's
+  # GzipFile default of 9, which is ~2.3x slower for <3% size difference.
   if file_obj:
-    with gzip.GzipFile(filename='', mode='wb', fileobj=file_obj, mtime=0) as fz:
+    with gzip.GzipFile(
+      filename='', mode='wb', fileobj=file_obj, compresslevel=6, mtime=0
+    ) as fz:
       yield fz
   else:
     with open(path, 'wb') as f:
-      with gzip.GzipFile(filename='', mode='wb', fileobj=f, mtime=0) as fz:
+      with gzip.GzipFile(
+        filename='', mode='wb', fileobj=f, compresslevel=6, mtime=0
+      ) as fz:
         yield fz
 
 
