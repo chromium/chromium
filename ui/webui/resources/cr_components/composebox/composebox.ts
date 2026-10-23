@@ -452,44 +452,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   // TODO(crbug.com/486707842): Move this to contextual tasks composebox.
-  injectInput(
-      title: string, thumbnail: string, fileToken: UnguessableToken,
-      supportsUnimodal: boolean, iconName?: string) {
-    const attachment = ComposeboxFile.createFromInjectedInput(
-        fileToken, thumbnail, title, iconName ?? null);
-    attachment.supportsUnimodal = supportsUnimodal;
-
-    this.onFileContextAdded(attachment);
-  }
-
-  setInputProgrammatically(
-      queryText: string, willSubmitAfterInjection: boolean) {
-    this.input = queryText;
-
-    if (!willSubmitAfterInjection) {
-      // If not submitting immediately, suggestions for the new input might be
-      // desired.
-      this.queryAutocomplete(/*clearMatches=*/ true);
-      return;
-    }
-
-    // Stop any in-flight autocomplete queries to prevent them from returning
-    // and triggering an automatic selection that would overwrite the injected
-    // input. This also prevents unnecessary backend work for a query that is
-    // about to be submitted.
-    this.getSearchboxHandler().stopAutocomplete(/*clearResult=*/ true);
-
-    // Clear lastQueriedInput to ensure that if any autocomplete results still
-    // arrive (e.g., if stopAutocomplete didn't stop them in time), they will
-    // be ignored because result.input won't match lastQueriedInput.
-    this.lastQueriedInput = '';
-
-    // Clear any existing matches to ensure the dropdown is hidden and no stale
-    // matches are displayed or interactable while waiting for submission.
-    this.clearAutocompleteMatches();
-  }
-
-  // TODO(crbug.com/486707842): Move this to contextual tasks composebox.
   private async updateAutoSuggestedTabContext_(
       tab: TabInfo|null, invocationSource: string|null) {
     if (this.smartTabSharingActive) {
