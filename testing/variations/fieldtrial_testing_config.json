@@ -829,6 +829,21 @@
             ]
         }
     ],
+    "AndroidSwapPressureTabDiscard": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261023",
+                    "enable_features": [
+                        "AndroidSwapPressureTabDiscard"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSwipeToSwitchPane": [
         {
             "platforms": [
