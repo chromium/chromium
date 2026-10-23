@@ -25,6 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -159,6 +160,8 @@ public class MinimizedFeatureUtils {
 
         // DevToolsActivity does not support minimization into Picture-in-Picture mode.
         if (intentDataProvider.getActivityType() == ActivityType.DEV_TOOLS) return false;
+
+        if (intentDataProvider.getUiType() == CustomTabsUiType.POPUP) return false;
 
         boolean isWebApp =
                 intentDataProvider.isWebappOrWebApkActivity()

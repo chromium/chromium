@@ -4,6 +4,14 @@
 
 package org.chromium.chrome.browser.popups;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -13,8 +21,10 @@ import android.app.role.RoleManager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
+import android.view.View;
 import android.view.WindowManager;
 
+import androidx.test.espresso.ViewAssertion;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -34,9 +44,12 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.popups.testhtmls.PopupLauncherPageStation;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -138,6 +151,49 @@ public class PopupMultiwindowPTTest {
         } else {
             TransitAsserts.assertFinalDestinations(page);
         }
+    }
+
+    /**
+     * Toolbar close is shown iff the popup is not in a desktop window; minimize is never offered.
+     * Forces the unflagged launch path so the test also runs on tablets.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testPopupToolbarCloseButton_matchesWindowingMode() {
+        forceUnflaggedLaunchPath();
+        PopupOnClickPageStation page =
+                PopupOnClickPageStation.loadInCurrentTab(
+                        mCtaTestRule.getActivityTestRule(), mEntryPage);
+
+        CctPageStation popup = page.clickLinkToOpenPopupWithBoundsExpectNewWindow();
+        CustomTabActivity cct = popup.getActivity();
+        View popupDecorView = cct.getWindow().getDecorView();
+
+        boolean inDesktopWindow =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                AppHeaderUtils.isAppInDesktopWindow(
+                                        cct.getRootUiCoordinatorForTesting()
+                                                .getDesktopWindowStateManager()));
+
+        // Toolbar close is shown iff the OS caption bar is not.
+        if (inDesktopWindow) {
+            onView(withId(R.id.close_button))
+                    .inRoot(withDecorView(is(popupDecorView)))
+                    .check(isAbsentOrNotDisplayed());
+        } else {
+            onView(withId(R.id.close_button))
+                    .inRoot(withDecorView(is(popupDecorView)))
+                    .check(matches(isDisplayed()));
+        }
+
+        // POPUP CCTs never offer minimize.
+        onView(withId(R.id.custom_tabs_minimize_button))
+                .inRoot(withDecorView(is(popupDecorView)))
+                .check(isAbsentOrNotDisplayed());
+
+        TransitAsserts.assertFinalDestinations(page, popup);
     }
 
     @Test
@@ -547,6 +603,17 @@ public class PopupMultiwindowPTTest {
                 "true",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         popup.webContentsElement.get(), "window.opener !== null"));
+    }
+
+    /**
+     * Passes if the view is not displayed or was never inflated (CCT toolbar buttons are inflated
+     * on first show, so a never-shown button does not exist).
+     */
+    private static ViewAssertion isAbsentOrNotDisplayed() {
+        return (view, noViewFoundException) -> {
+            if (noViewFoundException != null) return;
+            matches(not(isDisplayed())).check(view, null);
+        };
     }
 
     private static void assumeHasBrowserRole() {

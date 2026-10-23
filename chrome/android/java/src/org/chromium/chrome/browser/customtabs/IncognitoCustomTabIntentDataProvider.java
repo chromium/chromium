@@ -106,7 +106,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                             intentVisibilityState, false));
             int uiType = getUiType(intent);
             builder.setUiType(uiType);
-            builder.setIsCloseButtonEnabled(uiType != CustomTabsUiType.POPUP);
+            builder.setIsCloseButtonEnabled(true);
 
             mDataHolder = builder.build();
         }
@@ -349,7 +349,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public boolean isCloseButtonEnabled() {
-        assert mDataHolder.mIsCloseButtonEnabled == (getUiType() != CustomTabsUiType.POPUP);
         return mDataHolder.mIsCloseButtonEnabled;
     }
 

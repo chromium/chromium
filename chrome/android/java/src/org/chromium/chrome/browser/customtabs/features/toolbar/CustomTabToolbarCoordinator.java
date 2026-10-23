@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitiali
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
@@ -118,7 +119,8 @@ public class CustomTabToolbarCoordinator {
     }
 
     private void observeDesktopWindowingState() {
-        if (!WebAppHeaderUtils.isWebAppHeaderEnabled(mIntentDataProvider)) {
+        if (!WebAppHeaderUtils.isWebAppHeaderEnabled(mIntentDataProvider)
+                && !DesktopPopupHeaderUtils.isDesktopPopupHeaderEnabled(mIntentDataProvider)) {
             return;
         }
         // Guaranteed by the check above.
@@ -158,6 +160,11 @@ public class CustomTabToolbarCoordinator {
     private void updateToolbarControlsVisibilityForDesktopWindowing() {
         if (mToolbarManager == null) return;
 
+        if (DesktopPopupHeaderUtils.isDesktopPopupHeaderEnabled(mIntentDataProvider)) {
+            updatePopupCloseButtonVisibility();
+            return;
+        }
+
         boolean isInDesktopWindow = AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
 
         if (mToolbarButtonsCoordinator != null) {
@@ -171,14 +178,19 @@ public class CustomTabToolbarCoordinator {
         }
     }
 
+    /** In a desktop window the OS caption bar provides the popup's close button. */
+    private void updatePopupCloseButtonVisibility() {
+        mCloseButtonVisibilityManager.setVisibility(
+                !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
+    }
+
     /**
      * Notifies the navigation controller that the ToolbarManager has been created and is ready for
      * use. ToolbarManager isn't passed directly to the constructor because it's not guaranteed to
      * be initialized yet.
      */
     public void onToolbarInitialized(
-            ToolbarManager manager,
-            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+            ToolbarManager manager, CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         assert manager != null : "Toolbar manager not initialized";
         mToolbarManager = manager;
         mToolbarColorController.onToolbarInitialized(manager);
@@ -186,6 +198,10 @@ public class CustomTabToolbarCoordinator {
 
         mToolbarButtonsCoordinator.setCloseButtonClickHandler(v -> onCloseButtonClick());
 
+        // Set before the manager's first update so the popup's close button is bound once.
+        if (DesktopPopupHeaderUtils.isDesktopPopupHeaderEnabled(mIntentDataProvider)) {
+            updatePopupCloseButtonVisibility();
+        }
         mCloseButtonVisibilityManager.onToolbarInitialized(manager, mToolbarButtonsCoordinator);
         updateTitleBarVisibility();
 

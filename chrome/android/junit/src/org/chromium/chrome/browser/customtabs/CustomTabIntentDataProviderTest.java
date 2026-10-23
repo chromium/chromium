@@ -1831,7 +1831,9 @@ public class CustomTabIntentDataProviderTest {
                 0,
                 dataProvider.getCustomButtonsOnToolbar().size());
 
-        assertFalse("The close button should be disabled", dataProvider.isCloseButtonEnabled());
+        assertTrue("The close button should be enabled", dataProvider.isCloseButtonEnabled());
+        assertNotNull(
+                "The close button icon should be present", dataProvider.getCloseButtonDrawable());
 
         IntentUtils.setForceIsTrustedIntentForTesting(false);
     }
@@ -1859,7 +1861,9 @@ public class CustomTabIntentDataProviderTest {
                 0,
                 dataProvider.getCustomButtonsOnToolbar().size());
 
-        assertFalse("The close button should be disabled", dataProvider.isCloseButtonEnabled());
+        assertTrue("The close button should be enabled", dataProvider.isCloseButtonEnabled());
+        assertNotNull(
+                "The close button icon should be present", dataProvider.getCloseButtonDrawable());
 
         IntentUtils.setForceIsTrustedIntentForTesting(false);
     }

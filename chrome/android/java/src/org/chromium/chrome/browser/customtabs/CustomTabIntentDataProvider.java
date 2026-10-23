@@ -488,9 +488,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return Color.argb(alpha, Color.red(bg), Color.green(bg), Color.blue(bg));
     }
 
-    private static boolean getIsCloseButtonEnabled(Intent intent, int uiType) {
-        return IntentUtils.safeGetBooleanExtra(intent, EXTRA_CLOSE_BUTTON_ENABLED, true)
-                && uiType != CustomTabsUiType.POPUP;
+    private static boolean getIsCloseButtonEnabled(Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(intent, EXTRA_CLOSE_BUTTON_ENABLED, true);
     }
 
     /**
@@ -621,7 +620,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                             intent, EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE, false);
             builder.setContentScrollMayResizeTab(contentScrollMayResizeTab);
 
-            boolean isCloseButtonEnabled = getIsCloseButtonEnabled(intent, uiType);
+            boolean isCloseButtonEnabled = getIsCloseButtonEnabled(intent);
             builder.setIsCloseButtonEnabled(isCloseButtonEnabled);
             if (isCloseButtonEnabled) {
                 // TODO(crbug.com/393437143): Potentially reuse the close button code from Auth Tab.
