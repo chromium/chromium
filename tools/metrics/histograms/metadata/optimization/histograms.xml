@@ -2369,7 +2369,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.Async.PendingContentCallbacksBatched"
-    units="callbacks" expires_after="2026-09-16">
+    units="callbacks" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2382,7 +2382,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.Async.PendingEligibilityCallbacksBatched"
-    units="callbacks" expires_after="2026-09-16">
+    units="callbacks" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2456,7 +2456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentExtraction.IsCacheHit"
-    enum="BooleanCacheHit" expires_after="2026-09-16">
+    enum="BooleanCacheHit" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2495,7 +2495,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.OnDemand.EnabledReason"
-    enum="PageContentExtractionEnablementReason" expires_after="2026-09-16">
+    enum="PageContentExtractionEnablementReason" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2507,7 +2507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentExtraction.OnDemand.IsPDF"
-    enum="Boolean" expires_after="2026-09-16">
+    enum="Boolean" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2519,7 +2519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentExtraction.OnDemand.Latency"
-    units="ms" expires_after="2026-09-16">
+    units="ms" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2532,7 +2532,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.OnDemand.PendingCallbacksBatched"
-    units="callbacks" expires_after="2026-09-16">
+    units="callbacks" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2545,7 +2545,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.OnDemand.StateAtRequest2"
-    enum="OptimizationGuideOnDemandExtractionState2" expires_after="2026-09-16">
+    enum="OptimizationGuideOnDemandExtractionState2" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2557,7 +2557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentExtraction.OnDemand.Success"
-    enum="BooleanSuccess" expires_after="2026-09-16">
+    enum="BooleanSuccess" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
