@@ -17,7 +17,7 @@ import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {BubbleController} from './bubble_controller.js';
 import {SettingsPath} from './constants.js';
-import type {FacialGesture} from './facial_gestures.js';
+import {FacialGesture} from './facial_gestures.js';
 import {GestureDetector} from './gesture_detector.js';
 import {GestureTimer} from './gesture_timer.js';
 import {MouseLongClickMacro} from './macros/mouse_long_click_macro.js';
@@ -37,6 +37,20 @@ interface DetectMacrosResult {
 
 /** The default confidence threshold for facial gestures. */
 const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
+
+/** The 18 valid FacialGesture string values. */
+const VALID_FACIAL_GESTURES: ReadonlySet<string> =
+    new Set<string>(Object.values(FacialGesture));
+
+/**
+ * Set of defined MacroName enum values (excluding MacroName.UNSPECIFIED).
+ * Using a Set over Object.values(MacroName) checks exact enum membership
+ * without assuming MacroName values are contiguous.
+ */
+const VALID_MACRO_NAMES: ReadonlySet<number> =
+    new Set<number>(Object.values(MacroName).filter(
+        (v): v is number =>
+            typeof v === 'number' && v !== MacroName.UNSPECIFIED));
 
 /** Handles converting facial gestures to Macros. */
 export class GestureHandler {
@@ -339,14 +353,20 @@ export class GestureHandler {
       case MacroName.CUSTOM_KEY_COMBINATION:
         const keyCombination = this.gesturesToKeyCombos_.get(gesture);
         if (!keyCombination) {
-          throw new Error(
+          console.error(
               `Expected a custom key combination for gesture: ${gesture}`);
+          return;
         }
 
         return new KeyPressMacro(name, keyCombination);
       default:
         return;
     }
+  }
+
+  private static isValidFacialGesture_(gesture: string):
+      gesture is FacialGesture {
+    return VALID_FACIAL_GESTURES.has(gesture);
   }
 
   private isMacroAllowed_(name: MacroName): boolean {
@@ -372,7 +392,7 @@ export class GestureHandler {
   }
 
   gesturesToMacrosChanged(bindings: Object): void {
-    if (!bindings) {
+    if (!bindings || typeof bindings !== 'object') {
       return;
     }
 
@@ -386,22 +406,31 @@ export class GestureHandler {
         continue;
       }
 
-      if (assignedMacro === MacroName.TOGGLE_SCROLL_MODE) {
+      if (!GestureHandler.isValidFacialGesture_(gesture) ||
+          typeof assignedMacro !== 'number' ||
+          !Number.isInteger(assignedMacro) ||
+          !VALID_MACRO_NAMES.has(assignedMacro)) {
+        console.warn(
+            `Ignoring invalid FaceGaze macro binding: ` +
+            `${gesture} -> ${assignedMacro}`);
+        continue;
+      }
+
+      const macroName = assignedMacro as MacroName;
+      if (macroName === MacroName.TOGGLE_SCROLL_MODE) {
         hasScrollModeAction = true;
       }
 
-      if (assignedMacro === MacroName.MOUSE_LONG_CLICK_LEFT) {
+      if (macroName === MacroName.MOUSE_LONG_CLICK_LEFT) {
         hasLongClickAction = true;
       }
 
-      this.gestureToMacroName_.set(
-          gesture as FacialGesture, Number(assignedMacro));
+      this.gestureToMacroName_.set(gesture, macroName);
       // Ensure the confidence for this gesture is set to the default,
       // if it wasn't set yet. This might happen if the user hasn't
       // opened the settings subpage yet.
-      if (!this.gestureToConfidence_.has(gesture as FacialGesture)) {
-        this.gestureToConfidence_.set(
-            gesture as FacialGesture, DEFAULT_CONFIDENCE_THRESHOLD);
+      if (!this.gestureToConfidence_.has(gesture)) {
+        this.gestureToConfidence_.set(gesture, DEFAULT_CONFIDENCE_THRESHOLD);
       }
     }
 
@@ -417,27 +446,46 @@ export class GestureHandler {
     }
   }
 
-  gesturesToConfidencesChanged(confidences: Object) {
-    if (!confidences) {
+  gesturesToConfidencesChanged(confidences: Object): void {
+    if (!confidences || typeof confidences !== 'object') {
       return;
     }
 
     for (const [gesture, confidence] of Object.entries(confidences)) {
-      this.gestureToConfidence_.set(
-          gesture as FacialGesture, Number(confidence) / 100.);
+      if (!GestureHandler.isValidFacialGesture_(gesture)) {
+        continue;
+      }
+      if (typeof confidence !== 'number' || !Number.isFinite(confidence)) {
+        if (this.gestureToMacroName_.has(gesture)) {
+          this.gestureToConfidence_.set(gesture, DEFAULT_CONFIDENCE_THRESHOLD);
+        }
+        continue;
+      }
+      const clampedPercent = Math.min(100, Math.max(1, confidence));
+      this.gestureToConfidence_.set(gesture, clampedPercent / 100.);
     }
   }
 
-  gesturesToKeyCombosChanged(keyCombos: Object) {
-    if (!keyCombos) {
+  gesturesToKeyCombosChanged(keyCombos: Object): void {
+    if (!keyCombos || typeof keyCombos !== 'object') {
       return;
     }
 
     // Update the whole map from this preference.
     this.gesturesToKeyCombos_.clear();
-    for (const [gesture, keyCombinationAsString] of Object.entries(keyCombos)) {
-      const keyCombination = JSON.parse(keyCombinationAsString as string);
-      this.gesturesToKeyCombos_.set(gesture as FacialGesture, keyCombination);
+    for (const [gesture, rawKeyCombo] of Object.entries(keyCombos)) {
+      if (!GestureHandler.isValidFacialGesture_(gesture)) {
+        continue;
+      }
+      const keyCombination =
+          KeyPressMacro.parseAndValidateKeyCombination(rawKeyCombo);
+      if (!keyCombination) {
+        console.warn(
+            `Ignoring invalid FaceGaze key combination ` +
+            `for gesture: ${gesture}`);
+        continue;
+      }
+      this.gesturesToKeyCombos_.set(gesture, keyCombination);
     }
   }
 

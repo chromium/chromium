@@ -183,6 +183,7 @@ source_set("browser_tests") {
     # "facegaze_browsertest.cc",
     "facegaze_bubble_test_helper.cc",
     "facegaze_bubble_test_helper.h",
+    "facegaze_pref_validation_browsertest.cc",
     "magnification_controller_browsertest.cc",
     "magnification_manager_browsertest.cc",
     "select_to_speak_browsertest.cc",
