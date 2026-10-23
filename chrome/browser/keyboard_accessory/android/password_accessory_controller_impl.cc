@@ -433,7 +433,7 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
     case autofill::AccessoryAction::SHOW_AT_MEMORY_BOTTOMSHEET:
     case autofill::AccessoryAction::COUNT:
       NOTREACHED() << "Unhandled selected action: "
-                   << static_cast<int>(selected_action);
+                   << std::to_underlying(selected_action);
   }
 }
 
@@ -445,7 +445,7 @@ void PasswordAccessoryControllerImpl::OnToggleChanged(
     return;
   }
   NOTREACHED() << "Unhandled selected action: "
-               << static_cast<int>(toggled_action);
+               << std::to_underlying(toggled_action);
 }
 
 void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(

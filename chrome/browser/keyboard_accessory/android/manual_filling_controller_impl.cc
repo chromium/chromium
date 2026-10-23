@@ -494,7 +494,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForTabType(
     case AccessoryTabType::ALL:
     case AccessoryTabType::COUNT:
       NOTREACHED() << "Controller not defined for tab: "
-                   << static_cast<int>(type);
+                   << std::to_underlying(type);
   }
 }
 
@@ -522,7 +522,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET:
     case AccessoryAction::COUNT:
       NOTREACHED() << "Controller not defined for action: "
-                   << static_cast<int>(action);
+                   << std::to_underlying(action);
   }
 }
 
@@ -539,7 +539,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForFillingSource(
       return at_memory_controller_.get();
     case FillingSource::AUTOFILL:
       NOTREACHED() << "Controller not defined for filling source: "
-                   << static_cast<int>(filling_source);
+                   << std::to_underlying(filling_source);
   }
 }
 

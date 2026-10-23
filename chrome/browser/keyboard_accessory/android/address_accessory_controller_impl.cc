@@ -132,7 +132,7 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
       return;
     default:
       NOTREACHED() << "Unhandled selected action: "
-                   << static_cast<int>(selected_action);
+                   << std::to_underlying(selected_action);
   }
 }
 
@@ -140,7 +140,7 @@ void AddressAccessoryControllerImpl::OnToggleChanged(
     AccessoryAction toggled_action,
     bool enabled) {
   NOTREACHED() << "Unhandled toggled action: "
-               << static_cast<int>(toggled_action);
+               << std::to_underlying(toggled_action);
 }
 
 
