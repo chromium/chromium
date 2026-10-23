@@ -59,8 +59,24 @@ Making a pref syncable requires a few things:
 * In any other cases that are unclear or questionable, reach out to
   chrome-privacy-core@google.com, or to rainhard@ directly.
 
+## Deprecating syncable preferences
+
+When deprecating or deleting a syncable preference:
+* Follow the standard preference deletion or migration steps in
+  [chrome/browser/prefs/README.md] (in particular, remove the `SYNCABLE_PREF`
+  flag from the temporary migration registration so `ClearPref()` does not sync
+  deletions to older clients).
+* Remove the entry from `kChromeSyncablePrefsAllowlist`,
+  `kIOSChromeSyncablePrefsAllowlist`, or `kCommonSyncablePrefsAllowlist` in the
+  corresponding [SyncablePrefsDatabase] implementation.
+* Comment out the corresponding enumerator in the `syncable_prefs_ids` enum (for
+  example, `// kMyDeprecatedPref = 100001, (deprecated)`) so the numeric value
+  is never reused.
+* Prefix `(obsolete)` to the corresponding entry's label in the `SyncablePref`
+  enum in `tools/metrics/histograms/metadata/sync/enums.xml`.
+
 [Preferences]: https://www.chromium.org/developers/design-documents/preferences/
-[chrome/browser/prefs/README.md]: ../../chrome/browser/prefs/README.md
-[components/sync/README.md]: ../../components/sync/README.md
+[chrome/browser/prefs/README.md]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/README.md
+[components/sync/README.md]: https://source.chromium.org/chromium/chromium/src/+/main:components/sync/README.md
 [PrefRegistrationFlags]: https://source.chromium.org/chromium/chromium/src/+/main:components/pref_registry/pref_registry_syncable.h?q=PrefRegistrationFlags
 [SyncablePrefsDatabase]: https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/sync_preferences/syncable_prefs_database.h

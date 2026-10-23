@@ -75,7 +75,9 @@ clean up after you in 1 year.
 2. Move registration code into `RegisterProfilePrefsForMigration()` or
    `RegisterLocalStatePrefsForMigration()` as appropriate.
 3. If the old registration code had the `SYNCABLE_PREF` flag, remove it now
-   (syncing the deletion would break clients on older versions).
+   (syncing the deletion would break clients on older versions) and follow the
+   syncable preference deprecation steps in
+   [components/sync_preferences/README.md].
 4. Add a `ClearPref()` call in `MigrateObsoleteProfilePrefs()` or
    `MigrateObsoleteLocalStatePrefs()` as appropriate, with today's date
    (MM/YYYY) in a comment.
@@ -140,7 +142,7 @@ you will need to either:
 [chrome/browser/prefs/browser_prefs.cc]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/browser_prefs.cc
 [chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc
 [chrome/common/pref_names.h]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/pref_names.h
-[components/sync_preferences/README.md]: ../../../components/sync_preferences/README.md
+[components/sync_preferences/README.md]: https://source.chromium.org/chromium/chromium/src/+/main:components/sync_preferences/README.md
 [components/sync_preferences/common_syncable_prefs_database.cc]: https://source.chromium.org/chromium/chromium/src/+/main:components/sync_preferences/common_syncable_prefs_database.cc
 [ios/chrome/browser/shared/model/prefs/browser_prefs.mm]: https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/shared/model/prefs/browser_prefs.mm
 [ios/chrome/browser/sync/prefs/ios_chrome_syncable_prefs_database.cc]: https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/sync/prefs/ios_chrome_syncable_prefs_database.cc
