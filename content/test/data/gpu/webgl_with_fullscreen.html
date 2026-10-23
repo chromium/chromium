@@ -24,8 +24,10 @@ function fullscreenChangeHandler() {
 
   // The canvas just exited fullscreen, so the test is finished.
   if (!enteredFullscreen) {
+    console.error("fullscreenchange fired without entering fullscreen");
     window.domAutomationController.send("FAILED");
   } else if (contextWasLost) {
+    console.error("WebGL context was lost during fullscreen transition");
     window.domAutomationController.send("FAILED");
   } else {
     window.domAutomationController.send("SUCCESS");
@@ -36,7 +38,8 @@ function enterFullscreen() {
   var canvas = document.getElementById("canvas1");
   var promise = canvas.requestFullscreen();
   if (promise && promise.catch) {
-    promise.catch(function() {
+    promise.catch(function(err) {
+      console.error("requestFullscreen failed:", err);
       window.domAutomationController.send("FAILED");
     });
   }
