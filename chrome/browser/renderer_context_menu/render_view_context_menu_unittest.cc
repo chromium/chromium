@@ -3600,6 +3600,52 @@ TEST_F(RenderViewContextMenuOrderTest, EditableTextMenu_EmptySelectionOrder) {
               testing::ElementsAreArray(expected));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, EditableTextMenu_WithSelectionOrder) {
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::EDITABLE | MenuItem::SELECTION);
+  params.page_url = GURL("https://www.example.com/");
+  params.form_control_type = blink::mojom::FormControlType::kInputText;
+  params.selection_text = u"editable selection";
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  std::vector<int> expected;
+  if (ui::IsEmojiPanelSupported()) {
+    expected.push_back(IDC_CONTENT_CONTEXT_EMOJI);
+    expected.push_back(kSeparatorId);
+  }
+#if BUILDFLAG(IS_MAC)
+  expected.push_back(IDC_CONTENT_CONTEXT_UNDO);
+  expected.push_back(IDC_CONTENT_CONTEXT_REDO);
+  expected.push_back(kSeparatorId);
+#endif
+  expected.push_back(IDC_CONTENT_CONTEXT_CUT);
+  expected.push_back(IDC_CONTENT_CONTEXT_COPY);
+  expected.push_back(IDC_CONTENT_CONTEXT_PASTE);
+  expected.push_back(IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE);
+#if BUILDFLAG(IS_CHROMEOS)
+  expected.push_back(IDC_CONTENT_PASTE_FROM_CLIPBOARD);
+#endif
+  expected.push_back(IDC_CONTENT_CONTEXT_SELECTALL);
+  expected.push_back(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE);
+  expected.push_back(kSeparatorId);
+  expected.push_back(IDC_CONTENT_CONTEXT_SEARCHWEBFOR);
+  expected.push_back(IDC_PRINT);
+#if !BUILDFLAG(IS_CHROMEOS)
+  expected.push_back(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE);
+#endif
+  expected.push_back(kSeparatorId);
+#if BUILDFLAG(IS_MAC)
+  expected.push_back(IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS);
+#else
+  expected.push_back(IDC_SPELLCHECK_MENU);
+#endif
+  expected.push_back(kSeparatorId);
+  expected.push_back(IDC_CONTENT_CONTEXT_INSPECTELEMENT);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAreArray(expected));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
@@ -3743,6 +3789,52 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest,
   expected.push_back(IDC_CONTENT_PASTE_FROM_CLIPBOARD);
 #endif
   expected.push_back(IDC_CONTENT_CONTEXT_SELECTALL);
+  expected.push_back(kSeparatorId);
+#if BUILDFLAG(IS_MAC)
+  expected.push_back(IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS);
+#else
+  expected.push_back(IDC_SPELLCHECK_MENU);
+#endif
+  expected.push_back(kSeparatorId);
+  expected.push_back(IDC_CONTENT_CONTEXT_INSPECTELEMENT);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAreArray(expected));
+}
+
+TEST_F(RenderViewContextMenuSimplifiedOrderTest,
+       EditableTextMenu_WithSelectionOrder) {
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::EDITABLE | MenuItem::SELECTION);
+  params.page_url = GURL("https://www.example.com/");
+  params.form_control_type = blink::mojom::FormControlType::kInputText;
+  params.selection_text = u"editable selection";
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  std::vector<int> expected;
+  if (ui::IsEmojiPanelSupported()) {
+    expected.push_back(IDC_CONTENT_CONTEXT_EMOJI);
+    expected.push_back(kSeparatorId);
+  }
+#if BUILDFLAG(IS_MAC)
+  expected.push_back(IDC_CONTENT_CONTEXT_UNDO);
+  expected.push_back(IDC_CONTENT_CONTEXT_REDO);
+  expected.push_back(kSeparatorId);
+#endif
+  expected.push_back(IDC_CONTENT_CONTEXT_CUT);
+  expected.push_back(IDC_CONTENT_CONTEXT_COPY);
+  expected.push_back(IDC_CONTENT_CONTEXT_PASTE);
+  expected.push_back(IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE);
+#if BUILDFLAG(IS_CHROMEOS)
+  expected.push_back(IDC_CONTENT_PASTE_FROM_CLIPBOARD);
+#endif
+  expected.push_back(IDC_CONTENT_CONTEXT_SELECTALL);
+  expected.push_back(kSeparatorId);
+  expected.push_back(IDC_CONTENT_CONTEXT_SEARCHWEBFOR);
+  expected.push_back(IDC_PRINT);
+#if !BUILDFLAG(IS_CHROMEOS)
+  expected.push_back(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE);
+#endif
   expected.push_back(kSeparatorId);
 #if BUILDFLAG(IS_MAC)
   expected.push_back(IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS);
