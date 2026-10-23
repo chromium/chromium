@@ -156,6 +156,25 @@ POST_PROCESS_OPERATION = {
             ["Apache 2.0", "BSD-3-Clause"],
         )
     ),
+    "third_party/icu/README.chromium": create_license_post_processing(
+        # HPND-sell-variant (install-sh), MIT-0 (sorttable.js) and NAIST-2003
+        # (cjdict.txt) only cover files that Cronet never builds or ships, and
+        # AOSP has no matching license_kind for them. Drop them.
+        Mapper(
+            "License",
+            [
+                'MIT',
+                'BSD-2-Clause',
+                'BSD-3-Clause',
+                'HPND-sell-variant',
+                'ICU',
+                'MIT-0',
+                'NAIST-2003',
+                'Unicode-3.0',
+            ],
+            ["MIT", "BSD-2-Clause", "BSD-3-Clause", "ICU", "Unicode-3.0"],
+        )
+    ),
 }
 
 # This is relative to the repo_directory passed in |update_license|
