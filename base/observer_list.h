@@ -180,8 +180,8 @@ class ObserverList {
           reentrancy != ObserverListReentrancyPolicy::kDisallowReentrancy ||
           list_.IsOnlyRemainingNode());
       // Bind to this sequence when creating the first iterator.
-      DCHECK_CALLED_ON_VALID_SEQUENCE(list_->iteration_sequence_checker_);
-      EnsureValidIndex();
+      DCHECK_CALLED_ON_VALID_SEQUENCE(list->iteration_sequence_checker_);
+      EnsureValidIndex(list);
     }
 
     ~Iter() {
@@ -192,8 +192,8 @@ class ObserverList {
 
     Iter(const Iter& other)
         : index_(other.index_), max_index_(other.max_index_) {
-      if (other.list_) {
-        list_.SetList(other.list_.get());
+      if (ObserverList* const list = other.list_.get()) {
+        list_.SetList(list);
       }
     }
 
@@ -207,8 +207,8 @@ class ObserverList {
       }
 
       list_.Invalidate();
-      if (other.list_) {
-        list_.SetList(other.list_.get());
+      if (ObserverList* const list = other.list_.get()) {
+        list_.SetList(list);
       }
 
       index_ = other.index_;
@@ -217,14 +217,16 @@ class ObserverList {
     }
 
     bool operator==(const Iter& other) const {
-      return (is_end() && other.is_end()) ||
-             (list_.get() == other.list_.get() && index_ == other.index_);
+      const ObserverList* const list = list_.get();
+      const ObserverList* const other_list = other.list_.get();
+      return (is_end(list) && other.is_end(other_list)) ||
+             (list == other_list && index_ == other.index_);
     }
 
     Iter& operator++() {
-      if (list_) {
+      if (const ObserverList* const list = list_.get()) {
         ++index_;
-        EnsureValidIndex();
+        EnsureValidIndex(list);
       }
       return *this;
     }
@@ -251,26 +253,33 @@ class ObserverList {
     friend class ObserverListTestBase;
 
     ObserverType* GetCurrent() const {
-      DCHECK(list_);
-      DCHECK_LT(index_, clamped_max_index());
+      ObserverList* const list = list_.get();
+      DCHECK(list);
+      DCHECK_LT(index_, clamped_max_index(list));
       return ObserverStorageType::template Get<ObserverType>(
-          list_->observers_[index_]);
+          list->observers_[index_]);
     }
 
-    void EnsureValidIndex() {
-      DCHECK(list_);
-      const size_t max_index = clamped_max_index();
+    // Helpers below accept an already-resolved `list` pointer rather than
+    // dereferencing `list_` directly because `WeakLinkNode::get()` checks
+    // `iteration_sequence_checker_` on every call when
+    // `EXPENSIVE_DCHECKS_ARE_ON()` is enabled.
+    void EnsureValidIndex(const ObserverList* list) {
+      DCHECK(list);
+      const size_t max_index = clamped_max_index(list);
       while (index_ < max_index &&
-             list_->observers_[index_].IsMarkedForRemoval()) {
+             list->observers_[index_].IsMarkedForRemoval()) {
         ++index_;
       }
     }
 
-    size_t clamped_max_index() const {
-      return std::min(max_index_, list_->observers_.size());
+    size_t clamped_max_index(const ObserverList* list) const {
+      return std::min(max_index_, list->observers_.size());
     }
 
-    bool is_end() const { return !list_ || index_ == clamped_max_index(); }
+    bool is_end(const ObserverList* list) const {
+      return !list || index_ == clamped_max_index(list);
+    }
 
     // Lightweight weak pointer to the ObserverList.
     internal::WeakLinkNode<ObserverList> list_;
