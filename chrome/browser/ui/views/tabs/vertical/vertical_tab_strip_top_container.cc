@@ -51,10 +51,6 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
               kVerticalTabStripTopContainerElementId);
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetMasksToBounds(true);
-
   collapse_button_ = AddChildButtonFor(kActionToggleCollapseVertical);
   collapse_button_->set_context_menu_controller(this);
   collapse_button_->SetProperty(views::kElementIdentifierKey,
@@ -62,6 +58,9 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
 
   combo_button_ = AddChildView(std::make_unique<TabStripComboButton>(
       browser_, TabStripComboButton::Context::kVerticalTabStrip));
+  combo_button_->SetPaintToLayer();
+  combo_button_->layer()->SetFillsBoundsOpaquely(false);
+  combo_button_->SetClipLayerToVisibleBounds(true);
   combo_button_->SetOrientation(
       combo_button_orientation_ = state_controller->IsCollapsed()
                                       ? views::LayoutOrientation::kVertical

@@ -164,6 +164,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support_ui",
     "//components/tabs:test_support",
     "//testing/gtest",
+    "//ui/compositor",
     "//ui/events:test_support",
     "//ui/views",
   ]

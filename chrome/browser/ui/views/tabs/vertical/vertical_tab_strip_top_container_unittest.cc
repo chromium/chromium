@@ -31,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget.h"
 
@@ -411,33 +412,28 @@ TEST_F(VerticalTabStripTopContainerTest,
   EXPECT_EQ(top_container()->height(), collapsing_height);
 
   // As soon as the expand-on-hover animation starts (even below the snap
-  // width), the combo button is visible and rendered at the expanded width.
+  // width), the combo button is visible and rendered at the expanded width,
+  // with its layer clipped to the visible bounds within the top container.
   LayoutView(tabs::kVerticalTabStripCollapseSnapWidth - 10);
   EXPECT_TRUE(combo_button()->GetVisible());
+  ASSERT_NE(combo_button()->layer(), nullptr);
+  EXPECT_FALSE(combo_button()->layer()->clip_rect().IsEmpty());
 
-  // When fully expanded on hover, the combo button is visible and fits within
-  // the container width.
-  top_container()->SetSize(gfx::Size(300, 40));
-  views::ProposedLayout layout = top_container()->CalculateProposedLayout(
-      views::SizeBounds(top_container()->size()));
-  auto it = std::ranges::find(layout.child_layouts, combo_button(),
-                              &views::ChildLayout::child_view);
-  ASSERT_NE(it, layout.child_layouts.end());
-  EXPECT_TRUE(it->visible);
-  EXPECT_LE(it->bounds.right(), top_container()->width());
+  // When fully expanded on hover, the combo button is visible, fits within
+  // the container width, and has no layer clip rect so focus rings are not
+  // clipped.
+  LayoutView(300);
+  EXPECT_TRUE(combo_button()->GetVisible());
+  EXPECT_LE(combo_button()->bounds().right(), top_container()->width());
+  EXPECT_TRUE(combo_button()->layer()->clip_rect().IsEmpty());
 
   // When expand on hover is disabled while collapsed, combo button is
-  // laid out vertically inside the collapsed width.
+  // laid out vertically inside the collapsed width with no layer clip rect.
   controller()->SetExpandOnHoverEnabled(false);
-  top_container()->SetSize(
-      gfx::Size(tabs::kVerticalTabStripCollapseSnapWidth - 10, 40));
-  layout = top_container()->CalculateProposedLayout(
-      views::SizeBounds(top_container()->size()));
-  it = std::ranges::find(layout.child_layouts, combo_button(),
-                         &views::ChildLayout::child_view);
-  ASSERT_NE(it, layout.child_layouts.end());
-  EXPECT_TRUE(it->visible);
-  EXPECT_LE(it->bounds.right(), top_container()->width());
+  LayoutView(tabs::kVerticalTabStripCollapseSnapWidth - 10);
+  EXPECT_TRUE(combo_button()->GetVisible());
+  EXPECT_LE(combo_button()->bounds().right(), top_container()->width());
+  EXPECT_TRUE(combo_button()->layer()->clip_rect().IsEmpty());
 }
 
 TEST_F(VerticalTabStripTopContainerTest,
