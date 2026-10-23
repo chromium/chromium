@@ -49,6 +49,7 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -474,6 +475,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // password-like field, per its text input state. Returns false if that state
   // has not yet arrived for the currently focused element.
   virtual bool IsFocusedElementPasswordLike() = 0;
+
+  // Returns the text input type (e.g. text area, plain text input, search box)
+  // of the focused editable element in this frame. Returns std::nullopt if no
+  // editable element is focused, or if its text input state hasn't arrived yet.
+  virtual std::optional<ui::TextInputType> GetFocusedElementTextInputType() = 0;
 
   // Used for devtools instrumentation and trace-ability. The token is
   // propagated to Blink's LocalFrame and both Blink and content/

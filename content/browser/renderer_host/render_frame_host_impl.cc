@@ -3535,16 +3535,17 @@ EditableLevel RenderFrameHostImpl::GetFocusedEditableLevel() const {
   return focused_editable_level_;
 }
 
-bool RenderFrameHostImpl::IsFocusedElementPasswordLike() {
+const ui::mojom::TextInputState*
+RenderFrameHostImpl::GetFocusedElementTextInputState() {
   if (focused_editable_dom_node_id_.is_null()) {
-    return false;
+    return nullptr;
   }
   RenderWidgetHostViewBase* view = GetView();
   TextInputManager* text_input_manager =
       view ? view->GetTextInputManager() : nullptr;
   if (!text_input_manager ||
       text_input_manager->GetActiveWidget() != GetRenderWidgetHost()) {
-    return false;
+    return nullptr;
   }
   const ui::mojom::TextInputState* state =
       text_input_manager->GetTextInputState();
@@ -3553,9 +3554,23 @@ bool RenderFrameHostImpl::IsFocusedElementPasswordLike() {
   // element. Only trust it if it refers to the currently focused element.
   if (!state ||
       state->node_id != focused_editable_dom_node_id_.GetUnsafeValue()) {
-    return false;
+    return nullptr;
   }
-  return TextInputManager::IsPasswordLike(*state);
+  return state;
+}
+
+bool RenderFrameHostImpl::IsFocusedElementPasswordLike() {
+  const ui::mojom::TextInputState* state = GetFocusedElementTextInputState();
+  return state && TextInputManager::IsPasswordLike(*state);
+}
+
+std::optional<ui::TextInputType>
+RenderFrameHostImpl::GetFocusedElementTextInputType() {
+  const ui::mojom::TextInputState* state = GetFocusedElementTextInputState();
+  if (!state) {
+    return std::nullopt;
+  }
+  return state->type;
 }
 
 const base::UnguessableToken& RenderFrameHostImpl::GetDevToolsFrameToken() {

@@ -12,6 +12,7 @@ source_set("dictation") {
     "dictation_overlay_view.h",
     "onboarding_dialog_controller.h",
     "reviewing_page_status_view.h",
+    "text_field_filter.h",
     "ui_state.h",
     "waveform_view.h",
     "waveform_view_button.h",
@@ -21,6 +22,7 @@ source_set("dictation") {
     "dictation_overlay_view.cc",
     "onboarding_dialog_controller.cc",
     "reviewing_page_status_view.cc",
+    "text_field_filter.cc",
     "waveform_view.cc",
     "waveform_view_button.cc",
   ]
@@ -29,6 +31,7 @@ source_set("dictation") {
     "//base",
     "//content/public/browser",
     "//ui/base",
+    "//ui/base/ime:text_input_types",
     "//ui/gfx",
     "//ui/views",
   ]
@@ -59,6 +62,7 @@ source_set("unit_tests") {
   sources = [
     "dictation_bubble_ui_unittest.cc",
     "dictation_overlay_view_unittest.cc",
+    "text_field_filter_unittest.cc",
   ]
   deps = [
     ":dictation",

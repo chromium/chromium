@@ -304,6 +304,21 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  // Focuses the element with `id` via script (simulated taps can miss on
+  // Android) and waits for its focus change and text input state to reach the
+  // browser.
+  void FocusAndWaitForTextInputState(const std::string& id) {
+    ASSERT_TRUE(ExecJs(web_contents(),
+                       JsReplace("document.getElementById($1).focus();", id)));
+    const int node_id = GetDOMNodeId(*root_frame_host(), "#" + id).value();
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      auto* state = web_contents()->GetTextInputManager()->GetTextInputState();
+      return state && state->node_id == node_id &&
+             root_frame_host()->GetFocusedDOMNodeId().GetUnsafeValue() ==
+                 node_id;
+    })) << id;
+  }
+
  private:
   net::EmbeddedTestServer https_server_;
 };
@@ -11766,20 +11781,6 @@ class RenderFrameHostImplPasswordLikeBrowserTest
         <div id="plain_ce" contenteditable>hello</div>`);
     )"));
   }
-
-  // Focuses `id` via script (simulated taps can miss on Android) and waits for
-  // its focus change and text input state to reach the browser.
-  void FocusAndWaitForTextInputState(const std::string& id) {
-    ASSERT_TRUE(ExecJs(web_contents(),
-                       JsReplace("document.getElementById($1).focus();", id)));
-    const int node_id = GetDOMNodeId(*root_frame_host(), "#" + id).value();
-    ASSERT_TRUE(base::test::RunUntil([&] {
-      auto* state = web_contents()->GetTextInputManager()->GetTextInputState();
-      return state && state->node_id == node_id &&
-             root_frame_host()->GetFocusedDOMNodeId().GetUnsafeValue() ==
-                 node_id;
-    })) << id;
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPasswordLikeBrowserTest,
@@ -11847,6 +11848,96 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPasswordLikeBrowserTest,
   ASSERT_TRUE(ExecJs(web_contents(), "document.activeElement.blur()"));
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return !root_frame_host()->IsFocusedElementPasswordLike(); }));
+}
+
+namespace {
+
+// Records GetFocusedElementTextInputType() at the moment focus changes, before
+// the text input state for the newly focused element has arrived.
+class TextInputTypeAtFocusChangeObserver : public WebContentsObserver {
+ public:
+  explicit TextInputTypeAtFocusChangeObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  int focus_change_count() const { return focus_change_count_; }
+  std::optional<ui::TextInputType> type_at_focus_change() const {
+    return type_at_focus_change_;
+  }
+
+  // WebContentsObserver:
+  void OnFocusChangedInPage(const FocusedNodeDetails& details) override {
+    ++focus_change_count_;
+    type_at_focus_change_ =
+        web_contents()->GetPrimaryMainFrame()->GetFocusedElementTextInputType();
+  }
+
+ private:
+  int focus_change_count_ = 0;
+  std::optional<ui::TextInputType> type_at_focus_change_;
+};
+
+}  // namespace
+
+class RenderFrameHostImplTextInputTypeBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    RenderFrameHostImplBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+    ASSERT_TRUE(ExecJs(web_contents(), R"(
+      document.body.innerHTML = `
+        <input id="text">
+        <input id="search" type="search">
+        <textarea id="textarea"></textarea>
+        <div id="editable" contenteditable>hello</div>`;
+    )"));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplTextInputTypeBrowserTest,
+                       ReportsTextInputType) {
+  ASSERT_NO_FATAL_FAILURE(FocusAndWaitForTextInputState("text"));
+  EXPECT_EQ(root_frame_host()->GetFocusedElementTextInputType(),
+            ui::TEXT_INPUT_TYPE_TEXT);
+
+  ASSERT_NO_FATAL_FAILURE(FocusAndWaitForTextInputState("search"));
+  EXPECT_EQ(root_frame_host()->GetFocusedElementTextInputType(),
+            ui::TEXT_INPUT_TYPE_SEARCH);
+
+  ASSERT_NO_FATAL_FAILURE(FocusAndWaitForTextInputState("textarea"));
+  EXPECT_EQ(root_frame_host()->GetFocusedElementTextInputType(),
+            ui::TEXT_INPUT_TYPE_TEXT_AREA);
+
+  ASSERT_NO_FATAL_FAILURE(FocusAndWaitForTextInputState("editable"));
+  EXPECT_EQ(root_frame_host()->GetFocusedElementTextInputType(),
+            ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE);
+}
+
+// The text input state arrives after the focus change. The previous field's
+// type must not be attributed to the newly focused element.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplTextInputTypeBrowserTest,
+                       StaleTypeIsNotUsedAtFocusChange) {
+  ASSERT_NO_FATAL_FAILURE(FocusAndWaitForTextInputState("textarea"));
+  ASSERT_EQ(root_frame_host()->GetFocusedElementTextInputType(),
+            ui::TEXT_INPUT_TYPE_TEXT_AREA);
+
+  TextInputTypeAtFocusChangeObserver observer(web_contents());
+  ASSERT_NO_FATAL_FAILURE(FocusAndWaitForTextInputState("search"));
+  ASSERT_GE(observer.focus_change_count(), 1);
+  EXPECT_EQ(observer.type_at_focus_change(), std::nullopt);
+  EXPECT_EQ(root_frame_host()->GetFocusedElementTextInputType(),
+            ui::TEXT_INPUT_TYPE_SEARCH);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplTextInputTypeBrowserTest,
+                       NoTextInputTypeAfterBlur) {
+  ASSERT_NO_FATAL_FAILURE(FocusAndWaitForTextInputState("textarea"));
+  ASSERT_TRUE(root_frame_host()->GetFocusedElementTextInputType());
+
+  ASSERT_TRUE(ExecJs(web_contents(), "document.activeElement.blur()"));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return !root_frame_host()->GetFocusedElementTextInputType(); }));
 }
 
 }  // namespace content

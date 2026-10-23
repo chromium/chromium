@@ -206,6 +206,7 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
+#include "ui/base/ime/mojom/text_input_state.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -504,6 +505,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   blink::DOMNodeIdType GetFocusedDOMNodeId() const override;
   EditableLevel GetFocusedEditableLevel() const override;
   bool IsFocusedElementPasswordLike() override;
+  std::optional<ui::TextInputType> GetFocusedElementTextInputType() override;
   const base::UnguessableToken& GetDevToolsFrameToken() override;
   std::optional<base::UnguessableToken> GetEmbeddingToken() override;
   const std::string& GetFrameName() override;
@@ -3466,6 +3468,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FrameTreeNode* FindAndVerifyChildInternal(
       RenderFrameHostOrProxy child_frame_or_proxy,
       bad_message::BadMessageReason reason);
+
+  // Returns the text input state of the focused editable element in this
+  // frame, or nullptr if no editable element is focused or its state hasn't
+  // arrived yet.
+  const ui::mojom::TextInputState* GetFocusedElementTextInputState();
 
   // IPC Message handlers.
   void OnForwardResourceTimingToParent(
