@@ -175,7 +175,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
 }
 
 void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
-  content_node_ids_ = std::move(content_node_ids);
+  content_node_ids_ = base::flat_set<ui::AXNodeID>(std::move(content_node_ids));
   display_node_ids_.clear();
   displayed_nodes_pending_deletion_.clear();
   screen2x_distiller_running_ = false;
@@ -1093,7 +1093,7 @@ ui::AXNode* ReadAnythingAppModel::GetAXNodeFromRoot(
 }
 
 bool ReadAnythingAppModel::NodeIsContentNode(ui::AXNodeID ax_node_id) const {
-  return std::ranges::contains(content_node_ids_, ax_node_id);
+  return content_node_ids_.contains(ax_node_id);
 }
 
 void ReadAnythingAppModel::AdjustTextSize(int increment) {
@@ -1226,7 +1226,7 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
         // Closing ads sometimes sends this event but we also get this when
         // keyboard focus changes. Only try to redistill if we have no content
         // right now.
-        if (content_node_ids_.size() == 0) {
+        if (content_node_ids_.empty()) {
           requires_distillation_ = true;
         }
         break;
@@ -1395,11 +1395,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
           redraw_required_ = true;
         break;
       case ui::AXEventGenerator::Event::EXPANDED:
-          if (std::ranges::contains(content_node_ids_, event.node_id)) {
-            redraw_required_ = true;
-          } else {
-            requires_distillation_ = true;
-          }
+        if (content_node_ids_.contains(event.node_id)) {
+          redraw_required_ = true;
+        } else {
+          requires_distillation_ = true;
+        }
         break;
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
@@ -1560,10 +1560,7 @@ void ReadAnythingAppModel::AllowChildTreeForActiveTree(bool use_child_tree) {
 }
 
 bool ReadAnythingAppModel::SelectionNodesContainedInDistilledContent() const {
-  std::vector<ui::AXNodeID> sorted_content_ids = content_node_ids_;
-  std::sort(sorted_content_ids.begin(), sorted_content_ids.end());
-  return std::includes(sorted_content_ids.begin(), sorted_content_ids.end(),
-                       selection_node_ids_.begin(), selection_node_ids_.end());
+  return std::ranges::includes(content_node_ids_, selection_node_ids_);
 }
 
 bool ReadAnythingAppModel::ProcessAXTreeAnchors() {

@@ -4611,9 +4611,9 @@ TEST_F(ReadAnythingAppModelScreen2xTest,
   // should return false.
   EXPECT_FALSE(model().SelectionNodesContainedInDistilledContent());
 
-  // Now, let's test the true case.
-  // content_node_ids = {1, 2, 3, 4}.
-  model().Reset({1, 2, 3, 4});
+  // Now, let's test the true case with unsorted input IDs.
+  // content_node_ids = {4, 2, 1, 3}.
+  model().Reset({4, 2, 1, 3});
 
   // Selection is {2}.
   ui::AXTreeUpdate update2;
