@@ -43,6 +43,8 @@ build_webui_tests("build") {
     "os_page_availability_test.ts",
     "os_settings_routes_test.ts",
     "router_test.ts",
+    "settings_prefs_test.ts",
+    "settings_prefs_test_cases.ts",
     "test_api.ts",
     "test_extension_control_browser_proxy.ts",
     "test_os_lifetime_browser_proxy.ts",

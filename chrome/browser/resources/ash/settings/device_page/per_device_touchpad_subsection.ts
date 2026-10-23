@@ -23,7 +23,6 @@ import './per_device_install_row.js';
 import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -35,6 +34,7 @@ import type {MousePolicies} from '../mojom-webui/input_device_settings.mojom-web
 import {MouseSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {DisableTouchpadMode} from '../os_a11y_page/disable_touchpad_constants.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 

@@ -19,7 +19,6 @@ import '../settings_shared.css.js';
 import './captions_subpage.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
@@ -30,6 +29,7 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
 

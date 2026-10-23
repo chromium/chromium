@@ -31,8 +31,6 @@ export type {ProfileInfo, ProfileInfoBrowserProxy} from '/shared/settings/people
 export {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 export type {ChromeSigninUserChoiceInfo, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 export {ChromeSigninAccessPoint, ChromeSigninUserChoice, PageStatus, SignedInState, StatusAction, SyncBrowserProxyImpl, UserSelectableType} from '/shared/settings/people_page/sync_browser_proxy.js';
-export {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
-export {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 export type {MetricsReporting, PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 export {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 export type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
@@ -240,6 +238,8 @@ export {ParentalControlsSettingsCardElement} from './parental_controls_page/pare
 export type {PersonalizationHubBrowserProxy} from './personalization_page/personalization_hub_browser_proxy.js';
 export {PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
 export {SettingsPersonalizationPageElement} from './personalization_page/personalization_page.js';
+export {SettingsPrefsElement} from './prefs/prefs.js';
+export {CrSettingsPrefs} from './prefs/prefs_types.js';
 export {createRouter as createRouterForTesting, Route, Router, routes} from './router.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';

@@ -22,7 +22,6 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
@@ -39,6 +38,7 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 

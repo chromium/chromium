@@ -15,8 +15,6 @@ export type {ProfileInfo, ProfileInfoBrowserProxy} from '/shared/settings/people
 export {ChromeSigninAccessPoint, ChromeSigninUserChoice, PageStatus, SignedInState, StatusAction, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes, TrustedVaultBannerState, UserSelectableType} from '/shared/settings/people_page/sync_browser_proxy.js';
 export type {ChromeSigninUserChoiceInfo, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 export {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
-export {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
-export {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 export {PrefService} from '/shared/settings/prefs2/pref_service.js';
 export {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 export type {PrefServiceObserverMixinInterface} from '/shared/settings/prefs2/pref_service_observer_mixin.js';

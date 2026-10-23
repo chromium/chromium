@@ -17,7 +17,6 @@ import '../settings_shared.css.js';
 import './facegaze_icons.html.js';
 
 import type {CrSliderElement} from '//resources/ash/common/cr_elements/cr_slider/cr_slider.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
@@ -33,6 +32,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {KeyEvent, ShortcutInputProviderInterface} from '../device_page/input_device_settings_types.js';
 import {getShortcutInputProvider} from '../device_page/shortcut_input_mojo_interface_provider.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
 import type {KeyCombination} from './facegaze_constants.js';

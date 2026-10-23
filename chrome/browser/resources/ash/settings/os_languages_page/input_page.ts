@@ -25,7 +25,6 @@ import '../os_search_page/magic_boost_review_terms_banner.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
@@ -46,6 +45,7 @@ import type {AcceleratorFetcherInterface} from '../mojom-webui/accelerator_fetch
 import {AcceleratorFetcher, AcceleratorFetcherObserverReceiver} from '../mojom-webui/accelerator_fetcher.mojom-webui.js';
 import type {StandardAcceleratorProperties} from '../mojom-webui/accelerator_info.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 

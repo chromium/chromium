@@ -14,8 +14,8 @@
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {deepEqual} from '/shared/settings/prefs/equality_comparators.js';
 
-import {deepEqual} from './equality_comparators.js';
 import {CrSettingsPrefs} from './prefs_types.js';
 
 
@@ -58,6 +58,8 @@ export class SettingsPrefsElement extends PolymerElement {
   constructor() {
     super();
 
+    this.boundPrefsChanged_ = this.onSettingsPrivatePrefsChanged_.bind(this);
+
     if (!CrSettingsPrefs.deferInitialization) {
       this.initialize();
     }
@@ -84,7 +86,6 @@ export class SettingsPrefsElement extends PolymerElement {
       this.settingsApi_ = settingsApi;
     }
 
-    this.boundPrefsChanged_ = this.onSettingsPrivatePrefsChanged_.bind(this);
     this.settingsApi_.onPrefsChanged.addListener(this.boundPrefsChanged_);
     this.settingsApi_.getAllPrefs().then((prefs) => {
       this.updatePrefs_(prefs);
@@ -107,13 +108,11 @@ export class SettingsPrefsElement extends PolymerElement {
     // a change event from settingsPrivate could make us call
     // settingsPrivate.setPref and potentially trigger an IPC loop.)
     if (!deepEqual(prefStoreValue, prefObj.value)) {
-      // <if expr="is_chromeos">
       this.dispatchEvent(new CustomEvent('user-action-setting-change', {
         bubbles: true,
         composed: true,
         detail: {prefKey: key, prefValue: prefObj.value},
       }));
-      // </if>
 
       this.settingsApi_
           .setPref(

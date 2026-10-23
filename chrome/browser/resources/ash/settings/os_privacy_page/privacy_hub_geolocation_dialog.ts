@@ -12,11 +12,11 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {getTemplate} from './privacy_hub_geolocation_dialog.html.js';
 import {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';

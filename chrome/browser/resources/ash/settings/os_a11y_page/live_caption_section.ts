@@ -18,7 +18,6 @@ import './live_translate_section.js';
 
 import type {CaptionsBrowserProxy, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -33,6 +32,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {Item} from '../os_languages_page/add_items_dialog.js';
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {getTemplate} from './live_caption_section.html.js';
 

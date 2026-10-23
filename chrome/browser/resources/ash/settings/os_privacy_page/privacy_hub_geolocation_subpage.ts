@@ -15,7 +15,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../controls/controlled_button.js';
 import '../os_settings_icons.html.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
@@ -33,6 +32,7 @@ import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.j
 import type {App, AppPermissionsHandlerInterface} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 import {AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 

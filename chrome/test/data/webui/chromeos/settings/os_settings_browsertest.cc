@@ -1374,6 +1374,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, Router) {
   RunSettingsTest("router_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsPrefs) {
+  RunSettingsTest("settings_prefs_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsSchedulerSlider) {
   RunSettingsTest(
       "settings_scheduler_slider/settings_scheduler_slider_test.js");

@@ -14,7 +14,6 @@ import './timezone_selector.js';
 import '../os_privacy_page/privacy_hub_geolocation_dialog.js';
 import '../os_privacy_page/privacy_hub_geolocation_warning_text.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -25,6 +24,7 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../router.js';
 import type {Route} from '../router.js';
 

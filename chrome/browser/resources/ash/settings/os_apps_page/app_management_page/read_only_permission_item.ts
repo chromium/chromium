@@ -6,7 +6,6 @@ import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js'
 import '../../os_privacy_page/privacy_hub_allow_sensor_access_dialog.js';
 
 import {assert} from '//resources/js/assert.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
@@ -14,6 +13,7 @@ import {getPermission} from 'chrome://resources/cr_components/app_management/uti
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MediaDevicesProxy} from '../../common/media_devices_proxy.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {PrivacyHubMixin} from './privacy_hub_mixin.js';
 import {getTemplate} from './read_only_permission_item.html.js';

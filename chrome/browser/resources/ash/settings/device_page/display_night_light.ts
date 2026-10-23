@@ -18,7 +18,6 @@ import '../controls/settings_toggle_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -29,6 +28,7 @@ import {DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojo
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {PrivacyHubBrowserProxyImpl} from '../os_privacy_page/privacy_hub_browser_proxy.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {getTemplate} from './display_night_light.html.js';
 import {getDisplaySettingsProvider} from './display_settings_mojo_interface_provider.js';

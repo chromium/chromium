@@ -12,7 +12,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,6 +21,7 @@ import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {DevicePageBrowserProxy} from '../device_page/device_page_browser_proxy.js';
 import {DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 

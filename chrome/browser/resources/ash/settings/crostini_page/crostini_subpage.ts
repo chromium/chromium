@@ -16,7 +16,6 @@ import '../guest_os/guest_os_confirmation_dialog.js';
 import './crostini_disk_resize_dialog.js';
 import './crostini_disk_resize_confirmation_dialog.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -28,6 +27,7 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Router, routes} from '../router.js';
 import type {Route} from '../router.js';
 

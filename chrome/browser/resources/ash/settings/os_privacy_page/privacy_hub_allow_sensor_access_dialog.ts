@@ -12,7 +12,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '../settings_shared.css.js';
 
 import {assertNotReached} from '//resources/js/assert.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
@@ -20,6 +19,7 @@ import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_man
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {getTemplate} from './privacy_hub_allow_sensor_access_dialog.html.js';
 import {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';

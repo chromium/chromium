@@ -24,7 +24,6 @@ import '../settings_vars.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {CrSliderElement} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
@@ -44,6 +43,7 @@ import type {SettingsSliderElement} from '../controls/settings_slider.js';
 import type {DisplaySettingsProviderInterface, DisplaySettingsValue} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {AmbientLightSensorObserverReceiver, DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsType, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
 

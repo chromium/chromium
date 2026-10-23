@@ -31,8 +31,6 @@ import './internet_config.js';
 import './internet_detail_menu.js';
 import './network_summary.js';
 
-import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
 import type {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
@@ -64,6 +62,8 @@ import type {RouteOriginMixinInterface} from '../common/route_origin_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 

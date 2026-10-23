@@ -12,7 +12,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -23,6 +22,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import type {BluetoothBrailleDisplayListener} from './bluetooth_braille_display_manager.js';
 import {BluetoothBrailleDisplayManager} from './bluetooth_braille_display_manager.js';

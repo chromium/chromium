@@ -19,7 +19,6 @@ import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import './crostini_port_forwarding_add_port_dialog.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
@@ -30,6 +29,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {containerLabel, equalContainerId} from '../guest_os/guest_os_container_select.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_VM_TYPE} from './crostini_browser_proxy.js';
 import type {CrostiniBrowserProxy, CrostiniPortActiveSetting, CrostiniPortSetting} from './crostini_browser_proxy.js';

@@ -6,7 +6,6 @@ import './toggle_row.js';
 import '../../os_privacy_page/privacy_hub_allow_sensor_access_dialog.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {App, Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {browserProxyFactory, InstallReason, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
@@ -16,6 +15,7 @@ import {getPermission, getPermissionValueBool, recordAppManagementUserAction} fr
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MediaDevicesProxy} from '../../common/media_devices_proxy.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {getTemplate} from './permission_item.html.js';
 import {PrivacyHubMixin} from './privacy_hub_mixin.js';

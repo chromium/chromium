@@ -13,7 +13,6 @@ import 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -21,6 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {AppParentalControlsHandlerInterface} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
 import {PinValidationResult} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {getTemplate} from './app_setup_pin_keyboard.html.js';
 import {ParentalControlsPinDialogError, recordPinDialogError} from './metrics_utils.js';

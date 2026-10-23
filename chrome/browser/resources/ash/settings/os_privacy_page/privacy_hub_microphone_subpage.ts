@@ -11,7 +11,6 @@
 import './privacy_hub_app_permission_row.js';
 import './privacy_hub_system_service_row.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
@@ -24,6 +23,7 @@ import {castExists} from '../assert_extras.js';
 import {MediaDevicesProxy} from '../common/media_devices_proxy.js';
 import type {App, AppPermissionsHandlerInterface} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 import {AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {getAppPermissionProvider} from './mojo_interface_provider.js';
 import type {PrivacyHubBrowserProxy} from './privacy_hub_browser_proxy.js';

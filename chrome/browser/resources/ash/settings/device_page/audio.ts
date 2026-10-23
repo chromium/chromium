@@ -15,7 +15,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrSliderElement} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -33,6 +32,7 @@ import {AudioDeviceType, AudioEffectState, AudioEffectType, AudioSystemPropertie
 import type {VoiceIsolationUIAppearance} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {AudioAndCaptionsPageBrowserProxyImpl} from '../os_a11y_page/audio_and_captions_page_browser_proxy.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
 

@@ -434,10 +434,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, MAYBE_PrivacyPageIndexSiteSettings) {
           "runMochaSuite('PrivacyPageIndex SiteSettings')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, Prefs) {
-  RunTest("settings/settings_prefs_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, PrefService) {
   RunTest("settings/pref_service_test.js", "mocha.run()");
 }

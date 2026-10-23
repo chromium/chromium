@@ -14,7 +14,6 @@ import '../settings_shared.css.js';
 import './ax_annotations_section.js';
 import './bluetooth_braille_display_ui.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {BrailleTable} from 'chrome://resources/ash/common/accessibility/braille_table.js';
 import {JP_BRAILLE_TENJI_TABLE} from 'chrome://resources/ash/common/accessibility/braille_table.js';
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
@@ -28,6 +27,7 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 

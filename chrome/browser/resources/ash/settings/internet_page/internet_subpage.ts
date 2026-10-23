@@ -24,8 +24,6 @@ import './cellular_networks_list.js';
 import './network_always_on_vpn.js';
 import './internet_subpage_menu.js';
 
-import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
@@ -48,6 +46,8 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import type {RouteOriginMixinInterface} from '../common/route_origin_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
