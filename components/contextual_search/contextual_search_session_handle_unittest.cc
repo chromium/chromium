@@ -2295,6 +2295,84 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
 }
 
+TEST_F(ContextualSearchSessionHandleTest,
+       MarkTabAckByServer_CopiesUrlAndTitleFromFileInfo) {
+  base::UnguessableToken tab_token = handle_->CreateContextToken();
+  FileInfo tab_info;
+  tab_info.file_token = tab_token;
+  tab_info.tab_session_id = SessionID::FromSerializedValue(1);
+  tab_info.tab_url = GURL("https://example.com/tab");
+  tab_info.tab_title = "Tab Title";
+  tab_info.request_id = lens::LensOverlayRequestId();
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(tab_token))
+      .WillRepeatedly(testing::Return(&tab_info));
+
+  // Submitting marks the tab as acked by the server, which attaches it with
+  // the URL and title from its FileInfo.
+  handle_->ClearFiles(/*query_submitted=*/true);
+
+  const std::vector<TabInfo>& attached = handle_->GetTabContextState().attached;
+  ASSERT_EQ(attached.size(), 1u);
+  EXPECT_EQ(attached[0].tab_id, 1);
+  EXPECT_EQ(attached[0].url, GURL("https://example.com/tab"));
+  EXPECT_EQ(attached[0].title, "Tab Title");
+  EXPECT_TRUE(attached[0].submitted);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       SetPersistedTabs_CopiesUrlAndTitleFromFileInfo) {
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  FileInfo file_info;
+  file_info.file_token = token;
+  file_info.tab_session_id = session_id;
+  file_info.tab_url = GURL("https://example.com/tab");
+  file_info.tab_title = "Tab Title";
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(token))
+      .WillRepeatedly(testing::Return(&file_info));
+
+  handle_->SetPersistedTabs(
+      {{session_id, {token, lens::LensOverlayRequestId()}}});
+
+  const std::vector<TabInfo>& attached = handle_->GetTabContextState().attached;
+  ASSERT_EQ(attached.size(), 1u);
+  EXPECT_EQ(attached[0].tab_id, session_id.id());
+  EXPECT_EQ(attached[0].url, GURL("https://example.com/tab"));
+  EXPECT_EQ(attached[0].title, "Tab Title");
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       SetPersistedTabs_KeepsUrlAndTitleOfReplacedTab) {
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  base::UnguessableToken old_token = base::UnguessableToken::Create();
+  FileInfo old_file_info;
+  old_file_info.file_token = old_token;
+  old_file_info.tab_session_id = session_id;
+  old_file_info.tab_url = GURL("https://example.com/tab");
+  old_file_info.tab_title = "Tab Title";
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(old_token))
+      .WillRepeatedly(testing::Return(&old_file_info));
+  handle_->SetPersistedTabs(
+      {{session_id, {old_token, lens::LensOverlayRequestId()}}});
+
+  // The new token's FileInfo has no URL or title, so the tab keeps the ones
+  // of the persisted tab it replaces.
+  base::UnguessableToken new_token = base::UnguessableToken::Create();
+  FileInfo new_file_info;
+  new_file_info.file_token = new_token;
+  new_file_info.tab_session_id = session_id;
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(new_token))
+      .WillRepeatedly(testing::Return(&new_file_info));
+  handle_->SetPersistedTabs(
+      {{session_id, {new_token, lens::LensOverlayRequestId()}}});
+
+  const std::vector<TabInfo>& attached = handle_->GetTabContextState().attached;
+  ASSERT_EQ(attached.size(), 1u);
+  EXPECT_EQ(attached[0].context_token, new_token);
+  EXPECT_EQ(attached[0].url, GURL("https://example.com/tab"));
+  EXPECT_EQ(attached[0].title, "Tab Title");
+}
+
 TEST_F(ContextualSearchSessionHandleTest, HasSubmittedContext) {
   auto mock_controller =
       std::make_unique<MockContextualSearchContextController>();

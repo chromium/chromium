@@ -1163,12 +1163,38 @@ void ContextualSearchSessionHandle::ClearAllPersistedTabs() {
 
 void ContextualSearchSessionHandle::SetPersistedTabs(
     PersistedTabsMap new_persisted_tabs) {
+  base::flat_map<int32_t, std::pair<GURL, std::string>> existing_tab_metadata;
+  for (const TabInfo& tab : tab_context_.attached) {
+    if (tab.tab_id.has_value() && (!tab.url.is_empty() || !tab.title.empty())) {
+      existing_tab_metadata[*tab.tab_id] = {tab.url, tab.title};
+    }
+  }
   ClearAllPersistedTabs();
+  auto* controller = GetController();
   for (auto& [session_id, token_and_req] : new_persisted_tabs) {
     TabInfo& tab = tab_context_.attached.emplace_back();
     tab.tab_id = session_id.id();
     tab.context_token = token_and_req.first;
     tab.request_id = std::move(token_and_req.second);
+    if (const auto* file_info =
+            controller ? controller->GetFileInfo(token_and_req.first)
+                       : nullptr) {
+      if (file_info->tab_url.has_value()) {
+        tab.url = *file_info->tab_url;
+      }
+      if (file_info->tab_title.has_value()) {
+        tab.title = *file_info->tab_title;
+      }
+    }
+    if (auto it = existing_tab_metadata.find(session_id.id());
+        it != existing_tab_metadata.end()) {
+      if (tab.url.is_empty()) {
+        tab.url = it->second.first;
+      }
+      if (tab.title.empty()) {
+        tab.title = it->second.second;
+      }
+    }
     tab.uploaded = true;
     tab.submitted = true;
     tab_context_dirty_ = true;
@@ -1613,6 +1639,12 @@ void ContextualSearchSessionHandle::MarkTabAckByServer(
   // recontextualization.
   tab->context_token = token;
   tab->request_id = file_info->request_id;
+  if (file_info->tab_url.has_value()) {
+    tab->url = *file_info->tab_url;
+  }
+  if (file_info->tab_title.has_value()) {
+    tab->title = *file_info->tab_title;
+  }
   tab->uploaded = !file_info->is_implicit_upload;
   tab->submitted = true;
   tab_context_dirty_ = true;

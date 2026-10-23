@@ -5508,6 +5508,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   contextual_search::FileInfo persisted_file_info;
   persisted_file_info.file_token = token;
   persisted_file_info.tab_session_id = active_tab_id;
+  persisted_file_info.tab_url = GURL("https://example.com/persisted");
+  persisted_file_info.tab_title = "Persisted Tab";
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(555);
   persisted_file_info.request_id = req_id;
@@ -5522,6 +5524,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                     const std::vector<int32_t>& submitted_tab_ids) {
         ASSERT_EQ(tabs.size(), 1u);
         EXPECT_EQ(tabs[0]->tab_id, active_tab_handle_id);
+        // The URL and title come from the tab's FileInfo.
+        EXPECT_EQ(tabs[0]->url, GURL("https://example.com/persisted"));
+        EXPECT_EQ(tabs[0]->title, "Persisted Tab");
         EXPECT_THAT(submitted_tab_ids,
                     testing::ElementsAre(active_tab_handle_id));
         tab_context_run_loop.Quit();
