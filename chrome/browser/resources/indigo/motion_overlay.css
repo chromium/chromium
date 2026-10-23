@@ -15,7 +15,6 @@
   --indigo-blur-layer-bg-color: rgba(229, 236, 242, 0.6);
   --indigo-loading-circle-dark-rgb: 41, 124, 241;
   --indigo-loading-circle-light-rgb: 183, 203, 255;
-  --indigo-mask-color: black;
   --indigo-blur-min: 1vw;
   --indigo-blur-max: 5vw;
 
@@ -102,33 +101,45 @@
 }
 
 /* --- Blur Effect --- */
-@keyframes blurDiagonalTransition-entry {
+/* The blur layers must stay exactly the size of the frame. Chrome mirrors the
+ * backdrop-filter input only at the element's bounds, so a layer larger than
+ * the image blurs in pixels from outside the image and leaves the image edges
+ * unblurred (b/517915228). The diagonal sweep is therefore drawn by a mask,
+ * paint(indigo-sweep) from sweep_mask_worklet.ts, which follows --indigo-sweep
+ * (0: no blur shown, 1: all of it). Unlike mask-position, animating that
+ * custom property, registered in motion_overlay.ts, runs on the compositor
+ * thread. */
+@keyframes blurSweep-entry {
   0% {
-    transform: translate(-40%, -115%) rotate(-20deg);
+    --indigo-sweep: 0;
   }
 
   100% {
-    transform: translate(-40%, -40%) rotate(-20deg);
+    --indigo-sweep: 1;
   }
 }
 
-@keyframes blurDiagonalTransition-exit {
+@keyframes blurSweep-exit {
   0% {
-    transform: translate(-40%, -40%) rotate(-20deg);
+    --indigo-sweep: 1;
   }
 
   100% {
-    transform: translate(-40%, -115%) rotate(-20deg);
+    --indigo-sweep: 0;
   }
 }
 
-@keyframes blurOpacityTransition {
+/* The blur radius itself is not animated. Chrome blurs large radii at a lower
+ * resolution and lowers it in steps as the radius grows, so an animated radius
+ * visibly stalls and then jumps. Instead, #maxBlurLayer (fixed maximum blur)
+ * fades in on top of #blurLayer (fixed minimum blur). */
+@keyframes maxBlurFadeIn {
   0% {
-    backdrop-filter: blur(var(--indigo-blur-min)) brightness(1.0);
+    opacity: 0;
   }
 
   100% {
-    backdrop-filter: blur(var(--indigo-blur-max)) brightness(1.0);
+    opacity: 1;
   }
 }
 
@@ -186,34 +197,60 @@
 }
 
 
-#blurLayer {
+#blurLayer,
+#maxBlurLayer {
   position: absolute;
-  width: 300%;
-  height: 300%;
-  top: 0;
-  left: 0;
-  backdrop-filter: blur(var(--indigo-blur-min)) brightness(1.0);
+  inset: 0;
+}
+
+#blurLayer {
+  backdrop-filter: blur(var(--indigo-blur-min));
   background-color: var(--indigo-blur-layer-bg-color);
-  mask-image: linear-gradient(to bottom,
-      transparent 0%,
-        var(--indigo-mask-color) 15%,
-        var(--indigo-mask-color) 85%,
-      transparent 100%);
-  will-change: transform, opacity;
-  backface-visibility: hidden;
+  mask-image: paint(indigo-sweep);
+}
+
+#maxBlurLayer {
+  backdrop-filter: blur(var(--indigo-blur-max));
+  opacity: 0;
 }
 
 :host([animation-state='entry']) #blurLayer {
-  animation: blurDiagonalTransition-entry var(--indigo-swipe-duration)
-                 ease-in-out forwards,
-             blurOpacityTransition calc(var(--indigo-swipe-duration) * 2)
+  animation: blurSweep-entry var(--indigo-swipe-duration) ease-in-out forwards;
+}
+
+/* #maxBlurLayer only fades in after the sweep has finished, so it needs no
+ * mask during the entry. */
+:host([animation-state='entry']) #maxBlurLayer {
+  animation: maxBlurFadeIn calc(var(--indigo-swipe-duration) * 2)
                  ease-in-out var(--indigo-swipe-duration) forwards;
 }
 
-:host([animation-state='exit']) #blurLayer {
-  animation: blurDiagonalTransition-exit var(--indigo-swipe-duration)
-                 ease-in-out forwards;
-  backdrop-filter: blur(var(--indigo-blur-max)) brightness(1.0);
+/* Once the fade-in has finished, #maxBlurLayer shows the blur alone, with
+ * #blurLayer's tint, so only one backdrop blur is drawn per frame. This looks
+ * the same because blurring doesn't change a uniform tint. */
+:host([max-blur='full']) #blurLayer {
+  display: none;
+}
+
+:host([max-blur='full']) #maxBlurLayer {
+  background-color: var(--indigo-blur-layer-bg-color);
+  opacity: 1;
+}
+
+/* The exit sweeps out the layers that are showing when it starts, as recorded
+ * in the max-blur attribute. */
+:host([animation-state='exit']) #blurLayer,
+:host([animation-state='exit']) #maxBlurLayer {
+  mask-image: paint(indigo-sweep);
+  animation: blurSweep-exit var(--indigo-swipe-duration) ease-in-out forwards;
+}
+
+:host([max-blur='hidden']) #maxBlurLayer {
+  display: none;
+}
+
+:host([max-blur='partial']) #maxBlurLayer {
+  opacity: var(--indigo-max-blur-opacity);
 }
 
 #loadingCircleDark,

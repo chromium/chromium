@@ -8,6 +8,12 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {sweepMaskReady} from './motion_overlay.js';
+
+// If the worklet fails to load, the overlay still shows, just without the blur
+// sweep.
+const sweepMaskLoaded: Promise<void> =
+    sweepMaskReady.catch(e => console.error(e));
 
 type ObjectFit = 'fill'|'contain'|'cover'|'none'|'scale-down';
 
@@ -101,6 +107,9 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
     const entryAnimationPromise = new Promise<void>(resolve => {
       this.entryAnimationResolve_ = resolve;
     });
+    // The entry's sweep mask needs the paint worklet. Without it, the blur
+    // would show unmasked and the sweep couldn't run on the compositor.
+    await sweepMaskLoaded;
     this.startAnimation_();
     try {
       const [imageData] = await Promise.all([

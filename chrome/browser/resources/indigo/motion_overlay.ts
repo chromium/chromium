@@ -15,9 +15,18 @@ const SWIPE_DURATION_MS: number = 2000;
 const LOADING_CIRCLES_START_DELAY_MS: number = 1300;
 const TEXT_OVERLAY_START_DELAY_MS: number = 1000;
 
+// If the exit starts within this opacity of either end of #maxBlurLayer's
+// fade-in, it snaps to that end, so the exit draws one blur instead of two.
+const MAX_BLUR_OPACITY_SNAP: number = 0.01;
+
+// How much of #maxBlurLayer is showing. maxBlur_ is null while the entry fades
+// it in, 'full' once the fade-in has finished, and 'hidden' or 'partial' if the
+// exit starts before that.
+type MaxBlur = 'hidden'|'partial'|'full';
+
 export interface IndigoMotionOverlayElement {
   $: {
-    blurLayer: HTMLElement,
+    maxBlurLayer: HTMLElement,
     swipeEllipse1: HTMLElement,
     swipeEllipse2: HTMLElement,
     loadingCircleDark: HTMLElement,
@@ -51,13 +60,36 @@ export class IndigoMotionOverlayElement extends CrLitElement {
         reflect: true,
         attribute: 'show-loading-circles',
       },
+      maxBlur_: {
+        type: String,
+        reflect: true,
+        attribute: 'max-blur',
+      },
     };
   }
 
   accessor animationState: 'entry'|'exit'|'none' = 'none';
   protected accessor showLoadingCircles_: boolean = false;
+  protected accessor maxBlur_: MaxBlur|null = null;
   private loadingTimeout_: number|null = null;
   private entryTimeout_: number|null = null;
+  private textOverlayTimeout_: number|null = null;
+  private motionCompleteTimeout_: number|null = null;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (!changedProperties.has('animationState')) {
+      return;
+    }
+    if (this.animationState === 'entry') {
+      this.maxBlur_ = null;
+    } else if (this.animationState === 'exit') {
+      // The exit styles drop the max blur's fade-in, so that a later entry
+      // restarts it. Read how far it got here: willUpdate() runs before
+      // update() reflects animation-state, so the entry styles still apply.
+      this.maxBlur_ = this.computeMaxBlurForExit_();
+    }
+  }
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -73,17 +105,32 @@ export class IndigoMotionOverlayElement extends CrLitElement {
     }
   }
 
+  protected onMaxBlurAnimationend_(e: AnimationEvent) {
+    if (e.animationName === 'maxBlurFadeIn') {
+      this.maxBlur_ = 'full';
+    }
+  }
+
   private startTransitionAnimation_() {
+    // A regenerated image can start a new entry before the previous exit ends.
+    if (this.motionCompleteTimeout_) {
+      window.clearTimeout(this.motionCompleteTimeout_);
+      this.motionCompleteTimeout_ = null;
+    }
+
     this.calculateDimensions_();
     this.entryTimeout_ = window.setTimeout(() => {
+      this.entryTimeout_ = null;
       this.fire('entry-complete');
     }, SWIPE_DURATION_MS);
 
     this.loadingTimeout_ = window.setTimeout(() => {
+      this.loadingTimeout_ = null;
       this.showLoadingCircles_ = true;
     }, LOADING_CIRCLES_START_DELAY_MS);
 
-    window.setTimeout(() => {
+    this.textOverlayTimeout_ = window.setTimeout(() => {
+      this.textOverlayTimeout_ = null;
       this.$.textOverlay.startSequence();
     }, TEXT_OVERLAY_START_DELAY_MS);
   }
@@ -97,28 +144,41 @@ export class IndigoMotionOverlayElement extends CrLitElement {
 
     if (this.loadingTimeout_) {
       window.clearTimeout(this.loadingTimeout_);
+      this.loadingTimeout_ = null;
+    }
+
+    if (this.textOverlayTimeout_) {
+      window.clearTimeout(this.textOverlayTimeout_);
+      this.textOverlayTimeout_ = null;
     }
 
     this.$.textOverlay.stopSequence();
 
-    // This is to handle a scenario where the exit animation is started before
-    // the entry animation has completed. In this case, we want the exit
-    // animation to start from the entry animation's last keyframe's opacity
-    // value.
-    const blurLayer = this.$.blurLayer;
-    if (blurLayer) {
-      const computedStyle = window.getComputedStyle(blurLayer);
-      const currentBlur = computedStyle.getPropertyValue('backdrop-filter');
-      if (currentBlur && currentBlur !== 'none') {
-        blurLayer.style.setProperty('backdrop-filter', currentBlur);
-      }
-    }
-
     this.showLoadingCircles_ = false;
 
-    window.setTimeout(() => {
+    this.motionCompleteTimeout_ = window.setTimeout(() => {
+      this.motionCompleteTimeout_ = null;
       this.fire('motion-complete');
     }, SWIPE_DURATION_MS);
+  }
+
+  private computeMaxBlurForExit_(): MaxBlur {
+    if (this.maxBlur_ === 'full') {
+      return 'full';
+    }
+    // There's no local DOM before the first render, and CrLitElement throws if
+    // `$` is used within willUpdate() then.
+    const opacity = this.hasUpdated ?
+        Number(getComputedStyle(this.$.maxBlurLayer).opacity) :
+        0;
+    if (opacity <= MAX_BLUR_OPACITY_SNAP) {
+      return 'hidden';
+    }
+    if (opacity >= 1 - MAX_BLUR_OPACITY_SNAP) {
+      return 'full';
+    }
+    this.style.setProperty('--indigo-max-blur-opacity', `${opacity}`);
+    return 'partial';
   }
 
   private calculateDimensions_() {
@@ -148,3 +208,19 @@ declare global {
 
 customElements.define(
     IndigoMotionOverlayElement.is, IndigoMotionOverlayElement);
+
+// The blur layers' sweep mask is drawn by a paint worklet from --indigo-sweep
+// (see sweep_mask_worklet.ts). The property is registered as a number so that
+// animating it can run on the compositor thread.
+CSS.registerProperty({
+  name: '--indigo-sweep',
+  syntax: '<number>',
+  inherits: false,
+  initialValue: '0',
+});
+
+// Resolves once the worklet has loaded. Don't start the entry animation before
+// that, or #blurLayer shows unmasked until the worklet loads and the sweep runs
+// on the main thread.
+export const sweepMaskReady: Promise<void> =
+    CSS.paintWorklet.addModule('sweep_mask_worklet.js');

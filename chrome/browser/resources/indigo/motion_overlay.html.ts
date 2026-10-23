@@ -10,6 +10,7 @@ export function getHtml(this: IndigoMotionOverlayElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="blurLayer"></div>
+<div id="maxBlurLayer" @animationend="${this.onMaxBlurAnimationend_}"></div>
 <div id="swipeEllipse1"></div>
 <div id="swipeEllipse2"></div>
 <div id="loadingCircleDark"></div>

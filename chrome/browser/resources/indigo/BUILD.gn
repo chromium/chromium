@@ -27,6 +27,7 @@ build_webui("build") {
     "app.ts",
     "motion_overlay.html.ts",
     "motion_overlay.ts",
+    "sweep_mask_worklet.ts",
     "text_overlay.html.ts",
     "text_overlay.ts",
   ]
@@ -34,6 +35,7 @@ build_webui("build") {
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/indigo_private.d.ts",
+    "paint_api.d.ts",
   ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

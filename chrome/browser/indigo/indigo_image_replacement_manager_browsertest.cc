@@ -494,6 +494,42 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   mock_replacement.WaitForRenderReplacement();
 }
 
+// The motion overlay draws its blur sweep with a paint worklet. Checks that the
+// worklet loads in the component extension page, e.g. that it is packaged and
+// allowed by the extension's CSP.
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       LoadsSweepMaskPaintWorklet) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  // `sweepMaskReady` rejects if the worklet fails to load or register.
+  EXPECT_TRUE(content::ExecJs(subframe.get(), R"js(
+    (async () => {
+      const {sweepMaskReady} = await import('./motion_overlay.js');
+      await sweepMaskReady;
+    })();
+  )js"));
+}
+
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
                        SendsGenerateRequest) {
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
