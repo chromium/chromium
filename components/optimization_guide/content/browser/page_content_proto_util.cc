@@ -247,6 +247,10 @@ optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
       return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_CLICK;
     case blink::mojom::AIPageContentClickabilityReason::kMouseHover:
       return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER;
+    case blink::mojom::AIPageContentClickabilityReason::kMouseEnter:
+      return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_ENTER;
+    case blink::mojom::AIPageContentClickabilityReason::kMouseOver:
+      return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_OVER;
     case blink::mojom::AIPageContentClickabilityReason::kHoverPseudoClass:
       return optimization_guide::proto::CLICKABILITY_REASON_HOVER_PSEUDO_CLASS;
     case blink::mojom::AIPageContentClickabilityReason::kAriaToggle:

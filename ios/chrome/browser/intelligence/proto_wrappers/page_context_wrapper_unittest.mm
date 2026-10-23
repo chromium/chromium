@@ -6047,13 +6047,16 @@ TEST_P(PageContextWrapperTest,
       testing::Contains(
           optimization_guide::proto::CLICKABILITY_REASON_MOUSE_CLICK));
 
-  // 11. Mouse Over (CLICKABILITY_REASON_MOUSE_HOVER).
+  // 11. Mouse Over (CLICKABILITY_REASON_MOUSE_OVER).
   const auto& mouse_over = root.children_nodes(10);
   EXPECT_TRUE(mouse_over.content_attributes().has_interaction_info());
   EXPECT_THAT(
       mouse_over.content_attributes().interaction_info().clickability_reasons(),
-      testing::Contains(
-          optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER));
+      testing::AllOf(
+          testing::Contains(
+              optimization_guide::proto::CLICKABILITY_REASON_MOUSE_OVER),
+          testing::Not(testing::Contains(
+              optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER))));
 
   // 12. Key Down (CLICKABILITY_REASON_KEY_EVENTS).
   const auto& key_down = root.children_nodes(11);

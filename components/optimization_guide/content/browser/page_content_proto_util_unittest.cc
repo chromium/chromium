@@ -1622,6 +1622,41 @@ TEST_F(PageContentProtoUtilTest, ConvertInteractionDisabledReasons) {
               INTERACTION_DISABLED_REASON_ARIA_ROLE_PRESENTATIONAL));
 }
 
+TEST_F(PageContentProtoUtilTest,
+       ConvertClickabilityReasonsMouseEnterHoverAndOver) {
+  auto root_content = CreatePageContent();
+  auto container_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kContainer);
+  container_node->content_attributes->node_interaction_info =
+      blink::mojom::AIPageContentNodeInteractionInfo::New();
+  auto& clickability_reasons =
+      container_node->content_attributes->node_interaction_info
+          ->clickability_reasons;
+  clickability_reasons.push_back(
+      blink::mojom::AIPageContentClickabilityReason::kMouseHover);
+  clickability_reasons.push_back(
+      blink::mojom::AIPageContentClickabilityReason::kMouseEnter);
+  clickability_reasons.push_back(
+      blink::mojom::AIPageContentClickabilityReason::kMouseOver);
+  root_content->root_node->children_nodes.emplace_back(
+      std::move(container_node));
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(
+      ConvertAIPageContentToProto(root_content, page_content).has_value());
+
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
+  const auto& interaction_info = page_content.proto.root_node()
+                                     .children_nodes(0)
+                                     .content_attributes()
+                                     .interaction_info();
+  EXPECT_THAT(interaction_info.clickability_reasons(),
+              testing::UnorderedElementsAre(
+                  optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER,
+                  optimization_guide::proto::CLICKABILITY_REASON_MOUSE_ENTER,
+                  optimization_guide::proto::CLICKABILITY_REASON_MOUSE_OVER));
+}
+
 TEST_F(PageContentProtoUtilTest, ConvertFormControlDataRedactionDecision) {
   auto root_content = CreatePageContent();
 

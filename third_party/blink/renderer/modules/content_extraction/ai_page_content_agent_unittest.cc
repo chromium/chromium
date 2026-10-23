@@ -8037,8 +8037,8 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonClickEvents) {
           mojom::blink::AIPageContentClickabilityReason::kClickEvents));
 }
 
-TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseHover) {
-  // An element with various mouse event listeners.
+TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseOver) {
+  // An element with a mouseover event listener.
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body><div id='testDiv'>Mouse Events</div>"
@@ -8055,8 +8055,68 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseHover) {
   ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
   EXPECT_THAT(
       div_node.content_attributes->node_interaction_info->clickability_reasons,
-      testing::Contains(
-          mojom::blink::AIPageContentClickabilityReason::kMouseHover));
+      testing::AllOf(
+          testing::Contains(
+              mojom::blink::AIPageContentClickabilityReason::kMouseOver),
+          testing::Not(testing::Contains(
+              mojom::blink::AIPageContentClickabilityReason::kMouseHover)),
+          testing::Not(testing::Contains(
+              mojom::blink::AIPageContentClickabilityReason::kMouseEnter))));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseEnter) {
+  // An element with a mouseenter event listener.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><div id='testDiv'>Mouse Events</div>"
+      "<script>"
+      "  const div = document.getElementById('testDiv');"
+      "  div.onmouseenter = function(){};"
+      "</script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      div_node.content_attributes->node_interaction_info->clickability_reasons,
+      testing::AllOf(
+          testing::Contains(
+              mojom::blink::AIPageContentClickabilityReason::kMouseEnter),
+          testing::Not(testing::Contains(
+              mojom::blink::AIPageContentClickabilityReason::kMouseHover)),
+          testing::Not(testing::Contains(
+              mojom::blink::AIPageContentClickabilityReason::kMouseOver))));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseOverAndEnter) {
+  // An element with both mouseover and mouseenter event listeners.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><div id='testDiv'>Mouse Events</div>"
+      "<script>"
+      "  const div = document.getElementById('testDiv');"
+      "  div.onmouseover = function(){};"
+      "  div.onmouseenter = function(){};"
+      "</script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      div_node.content_attributes->node_interaction_info->clickability_reasons,
+      testing::AllOf(
+          testing::Contains(
+              mojom::blink::AIPageContentClickabilityReason::kMouseEnter),
+          testing::Contains(
+              mojom::blink::AIPageContentClickabilityReason::kMouseOver),
+          testing::Not(testing::Contains(
+              mojom::blink::AIPageContentClickabilityReason::kMouseHover))));
 }
 
 TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseClick) {
@@ -8181,7 +8241,7 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMultipleReasons) {
       testing::UnorderedElementsAre(
           mojom::blink::AIPageContentClickabilityReason::kClickableControl,
           mojom::blink::AIPageContentClickabilityReason::kClickEvents,
-          mojom::blink::AIPageContentClickabilityReason::kMouseHover,
+          mojom::blink::AIPageContentClickabilityReason::kMouseOver,
           mojom::blink::AIPageContentClickabilityReason::kMouseClick,
           mojom::blink::AIPageContentClickabilityReason::kKeyEvents,
           mojom::blink::AIPageContentClickabilityReason::kEditable,

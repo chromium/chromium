@@ -1632,9 +1632,11 @@ function getNodeInteractionInfo(
       safeHasAttribute(element, ATTR_KEY_ONMOUSEUP)) {
     clickabilityReasons.push(PageContentClickabilityReason.MOUSE_CLICK);
   }
-  if (safeHasAttribute(element, ATTR_KEY_ONMOUSEOVER) ||
-      safeHasAttribute(element, ATTR_KEY_ONMOUSEENTER)) {
-    clickabilityReasons.push(PageContentClickabilityReason.MOUSE_HOVER);
+  if (safeHasAttribute(element, ATTR_KEY_ONMOUSEENTER)) {
+    clickabilityReasons.push(PageContentClickabilityReason.MOUSE_ENTER);
+  }
+  if (safeHasAttribute(element, ATTR_KEY_ONMOUSEOVER)) {
+    clickabilityReasons.push(PageContentClickabilityReason.MOUSE_OVER);
   }
   if (safeHasAttribute(element, ATTR_KEY_ONKEYDOWN) ||
       safeHasAttribute(element, ATTR_KEY_ONKEYUP) ||

@@ -905,14 +905,18 @@ void AddClickabilityReasons(
     interaction_info.clickability_reasons.push_back(Reason::kClickEvents);
   }
 
-  const bool has_mouse_hover =
-      element.HasJSBasedEventListeners(event_type_names::kMouseover) ||
+  const bool has_mouseenter =
       element.HasJSBasedEventListeners(event_type_names::kMouseenter);
+  const bool has_mouseover =
+      element.HasJSBasedEventListeners(event_type_names::kMouseover);
   const bool has_mouse_click =
       element.HasJSBasedEventListeners(event_type_names::kMouseup) ||
       element.HasJSBasedEventListeners(event_type_names::kMousedown);
-  if (has_mouse_hover) {
-    interaction_info.clickability_reasons.push_back(Reason::kMouseHover);
+  if (has_mouseenter) {
+    interaction_info.clickability_reasons.push_back(Reason::kMouseEnter);
+  }
+  if (has_mouseover) {
+    interaction_info.clickability_reasons.push_back(Reason::kMouseOver);
   }
   if (has_mouse_click) {
     interaction_info.clickability_reasons.push_back(Reason::kMouseClick);
