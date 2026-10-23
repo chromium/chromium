@@ -5,6 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_GLOBAL_DOM_NODE_ID_H_
 #define CONTENT_PUBLIC_BROWSER_GLOBAL_DOM_NODE_ID_H_
 
+#include <iosfwd>
+
+#include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 
@@ -18,6 +21,9 @@ struct GlobalDOMNodeId {
 
   blink::DOMNodeIdType target_element_dom_id;
 };
+
+CONTENT_EXPORT std::ostream& operator<<(std::ostream& os,
+                                        const GlobalDOMNodeId& target_id);
 
 }  // namespace content
 

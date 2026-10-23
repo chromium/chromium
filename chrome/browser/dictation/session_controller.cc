@@ -30,7 +30,6 @@
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -39,21 +38,6 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-
-namespace content {
-
-// TODO(bokan): Move into global_dom_node_id.h
-std::ostream& operator<<(std::ostream& os,
-                         const content::GlobalDOMNodeId& target_id) {
-  const content::RenderFrameHost* rfh =
-      target_id.document.AsRenderFrameHostIfValid();
-
-  return os << "GlobalDOMNodeId("
-            << (rfh ? rfh->GetGlobalId() : content::GlobalRenderFrameHostId())
-            << ", " << target_id.target_element_dom_id << ")";
-}
-
-}  // namespace content
 
 namespace dictation {
 
