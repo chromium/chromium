@@ -12,13 +12,8 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/bind_post_task.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 
 namespace webnn::coreml {
@@ -132,17 +127,16 @@ void RecursivelyWriteToMLMultiArray(
 
 }  // namespace
 
-void ReadFromMLMultiArray(
-    MLMultiArray* multi_array,
-    base::OnceCallback<void(mojo_base::BigBuffer)> result_callback) {
-  __block auto wrapped_callback =
-      base::BindPostTaskToCurrentDefault(std::move(result_callback));
-  __block size_t packed_size =
+mojo_base::BigBuffer ReadFromMLMultiArray(MLMultiArray* multi_array) {
+  size_t packed_size =
       base::CheckMul(base::checked_cast<size_t>(multi_array.count),
                      GetDataTypeByteSize(multi_array.dataType))
           .ValueOrDie();
+  __block mojo_base::BigBuffer output_buffer(packed_size);
+  __block bool block_executing_synchronously = true;
 
   [multi_array getBytesWithHandler:^(const void* bytes, NSInteger size) {
+    CHECK(block_executing_synchronously);
     std::vector<size_t> shape = ToStdVector(multi_array.shape);
     std::vector<size_t> strides = ToStdVector(multi_array.strides);
     CHECK_EQ(shape.size(), strides.size());
@@ -152,24 +146,21 @@ void ReadFromMLMultiArray(
     auto multi_array_data = UNSAFE_BUFFERS(base::span(
         static_cast<const uint8_t*>(bytes), base::checked_cast<size_t>(size)));
 
-    mojo_base::BigBuffer output_buffer(packed_size);
-
     RecursivelyReadFromMLMultiArray(multi_array_data,
                                     GetDataTypeByteSize(multi_array.dataType),
                                     shape, strides, output_buffer);
-
-    std::move(wrapped_callback).Run(std::move(output_buffer));
   }];
+  block_executing_synchronously = false;
+  return std::move(output_buffer);
 }
 
 void WriteToMLMultiArray(MLMultiArray* multi_array,
-                         base::span<const uint8_t> bytes_to_write,
-                         base::OnceClosure done_closure) {
-  __block auto wrapped_closure =
-      base::BindPostTaskToCurrentDefault(std::move(done_closure));
+                         base::span<const uint8_t> bytes_to_write) {
+  __block bool block_executing_synchronously = true;
 
   [multi_array getMutableBytesWithHandler:^(void* mutable_bytes, NSInteger size,
                                             NSArray<NSNumber*>* strides) {
+    CHECK(block_executing_synchronously);
     std::vector<size_t> shape = ToStdVector(multi_array.shape);
     std::vector<size_t> std_strides = ToStdVector(strides);
     CHECK_EQ(shape.size(), std_strides.size());
@@ -182,9 +173,8 @@ void WriteToMLMultiArray(MLMultiArray* multi_array,
     RecursivelyWriteToMLMultiArray(
         bytes_to_write, GetDataTypeByteSize(multi_array.dataType), shape,
         std_strides, mutable_multi_array_data);
-
-    std::move(wrapped_closure).Run();
   }];
+  block_executing_synchronously = false;
 }
 
 }  // namespace webnn::coreml

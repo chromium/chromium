@@ -92,7 +92,7 @@ source_set("webnn_service_base") {
   defines = [ "IS_WEBNN_SERVICE_IMPL" ]
 }
 
-if (is_apple || webnn_use_tflite || webnn_use_litert) {
+if (webnn_use_tflite || webnn_use_litert) {
   source_set("webnn_service_resource_management") {
     visibility = [ ":*" ]
 
@@ -137,8 +137,6 @@ component("webnn_service") {
 
   if (is_apple) {
     sources += [
-      "coreml/buffer_content_coreml.h",
-      "coreml/buffer_content_coreml.mm",
       "coreml/compiler_context_impl_coreml.h",
       "coreml/compiler_context_impl_coreml.mm",
       "coreml/context_impl_coreml.h",
@@ -258,7 +256,7 @@ component("webnn_service") {
     ]
   }
 
-  if (is_apple || webnn_use_tflite || webnn_use_litert) {
+  if (webnn_use_tflite || webnn_use_litert) {
     deps += [ ":webnn_service_resource_management" ]
   }
 }

@@ -422,9 +422,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         && base::mac::GetCPUType() == base::mac::CPUType::kArm
 #endif  // BUILDFLAG(IS_MAC)
         ;
-    // CoreML contexts are created and owned on the main thread.
   }
-  use_main_thread |= should_create_coreml_context;
 #endif  // BUILDFLAG(IS_APPLE)
 
   // Task runner used to create the context on gpu sequence.
@@ -532,17 +530,20 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       mojo::PendingRemote<mojom::WebNNContext> remote;
       auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
-      WebNNContextImplPtr context_impl = coreml::ContextImplCoreml::Create(
-          std::move(receiver), AsWeakPtr(), std::move(options),
-          std::move(gpu_task_scheduler), memory_tracker, owning_task_runner,
-          shared_image_manager_, main_thread_task_runner_,
-          /*model_loader_receiver=*/mojo::NullReceiver());
-      OnCreateWebNNContextImpl(std::move(callback), std::move(remote),
-                               mojo::ScopedDataPipeProducerHandle(),
-                               mojo::ScopedDataPipeConsumerHandle(),
-                               sequence_id, command_buffer_id,
-                               /*compiler_context_remote=*/mojo::NullRemote(),
-                               std::move(context_impl));
+      owning_task_runner->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&coreml::ContextImplCoreml::Create,
+                         std::move(receiver), AsWeakPtr(), std::move(options),
+                         std::move(gpu_task_scheduler),
+                         std::move(memory_tracker), owning_task_runner,
+                         shared_image_manager_.get(), main_thread_task_runner_,
+                         /*model_loader_receiver=*/mojo::NullReceiver()),
+          base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
+                         AsWeakPtr(), std::move(callback), std::move(remote),
+                         mojo::ScopedDataPipeProducerHandle(),
+                         mojo::ScopedDataPipeConsumerHandle(), sequence_id,
+                         command_buffer_id,
+                         /*compiler_context_remote=*/mojo::NullRemote()));
       return;
     }
   }
@@ -1000,17 +1001,18 @@ void WebNNContextProviderImpl::OnCoreMLCompilerContextRequested(
   mojo::PendingRemote<mojom::WebNNContext> remote;
   auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
-  WebNNContextImplPtr context_impl = coreml::ContextImplCoreml::Create(
-      std::move(receiver), AsWeakPtr(), std::move(options),
-      std::move(gpu_task_scheduler), memory_tracker, task_runner,
-      shared_image_manager_, main_thread_task_runner_,
-      std::move(model_loader_receiver));
-
-  OnCreateWebNNContextImpl(
-      std::move(callback), std::move(remote),
-      mojo::ScopedDataPipeProducerHandle(),
-      mojo::ScopedDataPipeConsumerHandle(), sequence_id, command_buffer_id,
-      std::move(compiler_context_remote), std::move(context_impl));
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &coreml::ContextImplCoreml::Create, std::move(receiver), AsWeakPtr(),
+          std::move(options), std::move(gpu_task_scheduler),
+          std::move(memory_tracker), task_runner, shared_image_manager_.get(),
+          main_thread_task_runner_, std::move(model_loader_receiver)),
+      base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
+                     AsWeakPtr(), std::move(callback), std::move(remote),
+                     mojo::ScopedDataPipeProducerHandle(),
+                     mojo::ScopedDataPipeConsumerHandle(), sequence_id,
+                     command_buffer_id, std::move(compiler_context_remote)));
 }
 #endif  // BUILDFLAG(IS_APPLE)
 

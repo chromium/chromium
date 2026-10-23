@@ -5,13 +5,14 @@
 #ifndef SERVICES_WEBNN_COREML_TENSOR_IMPL_COREML_H_
 #define SERVICES_WEBNN_COREML_TENSOR_IMPL_COREML_H_
 
+#import <CoreML/CoreML.h>
+
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_tensor_impl.h"
 
 namespace webnn {
@@ -19,8 +20,6 @@ namespace webnn {
 class WebNNContextImpl;
 
 namespace coreml {
-
-class BufferContent;
 
 class TensorImplCoreml final : public WebNNTensorImpl {
  public:
@@ -35,13 +34,12 @@ class TensorImplCoreml final : public WebNNTensorImpl {
       mojom::TensorInfoPtr tensor_info,
       RepresentationPtr representation);
 
-  TensorImplCoreml(
-      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      WebNNContextImpl& context,
-      mojom::TensorInfoPtr tensor_info,
-      scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-      RepresentationPtr representation,
-      base::PassKey<TensorImplCoreml> pass_key);
+  TensorImplCoreml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                   WebNNContextImpl& context,
+                   mojom::TensorInfoPtr tensor_info,
+                   MLMultiArray* multi_array,
+                   RepresentationPtr representation,
+                   base::PassKey<TensorImplCoreml> pass_key);
 
   TensorImplCoreml(const TensorImplCoreml&) = delete;
   TensorImplCoreml& operator=(const TensorImplCoreml&) = delete;
@@ -52,20 +50,12 @@ class TensorImplCoreml final : public WebNNTensorImpl {
   bool ImportTensorImpl(ScopedAccessPtr access) override;
   void ExportTensorImpl(ScopedAccessPtr access) override;
 
-  const scoped_refptr<QueueableResourceState<BufferContent>>& GetBufferState()
-      const;
-
-  // mojom::WebNNTensor
-  void ExportTensor(uint64_t flow_id, uint64_t release_count) override;
-  void ExportTensorSync(uint64_t flow_id,
-                        uint64_t release_count,
-                        ExportTensorSyncCallback callback) override;
+  MLFeatureValue* AsFeatureValue() const;
 
  private:
   ~TensorImplCoreml() override;
 
-  scoped_refptr<QueueableResourceState<BufferContent>> buffer_state_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  MLMultiArray* __strong multi_array_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace coreml

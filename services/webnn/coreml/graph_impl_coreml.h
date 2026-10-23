@@ -22,7 +22,6 @@
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
-#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
@@ -61,31 +60,18 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
       WebNNContextImpl::CreateGraphImplCallback callback);
 
   struct Params;
-  GraphImplCoreml(WebNNContextImpl& context, std::unique_ptr<Params> params);
+  GraphImplCoreml(
+      WebNNContextImpl& context,
+      ComputeResourceInfo compute_resource_info,
+      base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+      MLModel* ml_model,
+      std::vector<mojom::Device> devices);
 
   GraphImplCoreml(const GraphImplCoreml&) = delete;
   GraphImplCoreml& operator=(const GraphImplCoreml&) = delete;
 
  private:
   ~GraphImplCoreml() override;
-
-  // Additional information about the model input that is required
-  // for the CoreML backend.
-  struct CoreMLFeatureInfo {
-    CoreMLFeatureInfo(MLMultiArrayDataType data_type,
-                      NSMutableArray* shape,
-                      NSMutableArray* stride,
-                      std::string_view coreml_name)
-        : data_type(data_type),
-          shape(shape),
-          stride(stride),
-          coreml_name(coreml_name) {}
-
-    MLMultiArrayDataType data_type;
-    NSMutableArray* __strong shape;
-    NSMutableArray* __strong stride;
-    std::string coreml_name;
-  };
 
   // Responsible for cleaning up disk artifacts created by the CoreML model
   // compilation process.
@@ -110,20 +96,10 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
       base::OnceCallback<void(
           base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback);
 
-  static void LoadCompiledModelOnBackgroundThread(
-      base::ScopedTempDir compiled_model_dir,
-      mojom::CreateContextOptionsPtr context_options,
-      ContextProperties context_properties,
-      base::flat_map<std::string, std::string> input_binding_names,
-      base::flat_map<std::string, std::string> output_binding_names,
-      base::OnceCallback<void(
-          base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback);
-
   // Completion handler for [MLModel compileModelAtURL:completionHandler:].
   static void OnModelCompiledOnBackgroundThread(
       base::ElapsedTimer compilation_timer,
       base::ScopedTempDir mlpackage_dir,
-      mojom::CreateContextOptionsPtr context_options,
       ComputeResourceInfo compute_resource_info,
       base::flat_map<std::string, std::string> coreml_name_to_operand_name,
       base::OnceCallback<void(
@@ -131,50 +107,39 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
       NSURL* compiled_model_url,
       NSError* error);
 
-  // Common helper to load MLModel from a compiled model URL and read compute
-  // plan. If `compute_resource_info` is `std::nullopt` (when loading a model
-  // compiled out-of-process), `context_properties` must be provided along with
-  // `input_binding_names` and `output_binding_names` so that
-  // `ComputeResourceInfo` can be reconstructed from the loaded `MLModel`
-  // metadata.
-  static void LoadModelAndReadComputePlan(
-      NSURL* compiled_model_url,
-      ScopedModelPath scoped_compiled_model_dir,
-      mojom::CreateContextOptionsPtr context_options,
-      base::flat_map<std::string, std::string> coreml_name_to_operand_name,
-      base::OnceCallback<void(
-          base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
-      std::optional<ComputeResourceInfo> compute_resource_info,
-      std::optional<ContextProperties> context_properties = std::nullopt,
-      base::flat_map<std::string, std::string> input_binding_names = {},
-      base::flat_map<std::string, std::string> output_binding_names = {});
-
-  static void ReadComputePlan(
-      std::unique_ptr<Params> params,
-      base::OnceCallback<void(
-          base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
-      ScopedModelPath temp_dir,
-      MLComputePlan* compute_plan,
-      NSError* compute_plan_error);
-
   static void DidCreateAndBuild(
       base::WeakPtr<WebNNContextImpl> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
       base::expected<std::unique_ptr<Params>, mojom::ErrorPtr> result);
 
-  // Execute the compiled platform graph asynchronously. The inputs were
-  // validated in base class so we can use them to compute directly.
+  static void ReadComputePlan(
+      base::WeakPtr<WebNNContextImpl> context,
+      WebNNContextImpl::CreateGraphImplCallback callback,
+      std::unique_ptr<Params> params,
+      MLModelConfiguration* configuration,
+      MLComputePlan* compute_plan,
+      NSError* compute_plan_error);
+
+  static void DidLoadModel(base::WeakPtr<WebNNContextImpl> context,
+                           WebNNContextImpl::CreateGraphImplCallback callback,
+                           std::unique_ptr<Params> params,
+                           std::vector<mojom::Device> devices,
+                           base::ElapsedTimer model_load_timer,
+                           MLModel* ml_model,
+                           NSError* model_load_error);
+
+  // Execute the compiled platform graph synchronously on the context sequence.
+  // The inputs were validated in base class so we can use them to compute
+  // directly.
   void DispatchImpl(
       base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
       base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs)
       override;
 
- private:
-  class ComputeResources;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
-  scoped_refptr<ComputeResources> compute_resources_;
+  const base::flat_map<std::string, std::string> coreml_name_to_operand_name_;
+  MLModel* __strong ml_model_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<GraphImplCoreml> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

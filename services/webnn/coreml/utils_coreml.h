@@ -9,30 +9,21 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 
 namespace webnn::coreml {
 
 // Reads from `multi_array` into a newly-allocated `BigBuffer` containing the
 // read bytes.
-//
-// The caller must ensure that `multi_array` remains alive until
-// `result_callback` is run.
-void COMPONENT_EXPORT(WEBNN_SERVICE) ReadFromMLMultiArray(
-    MLMultiArray* multi_array,
-    base::OnceCallback<void(mojo_base::BigBuffer)> result_callback);
+mojo_base::BigBuffer COMPONENT_EXPORT(WEBNN_SERVICE)
+    ReadFromMLMultiArray(MLMultiArray* multi_array);
 
 // Writes `bytes_to_write` into `multi_array`, overwriting any data
 // that was previously there. The length of `bytes_to_write` must exactly
 // match the number of bytes of data represented by `multi_array`.
-//
-// The caller must ensure that `multi_array` and the bytes backed by
-// `bytes_to_write` remain alive until `done_closure` is run.
 void COMPONENT_EXPORT(WEBNN_SERVICE)
     WriteToMLMultiArray(MLMultiArray* multi_array,
-                        base::span<const uint8_t> bytes_to_write,
-                        base::OnceClosure done_closure);
+                        base::span<const uint8_t> bytes_to_write);
 
 }  // namespace webnn::coreml
 

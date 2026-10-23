@@ -13,25 +13,18 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "services/webnn/coreml/buffer_content_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/error.h"
-#include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/queueable_resource_state.h"
-#include "services/webnn/resource_task.h"
 
 namespace webnn::coreml {
 
@@ -189,13 +182,9 @@ TensorImplCoreml::Create(
                                               "Failed to allocate tensor."));
   }
 
-  auto buffer_content = std::make_unique<BufferContent>(std::move(multi_array));
-  auto buffer_state =
-      base::MakeRefCounted<QueueableResourceState<BufferContent>>(
-          std::move(buffer_content));
   return base::MakeRefCounted<TensorImplCoreml>(
       std::move(receiver), context, std::move(tensor_info),
-      std::move(buffer_state),
+      std::move(multi_array),
       /*representation=*/
       RepresentationPtr{nullptr, OnTaskRunnerDeleterWithWait(nullptr)},
       base::PassKey<TensorImplCoreml>());
@@ -259,13 +248,9 @@ TensorImplCoreml::Create(
                                               "Failed to allocate tensor."));
   }
 
-  auto buffer_content = std::make_unique<BufferContent>(std::move(multi_array));
-  auto buffer_state =
-      base::MakeRefCounted<QueueableResourceState<BufferContent>>(
-          std::move(buffer_content));
   return base::MakeRefCounted<TensorImplCoreml>(
       std::move(receiver), context, std::move(tensor_info),
-      std::move(buffer_state), std::move(representation),
+      std::move(multi_array), std::move(representation),
       base::PassKey<TensorImplCoreml>());
 }
 
@@ -273,17 +258,22 @@ TensorImplCoreml::TensorImplCoreml(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl& context,
     mojom::TensorInfoPtr tensor_info,
-    scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+    MLMultiArray* multi_array,
     RepresentationPtr representation,
     base::PassKey<TensorImplCoreml> /*pass_key*/)
     : WebNNTensorImpl(std::move(receiver),
                       context,
                       std::move(tensor_info),
                       std::move(representation)),
-      buffer_state_(std::move(buffer_state)) {}
+      multi_array_(std::move(multi_array)) {}
 
 TensorImplCoreml::~TensorImplCoreml() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+MLFeatureValue* TensorImplCoreml::AsFeatureValue() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return [MLFeatureValue featureValueWithMultiArray:multi_array_];
 }
 
 void TensorImplCoreml::ReadTensorImpl(
@@ -291,87 +281,25 @@ void TensorImplCoreml::ReadTensorImpl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplCoreml::ReadTensorImpl");
+  scoped_trace.AddStep("Begin read");
+  mojo_base::BigBuffer output_buffer = ReadFromMLMultiArray(multi_array_);
+  scoped_trace.AddStep("End read");
 
-  // Lock the buffer contents as shared/read-only.
-  std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources = {
-      buffer_state_};
-
-  scoped_trace.AddStep("Wait for tensor");
-  auto task = base::MakeRefCounted<ResourceTask>(
-      std::move(shared_resources),
-      /*exclusive_resources=*/
-      std::vector<scoped_refptr<QueueableResourceStateBase>>(),
-      base::BindOnce(
-          [](scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-             ReadTensorCallback read_tensor_result_callback,
-             ScopedTrace scoped_trace, base::OnceClosure completion_closure) {
-            scoped_trace.AddStep("Begin read");
-
-            // Read from the underlying buffer contents, which are kept alive
-            // until `completion_closure` is run.
-            buffer_state->GetSharedLockedResource().Read(base::BindOnce(
-                [](base::OnceClosure completion_closure,
-                   ReadTensorCallback read_tensor_result_callback,
-                   ScopedTrace scoped_trace,
-                   mojo_base::BigBuffer output_buffer) {
-                  scoped_trace.AddStep("End read");
-                  // Unlock the buffer contents.
-                  std::move(completion_closure).Run();
-
-                  std::move(read_tensor_result_callback)
-                      .Run(mojom::ReadTensorResult::NewBuffer(
-                          std::move(output_buffer)));
-                },
-                std::move(completion_closure),
-                std::move(read_tensor_result_callback),
-                std::move(scoped_trace)));
-          },
-          buffer_state_, std::move(callback), std::move(scoped_trace)));
-  task->Enqueue();
+  std::move(callback).Run(
+      mojom::ReadTensorResult::NewBuffer(std::move(output_buffer)));
 }
 
 void TensorImplCoreml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplCoreml::WriteTensorImpl");
-
-  // Take an exclusive lock to the buffer contents while writing.
-  std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {
-      buffer_state_};
-
-  scoped_trace.AddStep("Wait for tensor");
-  auto task = base::MakeRefCounted<ResourceTask>(
-      /*shared_resources=*/
-      std::vector<scoped_refptr<QueueableResourceStateBase>>(),
-      std::move(exclusive_resources),
-      base::BindOnce(
-          [](scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-             mojo_base::BigBuffer src_buffer, ScopedTrace scoped_trace,
-             base::OnceClosure completion_closure) {
-            scoped_trace.AddStep("Begin write");
-            // Write to the underlying buffer contents, which are kept alive
-            // until `completion_closure` is run.
-            buffer_state->GetExclusivelyLockedResource()->Write(
-                src_buffer,
-                base::BindOnce(
-                    [](base::OnceClosure completion_closure,
-                       ScopedTrace scoped_trace) {
-                      scoped_trace.AddStep("End write");
-                      std::move(completion_closure).Run();
-                    },
-                    std::move(completion_closure), std::move(scoped_trace)));
-          },
-          buffer_state_, std::move(src_buffer), std::move(scoped_trace)));
-  task->Enqueue();
-}
-
-const scoped_refptr<QueueableResourceState<BufferContent>>&
-TensorImplCoreml::GetBufferState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return buffer_state_;
+  scoped_trace.AddStep("Begin write");
+  WriteToMLMultiArray(multi_array_, src_buffer);
+  scoped_trace.AddStep("End write");
 }
 
 bool TensorImplCoreml::ImportTensorImpl(ScopedAccessPtr access) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   representation_access_ = std::move(access);
 
   // Always true since CoreML requires no device synchronization.
@@ -379,92 +307,10 @@ bool TensorImplCoreml::ImportTensorImpl(ScopedAccessPtr access) {
 }
 
 void TensorImplCoreml::ExportTensorImpl(ScopedAccessPtr access) {
-  // Not reachable because we override `ExportTensor`.
-  NOTREACHED();
-}
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-void TensorImplCoreml::ExportTensor(uint64_t flow_id, uint64_t release_count) {
-  // Since we currently depend on `ResourceTask`, we can't support the
-  // asynchronous `ExportTensor`.
-  NOTIMPLEMENTED();
-}
-
-void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
-                                        uint64_t release_count,
-                                        ExportTensorSyncCallback callback) {
-  ScopedTrace scoped_trace("TensorImplCoreml::ExportTensorSync");
-
-  if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
-    return;
-  }
-
-  if (!context_->gpu_task_scheduler()) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
-    return;
-  }
-
-  gpu::SyncToken release;
-  if (release_count != 0) {
-    release = gpu::SyncToken(
-        context_->gpu_task_scheduler()->namespace_id(),
-        context_->gpu_task_scheduler()->command_buffer_id(), release_count);
-  }
-
-  // Ensure the Mojo callback is posted back to the task runner. Running
-  // it directly on the GPU sequence can violate Mojo's sequence checks,
-  // even if executing on the same thread.
-  auto mojo_callback_wrapper = WrapCallbackOnMojoSequence(base::BindOnce(
-      [](ExportTensorSyncCallback callback, ScopedTrace scoped_trace,
-         uint64_t flow_id) {
-        TRACE_EVENT("webnn", "TensorImplCoreml::ExportTensorSync",
-                    perfetto::TerminatingFlow::Global(flow_id));
-        std::move(callback).Run();
-      },
-      std::move(callback), std::move(scoped_trace), flow_id));
-
-  context_->RunOrScheduleTask(base::BindOnce(
-      [](TensorImplCoreml* self, base::OnceCallback<void()> callback,
-         mojo::ReportBadMessageCallback bad_message_cb,
-         gpu::SyncToken release) {
-        if (self->is_exported()) {
-          LOG(ERROR)
-              << "[WebNN] ExportTensorSync called on already exported tensor.";
-          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
-          return;
-        }
-
-        // End WebNN access which makes the tensor be exported.
-        self->representation_access_.reset();
-
-        // Take an exclusive lock to the buffer contents to wait for all
-        // existing operations to finish.
-        std::vector<scoped_refptr<QueueableResourceStateBase>>
-            exclusive_resources = {self->GetBufferState()};
-
-        auto task = base::MakeRefCounted<ResourceTask>(
-            /*shared_resources=*/
-            std::vector<scoped_refptr<QueueableResourceStateBase>>(),
-            std::move(exclusive_resources),
-            base::BindOnce(
-                [](base::WeakPtr<WebNNContextImpl> context,
-                   base::OnceCallback<void()> callback, gpu::SyncToken release,
-                   base::OnceClosure completion_closure) {
-                  std::move(completion_closure).Run();
-                  if (!context) {
-                    return;
-                  }
-
-                  // Schedule a task first to ensure export waits until
-                  // ResourceTask completes.
-                  context->RunOrScheduleTask(base::DoNothing(), {}, release);
-                  std::move(callback).Run();
-                },
-                self->context_->AsWeakPtr(), std::move(callback), release));
-        task->Enqueue();
-      },
-      base::RetainedRef(this), std::move(mojo_callback_wrapper),
-      GetBadMessageCallbackOnMojoSequence(), release));
+  // Since we wait for all WebNN operations to complete, we only need to release
+  // the ScopedAccess to end WebNN access.
 }
 
 }  // namespace webnn::coreml
