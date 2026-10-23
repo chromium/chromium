@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
@@ -1083,6 +1084,49 @@ TEST_P(StorageQueueTest,
   SetExpectedUploadsCount();
   task_environment_.FastForwardBy(base::Seconds(1));
 }
+
+TEST_P(StorageQueueTest, LegacyQueueWipeOnDataLoss) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEraseLegacyQueueOnDataLoss);
+
+  // Set directory to mimic a legacy queue without a GUID extension.
+  options_.set_directory(
+      base::FilePath(location_.GetPath()).AppendASCII("LegacyFolder"));
+
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+
+  // Save copy of options.
+  const QueueOptions options = storage_queue_->options();
+  ResetTestStorageQueue();
+
+  // Delete all metadata files.
+  EnsureDeletingFiles(options.directory(),
+                      /*recursive=*/false, base::FileEnumerator::FILES,
+                      base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
+
+  // Reopen, triggering a forced legacy reset.
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+
+  WriteStringOrDie(kMoreData[0]);
+
+  // Set uploader expectations. Previous data is all lost.
+  test::TestCallbackAutoWaiter waiter;
+  EXPECT_CALL(set_mock_uploader_expectations_,
+              Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
+            .Required(0, kMoreData[0])
+            .Complete();
+      })
+      .RetiresOnSaturation();
+
+  // Trigger upload.
+  SetExpectedUploadsCount();
+  task_environment_.FastForwardBy(base::Seconds(1));
+}
+
 
 TEST_P(
     StorageQueueTest,
