@@ -10800,6 +10800,155 @@ TEST_F(AIPageContentAgentTestZOrder, HitTestElementsAnchorWithSpanParent) {
             9);
 }
 
+TEST_F(AIPageContentAgentTestZOrder, CulledInlineWithSelfPaintingChild) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <style>
+        .rel { position: relative; }
+      </style>
+      <body>
+        <span id="btn" role="button" tabindex="0" aria-label="Button" style="cursor:pointer">
+          <span class="rel">
+            <svg width="14" height="14" viewBox="0 0 24 24">
+              <path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"></path>
+            </svg>
+          </span>
+        </span>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = *Content()->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& html = *root.children_nodes.at(0);
+  ASSERT_EQ(html.children_nodes.size(), 1u);
+  const auto& body = *html.children_nodes.at(0);
+  ASSERT_EQ(body.children_nodes.size(), 1u);
+
+  // The culled inline button must receive a document_scoped_z_order lower than
+  // its self-painting child, matching paint order.
+  const auto& btn = *body.children_nodes.at(0);
+  ASSERT_TRUE(btn.content_attributes->node_interaction_info);
+  ASSERT_TRUE(btn.content_attributes->node_interaction_info
+                  ->document_scoped_z_order.has_value());
+
+  const auto& inner_span = *btn.children_nodes.at(0);
+  ASSERT_TRUE(inner_span.content_attributes->node_interaction_info);
+  ASSERT_TRUE(inner_span.content_attributes->node_interaction_info
+                  ->document_scoped_z_order.has_value());
+
+  EXPECT_LT(
+      *btn.content_attributes->node_interaction_info->document_scoped_z_order,
+      *inner_span.content_attributes->node_interaction_info
+           ->document_scoped_z_order);
+}
+
+TEST_F(AIPageContentAgentTestZOrder, CulledInlineThroughDisplayContents) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body>
+        <a href="https://example.com">
+          <span style="display: contents">
+            <span style="position: relative">Link</span>
+          </span>
+        </a>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = *Content()->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& html = *root.children_nodes.at(0);
+  ASSERT_EQ(html.children_nodes.size(), 1u);
+  const auto& body = *html.children_nodes.at(0);
+  ASSERT_EQ(body.children_nodes.size(), 1u);
+
+  // The display: contents span has no layout object, so the anchor must be
+  // found through the layout tree rather than the DOM.
+  const auto& anchor = *body.children_nodes.at(0);
+  ASSERT_TRUE(anchor.content_attributes->node_interaction_info);
+  ASSERT_TRUE(anchor.content_attributes->node_interaction_info
+                  ->document_scoped_z_order.has_value());
+
+  const auto& inner_span = *anchor.children_nodes.at(0);
+  ASSERT_TRUE(inner_span.content_attributes->node_interaction_info);
+  EXPECT_LT(*anchor.content_attributes->node_interaction_info
+                 ->document_scoped_z_order,
+            *inner_span.content_attributes->node_interaction_info
+                 ->document_scoped_z_order);
+}
+
+TEST_F(AIPageContentAgentTestZOrder, CulledInlinePointerEventsNone) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body>
+        <a href="https://example.com" style="pointer-events: none">
+          <span style="position: relative; pointer-events: auto">Link</span>
+        </a>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = *Content()->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& html = *root.children_nodes.at(0);
+  ASSERT_EQ(html.children_nodes.size(), 1u);
+  const auto& body = *html.children_nodes.at(0);
+  ASSERT_EQ(body.children_nodes.size(), 1u);
+
+  // The anchor has pointer-events: none, so it must not receive z-order
+  // or interaction info even though its child is hit-testable.
+  const auto& anchor = *body.children_nodes.at(0);
+  EXPECT_FALSE(anchor.content_attributes->node_interaction_info);
+
+  const auto& inner_span = *anchor.children_nodes.at(0);
+  ASSERT_TRUE(inner_span.content_attributes->node_interaction_info);
+  EXPECT_TRUE(inner_span.content_attributes->node_interaction_info
+                  ->document_scoped_z_order.has_value());
+}
+
+TEST_F(AIPageContentAgentTestZOrder, CulledInlineVisibilityHidden) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body>
+        <a href="https://example.com" style="visibility: hidden">
+          <span style="position: relative; visibility: visible">Link</span>
+        </a>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = *Content()->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& html = *root.children_nodes.at(0);
+  ASSERT_EQ(html.children_nodes.size(), 1u);
+  const auto& body = *html.children_nodes.at(0);
+  ASSERT_EQ(body.children_nodes.size(), 1u);
+
+  // The anchor has visibility: hidden, so it must not receive z-order.
+  const auto& anchor = *body.children_nodes.at(0);
+  ASSERT_TRUE(anchor.content_attributes->node_interaction_info);
+  EXPECT_FALSE(anchor.content_attributes->node_interaction_info
+                   ->document_scoped_z_order.has_value());
+
+  const auto& inner_span = *anchor.children_nodes.at(0);
+  ASSERT_TRUE(inner_span.content_attributes->node_interaction_info);
+  EXPECT_TRUE(inner_span.content_attributes->node_interaction_info
+                  ->document_scoped_z_order.has_value());
+}
+
 TEST_F(AIPageContentAgentTest, LinkWithOverflowGeometry) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
