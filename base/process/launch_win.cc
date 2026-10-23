@@ -142,6 +142,11 @@ bool GetAppOutputInternal(
       // The process ended, so continue reading as long as there is data
       // available.
     }
+
+    // Callers may poll the child here, so call this even without output.
+    if (!process_exited) {
+      still_waiting(process, {});
+    }
   } while (!process_exited && (timer.Elapsed() < timeout));
 
   if (final_status) {

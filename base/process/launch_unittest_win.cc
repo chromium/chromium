@@ -137,6 +137,32 @@ TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_NoOutput) {
   ASSERT_EQ(final_status, TERMINATION_STATUS_NORMAL_TERMINATION);
 }
 
+TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_NoOutputLongRunning) {
+  // Runs for about 3 seconds.
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("cmd")));
+  cl.AppendArg("/q");
+  cl.AppendArg("/c");
+  cl.AppendArg("ping -n 4 127.0.0.1 > nul");
+  std::string output;
+  int exit_code = 0;
+  TerminationStatus final_status = TERMINATION_STATUS_MAX_ENUM;
+  int count = 0;
+  base::LaunchOptions options;
+  options.start_hidden = true;
+  ASSERT_TRUE(GetAppOutputWithExitCodeAndTimeout(
+      cl.GetCommandLineString(), true, &output, &exit_code, TimeDelta::Max(),
+      options,
+      [&](const Process& process, std::string_view partial_output) {
+        ASSERT_TRUE(process.IsValid());
+        ASSERT_TRUE(partial_output.empty());
+        ++count;
+      },
+      &final_status));
+  ASSERT_GE(count, 3);
+  ASSERT_EQ(output, "");
+  ASSERT_EQ(final_status, TERMINATION_STATUS_NORMAL_TERMINATION);
+}
+
 TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_StreamingOutput) {
   CommandLine cl(FilePath(FILE_PATH_LITERAL("powershell")));
   cl.AppendArg("-command");
