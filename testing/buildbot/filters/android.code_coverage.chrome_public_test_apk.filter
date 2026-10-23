@@ -5,3 +5,7 @@
 # (FILE_MOVE_FAILED) on this configuration.
 -org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testDownloadPage
 -org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testSharePublicOfflinePage
+
+# crbug.com/40808869, crbug.com/345352689: Feed scroll restoration after back
+# gesture times out under Java coverage instrumentation (already disabled > Q).
+-org.chromium.chrome.browser.feed.FeedV2NewTabPageTest.testNavigateBackToNTPWithFeeds
