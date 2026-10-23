@@ -7,10 +7,10 @@
   ],
   children: [
     {
-      // Run an isolated instance of codec_factory so that tests can run on
+      // Run an isolated instance of codec_factory_for_test so that tests can run on
       // system images that don't run it.
       name: "isolated_codec_factory",
-      url: "fuchsia-pkg://fuchsia.com/codec_factory#meta/codec_factory.cm",
+      url: "fuchsia-pkg://fuchsia.com/codec_factory_for_test#meta/codec_factory.cm",
     },
   ],
   offer: [
@@ -47,7 +47,7 @@
   ],
   facets: {
     "fuchsia.test": {
-        "deprecated-allowed-packages": [ "codec_factory" ],
+        "deprecated-allowed-packages": [ "codec_factory_for_test" ],
     },
   },
 }
