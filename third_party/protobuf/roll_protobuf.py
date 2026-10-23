@@ -35,8 +35,10 @@ import filecmp
 import functools
 import json
 import os
+import pathlib
 import posixpath
 import re
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -1063,6 +1065,197 @@ def FormatRollPlanReport(roll_plan: RollPlan) -> str:
             check_file_lists.FormatFileListsDiffReport(
                 roll_plan.file_lists_diff))
     return '\n'.join(lines)
+
+
+@dataclasses.dataclass(frozen=True)
+class _CheckoutPaths:
+    protobuf_directory: str
+    repository_root: str
+    # POSIX path of protobuf_directory in repository_root, or '' at the root.
+    protobuf_prefix: str
+    roll_state_directory: str
+    state_file_path: str
+    chain_directory: str
+
+
+def _ResolveCheckoutPaths(protobuf_directory: str) -> _CheckoutPaths:
+    protobuf_directory = os.path.abspath(protobuf_directory)
+    process = _RunGit([
+        'git', '-C', protobuf_directory, 'rev-parse', '--show-toplevel',
+        '--absolute-git-dir', '--show-prefix'
+    ],
+                      accepted_return_codes=None)
+    if process.returncode != 0:
+        raise RollProtobufError(
+            f'{protobuf_directory} is not inside a git working tree.')
+    repository_root, git_directory, prefix = (
+        line.rstrip('\r') for line in process.stdout.decode().split('\n')[:3])
+    roll_state_directory = os.path.join(git_directory, 'protobuf-roll')
+    return _CheckoutPaths(
+        protobuf_directory,
+        repository_root,
+        prefix.rstrip('/'),
+        roll_state_directory,
+        os.path.join(roll_state_directory, 'state.json'),
+        os.path.join(roll_state_directory, 'chain'),
+    )
+
+
+_ROLL_STATE_SCALAR_KEYS = (
+    'phase',
+    'start_commit',
+    'expected_head',
+    'old_revision',
+    'new_revision',
+    'new_commit',
+    'copied_blob_count',
+    'current_index',
+)
+
+
+@dataclasses.dataclass(frozen=True)
+class RollState:
+    """Saved state of an in-progress roll under GITDIR/protobuf-roll/."""
+
+    phase: str  # 'prepared', 'conflict', or 'replayed'.
+    start_commit: str  # HEAD before the roll modified the branch.
+    expected_head: str  # HEAD most recently written by the script.
+    old_revision: str
+    new_revision: str
+    new_commit: str
+    copied_blob_count: int
+    current_index: int  # 0-based index into patches.
+    patches: tuple[ChainPatch, ...]
+    conflict_files: tuple[str, ...] = ()
+    patch_results: tuple[PatchReplayResult, ...] = ()
+
+    def ToDictionary(self) -> dict[str, object]:
+        return {
+            **{
+                key: getattr(self, key)
+                for key in _ROLL_STATE_SCALAR_KEYS
+            },
+            'conflict_files':
+            list(self.conflict_files),
+            'patches': [{
+                'patch': patch.patch_name,
+                'preimage_blobs': patch.preimage_blobs,
+                'changed_lines_before': patch.changed_line_count,
+            } for patch in self.patches],
+            'patch_results':
+            [result.ToDictionary() for result in self.patch_results],
+        }
+
+
+def _SaveRollState(checkout: _CheckoutPaths, state: RollState) -> None:
+    os.makedirs(checkout.roll_state_directory, exist_ok=True)
+    pathlib.Path(checkout.state_file_path).write_text(
+        json.dumps(state.ToDictionary(), indent=2) + '\n',
+        encoding='utf-8',
+        newline='\n')
+
+
+def LoadRollState(
+        protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState | None:
+    """Loads GITDIR/protobuf-roll/state.json and chain/*.patch, or None."""
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if not os.path.isfile(checkout.state_file_path):
+        return None
+    try:
+        raw = json.loads(
+            pathlib.Path(checkout.state_file_path).read_text(encoding='utf-8'))
+        patches = tuple(
+            ChainPatch(
+                entry['patch'],
+                pathlib.Path(checkout.chain_directory,
+                             entry['patch']).read_bytes(),
+                dict(entry['preimage_blobs']),
+                entry['changed_lines_before'],
+            ) for entry in raw['patches'])
+        patch_results = tuple(
+            PatchReplayResult(
+                entry['patch'],
+                PatchReplayStatus(entry['status']),
+                entry['changed_lines_before'],
+                entry['changed_lines_after'],
+                tuple(
+                    ConflictedFile(item['path'], item['conflict_regions'])
+                    for item in entry['conflicted_files']),
+                tuple(entry['missing_files']),
+                entry['error'],
+            ) for entry in raw.get('patch_results', ()))
+        return RollState(**{key: raw[key]
+                            for key in _ROLL_STATE_SCALAR_KEYS},
+                         patches=patches,
+                         conflict_files=tuple(raw.get('conflict_files', ())),
+                         patch_results=patch_results)
+    except (json.JSONDecodeError, KeyError, OSError, TypeError,
+            ValueError) as error:
+        raise RollProtobufError(
+            f'Corrupt roll state in {checkout.state_file_path}: {error}'
+        ) from error
+
+
+def PrepareRoll(to_revision: str,
+                protobuf_directory: str = _PROTOBUF_DIRECTORY,
+                upstream_repository_path: str | None = None,
+                cache_directory: str | None = None,
+                build_directory: str | None = None,
+                upstream_url: str = UPSTREAM_REPOSITORY_URL) -> RollState:
+    """Prepares GITDIR/protobuf-roll/ without changing the working tree.
+
+    Builds the patch chain on README.chromium's Revision, copies missing
+    preimage blobs into the checkout's object store, and writes
+    chain/*.patch and state.json under GITDIR/protobuf-roll/.
+    """
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    existing_state = LoadRollState(checkout.protobuf_directory)
+    if existing_state is not None and existing_state.phase != 'prepared':
+        raise RollProtobufError(
+            f'A roll to {existing_state.new_revision} is already in '
+            f'progress (phase: {existing_state.phase}); run '
+            '`roll_protobuf.py status` or `roll_protobuf.py abort` first.')
+    upstream_arguments = (upstream_repository_path, cache_directory,
+                          build_directory, upstream_url)
+    old_revision = ReadReadmeRevision(checkout.protobuf_directory)
+    repository_path, old_commit = EnsureUpstreamCommitCached(
+        old_revision, *upstream_arguments)
+    _, new_commit = EnsureUpstreamCommitCached(to_revision,
+                                               *upstream_arguments)
+    head_commit = _RunScratchGit(checkout.repository_root, 'rev-parse',
+                                 'HEAD').stdout.decode().strip()
+    with tempfile.TemporaryDirectory(
+            prefix='protobuf_roll_prepare_') as temporary_directory:
+        patch_chain = BuildPatchChain(
+            repository_path, old_commit,
+            ListTopLevelPatchPaths(checkout.protobuf_directory),
+            os.path.join(temporary_directory, 'chain'))
+        all_preimage_blobs = (blob_id for patch in patch_chain.patches
+                              for blob_id in patch.preimage_blobs.values())
+        copied_blobs = CopyPreimageBlobs(patch_chain.repository_directory,
+                                         checkout.repository_root,
+                                         all_preimage_blobs)
+    prior_copied_count = (existing_state.copied_blob_count if existing_state
+                          and existing_state.old_revision == old_revision else
+                          0)
+    shutil.rmtree(checkout.roll_state_directory, ignore_errors=True)
+    os.makedirs(checkout.chain_directory, exist_ok=True)
+    for chain_patch in patch_chain.patches:
+        pathlib.Path(checkout.chain_directory,
+                     chain_patch.patch_name).write_bytes(chain_patch.diff)
+    state = RollState(
+        phase='prepared',
+        start_commit=head_commit,
+        expected_head=head_commit,
+        old_revision=old_revision,
+        new_revision=to_revision,
+        new_commit=new_commit,
+        copied_blob_count=prior_copied_count + len(copied_blobs),
+        current_index=0,
+        patches=patch_chain.patches,
+    )
+    _SaveRollState(checkout, state)
+    return state
 
 
 def main(command_line_arguments: Sequence[str] | None = None) -> int:
