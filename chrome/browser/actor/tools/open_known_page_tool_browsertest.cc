@@ -31,10 +31,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_info.h"
-#endif
-
 namespace actor {
 
 namespace {
@@ -49,13 +45,6 @@ class ActorOpenKnownPageToolBrowserTest : public ActorToolsTest {
   ~ActorOpenKnownPageToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/517619366): Decouple test from Glic eligibility criteria.
-    if (base::android::android_info::sdk_int() <
-        base::android::android_info::SDK_VERSION_S) {
-      GTEST_SKIP() << "Actor requires Android S+ to run";
-    }
-#endif
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());

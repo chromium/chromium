@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/password_manager/actor_login/chrome_actor_login_delegate_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -217,6 +218,14 @@ ActorToolsTest::ActorToolsTest() {
 }
 
 ActorToolsTest::~ActorToolsTest() = default;
+
+void ActorToolsTest::SetUp() {
+  // TODO(crbug.com/517619366): Decouple tests from Glic eligibility criteria.
+  if (!glic::GlicEnabling::IsOsVersionSupported()) {
+    GTEST_SKIP() << "OS version not supported by Glic";
+  }
+  PlatformBrowserTest::SetUp();
+}
 
 void ActorToolsTest::SetUpOnMainThread() {
   PlatformBrowserTest::SetUpOnMainThread();

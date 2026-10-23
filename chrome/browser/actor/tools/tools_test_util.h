@@ -201,6 +201,9 @@ class ActorToolsTest : public PlatformBrowserTest {
   ActorToolsTest& operator=(const ActorToolsTest&) = delete;
   ~ActorToolsTest() override;
 
+  // Skips the test, before the browser is launched, on OS versions where
+  // actor isn't supported.
+  void SetUp() override;
   void SetUpOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void TearDownOnMainThread() override;

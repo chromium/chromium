@@ -49,7 +49,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/ui_test_utils.h"
 #else
-#include "base/android/android_info.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif
@@ -179,14 +178,6 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
   }
 
   void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/517620110): Decouple test from Glic eligibility criteria.
-    if (base::android::android_info::sdk_int() <
-        base::android::android_info::SDK_VERSION_S) {
-      GTEST_SKIP() << "Actor requires Android S+ to run";
-    }
-#endif
-
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_https_test_server().Start());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -923,12 +914,6 @@ class ActorAttemptLoginToolTestWithFaviconService
 
   void SetUpOnMainThread() override {
     ActorAttemptLoginToolTest::SetUpOnMainThread();
-#if BUILDFLAG(IS_ANDROID)
-    if (base::android::android_info::sdk_int() <
-        base::android::android_info::SDK_VERSION_S) {
-      return;
-    }
-#endif
     ON_CALL(mock_execution_engine(), GetFaviconService())
         .WillByDefault(Return(&mock_favicon_service_));
 
