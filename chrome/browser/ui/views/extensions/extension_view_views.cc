@@ -28,6 +28,7 @@ ExtensionViewViews::ExtensionViewViews(Profile* profile,
           &ExtensionViewViews::OnWebContentsAttached, base::Unretained(this)));
   host_->set_view(this);
   SetWebContents(host_->web_contents());
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 }
 
 ExtensionViewViews::~ExtensionViewViews() {
@@ -121,8 +122,7 @@ void ExtensionViewViews::RenderFrameCreated(
 bool ExtensionViewViews::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
+  return WebView::HandleKeyboardEvent(source, event);
 }
 
 void ExtensionViewViews::OnLoaded() {

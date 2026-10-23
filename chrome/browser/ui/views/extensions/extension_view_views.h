@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/extension_view.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
 class Profile;
@@ -91,10 +90,6 @@ class ExtensionViewViews : public views::WebView,
   // The container this view is in (not necessarily its direct superview).
   // Note: the view does not own its container.
   raw_ptr<Container> container_ = nullptr;
-
-  // A handler to handle unhandled keyboard messages coming back from the
-  // renderer process.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // The associated observers.
   base::ObserverList<Observer> observers_;
