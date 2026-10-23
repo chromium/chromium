@@ -423,7 +423,10 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
 
   // Deliver the frame when it doesn't arrive too early.
   if (ThrottleFrame(current_time)) {
-    client_->OnFrameDropped(VideoCaptureFrameDropReason::kAndroidThrottling);
+    base::AutoLock lock(lock_);
+    if (client_) {
+      client_->OnFrameDropped(VideoCaptureFrameDropReason::kAndroidThrottling);
+    }
     return;
   }
 
@@ -480,7 +483,10 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
 
   // Deliver the frame when it doesn't arrive too early.
   if (ThrottleFrame(current_time)) {
-    client_->OnFrameDropped(VideoCaptureFrameDropReason::kAndroidThrottling);
+    base::AutoLock lock(lock_);
+    if (client_) {
+      client_->OnFrameDropped(VideoCaptureFrameDropReason::kAndroidThrottling);
+    }
     return;
   }
 
@@ -849,6 +855,7 @@ void VideoCaptureDeviceAndroid::OnPhotoTaken(
 }
 
 void VideoCaptureDeviceAndroid::OnStarted(JNIEnv* env) {
+  base::AutoLock lock(lock_);
   if (client_)
     client_->OnStarted();
 }
@@ -878,6 +885,7 @@ bool VideoCaptureDeviceAndroid::IsClientConfigured() {
 }
 
 bool VideoCaptureDeviceAndroid::ThrottleFrame(base::TimeTicks current_time) {
+  base::AutoLock lock(lock_);
   if (expected_next_frame_time_ > current_time)
     return true;
   expected_next_frame_time_ += frame_interval_;

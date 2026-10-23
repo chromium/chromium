@@ -221,24 +221,27 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid
   // Thread on which we are created.
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
-  // |lock_| protects |state_|, |client_|, |got_first_frame_| and
-  // |photo_requests_queue_| from concurrent access.
+  // |lock_| protects |state_|, |client_|, |got_first_frame_|,
+  // |photo_requests_queue_|, and |expected_next_frame_time_| from concurrent
+  // access.
   base::Lock lock_;
-  InternalState state_ = kIdle;
-  std::unique_ptr<VideoCaptureDevice::Client> client_;
-  bool got_first_frame_ = false;
+  InternalState state_ GUARDED_BY(lock_) = kIdle;
+  std::unique_ptr<VideoCaptureDevice::Client> client_ GUARDED_BY(lock_);
+  bool got_first_frame_ GUARDED_BY(lock_) = false;
   // Photo-related requests waiting for |got_first_frame_| to be served. Android
   // APIs need the device capturing or nearly-capturing to be fully operational.
-  std::list<base::OnceClosure> photo_requests_queue_;
+  std::list<base::OnceClosure> photo_requests_queue_ GUARDED_BY(lock_);
 
-  base::TimeTicks expected_next_frame_time_;
+  base::TimeTicks expected_next_frame_time_ GUARDED_BY(lock_);
   base::TimeDelta frame_interval_;
 
   // List of callbacks for photo API in flight, being served in Java side.
   base::Lock photo_callbacks_lock_;
-  int64_t nextPhotoRequestId_ = 0;
-  base::flat_map<int64_t, GetPhotoStateCallback> get_photo_state_callbacks_;
-  base::flat_map<int64_t, TakePhotoCallback> take_photo_callbacks_;
+  int64_t nextPhotoRequestId_ GUARDED_BY(photo_callbacks_lock_) = 0;
+  base::flat_map<int64_t, GetPhotoStateCallback> get_photo_state_callbacks_
+      GUARDED_BY(photo_callbacks_lock_);
+  base::flat_map<int64_t, TakePhotoCallback> take_photo_callbacks_
+      GUARDED_BY(photo_callbacks_lock_);
 
   const VideoCaptureDeviceDescriptor device_descriptor_;
   VideoCaptureFormat capture_format_;
