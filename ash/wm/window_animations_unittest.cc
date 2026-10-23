@@ -441,7 +441,16 @@ TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedFallbackParams) {
   window->layer()->GetAnimator()->StopAnimating();
 }
 
-TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedHistograms) {
+// TODO(crbug.com/576888538): Frequently fails due to frame presentation
+// timeout.
+#if !defined(NDEBUG)
+#define MAYBE_SetBoundsDirectAnimatedHistograms \
+  DISABLED_SetBoundsDirectAnimatedHistograms
+#else
+#define MAYBE_SetBoundsDirectAnimatedHistograms \
+  SetBoundsDirectAnimatedHistograms
+#endif
+TEST_F(WindowAnimationsTest, MAYBE_SetBoundsDirectAnimatedHistograms) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kCrossFadeBoundsChangeAnimation};
 
