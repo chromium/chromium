@@ -782,6 +782,9 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
                                     IID_PPV_ARGS(&class_factory)));
 
   DWORD creation_flags = 0;
+  if (audio_decoder_config.has_value() && !video_decoder_config.has_value()) {
+    creation_flags |= MF_MEDIA_ENGINE_AUDIOONLY;
+  }
   // Enable low-latency mode if latency hint is low.
   if (latency_hint_.has_value() && (*latency_hint_ <= base::Milliseconds(50))) {
     creation_flags |= MF_MEDIA_ENGINE_REAL_TIME_MODE;
@@ -799,7 +802,9 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationSourceWrapper>(
       &mf_source_, media_resource, media_log_.get(), task_runner_, has_cdm));
 
-  std::ignore = SetDCompModeInternal();
+  if (video_decoder_config.has_value()) {
+    std::ignore = SetDCompModeInternal();
+  }
 
   // If we don't have a CDM and there is no encrypted stream, we can early out
   // and start playback immediately. This is true for pure clear playback when
