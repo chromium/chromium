@@ -41,6 +41,22 @@ constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
       /*machine_scope=*/true);
 }
 
++ (void)setNonBlockingDownloadProtectionRules {
+  PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
+  enterprise_connectors::test::SetAnalysisConnectorsPrefs(
+      prefs, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, {R"({
+        "service_provider": "google",
+        "enable": [{
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }],
+        "block_until_verdict": 0,
+        "block_password_protected": true,
+        "block_large_files": true
+      })"},
+      /*machine_scope=*/true);
+}
+
 + (void)clearDownloadProtectionRules {
   PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   prefs->ClearPref(enterprise_connectors::AnalysisConnectorPref(

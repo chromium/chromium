@@ -267,7 +267,7 @@ void BackgroundCloudScannerManager::StartScanner(
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&CloneToTemporaryDirectory, file_path),
       base::BindOnce(&OnTemporaryFileCloned, GetWeakPtr(), std::move(info), url,
                      std::move(download_proceed)));

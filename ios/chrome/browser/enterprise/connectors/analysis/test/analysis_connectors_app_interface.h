@@ -13,6 +13,9 @@
 // Sets the prefs to enable download connectors.
 + (void)setDownloadProtectionRules;
 
+// Sets the prefs to enable download connectors for non-blocking scan.
++ (void)setNonBlockingDownloadProtectionRules;
+
 // Clears all download protection rules.
 + (void)clearDownloadProtectionRules;
 

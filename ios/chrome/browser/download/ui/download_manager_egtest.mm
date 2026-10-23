@@ -126,16 +126,25 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
 }
 
 - (bool)isEnterpriseDownloadTest {
-  return [self isRunningTest:@selector
-               (testSuccessfulDownloadWhenDownloadProtectionEnabled)] ||
-         [self isRunningTest:@selector
-               (testSuccessfulDownloadScanWhenDownloadProtectionEnabled)] ||
-         [self isRunningTest:@selector
-               (testDownloadBlockWhenDownloadProtectionEnabled)] ||
-         [self isRunningTest:@selector
-               (testDownloadWarnCancelWhenDownloadProtectionEnabled)] ||
-         [self isRunningTest:@selector
-               (testDownloadWarnProceedWhenDownloadProtectionEnabled)];
+  return
+      [self
+          isRunningTest:
+              @selector(testSuccessfulDownloadWhenDownloadProtectionEnabled)] ||
+      [self isRunningTest:
+                @selector(
+                    testSuccessfulDownloadScanWhenDownloadProtectionEnabled)] ||
+      [self
+          isRunningTest:@selector(
+                            testDownloadBlockWhenDownloadProtectionEnabled)] ||
+      [self
+          isRunningTest:
+              @selector(testDownloadWarnCancelWhenDownloadProtectionEnabled)] ||
+      [self isRunningTest:
+                @selector(
+                    testDownloadWarnProceedWhenDownloadProtectionEnabled)] ||
+      [self
+          isRunningTest:@selector(
+                            testDownloadAllowForNonBlockingScanWhenDLPEnabled)];
 }
 
 - (bool)isEnterpriseDownloadAllowTest {
@@ -688,6 +697,36 @@ TAG_SMOKE_TEST(DownloadManagerTestCase, testSuccessfulDownload);
   GREYAssertEqual(_uploadServer->GetRequestCount(), 1,
                   @"Expected 1 scan request but received %d request(s)",
                   _uploadServer->GetRequestCount());
+}
+
+// Tests that download can proceed immediately while a scan request can still
+// be sent in the background for non-blocking download protection scan.
+- (void)testDownloadAllowForNonBlockingScanWhenDLPEnabled {
+  [AnalysisConnectorsAppInterface setNonBlockingDownloadProtectionRules];
+  [AnalysisConnectorsAppInterface setBrowserDMToken];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"DataURL"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"data"];
+
+  GREYAssert(WaitForDownloadButton(/*loading*/ true),
+             @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+
+  // Using a raw pointer to the `_uploadServer` to avoid implicitly capturing
+  // `self`.
+  enterprise_connectors::test::UploadRequestTestServer* uploadServer =
+      _uploadServer.get();
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kWaitForDownloadTimeout,
+                 ^{
+                   return uploadServer->GetRequestCount() == 1;
+                 }),
+             @"Expected 1 scan request but received %d request(s)",
+             _uploadServer->GetRequestCount());
 }
 
 @end

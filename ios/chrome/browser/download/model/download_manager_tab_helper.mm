@@ -364,6 +364,11 @@ void DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory(
   files_request_handler_->ReportWarningBypass(
       /* user_justification */ std::nullopt);
 
+  // Ensure the handler and content_analysis_info_ are destroyed as soon as they
+  // are no longer necessary.
+  files_request_handler_.reset();
+  content_analysis_info_.reset();
+
   [delegate_ downloadManagerTabHelperDidChangeState:this];
   base::FilePath user_download_path;
   GetDownloadsDirectory(&user_download_path);
@@ -373,11 +378,6 @@ void DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory(
       user_download_path, base_file_name,
       base::BindOnce(&DownloadManagerTabHelper::UseAvailableUserDocumentsPath,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  // Ensure the handler and content_analysis_info_ are destroyed as soon as they
-  // are no longer necessary.
-  files_request_handler_.reset();
-  content_analysis_info_.reset();
 }
 
 void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
