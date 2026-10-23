@@ -1615,7 +1615,7 @@ bool WebContentsAccessibilityBase::UpdateCachedAccessibilityNodeInfo(
   }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node) {
+  if (!node || node->IsIgnored()) {
     return false;
   }
 
@@ -2090,7 +2090,7 @@ WebContentsAccessibilityBase::GetSelectionAsTextOffsetsForNode(
     JNIEnv* env,
     int32_t unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node) {
+  if (!node || node->IsIgnored()) {
     return nullptr;
   }
 
@@ -2151,7 +2151,7 @@ bool WebContentsAccessibilityBase::PopulateAccessibilityNodeInfo(
   }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node) {
+  if (!node || node->IsIgnored()) {
     return false;
   }
 
