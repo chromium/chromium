@@ -4180,12 +4180,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_PASSPHRASE_TITLE" desc="The title of the identity error info bar when the passphrase is required. [iOS only]">
         Enter your passphrase
       </message>
-      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_ON_THIS_DEVICE" desc="The error message that explains a sync error: Passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys). [iOS only]">
-        Verify it’s you to get all your passwords on this device
-      </message>
-      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_TITLE" desc="The title of the identity error info bar when a user needs to fix an error for being able to access their passwords.">
-        Get all your passwords
-      </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE" desc="The error message in the identity error info bar related to keep using passwords. [iOS only]">
         Keep using the passwords in your Google Account
       </message>
@@ -4194,9 +4188,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_MAKE_SURE_YOU_CAN_ALWAYS_USE_PASSWORDS_MESSAGE" desc="The error message in the identity error info bar related to making sure you can always use your passwords. [iOS only]">
         Make sure you can always use the passwords in your Google Account
-      </message>
-      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_OKAY_BUTTON_LABEL" desc="Button label for the message shown in the Sync Error Card (due to missing trusted vault keys) for confirming that a user wants to get all their passwords on their device.">
-        Okay
       </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL" desc="The label of the verify your account action button in the identity error info bar. [iOS only]">
         Verify

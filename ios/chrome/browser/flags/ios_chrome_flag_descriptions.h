@@ -1948,12 +1948,6 @@ inline constexpr char kSyncThemesIosName[] = "Enable Sync Themes on iOS";
 inline constexpr char kSyncThemesIosDescription[] =
     "Enables syncing of themes across iOS devices.";
 
-inline constexpr char kSyncTrustedVaultInfobarMessageImprovementsName[] =
-    "Trusted vault infobar message improvements";
-inline constexpr char kSyncTrustedVaultInfobarMessageImprovementsDescription[] =
-    "Enables massage improvements for the UI of the trusted vault error "
-    "infobar.";
-
 inline constexpr char kSyncWalletFlightReservationsName[] =
     "Sync wallet flight reservations";
 inline constexpr char kSyncWalletFlightReservationsDescription[] =

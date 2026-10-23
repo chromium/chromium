@@ -162,13 +162,6 @@ inline constexpr base::FeatureParam<double>
 BASE_DECLARE_FEATURE(kSyncTrustedVaultErrorMessageDuration);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_IOS)
-// Enables a message improvements to the existing trusted vault error infobar
-// (informing users that fixing the error will help them to start syncing their
-// passwords).
-BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements);
-#endif  // BUILDFLAG(IS_IOS)
-
 // If enabled, the new sync dashboard URL will be opened when the user clicks
 // on the "Review your synced data" (or equivalent) entrypoint in settings.
 BASE_DECLARE_FEATURE(kSyncEnableNewSyncDashboardUrl);
