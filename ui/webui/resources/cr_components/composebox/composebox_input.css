@@ -17,6 +17,11 @@
   width: 100%;
 }
 
+:host([inline-action-buttons]) {
+  align-items: flex-start;
+  flex-direction: row;
+}
+
 #textContainer {
   display: flex;
   flex-direction: row;
@@ -24,6 +29,11 @@
   padding-block-end: 0;
   padding-inline: var(--text-input-inline-start-spacing, 0)
       max(0px, calc(var(--text-input-inline-end-spacing, 0px) - 12px));
+}
+
+:host([inline-action-buttons]) #textContainer {
+  flex: 1;
+  min-width: 0;
 }
 
 :host-context([use-pec-api]:not([has-allowed-inputs])) #textContainer {
@@ -39,7 +49,7 @@
   --text-input-top-spacing: 8px;
   align-items: center;
   display: flex;
-  height: 48px;
+  height: var(--cr-composebox-icon-container-height, 48px);
   justify-content: center;
 }
 
@@ -58,7 +68,7 @@
 }
 
 :host-context([searchbox-next-enabled]) #iconContainer {
-  height: 44px;
+  height: var(--cr-composebox-icon-container-height, 44px);
 }
 
 #aimIcon {
@@ -95,7 +105,8 @@
   font-family: inherit;
   font-size: var(--cr-composebox-font-size, inherit);
   line-height: 24px;
-  padding-block: var(--text-input-top-spacing) 4px;
+  padding-block: var(--cr-composebox-input-padding-block,
+      var(--text-input-top-spacing) 4px);
   padding-inline: 12px;
   width: 100%;
 }

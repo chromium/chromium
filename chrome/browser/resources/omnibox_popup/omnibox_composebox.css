@@ -157,6 +157,30 @@
   flex-shrink: 0;
 }
 
+:host([is-aim-button-shown_]) {
+  --cr-composebox-text-container-padding-block-start: 4px;
+  --omnibox-voice-icon-inset-end: 8px;
+  --omnibox-voice-icon-margin-end: 0;
+}
+
+:host([is-aim-button-shown_]) #composeboxInput {
+  --cr-composebox-icon-container-height: 40px;
+  --cr-composebox-input-padding-block: 8px;
+  --text-input-inline-end-spacing: 12px;
+  --text-input-inline-start-spacing: 16px;
+}
+
+cr-composebox-aim-button {
+  --cr-button-height: 24px;
+  --cr-composebox-aim-button-icon-gap: 4px;
+  --cr-composebox-aim-button-icon-inset: 6px;
+  --cr-composebox-aim-button-icon-size: 16px;
+  --cr-composebox-aim-button-leading-glyph-size: 16px;
+  font-size: 12px;
+  margin-block-start: 12px;
+  margin-inline-end: 14px;
+}
+
 #context {
   display: flex;
   flex-direction: column;
@@ -227,18 +251,14 @@ cr-composebox-tool-chip {
 :host(:not([searchbox-next-enabled])) #voiceSearchButton,
 :host([searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
   bottom: 12px;
-  inset-inline-end: 12px;
+  inset-inline-end: var(--omnibox-voice-icon-inset-end, 12px);
   position: absolute;
 }
 
 :host([submit-enabled][searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
-  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 6px);
-  margin-inline-end: 6px;
-}
-
-:host([submit-enabled][searchbox-layout-mode='TallBottomContext'][show-dropdown]) #voiceSearchButton {
-  bottom: unset;
-  top: var(--cr-composebox-voice-icon-top, 60px);
+  inset-inline-end: var(--omnibox-voice-icon-inset-end,
+      calc(var(--cr-composebox-submit-container-size) + 6px));
+  margin-inline-end: var(--omnibox-voice-icon-margin-end, 6px);
 }
 
 :host([searchbox-layout-mode='Compact']) #voiceSearchButton {
@@ -247,7 +267,13 @@ cr-composebox-tool-chip {
   top: 10px;
 }
 
-:host([searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
+/* TODO(crbug.com/558864651): When cleaning up
+ * ComposeboxPersistentAimButtonOmnibox, replace is-aim-button-shown_ below
+ * with searchbox-layout-mode='TallBottomContext', keeping submit-enabled and
+ * show-dropdown to override composebox.css's bottom reset. */
+:host([searchbox-layout-mode='TallBottomContext']) #voiceSearchButton,
+:host([is-aim-button-shown_][submit-enabled][show-dropdown])
+    #voiceSearchButton {
   bottom: 11px;
 }
 
@@ -255,14 +281,14 @@ cr-composebox-tool-chip {
 :host([energy-effect-enabled][searchbox-layout-mode='TallBottomContext'][show-dropdown]) #voiceSearchButton {
   bottom: 10px;
   top: unset;
-  inset-inline-end: 14px;
+  inset-inline-end: var(--omnibox-voice-icon-inset-end, 14px);
 }
 
 :host([energy-effect-enabled][submit-enabled][searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
-  inset-inline-end: calc(
-      var(--cr-composebox-submit-width,
-          var(--cr-composebox-submit-container-size)) + 8px);
-  margin-inline-end: 4px;
+  inset-inline-end: var(--omnibox-voice-icon-inset-end,
+      calc(var(--cr-composebox-submit-width,
+          var(--cr-composebox-submit-container-size)) + 8px));
+  margin-inline-end: var(--omnibox-voice-icon-margin-end, 4px);
 }
 
 :host([submit-enabled][searchbox-layout-mode='TallBottomContext'])
@@ -392,7 +418,7 @@ cr-composebox-tool-chip {
   transition-duration: var(--on-press-duration);
 }
 
-#composeboxInput::part(input) {
+:host(:not([is-aim-button-shown_])) #composeboxInput::part(input) {
   min-height: 44px;
 }
 

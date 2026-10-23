@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/composebox/composebox_aim_button.js';
 import '//resources/cr_components/composebox/composebox_dropdown.js';
 import '//resources/cr_components/composebox/composebox_input.js';
 import '//resources/cr_components/composebox/composebox_submit.js';
@@ -107,6 +108,11 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       isLensSearchEligible_: {type: Boolean},
       askGComposeboxPlaceholderEnabled_: {type: Boolean},
       baseSearchboxLayoutMode_: {type: String},
+      isAimButtonShown_: {
+        type: Boolean,
+        reflect: true,
+      },
+      showAimButtonExitIcon_: {type: Boolean},
       energyEffectAnimationEnabled_: {
         type: Boolean,
         reflect: true,
@@ -163,6 +169,9 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       getLoadTimeBoolean('askGComposeboxPlaceholderEnabled', false);
   protected accessor baseSearchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
+  protected accessor isAimButtonShown_: boolean = false;
+  protected accessor showAimButtonExitIcon_: boolean =
+      getLoadTimeBoolean('composeboxPersistentAimButtonWithX', false);
   // The use of energyEffectEnabled to set energyEffectAnimationEnabled_ is
   // intentional. This is to align the gating properties for energy effects
   // across all surfaces (= Nextbox, Omnibox, and Realbox).
@@ -199,6 +208,8 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
    * the results come in.
    */
   private shouldAnimateContextualSuggestions_: boolean = false;
+  private persistentAimButtonEnabled_: boolean =
+      getLoadTimeBoolean('composeboxPersistentAimButton', false);
 
   constructor() {
     super();
@@ -278,6 +289,8 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     if (changedPrivateProperties.has('baseSearchboxLayoutMode_') ||
         changedPrivateProperties.has('hasAllowedInputs')) {
       this.searchboxLayoutMode = this.computeSearchboxLayoutMode_();
+      this.isAimButtonShown_ = this.persistentAimButtonEnabled_ &&
+          this.searchboxLayoutMode === 'TallBottomContext';
     }
   }
 

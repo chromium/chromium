@@ -13,7 +13,13 @@
 
 :host {
   --aim-motion-duration: var(--aim-motion-duration-long);
+  --cr-composebox-aim-button-icon-gap: 2px;
+  --cr-composebox-aim-button-icon-inset: 8px;
+  --cr-composebox-aim-button-icon-size: 20px;
+  /* 18px matches the Realbox icon. */
+  --cr-composebox-aim-button-leading-glyph-size: 18px;
   flex-shrink: 0;
+  font-size: 13px;
 }
 
 :host([mode='send']) {
@@ -32,9 +38,8 @@
   background-color: var(--color-composebox-submit-button-background);
   border: none;
   color: var(--color-composebox-submit-button-icon, white);
-  font-size: 13px;
   gap: 0;
-  padding-inline: 8px;
+  padding-inline: var(--cr-composebox-aim-button-icon-inset);
 }
 
 :host-context(.focus-outline-visible) #button:focus {
@@ -53,30 +58,29 @@
   -webkit-mask-image: var(--cr-icon-image);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 20px;
+  -webkit-mask-size: var(--cr-composebox-aim-button-icon-size);
   background-color: currentColor;
-  height: 20px;
+  height: var(--cr-composebox-aim-button-icon-size);
   mask-image: var(--cr-icon-image);
   mask-position: center;
   mask-repeat: no-repeat;
-  mask-size: 20px;
+  mask-size: var(--cr-composebox-aim-button-icon-size);
   transition-duration: var(--aim-motion-duration);
   transition-property: width, margin-inline, opacity;
   transition-timing-function: var(--aim-motion-easing);
-  width: 20px;
+  width: var(--cr-composebox-aim-button-icon-size);
 }
 
-/* Leading glyph stays 18px, like the Realbox icon, in the 20px box. */
 #leadingIcon {
   --cr-icon-image:
       url(//resources/cr_components/searchbox/icons/search_spark.svg);
-  -webkit-mask-size: 18px;
-  margin-inline-end: 2px;
-  mask-size: 18px;
+  -webkit-mask-size: var(--cr-composebox-aim-button-leading-glyph-size);
+  margin-inline-end: var(--cr-composebox-aim-button-icon-gap);
+  mask-size: var(--cr-composebox-aim-button-leading-glyph-size);
 }
 
 #trailingIcon {
-  margin-inline-start: 2px;
+  margin-inline-start: var(--cr-composebox-aim-button-icon-gap);
 }
 
 #leadingIcon.collapsed,

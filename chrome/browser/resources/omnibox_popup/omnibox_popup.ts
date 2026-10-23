@@ -9,6 +9,7 @@ import './full_app.js';
 import './omnibox_popup_contextual_entrypoint.js';
 import './omnibox_popup_contextual_entrypoint_button.js';
 
+export {AimButtonMode} from '//resources/cr_components/composebox/composebox_aim_button.js';
 export {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';

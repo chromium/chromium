@@ -100,6 +100,7 @@ export class ComposeboxInputElement extends I18nMixinLit
       entrypointName: {type: String, reflect: true},
       cancelButtonTitle: {type: String},
       hideCancel: {type: Boolean},
+      inlineActionButtons: {type: Boolean, reflect: true},
       isBackspacing_: {type: Boolean},
     };
   }
@@ -116,6 +117,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   accessor entrypointName: string = '';
   accessor cancelButtonTitle: string = '';
   accessor hideCancel: boolean = false;
+  accessor inlineActionButtons: boolean = false;
   accessor isBackspacing_: boolean = false;
 
   private resizeObserver_: ResizeObserver|null = null;

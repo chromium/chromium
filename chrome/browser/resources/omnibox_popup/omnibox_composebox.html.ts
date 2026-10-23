@@ -83,10 +83,24 @@ export function getHtml(this: OmniboxComposeboxElement) {
             .submitEnabled="${this.submitEnabled}"
             .entrypointName="${this.entrypointName}"
             .cancelButtonTitle="${this.computeCancelButtonTitle()}"
+            .hideCancel="${this.isAimButtonShown_}"
+            .inlineActionButtons="${this.isAimButtonShown_}"
             @input-input="${this.onInputInput}"
             @input-focusin="${this.onInputFocusin}"
             @cancel-click="${this.onCancelClick}"
             @clear-smart-compose="${this.onClearSmartCompose}">
+          ${this.isAimButtonShown_ ? html`
+            <cr-composebox-aim-button slot="action-buttons"
+                .mode="${this.getAimButtonMode()}"
+                .showExitIcon="${this.showAimButtonExitIcon_}"
+                .disabled="${this.isAimButtonDisabled()}"
+                .label="${this.i18n('searchboxComposeButtonText')}"
+                .exitTitle="${this.i18n('composeboxAimButtonExitTitle')}"
+                .sendTitle="${this.i18n('composeboxAimButtonSendTitle')}"
+                @aim-button-click="${this.onAimButtonClick}"
+                @focusin="${this.onAimButtonFocusin}">
+            </cr-composebox-aim-button>
+          ` : ''}
         </cr-composebox-input>
         <div id="context" part="context-entrypoint">
           <div id="carouselContainer" part="carousel-container">
@@ -167,7 +181,8 @@ export function getHtml(this: OmniboxComposeboxElement) {
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </cr-icon-button>
           ` : ''}
-          ${this.shouldShowSubmitButton() &&
+          ${!this.isAimButtonShown_ &&
+                this.shouldShowSubmitButton() &&
                 this.searchboxLayoutMode === 'TallBottomContext' ? html`
               <cr-composebox-submit
                 exportparts="action-icon, submit, submit-icon, submit-overlay"
