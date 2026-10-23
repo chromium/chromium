@@ -902,7 +902,13 @@ export class OmniboxPopupSearchboxElement extends
       // the selected URL, and only place the caret and unelide on release (see
       // `onMouseUp_()`).
       this.unelideOnMouseRelease_ = true;
-    } else {
+    } else if (e.composedPath().includes(input)) {
+      // Only a press on the input itself deselects: Blink then places the
+      // caret at the click position. A press elsewhere in the row (e.g. on the
+      // icon) leaves the selection as is (`OmniboxFullAppElement` prevents its
+      // default action), so uneliding would leave the selection on the wrong
+      // characters of the unelided URL, which the next keystroke would
+      // replace.
       this.showFullUrlOnDeselect_();
     }
 
@@ -925,8 +931,11 @@ export class OmniboxPopupSearchboxElement extends
       // double click selecting all text on mouse release), Blink's
       // SelectionController ignores double-click word selection because
       // Selection().IsRange() is true. Collapse the selection so Blink performs
-      // native word selection at the click coordinates.
-      if (input.selectionStart !== input.selectionEnd) {
+      // native word selection at the click coordinates. Blink only does so for
+      // presses on the input, so leave the selection for others (e.g. on the
+      // icon).
+      if (e.composedPath().includes(input) &&
+          input.selectionStart !== input.selectionEnd) {
         this.getInputElement().setSelectionRange(0, 0);
       }
       return;
@@ -1280,6 +1289,7 @@ export class OmniboxPopupSearchboxElement extends
     if (this.fullUrlShown_ || (start === 0 && end === elidedText.length)) {
       return;
     }
+    const scrollLeft = input.scrollLeft;
     this.maybeShowFullUrl_();
     if (!this.fullUrlShown_) {
       return;
@@ -1305,6 +1315,11 @@ export class OmniboxPopupSearchboxElement extends
     end += offset;
     this.getInputElement().setSelectionRange(start, end, direction);
     this.lastInputSelection_ = {start, end};
+    // Uneliding shifts the caret by the elided prefix, e.g. past the end of the
+    // visible text after a click at its end. Like Views, keep the scroll
+    // offset, but scroll as little as needed to show the caret.
+    this.scrollOffsetIntoView_(
+        direction === 'backward' ? start : end, scrollLeft);
   }
 
   private isChromeScheme_(): boolean {
@@ -1718,24 +1733,46 @@ export class OmniboxPopupSearchboxElement extends
    * old scroll offset.
    */
   private scrollSelectionStartIntoView_(selStart: number) {
+    this.scrollOffsetIntoView_(selStart, /*fromScrollLeft=*/ 0);
+  }
+
+  /**
+   * Scrolls the single-line input as little as needed from `fromScrollLeft` to
+   * show the caret at `offset`, like `gfx::RenderText` does in Views. Blink
+   * doesn't scroll a text field for `setSelectionRange()`.
+   */
+  private scrollOffsetIntoView_(offset: number, fromScrollLeft: number) {
     if (this.multiLineEnabled) {
       return;
     }
     const inputEl = this.getInputElement().inputElement;
-    const style = window.getComputedStyle(inputEl);
-    // The width of the text before an offset is only its position in LTR text.
-    if (style.direction !== 'ltr') {
-      return;
-    }
-    const visibleWidth = inputEl.clientWidth - parseFloat(style.paddingLeft) -
-        parseFloat(style.paddingRight);
+    const visibleWidth = this.getVisibleTextWidth_(inputEl);
     if (visibleWidth <= 0) {
       return;
     }
-    const startLeft =
-        this.getTextWidth_(inputEl.value.substring(0, selStart), inputEl);
-    // Leave room for the 1px caret at the selection start.
-    inputEl.scrollLeft = Math.max(0, startLeft + 1 - visibleWidth);
+    const offsetLeft =
+        this.getTextWidth_(inputEl.value.substring(0, offset), inputEl);
+    // Leave room for the 1px caret at `offset`.
+    inputEl.scrollLeft = Math.min(
+        offsetLeft, Math.max(fromScrollLeft, offsetLeft + 1 - visibleWidth));
+  }
+
+  /**
+   * Returns the width of the single-line input's text area (its content box),
+   * or 0 if the text isn't LTR, since the width of the text before an offset
+   * is only its position in LTR text. Doesn't use `clientWidth`: for text
+   * fields, it already excludes the inline padding while the
+   * InputClientRectWithoutInlinePadding Blink feature is enabled (the
+   * default), but includes it otherwise.
+   */
+  private getVisibleTextWidth_(inputEl: HTMLElement): number {
+    const style = window.getComputedStyle(inputEl);
+    if (style.direction !== 'ltr') {
+      return 0;
+    }
+    return inputEl.offsetWidth - parseFloat(style.paddingLeft) -
+        parseFloat(style.paddingRight) - parseFloat(style.borderLeftWidth) -
+        parseFloat(style.borderRightWidth);
   }
 
   private maybeShowFullUrl_() {

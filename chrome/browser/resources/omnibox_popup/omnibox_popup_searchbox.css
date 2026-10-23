@@ -160,10 +160,21 @@ cr-searchbox-input::part(mirror) {
   padding-top: 0;
 }
 
-/* On the shared container, so the gap follows the UI direction, and the input
- * and #mirror (both dir="ltr" for URLs) keep the same box. */
-:host(:not([aim-button-visible_])) cr-searchbox-input::part(mirror-container) {
-  margin-inline-end: 18px;
+/* Pad the input and #mirror alike, rather than adding a margin outside the
+ * input, so that the gap is part of the input's hit area: like in the Views
+ * omnibox, a click in it places the caret. Uses physical sides keyed off the
+ * UI direction, since URLs are laid out LTR (the input and #mirror get
+ * dir="ltr"), so that the gap stays at the end of the field in RTL UIs. */
+:host(:not([aim-button-visible_]):dir(ltr))
+    cr-searchbox-input::part(searchbox-input),
+:host(:not([aim-button-visible_]):dir(ltr)) cr-searchbox-input::part(mirror) {
+  padding-right: 18px;
+}
+
+:host(:not([aim-button-visible_]):dir(rtl))
+    cr-searchbox-input::part(searchbox-input),
+:host(:not([aim-button-visible_]):dir(rtl)) cr-searchbox-input::part(mirror) {
+  padding-left: 18px;
 }
 
 /* When the window is inactive (top container has focus), the selection should

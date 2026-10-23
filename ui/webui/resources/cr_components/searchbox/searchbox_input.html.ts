@@ -35,7 +35,7 @@ export function getHtml(this: SearchboxInputElement) {
     <div id="selectionListbox" role="listbox" hidden>
       <div id="selectionAnnouncement" role="option" aria-selected="true"></div>
     </div>
-    <div id="mirrorContainer" part="mirror-container">
+    <div id="mirrorContainer">
       <div id="mirror" part="mirror" aria-hidden="true"
           ?hidden="${!this.urlEmphasisEnabled}"></div>
       ${this.multiLineEnabled ? html`
