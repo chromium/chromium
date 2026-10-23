@@ -81,14 +81,13 @@ bool LazyLoadMediaObserver::LoadAllImagesAndBlockLoadEvent(
     if (!IsDescendantOrSameDocument(element->GetDocument(), for_document)) {
       continue;
     }
-    if (auto* image_element = DynamicTo<HTMLImageElement>(element)) {
-      const_cast<HTMLImageElement*>(image_element)
-          ->LoadDeferredImageBlockingLoad();
-      resources_have_started_loading = true;
-    }
     to_be_unobserved.push_back(element);
   }
   for (Element* element : to_be_unobserved) {
+    if (auto* image_element = DynamicTo<HTMLImageElement>(element)) {
+      image_element->LoadDeferredImageBlockingLoad();
+      resources_have_started_loading = true;
+    }
     lazy_load_intersection_observer_->unobserve(element);
   }
   return resources_have_started_loading;

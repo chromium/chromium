@@ -308,20 +308,20 @@ class HashTableConstIterator final
 #endif
   }
 
+ public:
+  constexpr HashTableConstIterator() = default;
+
   void CheckModifications() const {
 #if DCHECK_IS_ON()
     // HashTable and collections that build on it do not support
     // modifications while there is an iterator in use. The exception is
-    // LinkedHashSet, which has its own iterators that tolerate modification
-    // of the underlying set.
+    // non-weak LinkedHashSet, which has its own iterators that tolerate
+    // modification of the underlying set.
 
     DCHECK_EQ(container_modifications_, container_->Modifications());
     DCHECK(!container_->AccessForbidden());
 #endif
   }
-
- public:
-  constexpr HashTableConstIterator() = default;
 
   GetType Get() const {
     CheckModifications();
@@ -777,8 +777,8 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   void RegisterModification() { modifications_++; }
   // HashTable and collections that build on it do not support modifications
   // while there is an iterator in use. The exception is
-  // LinkedHashSet, which has its own iterators that tolerate modification
-  // of the underlying set.
+  // non-weak LinkedHashSet, which has its own iterators that tolerate
+  // modification of the underlying set.
   void CheckModifications(int64_t mods) const {
     DCHECK_EQ(mods, modifications_);
   }
