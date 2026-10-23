@@ -12,7 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/open_url_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/test_utils.h"
@@ -70,10 +70,11 @@ class TtcSessionJournalImplBrowserTest : public TtcCoreBrowserTestBase {
     return tasks.size() == 1u ? tasks.begin()->first : actor::TaskId();
   }
 
-  ToolResponse Navigate(const GURL& url) {
+  ToolResponse OpenUrl(const GURL& url) {
     ToolRequest request;
-    request.name = std::string(actor::NavigateToolRequest::kModelFacingName);
-    request.arguments.Set(actor::NavigateToolRequest::kUrlParam, url.spec());
+    request.name = std::string(actor::OpenUrlToolRequest::kModelFacingName);
+    request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam, url.spec());
+    request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
     base::test::TestFuture<ToolResponse> future;
     ttc_service().session_controller()->ProcessToolCall(request,
                                                         future.GetCallback());
@@ -105,8 +106,8 @@ IN_PROC_BROWSER_TEST_F(TtcSessionJournalImplBrowserTest,
   // it. The session keeps its journal, which moves to the new task.
   actor_service().StopTask(first_task_id,
                            actor::ActorTask::StoppedReason::kStoppedByUser);
-  ASSERT_TRUE(Navigate(embedded_https_test_server().GetURL("example.com",
-                                                           "/title1.html"))
+  ASSERT_TRUE(OpenUrl(embedded_https_test_server().GetURL("example.com",
+                                                          "/title1.html"))
                   .Ok());
   const actor::TaskId second_task_id = GetOnlyActiveTaskId();
   ASSERT_FALSE(second_task_id.is_null());

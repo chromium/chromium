@@ -76,10 +76,9 @@ class ToolController {
           page_content_annotations::FetchPageContextErrorDetails> result);
   void GoBack(ToolResponseCallback callback);
   void GoForward(ToolResponseCallback callback);
-  void Navigate(const base::DictValue& arguments,
-                ToolResponseCallback callback);
   void OpenKnownPage(const base::DictValue& arguments,
                      ToolResponseCallback callback);
+  void OpenUrl(const base::DictValue& arguments, ToolResponseCallback callback);
   void PauseVideo(ToolResponseCallback callback);
   void PerformSearch(const base::DictValue& arguments,
                      ToolResponseCallback callback);

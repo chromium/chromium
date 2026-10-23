@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
+#include "chrome/browser/actor/tools/open_url_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
@@ -134,10 +136,9 @@ class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, NavigateCurrentTab) {
-  // Verify ActorKeyedService is available.
-  auto* actor_service = actor::ActorKeyedService::Get(profile());
-  ASSERT_TRUE(actor_service);
+// `navigate` has been replaced by `open_url` and is no longer dispatched.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, NavigateIsUnsupported) {
+  const GURL start_url = web_contents()->GetLastCommittedURL();
 
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -155,27 +156,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, NavigateCurrentTab) {
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  EXPECT_TRUE(response.Ok());
-
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
-}
-
-IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, NavigateMissingUrl) {
-  ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
-  ASSERT_TRUE(session_controller);
-
-  base::test::TestFuture<ToolResponse> future;
-
-  ToolRequest tool_request;
-  tool_request.name = std::string(actor::NavigateToolRequest::kModelFacingName);
-
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
-
-  ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(response,
-                    actor::mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kToolUnknown);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PerformSearchCurrentTab) {
@@ -493,6 +475,108 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
                     actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInCurrentTab) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = std::string(actor::OpenUrlToolRequest::kModelFacingName);
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
+                             target_url.spec());
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInNewTab) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  content::WebContents* source_contents = web_contents();
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = std::string(actor::OpenUrlToolRequest::kModelFacingName);
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
+                             target_url.spec());
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, true);
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count + 1);
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_NE(active_contents, source_contents);
+  EXPECT_EQ(active_contents->GetLastCommittedURL(), target_url);
+  EXPECT_EQ(source_contents->GetLastCommittedURL(), start_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInvalidArguments) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  struct {
+    const char* description;
+    std::optional<std::string> url;
+    std::optional<base::Value> new_tab;
+  } kCases[] = {
+      {"missing url", std::nullopt, base::Value(true)},
+      {"empty url", "", base::Value(true)},
+      {"invalid url", "not a url", base::Value(true)},
+      {"missing new_tab", "https://example.com/", std::nullopt},
+      {"non-bool new_tab", "https://example.com/", base::Value("true")},
+  };
+
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.description);
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name =
+        std::string(actor::OpenUrlToolRequest::kModelFacingName);
+    if (test_case.url) {
+      tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
+                                 *test_case.url);
+    }
+    if (test_case.new_tab) {
+      tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam,
+                                 test_case.new_tab->Clone());
+    }
+
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+
+    ToolResponse response = future.Take();
+    EXPECT_TOOL_ERROR(response,
+                      actor::mojom::ActionResultCode::kArgumentsInvalid);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, FindAndHighlight) {
@@ -1870,7 +1954,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   const std::set<actor::ToolId> kExpectedToolIds = {
-      actor::ToolId::kNavigate,
+      actor::ToolId::kOpenUrl,
       actor::ToolId::kPerformSearch,
       actor::ToolId::kGoBack,
       actor::ToolId::kGoForward,
@@ -2069,11 +2153,12 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   const actor::TaskId acting_task_id =
       actor_service->GetActiveTasks().begin()->first;
   ToolRequest tool_request;
-  tool_request.name = std::string(actor::NavigateToolRequest::kModelFacingName);
-  tool_request.arguments.Set(actor::NavigateToolRequest::kUrlParam,
+  tool_request.name = std::string(actor::OpenUrlToolRequest::kModelFacingName);
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
                              embedded_https_test_server()
                                  .GetURL("example.com", "/title1.html")
                                  .spec());
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
   base::test::TestFuture<ToolResponse> future;
   ttc_service().session_controller()->ProcessToolCall(std::move(tool_request),
                                                       future.GetCallback());
@@ -2088,7 +2173,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 // (the actor overlay, the handoff button, the tab indicator, the border glow)
 // should be shown while TTC acts on a tab.
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
-                       NavigateDoesNotShowTabScopedActorUi) {
+                       OpenUrlDoesNotShowTabScopedActorUi) {
   auto* actor_service = actor::ActorKeyedService::Get(profile());
   ASSERT_TRUE(actor_service);
 
@@ -2107,8 +2192,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   ToolRequest tool_request;
-  tool_request.name = std::string(actor::NavigateToolRequest::kModelFacingName);
-  tool_request.arguments.Set(actor::NavigateToolRequest::kUrlParam, url.spec());
+  tool_request.name = std::string(actor::OpenUrlToolRequest::kModelFacingName);
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam, url.spec());
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
   ASSERT_TRUE(future.Take().Ok());

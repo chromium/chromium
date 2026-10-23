@@ -28,8 +28,8 @@
 #include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
-#include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
+#include "chrome/browser/actor/tools/open_url_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
@@ -155,9 +155,6 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
   if (std::optional<actor::ToolId> tool_id =
           actor::ToolRegistry::NameToToolId(tool_request.name)) {
     switch (*tool_id) {
-      case actor::ToolId::kNavigate:
-        Navigate(tool_request.arguments, std::move(callback));
-        return;
       case actor::ToolId::kPerformSearch:
         PerformSearch(tool_request.arguments, std::move(callback));
         return;
@@ -196,6 +193,9 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
         return;
       case actor::ToolId::kSwitchTab:
         SwitchTab(tool_request.arguments, std::move(callback));
+        return;
+      case actor::ToolId::kOpenUrl:
+        OpenUrl(tool_request.arguments, std::move(callback));
         return;
       case actor::ToolId::kEnterFullscreen:
         SetFullscreen(/*fullscreen=*/true, std::move(callback));
@@ -252,7 +252,6 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   // rewriting dom_node_id for TOCTOU checks and ProcessToolCall() dispatches
   // their registry names.
   static const base::NoDestructor<std::set<actor::ToolId>> kSupportedToolIds({
-      actor::ToolId::kNavigate,
       actor::ToolId::kPerformSearch,
       actor::ToolId::kGoBack,
       actor::ToolId::kGoForward,
@@ -266,6 +265,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor::ToolId::kCloseGeminiPanel,
       actor::ToolId::kCloseTab,
       actor::ToolId::kSwitchTab,
+      actor::ToolId::kOpenUrl,
       actor::ToolId::kEnterFullscreen,
       actor::ToolId::kExitFullscreen,
       actor::ToolId::kOpenKnownPage,
@@ -651,26 +651,6 @@ void ToolController::GoForward(ToolResponseCallback callback) {
       std::move(callback));
 }
 
-void ToolController::Navigate(const base::DictValue& arguments,
-                              ToolResponseCallback callback) {
-  const std::string* url =
-      arguments.FindString(actor::NavigateToolRequest::kUrlParam);
-  if (!url) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing url argument"));
-    return;
-  }
-
-  PerformActionOnTrackedContents(
-      [&url](actor::ActorSurfaceHandle actor_surface_handle)
-          -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::NavigateToolRequest>(
-            actor_surface_handle, GURL(*url));
-      },
-      std::move(callback));
-}
-
 void ToolController::OpenKnownPage(const base::DictValue& arguments,
                                    ToolResponseCallback callback) {
   const std::string* query =
@@ -684,6 +664,35 @@ void ToolController::OpenKnownPage(const base::DictValue& arguments,
 
   PerformAction(std::make_unique<actor::OpenKnownPageToolRequest>(*query),
                 std::move(callback));
+}
+
+void ToolController::OpenUrl(const base::DictValue& arguments,
+                             ToolResponseCallback callback) {
+  const std::string* url =
+      arguments.FindString(actor::OpenUrlToolRequest::kUrlParam);
+  if (!url || url->empty()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or empty url argument"));
+    return;
+  }
+
+  std::optional<bool> new_tab =
+      arguments.FindBool(actor::OpenUrlToolRequest::kNewTabParam);
+  if (!new_tab) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing new_tab argument"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&url, &new_tab](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::OpenUrlToolRequest>(
+            actor_surface_handle, GURL(*url), *new_tab);
+      },
+      std::move(callback));
 }
 
 void ToolController::PauseVideo(ToolResponseCallback callback) {
