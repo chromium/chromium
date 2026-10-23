@@ -53,8 +53,8 @@ using DecisionCallbackWithReason =
 //
 // Returns `base::ok()` if this function will eventually invoke `callback`;
 // otherwise returns `base::unexpected(callback)` and the caller is responsible
-// for invoking `callback` themselves (maybe because the feature was disabled,
-// or OptimizationGuide is not available for some other reason).
+// for invoking `callback` themselves (e.g., if OptimizationGuide is not
+// available).
 base::expected<void, DecisionCallback>
 MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
                                            Profile* profile,

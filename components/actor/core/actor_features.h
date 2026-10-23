@@ -12,7 +12,6 @@
 
 namespace actor {
 
-BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
 BASE_DECLARE_FEATURE(kActorBypassTOUValidationForGuestView);
 
 // Temporary migration flag: when enabled, a tab-backed ActorSurface uses its

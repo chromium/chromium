@@ -15,8 +15,6 @@ BASE_FEATURE(kActorBypassTOUValidationForGuestView,
 
 BASE_FEATURE(kUseTabHandleAsSurfaceHandle, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicActionUseOptimizationGuide, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicExternalProtocolActionResultCode,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -35,9 +35,7 @@ bool ShouldContinueFromOptimizationGuideDecision(
 
 void InitActionBlocklist(Profile* profile) {
   if (auto* optimization_guide_decider =
-          OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-      optimization_guide_decider &&
-      base::FeatureList::IsEnabled(kGlicActionUseOptimizationGuide)) {
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
     optimization_guide_decider->RegisterOptimizationTypes(
         {optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK});
   }
@@ -51,8 +49,7 @@ MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
   // missing, for example, if the user has very recently installed chrome and
   // the component updater has not yet run. We don't want to reject every URL,
   // so we check for this and fail open.
-  if (!base::FeatureList::IsEnabled(kGlicActionUseOptimizationGuide) ||
-      !optimization_guide::OptimizationHintsComponentUpdateListener::
+  if (!optimization_guide::OptimizationHintsComponentUpdateListener::
            GetInstance()
                ->hints_component_info()
                .has_value()) {
