@@ -21,6 +21,9 @@ namespace {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 const int k10YearsInDays = 365 * 10;
 #endif
+#if BUILDFLAG(IS_IOS)
+const uint32_t kSwipeBackForwardFirstRunRecencyInDays = 60;
+#endif
 }  // namespace
 
 namespace feature_engagement {
@@ -3225,6 +3228,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHiOSSwipeBackForwardFeature.name == feature->name) {
     // The IPH of the swipe back/forward feature.
+    std::optional<uint32_t> first_run_recency_in_days =
+        kIPHiOSSwipeBackForwardForAllUsers.Get()
+            ? std::nullopt
+            : std::make_optional(kSwipeBackForwardFirstRunRecencyInDays);
     return CreateNewUserGestureInProductHelpConfig(
         *feature, /*action_event=*/
         events::kIOSBackForwardButtonTapped,
@@ -3232,7 +3239,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         events::kIOSSwipeBackForwardUsed,
         /*dismiss_button_tap_event=*/
         events::kIOSSwipeBackForwardIPHDismissButtonTapped,
-        /*first_run_recency_in_days=*/60);
+        first_run_recency_in_days);
   }
 
   if (kIPHiOSSwipeToolbarToChangeTabFeature.name == feature->name) {

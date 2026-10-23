@@ -639,6 +639,49 @@ TEST_F(FeatureEngagementTest,
       feature_engagement::kIPHiOSSwipeBackForwardFeature));
 }
 
+// Verifies that the swipe back/forward IPH requires `kIOSFirstRunComplete` by
+// default.
+TEST_F(FeatureEngagementTest,
+       TestSwipeBackForwardIPHRequiresFirstRunByDefault) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSSwipeBackForwardFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeBackForwardFeature));
+
+  tracker->NotifyEvent(feature_engagement::events::kIOSFirstRunComplete);
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeBackForwardFeature));
+}
+
+// Verifies that the swipe back/forward IPH triggers without
+// `kIOSFirstRunComplete` when `kIPHiOSSwipeBackForwardForAllUsers` is enabled.
+TEST_F(FeatureEngagementTest, TestSwipeBackForwardIPHForAllUsers) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSSwipeBackForwardFeature,
+        {{feature_engagement::kIPHiOSSwipeBackForwardForAllUsers.name,
+          "true"}}}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeBackForwardFeature));
+}
+
 // Verifies that the swipe on toolbar IPH is not triggered after the user has
 // swiped on the toolbar to switch tab.
 TEST_F(FeatureEngagementTest,

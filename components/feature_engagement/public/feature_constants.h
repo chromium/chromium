@@ -382,6 +382,10 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPromoAllTabsFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPromoMadeForIOSFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPromoStaySafeFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSSwipeBackForwardFeature);
+// Feature parameter that removes the 60-day first-run recency requirement for
+// `kIPHiOSSwipeBackForwardFeature`.
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+extern const base::FeatureParam<bool> kIPHiOSSwipeBackForwardForAllUsers;
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSSwipeToolbarToChangeTabFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPostDefaultAbandonmentPromoFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPromoGenericDefaultBrowserFeature);

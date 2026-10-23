@@ -3738,10 +3738,14 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "x_ios_swipe_back_iph_for_all_users": "true"
+                    },
                     "enable_features": [
                         "AppBarAssistantCustomization",
                         "ChromeNextIa",
                         "FullscreenRefactoring",
+                        "IPH_iOSSwipeBackForward",
                         "LightAppBar",
                         "NextOldDesign",
                         "OverflowMenuNTPRefactor",
