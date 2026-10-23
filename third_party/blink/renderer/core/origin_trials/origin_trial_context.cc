@@ -539,6 +539,13 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(
         blink::features::kConnectionAllowlistEmbeddedEnforcement);
   }
+
+  // The browser process rejects RTCLoggingDispatcher messages as bad messages
+  // when kRTCDiagnosticLogging is disabled (e.g., it is disabled by default on
+  // Android), so the trial must not expose the API in that case.
+  if (trial_name == "RTCDiagnosticLogging") {
+    return base::FeatureList::IsEnabled(blink::features::kRTCDiagnosticLogging);
+  }
   return true;
 }
 
