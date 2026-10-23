@@ -1121,6 +1121,20 @@ enum GlicRequestEvent {
   kRequestReceivedWhileInactive = 4,
 };
 
+// @generate glic_api
+// A device that can receive tabs sent via Send Tab to Self.
+struct SendTabToSelfDevice {
+  // A unique identifier for the device. Pass this as the target device when
+  // sending a tab.
+  string device_guid;
+  // The user-visible name of the device.
+  string device_name;
+  // The form factor of the device.
+  FormFactor form_factor;
+  // The time when the device last updated its sync metadata.
+  mojo_base.mojom.Time? last_updated_time;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -1483,6 +1497,10 @@ interface WebClientHandler {
   // browser has cleared the authoritative in-memory storage and scheduled a
   // pref write.
   ClearClientStorage() => ();
+
+  // Returns the list of target devices available for Send Tab to Self.
+  [RuntimeFeature=glic.mojom.features.kGlicSendTabToSelf]
+  GetSendTabToSelfDevices() => (array<SendTabToSelfDevice> devices);
 };
 
 // Accesses zero state suggestions from the web client.
@@ -2441,6 +2459,8 @@ enum HostCapability {
   kEmbeddedPdfBytesExtraction = 18,
   // Indicates that the host operates in NoWebview mode.
   kNoWebview = 19,
+  // Indicates that the host supports Send Tab to Self APIs.
+  kSendTabToSelf = 20,
 };
 
 // @generate glic_api

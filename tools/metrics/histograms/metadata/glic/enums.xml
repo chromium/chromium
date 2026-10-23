@@ -513,6 +513,7 @@ chromium-metrics-reviews@google.com.
   <int value="105" label="OpenContactInfoSettingsPage"/>
   <int value="106" label="SetClientStorageItem"/>
   <int value="107" label="ClearClientStorage"/>
+  <int value="108" label="GetSendTabToSelfDevices"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->

@@ -77,6 +77,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -94,6 +95,10 @@
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -1100,6 +1105,46 @@ class GlicWebClientHandler
       glic_service_->client_data_storage().Clear();
     }
     std::move(callback).Run();
+  }
+
+  void GetSendTabToSelfDevices(
+      GetSendTabToSelfDevicesCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kGetSendTabToSelfDevices);
+    send_tab_to_self::SendTabToSelfSyncService* const service =
+        SendTabToSelfSyncServiceFactory::GetForProfile(profile_);
+    send_tab_to_self::SendTabToSelfModel* const model =
+        service ? service->GetSendTabToSelfModel() : nullptr;
+    if (!model || !model->IsReady()) {
+      std::move(callback).Run({});
+      return;
+    }
+
+    std::vector<syncer::RemoteDeviceInfo> devices =
+        model->GetTargetDeviceInfoSortedList();
+    std::vector<mojom::SendTabToSelfDevicePtr> result;
+    result.reserve(devices.size());
+    for (syncer::RemoteDeviceInfo& info : devices) {
+      auto device = mojom::SendTabToSelfDevice::New();
+      device->device_guid = std::move(info.cache_guid);
+      device->device_name = std::move(info.device_name);
+      switch (info.form_factor) {
+        case syncer::DeviceInfo::FormFactor::kDesktop:
+          device->form_factor = mojom::FormFactor::kDesktop;
+          break;
+        case syncer::DeviceInfo::FormFactor::kPhone:
+          device->form_factor = mojom::FormFactor::kPhone;
+          break;
+        case syncer::DeviceInfo::FormFactor::kTablet:
+          device->form_factor = mojom::FormFactor::kTablet;
+          break;
+        default:
+          device->form_factor = mojom::FormFactor::kUnknown;
+          break;
+      }
+      device->last_updated_time = info.last_updated_timestamp;
+      result.push_back(std::move(device));
+    }
+    std::move(callback).Run(std::move(result));
   }
 
   void ActivateTab(int32_t tab_id) override {

@@ -76,6 +76,36 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testDoNothing() {}
 
+  async testGetSendTabToSelfDevicesFeatureDisabled() {
+    assertDefined(this.host.getHostCapabilities);
+    const capabilities: Set<HostCapability> =
+        await this.host.getHostCapabilities();
+    assertFalse(capabilities.has(HostCapability.SEND_TAB_TO_SELF));
+    assertUndefined(this.host.getSendTabToSelfDevices);
+  }
+
+  async testGetSendTabToSelfDevicesFeatureEnabled() {
+    assertDefined(this.host.getHostCapabilities);
+    const capabilities: Set<HostCapability> =
+        await this.host.getHostCapabilities();
+    assertTrue(capabilities.has(HostCapability.SEND_TAB_TO_SELF));
+    assertDefined(this.host.getSendTabToSelfDevices);
+    const devices = await this.host.getSendTabToSelfDevices();
+    assertDefined(devices);
+    assertEquals(devices.length, 1);
+    assertEquals(devices[0]!.deviceGuid, 'device_guid_1');
+    assertEquals(devices[0]!.deviceName, 'My Phone');
+    assertEquals(devices[0]!.formFactor, FormFactor.PHONE);
+    assertEquals(devices[0]!.lastUpdatedTime?.getTime(), 1700000000000);
+  }
+
+  async testGetSendTabToSelfDevicesModelNotReady() {
+    assertDefined(this.host.getSendTabToSelfDevices);
+    const devices = await this.host.getSendTabToSelfDevices();
+    assertDefined(devices);
+    assertEquals(devices.length, 0);
+  }
+
   async testRecordUseCounter() {
     assertDefined(this.host.getMetrics);
     const metrics = this.host.getMetrics();

@@ -81,6 +81,7 @@ import type {                            //
              Platform,                   //
              PromptType,                 //
              ResizeWindowOptions,        //
+             SendTabToSelfDevice,        //
              TabContextOptions,          //
              TabContextResult,           //
              TabData,                    //
@@ -116,6 +117,7 @@ import {                              //
   pinCandidateToClient,               //
   pinTabsOptionsToMojo,               //
   replaceProperties,                  //
+  sendTabToSelfDeviceToClient,        //
   tabContextOptionsFromClient,        //
   tabContextToClient,                 //
   tabDataToClient,                    //
@@ -439,6 +441,11 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     if (!state.enableProcessCounterAbuseVerdict) {
       this.processCounterAbuseVerdict = undefined;
     }
+
+    if (!this.hostCapabilities.has(HostCapability.SEND_TAB_TO_SELF)) {
+      // MOJO_RUNTIME_FEATURE_GATED GetSendTabToSelfDevices
+      this.getSendTabToSelfDevices = undefined;
+    }
   }
 
   webClientInitialized(success: boolean) {
@@ -741,6 +748,11 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   showProfilePicker(): void {
     this.handler.showProfilePicker();
+  }
+
+  async getSendTabToSelfDevices?(): Promise<SendTabToSelfDevice[]> {
+    const {devices} = await this.handler.getSendTabToSelfDevices();
+    return devices.map(sendTabToSelfDeviceToClient);
   }
 
   async getModelQualityClientId?(): Promise<string> {

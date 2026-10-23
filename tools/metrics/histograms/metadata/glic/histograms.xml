@@ -49,6 +49,7 @@ chromium-metrics-reviews@google.com.
   <variant name="GetImageBytesFromTab"/>
   <variant name="GetModelQualityClientId"/>
   <variant name="GetOsMicrophonePermissionStatus"/>
+  <variant name="GetSendTabToSelfDevices"/>
   <variant name="GetSkill"/>
   <variant name="GetUserProfileInfo"/>
   <variant name="GetZeroStateSuggestionsAndSubscribe"/>
@@ -372,6 +373,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Glic.Api.RequestCounts.{ApiRequestType}"
     enum="GlicRequestEvent" expires_after="2027-04-11">
+<!-- Allowed unsplittable: recorded on every API call across many
+ApiRequestType variants; see go/geic-metrics-split. -->
+
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <summary>
@@ -383,6 +387,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Glic.Api.RequestHostLatency.{ApiRequestType}" units="ms"
     expires_after="2027-04-11">
+<!-- Allowed unsplittable: recorded on every API call across many
+ApiRequestType variants; see go/geic-metrics-split. -->
+
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <summary>

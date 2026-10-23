@@ -97,6 +97,7 @@ export import SelectCredentialDialogRequest =
     generated.SelectCredentialDialogRequest;
 export import SelectCredentialDialogResponse =
     generated.SelectCredentialDialogResponse;
+export import SendTabToSelfDevice = generated.SendTabToSelfDevice;
 export import Skill = generated.Skill;
 export import SkillPreview = generated.SkillPreview;
 export import SkillsPayload = generated.SkillsPayload;
@@ -445,6 +446,12 @@ export declare interface GlicBrowserHost {
    */
   resizeWindow(width: number, height: number, options?: ResizeWindowOptions):
       Promise<void>;
+
+  /**
+   * Returns the list of target devices available for Send Tab to Self.
+   * Resolves to an empty list if sync is disabled or the model is not ready.
+   */
+  getSendTabToSelfDevices?(): Promise<SendTabToSelfDevice[]>;
 
   /**
    * Set the state of the panel's user drag-to-resize capability, or if the

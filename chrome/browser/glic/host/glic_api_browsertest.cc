@@ -71,6 +71,7 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -97,12 +98,15 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/active_field_trials.h"
@@ -677,6 +681,70 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextDisabled,
 #define MAYBE_testAttachPanel testAttachPanel
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAttachPanel) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testGetSendTabToSelfDevicesFeatureDisabled) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+class GlicApiTestWithSendTabToSelf : public GlicApiTest {
+ public:
+  GlicApiTestWithSendTabToSelf() {
+    send_tab_to_self_features_.InitAndEnableFeature(
+        mojom::features::kGlicSendTabToSelf);
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              send_tab_to_self::StubSendTabToSelfSyncService>();
+        }));
+    GlicApiTest::SetUpBrowserContextKeyedServices(context);
+  }
+
+  send_tab_to_self::FakeSendTabToSelfModel* GetFakeSendTabToSelfModel() {
+    auto* stub_service =
+        static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
+            SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile()));
+    return stub_service ? stub_service->GetFakeSendTabToSelfModel() : nullptr;
+  }
+
+ private:
+  base::test::ScopedFeatureList send_tab_to_self_features_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithSendTabToSelf,
+                       testGetSendTabToSelfDevicesFeatureEnabled) {
+  auto* fake_model = GetFakeSendTabToSelfModel();
+  ASSERT_TRUE(fake_model);
+  fake_model->SetTargetDeviceInfoSortedList({syncer::RemoteDeviceInfo(
+      "My Phone", "device_guid_1", syncer::DeviceInfo::FormFactor::kPhone,
+      syncer::DeviceInfo::OsType::kAndroid,
+      base::Time::FromMillisecondsSinceUnixEpoch(1700000000000.0),
+      /*has_high_precision_timestamp=*/false)});
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithSendTabToSelf,
+                       testGetSendTabToSelfDevicesModelNotReady) {
+  auto* fake_model = GetFakeSendTabToSelfModel();
+  ASSERT_TRUE(fake_model);
+  fake_model->SetIsReady(false);
+  fake_model->SetTargetDeviceInfoSortedList({syncer::RemoteDeviceInfo(
+      "My Phone", "device_guid_1", syncer::DeviceInfo::FormFactor::kPhone,
+      syncer::DeviceInfo::OsType::kAndroid,
+      base::Time::FromMillisecondsSinceUnixEpoch(1700000000000.0),
+      /*has_high_precision_timestamp=*/false)});
+
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
@@ -5728,6 +5796,11 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithNewTabDaisyChain,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithSendTabToSelf,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

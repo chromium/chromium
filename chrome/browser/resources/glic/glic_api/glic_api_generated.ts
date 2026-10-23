@@ -532,6 +532,8 @@ export enum HostCapability {
   EMBEDDED_PDF_BYTES_EXTRACTION = 18,
   // Indicates that the host operates in NoWebview mode.
   NO_WEBVIEW = 19,
+  // Indicates that the host supports Send Tab to Self APIs.
+  SEND_TAB_TO_SELF = 20,
 }
 
 // Lists capabilities that the glic web client may support.
@@ -1123,6 +1125,19 @@ export declare interface CreateTabOptions {
   openInBackground?: boolean;
   // The windowId of the window where the new tab should be created at.
   windowId?: string;
+}
+
+// A device that can receive tabs sent via Send Tab to Self.
+export declare interface SendTabToSelfDevice {
+  // A unique identifier for the device. Pass this as the target device when
+  // sending a tab.
+  deviceGuid: string;
+  // The user-visible name of the device.
+  deviceName: string;
+  // The form factor of the device.
+  formFactor: FormFactor;
+  // The time when the device last updated its sync metadata.
+  lastUpdatedTime?: Date;
 }
 
 // Information about a conversation.

@@ -946,6 +946,9 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
   if (base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)) {
     state->host_capabilities.push_back(mojom::HostCapability::kSkillsV2);
   }
+  if (base::FeatureList::IsEnabled(mojom::features::kGlicSendTabToSelf)) {
+    state->host_capabilities.push_back(mojom::HostCapability::kSendTabToSelf);
+  }
   state->enable_get_page_metadata =
       base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);
   if (base::FeatureList::IsEnabled(

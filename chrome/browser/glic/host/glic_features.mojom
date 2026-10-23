@@ -26,3 +26,9 @@ feature kGlicActivateTabApi {
   const string name = "GlicActivateTabApi";
   const bool default_state = true;
 };
+
+// Enables the Send Tab to Self APIs in Glic.
+feature kGlicSendTabToSelf {
+  const string name = "GlicSendTabToSelf";
+  const bool default_state = false;
+};

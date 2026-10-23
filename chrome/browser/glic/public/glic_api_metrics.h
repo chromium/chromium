@@ -119,6 +119,7 @@ enum class GlicHostApiRequestId {
   kOpenContactInfoSettingsPage = 105,
   kSetClientStorageItem = 106,
   kClearClientStorage = 107,
+  kGetSendTabToSelfDevices = 108,
 };
 // LINT.ThenChange(
 // //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,

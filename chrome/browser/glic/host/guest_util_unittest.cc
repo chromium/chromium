@@ -502,6 +502,32 @@ TEST_F(GuestUtilMultiInstanceTest,
               Contains(mojom::HostCapability::kNoWebview));
 }
 
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_SendTabToSelfDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(mojom::features::kGlicSendTabToSelf);
+
+  TestingProfile* profile = CreateTestingProfile();
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_THAT(state->host_capabilities,
+              Not(Contains(mojom::HostCapability::kSendTabToSelf)));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_SendTabToSelfEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(mojom::features::kGlicSendTabToSelf);
+
+  TestingProfile* profile = CreateTestingProfile();
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_THAT(state->host_capabilities,
+              Contains(mojom::HostCapability::kSendTabToSelf));
+}
+
 TEST_F(GuestUtilTest, IsOriginAllowedGlicApiWildcardMatching) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(

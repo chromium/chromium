@@ -210,6 +210,8 @@ std::string_view ToString(GlicHostApiRequestId request_id) {
       return "SetClientStorageItem";
     case GlicHostApiRequestId::kClearClientStorage:
       return "ClearClientStorage";
+    case GlicHostApiRequestId::kGetSendTabToSelfDevices:
+      return "GetSendTabToSelfDevices";
   }
   return "";
 }

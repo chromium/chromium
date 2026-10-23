@@ -44,6 +44,7 @@ import type {                                                                //
              PinTabsOptions as PinTabsOptionsMojo,                           //
              Screenshot as ScreenshotMojo,                                   //
              ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, //
+             SendTabToSelfDevice as SendTabToSelfDeviceMojo,                 //
              SkillsPayload as SkillsPayloadMojo,                             //
              TabContextOptions as TabContextOptionsMojo,                     //
              TabContextResult as TabContextResultMojo,                       //
@@ -87,6 +88,7 @@ import type {                                                   //
              PinTrigger,                                        //
              Screenshot,                                        //
              ScreenshotCollectionOptions,                       //
+             SendTabToSelfDevice,                               //
              SkillsPayload,                                     //
              TabContextOptions,                                 //
              TabContextResult,                                  //
@@ -173,6 +175,16 @@ export function screenshotToClient(screenshot: ScreenshotMojo|null): Screenshot|
     mimeType: screenshot.mimeType,
     originAnnotations: {},
     encryptionScheme: enumToClient(screenshot.encryptionScheme),
+  };
+}
+
+export function sendTabToSelfDeviceToClient(device: SendTabToSelfDeviceMojo):
+    SendTabToSelfDevice {
+  return {
+    deviceGuid: device.deviceGuid,
+    deviceName: device.deviceName,
+    formFactor: enumToClient(device.formFactor),
+    lastUpdatedTime: timeToClient(device.lastUpdatedTime),
   };
 }
 
