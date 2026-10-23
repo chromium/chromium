@@ -5,6 +5,7 @@
 #include "components/autofill/content/browser/integrators/email_verifier/email_verifier_delegate.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -17,6 +18,7 @@
 #include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,10 +35,13 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/strike_databases/evp/email_verification_not_signed_in_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/evp/email_verification_strike_database.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -120,6 +125,52 @@ content::webid::EmailVerifier* GetOrCreateEmailVerifier(
   }
 
   return content::webid::EmailVerifier::GetOrCreateForFrame(rfh);
+}
+
+// Returns a human-readable description of `result` for
+// chrome://autofill-internals.
+std::string_view FlowResultToString(EvpAutofillFlowResult result) {
+  switch (result) {
+    case EvpAutofillFlowResult::kSuccess:
+      return "Success.";
+    case EvpAutofillFlowResult::kTokenFieldHasNoNonce:
+      return "The email verification token field has no nonce or an empty "
+             "nonce attribute.";
+    case EvpAutofillFlowResult::kUserPrefDisabled:
+      return "The user turned off email verification in the settings.";
+    case EvpAutofillFlowResult::kStrikeDatabaseBlock:
+      return "Blocked because the user declined or dismissed the permission "
+             "prompt for this email address too many times.";
+    case EvpAutofillFlowResult::kVerifierUnavailable:
+      return "The email verifier is unavailable because the "
+             "EmailVerificationProtocol feature or origin trial is not enabled "
+             "for this frame.";
+    case EvpAutofillFlowResult::kNotVerifiable:
+      return "The email address is not verifiable.";
+    case EvpAutofillFlowResult::kUserDeclinedPermissionPrompt:
+      return "The user declined the permission prompt.";
+    case EvpAutofillFlowResult::kUserIgnoredPermissionPrompt:
+      return "The permission prompt or loading UI was dismissed, ignored or "
+             "could not be shown.";
+    case EvpAutofillFlowResult::kVerificationFailed:
+      return "The issuer did not issue a valid email verification token.";
+    case EvpAutofillFlowResult::kManagerDestroyed:
+      return "The AutofillManager was destroyed during the flow.";
+    case EvpAutofillFlowResult::kTokenSentToRenderer:
+      return "Success: the email verification token was sent to the renderer.";
+    case EvpAutofillFlowResult::kDriverInactive:
+      return "The frame became inactive during the flow.";
+    case EvpAutofillFlowResult::kPageNavigatedDuringVerification:
+      return "The page navigated or the form was submitted while the token was "
+             "being issued.";
+    case EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable:
+      return "The page navigated or the form was submitted while checking "
+             "whether the email address is verifiable.";
+    case EvpAutofillFlowResult::kNotSignedInStrikeDatabaseBlock:
+      return "Blocked because the user was repeatedly not signed in to the "
+             "issuer with this email address.";
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -466,6 +517,9 @@ void EmailVerifierDelegate::MetricsObserver::OnFlowCompleted(
 void EmailVerifierDelegate::NotifyFlowCompleted(FieldGlobalId field_id,
                                                 EvpAutofillFlowResult result) {
   base::UmaHistogramEnumeration("Blink.Evp.Autofill.FlowResult", result);
+  LOG_AF(client_->GetCurrentLogManager())
+      << LoggingScope::kEmailVerification
+      << "Email verification flow finished: " << FlowResultToString(result);
 
   if (auto it = pending_request_metrics_.find(field_id);
       it != pending_request_metrics_.end()) {

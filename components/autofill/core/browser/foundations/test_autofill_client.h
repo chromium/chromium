@@ -551,6 +551,10 @@ class TestAutofillClientTemplate : public T {
 
   LogManager* GetCurrentLogManager() override { return log_manager_.get(); }
 
+  // Returns the LogRouter that receives the logs of `GetCurrentLogManager()`.
+  // Register a LogReceiver on it to inspect chrome://autofill-internals logs.
+  LogRouter& log_router() { return log_router_; }
+
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
       override {
     return form_interactions_ukm_logger_;

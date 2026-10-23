@@ -782,6 +782,7 @@ function setUpScopeCheckboxes() {
     {id: 'AutofillActor'},
     {id: 'OneTimeTokens'},
     {id: 'AtMemory'},
+    {id: 'EmailVerification'},
   ];
   // LINT.ThenChange(
   //     //components/autofill/core/common/autofill_internals/logging_scope.h:LoggingScope,
