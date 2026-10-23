@@ -1,3 +1,10 @@
 include_rules = [
-  "+components/browser_actuator",
+  "+components/browser_actuator/public",
 ]
+
+specific_include_rules = {
+  "browser_actuator_message_handler_unittest\\.cc": [
+    "+components/browser_actuator/internal",
+    "+components/browser_actuator/test_support",
+  ],
+}
