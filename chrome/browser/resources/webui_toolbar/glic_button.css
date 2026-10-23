@@ -27,11 +27,17 @@
 
 /* Match the toolbar background (see ToolbarGlicButton::UpdateStyle()). Uses a
  * solid toolbar color rather than transparent so that it matches native views
- * when the theme has a background image.
- * TODO(crbug.com/510825665): Support the custom (extension) theme fallback
- * colors used by ToolbarGlicButton::ShouldApplyCustomThemeFallback(). */
+ * when the theme has a background image. */
 #button[match-toolbar-style] {
   --toolbar-chip-bg-color: var(--color-toolbar);
+}
+
+/* Custom (extension) theme fallback (see
+ * GlicButton::ShouldApplyCustomThemeFallback()). */
+#button[custom-theme-fallback] {
+  --toolbar-chip-bg-color: var(--color-avatar-button-highlight-default);
+  --toolbar-chip-fg-color:
+      var(--color-avatar-button-highlight-default-foreground);
 }
 
 :host(.anchor-highlight) #button {

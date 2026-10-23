@@ -35,6 +35,9 @@ class WebUIGlicControl : public glic::ToolbarGlicButtonInterface,
   void OnClicked();
   void HandleContextMenu(const gfx::Rect& screen_rect,
                          ui::mojom::MenuSourceType source);
+  // Re-evaluates whether the custom (extension) theme fallback colors should be
+  // used, mirroring `glic::ToolbarGlicButton::OnThemeChanged()`.
+  void OnThemeChanged();
   bool IsVisible() const { return should_show_ && is_pinned_; }
   bool IsContextMenuShowingForTesting() const;
 
@@ -53,6 +56,7 @@ class WebUIGlicControl : public glic::ToolbarGlicButtonInterface,
   void OnMenuClosed();
   void OnPrefChanged();
   void UpdateState();
+  bool ShouldApplyCustomThemeFallback() const;
 
   const raw_ptr<WebUIToolbarControlDelegate> delegate_;
   raw_ptr<Profile> profile_ = nullptr;
@@ -67,6 +71,7 @@ class WebUIGlicControl : public glic::ToolbarGlicButtonInterface,
   bool should_show_ = false;
   bool is_showing_nudge_ = false;
   bool should_match_toolbar_style_ = false;
+  bool use_custom_theme_fallback_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_GLIC_CONTROL_H_

@@ -6,14 +6,21 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_helper.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,13 +43,42 @@ auto GlicButtonStateMatches(bool open,
                      is_context_menu_visible)));
 }
 
+class FakeThemeService : public ThemeService {
+ public:
+  explicit FakeThemeService(Profile* profile)
+      : ThemeService(profile, GetFakeThemeHelper()) {}
+
+  bool UsingExtensionTheme() const override {
+    return is_using_extension_theme_;
+  }
+  void set_using_extension_theme(bool value) {
+    is_using_extension_theme_ = value;
+  }
+
+ private:
+  static const ThemeHelper& GetFakeThemeHelper() {
+    static base::NoDestructor<ThemeHelper> helper;
+    return *helper;
+  }
+
+  bool is_using_extension_theme_ = false;
+};
+
 }  // namespace
 
 class WebUIGlicControlTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    profile_ = std::make_unique<TestingProfile>();
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        ThemeServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<FakeThemeService>(
+              Profile::FromBrowserContext(context));
+        }));
+    profile_ = profile_builder.Build();
 
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     view_ = widget_->SetContentsView(std::make_unique<views::View>());
@@ -80,6 +116,11 @@ class WebUIGlicControlTest : public ChromeViewsTestBase {
       browser_interface_;
   std::unique_ptr<testing::NiceMock<MockWebUIToolbarControlDelegate>> delegate_;
   std::unique_ptr<WebUIGlicControl> control_;
+
+  FakeThemeService* theme_service() {
+    return static_cast<FakeThemeService*>(
+        ThemeServiceFactory::GetForProfile(profile_.get()));
+  }
 };
 
 TEST_F(WebUIGlicControlTest, PrefChangeNotifiesDelegate) {
@@ -197,4 +238,44 @@ TEST_F(WebUIGlicControlTest, UpdateStyleNotifiesDelegate) {
           &toolbar_ui_api::mojom::GlicButtonState::should_match_toolbar_style,
           false))));
   control_->UpdateStyle(false);
+}
+
+TEST_F(WebUIGlicControlTest, InitSetsCustomThemeFallback) {
+  theme_service()->set_using_extension_theme(true);
+  auto control = std::make_unique<WebUIGlicControl>(delegate_.get());
+
+  // OnThemeChanged() before Init() is a no-op.
+  EXPECT_CALL(*delegate_, OnGlicButtonStateChanged).Times(0);
+  control->OnThemeChanged();
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  EXPECT_CALL(
+      *delegate_,
+      OnGlicButtonStateChanged(testing::Pointee(testing::Field(
+          &toolbar_ui_api::mojom::GlicButtonState::use_custom_theme_fallback,
+          true))));
+  control->Init();
+}
+
+TEST_F(WebUIGlicControlTest, OnThemeChangedUpdatesCustomThemeFallback) {
+  EXPECT_CALL(
+      *delegate_,
+      OnGlicButtonStateChanged(testing::Pointee(testing::Field(
+          &toolbar_ui_api::mojom::GlicButtonState::use_custom_theme_fallback,
+          true))));
+  theme_service()->set_using_extension_theme(true);
+  control_->OnThemeChanged();
+
+  // A theme change that doesn't affect the fallback is a no-op.
+  EXPECT_CALL(*delegate_, OnGlicButtonStateChanged).Times(0);
+  control_->OnThemeChanged();
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  EXPECT_CALL(
+      *delegate_,
+      OnGlicButtonStateChanged(testing::Pointee(testing::Field(
+          &toolbar_ui_api::mojom::GlicButtonState::use_custom_theme_fallback,
+          false))));
+  theme_service()->set_using_extension_theme(false);
+  control_->OnThemeChanged();
 }

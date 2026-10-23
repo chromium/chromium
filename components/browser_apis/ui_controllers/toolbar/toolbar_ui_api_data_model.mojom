@@ -318,6 +318,11 @@ struct GlicButtonState {
   // the highlighted Glic chip background. Mirrors
   // `glic::ToolbarGlicButton::UpdateStyle()`.
   bool should_match_toolbar_style = false;
+  // Whether a custom (extension) theme is in use, in which case the button
+  // uses the avatar button highlight colors regardless of
+  // `should_match_toolbar_style`. Mirrors
+  // `glic::GlicButton::ShouldApplyCustomThemeFallback()`.
+  bool use_custom_theme_fallback = false;
   // Dynamic nudge label to display in the button when a nudge is active, if
   // available. This string is for display only and must not be
   // programmatically parsed.

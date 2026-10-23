@@ -718,6 +718,7 @@ if (toolkit_views) {
       "//chrome/browser:flags",
       "//chrome/browser/history",
       "//chrome/browser/sessions",
+      "//chrome/browser/themes",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui:test_support",

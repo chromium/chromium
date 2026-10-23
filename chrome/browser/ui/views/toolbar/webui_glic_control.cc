@@ -13,6 +13,8 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,6 +52,7 @@ void WebUIGlicControl::Init() {
     is_panel_open_ =
         glic_service->IsPanelShowingForBrowser(*delegate_->GetBrowser());
   }
+  use_custom_theme_fallback_ = ShouldApplyCustomThemeFallback();
 
   is_initialized_ = true;
   UpdateState();
@@ -155,6 +158,26 @@ void WebUIGlicControl::UpdateStyle(bool should_match_toolbar) {
   UpdateState();
 }
 
+void WebUIGlicControl::OnThemeChanged() {
+  if (!is_initialized_) {
+    return;
+  }
+  const bool use_custom_theme_fallback = ShouldApplyCustomThemeFallback();
+  if (use_custom_theme_fallback_ == use_custom_theme_fallback) {
+    return;
+  }
+  use_custom_theme_fallback_ = use_custom_theme_fallback;
+  UpdateState();
+}
+
+bool WebUIGlicControl::ShouldApplyCustomThemeFallback() const {
+  if (!profile_) {
+    return false;
+  }
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
+  return theme_service && theme_service->UsingExtensionTheme();
+}
+
 bool WebUIGlicControl::IsContextMenuShowingForTesting() const {
   return menu_runner_ && menu_runner_->IsRunning();
 }
@@ -200,6 +223,7 @@ void WebUIGlicControl::UpdateState() {
   state->should_show = IsVisible();
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
   state->should_match_toolbar_style = should_match_toolbar_style_;
+  state->use_custom_theme_fallback = use_custom_theme_fallback_;
   if (is_showing_nudge_ && !nudge_label_.empty()) {
     state->nudge_label = nudge_label_;
   }

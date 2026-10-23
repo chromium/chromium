@@ -337,6 +337,7 @@ export class ToolbarAppElement extends AppElementBase {
       shouldShow: false,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     },
     layoutConstantsVersion:

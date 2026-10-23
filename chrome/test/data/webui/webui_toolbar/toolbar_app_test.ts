@@ -166,6 +166,7 @@ function createMockToolbarState() {
       shouldShow: false,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null as string | null,
     },
     overflowButtonControlState: {

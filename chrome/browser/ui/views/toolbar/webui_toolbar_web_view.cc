@@ -628,6 +628,9 @@ void WebUIToolbarWebView::OnThemeChanged() {
   if (features::IsWebUIPinnedToolbarActionsEnabled()) {
     pinned_toolbar_actions_.OnThemeChanged();
   }
+  if (features::IsWebUIGlicButtonEnabled()) {
+    glic_control_.OnThemeChanged();
+  }
   extensions_container_.OnThemeChanged();
   icon_table_.OnThemeChanged();
 }

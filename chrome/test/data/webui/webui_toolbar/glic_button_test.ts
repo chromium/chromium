@@ -74,6 +74,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -94,6 +95,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -116,6 +118,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -141,6 +144,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: true,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -156,6 +160,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -199,6 +204,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: 'Summarize this page',
     };
     await element.updateComplete;
@@ -220,6 +226,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: 'Summarize this page',
     };
     await element.updateComplete;
@@ -232,6 +239,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -326,6 +334,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -337,6 +346,7 @@ suite('GlicButtonTest', function() {
       shouldShow: false,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -388,6 +398,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -412,6 +423,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: 'Summarize this page',
     };
     await element.updateComplete;
@@ -434,6 +446,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -523,6 +536,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -534,6 +548,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -545,6 +560,7 @@ suite('GlicButtonTest', function() {
       shouldShow: true,
       isContextMenuVisible: false,
       shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
       nudgeLabel: 'Summarize',
     };
     await element.updateComplete;
@@ -581,5 +597,49 @@ suite('GlicButtonTest', function() {
     await element.updateComplete;
     assertFalse(chip.hasAttribute('match-toolbar-style'));
     assertEquals(glicBgColor, bgColor());
+  });
+
+  test('CustomThemeFallbackOverridesChipColors', async function() {
+    // Define the color variables explicitly so that a missing or misspelled
+    // variable name resolves to '' and fails the assertions below.
+    const glicBgColor = 'rgb(1, 2, 3)';
+    const toolbarColor = 'rgb(4, 5, 6)';
+    const fallbackBgColor = 'rgb(7, 8, 9)';
+    const fallbackFgColor = 'rgb(10, 11, 12)';
+    element.style.setProperty(
+        '--color-toolbar-glic-button-background-default', glicBgColor);
+    element.style.setProperty('--color-toolbar', toolbarColor);
+    element.style.setProperty(
+        '--color-avatar-button-highlight-default', fallbackBgColor);
+    element.style.setProperty(
+        '--color-avatar-button-highlight-default-foreground', fallbackFgColor);
+
+    const chip = element.$.button;
+    const chipVar = (name: string) =>
+        getComputedStyle(chip).getPropertyValue(name).trim();
+    assertFalse(chip.hasAttribute('custom-theme-fallback'));
+    assertEquals(glicBgColor, chipVar('--toolbar-chip-bg-color'));
+    assertEquals('', chipVar('--toolbar-chip-fg-color'));
+
+    element.state = {...element.state, useCustomThemeFallback: true};
+    await element.updateComplete;
+    assertTrue(chip.hasAttribute('custom-theme-fallback'));
+    assertEquals(fallbackBgColor, chipVar('--toolbar-chip-bg-color'));
+    assertEquals(fallbackFgColor, chipVar('--toolbar-chip-fg-color'));
+
+    // The fallback takes precedence over matching the toolbar style.
+    element.state = {...element.state, shouldMatchToolbarStyle: true};
+    await element.updateComplete;
+    assertTrue(chip.hasAttribute('custom-theme-fallback'));
+    assertTrue(chip.hasAttribute('match-toolbar-style'));
+    assertEquals(fallbackBgColor, chipVar('--toolbar-chip-bg-color'));
+    assertEquals(fallbackFgColor, chipVar('--toolbar-chip-fg-color'));
+
+    element.state = {...element.state, useCustomThemeFallback: false};
+    await element.updateComplete;
+    assertFalse(chip.hasAttribute('custom-theme-fallback'));
+    assertTrue(chip.hasAttribute('match-toolbar-style'));
+    assertEquals(toolbarColor, chipVar('--toolbar-chip-bg-color'));
+    assertEquals('', chipVar('--toolbar-chip-fg-color'));
   });
 });

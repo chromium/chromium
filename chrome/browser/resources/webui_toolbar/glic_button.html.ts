@@ -12,6 +12,7 @@ export function getHtml(this: GlicButtonElement) {
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
     ?has-label="${this.shouldShowLabel_()}"
     ?match-toolbar-style="${this.state.shouldMatchToolbarStyle}"
+    ?custom-theme-fallback="${this.state.useCustomThemeFallback}"
     ?is-menu-open="${this.state.open || this.state.isContextMenuVisible}"
     .disabled="${!this.enabled}" .tooltip="${this.getTooltip_()}"
     .ariaLabel="${this.getAriaLabel_()}"
