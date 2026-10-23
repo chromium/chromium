@@ -355,11 +355,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Emulation module
       // keep-sorted start block=yes
       case 'emulation.setForcedColorsModeThemeOverride':
-        this.#parser.parseSetForcedColorsModeThemeOverrideParams(
-          command.params,
-        );
-        throw new UnsupportedOperationException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#emulationProcessor.setForcedColorsModeThemeOverride(
+          this.#parser.parseSetForcedColorsModeThemeOverrideParams(
+            command.params,
+          ),
         );
       case 'emulation.setGeolocationOverride':
         return await this.#emulationProcessor.setGeolocationOverride(

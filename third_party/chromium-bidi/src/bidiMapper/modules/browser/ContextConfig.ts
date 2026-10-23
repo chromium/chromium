@@ -48,6 +48,7 @@ export class ContextConfig {
   emulatedNetworkConditions?: Emulation.NetworkConditions | null;
   // Extra headers are kept in CDP format.
   extraHeaders?: Protocol.Network.Headers;
+  forcedColorsModeTheme?: Emulation.ForcedColorsModeTheme | null;
   geolocation?:
     | Emulation.GeolocationCoordinates
     | Emulation.GeolocationPositionError

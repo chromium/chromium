@@ -45,6 +45,36 @@ export class EmulationProcessor {
     this.#contextConfigStorage = contextConfigStorage;
   }
 
+  async setForcedColorsModeThemeOverride(
+    params: Emulation.SetForcedColorsModeThemeOverrideParameters,
+  ): Promise<EmptyResult> {
+    const relatedBrowsingContexts =
+      await this.#contextConfigStorage.updateConfig(
+        {
+          forcedColorsModeTheme: params.theme,
+        },
+        params.contexts,
+        params.userContexts,
+      );
+
+    await Promise.all(
+      relatedBrowsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setEmulatedMedia(
+          config.mediaFeatures ?? null,
+          config.forcedColorsModeTheme ?? null,
+        );
+      }),
+    );
+    return {};
+  }
+
   async setGeolocationOverride(
     params: Emulation.SetGeolocationOverrideParameters,
   ): Promise<EmptyResult> {
@@ -181,7 +211,10 @@ export class EmulationProcessor {
           context.userContext,
         );
 
-        await context.setMediaFeaturesOverride(config.mediaFeatures ?? null);
+        await context.setEmulatedMedia(
+          config.mediaFeatures ?? null,
+          config.forcedColorsModeTheme ?? null,
+        );
       }),
     );
     return {};

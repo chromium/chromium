@@ -802,8 +802,16 @@ export class CdpTarget {
         promises.push(this.setTouchOverride(config.maxTouchPoints));
       }
 
-      if (config.mediaFeatures !== undefined) {
-        promises.push(this.setMediaFeaturesOverride(config.mediaFeatures));
+      if (
+        config.mediaFeatures !== undefined ||
+        config.forcedColorsModeTheme !== undefined
+      ) {
+        promises.push(
+          this.setEmulatedMedia(
+            config.mediaFeatures ?? null,
+            config.forcedColorsModeTheme ?? null,
+          ),
+        );
       }
     }
 
@@ -1117,22 +1125,34 @@ export class CdpTarget {
     ]);
   }
 
-  async setMediaFeaturesOverride(
+  async setEmulatedMedia(
     mediaFeatures: Emulation.MediaFeatures | null,
+    forcedColorsModeTheme: Emulation.ForcedColorsModeTheme | null,
   ): Promise<void> {
     if (!CdpTarget.isFrameTarget(this.#targetType)) {
       // Media emulation is only supported on frame targets.
       return;
     }
-    const features: Protocol.Emulation.MediaFeature[] = [];
+    const featuresMap = new Map<string, string>();
+    if (forcedColorsModeTheme !== null) {
+      featuresMap.set('forced-colors', 'active');
+      featuresMap.set('prefers-color-scheme', forcedColorsModeTheme);
+    }
+    // Explicit `emulation.setMediaFeaturesOverride` values take precedence over
+    // the defaults derived from `forcedColorsModeTheme` (BiDi spec §8.3.2).
+    // Note: in Blink (`InspectorEmulationAgent::setEmulatedMedia`),
+    // `prefers-color-scheme` also selects the forced-colors palette and
+    // `forced-colors: none` disables forced colors entirely, so CDP cannot
+    // currently decouple the forced-colors palette from those media queries.
     for (const [name, value] of Object.entries(mediaFeatures ?? {})) {
       if (value !== null && value !== undefined) {
-        features.push({
-          name,
-          value: String(value),
-        });
+        featuresMap.set(name, String(value));
       }
     }
+    const features: Protocol.Emulation.MediaFeature[] = Array.from(
+      featuresMap,
+      ([name, value]) => ({name, value}),
+    );
 
     await this.cdpClient.sendCommand('Emulation.setEmulatedMedia', {
       features,
