@@ -56,6 +56,7 @@ source_set("omnibox") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/views/frame:app_menu_button_observer",
     "//chrome/browser/ui/webui/cr_components/searchbox",
+    "//chrome/browser/ui/webui/omnibox_popup/mojom",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
     "//components/omnibox/browser",

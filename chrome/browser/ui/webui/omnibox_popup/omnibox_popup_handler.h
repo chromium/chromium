@@ -90,7 +90,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
                      bool is_focused,
                      const std::string& permanent_display_text,
                      bool show_full_url,
-                     bool query_zps,
+                     omnibox_popup::mojom::MatchesUpdate matches_update,
                      searchbox::mojom::InputKeywordModelPtr keyword_model,
                      bool is_tab_switch);
   void SetFocus(bool is_focused,

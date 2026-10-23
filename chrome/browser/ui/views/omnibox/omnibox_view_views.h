@@ -469,6 +469,14 @@ class OmniboxViewViews
   // user made a selection via a click-drag gesture.
   bool select_all_on_mouse_release_ = false;
 
+  // In Full WebUI mode, whether the current click gesture requested zero-prefix
+  // suggestions on mouse release. This is set by the single click that opens
+  // the popup and is carried over to the later clicks of the same multi-click
+  // gesture, so that those clicks keep the dropdown open. Those later clicks
+  // land on the newly opened popup, which forwards them to this view for a
+  // short time (see `OmniboxPopupFullPresenter::Show()`).
+  bool click_gesture_requested_zps_ = false;
+
   // Indicates if we want to select all text in the omnibox when we get a
   // GESTURE_TAP. We want to select all only when the textfield is not in focus
   // and gets a tap. So we use this variable to remember focus state before tap.

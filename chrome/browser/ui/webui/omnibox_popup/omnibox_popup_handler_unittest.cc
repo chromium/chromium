@@ -121,7 +121,8 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
   std::string full_url = "test.com";
   std::string permanent_display_text = "permanent.com";
   bool show_full_url = true;
-  bool query_zps = true;
+  omnibox_popup::mojom::MatchesUpdate matches_update =
+      omnibox_popup::mojom::MatchesUpdate::kPreserveMatches;
   EXPECT_CALL(page_, SetInputState(testing::_))
       .WillOnce([&](omnibox_popup::mojom::OmniboxInputStatePtr state) {
         EXPECT_EQ(state->text, test_text);
@@ -131,7 +132,7 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
         EXPECT_TRUE(state->is_focused);
         EXPECT_EQ(state->permanent_display_text, permanent_display_text);
         EXPECT_TRUE(state->show_full_url);
-        EXPECT_TRUE(state->query_zps);
+        EXPECT_EQ(state->matches_update, matches_update);
         EXPECT_TRUE(state->is_tab_switch);
         EXPECT_TRUE(state->url_emphasis);
         EXPECT_TRUE(state->unelided_url_emphasis);
@@ -139,7 +140,7 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
   handler_->SetInputState(test_text, test_selection,
                           /*user_input_in_progress=*/true, full_url,
                           /*is_focused=*/true, permanent_display_text,
-                          show_full_url, query_zps,
+                          show_full_url, matches_update,
                           /*keyword_model=*/nullptr,
                           /*is_tab_switch=*/true);
   page_.FlushForTesting();
@@ -171,7 +172,8 @@ TEST_F(OmniboxPopupHandlerTest, OnSelectionChangedSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*show_full_url=*/false,
+                          omnibox_popup::mojom::MatchesUpdate::kDefault,
                           /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
 
   // A call with stale sequence number 0 should be discarded.
@@ -232,7 +234,8 @@ TEST_F(OmniboxPopupHandlerTest, OnInputClearedSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*show_full_url=*/false,
+                          omnibox_popup::mojom::MatchesUpdate::kDefault,
                           /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
   omnibox_controller->edit_model()->SetUserText(u"some text");
   test_omnibox_view->SetWindowTextAndCaretPos(u"some text", 0, false, false);
@@ -262,7 +265,8 @@ TEST_F(OmniboxPopupHandlerTest, RevertSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*show_full_url=*/false,
+                          omnibox_popup::mojom::MatchesUpdate::kDefault,
                           /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
   omnibox_controller->edit_model()->SetUserText(u"draft text");
 
@@ -294,7 +298,8 @@ TEST_F(OmniboxPopupHandlerTest, OnPasteSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*show_full_url=*/false,
+                          omnibox_popup::mojom::MatchesUpdate::kDefault,
                           /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
 
   // A call with stale sequence number 0 should be discarded.
@@ -325,7 +330,8 @@ TEST_F(OmniboxPopupHandlerTest, OnPasteUpdatesEditModel) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*show_full_url=*/false,
+                          omnibox_popup::mojom::MatchesUpdate::kDefault,
                           /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
 
   // OnPaste with valid sequence number 1 should:
@@ -370,7 +376,8 @@ TEST_F(OmniboxPopupHandlerTest, OnCutOrCopySequenceGuard) {
   handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*show_full_url=*/false,
+                          omnibox_popup::mojom::MatchesUpdate::kDefault,
                           /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
 
   // Stale call (sequence 0) discarded.
@@ -405,7 +412,8 @@ TEST_F(OmniboxPopupHandlerTest, OnCutUpdatesEditModel) {
   handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*show_full_url=*/false,
+                          omnibox_popup::mojom::MatchesUpdate::kDefault,
                           /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
 
   // OnCut (is_cut = true) cutting "example" (range 8-15) from
@@ -456,7 +464,8 @@ TEST_F(OmniboxPopupHandlerTest, OnCopyUpdatesEditModel) {
   handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*show_full_url=*/false,
+                          omnibox_popup::mojom::MatchesUpdate::kDefault,
                           /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
 
   // Set focus on edit model to record last_omnibox_focus timestamp.
@@ -516,7 +525,8 @@ TEST_F(OmniboxPopupHandlerTest, OnCopyZeroSuggestUpdatesEditModel) {
   handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/true,
+                          /*show_full_url=*/false,
+                          omnibox_popup::mojom::MatchesUpdate::kQueryZps,
                           /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
 
   // Set focus on edit model to record last_omnibox_focus timestamp.
@@ -580,12 +590,12 @@ TEST_F(OmniboxPopupHandlerTest, SetInputStateUrlEmphasisWithNullController) {
       .WillOnce([&](omnibox_popup::mojom::OmniboxInputStatePtr state) {
         captured_state = std::move(state);
       });
-  handler_->SetInputState("example.com/path", gfx::Range(0, 0),
-                          /*user_input_in_progress=*/false,
-                          "https://example.com/path",
-                          /*is_focused=*/true, "example.com/path",
-                          /*show_full_url=*/false, /*query_zps=*/false,
-                          /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
+  handler_->SetInputState(
+      "example.com/path", gfx::Range(0, 0),
+      /*user_input_in_progress=*/false, "https://example.com/path",
+      /*is_focused=*/true, "example.com/path",
+      /*show_full_url=*/false, omnibox_popup::mojom::MatchesUpdate::kDefault,
+      /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
   page_.FlushForTesting();
   ASSERT_TRUE(captured_state);
   ASSERT_TRUE(captured_state->url_emphasis);
@@ -617,7 +627,8 @@ TEST_F(OmniboxPopupHandlerTest, SetInputStateUrlEmphasisWithController) {
     handler->SetInputState(text, gfx::Range(0, 0), user_input_in_progress,
                            full_url,
                            /*is_focused=*/true, text, /*show_full_url=*/false,
-                           /*query_zps=*/false, /*keyword_model=*/nullptr,
+                           omnibox_popup::mojom::MatchesUpdate::kDefault,
+                           /*keyword_model=*/nullptr,
                            /*is_tab_switch=*/false);
     local_page.FlushForTesting();
     return captured_state;
@@ -740,7 +751,8 @@ TEST_F(OmniboxPopupHandlerTest, SetInputStatePopulatesCurrentMatch) {
                          /*full_url=*/"https://google.com/",
                          /*is_focused=*/true,
                          /*permanent_display_text=*/"https://google.com/",
-                         /*show_full_url=*/false, /*query_zps=*/false,
+                         /*show_full_url=*/false,
+                         omnibox_popup::mojom::MatchesUpdate::kDefault,
                          /*keyword_model=*/nullptr, /*is_tab_switch=*/true);
   local_page.FlushForTesting();
 

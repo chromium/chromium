@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -570,6 +571,9 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Returns the last click root location (relative to the root window).
   gfx::Point GetLastClickRootLocation() const;
+
+  // Returns the time stamp of the last click.
+  base::TimeTicks GetLastClickTime() const;
 
   // Called when PasteSelectionClipboard() is done reading text from the
   // clipboard. The callback is passed the result of the paste operation, i.e.

@@ -116,8 +116,20 @@ void OmniboxPopupViewFullWebUI::UpdatePopupAppearance() {
 }
 
 void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
-  TRACE_EVENT1("omnibox", "OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI",
-               "query_zps", query_zps);
+  SyncNativeStateToWebUIImpl(
+      query_zps ? omnibox_popup::mojom::MatchesUpdate::kQueryZps
+                : omnibox_popup::mojom::MatchesUpdate::kDefault);
+}
+
+void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIPreservingMatches() {
+  SyncNativeStateToWebUIImpl(
+      omnibox_popup::mojom::MatchesUpdate::kPreserveMatches);
+}
+
+void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIImpl(
+    omnibox_popup::mojom::MatchesUpdate matches_update) {
+  TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI",
+              "matches_update", matches_update);
   auto* edit_model = controller()->edit_model();
 
   edit_model->ResetDisplayTexts();
@@ -191,7 +203,11 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
   bool selection_changed = selection != handler_selection;
   bool focus_changed = !last_sent_focus_ || focus != *last_sent_focus_;
 
-  if (text_changed || selection_changed || focus_changed || query_zps) {
+  // Always send for a zero-prefix query, or when preserving matches, even if
+  // nothing else changed, so that WebUI starts the query or stops any
+  // in-flight one, respectively.
+  if (text_changed || selection_changed || focus_changed ||
+      matches_update != omnibox_popup::mojom::MatchesUpdate::kDefault) {
     searchbox::mojom::InputKeywordModelPtr keyword_model =
         CreateInputKeywordModel(
             edit_model->keyword_state(), edit_model->keyword(),
@@ -205,7 +221,7 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
         base::UTF16ToUTF8(text), selection, user_input_in_progress,
         base::UTF16ToUTF8(full_url), edit_model->has_focus(),
         base::UTF16ToUTF8(permanent_display_text), /*show_full_url=*/false,
-        query_zps, std::move(keyword_model), /*is_tab_switch=*/false);
+        matches_update, std::move(keyword_model), /*is_tab_switch=*/false);
     last_sent_text_ = text;
     last_sent_focus_ = focus;
   }
@@ -429,7 +445,8 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
         base::UTF16ToUTF8(text), selection, non_empty_user_input_in_progress,
         base::UTF16ToUTF8(full_url), should_focus_popup,
         base::UTF16ToUTF8(permanent_display_text), show_full_url,
-        /*query_zps=*/false, std::move(keyword_model), is_tab_switch);
+        omnibox_popup::mojom::MatchesUpdate::kDefault, std::move(keyword_model),
+        is_tab_switch);
     last_sent_text_ = text;
     last_sent_focus_ = should_focus_popup;
   }

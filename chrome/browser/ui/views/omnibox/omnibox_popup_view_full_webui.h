@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
+#include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/range/range.h"
 
@@ -44,6 +45,7 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // Syncs the text and selection state from the native location bar to the
   // WebUI omnibox.
   void SyncNativeStateToWebUI(bool query_zps) override;
+  void SyncNativeStateToWebUIPreservingMatches() override;
   // Saves the current omnibox state (e.g. input) to the given tab's
   // user data, so it can be restored when switching back to this tab.
   void SaveStateToTab(content::WebContents* tab) override;
@@ -84,6 +86,13 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
  private:
   // Gets the OmniboxPopupHandler associated with this view's WebUI.
   OmniboxPopupHandler* GetPopupHandler();
+
+  // Implements `SyncNativeStateToWebUI()` and
+  // `SyncNativeStateToWebUIPreservingMatches()`. For
+  // `MatchesUpdate::kPreserveMatches`, the input state is sent even if
+  // unchanged, so that WebUI stops any in-flight query.
+  void SyncNativeStateToWebUIImpl(
+      omnibox_popup::mojom::MatchesUpdate matches_update);
 
   // Caches the last text string sent to the WebUI to avoid redundant IPCs.
   // Null after a state reset (e.g., tab switch).
