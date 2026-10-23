@@ -41,23 +41,6 @@ using content::NavigationThrottle;
 using ::testing::_;
 using ::testing::Return;
 
-namespace {
-
-void EnableManager(enterprise_auth::PlatformAuthProviderManager& manager,
-                   bool enabled) {
-  base::MockCallback<base::OnceClosure> callback;
-  base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run()).WillOnce([&run_loop]() {
-    run_loop.QuitWhenIdle();
-  });
-  manager.SetEnabled(enabled, callback.Get());
-  EXPECT_EQ(manager.IsEnabled(), enabled);
-  run_loop.Run();
-  EXPECT_EQ(manager.IsEnabled(), enabled);
-}
-
-}  // namespace
-
 namespace enterprise_auth {
 
 class PlatformAuthNavigationThrottleTest : public testing::Test {
@@ -114,6 +97,19 @@ class PlatformAuthNavigationThrottleTest : public testing::Test {
     if (manager().IsEnabled()) {
       EnableManager(manager(), false);
     }
+  }
+
+  void EnableManager(enterprise_auth::PlatformAuthProviderManager& manager,
+                     bool enabled) {
+    base::MockCallback<base::OnceClosure> callback;
+    base::RunLoop run_loop;
+    EXPECT_CALL(callback, Run()).WillOnce([&run_loop]() {
+      run_loop.QuitWhenIdle();
+    });
+    manager.SetEnabled(enabled, callback.Get());
+    EXPECT_EQ(manager.IsEnabled(), enabled);
+    run_loop.Run();
+    EXPECT_EQ(manager.IsEnabled(), enabled);
   }
 
   content::BrowserTaskEnvironment task_environment_{

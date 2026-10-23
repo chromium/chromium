@@ -22,6 +22,7 @@
 #include "url/origin.h"
 
 class GURL;
+class PrefService;
 
 namespace net {
 class HttpRequestHeaders;
@@ -47,11 +48,10 @@ class PlatformAuthProviderManager {
       delete;
   ~PlatformAuthProviderManager();
 
-  // Enables or disables platform-based auth asynchronously. `on_complete` will
-  // be run (possibly synchronously) once processing is complete. Conversely,
-  // `on_complete` will not be run if `SetEnabled()` is called again before a
-  // previous call is fully processed.
-  void SetEnabled(bool enabled, base::OnceClosure on_complete);
+  // Enables or disables the process-wide instance based on the platform's
+  // feature flags, device management state and the policy-backed prefs stored
+  // in `local_state`. `local_state` must not be null.
+  static void EnableOrDisableIfNecessary(PrefService* local_state);
 
   // Returns true if platform-based authentication is enabled.
   bool IsEnabled() const;
@@ -74,19 +74,24 @@ class PlatformAuthProviderManager {
 
  private:
   friend class ScopedSetProviderForTesting;
+  friend class PlatformAuthManagerBrowserTest;
+  friend class PlatformAuthProviderManagerTestBase;
+  friend class PlatformAuthNavigationThrottleTest;
+  friend class PlatformAuthProxyingURLLoaderFactoryTest;
   FRIEND_TEST_ALL_PREFIXES(PlatformAuthProviderManagerTest, DefaultDisabled);
   FRIEND_TEST_ALL_PREFIXES(PlatformAuthProviderManagerTest, DisableNoop);
   FRIEND_TEST_ALL_PREFIXES(PlatformAuthProviderManagerTest, NotSupported);
   FRIEND_TEST_ALL_PREFIXES(PlatformAuthProviderManagerTest,
                            SupportedWithEmptyOrigins);
   FRIEND_TEST_ALL_PREFIXES(PlatformAuthProviderManagerTest, OriginRemoval);
-  FRIEND_TEST_ALL_PREFIXES(PlatformAuthProviderManagerMetricsTest, Success);
   FRIEND_TEST_ALL_PREFIXES(PlatformAuthProviderManagerNoOriginFilteringTest,
                            OriginFilteringNotSupported);
-  FRIEND_TEST_ALL_PREFIXES(PlatformAuthNavigationThrottleTest, ManagerDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PlatformAuthNavigationThrottleTest, EmptyOrigins);
-  FRIEND_TEST_ALL_PREFIXES(PlatformAuthNavigationThrottleTest, EmptyData);
-  FRIEND_TEST_ALL_PREFIXES(PlatformAuthNavigationThrottleTest, DataReceived);
+
+  // Enables or disables platform-based auth asynchronously. `on_complete` will
+  // be run (possibly synchronously) once processing is complete. Conversely,
+  // `on_complete` will not be run if `SetEnabled()` is called again before a
+  // previous call is fully processed.
+  void SetEnabled(bool enabled, base::OnceClosure on_complete);
 
   explicit PlatformAuthProviderManager(
       std::unique_ptr<PlatformAuthProvider> provider);

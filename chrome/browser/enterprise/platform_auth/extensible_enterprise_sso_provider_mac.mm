@@ -110,6 +110,10 @@ void ExtensibleEnterpriseSSOProvider::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
   auto metrics = std::make_unique<Metrics>(url.GetHost());
+
+  // TODO(b/564412659): Fail if the `url` does not match any entries from
+  // `GetCurrentSsoExtensionConfig()->urls`.
+
   NSURL* nativeUrl = net::NSURLWithGURL(url);
   ASAuthorizationSingleSignOnProvider* auth_provider =
       [ASAuthorizationSingleSignOnProvider

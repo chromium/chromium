@@ -36,6 +36,11 @@ class PlatformAuthPolicyObserver {
   void OnPrefChanged();
 
 #if BUILDFLAG(IS_MAC)
+  // Creates or destroys `prefs_handler_`, which mirrors the SSO extension MDM
+  // configuration into prefs, depending on the Okta SSO feature, device
+  // management state and the ExtensibleEnterpriseSSO pref.
+  void UpdateSsoPrefsHandler();
+
   std::unique_ptr<enterprise_auth::ExtensibleEnterpriseSSOPrefsHandler>
       prefs_handler_;
 #endif

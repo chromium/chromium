@@ -70,9 +70,11 @@ class PlatformAuthProxyingURLLoaderFactoryTest : public testing::Test {
     test_request_.method = "GET";
   }
 
-  void SetUp() override {
-    PlatformAuthProviderManager::GetInstance().SetEnabled(true, {});
+  void SetProviderManagerEnabled(bool enabled) {
+    PlatformAuthProviderManager::GetInstance().SetEnabled(enabled, {});
   }
+
+  void SetUp() override { SetProviderManagerEnabled(true); }
 
   void CreateProxyingFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -286,7 +288,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
 
 TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
        MaybeProxyRequest_PlatformAuthManagerDisabled) {
-  PlatformAuthProviderManager::GetInstance().SetEnabled(false, {});
+  SetProviderManagerEnabled(false);
 
   network::TestURLLoaderFactory terminal_factory;
   scoped_refptr<network::SharedURLLoaderFactory> terminal_shared_factory =

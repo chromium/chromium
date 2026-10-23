@@ -21,19 +21,23 @@ using ::testing::_;
 
 namespace enterprise_auth {
 
-void EnableManager(PlatformAuthProviderManager& manager, bool enabled) {
-  base::MockCallback<base::OnceClosure> callback;
-  base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run()).WillOnce([&run_loop]() {
-    run_loop.QuitWhenIdle();
-  });
-  manager.SetEnabled(enabled, callback.Get());
-  EXPECT_EQ(manager.IsEnabled(), enabled);
-  run_loop.Run();
-  EXPECT_EQ(manager.IsEnabled(), enabled);
-}
+class PlatformAuthProviderManagerTestBase : public ::testing::Test {
+ protected:
+  void EnableManager(PlatformAuthProviderManager& manager, bool enabled) {
+    base::MockCallback<base::OnceClosure> callback;
+    base::RunLoop run_loop;
+    EXPECT_CALL(callback, Run()).WillOnce([&run_loop]() {
+      run_loop.QuitWhenIdle();
+    });
+    manager.SetEnabled(enabled, callback.Get());
+    EXPECT_EQ(manager.IsEnabled(), enabled);
+    run_loop.Run();
+    EXPECT_EQ(manager.IsEnabled(), enabled);
+  }
+};
 
-class PlatformAuthProviderManagerTest : public ::testing::Test {
+class PlatformAuthProviderManagerTest
+    : public PlatformAuthProviderManagerTestBase {
  protected:
   PlatformAuthProviderManagerTest() : mock_provider_(owned_provider_.get()) {
     // Set up a default that will clear the raw pointer upon destruction.
@@ -171,16 +175,20 @@ TEST_F(PlatformAuthProviderManagerNoOriginFilteringTest,
   EXPECT_NE(mock_provider(), nullptr);
 }
 
+class PlatformAuthProviderManagerMetricsTest
+    : public PlatformAuthProviderManagerTestBase {};
+
 // Verifies that the expected metrics are recorded on a cookie fetch.
-TEST(PlatformAuthProviderManagerMetricsTest, Success) {
+TEST_F(PlatformAuthProviderManagerMetricsTest, Success) {
   const char kOldCookie[] = "old-cookie=old-cookie-data";
   base::test::TaskEnvironment task_environment;
   PlatformAuthProviderManager manager;
 
   EnableManager(manager, true);
   const auto origins = manager.GetOriginsForTesting();
-  if (origins.empty())
+  if (origins.empty()) {
     return;  // Nothing to test if there are no IdP/STS origins.
+  }
 
   net::HttpRequestHeaders headers;
   headers.SetHeader(net::HttpRequestHeaders::kCookie, kOldCookie);

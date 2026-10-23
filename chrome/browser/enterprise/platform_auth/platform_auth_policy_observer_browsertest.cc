@@ -21,7 +21,9 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -138,6 +140,34 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, EnableThenUnset) {
   // The manager should now be disabled.
   ASSERT_FALSE(manager.IsEnabled());
 }
+
+// Sets the policy before the browser starts, so that it is already applied
+// when the browser-owned `PlatformAuthPolicyObserver` is created.
+class PlatformAuthPolicyObserverPolicySetBeforeStartupTest
+    : public PlatformAuthPolicyObserverTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    PlatformAuthPolicyObserverTest::SetUpInProcessBrowserTestFixture();
+    policy::PolicyMap policies;
+    policies.Set(kPolicyKey, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(1), nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+};
+
+// Tests that the manager is enabled right away when the policy is already set
+// when the observer is created.
+IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverPolicySetBeforeStartupTest,
+                       EnabledWhenPolicySetBeforeCreation) {
+  PrefService* prefs = g_browser_process->local_state();
+  ASSERT_TRUE(prefs);
+  ASSERT_EQ(/*Enabled*/ 1, prefs->GetInteger(kPrefKey));
+
+  EXPECT_TRUE(
+      enterprise_auth::PlatformAuthProviderManager::GetInstance().IsEnabled());
+}
+
 #elif BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, DisableThenEnable) {
@@ -249,4 +279,30 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverUnmanagedTest,
   // device.
   ASSERT_FALSE(manager.IsEnabled());
 }
-#endif  //  BUILDFLAG(IS_WIN)
+
+// Tests that a blocklist which leaves some IdPs allowed keeps the manager
+// enabled. The pref value stays `1` but becomes managed, which still triggers
+// a pref change notification.
+IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest,
+                       PartialBlocklistKeepsManagerEnabled) {
+  PrefService* prefs = g_browser_process->local_state();
+  ASSERT_TRUE(prefs);
+  auto& manager = enterprise_auth::PlatformAuthProviderManager::GetInstance();
+  ASSERT_TRUE(manager.IsEnabled());
+
+  policy::PolicyMap policies;
+  base::ListValue blocklist;
+  blocklist.Append(enterprise_auth::kOktaIdentityProvider);
+  policies.Set(policy::key::kExtensibleEnterpriseSSOBlocklist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(blocklist)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+
+  EXPECT_EQ(/*Enabled*/ 1,
+            prefs->GetInteger(prefs::kExtensibleEnterpriseSSOEnabled));
+  EXPECT_TRUE(
+      prefs->IsManagedPreference(prefs::kExtensibleEnterpriseSSOEnabled));
+  EXPECT_TRUE(manager.IsEnabled());
+}
+#endif  //  BUILDFLAG(IS_MAC)

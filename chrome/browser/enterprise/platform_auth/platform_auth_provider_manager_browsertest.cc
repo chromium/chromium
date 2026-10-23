@@ -35,6 +35,12 @@ class PlatformAuthManagerBrowserTest : public PlatformBrowserTest {
       delete;
   PlatformAuthManagerBrowserTest& operator=(
       const PlatformAuthManagerBrowserTest&) = delete;
+
+ protected:
+  void SetManagerEnabled(bool enabled, base::OnceClosure on_complete) {
+    PlatformAuthProviderManager::GetInstance().SetEnabled(
+        enabled, std::move(on_complete));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
@@ -73,8 +79,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
   EXPECT_CALL(*mock_provider, Die());
   ScopedSetProviderForTesting set_provider(std::move(mock_provider));
 
-  PlatformAuthProviderManager::GetInstance().SetEnabled(true,
-                                                        base::OnceClosure());
+  SetManagerEnabled(true, base::OnceClosure());
 
   EXPECT_TRUE(content::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), url));
@@ -99,8 +104,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
           std::move(callback).Run(std::make_unique<std::vector<url::Origin>>());
         });
     base::RunLoop run_loop;
-    PlatformAuthProviderManager::GetInstance().SetEnabled(
-        true, run_loop.QuitClosure());
+    SetManagerEnabled(true, run_loop.QuitClosure());
     run_loop.Run();
     ::testing::Mock::VerifyAndClearExpectations(unsafe_mock_provider);
   }
@@ -120,8 +124,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
               std::vector<url::Origin>{origin}));
         });
     base::RunLoop run_loop;
-    PlatformAuthProviderManager::GetInstance().SetEnabled(
-        true, run_loop.QuitClosure());
+    SetManagerEnabled(true, run_loop.QuitClosure());
     run_loop.Run();
     ::testing::Mock::VerifyAndClearExpectations(unsafe_mock_provider);
   }
@@ -189,8 +192,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest, ConcurrentNavigations) {
   MockPlatformAuthProvider* unsafe_mock_provider = mock_provider.get();
   ScopedSetProviderForTesting set_provider(std::move(mock_provider));
 
-  PlatformAuthProviderManager::GetInstance().SetEnabled(true,
-                                                        base::OnceClosure());
+  SetManagerEnabled(true, base::OnceClosure());
 
   GURL url1 = embedded_test_server()->GetURL("/title1.html");
   GURL url2 = embedded_test_server()->GetURL("/title2.html");
