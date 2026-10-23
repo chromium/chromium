@@ -2876,7 +2876,6 @@ crbug.com/442873877 [ Mac15 ] external/wpt/uievents/order-of-events/focus-events
 crbug.com/442871878 [ Win11-arm64 ] external/wpt/accelerometer/GravitySensor.https.html [ Failure Pass Timeout ]
 crbug.com/444416234 [ Win10.20h2 ] external/wpt/accelerometer/GravitySensor.https.html [ Pass Timeout ]
 crbug.com/444416234 [ Win11 ] external/wpt/accelerometer/GravitySensor.https.html [ Pass Timeout ]
-crbug.com/442769076 external/wpt/css/css-pseudo/before-as-flex-container.html [ Failure ]
 crbug.com/441356800 external/wpt/html/semantics/embedded-content/the-video-element/video_timeupdate_on_seek.html [ Timeout ]
 crbug.com/441216889 [ Mac14 ] external/wpt/bluetooth/bidi/service/device-same-object.https.window.html [ Pass Timeout ]
 crbug.com/441216889 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/device-same-object.https.window.html [ Failure Pass Timeout ]
