@@ -21,6 +21,7 @@
 #include "ui/aura/scoped_keyboard_hook.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/gestures/motion_event_aura.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/latency/latency_info.h"
 
 namespace aura {
@@ -274,6 +275,10 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   // indicates what the change in position of the mouse would be had it not been
   // locked.
   bool mouse_locked_ = false;
+
+  // Screen-DIP position captured before emulated pointer lock moves the cursor.
+  // Unset when native pointer lock or the legacy restoration path is used.
+  std::optional<gfx::Point> pointer_lock_restore_position_;
 
   // Use to track whether pointer lock is in the unadjusted movement mode and
   // mousemoves are using unadjusted movement value (without mouse

@@ -580,6 +580,21 @@ BASE_FEATURE(kPermissionsPolicyVerificationInContent,
 // pen/touch pointer type is not clobbered.
 BASE_FEATURE(kMouseEventPreservePointerType, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Captures the cursor's screen position before emulated Aura pointer lock and
+// restores it on unlock, even if the cursor was outside the view or the window
+// moved while locked. See https://crbug.com/525729332.
+// TODO(crbug.com/525729332): ChromeOS could have issues restoring the pointer
+// to the same location it was in if the cursor was in a second display with
+// different DPI. Validate that the current solution works for ChromeOS, and add
+// a fix if it doesn't before enabling by default.
+BASE_FEATURE(kPointerLockRestoreScreenPosition,
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 // If enabled, responses with an operative Cookie-Indices will not be used
 // if the relevant cookie values have changed.
 BASE_FEATURE(kPrefetchCookieIndices, base::FEATURE_DISABLED_BY_DEFAULT);

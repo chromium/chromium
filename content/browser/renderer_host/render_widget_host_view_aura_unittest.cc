@@ -119,6 +119,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/display/display.h"
+#include "ui/display/display_list.h"
 #include "ui/display/screen.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/blink_features.h"
@@ -133,8 +134,10 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/selection_bound.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -149,6 +152,9 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
+#include "ui/display/win/display_info.h"
+#include "ui/display/win/screen_win.h"
+#include "ui/display/win/test/screen_util_win.h"
 #include "ui/events/keycodes/keyboard_codes_win.h"
 #include "ui/events/test/keyboard_layout.h"
 #include "ui/gfx/win/window_impl.h"
@@ -5418,6 +5424,297 @@ TEST_F(RenderWidgetHostViewAuraTest, ForwardMouseEvent) {
 
   // view_ will be destroyed when parent is destroyed.
   view_ = nullptr;
+}
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+
+// Supplies native monitor data for ScreenWin's real DIP-to-pixel conversion.
+// Cursor capture continues to use Aura's TestScreen, not the native cursor.
+class PointerLockTestScreenWin : public display::win::ScreenWin {
+ public:
+  PointerLockTestScreenWin(const gfx::Size& display_size_in_pixels,
+                           float primary_scale)
+      : ScreenWin(/*initialize_from_system=*/false) {
+    std::vector<display::win::internal::DisplayInfo> display_infos;
+    // The primary monitor hosts the browser at the test's device scale factor.
+    {
+      const gfx::Rect bounds(display_size_in_pixels);
+      display_infos.emplace_back(
+          /*hmonitor=*/std::nullopt,
+          display::win::test::CreateMonitorInfo(bounds, bounds, L"primary"),
+          primary_scale, /*text_scale_multiplier=*/1.0f,
+          display::Display::kDefaultBitsPerPixel,
+          /*sdr_white_level=*/1.0f, display::Display::ROTATE_0,
+          /*display_frequency=*/60.0f, /*pixels_per_inch=*/gfx::Vector2dF(),
+          DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER,
+          /*label=*/std::string());
+    }
+    // The secondary monitor is to the left at a different scale to exercise
+    // restoration across displays with a nonzero native origin.
+    {
+      const float secondary_scale = primary_scale == 2.0f ? 1.0f : 2.0f;
+      const gfx::Rect bounds(gfx::Point(-display_size_in_pixels.width(), 0),
+                             display_size_in_pixels);
+      display_infos.emplace_back(
+          /*hmonitor=*/std::nullopt,
+          display::win::test::CreateMonitorInfo(bounds, bounds, L"secondary"),
+          secondary_scale, /*text_scale_multiplier=*/1.0f,
+          display::Display::kDefaultBitsPerPixel,
+          /*sdr_white_level=*/1.0f, display::Display::ROTATE_0,
+          /*display_frequency=*/60.0f, /*pixels_per_inch=*/gfx::Vector2dF(),
+          DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER,
+          /*label=*/std::string());
+    }
+    UpdateFromDisplayInfos(display_infos);
+  }
+
+  using ScreenWin::GetAllDisplays;
+};
+
+}  // namespace
+#endif  // BUILDFLAG(IS_WIN)
+
+class RenderWidgetHostViewAuraPointerLockTest
+    : public RenderWidgetHostViewAuraTest,
+      public testing::WithParamInterface<std::tuple<bool, float>> {
+ public:
+  void SetUp() override {
+    feature_list_.InitWithFeatureState(
+        features::kPointerLockRestoreScreenPosition,
+        ShouldRestoreScreenPosition());
+    RenderWidgetHostViewAuraTest::SetUp();
+    aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(
+        DeviceScaleFactor());
+#if BUILDFLAG(IS_WIN)
+    screen_win_ = std::make_unique<PointerLockTestScreenWin>(
+        aura_test_helper_->GetTestScreen()
+            ->GetPrimaryDisplay()
+            .GetSizeInPixel(),
+        DeviceScaleFactor());
+#endif  // BUILDFLAG(IS_WIN)
+    parent_view_->SetBounds(gfx::Rect(0, 0, 400, 300));
+    InitViewForFrame(parent_view_->GetNativeView());
+    view_->SetBounds(kViewBounds);
+  }
+
+  void TearDown() override {
+    view_->UnlockPointer();
+    RenderWidgetHostViewAuraTest::TearDown();
+#if BUILDFLAG(IS_WIN)
+    screen_win_.reset();
+#endif  // BUILDFLAG(IS_WIN)
+  }
+
+ protected:
+  static constexpr gfx::Rect kViewBounds{40, 40, 200, 160};
+  static constexpr gfx::Point kPositionInWidget{80, 60};
+
+  bool ShouldRestoreScreenPosition() const { return std::get<0>(GetParam()); }
+  float DeviceScaleFactor() const { return std::get<1>(GetParam()); }
+
+  gfx::Point ScreenPosition(const gfx::Point& position_in_widget) const {
+    gfx::Point position_in_screen = position_in_widget;
+    wm::ConvertPointToScreen(view_->GetNativeView(), &position_in_screen);
+    return position_in_screen;
+  }
+
+  void SendMouseMove(const gfx::Point& position_in_widget) {
+    const gfx::Point position_in_screen = ScreenPosition(position_in_widget);
+    aura::Env::GetInstance()->SetLastMouseLocation(position_in_screen);
+    gfx::Point position_in_root = position_in_screen;
+    wm::ConvertPointFromScreen(view_->GetNativeView()->GetRootWindow(),
+                               &position_in_root);
+    ui::MouseEvent event(ui::EventType::kMouseMoved, position_in_widget,
+                         position_in_root, ui::EventTimeForNow(), 0, 0);
+    view_->OnMouseEvent(&event);
+  }
+
+  void ExpectRestorationAt(const gfx::Point& position_in_screen) {
+    // Inspect the requested host position, not the shared native OS cursor.
+    EXPECT_EQ(gfx::ScaleToFlooredPoint(position_in_screen, DeviceScaleFactor()),
+              aura::test::QueryLatestMousePositionRequestInHost(
+                  view_->GetNativeView()->GetHost()));
+  }
+
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<PointerLockTestScreenWin> screen_win_;
+#endif  // BUILDFLAG(IS_WIN)
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderWidgetHostViewAuraPointerLockTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Values(1.0f, 1.25f, 2.0f)));
+
+TEST_P(RenderWidgetHostViewAuraPointerLockTest, RestoreWithoutWindowMovement) {
+  SendMouseMove(kPositionInWidget);
+  const gfx::Point original_position = ScreenPosition(kPositionInWidget);
+
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+  view_->UnlockPointer();
+
+  ExpectRestorationAt(original_position);
+}
+
+TEST_P(RenderWidgetHostViewAuraPointerLockTest,
+       RestoreOnDisplayWithDifferentScale) {
+  auto* screen = aura_test_helper_->GetTestScreen();
+  const display::Display primary_display = screen->GetPrimaryDisplay();
+  const gfx::Point secondary_origin(-primary_display.GetSizeInPixel().width(),
+                                    0);
+#if BUILDFLAG(IS_WIN)
+  ASSERT_EQ(2u, screen_win_->GetAllDisplays().size());
+  const display::Display cursor_display = screen_win_->GetAllDisplays()[1];
+#else
+  const float secondary_scale = DeviceScaleFactor() == 2.0f ? 1.0f : 2.0f;
+  display::Display cursor_display(primary_display.id() + 1);
+  cursor_display.SetScaleAndBounds(
+      secondary_scale,
+      gfx::Rect(secondary_origin, primary_display.GetSizeInPixel()));
+  cursor_display.set_native_origin(secondary_origin);
+#endif  // BUILDFLAG(IS_WIN)
+  ASSERT_NE(DeviceScaleFactor(), cursor_display.device_scale_factor());
+  ASSERT_LT(cursor_display.bounds().x(), 0);
+  screen->display_list().AddDisplay(cursor_display,
+                                    display::DisplayList::Type::NOT_PRIMARY);
+
+  auto* window_host = view_->GetNativeView()->GetHost();
+  gfx::Rect host_bounds = window_host->GetBoundsInPixels();
+  host_bounds.Offset(40, 40);
+  window_host->SetBoundsInPixels(host_bounds);
+  // The Windows Aura test host reports client-relative bounds with origin
+  // (0, 0), so use the reported bounds rather than the requested bounds.
+  host_bounds = window_host->GetBoundsInPixels();
+  SendMouseMove(kPositionInWidget);
+
+  // These offsets expose rounding if restoration passes through host DIPs.
+  const gfx::Point kOffsetInCursorDisplay(81, 61);
+  const gfx::Point cursor_in_screen_dips =
+      cursor_display.bounds().origin() +
+      kOffsetInCursorDisplay.OffsetFromOrigin();
+  aura::Env::GetInstance()->SetLastMouseLocation(cursor_in_screen_dips);
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+  view_->UnlockPointer();
+
+  // Scale only the offset within the destination display, not its origin.
+  const gfx::Point cursor_in_screen_pixels =
+      secondary_origin +
+      gfx::ScaleToFlooredPoint(kOffsetInCursorDisplay,
+                               cursor_display.device_scale_factor())
+          .OffsetFromOrigin();
+  const gfx::Point expected_position_in_host =
+      ShouldRestoreScreenPosition()
+          ? cursor_in_screen_pixels - host_bounds.origin().OffsetFromOrigin()
+          : gfx::ScaleToFlooredPoint(
+                kViewBounds.origin() + kPositionInWidget.OffsetFromOrigin(),
+                DeviceScaleFactor());
+  EXPECT_EQ(expected_position_in_host,
+            aura::test::QueryLatestMousePositionRequestInHost(window_host));
+}
+
+TEST_P(RenderWidgetHostViewAuraPointerLockTest, RestoreAfterWindowMovement) {
+  SendMouseMove(kPositionInWidget);
+  const gfx::Point original_position = ScreenPosition(kPositionInWidget);
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+
+  gfx::Rect moved_bounds = kViewBounds;
+  moved_bounds.Offset(60, 40);
+  view_->SetBounds(moved_bounds);
+  view_->UnlockPointer();
+
+  ExpectRestorationAt(ShouldRestoreScreenPosition()
+                          ? original_position
+                          : ScreenPosition(kPositionInWidget));
+}
+
+// A keyboard request can acquire lock with the cursor outside the view and the
+// last mouse event in the view reporting an outdated position.
+TEST_P(RenderWidgetHostViewAuraPointerLockTest,
+       RestoreOutsideViewWithStaleMouseEvent) {
+  SendMouseMove(kPositionInWidget);
+  const gfx::Point previous_position = ScreenPosition(kPositionInWidget);
+  const gfx::Point outside_position =
+      kViewBounds.bottom_right() + gfx::Vector2d(40, 40);
+  aura::Env::GetInstance()->SetLastMouseLocation(outside_position);
+
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+  view_->UnlockPointer();
+
+  ExpectRestorationAt(ShouldRestoreScreenPosition() ? outside_position
+                                                    : previous_position);
+}
+
+TEST_P(RenderWidgetHostViewAuraPointerLockTest, RestoreWithoutPriorMouseEvent) {
+  const gfx::Point outside_position =
+      kViewBounds.bottom_right() + gfx::Vector2d(40, 40);
+  aura::Env::GetInstance()->SetLastMouseLocation(outside_position);
+
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+  view_->UnlockPointer();
+
+  ExpectRestorationAt(ShouldRestoreScreenPosition() ? outside_position
+                                                    : kViewBounds.origin());
+}
+
+TEST_P(RenderWidgetHostViewAuraPointerLockTest, RestoreOutsideResizedView) {
+  const gfx::Point position_in_widget =
+      kPositionInWidget + gfx::Vector2d(80, 60);
+  SendMouseMove(position_in_widget);
+  const gfx::Point original_position = ScreenPosition(position_in_widget);
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+
+  gfx::Rect resized_bounds = kViewBounds;
+  resized_bounds.Offset(60, 40);
+  resized_bounds.set_size(gfx::Size(40, 40));
+  view_->SetBounds(resized_bounds);
+  ASSERT_FALSE(view_->GetViewBounds().Contains(original_position));
+  view_->UnlockPointer();
+
+  ExpectRestorationAt(ShouldRestoreScreenPosition()
+                          ? original_position
+                          : ScreenPosition(position_in_widget));
+}
+
+TEST_P(RenderWidgetHostViewAuraPointerLockTest,
+       RepeatedLockPreservesOriginalPosition) {
+  SendMouseMove(kPositionInWidget);
+  const gfx::Point last_event_position = ScreenPosition(kPositionInWidget);
+  const gfx::Point original_position =
+      last_event_position + gfx::Vector2d(40, 40);
+  aura::Env::GetInstance()->SetLastMouseLocation(original_position);
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+
+  aura::Env::GetInstance()->SetLastMouseLocation(original_position +
+                                                 gfx::Vector2d(20, 20));
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+  view_->UnlockPointer();
+  ExpectRestorationAt(ShouldRestoreScreenPosition() ? original_position
+                                                    : last_event_position);
+
+  // A new lock session must capture a new position.
+  const gfx::Point next_position = kPositionInWidget + gfx::Vector2d(20, 20);
+  SendMouseMove(next_position);
+  const gfx::Point next_event_position = ScreenPosition(next_position);
+  const gfx::Point next_restore_position =
+      next_event_position + gfx::Vector2d(60, 40);
+  aura::Env::GetInstance()->SetLastMouseLocation(next_restore_position);
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+  view_->UnlockPointer();
+  ExpectRestorationAt(ShouldRestoreScreenPosition() ? next_restore_position
+                                                    : next_event_position);
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, MouseEventsHandled) {

@@ -4,7 +4,10 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 
+#include <utility>
+
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/numerics/safe_conversions.h"
@@ -25,6 +28,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/scoped_keyboard_hook.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -32,14 +36,19 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/web_input_event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/delegated_ink_point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "ui/display/win/screen_win.h"
 #endif
 
 namespace {
@@ -150,13 +159,29 @@ blink::mojom::PointerLockResult RenderWidgetHostViewEventHandler::LockPointer(
     if (!mouse_locked_unadjusted_movement_)
       return blink::mojom::PointerLockResult::kUnsupportedOptions;
   }
+
+  // Retain legacy window-relative restoration for headless screens and
+  // embedders without screen mapping.
+  if (base::FeatureList::IsEnabled(
+          features::kPointerLockRestoreScreenPosition) &&
+      !window_->GetHost()->SupportsMouseLock() &&
+      !display::Screen::Get()->IsHeadless() &&
+      aura::client::GetScreenPositionClient(root_window)) {
+    // The last mouse event may be stale when lock is requested with the cursor
+    // outside the view. Sample before LockMouse() can clip it.
+    pointer_lock_restore_position_ =
+        display::Screen::Get()->GetCursorScreenPoint();
+  }
   mouse_locked_ = true;
 
   aura::Window::ScopedDeleteBlocker delete_blocker(window_);
   window_->GetHost()->LockMouse(window_);
 
-  if (ShouldMoveToCenter(unlocked_global_mouse_position_))
+  if (ShouldMoveToCenter(pointer_lock_restore_position_
+                             ? gfx::PointF(*pointer_lock_restore_position_)
+                             : unlocked_global_mouse_position_)) {
     MoveCursorToCenter(nullptr);
+  }
 
   delegate_->SetTooltipsEnabled(false);
   return blink::mojom::PointerLockResult::kSuccess;
@@ -201,6 +226,10 @@ void RenderWidgetHostViewEventHandler::UnlockPointer() {
     return;
   }
 
+  // Reset `pointer_lock_restore_position_` here so that `UnlockMouse` doesn't
+  // use a stale value.
+  const std::optional<gfx::Point> restore_position =
+      std::exchange(pointer_lock_restore_position_, std::nullopt);
   mouse_locked_ = false;
   mouse_locked_unadjusted_movement_.reset();
 
@@ -211,16 +240,40 @@ void RenderWidgetHostViewEventHandler::UnlockPointer() {
 
   window_->GetHost()->UnlockMouse(window_);
 
-  // Ensure that the global mouse position is updated here to its original
-  // value. If we don't do this then the synthesized mouse move which is posted
-  // after the cursor is moved ends up getting a large movement delta which is
-  // not what sites expect. The delta is computed in the
-  // ModifyEventMovementAndCoords function.
+  // Restore the cursor after emulated pointer lock. Blink resets its cached
+  // mouse position on unlock to avoid computing a movement delta from the last
+  // locked position.
   if (window_) {
-    window_->MoveCursorTo(gfx::ToFlooredPoint(unlocked_mouse_position_));
+    if (restore_position) {
+#if BUILDFLAG(IS_WIN)
+      // Windows does not populate Display::native_origin(). Use ScreenWin's
+      // native display origins and per-display scales to convert to pixels.
+      gfx::Point position_in_host =
+          display::win::GetScreenWin()->DIPToScreenPoint(*restore_position);
+#else
+      auto* screen = display::Screen::Get();
+      const display::Display cursor_display =
+          screen->GetDisplayNearestPoint(*restore_position);
+      gfx::Point position_in_host =
+          *restore_position - cursor_display.bounds().OffsetFromOrigin();
+      // Scale only the offset within the cursor's display, not its origin or
+      // the offset from the browser window.
+      position_in_host = gfx::ScaleToFlooredPoint(
+          position_in_host, cursor_display.device_scale_factor());
+      position_in_host += cursor_display.native_origin().OffsetFromOrigin();
+#endif
+      auto* window_host = window_->GetHost();
+      position_in_host -= window_host->GetBoundsInPixels().OffsetFromOrigin();
+      // The saved position is in integer screen DIPs. Converting to pixels may
+      // introduce a rounding error and land a few pixels off from the original
+      // location.
+      window_host->MoveCursorToLocationInPixels(position_in_host);
+    } else {
+      window_->MoveCursorTo(gfx::ToFlooredPoint(unlocked_mouse_position_));
+    }
   }
-  synthetic_move_position_ =
-      gfx::ToFlooredPoint(unlocked_global_mouse_position_);
+  synthetic_move_position_ = restore_position.value_or(
+      gfx::ToFlooredPoint(unlocked_global_mouse_position_));
 
   host_->LostPointerLock();
 }
