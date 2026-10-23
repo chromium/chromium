@@ -56,7 +56,7 @@ PrivateAiInternalsUI::PrivateAiInternalsUI(web::WebUIIOS* web_ui,
   web::WebUIIOSDataSource::Add(profile, CreatePrivateAiInternalsHTMLSource());
   web_ui->GetWebState()->GetInterfaceBinderForMainFrame()->AddInterface(
       base::BindRepeating(&PrivateAiInternalsUI::BindInterface,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 PrivateAiInternalsUI::~PrivateAiInternalsUI() {
