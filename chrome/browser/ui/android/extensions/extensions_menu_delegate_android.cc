@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -83,10 +84,6 @@ ExtensionsMenuDelegateAndroid::ExtensionsMenuDelegateAndroid(
 }
 
 ExtensionsMenuDelegateAndroid::~ExtensionsMenuDelegateAndroid() = default;
-
-void ExtensionsMenuDelegateAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void ExtensionsMenuDelegateAndroid::ExecuteAction(
     JNIEnv* env,
@@ -386,15 +383,14 @@ void ExtensionsMenuDelegateAndroid::OnSiteSettingsToggleChanged(
   OnSiteSettingsToggleButtonPressed(is_checked);
 }
 
-static int64_t JNI_ExtensionsMenuBridge_Init(
+static jni_zero::JniUniquePtr<ExtensionsMenuDelegateAndroid>
+JNI_ExtensionsMenuBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_object,
     BrowserWindowInterface* browser,
-    int64_t j_toolbar_android) {
-  ExtensionsToolbarAndroid* toolbar_android =
-      reinterpret_cast<ExtensionsToolbarAndroid*>(j_toolbar_android);
-  return reinterpret_cast<int64_t>(
-      new ExtensionsMenuDelegateAndroid(browser, toolbar_android, java_object));
+    ExtensionsToolbarAndroid* toolbar_android) {
+  return jni_zero::MakeUnique<ExtensionsMenuDelegateAndroid>(
+      browser, toolbar_android, java_object);
 }
 
 }  // namespace extensions

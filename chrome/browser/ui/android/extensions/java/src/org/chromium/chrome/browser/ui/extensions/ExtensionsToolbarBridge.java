@@ -11,6 +11,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -28,8 +30,11 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 @JNINamespace("extensions")
 public class ExtensionsToolbarBridge implements Destroyable {
+    @JniType("::extensions::ExtensionsToolbarAndroid")
+    interface NativeExtensionsToolbarAndroid extends JniTypeToken {}
+
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private long mNativeExtensionsToolbarAndroid;
+    private final JniUniquePtr<NativeExtensionsToolbarAndroid> mNative;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     // The delegates are set via setters because of bidirectional dependencies.
@@ -37,16 +42,14 @@ public class ExtensionsToolbarBridge implements Destroyable {
     private @Nullable MenuDelegate mMenuDelegate;
 
     public ExtensionsToolbarBridge(ChromeAndroidTask task, Profile profile) {
-        mNativeExtensionsToolbarAndroid =
+        mNative =
                 ExtensionsToolbarBridgeJni.get()
                         .init(this, task.getOrCreateNativeBrowserWindow(profile));
     }
 
     @Override
     public void destroy() {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        ExtensionsToolbarBridgeJni.get().destroy(mNativeExtensionsToolbarAndroid);
-        mNativeExtensionsToolbarAndroid = 0;
+        mNative.destroy();
         LifetimeAssert.destroy(mLifetimeAssert);
     }
 
@@ -66,16 +69,13 @@ public class ExtensionsToolbarBridge implements Destroyable {
         mMenuDelegate = delegate;
     }
 
-    public long getNativePtr() {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        return mNativeExtensionsToolbarAndroid;
+    JniPtr<NativeExtensionsToolbarAndroid> getNativePtr() {
+        return mNative;
     }
 
     @Nullable
     public ExtensionAction getAction(String actionId, @Nullable WebContents webContents) {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        return ExtensionsToolbarBridgeJni.get()
-                .getAction(mNativeExtensionsToolbarAndroid, actionId, webContents);
+        return ExtensionsToolbarBridgeJni.get().getAction(mNative, actionId, webContents);
     }
 
     @Nullable
@@ -85,56 +85,38 @@ public class ExtensionsToolbarBridge implements Destroyable {
             int canvasWidthDp,
             int canvasHeightDp,
             float scaleFactor) {
-        assert mNativeExtensionsToolbarAndroid != 0;
         return ExtensionsToolbarBridgeJni.get()
                 .getIcon(
-                        mNativeExtensionsToolbarAndroid,
-                        actionId,
-                        webContents,
-                        canvasWidthDp,
-                        canvasHeightDp,
-                        scaleFactor);
+                        mNative, actionId, webContents, canvasWidthDp, canvasHeightDp, scaleFactor);
     }
 
     public String[] getAllActionIds() {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        return ExtensionsToolbarBridgeJni.get().getAllActionIds(mNativeExtensionsToolbarAndroid);
+        return ExtensionsToolbarBridgeJni.get().getAllActionIds(mNative);
     }
 
     public String[] getPinnedActionIds() {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        return ExtensionsToolbarBridgeJni.get().getPinnedActionIds(mNativeExtensionsToolbarAndroid);
+        return ExtensionsToolbarBridgeJni.get().getPinnedActionIds(mNative);
     }
 
     public boolean isActionDraggable(String actionId) {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        return ExtensionsToolbarBridgeJni.get()
-                .isActionDraggable(mNativeExtensionsToolbarAndroid, actionId);
+        return ExtensionsToolbarBridgeJni.get().isActionDraggable(mNative, actionId);
     }
 
     public void executeUserAction(String actionId, @InvocationSource int source) {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        ExtensionsToolbarBridgeJni.get()
-                .executeUserAction(mNativeExtensionsToolbarAndroid, actionId, source);
+        ExtensionsToolbarBridgeJni.get().executeUserAction(mNative, actionId, source);
     }
 
     public void movePinnedAction(String actionId, int targetIndex) {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        ExtensionsToolbarBridgeJni.get()
-                .movePinnedAction(mNativeExtensionsToolbarAndroid, actionId, targetIndex);
+        ExtensionsToolbarBridgeJni.get().movePinnedAction(mNative, actionId, targetIndex);
     }
 
     public boolean onRequestAccessButtonClicked(WebContents webContents) {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        return ExtensionsToolbarBridgeJni.get()
-                .onRequestAccessButtonClicked(mNativeExtensionsToolbarAndroid, webContents);
+        return ExtensionsToolbarBridgeJni.get().onRequestAccessButtonClicked(mNative, webContents);
     }
 
     public RequestAccessButtonParams getRequestAccessButtonParams(WebContents webContents) {
-        assert mNativeExtensionsToolbarAndroid != 0;
         RequestAccessButtonParams params =
-                ExtensionsToolbarBridgeJni.get()
-                        .getRequestAccessButtonParams(mNativeExtensionsToolbarAndroid, webContents);
+                ExtensionsToolbarBridgeJni.get().getRequestAccessButtonParams(mNative, webContents);
         assert params != null;
         return params;
     }
@@ -145,22 +127,14 @@ public class ExtensionsToolbarBridge implements Destroyable {
             int canvasHeightDp,
             float scaleFactor,
             int color) {
-        assert mNativeExtensionsToolbarAndroid != 0;
         return ExtensionsToolbarBridgeJni.get()
                 .getMenuButtonState(
-                        mNativeExtensionsToolbarAndroid,
-                        webContents,
-                        canvasWidthDp,
-                        canvasHeightDp,
-                        scaleFactor,
-                        color);
+                        mNative, webContents, canvasWidthDp, canvasHeightDp, scaleFactor, color);
     }
 
     /** Handles the key down event and returns the result. */
     public boolean handleKeyDownEvent(KeyEvent event) {
-        assert mNativeExtensionsToolbarAndroid != 0;
-        return ExtensionsToolbarBridgeJni.get()
-                .handleKeyDownEvent(mNativeExtensionsToolbarAndroid, event);
+        return ExtensionsToolbarBridgeJni.get().handleKeyDownEvent(mNative, event);
     }
 
     @CalledByNative
@@ -348,20 +322,18 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     @NativeMethods
-    public interface Natives {
-        long init(
+    interface Natives {
+        JniUniquePtr<NativeExtensionsToolbarAndroid> init(
                 ExtensionsToolbarBridge bridge, JniPtr<NativeBrowserWindowInterface> browserWindow);
 
-        void destroy(long nativeExtensionsToolbarAndroid);
-
         @Nullable ExtensionAction getAction(
-                long nativeExtensionsToolbarAndroid,
+                JniPtr<NativeExtensionsToolbarAndroid> self,
                 @JniType("std::string") String actionId,
                 @JniType("content::WebContents*") @Nullable WebContents webContents);
 
         @JniType("SkBitmap")
         @Nullable Bitmap getIcon(
-                long nativeExtensionsToolbarAndroid,
+                JniPtr<NativeExtensionsToolbarAndroid> self,
                 @JniType("std::string") String actionId,
                 @JniType("content::WebContents*") @Nullable WebContents webContents,
                 int canvasWidthDp,
@@ -369,38 +341,39 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 float scaleFactor);
 
         @JniType("std::vector<std::string>")
-        String[] getAllActionIds(long nativeExtensionsToolbarAndroid);
+        String[] getAllActionIds(JniPtr<NativeExtensionsToolbarAndroid> self);
 
         @JniType("std::vector<std::string>")
-        String[] getPinnedActionIds(long nativeExtensionsToolbarAndroid);
+        String[] getPinnedActionIds(JniPtr<NativeExtensionsToolbarAndroid> self);
 
         boolean isActionDraggable(
-                long nativeExtensionsToolbarAndroid, @JniType("std::string") String actionId);
+                JniPtr<NativeExtensionsToolbarAndroid> self,
+                @JniType("std::string") String actionId);
 
         void executeUserAction(
-                long nativeExtensionsToolbarAndroid,
+                JniPtr<NativeExtensionsToolbarAndroid> self,
                 @JniType("std::string") String actionId,
                 @JniType("ToolbarActionViewModel::InvocationSource") int source);
 
         void movePinnedAction(
-                long nativeExtensionsToolbarAndroid,
+                JniPtr<NativeExtensionsToolbarAndroid> self,
                 @JniType("std::string") String actionId,
                 int targetIndex);
 
         boolean onRequestAccessButtonClicked(
-                long nativeExtensionsToolbarAndroid,
+                JniPtr<NativeExtensionsToolbarAndroid> self,
                 @JniType("content::WebContents*") WebContents webContents);
 
         RequestAccessButtonParams getRequestAccessButtonParams(
-                long nativeExtensionsToolbarAndroid,
+                JniPtr<NativeExtensionsToolbarAndroid> self,
                 @JniType("content::WebContents*") WebContents webContents);
 
         boolean handleKeyDownEvent(
-                long nativeExtensionsToolbarAndroid,
+                JniPtr<NativeExtensionsToolbarAndroid> self,
                 @JniType("ui::KeyEventAndroid") KeyEvent keyEvent);
 
         ExtensionsMenuButtonState getMenuButtonState(
-                long nativeExtensionsToolbarAndroid,
+                JniPtr<NativeExtensionsToolbarAndroid> self,
                 @JniType("content::WebContents*") WebContents webContents,
                 int canvasWidthDp,
                 int canvasHeightDp,

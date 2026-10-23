@@ -66,7 +66,6 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
       content::WebContents* web_contents) override;
 
   // JNI implementations.
-  void Destroy();
   jni_zero::ScopedJavaLocalRef<jobject> GetRequestAccessButtonParams(
       JNIEnv* env,
       content::WebContents* web_contents);

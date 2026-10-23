@@ -34,7 +34,6 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
   ~ExtensionsMenuDelegateAndroid() override;
 
   // JNI implementations:
-  void Destroy(JNIEnv* env);
   void ExecuteAction(JNIEnv* env, const extensions::ExtensionId& extension_id);
   base::android::ScopedJavaLocalRef<jobject> GetActionIcon(JNIEnv* env,
                                                            int action_index);

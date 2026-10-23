@@ -8,10 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -123,6 +124,7 @@ public class ExtensionsMenuMediatorTest {
     private ModelList mActionModels;
 
     private ExtensionsMenuMediator mMenuMediator;
+    private JniUniquePtr<ExtensionsMenuBridge.NativeExtensionsMenuDelegateAndroid> mMenuNative;
 
     private ExtensionsMenuTypes.SiteSettingsState mSiteSettingsState;
 
@@ -150,10 +152,15 @@ public class ExtensionsMenuMediatorTest {
                         ExtensionsMenuTypes.ControlState.Status.HIDDEN,
                         /* isOn= */ false,
                         /* hasTooltip= */ false);
-        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
-                .thenReturn(mSiteSettingsState);
-        when(mExtensionsMenuBridgeJniMock.init(any(), any(), anyLong()))
-                .thenReturn(EXTENSIONS_MENU_BRIDGE_POINTER);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(any())).thenReturn(mSiteSettingsState);
+        doAnswer(
+                        invocation -> {
+                            mMenuNative =
+                                    JniUniquePtr.createForTesting(EXTENSIONS_MENU_BRIDGE_POINTER);
+                            return mMenuNative;
+                        })
+                .when(mExtensionsMenuBridgeJniMock)
+                .init(any(), any(), any());
 
         // Set the current tab.
         MockTab tab = new MockTab(TAB_ID, mProfile);
@@ -177,7 +184,7 @@ public class ExtensionsMenuMediatorTest {
                         mOnReadyRunnable);
 
         // Capture the bridge instance created inside the constructor
-        verify(mExtensionsMenuBridgeJniMock).init(mBridgeCaptor.capture(), any(), anyLong());
+        verify(mExtensionsMenuBridgeJniMock).init(mBridgeCaptor.capture(), any(), any());
     }
 
     @After
@@ -188,7 +195,7 @@ public class ExtensionsMenuMediatorTest {
     @Test
     public void testOnReady_ZeroState() {
         // Mock the bridge to return an empty list (no extensions).
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(new ArrayList<>());
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(new ArrayList<>());
 
         // Simulate the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -213,7 +220,7 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Simulate the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -231,13 +238,13 @@ public class ExtensionsMenuMediatorTest {
     @Test
     public void testOnReady_AlreadyPopulated() {
         // Setup a new mediator context where the bridge is already ready during construction.
-        when(mExtensionsMenuBridgeJniMock.isReady(anyLong())).thenReturn(true);
+        when(mExtensionsMenuBridgeJniMock.isReady(any())).thenReturn(true);
 
         List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_a", "Extension A", ICON_RED, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         mActionModels.clear();
 
@@ -275,7 +282,7 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B", null, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         mBridgeCaptor.getValue().onReady();
 
@@ -285,7 +292,7 @@ public class ExtensionsMenuMediatorTest {
 
         // Simulate the native callback triggered when the icon for the first item is updated.
         int entryIndex = 0;
-        when(mExtensionsMenuBridgeJniMock.getActionIcon(anyLong(), eq(entryIndex)))
+        when(mExtensionsMenuBridgeJniMock.getActionIcon(any(), eq(entryIndex)))
                 .thenReturn(ICON_GREEN);
         mBridgeCaptor.getValue().onActionIconUpdated(entryIndex);
 
@@ -310,13 +317,13 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Mock being on the site permissions page for "id_a".
         ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
                 ExtensionTestUtils.createExtensionSitePermissionsState(
                         extensionName, extensionIcon);
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id_a")))
                 .thenReturn(sitePermissionsState);
 
         // Open extensions menu and go to Extension's A site permissions page.
@@ -338,9 +345,9 @@ public class ExtensionsMenuMediatorTest {
 
         // Update Extension A icon.
         int entryIndexA = 0;
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(entryIndexA)))
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(entryIndexA)))
                 .thenReturn(entries.get(entryIndexA));
-        when(mExtensionsMenuBridgeJniMock.getActionIcon(anyLong(), eq(entryIndexA)))
+        when(mExtensionsMenuBridgeJniMock.getActionIcon(any(), eq(entryIndexA)))
                 .thenReturn(ICON_GREEN);
 
         clearInvocations(mSitePermissionsPropertyModel);
@@ -352,9 +359,9 @@ public class ExtensionsMenuMediatorTest {
 
         // Update Extension B icon.
         int entryIndexB = 1;
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(entryIndexB)))
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(entryIndexB)))
                 .thenReturn(entries.get(entryIndexB));
-        when(mExtensionsMenuBridgeJniMock.getActionIcon(anyLong(), eq(entryIndexB)))
+        when(mExtensionsMenuBridgeJniMock.getActionIcon(any(), eq(entryIndexB)))
                 .thenReturn(ICON_BLUE);
 
         clearInvocations(mSitePermissionsPropertyModel);
@@ -373,7 +380,7 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_a", "Extension A", ICON_RED, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -385,7 +392,7 @@ public class ExtensionsMenuMediatorTest {
         ExtensionsMenuTypes.MenuEntryState newEntry =
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(1))).thenReturn(newEntry);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(1))).thenReturn(newEntry);
 
         // Simulate the native callback triggered when a new item is added at the end.
         mBridgeCaptor.getValue().onActionAdded(1);
@@ -403,7 +410,7 @@ public class ExtensionsMenuMediatorTest {
     @Test
     public void testOnActionAdded_ZeroState() {
         // Initialize with no items.
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(new ArrayList<>());
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(new ArrayList<>());
 
         // Open extensions menu by simulating the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -415,7 +422,7 @@ public class ExtensionsMenuMediatorTest {
         ExtensionsMenuTypes.MenuEntryState newEntry =
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_a", "Extension A", ICON_RED, /* isPinned= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(newEntry);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(0))).thenReturn(newEntry);
 
         // Simulate the native callback triggered when an item is added to an empty menu.
         mBridgeCaptor.getValue().onActionAdded(0);
@@ -440,7 +447,7 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -465,7 +472,7 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_a", "Extension A", ICON_RED, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -498,7 +505,7 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -509,7 +516,7 @@ public class ExtensionsMenuMediatorTest {
         ExtensionsMenuTypes.MenuEntryState updatedEntryA =
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_a", "Extension A Updated", ICON_RED, /* isPinned= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntryA);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(0))).thenReturn(updatedEntryA);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
         // Verify "Extension A" is updated at its current index.
@@ -521,7 +528,7 @@ public class ExtensionsMenuMediatorTest {
         ExtensionsMenuTypes.MenuEntryState updatedEntryB =
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B Updated", ICON_BLUE, /* isPinned= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntryB);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(0))).thenReturn(updatedEntryB);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
         // Verify "Extension B" moved to index 0 and "Extension A" moved to index 1.
@@ -546,13 +553,13 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Mock the site permissions page info for "id_a".
         ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
                 ExtensionTestUtils.createExtensionSitePermissionsState(
                         extensionName, extensionIcon);
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id_a")))
                 .thenReturn(sitePermissionsState);
 
         // Open extensions menu and go to Extension's A site permissions page.
@@ -576,11 +583,11 @@ public class ExtensionsMenuMediatorTest {
         ExtensionsMenuTypes.MenuEntryState updatedEntryA =
                 ExtensionTestUtils.createMenuEntryWithHostPermissions(
                         "id_a", "Extension A Updated", ICON_RED, /* isPinned= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntryA);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(0))).thenReturn(updatedEntryA);
         ExtensionsMenuTypes.ExtensionSitePermissionsState updatedSitePermissionsStateA =
                 ExtensionTestUtils.createExtensionSitePermissionsState(
                         "Extension A Updated", ICON_RED);
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id_a")))
                 .thenReturn(updatedSitePermissionsStateA);
 
         clearInvocations(mSitePermissionsPropertyModel);
@@ -594,7 +601,7 @@ public class ExtensionsMenuMediatorTest {
         ExtensionsMenuTypes.MenuEntryState updatedEntryB =
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B Updated", ICON_BLUE, /* isPinned= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(1))).thenReturn(updatedEntryB);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(1))).thenReturn(updatedEntryB);
 
         clearInvocations(mSitePermissionsPropertyModel);
         mBridgeCaptor.getValue().onActionUpdated(1);
@@ -614,7 +621,7 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_a", "Extension A", ICON_RED, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         mBridgeCaptor.getValue().onReady();
 
@@ -689,7 +696,7 @@ public class ExtensionsMenuMediatorTest {
                         placeholderState,
                         /* isEnterprise= */ false,
                         "https://example.com"));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         mBridgeCaptor.getValue().onReady();
 
@@ -721,8 +728,7 @@ public class ExtensionsMenuMediatorTest {
                         ExtensionsMenuTypes.ControlState.Status.ENABLED,
                         /* isOn= */ true,
                         /* hasTooltip= */ false);
-        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
-                .thenReturn(siteSettingsStateOn);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(any())).thenReturn(siteSettingsStateOn);
         mMenuMediator.updateSiteSettingsToggle();
 
         verify(mMenuPropertyModel)
@@ -744,8 +750,7 @@ public class ExtensionsMenuMediatorTest {
                         ExtensionsMenuTypes.ControlState.Status.ENABLED,
                         /* isOn= */ false,
                         /* hasTooltip= */ false);
-        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
-                .thenReturn(siteSettingsStateOff);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(any())).thenReturn(siteSettingsStateOff);
         mMenuMediator.updateSiteSettingsToggle();
 
         verify(mMenuPropertyModel)
@@ -769,7 +774,7 @@ public class ExtensionsMenuMediatorTest {
                         ExtensionsMenuTypes.ControlState.Status.HIDDEN,
                         /* isOn= */ false,
                         /* hasTooltip= */ false);
-        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(any()))
                 .thenReturn(siteSettingsStateHidden);
         mMenuMediator.updateSiteSettingsToggle();
 
@@ -795,7 +800,7 @@ public class ExtensionsMenuMediatorTest {
                         ExtensionsMenuTypes.ControlState.Status.ENABLED,
                         /* isOn= */ true,
                         /* hasTooltip= */ true);
-        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong())).thenReturn(siteSettingsState);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(any())).thenReturn(siteSettingsState);
         mMenuMediator.updateSiteSettingsToggle();
 
         verify(mMenuPropertyModel)
@@ -812,8 +817,7 @@ public class ExtensionsMenuMediatorTest {
     @Test
     public void testSiteSettingsToggle_ClickCallsBridge() {
         mMenuMediator.onSiteSettingsToggleChanged(true);
-        verify(mExtensionsMenuBridgeJniMock)
-                .onSiteSettingsToggleChanged(EXTENSIONS_MENU_BRIDGE_POINTER, true);
+        verify(mExtensionsMenuBridgeJniMock).onSiteSettingsToggleChanged(eq(mMenuNative), eq(true));
     }
 
     @Test
@@ -822,7 +826,7 @@ public class ExtensionsMenuMediatorTest {
                 .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
         List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
         requests.add(new ExtensionsMenuTypes.HostAccessRequest("id1", "name1", null));
-        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(any())).thenReturn(requests);
 
         mMenuMediator.onHostAccessRequestAdded("id1");
 
@@ -846,7 +850,7 @@ public class ExtensionsMenuMediatorTest {
                 .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
         List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
         requests.add(new ExtensionsMenuTypes.HostAccessRequest("id1", "name1", null));
-        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(any())).thenReturn(requests);
 
         mMenuMediator.onHostAccessRequestUpdated("id1");
 
@@ -858,7 +862,7 @@ public class ExtensionsMenuMediatorTest {
         when(mMenuPropertyModel.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE))
                 .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
         List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
-        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(any())).thenReturn(requests);
 
         mMenuMediator.onHostAccessRequestRemoved("id1");
 
@@ -870,7 +874,7 @@ public class ExtensionsMenuMediatorTest {
         when(mMenuPropertyModel.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE))
                 .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
         List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
-        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(any())).thenReturn(requests);
 
         mMenuMediator.onHostAccessRequestsCleared();
 
@@ -888,7 +892,7 @@ public class ExtensionsMenuMediatorTest {
         // Mock the site permissions state returned by bridge.
         ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
                 ExtensionTestUtils.createExtensionSitePermissionsState("Extension A", null);
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id1")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id1")))
                 .thenReturn(sitePermissionsState);
 
         // Call the method.
@@ -911,7 +915,7 @@ public class ExtensionsMenuMediatorTest {
 
         // Verify that getExtensionSitePermissionsState was never called.
         verify(mExtensionsMenuBridgeJniMock, never())
-                .getExtensionSitePermissionsState(anyLong(), any());
+                .getExtensionSitePermissionsState(any(), any());
     }
 
     @Test
@@ -927,14 +931,13 @@ public class ExtensionsMenuMediatorTest {
 
         // Verify that getExtensionSitePermissionsState was never called for "id1".
         verify(mExtensionsMenuBridgeJniMock, never())
-                .getExtensionSitePermissionsState(anyLong(), eq("id1"));
+                .getExtensionSitePermissionsState(any(), eq("id1"));
     }
 
     @Test
     public void testOnReloadPageButtonClicked() {
         mMenuMediator.onReloadPageButtonClicked();
-        verify(mExtensionsMenuBridgeJniMock)
-                .onReloadPageButtonClicked(EXTENSIONS_MENU_BRIDGE_POINTER);
+        verify(mExtensionsMenuBridgeJniMock).onReloadPageButtonClicked(eq(mMenuNative));
     }
 
     /** Tests that the menu item's site access toggle properties are correctly updated. */
@@ -970,7 +973,7 @@ public class ExtensionsMenuMediatorTest {
                         toggleState,
                         sitePermissionsButtonState,
                         /* isEnterprise= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -1001,7 +1004,7 @@ public class ExtensionsMenuMediatorTest {
                         toggleState,
                         sitePermissionsButtonState,
                         /* isEnterprise= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
         // Verify toggle is disabled and checked for the menu item
@@ -1031,7 +1034,7 @@ public class ExtensionsMenuMediatorTest {
                         toggleState,
                         sitePermissionsButtonState,
                         /* isEnterprise= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
         // Verify toggle is enabled and unchecked for the menu item.
@@ -1074,7 +1077,7 @@ public class ExtensionsMenuMediatorTest {
                         toggleState,
                         sitePermissionsButtonState,
                         /* isEnterprise= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -1091,7 +1094,7 @@ public class ExtensionsMenuMediatorTest {
         // ID and value.
         verify(mExtensionsMenuBridgeJniMock)
                 .onExtensionToggleSelected(
-                        EXTENSIONS_MENU_BRIDGE_POINTER, "id_a", "https://example.com", true);
+                        eq(mMenuNative), eq("id_a"), eq("https://example.com"), eq(true));
     }
 
     /** Tests that the menu item's site permission button properties are correctly updated. */
@@ -1127,7 +1130,7 @@ public class ExtensionsMenuMediatorTest {
                         toggleState,
                         sitePermissionsButtonState,
                         /* isEnterprise= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open extensions menu.
         mBridgeCaptor.getValue().onReady();
@@ -1157,7 +1160,7 @@ public class ExtensionsMenuMediatorTest {
                         toggleState,
                         sitePermissionsButtonState,
                         /* isEnterprise= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
         // Verify button is disabled and has correct text and accessible name.
@@ -1193,7 +1196,7 @@ public class ExtensionsMenuMediatorTest {
                         toggleState,
                         sitePermissionsButtonState,
                         /* isEnterprise= */ false);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
         // Verify button is enabled and has updated text and accessible name.
@@ -1211,11 +1214,11 @@ public class ExtensionsMenuMediatorTest {
     @Test
     public void testOnModelChanged_HostAccessRequestsSection() {
         // Mock that the main page is visible and the optional section is HOST_ACCESS_REQUESTS
-        when(mExtensionsMenuBridgeJniMock.getOptionalSection(anyLong()))
+        when(mExtensionsMenuBridgeJniMock.getOptionalSection(any()))
                 .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
         List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
         requests.add(new ExtensionsMenuTypes.HostAccessRequest("id1", "name1", null));
-        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(any())).thenReturn(requests);
 
         mMenuMediator.onModelChanged();
 
@@ -1229,7 +1232,7 @@ public class ExtensionsMenuMediatorTest {
     @Test
     public void testOnModelChanged_ReloadSection() {
         // Mock that the main page is visible and the optional section is RELOAD_PAGE
-        when(mExtensionsMenuBridgeJniMock.getOptionalSection(anyLong()))
+        when(mExtensionsMenuBridgeJniMock.getOptionalSection(any()))
                 .thenReturn(ExtensionsMenuTypes.OptionalSectionType.RELOAD_PAGE);
 
         mMenuMediator.onModelChanged();
@@ -1250,7 +1253,7 @@ public class ExtensionsMenuMediatorTest {
     @Test
     public void testOnModelChanged_NoOptionalSection() {
         // Mock that the main page is visible and there is no optional section
-        when(mExtensionsMenuBridgeJniMock.getOptionalSection(anyLong()))
+        when(mExtensionsMenuBridgeJniMock.getOptionalSection(any()))
                 .thenReturn(ExtensionsMenuTypes.OptionalSectionType.NONE);
 
         mMenuMediator.onModelChanged();
@@ -1277,13 +1280,13 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createMenuEntryWithHostPermissions(
                         "id_a", extensionName, extensionIcon, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Mock being on the site permissions page for "id_a".
         ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
                 ExtensionTestUtils.createExtensionSitePermissionsState(
                         extensionName, extensionIcon);
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id_a")))
                 .thenReturn(sitePermissionsState);
 
         // Open extensions menu.
@@ -1326,13 +1329,13 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createMenuEntryWithHostPermissions(
                         "id_a", extensionName, extensionIcon, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Mock being on the site permissions page for "id_a".
         ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
                 ExtensionTestUtils.createExtensionSitePermissionsState(
                         extensionName, extensionIcon);
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id_a")))
                 .thenReturn(sitePermissionsState);
 
         // Open extensions menu and go to the site permissions page.
@@ -1394,7 +1397,7 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createMenuEntryWithHostPermissions(
                         "id_a", extensionName, extensionIcon, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open extensions menu.
         mBridgeCaptor.getValue().onReady();
@@ -1403,7 +1406,7 @@ public class ExtensionsMenuMediatorTest {
         ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
                 ExtensionTestUtils.createExtensionSitePermissionsState(
                         extensionName, extensionIcon);
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id_a")))
                 .thenReturn(sitePermissionsState);
 
         // Trigger the click listener for the site permissions button.
@@ -1434,7 +1437,7 @@ public class ExtensionsMenuMediatorTest {
 
         listenerCaptor.getValue().onCheckedChanged(null, false);
         verify(mExtensionsMenuBridgeJniMock)
-                .onShowRequestsTogglePressed(EXTENSIONS_MENU_BRIDGE_POINTER, "id_a", false);
+                .onShowRequestsTogglePressed(eq(mMenuNative), eq("id_a"), eq(false));
     }
 
     /**
@@ -1449,13 +1452,13 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createMenuEntryWithHostPermissions(
                         "id_a", extensionName, extensionIcon, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Mock the site permissions page info for "id_a".
         ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
                 ExtensionTestUtils.createExtensionSitePermissionsState(
                         extensionName, extensionIcon);
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id_a")))
                 .thenReturn(sitePermissionsState);
 
         // Open extensions menu and go to Extension's A site permissions page.
@@ -1510,10 +1513,10 @@ public class ExtensionsMenuMediatorTest {
         // Verify bridge is notified with the correct option.
         verify(mExtensionsMenuBridgeJniMock)
                 .onSiteAccessSelected(
-                        EXTENSIONS_MENU_BRIDGE_POINTER,
-                        "id_a",
-                        "https://example.com",
-                        ExtensionsMenuTypes.UserSiteAccess.ON_SITE);
+                        eq(mMenuNative),
+                        eq("id_a"),
+                        eq("https://example.com"),
+                        eq(ExtensionsMenuTypes.UserSiteAccess.ON_SITE));
     }
 
     /**
@@ -1528,9 +1531,9 @@ public class ExtensionsMenuMediatorTest {
         when(mSitePermissionsPropertyModel.get(SitePermissionsPageProperties.EXTENSION_ID))
                 .thenReturn("id_a");
 
-        when(mExtensionsMenuBridgeJniMock.getOptionalSection(anyLong()))
+        when(mExtensionsMenuBridgeJniMock.getOptionalSection(any()))
                 .thenReturn(ExtensionsMenuTypes.OptionalSectionType.NONE);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(new ArrayList<>());
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(new ArrayList<>());
 
         mMenuMediator.onModelChanged();
 
@@ -1540,7 +1543,7 @@ public class ExtensionsMenuMediatorTest {
 
         // Verify that the site permissions state is not queried or updated on model change.
         verify(mExtensionsMenuBridgeJniMock, never())
-                .getExtensionSitePermissionsState(anyLong(), any());
+                .getExtensionSitePermissionsState(any(), any());
         verify(mSitePermissionsPropertyModel, never())
                 .set(eq(SitePermissionsPageProperties.ON_SITE_ACCESS_SELECTED_LISTENER), any());
     }
@@ -1582,7 +1585,7 @@ public class ExtensionsMenuMediatorTest {
                 .thenReturn(ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
         when(mSitePermissionsPropertyModel.get(SitePermissionsPageProperties.EXTENSION_ID))
                 .thenReturn("id_a");
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id_a")))
                 .thenReturn(stateA, stateB);
 
         // Trigger model change when site permissions page is open.
@@ -1609,10 +1612,10 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createMenuEntryWithHostPermissions(
                         "id_a", extensionName, extensionIcon, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Mock null state for extension site permissions.
-        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(any(), eq("id_a")))
                 .thenReturn(null);
 
         // Open extensions menu.
@@ -1642,7 +1645,7 @@ public class ExtensionsMenuMediatorTest {
         entries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
                         "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open extensions menu.
         mBridgeCaptor.getValue().onReady();
@@ -1653,13 +1656,12 @@ public class ExtensionsMenuMediatorTest {
                 .thenReturn(ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
         when(mSitePermissionsPropertyModel.get(SitePermissionsPageProperties.EXTENSION_ID))
                 .thenReturn("id_a");
-        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0)))
-                .thenReturn(entries.get(0));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(any(), eq(0))).thenReturn(entries.get(0));
 
         // When id_a is removed from native side, only id_b remains in menu entries.
         List<ExtensionsMenuTypes.MenuEntryState> remainingEntries = new ArrayList<>();
         remainingEntries.add(entries.get(1));
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(remainingEntries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(remainingEntries);
 
         mBridgeCaptor.getValue().onActionRemoved(0);
 
@@ -1706,7 +1708,7 @@ public class ExtensionsMenuMediatorTest {
 
         List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
         entries.add(enterpriseEntry);
-        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(any())).thenReturn(entries);
 
         // Open the menu.
         mBridgeCaptor.getValue().onReady();
