@@ -100,6 +100,9 @@ HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
       is_first_run_desktop_refresh_enabled
           ? IDR_SIGNIN_HISTORY_SYNC_OPTIN_HISTORY_SYNC_OPTIN_REFRESH_HTML
           : IDR_SIGNIN_HISTORY_SYNC_OPTIN_HISTORY_SYNC_OPTIN_HTML);
+  source->AddResourcePath(
+      chrome::kChromeUIHistorySyncOptinLoadingPath,
+      IDR_SIGNIN_HISTORY_SYNC_OPTIN_SYNC_LOADING_CONFIRMATION_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"historySyncOptInTitle", IDS_HISTORY_SYNC_OPT_IN_TITLE},
@@ -109,6 +112,7 @@ HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
       {"historySyncOptInRejectButtonLabel",
        IDS_HISTORY_SYNC_OPT_IN_REJECT_BUTTON},
       {"historySyncOptInDescription", IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION},
+      {"syncLoadingConfirmationTitle", IDS_SYNC_LOADING_CONFIRMATION_TITLE},
   };
 
   // Refreshed UI doesn't need the background illustrations.

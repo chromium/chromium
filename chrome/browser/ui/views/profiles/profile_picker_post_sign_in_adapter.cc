@@ -228,7 +228,10 @@ void ProfilePickerPostSignInAdapter::SwitchToSyncConfirmation() {
     std::move(step_switch_callback_.value()).Run(true);
   }
   host_->ShowScreen(
-      contents(), GetSyncConfirmationURL(/*loading=*/false),
+      contents(),
+      AppendSyncConfirmationQueryParams(
+          GURL(chrome::kChromeUISyncConfirmationURL),
+          SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true),
       /*navigation_finished_closure=*/
       base::BindOnce(
           &ProfilePickerPostSignInAdapter::SwitchToSyncConfirmationFinished,
@@ -340,11 +343,9 @@ std::optional<SkColor> ProfilePickerPostSignInAdapter::GetProfileColor() const {
   return profile_color_;
 }
 
-GURL ProfilePickerPostSignInAdapter::GetSyncConfirmationURL(bool loading) {
-  GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
-  return AppendSyncConfirmationQueryParams(
-      loading ? url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath) : url,
-      SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true);
+GURL ProfilePickerPostSignInAdapter::GetLoadingScreenURL() const {
+  return GURL(chrome::kChromeUIHistorySyncOptinURL)
+      .Resolve(chrome::kChromeUIHistorySyncOptinLoadingPath);
 }
 
 std::unique_ptr<content::WebContents>

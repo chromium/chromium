@@ -125,9 +125,8 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   // Returns the profile color, taking into account current policies.
   std::optional<SkColor> GetProfileColor() const;
 
-  // Returns the URL for sync confirmation screen (or for the "is-loading"
-  // version of it, if `loading` is true).
-  GURL GetSyncConfirmationURL(bool loading);
+  // Returns the URL for the post-sign-in loading spinner screen.
+  GURL GetLoadingScreenURL() const;
 
   ProfilePickerWebContentsHost* host() const { return host_; }
   Profile* profile() const { return profile_; }

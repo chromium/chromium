@@ -187,11 +187,11 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
         std::make_unique<ProfileNameResolver>(identity_manager, account_info());
 
     // Stop with the sign-in navigation and show a spinner instead. The spinner
-    // will be shown until TurnSyncOnHelper figures out whether it's a
-    // managed account and whether sync is disabled by policies (which in some
-    // cases involves fetching policies and can take a couple of seconds).
-    host()->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/true),
-                       base::OnceClosure());
+    // will be shown until the post-sign-in flow figures out whether it's a
+    // managed account and whether sync/policies are resolved (which in some
+    // cases involves fetching policies/capabilities and can take a couple of
+    // seconds).
+    host()->ShowScreen(contents(), GetLoadingScreenURL(), base::OnceClosure());
 
     ProfilePickerPostSignInAdapter::Init(std::move(step_switch_callback));
   }

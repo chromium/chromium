@@ -40,7 +40,6 @@ build_webui("build") {
     "sync_confirmation/sync_confirmation.html",
     "sync_confirmation/sync_confirmation_refresh.html",
     "sync_confirmation/sync_disabled_confirmation.html",
-    "sync_confirmation/sync_loading_confirmation.html",
   ]
   if (!is_chromeos) {
     static_files += [

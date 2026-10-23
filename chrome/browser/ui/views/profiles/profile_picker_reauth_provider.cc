@@ -35,8 +35,8 @@ void RecordReauthResult(ProfilePickerReauthResult result) {
 }
 
 GURL GetLoadingScreenURL() {
-  GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
-  return url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath);
+  return GURL(chrome::kChromeUIHistorySyncOptinURL)
+      .Resolve(chrome::kChromeUIHistorySyncOptinLoadingPath);
 }
 
 ForceSigninUIError ComputeReauthUIError(ProfilePickerReauthResult result,

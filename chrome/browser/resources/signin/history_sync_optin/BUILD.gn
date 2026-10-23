@@ -15,6 +15,7 @@ build_webui("build") {
     "history_sync_optin_refresh.html",
     "images/avatar_surrounding_illustration_dark.svg",
     "images/avatar_surrounding_illustration_light.svg",
+    "sync_loading_confirmation.html",
   ]
 
   ts_files = [

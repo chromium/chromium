@@ -1828,10 +1828,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       // Initially the loading screen is shown.
       WaitForWebContentsNavigation(
           kWebContentsId,
-          AppendSyncConfirmationQueryParams(
-              GURL(chrome::kChromeUISyncConfirmationURL)
-                  .Resolve(chrome::kChromeUISyncConfirmationLoadingPath),
-              SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true)));
+          GURL(chrome::kChromeUIHistorySyncOptinURL)
+              .Resolve(chrome::kChromeUIHistorySyncOptinLoadingPath)));
 
   AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(
@@ -2544,10 +2542,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTestWithSyncService,
       views::ElementTrackerViews::GetContextForView(view()),
       WaitForWebContentsNavigation(
           kWebContentsId,
-          AppendSyncConfirmationQueryParams(
-              GURL(chrome::kChromeUISyncConfirmationURL)
-                  .Resolve(chrome::kChromeUISyncConfirmationLoadingPath),
-              SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true)));
+          GURL(chrome::kChromeUIHistorySyncOptinURL)
+              .Resolve(chrome::kChromeUIHistorySyncOptinLoadingPath)));
 
   auto& identity_manager =
       CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile()));

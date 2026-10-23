@@ -545,11 +545,11 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
 
   void Init(StepSwitchFinishedCallback step_switch_callback) override {
     // Stop with the sign-in navigation and show a spinner instead. The spinner
-    // will be shown until TurnSyncOnHelper or HistorySyncOptinHelper figures
-    // out whether it's a managed account and whether sync/policies are resolved
-    // (which in some cases involves fetching policies/capabilities and can take
-    // a couple of seconds).
-    host()->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/true),
+    // will be shown until the post-sign-in flow figures out whether it's a
+    // managed account and whether sync/policies are resolved (which in some
+    // cases involves fetching policies/capabilities and can take a couple of
+    // seconds).
+    host()->ShowScreen(contents(), GetLoadingScreenURL(),
                        /*navigation_finished_closure=*/base::OnceClosure());
 
     ProfilePickerPostSignInAdapter::Init(std::move(step_switch_callback));
