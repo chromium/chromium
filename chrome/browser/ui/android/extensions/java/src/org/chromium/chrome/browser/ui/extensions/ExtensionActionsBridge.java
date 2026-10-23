@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.extensions;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -13,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 
 /** A JNI bridge to interact with extension actions for the toolbar. */
 @NullMarked
@@ -24,7 +26,7 @@ public class ExtensionActionsBridge implements Destroyable {
     public ExtensionActionsBridge(ChromeAndroidTask task, Profile profile) {
         mNativeExtensionActionsBridge =
                 ExtensionActionsBridgeJni.get()
-                        .init(this, task.getOrCreateNativeBrowserWindowPtr(profile));
+                        .init(this, task.getOrCreateNativeBrowserWindow(profile));
     }
 
     @Override
@@ -38,7 +40,8 @@ public class ExtensionActionsBridge implements Destroyable {
     @NativeMethods
     public interface Natives {
 
-        long init(ExtensionActionsBridge bridge, long browserWindowInterfacePtr);
+        long init(
+                ExtensionActionsBridge bridge, JniPtr<NativeBrowserWindowInterface> browserWindow);
 
         void destroy(long nativeExtensionActionsBridge);
     }

@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -20,18 +25,19 @@ import java.util.TreeMap;
 @NullMarked
 public class FakeExtensionActionsBridge {
     /**
-     * A map of task IDs to their corresponding {@link TaskModel}.
+     * A map of native browser windows, as returned by {@link
+     * ChromeAndroidTask#getOrCreateNativeBrowserWindow()}, to their corresponding {@link
+     * TaskModel}.
      *
-     * <p>Task IDs is a concept internal to this class, identifying a {@link ChromeAndroidTask} that
-     * is associated with {@link TaskModel}. It is defined to be identical to the native browser
-     * window interface pointer as returned by {@link
-     * ChromeAndroidTask#getOrCreateNativeBrowserWindowPtr()}. We ensure that it is non-zero to
-     * avoid potential bugs with mocked {@link ChromeAndroidTask}.
+     * <p>Keys are compared by identity, which works because {@link
+     * ChromeAndroidTask#getOrCreateNativeBrowserWindow()} returns the same instance for a given
+     * task and profile.
      */
-    private final TreeMap<Long, TaskModel> mTaskModels = new TreeMap<>();
+    private final Map<JniPtr<NativeBrowserWindowInterface>, TaskModel> mTaskModels =
+            new HashMap<>();
 
     /**
-     * A map of bridge IDs to their corresponding task IDs.
+     * A map of bridge IDs to their corresponding native browser windows.
      *
      * <p>Bridge IDs is a concept internal to this class, identifying a {@link
      * ExtensionActionsBridge} by a unique long. An increasing non-negative long is assigned to a
@@ -39,7 +45,8 @@ public class FakeExtensionActionsBridge {
      *
      * <p>Note that we never remove items from this map, which should be fine for tests.
      */
-    private final TreeMap<Long, Long> mBridgeIdToTaskId = new TreeMap<>();
+    private final TreeMap<Long, JniPtr<NativeBrowserWindowInterface>> mBridgeIdToBrowserWindow =
+            new TreeMap<>();
 
     public FakeExtensionActionsBridge() {}
 
@@ -61,7 +68,7 @@ public class FakeExtensionActionsBridge {
      * exist.
      */
     public @Nullable TaskModel getTaskModel(ChromeAndroidTask task, Profile profile) {
-        return mTaskModels.get(computeTaskId(task, profile));
+        return mTaskModels.get(getBrowserWindow(task, profile));
     }
 
     /**
@@ -69,11 +76,11 @@ public class FakeExtensionActionsBridge {
      * doesn't exist.
      */
     public TaskModel getOrCreateTaskModel(ChromeAndroidTask task, Profile profile) {
-        long browserId = computeTaskId(task, profile);
-        TaskModel model = mTaskModels.get(browserId);
+        JniPtr<NativeBrowserWindowInterface> browserWindow = getBrowserWindow(task, profile);
+        TaskModel model = mTaskModels.get(browserWindow);
         if (model == null) {
             model = new TaskModel(task);
-            mTaskModels.put(browserId, model);
+            mTaskModels.put(browserWindow, model);
         }
         return model;
     }
@@ -83,11 +90,13 @@ public class FakeExtensionActionsBridge {
         mTaskModels.clear();
     }
 
-    /** Computes the task ID for the given {@link ChromeAndroidTask}. */
-    private static long computeTaskId(ChromeAndroidTask task, Profile profile) {
-        long taskId = task.getOrCreateNativeBrowserWindowPtr(profile);
-        assert taskId != 0 : "ChromeAndroidTask#getOrCreateNativeBrowserWindowPtr() returned 0";
-        return taskId;
+    private static JniPtr<NativeBrowserWindowInterface> getBrowserWindow(
+            ChromeAndroidTask task, Profile profile) {
+        JniPtr<NativeBrowserWindowInterface> browserWindow =
+                task.getOrCreateNativeBrowserWindow(profile);
+        assert browserWindow != null
+                : "ChromeAndroidTask#getOrCreateNativeBrowserWindow() returned null";
+        return browserWindow;
     }
 
     /**
@@ -108,18 +117,19 @@ public class FakeExtensionActionsBridge {
         private FakeExtensionActionsBridgeJni() {}
 
         @Override
-        public long init(ExtensionActionsBridge bridge, long taskId) {
+        public long init(
+                ExtensionActionsBridge bridge, JniPtr<NativeBrowserWindowInterface> browserWindow) {
             // Use the bridge ID as the native bridge pointer.
-            return allocateBridgeId(taskId);
+            return allocateBridgeId(browserWindow);
         }
 
         @Override
         public void destroy(long bridgeId) {}
 
-        /** Allocates a new bridge ID for the given task ID. */
-        private long allocateBridgeId(long taskId) {
-            long bridgeId = mBridgeIdToTaskId.size() + 1L; // Start bridge IDs at 1.
-            mBridgeIdToTaskId.put(bridgeId, taskId);
+        /** Allocates a new bridge ID for the given native browser window. */
+        private long allocateBridgeId(JniPtr<NativeBrowserWindowInterface> browserWindow) {
+            long bridgeId = mBridgeIdToBrowserWindow.size() + 1L; // Start bridge IDs at 1.
+            mBridgeIdToBrowserWindow.put(bridgeId, browserWindow);
             return bridgeId;
         }
     }

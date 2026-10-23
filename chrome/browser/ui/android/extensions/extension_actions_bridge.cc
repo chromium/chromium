@@ -34,13 +34,10 @@ void ExtensionActionsBridge::Destroy(JNIEnv* env) {
 static int64_t JNI_ExtensionActionsBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_object,
-    int64_t j_browser_window_interface) {
-  BrowserWindowInterface* browser =
-      reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
+    BrowserWindowInterface* browser) {
   return reinterpret_cast<int64_t>(
       new ExtensionActionsBridge(browser, java_object));
 }
-
 
 }  // namespace extensions
 
