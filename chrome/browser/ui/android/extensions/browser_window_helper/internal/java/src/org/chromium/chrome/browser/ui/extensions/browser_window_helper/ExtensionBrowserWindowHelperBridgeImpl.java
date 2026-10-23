@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.ui.extensions.browser_window_helper;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
 /** Implements {@link ExtensionBrowserWindowHelperBridge}. */
@@ -26,7 +29,7 @@ final class ExtensionBrowserWindowHelperBridgeImpl implements ExtensionBrowserWi
 
         mNativeExtensionBrowserWindowHelperBridge =
                 ExtensionBrowserWindowHelperBridgeImplJni.get()
-                        .create(/* caller= */ this, initInfo.nativeBrowserWindowPtr);
+                        .create(/* caller= */ this, initInfo.nativeBrowserWindow);
     }
 
     @Override
@@ -53,11 +56,11 @@ final class ExtensionBrowserWindowHelperBridgeImpl implements ExtensionBrowserWi
          * Creates a native {@code ExtensionBrowserWindowHelperBridge}.
          *
          * @param caller The Java object calling this method.
-         * @param nativeBrowserWindowPtr The address of a native {@code BrowserWindowInterface}.
-         *     It's the caller's responsibility to ensure the validity of the address. Failure to do
-         *     so will result in undefined behavior on the native side.
+         * @param browserWindow The native {@code BrowserWindowInterface}.
          */
-        long create(ExtensionBrowserWindowHelperBridgeImpl caller, long nativeBrowserWindowPtr);
+        long create(
+                ExtensionBrowserWindowHelperBridgeImpl caller,
+                @Nullable JniPtr<NativeBrowserWindowInterface> browserWindow);
 
         void destroy(long nativeExtensionBrowserWindowHelperBridge);
     }
