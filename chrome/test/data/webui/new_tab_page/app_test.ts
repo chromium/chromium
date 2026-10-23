@@ -1355,6 +1355,62 @@ suite('NewTabPageAppTest', () => {
       assertEquals('latest', state.text);
     });
 
+    test(
+        're-rendering app does not overwrite internal composebox state changes',
+        async () => {
+          // Arrange: Open composebox with initial tool mode.
+          $$(app, '#searchbox')!.dispatchEvent(
+              new CustomEvent('open-composebox', {
+                detail: {
+                  text: '',
+                  files: [],
+                  mode: ToolMode.kImageGen,
+                  model: ModelMode.kUnspecified,
+                  smartTabSharingActive: false,
+                },
+              }));
+          await microtasksFinished();
+
+          const composebox =
+              app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
+          assertTrue(!!composebox);
+          assertEquals(ToolMode.kImageGen, composebox.state?.mode);
+
+          // Simulate composebox updating its own state (e.g. via
+          // handleFuseboxAction when selecting an image suggestion).
+          const action = createFuseboxAction({
+            queryActionOverride: QueryActionOverride.kPaste,
+            preselectedTool: ToolMode.kImageGen,
+            searchboxOverride: SearchboxOverride.kComposebox,
+          });
+          await composebox.handleFuseboxAction({
+            suggestion: 'Create an image of a birthday party invitation',
+            files: [],
+            fuseboxAction: action,
+          });
+          await microtasksFinished();
+          assertEquals(
+              'Create an image of a birthday party invitation',
+              composebox.state?.text);
+
+          searchboxHandler.resetResolver('setActiveToolMode');
+
+          // Act: Trigger an `<ntp-app>` re-render via searchboxContainer
+          // focusout/focusin (such as when the tool chip is removed).
+          const searchboxContainer = $$(app, '#searchboxContainer')!;
+          searchboxContainer.dispatchEvent(new FocusEvent('focusout'));
+          searchboxContainer.dispatchEvent(new FocusEvent('focusin'));
+          await microtasksFinished();
+
+          // Assert: `<ntp-app>` re-render does not overwrite `composebox.state`
+          // with the initial state from `open-composebox` or re-apply tool
+          // mode.
+          assertEquals(
+              'Create an image of a birthday party invitation',
+              composebox.state?.text);
+          assertEquals(0, searchboxHandler.getCallCount('setActiveToolMode'));
+        });
+
     test('composebox state toggles inert attribute on siblings', async () => {
       // Arrange: Verify blocked elements do NOT have inert initially.
       callbackRouterRemote.setTheme(createTheme());

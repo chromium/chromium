@@ -224,7 +224,6 @@ export class AppElement extends AppElementBase {
       // Protected properties
       // =======================================================================
 
-      composeboxState_: {type: Object},
       oneGoogleBarIframePath_: {type: String},
       oneGoogleBarLoaded_: {type: Boolean},
       theme_: {type: Object},
@@ -388,7 +387,6 @@ export class AppElement extends AppElementBase {
   accessor composeboxEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposebox');
 
-  protected accessor composeboxState_: ComposeboxState|null = null;
   protected accessor oneGoogleBarIframePath_: string|undefined;
   protected accessor oneGoogleBarLoaded_: boolean = false;
   protected accessor theme_: Theme|null = null;
@@ -1061,9 +1059,7 @@ export class AppElement extends AppElementBase {
   }
 
   private async openComposeboxForActionChip_(detail: ActionChipClickDetail) {
-    this.composeboxState_ = null;
-    this.ensureComposeboxOpen_();
-    await this.updateComplete;
+    await this.ensureComposeboxOpen_();
     const composebox =
         this.shadowRoot?.querySelector<NtpComposeboxElement>('#composebox');
     if (composebox) {
@@ -1075,8 +1071,8 @@ export class AppElement extends AppElementBase {
     this.pageHandler_.onContextualSearchIPHEngaged();
   }
 
-  protected openComposebox_(state: ComposeboxState|null = null) {
-    this.composeboxState_ = state ?? {
+  protected async openComposebox_(state: ComposeboxState|null = null) {
+    const nextState: ComposeboxState = state ?? {
       text: '',
       files: [],
       mode: ToolMode.kUnspecified,
@@ -1085,10 +1081,15 @@ export class AppElement extends AppElementBase {
       smartTabSharingActive: false,
       // </if>
     };
-    this.ensureComposeboxOpen_();
+    await this.ensureComposeboxOpen_();
+    const composebox =
+        this.shadowRoot?.querySelector<NtpComposeboxElement>('#composebox');
+    if (composebox) {
+      composebox.state = nextState;
+    }
   }
 
-  private ensureComposeboxOpen_() {
+  private async ensureComposeboxOpen_() {
     if (!this.showComposebox_) {
       this.showComposebox_ = true;
       if (this.composeboxOutsideClickEnabled_) {
@@ -1104,6 +1105,9 @@ export class AppElement extends AppElementBase {
           WindowProxy.getInstance().now());
       this.wasComposeboxOpened_ = true;
     }
+    // Wait for `<ntp-composebox>` to render in the DOM after setting
+    // `showComposebox_ = true` before callers query `#composebox`.
+    await this.updateComplete;
   }
 
   protected closeComposebox_() {
