@@ -68,15 +68,51 @@ Context context = ApplicationProvider.getApplicationContext();
 
 ### Geometry, layout, location
 
-| Instead of mocking                        | Do                                                                                                                                                                                                                                                                    |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `getWidth/getHeight/getTop/...`           | `view.layout(l, t, r, b)` (or `measure()` + `layout()`), or `setLeft/setTop/...`                                                                                                                                                                                      |
-| `getMeasuredWidth/Height`                 | real `measure(spec, spec)`; size content with `setMinimumWidth/Height` or LayoutParams                                                                                                                                                                                |
-| `getLocationInWindow/OnScreen`            | attach the view: put it in a laid-out parent that is the Activity content view, or `context.getSystemService(WindowManager.class).addView(root, lp)` + `ShadowLooper.idleMainLooper()`, then position via margins/`layout()`. **Detached views always report (0,0).** |
-| `getGlobalVisibleRect`                    | real laid-out tree (e.g. FrameLayout root at 1000x2000 with gravity)                                                                                                                                                                                                  |
-| `transformMatrixToGlobal` / rotation      | `parent.setRotation(30f)` etc.                                                                                                                                                                                                                                        |
-| `getWindowVisibleDisplayFrame` (detached) | returns display size; set `@Config(qualifiers = "h2000dp")` so it doesn't clamp                                                                                                                                                                                       |
-| `isAttachedToWindow`                      | actually attach it (content view or `WindowManager.addView`)                                                                                                                                                                                                          |
+| Instead of mocking                        | Do                                                                                                                                                                                                                                                   |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getWidth/getHeight/getTop/...`           | detached view: `view.layout(l, t, r, b)` (or `measure()` + `layout()`), or `setLeft/setTop/...`; attached view: a real layout pass (see *Laying out views*)                                                                                          |
+| `getMeasuredWidth/Height`                 | real `measure(spec, spec)`; size content with `setMinimumWidth/Height` or LayoutParams                                                                                                                                                               |
+| `getLocationInWindow/OnScreen`            | attach the root (content view or `context.getSystemService(WindowManager.class).addView(root, lp)`) + `RobolectricUtil.runAllBackgroundAndUi()` (see *Laying out views*); position via margins/LayoutParams. **Detached views always report (0,0).** |
+| `getGlobalVisibleRect`                    | real laid-out tree (e.g. FrameLayout root at 1000x2000 with gravity)                                                                                                                                                                                 |
+| `transformMatrixToGlobal` / rotation      | `parent.setRotation(30f)` etc.                                                                                                                                                                                                                       |
+| `getWindowVisibleDisplayFrame` (detached) | returns display size; set `@Config(qualifiers = "h2000dp")` so it doesn't clamp                                                                                                                                                                      |
+| `isAttachedToWindow`                      | actually attach it (content view or `WindowManager.addView`)                                                                                                                                                                                         |
+
+#### Laying out views
+
+- **Detached view** (no window): `measure(spec, spec)` + `layout(0, 0, w, h)` on
+  the root lays out the whole subtree (`layout()` alone leaves never-measured
+  children 0x0). Nothing re-lays it out on its own, so repeat both after
+  changes.
+- **Attached view** (anything under a `setup()` Activity's content view, or a
+  root added with `WindowManager.addView`): let Robolectric lay it out.
+  `setContentView()`, `addView()` and anything else that calls `requestLayout()`
+  only *schedule* a layout pass (a `WindowManager.addView` root isn't even
+  attached until it runs). Idling the main looper with
+  `RobolectricUtil.runAllBackgroundAndUi()` runs it: a real `ViewRootImpl`
+  measure + layout of the whole window.
+- **Window size:** Robolectric's default display is `w320dp-h470dp` at mdpi (so
+  1dp = 1px). If only the view under test needs a size, give it fixed
+  LayoutParams. If the window size matters, set e.g.
+  `@Config(qualifiers = "h1000dp")` on the class or method rather than laying
+  views out by hand. Keep the smaller of `w`/`h` under 600dp unless testing
+  tablets: an unset `sw` becomes min(w, h), so e.g. `w800dp-h1000dp` loads
+  `-sw600dp` resources and `DeviceFormFactor` reports a tablet.
+- **Never simulate a layout pass** on an attached tree, e.g. by calling
+  `layout()` on a view and each of its `getParent()`s instead of idling. Laying
+  out a parent runs its `onLayout()`, which re-positions its children from
+  padding, LayoutParams and measured sizes (overwriting the bounds you just
+  set), and the next layout pass (usually already pending) redoes it all when
+  the looper idles. The only exception is a one-off child override (below).
+- **Don't assume window coordinates or sizes:** after a real layout, views are
+  often offset (parent padding or margins, or an action bar if the theme has
+  one), and the content view can be smaller than the display. Build expected
+  window coordinates from a parent's `getLocationInWindow()` (e.g.
+  `parentPos[0] + 50`) instead of hard-coding them.
+- **One child at a known rect:** for RecyclerView items, use a custom
+  `LayoutManager` (see *RecyclerView / ListView*). A one-off
+  `child.layout(l, t, r, b)` after the real layout pass is OK when only that
+  child's bounds matter; the next layout pass resets it.
 
 ### Visibility & focus
 
@@ -89,16 +125,16 @@ Context context = ApplicationProvider.getApplicationContext();
 
 ### Clicks, listeners, observers
 
-| Instead of `verify(view)...`              | Do                                                                                                                                                                                |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `setOnClickListener(...)`                 | `view.hasOnClickListeners()`, `view.performClick()`, `shadowOf(view).getOnClickListener()`                                                                                        |
-| `addOnLayoutChangeListener`               | `shadowOf(view).getOnLayoutChangeListeners()`; trigger with `forceLayout()` + `measure()` + `layout()`                                                                            |
-| ViewTreeObserver global-layout / pre-draw | `view.getViewTreeObserver().dispatchOnGlobalLayout()` / `dispatchOnPreDraw()` on the real observer; check **behaviour** (e.g. listener removed ⇒ a second dispatch has no effect) |
-| `removeOn...Listener` was called          | behavioural: fire the event again and assert nothing happens                                                                                                                      |
-| `performHapticFeedback(c)`                | `shadowOf(view).lastHapticFeedbackPerformed()`                                                                                                                                    |
-| `announceForAccessibility`                | `shadowOf(accessibilityManager).setEnabled(true)` then `getSentAccessibilityEvents()` filtered to `TYPE_ANNOUNCEMENT`                                                             |
-| attach-state listener removed             | really detach (`parent.removeView`) / re-attach and assert behaviour                                                                                                              |
-| `post(Runnable)` sync hack                | `ShadowLooper.idleMainLooper()` / `RobolectricUtil.runAllBackgroundAndUi()`                                                                                                       |
+| Instead of `verify(view)...`              | Do                                                                                                                                                                                             |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `setOnClickListener(...)`                 | `view.hasOnClickListeners()`, `view.performClick()`, `shadowOf(view).getOnClickListener()`                                                                                                     |
+| `addOnLayoutChangeListener`               | `shadowOf(view).getOnLayoutChangeListeners()`; trigger with `requestLayout()` + `RobolectricUtil.runAllBackgroundAndUi()` (attached), or `forceLayout()` + `measure()` + `layout()` (detached) |
+| ViewTreeObserver global-layout / pre-draw | `view.getViewTreeObserver().dispatchOnGlobalLayout()` / `dispatchOnPreDraw()` on the real observer; check **behaviour** (e.g. listener removed ⇒ a second dispatch has no effect)              |
+| `removeOn...Listener` was called          | behavioural: fire the event again and assert nothing happens                                                                                                                                   |
+| `performHapticFeedback(c)`                | `shadowOf(view).lastHapticFeedbackPerformed()`                                                                                                                                                 |
+| `announceForAccessibility`                | `shadowOf(accessibilityManager).setEnabled(true)` then `getSentAccessibilityEvents()` filtered to `TYPE_ANNOUNCEMENT`                                                                          |
+| attach-state listener removed             | really detach (`parent.removeView`) / re-attach and assert behaviour                                                                                                                           |
+| `post(Runnable)` sync hack                | `ShadowLooper.idleMainLooper()` / `RobolectricUtil.runAllBackgroundAndUi()`                                                                                                                    |
 
 ### Visual state & animations
 
@@ -120,7 +156,8 @@ Never fake `getChildAt`, `getChildCount`, `getChildAdapterPosition`,
 
 - Real `RecyclerView` + real `LinearLayoutManager`/`GridLayoutManager` + a tiny
   test `Adapter` (one view type per position, or pre-built views/holders).
-  `measure()` + `layout()` it (or attach to a `setup()` Activity).
+  `measure()` + `layout()` it if detached, or attach it to a `setup()` Activity
+  and run `RobolectricUtil.runAllBackgroundAndUi()`.
 - Specific item bounds: a small custom `LayoutManager` (e.g.
   `FixedBoundsLayoutManager`) that places child *i* at a given rect — it's not a
   View, so it's allowed.
