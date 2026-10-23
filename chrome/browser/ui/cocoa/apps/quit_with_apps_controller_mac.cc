@@ -61,6 +61,18 @@ const char QuitWithAppsController::kQuitWithAppsNotificationID[] =
 QuitWithAppsController::QuitWithAppsController() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
+    profile_manager_observation_.Observe(profile_manager);
+  }
+}
+
+QuitWithAppsController::~QuitWithAppsController() = default;
+
+void QuitWithAppsController::EnsureNotification() {
+  if (notification_) {
+    return;
+  }
+
   message_center::ButtonInfo quit_apps_button_info(
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_QUIT_LABEL));
   message_center::RichNotificationData rich_notification_data;
@@ -81,12 +93,7 @@ QuitWithAppsController::QuitWithAppsController() {
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kQuitWithAppsNotificationID),
       rich_notification_data, this);
-  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
-    profile_manager_observation_.Observe(profile_manager);
-  }
 }
-
-QuitWithAppsController::~QuitWithAppsController() = default;
 
 void QuitWithAppsController::OnProfileManagerDestroying() {
   // Set `notification_profile_` to null to avoid danling pointer detection when
@@ -170,6 +177,7 @@ bool QuitWithAppsController::ShouldQuit() {
     return true;
   }
 
+  EnsureNotification();
   NotificationDisplayServiceFactory::GetForProfile(notification_profile_)
       ->Display(NotificationHandler::Type::TRANSIENT, *notification_,
                 /*metadata=*/nullptr);

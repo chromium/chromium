@@ -50,6 +50,9 @@ class QuitWithAppsController : public message_center::NotificationDelegate,
  private:
   ~QuitWithAppsController() override;
 
+  // Creates `notification_` if it does not exist yet.
+  void EnsureNotification();
+
   std::unique_ptr<message_center::Notification> notification_;
   // The Profile instance associated with the notification_. We need to cache
   // the instance here because when we want to cancel the notification we need
