@@ -24,9 +24,7 @@ class DevToolsSelectFileDialogTest : public content::RenderViewHostTestHarness {
     return std::make_unique<TestingProfile>();
   }
 
-  void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
-  }
+  void SetUp() override { content::RenderViewHostTestHarness::SetUp(); }
 
   void TearDown() override {
     ui::SelectFileDialog::SetFactory(nullptr);
@@ -90,4 +88,62 @@ TEST_F(DevToolsSelectFileDialogTest,
 
   EXPECT_EQ(params.type, ui::SelectFileDialog::SELECT_SAVEAS_FILE);
   EXPECT_EQ(params.default_path, default_path);
+  ASSERT_TRUE(params.file_types.has_value());
+  EXPECT_EQ(params.file_types->extensions,
+            std::vector<std::vector<base::FilePath::StringType>>{
+                {FILE_PATH_LITERAL("html")}});
+}
+
+TEST_F(DevToolsSelectFileDialogTest,
+       SelectFileSelectedCallbackWithDoubleExtensionDefaultPath) {
+  content::SelectFileDialogParams params;
+  const base::FilePath test_path =
+      base::FilePath::FromASCII("Trace-20261019T154233.json.gz");
+  const base::FilePath default_path =
+      base::FilePath::FromASCII("Trace-20261019T154233.json.gz");
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_path}, &params));
+
+  base::test::TestFuture<const ui::SelectedFileInfo&> future;
+  DevToolsSelectFileDialog::SelectFile(
+      web_contents(), ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+      future.GetCallback(), base::DoNothing(), default_path);
+  EXPECT_TRUE(future.Wait());
+  ui::SelectedFileInfo result = future.Get();
+  EXPECT_EQ(result.file_path, test_path);
+
+  EXPECT_EQ(params.type, ui::SelectFileDialog::SELECT_SAVEAS_FILE);
+  EXPECT_EQ(params.default_path, default_path);
+  ASSERT_TRUE(params.file_types.has_value());
+  EXPECT_EQ(params.file_types->extensions,
+            std::vector<std::vector<base::FilePath::StringType>>{
+                {FILE_PATH_LITERAL("gz")}});
+}
+
+TEST_F(DevToolsSelectFileDialogTest,
+       SelectFileSelectedCallbackWithMultipleDotsInStemDefaultPath) {
+  content::SelectFileDialogParams params;
+  const base::FilePath test_path =
+      base::FilePath::FromASCII("www.paulirish.com-20261019T154354.har");
+  const base::FilePath default_path =
+      base::FilePath::FromASCII("www.paulirish.com-20261019T154354.har");
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_path}, &params));
+
+  base::test::TestFuture<const ui::SelectedFileInfo&> future;
+  DevToolsSelectFileDialog::SelectFile(
+      web_contents(), ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+      future.GetCallback(), base::DoNothing(), default_path);
+  EXPECT_TRUE(future.Wait());
+  ui::SelectedFileInfo result = future.Get();
+  EXPECT_EQ(result.file_path, test_path);
+
+  EXPECT_EQ(params.type, ui::SelectFileDialog::SELECT_SAVEAS_FILE);
+  EXPECT_EQ(params.default_path, default_path);
+  ASSERT_TRUE(params.file_types.has_value());
+  EXPECT_EQ(params.file_types->extensions,
+            std::vector<std::vector<base::FilePath::StringType>>{
+                {FILE_PATH_LITERAL("har")}});
 }

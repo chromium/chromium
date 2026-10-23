@@ -296,15 +296,33 @@ TEST_F(DevToolsFileHelperTest, SuggestedSavePathUsesLastSaveDirectory) {
             tf.path().DirName().Append(FILE_PATH_LITERAL("script.js")));
 }
 
+TEST_F(DevToolsFileHelperTest, SuggestedSavePathPreservesRawFileName) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  PrimeLastSaveDirectory(tf.path());
+  const base::FilePath dir = tf.path().DirName();
+
+  EXPECT_EQ(GetSuggestedSavePath("Trace-20261019T154233.json"),
+            dir.Append(FILE_PATH_LITERAL("Trace-20261019T154233.json")));
+  EXPECT_EQ(GetSuggestedSavePath("Trace-20261019T154233.json.gz"),
+            dir.Append(FILE_PATH_LITERAL("Trace-20261019T154233.json.gz")));
+  EXPECT_EQ(GetSuggestedSavePath("CPU-20261019T154233.cpuprofile"),
+            dir.Append(FILE_PATH_LITERAL("CPU-20261019T154233.cpuprofile")));
+  EXPECT_EQ(
+      GetSuggestedSavePath("www.paulirish.com-20261019T154354.har"),
+      dir.Append(FILE_PATH_LITERAL("www.paulirish.com-20261019T154354.har")));
+}
+
 TEST_F(DevToolsFileHelperTest, SuggestedSavePathFallsBackToDefaultName) {
   base::ScopedTempFile tf;
   ASSERT_TRUE(tf.Create());
   PrimeLastSaveDirectory(tf.path());
   const base::FilePath dir = tf.path().DirName();
 
-  // URLs without a usable file name must fall back to the default name,
-  // rather than turning the raw URL into a file name.
-  for (const char* url : {"https://example.com/", "not a url", ""}) {
+  // URLs or inputs without a usable file name must fall back to the default
+  // name.
+  for (const char* url : {"https://example.com/", "about:blank",
+                          "data:text/plain,hello", "..", ".", ""}) {
     EXPECT_EQ(GetSuggestedSavePath(url),
               dir.Append(FILE_PATH_LITERAL("download")))
         << url;
@@ -325,6 +343,13 @@ TEST_F(DevToolsFileHelperTest, SuggestedSavePathCannotEscapeDirectory) {
            "https://example.com/%2e%2e%2f%2e%2e%2fevil.sh",
            "https://example.com/a%5C..%5C..%5Cevil.sh",
            "https://example.com/%2Fetc%2Fpasswd",
+           "../../evil.sh",
+           "..\\..\\evil.sh",
+           "/etc/passwd",
+           "a%2F..%2F..%2Fevil.sh",
+           "%2e%2e/%2e%2e/evil.sh",
+           "C:\\Windows\\System32\\cmd.exe",
+           "\\\\server\\share\\evil.sh",
        }) {
     const base::FilePath suggested = GetSuggestedSavePath(url);
     EXPECT_FALSE(suggested.ReferencesParent()) << url;
@@ -339,12 +364,17 @@ TEST_F(DevToolsFileHelperTest, SuggestedSavePathStripsBidiControlCharacters) {
   ASSERT_TRUE(tf.Create());
   PrimeLastSaveDirectory(tf.path());
 
-  const base::FilePath suggested =
-      GetSuggestedSavePath("https://example.com/report%E2%80%AEfdp.exe");
+  for (const char* url : {
+           "https://example.com/report%E2%80%AEfdp.exe",
+           "report\u202efdp.exe",
+       }) {
+    const base::FilePath suggested = GetSuggestedSavePath(url);
 
-  EXPECT_EQ(suggested.value().find(FILE_PATH_LITERAL("\u202e")),
-            base::FilePath::StringType::npos);
-  EXPECT_EQ(suggested.DirName(), tf.path().DirName());
+    EXPECT_EQ(suggested.value().find(FILE_PATH_LITERAL("\u202e")),
+              base::FilePath::StringType::npos)
+        << url;
+    EXPECT_EQ(suggested.DirName(), tf.path().DirName()) << url;
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
