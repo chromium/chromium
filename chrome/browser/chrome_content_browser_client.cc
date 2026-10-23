@@ -6992,6 +6992,8 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
   if (type == URLLoaderFactoryType::kDocumentSubResource) {
+    contextual_tasks::ContextualTasksSubresourceProxyingURLLoaderFactory::
+        MaybeProxyRequest(browser_context, isolation_info, factory_builder);
     glic::GlicSubresourceProxyingURLLoaderFactory::MaybeProxyRequest(
         frame, factory_builder);
   }
