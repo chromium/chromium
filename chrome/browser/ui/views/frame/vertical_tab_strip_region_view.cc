@@ -508,6 +508,7 @@ void VerticalTabStripRegionView::Layout(PassKey) {
   resize_area_->SetBoundsRect(gfx::Rect(bounds().right() - resize_area_width_,
                                         0, resize_area_width_,
                                         bounds().height()));
+  resize_area_->SetVisible(organizer_panel_show_percent_ == 0.0);
   shadow_frame_->SetBoundsRect(GetLocalBounds());
 
   // Ensure that we update the drop arrow position so that it does not render in

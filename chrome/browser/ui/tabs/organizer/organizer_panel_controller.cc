@@ -221,6 +221,13 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
     return;
   }
 
+  if (auto* const vertical_tabs =
+          tabs::VerticalTabStripStateController::From(&*browser_window_);
+      visible && vertical_tabs && vertical_tabs->IsResizing()) {
+    // Cannot show during vertical tab strip resize.
+    return;
+  }
+
   is_visible_ = visible;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!is_visible_) {
