@@ -8,6 +8,10 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -22,13 +26,17 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class AutofillPaymentsChurnedUsersBottomSheetBridge
         implements AutofillPaymentsChurnedUsersBottomSheetCoordinator.Delegate {
-    private long mNativeBridge;
+    @JniType("::autofill::AutofillPaymentsChurnedUsersBottomSheetBridge")
+    interface NativeAutofillPaymentsChurnedUsersBottomSheetBridge extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAutofillPaymentsChurnedUsersBottomSheetBridge> mNativeBridge;
     private final WindowAndroid mWindowAndroid;
     private @Nullable AutofillPaymentsChurnedUsersBottomSheetCoordinator mCoordinator;
 
     @CalledByNative
     public AutofillPaymentsChurnedUsersBottomSheetBridge(
-            long nativeBridge, WindowAndroid windowAndroid) {
+            JniRawPtr<NativeAutofillPaymentsChurnedUsersBottomSheetBridge> nativeBridge,
+            WindowAndroid windowAndroid) {
         mNativeBridge = nativeBridge;
         mWindowAndroid = windowAndroid;
     }
@@ -56,31 +64,31 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridge
 
     @Override
     public void onUiAccepted() {
-        if (mNativeBridge == 0) return;
+        if (mNativeBridge == null) return;
         AutofillPaymentsChurnedUsersBottomSheetBridgeJni.get().onUiAccepted(mNativeBridge);
     }
 
     @Override
     public void onShowConfirmation() {
-        if (mNativeBridge == 0) return;
+        if (mNativeBridge == null) return;
         AutofillPaymentsChurnedUsersBottomSheetBridgeJni.get().onShowConfirmation(mNativeBridge);
     }
 
     @Override
     public void onUiCanceled() {
-        if (mNativeBridge == 0) return;
+        if (mNativeBridge == null) return;
         AutofillPaymentsChurnedUsersBottomSheetBridgeJni.get().onUiCanceled(mNativeBridge);
     }
 
     @Override
     public void onUiDismissed() {
-        if (mNativeBridge == 0) return;
+        if (mNativeBridge == null) return;
         AutofillPaymentsChurnedUsersBottomSheetBridgeJni.get().onUiDismissed(mNativeBridge);
     }
 
     @Override
     public void onUiNotShown() {
-        if (mNativeBridge == 0) return;
+        if (mNativeBridge == null) return;
         AutofillPaymentsChurnedUsersBottomSheetBridgeJni.get().onUiNotShown(mNativeBridge);
     }
 
@@ -90,7 +98,10 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridge
             mCoordinator.destroy();
             mCoordinator = null;
         }
-        mNativeBridge = 0;
+        if (mNativeBridge != null) {
+            mNativeBridge.release();
+            mNativeBridge = null;
+        }
     }
 
     @Nullable AutofillPaymentsChurnedUsersBottomSheetCoordinator getCoordinatorForTesting() {
@@ -99,14 +110,14 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridge
 
     @NativeMethods
     interface Natives {
-        void onUiAccepted(long nativeAutofillPaymentsChurnedUsersBottomSheetBridge);
+        void onUiAccepted(JniPtr<NativeAutofillPaymentsChurnedUsersBottomSheetBridge> self);
 
-        void onShowConfirmation(long nativeAutofillPaymentsChurnedUsersBottomSheetBridge);
+        void onShowConfirmation(JniPtr<NativeAutofillPaymentsChurnedUsersBottomSheetBridge> self);
 
-        void onUiCanceled(long nativeAutofillPaymentsChurnedUsersBottomSheetBridge);
+        void onUiCanceled(JniPtr<NativeAutofillPaymentsChurnedUsersBottomSheetBridge> self);
 
-        void onUiDismissed(long nativeAutofillPaymentsChurnedUsersBottomSheetBridge);
+        void onUiDismissed(JniPtr<NativeAutofillPaymentsChurnedUsersBottomSheetBridge> self);
 
-        void onUiNotShown(long nativeAutofillPaymentsChurnedUsersBottomSheetBridge);
+        void onUiNotShown(JniPtr<NativeAutofillPaymentsChurnedUsersBottomSheetBridge> self);
     }
 }

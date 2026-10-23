@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that declare env/types.
@@ -21,8 +22,7 @@ AutofillPaymentsChurnedUsersBottomSheetBridge::
     JNIEnv* env = base::android::AttachCurrentThread();
     java_object_ =
         Java_AutofillPaymentsChurnedUsersBottomSheetBridge_Constructor(
-            env, reinterpret_cast<intptr_t>(this),
-            window_android->GetJavaObject());
+            env, jni_zero::MakeRaw(this), window_android->GetJavaObject());
   }
 }
 
