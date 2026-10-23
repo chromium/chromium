@@ -450,6 +450,65 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
             as_root=True,
         )
 
+    @mock.patch('lib.proto.exception_recorder.register')
+    def test_SetUp_install_apk_records_and_reraises_base_error(
+        self, mock_register
+    ):
+        cases = [
+            (
+                local_device_gtest_run.device_errors.CommandFailedError(
+                    'pm path failed', 'device_1'
+                ),
+                local_device_gtest_run.test_exception.InstallationFailedError,
+            ),
+            (
+                local_device_gtest_run.device_errors.CommandTimeoutError(
+                    'install timed out'
+                ),
+                local_device_gtest_run.test_exception.InstallationTimeoutError,
+            ),
+            (
+                local_device_gtest_run.base_error.BaseError('base error'),
+                local_device_gtest_run.test_exception.InstallationError,
+            ),
+        ]
+        for err, expected_wrapper_cls in cases:
+            with self.subTest(err=type(err).__name__):
+                mock_register.reset_mock()
+                mock_env = mock.MagicMock(
+                    spec=local_device_environment.LocalDeviceEnvironment
+                )
+                mock_env.concurrent_adb = False
+                mock_env.force_main_user = False
+                mock_ti = mock.MagicMock(
+                    spec=gtest_test_instance.GtestTestInstance
+                )
+                mock_ti.use_existing_test_data = True
+                mock_ti.deploy_mock_openxr_runtime = False
+                mock_ti.GetDataDependencies.return_value = [[]]
+
+                device = mock.MagicMock()
+                device.serial = 'device_1'
+                device.RunShellCommand.return_value = ['1.0', '1.0', '1.0']
+                mock_env.parallel_devices.pMap.side_effect = lambda f, args: [
+                    f(device, args[0])
+                ]
+
+                run = local_device_gtest_run.LocalDeviceGtestRun(
+                    mock_env, mock_ti
+                )
+                run._delegate = mock.MagicMock()
+                run._delegate.Install.side_effect = err
+
+                run.SetUp()
+
+                mock_register.assert_called_once()
+                registered_exc = mock_register.call_args[0][0]
+                self.assertIsInstance(registered_exc, expected_wrapper_cls)
+                mock_env.DenylistDevice.assert_called_once_with(
+                    device, 'individual_device_set_up'
+                )
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

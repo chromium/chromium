@@ -600,11 +600,20 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                 try:
                     self._delegate.Install(dev)
                 except device_errors.CommandFailedError as e:
-                    raise test_exception.InstallationFailedError(e) from e
+                    exception_recorder.register(
+                        test_exception.InstallationFailedError(e)
+                    )
+                    raise
                 except device_errors.CommandTimeoutError as e:
-                    raise test_exception.InstallationTimeoutError(e) from e
+                    exception_recorder.register(
+                        test_exception.InstallationTimeoutError(e)
+                    )
+                    raise
                 except base_error.BaseError as e:
-                    raise test_exception.InstallationError(e) from e
+                    exception_recorder.register(
+                        test_exception.InstallationError(e)
+                    )
+                    raise
 
             @measures.timed_func('device_setup', 'push_test_data')
             def push_test_data(dev):
