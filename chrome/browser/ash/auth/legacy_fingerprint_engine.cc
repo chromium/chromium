@@ -11,22 +11,35 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_prefs/user_prefs.h"
-#include "content/public/browser/browser_context.h"
 
 namespace ash {
 namespace {
 
 const char kFactorsOptionAll[] = "all";
 const char kFactorsOptionFingerprint[] = "FINGERPRINT";
+
+// Whether `account_id` owns the primary session. "Primary" is a property of
+// the session rather than of the user, so it is asked of SessionManager.
+bool IsPrimarySession(const AccountId& account_id) {
+  const session_manager::SessionManager* const session_manager =
+      session_manager::SessionManager::Get();
+  if (!session_manager) {
+    return false;
+  }
+  const session_manager::Session* const primary_session =
+      session_manager->GetPrimarySession();
+  return primary_session && primary_session->account_id() == account_id;
+}
 
 bool HasPolicyValue(const PrefService& pref_service,
                     LegacyFingerprintEngine::Purpose purpose,
@@ -142,21 +155,18 @@ bool LegacyFingerprintEngine::IsFingerprintEnabled(
 bool LegacyFingerprintEngine::IsFingerprintAvailable(
     Purpose purpose,
     const AccountId& account_id) {
-  content::BrowserContext* const browser_context =
-      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
-
-  if (!browser_context) {
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (!user) {
     return false;
   }
 
-  auto* pref_service = user_prefs::UserPrefs::Get(browser_context);
-
+  const PrefService* const pref_service = user->GetProfilePrefs();
   if (!pref_service) {
     return false;
   }
 
-  auto* user_manager = user_manager::UserManager::Get();
-  if (!user_manager->IsPrimaryUser(user_manager->FindUser(account_id)) ||
+  if (!IsPrimarySession(account_id) ||
       IsFingerprintDisabledByPolicy(*pref_service, purpose)) {
     return false;
   }

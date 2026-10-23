@@ -9,14 +9,13 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ref.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_prefs/user_prefs.h"
-#include "content/public/browser/browser_context.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash::legacy {
 namespace {
@@ -79,16 +78,13 @@ CryptohomePinEngine::~CryptohomePinEngine() = default;
 std::optional<bool> CryptohomePinEngine::IsCryptohomePinDisabledByPolicy(
     const AccountId& account_id,
     CryptohomePinEngine::Purpose purpose) const {
-  content::BrowserContext* const browser_context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id);
-
-  if (!browser_context) {
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (!user) {
     return std::nullopt;
   }
 
-  auto* pref_service = user_prefs::UserPrefs::Get(browser_context);
-
+  const PrefService* const pref_service = user->GetProfilePrefs();
   if (!pref_service) {
     return std::nullopt;
   }
