@@ -221,6 +221,35 @@ enum AccessPoint {
   kHistoryPage = 1,
 };
 
+// Identifies a predefined time period option for the history time filter.
+// Must be kept in sync with `history::TimePeriodOptionId` in
+// components/history/core/browser/time_period_filter_utils.h.
+// LINT.IfChange(TimePeriodOptionId)
+enum TimePeriodOptionId {
+  kAllTime = 0,
+  kYesterday = 1,
+  kEarlierThisWeek = 2,
+  kLastWeek = 3,
+  kTwoWeeksAgo = 4,
+};
+// LINT.ThenChange(//components/history/core/browser/time_period_filter_utils.h:TimePeriodOptionId)
+
+// A predefined time period option for the history page's time filter.
+struct TimePeriodOption {
+  TimePeriodOptionId id;
+
+  // The localized label shown to the user in the filter UI.
+  string label;
+
+  // The start of the time period (inclusive), in milliseconds since the Unix
+  // epoch. Null if unbounded.
+  double? begin_time;
+
+  // The end of the time period (exclusive), in milliseconds since the Unix
+  // epoch. Null if unbounded.
+  double? end_time;
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // The BrowserProxy singleton calls this when it's first initialized.
@@ -270,6 +299,10 @@ interface PageHandler {
 
   // Fetches the list of known synced devices.
   GetSyncedDevicesForFiltering() => (array<Device> devices);
+
+  // Returns the predefined time period options for the history page's time
+  // filter. Returns an empty list if the time filter is disabled.
+  GetTimePeriodOptions() => (array<TimePeriodOption> options);
 
   // Checks if the history sync promo should be shown on the history page.
   [EnableIfNot=is_chromeos]

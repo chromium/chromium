@@ -13,6 +13,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestUserEducationMixedTrustHandler} from 'chrome://webui-test/test_user_education_mixed_trust_handler.js';
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 // <if expr="not is_chromeos">
 import {AccessPoint} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -602,6 +603,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     browserProxy.handler.setResultFor(
         'getSyncedDevicesForFiltering', Promise.resolve({
@@ -619,6 +621,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: true,
       isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     // Re-create the element to pick up the new loadTimeData.
     await createPage();
@@ -629,6 +632,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     browserProxy.handler.setResultFor(
         'getSyncedDevicesForFiltering', Promise.resolve({
@@ -648,6 +652,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     browserProxy.handler.setResultFor(
         'getSyncedDevicesForFiltering', Promise.resolve({
@@ -660,10 +665,52 @@ suite('HistoryFilterChipsVisibility', function() {
     assertFalse(isChildVisible(element, '#historyFilterChips'));
   });
 
+  test('FilterChipsVisible_TimePeriodFilterOnly', async () => {
+    loadTimeData.overrideValues({
+      isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByTimePeriodEnabled: true,
+    });
+    browserProxy.handler.setResultFor('getTimePeriodOptions', Promise.resolve({
+      options: [{
+        id: TimePeriodOptionId.kYesterday,
+        label: 'Yesterday',
+        beginTime: 0,
+        endTime: 1,
+      }],
+    }));
+    // Re-create the element to pick up the new loadTimeData.
+    await createPage();
+    await browserProxy.handler.whenCalled('getTimePeriodOptions');
+    await microtasksFinished();
+    assertTrue(isChildVisible(element, '#historyFilterChips'));
+  });
+
+  test('FilterChipsNotVisible_TimePeriodFilterDisabled', async () => {
+    loadTimeData.overrideValues({
+      isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
+    });
+    browserProxy.handler.setResultFor('getTimePeriodOptions', Promise.resolve({
+      options: [{
+        id: TimePeriodOptionId.kYesterday,
+        label: 'Yesterday',
+        beginTime: 0,
+        endTime: 1,
+      }],
+    }));
+    await createPage();
+    await browserProxy.handler.whenCalled('getTimePeriodOptions');
+    await microtasksFinished();
+    assertFalse(isChildVisible(element, '#historyFilterChips'));
+  });
+
   test('PropagatesFilterChanges', async () => {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: true,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     await createPage();
 
@@ -701,6 +748,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: true,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: true,
     });
     browserProxy.handler.setResultFor(
         'getSyncedDevicesForFiltering', Promise.resolve({

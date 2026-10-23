@@ -28,7 +28,7 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
 import type {ForeignSession, ForeignSessionPageCallbackRouter} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import {browserProxyFactory as foreignSessionBrowserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
-import type {Device, PageCallbackRouter, QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {Device, PageCallbackRouter, QueryResult, QueryState, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -182,6 +182,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
       clientIds_: {type: Array},
       isGlicWebActuationAvailable_: {type: Boolean},
       isBrowsingHistoryFilterByDeviceEnabled_: {type: Boolean},
+      isBrowsingHistoryFilterByTimePeriodEnabled_: {type: Boolean},
+      timePeriodOptions_: {type: Array},
     };
   }
 
@@ -259,6 +261,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
       loadTimeData.getBoolean('isGlicWebActuationAvailable');
   protected accessor isBrowsingHistoryFilterByDeviceEnabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryFilterByDeviceEnabled');
+  protected accessor isBrowsingHistoryFilterByTimePeriodEnabled_: boolean =
+      loadTimeData.getBoolean('isBrowsingHistoryFilterByTimePeriodEnabled');
+  protected accessor timePeriodOptions_: TimePeriodOption[] = [];
 
   private callbackRouter_: PageCallbackRouter;
   private foreignSessionCallbackRouter_: ForeignSessionPageCallbackRouter;
@@ -323,6 +328,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
         ({devices}) => {
           this.devices_ = devices;
         });
+    BrowserProxyImpl.getInstance().getTimePeriodOptions().then(({options}) => {
+      this.timePeriodOptions_ = options;
+    });
 
     const mediaQuery = window.matchMedia('(max-width: 1023px)');
     this.hasDrawer_ = mediaQuery.matches;
@@ -1020,8 +1028,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
         this.devices_.length > 1;
   }
 
+  protected showTimePeriodFilter_(): boolean {
+    return this.isBrowsingHistoryFilterByTimePeriodEnabled_ &&
+        this.timePeriodOptions_.length > 0;
+  }
+
   protected showFilterChips_(): boolean {
-    return (this.showActorFilter_() || this.showDeviceFilter_()) &&
+    return (this.showActorFilter_() || this.showDeviceFilter_() ||
+            this.showTimePeriodFilter_()) &&
         !this.getShowResultsByGroup_();
   }
 

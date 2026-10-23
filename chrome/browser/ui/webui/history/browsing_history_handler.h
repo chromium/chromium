@@ -109,6 +109,7 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
       OpenCriticalActionConversationCallback callback) override;
   void GetSyncedDevicesForFiltering(
       GetSyncedDevicesForFilteringCallback callback) override;
+  void GetTimePeriodOptions(GetTimePeriodOptionsCallback callback) override;
 #if !BUILDFLAG(IS_CHROMEOS)
   void ShouldShowHistoryPageHistorySyncPromo(
       ShouldShowHistoryPageHistorySyncPromoCallback callback) override;

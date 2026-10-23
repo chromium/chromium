@@ -5,7 +5,7 @@
 import type {BrowserProxy, HistoryIdentityState} from 'chrome://history/history.js';
 import {HistorySignInState, SyncState} from 'chrome://history/history.js';
 import {OpenConversationResult, PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
-import type {AccessPoint, Device, PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {AccessPoint, Device, PageRemote, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -77,6 +77,9 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
     this.handler.setResultFor('getSyncedDevicesForFiltering', Promise.resolve({
       devices: [],
     }));
+
+    this.handler.setResultFor(
+        'getTimePeriodOptions', Promise.resolve({options: []}));
 
     // <if expr="not is_chromeos">
     this.handler.setResultFor(
@@ -150,5 +153,9 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
 
   getSyncedDevicesForFiltering(): Promise<{devices: Device[]}> {
     return this.handler.getSyncedDevicesForFiltering();
+  }
+
+  getTimePeriodOptions(): Promise<{options: TimePeriodOption[]}> {
+    return this.handler.getTimePeriodOptions();
   }
 }

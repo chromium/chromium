@@ -60,6 +60,17 @@ export function getHtml(this: HistoryFilterChipsElement) {
         </select>
       </div>
     ` : ''}
+    ${this.showTimePeriodFilter ? html`
+      <div class="filter-chips">
+        <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
+        <!-- TODO(b/561604860): Handle time period selection. -->
+        <select id="timePeriodSelect" class="md-select">
+          ${this.timePeriodOptions.map(option => html`
+            <option value="${option.id}">${option.label}</option>
+          `)}
+        </select>
+      </div>
+    ` : ''}
     ${this.hasActiveFilter_() ? html`
       <cr-button id="clearAllButton" @click="${this.onClearAllClick_}">
         $i18n{resetFilters}

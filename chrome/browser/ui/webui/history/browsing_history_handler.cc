@@ -59,6 +59,7 @@
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history/core/browser/features.h"
+#include "components/history/core/browser/time_period_filter_utils.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
@@ -1123,6 +1124,27 @@ void BrowsingHistoryHandler::OpenCriticalActionConversation(
       base::BindOnce(
           &BrowsingHistoryHandler::OnCriticalActionRetrievedForLinkout,
           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BrowsingHistoryHandler::GetTimePeriodOptions(
+    GetTimePeriodOptionsCallback callback) {
+  std::vector<history::mojom::TimePeriodOptionPtr> options_mojom;
+  for (const history::TimePeriodOption& option :
+       history::ComputeTimePeriodOptions(clock_->Now())) {
+    auto option_mojom = history::mojom::TimePeriodOption::New();
+    option_mojom->id =
+        static_cast<history::mojom::TimePeriodOptionId>(option.id);
+    option_mojom->label = base::UTF16ToUTF8(option.label);
+    if (!option.begin_time.is_null()) {
+      option_mojom->begin_time =
+          option.begin_time.InMillisecondsFSinceUnixEpoch();
+    }
+    if (!option.end_time.is_null()) {
+      option_mojom->end_time = option.end_time.InMillisecondsFSinceUnixEpoch();
+    }
+    options_mojom.push_back(std::move(option_mojom));
+  }
+  std::move(callback).Run(std::move(options_mojom));
 }
 
 void BrowsingHistoryHandler::OnCriticalActionRetrievedForLinkout(

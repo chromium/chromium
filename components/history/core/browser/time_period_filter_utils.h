@@ -14,6 +14,9 @@ namespace history {
 
 // Identifies a predefined time period option in the history page's time period
 // filter.
+// Must be kept in sync with `history.mojom.TimePeriodOptionId` in
+// ui/webui/resources/cr_components/history/history.mojom.
+// LINT.IfChange(TimePeriodOptionId)
 enum class TimePeriodOptionId {
   // No time period restriction. This is the default option.
   kAllTime = 0,
@@ -27,6 +30,7 @@ enum class TimePeriodOptionId {
   kTwoWeeksAgo = 4,
   kMaxValue = kTwoWeeksAgo,
 };
+// LINT.ThenChange(//ui/webui/resources/cr_components/history/history.mojom:TimePeriodOptionId)
 
 // A predefined time period the user can select on the history page to restrict
 // the shown history to. The time period maps directly onto

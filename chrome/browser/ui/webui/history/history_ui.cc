@@ -143,6 +143,9 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByActor));
   source->AddBoolean("isBrowsingHistoryFilterByDeviceEnabled",
                      history::IsBrowsingHistoryFilterByDeviceEnabled());
+  source->AddBoolean(
+      "isBrowsingHistoryFilterByTimePeriodEnabled",
+      base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByTime));
   source->AddBoolean("isCriticalActionsEnabled", is_critical_actions_enabled);
   source->AddBoolean("isCriticalActionsChatLinkoutsEnabled",
                      is_critical_actions_chat_linkouts_enabled);
