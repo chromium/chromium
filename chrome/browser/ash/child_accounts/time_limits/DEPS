@@ -17,8 +17,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/extensions/launch_util.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/web_applications/web_app_tab_helper.h",
-  "+chrome/browser/web_applications/web_app_utils.h",
 ]
 
 specific_include_rules = {

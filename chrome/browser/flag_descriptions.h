@@ -8207,11 +8207,6 @@ inline constexpr char kUiSlowAnimationsName[] = "Slow UI animations";
 inline constexpr char kUiSlowAnimationsDescription[] =
     "Makes all UI animations slow.";
 
-inline constexpr char kUnicornChromeActivityReportingName[] =
-    "Chrome app activity reporting for supervised users";
-inline constexpr char kUnicornChromeActivityReportingDescription[] =
-    "Enables reporting Chrome app activity for supervised users.";
-
 inline constexpr char kVirtualKeyboardName[] = "Virtual Keyboard";
 inline constexpr char kVirtualKeyboardDescription[] =
     "Always show virtual keyboard regardless of having a physical keyboard "

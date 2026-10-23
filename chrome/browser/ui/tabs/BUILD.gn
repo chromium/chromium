@@ -791,7 +791,6 @@ if (!is_android) {
       deps += [
         "//chrome/browser/apps/app_service",
         "//chrome/browser/ash/boot_times_recorder",
-        "//chrome/browser/ash/child_accounts/time_limits",
         "//chrome/browser/ash/growth",
         "//chrome/browser/ash/mahi/web_contents",
         "//chrome/browser/chromeos/gemini_app",

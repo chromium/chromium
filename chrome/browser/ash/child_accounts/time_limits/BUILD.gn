@@ -25,8 +25,6 @@ static_library("time_limits") {
     "app_types.h",
     "persisted_app_info.cc",
     "persisted_app_info.h",
-    "web_time_navigation_observer.cc",
-    "web_time_navigation_observer.h",
   ]
 
   public_deps = [
@@ -35,8 +33,6 @@ static_library("time_limits") {
     "//chromeos/ash/components/settings",
     "//components/policy/proto",
     "//components/services/app_service/public/cpp:instance_update",
-    "//components/tabs:public",
-    "//ui/base/unowned_user_data",
     "//url",
   ]
 
