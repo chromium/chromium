@@ -425,6 +425,9 @@ class Generator(generator.Generator):
     self.Write(self._GenerateMojoScriptsPage(), self._GetMojoScriptsPagePath())
 
     primary_interface_name = args.fuzzilli_primary_interface_name
+    # GN doesn't provide primary interface when generating Mojo scripts page.
+    if not primary_interface_name:
+      return
     self.primary_interface = next(
       (
         i
