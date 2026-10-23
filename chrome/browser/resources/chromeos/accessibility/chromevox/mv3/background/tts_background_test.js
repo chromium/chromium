@@ -24,6 +24,15 @@ ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
       }
     }
   }
+
+  recordPanelCommands() {
+    const commands = [];
+    // Use a function() rather than an arrow lambda to allow access to |this|.
+    PanelCommand.prototype.send = async function() {
+      commands.push({type: this.type, data: this.data});
+    };
+    return commands;
+  }
 };
 
 AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Preprocess', function() {
@@ -705,4 +714,244 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Pluralization', function() {
 
   assertEquals('square bullet', preprocess('\u25a0'));
   assertEquals('3 square bullets', preprocess('\u25a0\u25a0\u25a0'));
+});
+
+AX_TEST_F('ChromeVoxBackgroundTtsTest', 'FlushSendsOneSetSpeech', function() {
+  const commands = this.recordPanelCommands();
+  chrome.tts.speak = () => {};
+  tts.currentVoice = constants.SYSTEM_VOICE;
+
+  tts.speak('a', QueueMode.FLUSH);
+  tts.speak('b', QueueMode.FLUSH);
+
+  assertEqualsJSON(
+      [
+        {
+          type: PanelCommandType.SET_SPEECH,
+          data: {text: 'A', formatAsAnnotation: false},
+        },
+        {
+          type: PanelCommandType.SET_SPEECH,
+          data: {text: 'B', formatAsAnnotation: false},
+        },
+      ],
+      commands);
+});
+
+AX_TEST_F(
+    'ChromeVoxBackgroundTtsTest', 'FlushWithoutVoiceClearsThenAdds',
+    function() {
+      const commands = this.recordPanelCommands();
+      chrome.tts.speak = () => {};
+      chrome.tts.getVoices = callback => {
+        callback([{voiceName: constants.SYSTEM_VOICE}]);
+      };
+      assertTrue(!tts.currentVoice);
+
+      tts.speak('a', QueueMode.FLUSH);
+
+      assertEqualsJSON(
+          [{type: PanelCommandType.CLEAR_SPEECH, data: undefined}], commands);
+
+      tts.updateVoice('');
+
+      assertEqualsJSON(
+          [
+            {type: PanelCommandType.CLEAR_SPEECH, data: undefined},
+            {type: PanelCommandType.ADD_NORMAL_SPEECH, data: 'A'},
+          ],
+          commands);
+    });
+
+AX_TEST_F(
+    'ChromeVoxBackgroundTtsTest', 'FlushWithDelayedHintClearsImmediately',
+    function() {
+      let lastSetTimeoutCallback;
+      setTimeout = callback => {
+        lastSetTimeoutCallback = callback;
+        return 1;
+      };
+      const commands = this.recordPanelCommands();
+      chrome.tts.speak = () => {};
+      tts.currentVoice = constants.SYSTEM_VOICE;
+
+      tts.speak('a', QueueMode.FLUSH, new TtsSpeechProperties({delay: true}));
+
+      assertEqualsJSON(
+          [{type: PanelCommandType.CLEAR_SPEECH, data: undefined}], commands);
+      assertTrue(Boolean(lastSetTimeoutCallback));
+
+      lastSetTimeoutCallback();
+
+      assertEqualsJSON(
+          [
+            {type: PanelCommandType.CLEAR_SPEECH, data: undefined},
+            {type: PanelCommandType.ADD_NORMAL_SPEECH, data: 'A'},
+          ],
+          commands);
+    });
+
+AX_TEST_F(
+    'ChromeVoxBackgroundTtsTest', 'FlushWhileDoNotInterruptSpeaking',
+    function() {
+      const commands = this.recordPanelCommands();
+      let lastSpeakOptions;
+      chrome.tts.speak = (textString, options) => {
+        lastSpeakOptions = options;
+      };
+      tts.currentVoice = constants.SYSTEM_VOICE;
+
+      tts.speak(
+          'a', QueueMode.FLUSH,
+          new TtsSpeechProperties({doNotInterrupt: true}));
+      commands.length = 0;
+
+      tts.speak('b', QueueMode.FLUSH);
+
+      assertEqualsJSON(
+          [{type: PanelCommandType.CLEAR_SPEECH, data: undefined}], commands);
+      this.expectUtteranceQueueIsLike(
+          [{textString: 'B', queueMode: QueueMode.FLUSH}]);
+
+      lastSpeakOptions.onEvent({type: chrome.tts.EventType.END});
+
+      assertEqualsJSON(
+          [
+            {type: PanelCommandType.CLEAR_SPEECH, data: undefined},
+            {type: PanelCommandType.ADD_NORMAL_SPEECH, data: 'B'},
+          ],
+          commands);
+    });
+
+AX_TEST_F(
+    'ChromeVoxBackgroundTtsTest', 'CategoryFlushSendsSetSpeechOrClears',
+    function() {
+      const commands = this.recordPanelCommands();
+      let lastSpeakOptions;
+      chrome.tts.speak = (textString, options) => {
+        lastSpeakOptions = options;
+      };
+      tts.currentVoice = constants.SYSTEM_VOICE;
+
+      tts.speak(
+          'a', QueueMode.FLUSH,
+          new TtsSpeechProperties({category: TtsCategory.NAV}));
+      commands.length = 0;
+
+      // Same category cancels the active utterance and sends SET_SPEECH.
+      tts.speak(
+          'b', QueueMode.CATEGORY_FLUSH,
+          new TtsSpeechProperties({category: TtsCategory.NAV}));
+
+      assertEqualsJSON(
+          [{
+            type: PanelCommandType.SET_SPEECH,
+            data: {text: 'B', formatAsAnnotation: false},
+          }],
+          commands);
+      commands.length = 0;
+
+      // Different category does not cancel the active utterance; clears
+      // immediately and appends when the active utterance ends.
+      tts.speak(
+          'c', QueueMode.CATEGORY_FLUSH,
+          new TtsSpeechProperties({category: TtsCategory.LIVE}));
+
+      assertEqualsJSON(
+          [{type: PanelCommandType.CLEAR_SPEECH, data: undefined}], commands);
+
+      lastSpeakOptions.onEvent({type: chrome.tts.EventType.END});
+
+      assertEqualsJSON(
+          [
+            {type: PanelCommandType.CLEAR_SPEECH, data: undefined},
+            {type: PanelCommandType.ADD_NORMAL_SPEECH, data: 'C'},
+          ],
+          commands);
+    });
+
+AX_TEST_F('ChromeVoxBackgroundTtsTest', 'InterjectSendsSetSpeech', function() {
+  let lastSetTimeoutCallback;
+  setTimeout = callback => {
+    lastSetTimeoutCallback = callback;
+    return 1;
+  };
+  const commands = this.recordPanelCommands();
+  let lastSpeakOptions;
+  chrome.tts.speak = (textString, options) => {
+    lastSpeakOptions = options;
+  };
+  tts.currentVoice = constants.SYSTEM_VOICE;
+
+  tts.speak('a', QueueMode.FLUSH);
+  commands.length = 0;
+
+  tts.speak('b', QueueMode.INTERJECT);
+
+  assertEqualsJSON(
+      [{
+        type: PanelCommandType.SET_SPEECH,
+        data: {text: 'B', formatAsAnnotation: false},
+      }],
+      commands);
+  assertTrue(Boolean(lastSetTimeoutCallback));
+  lastSetTimeoutCallback();
+
+  lastSpeakOptions.onEvent({type: chrome.tts.EventType.END});
+
+  assertEqualsJSON(
+      [
+        {
+          type: PanelCommandType.SET_SPEECH,
+          data: {text: 'B', formatAsAnnotation: false},
+        },
+        {type: PanelCommandType.ADD_NORMAL_SPEECH, data: 'A'},
+      ],
+      commands);
+});
+
+AX_TEST_F('ChromeVoxBackgroundTtsTest', 'QueueAppends', function() {
+  const commands = this.recordPanelCommands();
+  let lastSpeakOptions;
+  chrome.tts.speak = (textString, options) => {
+    lastSpeakOptions = options;
+  };
+  tts.currentVoice = constants.SYSTEM_VOICE;
+
+  tts.speak('a', QueueMode.FLUSH);
+  tts.speak('b', QueueMode.QUEUE);
+  commands.length = 0;
+
+  lastSpeakOptions.onEvent({type: chrome.tts.EventType.END});
+
+  assertEqualsJSON(
+      [{type: PanelCommandType.ADD_NORMAL_SPEECH, data: 'B'}], commands);
+});
+
+AX_TEST_F('ChromeVoxBackgroundTtsTest', 'AnnotationUsesSetSpeech', function() {
+  const commands = this.recordPanelCommands();
+  chrome.tts.speak = () => {};
+  tts.currentVoice = constants.SYSTEM_VOICE;
+  tts.ttsProperties[TtsSettings.PITCH] = 1;
+
+  tts.speak(
+      'a', QueueMode.FLUSH,
+      new TtsSpeechProperties({[TtsSettings.PITCH]: 0.5}));
+
+  assertEqualsJSON(
+      [{
+        type: PanelCommandType.SET_SPEECH,
+        data: {text: 'A', formatAsAnnotation: true},
+      }],
+      commands);
+});
+
+AX_TEST_F('ChromeVoxBackgroundTtsTest', 'StopClears', function() {
+  const commands = this.recordPanelCommands();
+  chrome.tts.stop = () => {};
+
+  tts.stop();
+
+  assertEqualsJSON(
+      [{type: PanelCommandType.CLEAR_SPEECH, data: undefined}], commands);
 });

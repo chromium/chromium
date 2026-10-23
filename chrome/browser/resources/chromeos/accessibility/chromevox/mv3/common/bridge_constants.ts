@@ -214,6 +214,7 @@ export const BridgeConstants = {
       FIRE_MOCK_QUERY: 'fireMockQuery',
       GET_ACTIVE_MENU_DATA: 'getActiveMenuData',
       GET_ACTIVE_SEARCH_MENU_DATA: 'getActiveSearchMenuData',
+      GET_SPEECH_HTML_FOR_TEST: 'getSpeechHtmlForTest',
       GET_TUTORIAL_ACTIVE_LESSON_INDEX: 'getTutorialActiveLessonIndex',
       GET_TUTORIAL_ACTIVE_SCREEN: 'getTutorialActiveScreen',
       GET_TUTORIAL_INTERACTIVE_MODE: 'getTutorialInteractiveMode',

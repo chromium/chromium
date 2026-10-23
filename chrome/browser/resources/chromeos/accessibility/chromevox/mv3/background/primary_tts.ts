@@ -13,6 +13,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {Msgs} from '../common/msgs.js';
 import {OffscreenBridge} from '../common/offscreen_bridge.js';
+import type {PanelCommandSpeechData} from '../common/panel_command.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {CharacterDictionary, Personality, PunctuationEcho, PunctuationEchoes, QueueMode, TtsAudioProperty, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
@@ -94,6 +95,8 @@ export class PrimaryTts extends AbstractTts {
   private utteranceQueue_: Utterance[] = [];
   // Queue of utterances interrupted by interjected utterances.
   private utteranceQueueInterruptedByInterjection_: Utterance[] = [];
+  // Whether a flushed utterance is waiting to clear or replace panel speech.
+  private clearSpeechPending_ = false;
 
 
   constructor(skipOnVoicesHandlerForTesting = false) {
@@ -296,8 +299,6 @@ export class PrimaryTts extends AbstractTts {
     if (queueMode === QueueMode.FLUSH ||
         queueMode === QueueMode.CATEGORY_FLUSH ||
         queueMode === QueueMode.INTERJECT) {
-      (new PanelCommand(PanelCommandType.CLEAR_SPEECH)).send();
-
       if (this.shouldCancel_(this.currentUtterance_, utterance)) {
         // Clear timeout in case currentUtterance_ is a delayed utterance.
         this.clearTimeout_();
@@ -313,6 +314,7 @@ export class PrimaryTts extends AbstractTts {
           i++;
         }
       }
+      this.clearSpeechPending_ = true;
     }
 
     // Now, some special handling for interjections.
@@ -348,6 +350,10 @@ export class PrimaryTts extends AbstractTts {
 
     // Now start speaking the next item in the queue.
     this.startSpeakingNextItemInQueue_();
+    if (this.clearSpeechPending_) {
+      (new PanelCommand(PanelCommandType.CLEAR_SPEECH)).send();
+      this.clearSpeechPending_ = false;
+    }
   }
 
   /**
@@ -402,8 +408,18 @@ export class PrimaryTts extends AbstractTts {
     }
 
     // Update the caption panel.
-    if (utterance.properties && utterance.properties['pitch'] &&
-        utterance.properties['pitch'] < this.ttsProperties['pitch']!) {
+    const formatAsAnnotation = Boolean(
+        utterance.properties && utterance.properties['pitch'] &&
+        this.ttsProperties['pitch'] &&
+        utterance.properties['pitch'] < this.ttsProperties['pitch']);
+    if (this.clearSpeechPending_) {
+      this.clearSpeechPending_ = false;
+      const speechData: PanelCommandSpeechData = {
+        text: utterance.textString,
+        formatAsAnnotation,
+      };
+      (new PanelCommand(PanelCommandType.SET_SPEECH, speechData)).send();
+    } else if (formatAsAnnotation) {
       (new PanelCommand(
            PanelCommandType.ADD_ANNOTATION_SPEECH, utterance.textString))
           .send();

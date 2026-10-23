@@ -91,6 +91,11 @@ export class PanelBridge {
         PanelTestTarget, PanelTestAction.GET_ACTIVE_SEARCH_MENU_DATA);
   }
 
+  static getSpeechHtmlForTest(): Promise<string> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.GET_SPEECH_HTML_FOR_TEST);
+  }
+
   static getTutorialActiveLessonIndex(): Promise<number> {
     return BridgeHelper.sendMessage(
         PanelTestTarget, PanelTestAction.GET_TUTORIAL_ACTIVE_LESSON_INDEX);

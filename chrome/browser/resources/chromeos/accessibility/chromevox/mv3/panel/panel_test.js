@@ -304,3 +304,58 @@ AX_TEST_F('ChromeVoxPanelTest', 'PanVirtualBrailleDisplay', async function() {
   this.braillePanRight();
   await panRightDone;
 });
+
+AX_TEST_F(
+    'ChromeVoxPanelTest', 'SetSpeechReplacesCaptionInOneStep',
+    async function() {
+      await this.runWithLoadedTree(this.linksDoc);
+      ChromeVox.tts.stop();
+      ChromeVox.tts.speak = () => ChromeVox.tts;
+
+      await new PanelCommand(PanelCommandType.ADD_NORMAL_SPEECH, 'old').send();
+      assertEquals(
+          '<span class="usertext">old</span>',
+          await PanelBridge.getSpeechHtmlForTest());
+
+      await new PanelCommand(
+          PanelCommandType.SET_SPEECH, {text: 'new', formatAsAnnotation: false})
+          .send();
+      assertEquals(
+          '<span class="usertext">new</span>',
+          await PanelBridge.getSpeechHtmlForTest());
+    });
+
+AX_TEST_F('ChromeVoxPanelTest', 'SetSpeechEscapesHtml', async function() {
+  await this.runWithLoadedTree(this.linksDoc);
+  ChromeVox.tts.stop();
+  ChromeVox.tts.speak = () => ChromeVox.tts;
+
+  await new PanelCommand(
+      PanelCommandType.SET_SPEECH, {text: '<b>', formatAsAnnotation: false})
+      .send();
+  assertEquals(
+      '<span class="usertext">&lt;b&gt;</span>',
+      await PanelBridge.getSpeechHtmlForTest());
+
+  await new PanelCommand(
+      PanelCommandType.SET_SPEECH, {text: '<b>', formatAsAnnotation: true})
+      .send();
+  assertEquals('&lt;b&gt;', await PanelBridge.getSpeechHtmlForTest());
+});
+
+AX_TEST_F('ChromeVoxPanelTest', 'AddAfterSetAppends', async function() {
+  await this.runWithLoadedTree(this.linksDoc);
+  ChromeVox.tts.stop();
+  ChromeVox.tts.speak = () => ChromeVox.tts;
+
+  await new PanelCommand(
+      PanelCommandType.SET_SPEECH, {text: 'first', formatAsAnnotation: false})
+      .send();
+  await new PanelCommand(PanelCommandType.ADD_NORMAL_SPEECH, 'second').send();
+  await new PanelCommand(PanelCommandType.ADD_ANNOTATION_SPEECH, 'third')
+      .send();
+  assertEquals(
+      '<span class="usertext">first</span>&nbsp;&nbsp;' +
+          '<span class="usertext">second</span>&nbsp;&nbsp;third',
+      await PanelBridge.getSpeechHtmlForTest());
+});

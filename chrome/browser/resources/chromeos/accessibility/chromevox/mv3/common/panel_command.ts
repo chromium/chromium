@@ -11,6 +11,15 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {BridgeConstants} from './bridge_constants.js';
 import {PanelBridge} from './panel_bridge.js';
 
+export interface PanelCommandSpeechData {
+  text: string;
+  /*
+   * Whether to format the speech caption as an annotation rather than wrapping
+   * it in a .usertext span.
+   */
+  formatAsAnnotation: boolean;
+}
+
 /**
  * Create one command to pass to the ChromeVox Panel.
  */
@@ -18,9 +27,10 @@ export class PanelCommand {
   private static panelIsInitialized_: Promise<void>|null = null;
 
   type: PanelCommandType;
-  data?: string|Object;
+  data?: string|PanelCommandSpeechData|Object;
 
-  constructor(type: PanelCommandType, data?: string|Object) {
+  constructor(
+      type: PanelCommandType, data?: string|PanelCommandSpeechData|Object) {
     this.type = type;
     this.data = data;
 
@@ -71,6 +81,7 @@ export class PanelCommand {
  */
 export enum PanelCommandType {
   CLEAR_SPEECH = 'clear_speech',
+  SET_SPEECH = 'set_speech',
   ADD_NORMAL_SPEECH = 'add_normal_speech',
   ADD_ANNOTATION_SPEECH = 'add_annotation_speech',
   CLOSE_CHROMEVOX = 'close_chromevox',
