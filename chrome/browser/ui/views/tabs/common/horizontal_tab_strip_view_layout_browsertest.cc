@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
@@ -21,10 +23,13 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -51,6 +56,13 @@ class HorizontalTabStripViewLayoutBrowserTest : public InProcessBrowserTest {
     return base_region_view ? views::AsViewClass<TabStripView>(
                                   base_region_view->GetTabStripView())
                             : nullptr;
+  }
+
+  views::View* GetTabViewAt(int index) {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->tab_strip_view()
+        ->GetTabAnchorView(
+            GetTabStripModel()->GetTabAtIndex(index)->GetHandle());
   }
 
   void SetWindowWidth(int width) {
@@ -296,4 +308,84 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
   SetWindowWidth(800);
   EXPECT_EQ(pinned_scroll->bounds().x(), 0);
   EXPECT_FALSE(pinned_scroll->GetDrawOverflowIndicator());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
+                       SplitTabCrossoverWidthConsistentAcrossActiveTabChanges) {
+  // Create a split tab from the first two tabs (model indices 0 and 1) and add
+  // 4 regular tabs (model indices 2..5).
+  for (int i = 0; i < 5; ++i) {
+    AppendTab();
+  }
+  GetTabStripModel()->ActivateTabAt(0);
+  GetTabStripModel()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  SetWindowWidth(800);
+
+  auto* tab_strip_view = GetTabStripView();
+  ASSERT_NE(tab_strip_view, nullptr);
+  ASSERT_EQ(GetTabStripModel()->count(), 6);
+
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
+  const int min_active_width =
+      TabStyle::Get()->GetMinimumActiveWidth(/*is_split=*/false);
+  const int split_standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split=*/true);
+  const int split_min_active_width =
+      TabStyle::Get()->GetMinimumActiveWidth(/*is_split=*/true);
+
+  // Verify both split halves and regular tabs are strictly in the
+  // above-crossover proportional domain.
+  GetTabStripModel()->ActivateTabAt(0);
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+  ASSERT_NE(GetTabViewAt(0), nullptr);
+  ASSERT_NE(GetTabViewAt(2), nullptr);
+  ASSERT_GT(GetTabViewAt(0)->width(), split_min_active_width);
+  ASSERT_LT(GetTabViewAt(0)->width(), split_standard_width);
+  ASSERT_GT(GetTabViewAt(2)->width(), min_active_width);
+  ASSERT_LT(GetTabViewAt(2)->width(), standard_width);
+
+  std::vector<int> widths_when_split_active;
+  for (int i = 0; i < GetTabStripModel()->count(); ++i) {
+    ASSERT_NE(GetTabViewAt(i), nullptr);
+    widths_when_split_active.push_back(GetTabViewAt(i)->width());
+  }
+
+  // Switching active tab from the split tab (index 0) to a regular tab
+  // (index 2) above crossover must keep every tab's width identical.
+  GetTabStripModel()->ActivateTabAt(2);
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+  for (int i = 0; i < GetTabStripModel()->count(); ++i) {
+    EXPECT_EQ(GetTabViewAt(i)->width(), widths_when_split_active[i])
+        << "tab index=" << i;
+  }
+
+  // Group the split tab (indices 0, 1) and one regular tab (index 2) into an
+  // expanded tab group and verify widths remain identical above crossover
+  // whether the grouped split tab, grouped regular tab, or an ungrouped
+  // regular tab is active.
+  GetTabStripModel()->AddToNewGroup({0, 1, 2});
+  GetTabStripModel()->ActivateTabAt(0);
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+  ASSERT_GT(GetTabViewAt(0)->width(), split_min_active_width);
+  ASSERT_LT(GetTabViewAt(0)->width(), split_standard_width);
+  ASSERT_GT(GetTabViewAt(2)->width(), min_active_width);
+  ASSERT_LT(GetTabViewAt(2)->width(), standard_width);
+
+  std::vector<int> grouped_widths_reference;
+  for (int i = 0; i < GetTabStripModel()->count(); ++i) {
+    grouped_widths_reference.push_back(GetTabViewAt(i)->width());
+  }
+
+  for (int active_index : {2, 3}) {
+    SCOPED_TRACE(testing::Message() << "active_index=" << active_index);
+    GetTabStripModel()->ActivateTabAt(active_index);
+    tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+    for (int i = 0; i < GetTabStripModel()->count(); ++i) {
+      EXPECT_EQ(GetTabViewAt(i)->width(), grouped_widths_reference[i])
+          << "tab index=" << i;
+    }
+  }
 }

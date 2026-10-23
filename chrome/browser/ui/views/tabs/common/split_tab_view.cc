@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_layout_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
@@ -129,23 +131,19 @@ views::ProposedLayout SplitTabView::CalculateProposedLayout(
 
 gfx::Size SplitTabView::GetMinimumSize() const {
   if (orientation_ == TabStripOrientation::kHorizontal) {
-    const auto children = collection_node_
-                              ? collection_node_->GetDirectChildren()
-                              : TabCollectionNode::ChildViews();
-    if (children.empty()) {
-      return gfx::Size(0, 0);
-    }
-    int min_width = 0;
-    for (views::View* child : children) {
-      min_width += child->GetMinimumSize().width();
-    }
-    const int tab_overlap = TabStyle::Get()->GetTabOverlap();
-    const int total_overlap =
-        static_cast<int>(children.size() - 1) * tab_overlap;
-    return gfx::Size(std::max(0, min_width - total_overlap),
-                     TabStyle::Get()->GetStandardHeight());
+    const int min_width = ComputeHorizontalWidth([](const views::View* child) {
+      return child->GetMinimumSize().width();
+    });
+    return gfx::Size(min_width, TabStyle::Get()->GetStandardHeight());
   }
   return views::View::GetMinimumSize();
+}
+
+int SplitTabView::GetCrossoverWidth() const {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    return ComputeHorizontalWidth(&GetChildCrossoverWidth);
+  }
+  return GetMinimumSize().width();
 }
 
 std::optional<BrowserRootView::DropIndex> SplitTabView::GetLinkDropIndex(
@@ -248,6 +246,23 @@ void SplitTabView::UpdateHovered(bool hovered) {
   }
 
   SchedulePaint();
+}
+
+int SplitTabView::ComputeHorizontalWidth(
+    base::FunctionRef<int(const views::View*)> get_child_width) const {
+  const auto split_children = collection_node_
+                                  ? collection_node_->GetDirectChildren()
+                                  : TabCollectionNode::ChildViews();
+  if (split_children.empty()) {
+    return 0;
+  }
+  int width = 0;
+  for (const views::View* split_child : split_children) {
+    width += get_child_width(split_child);
+  }
+  const int total_overlap = static_cast<int>(split_children.size() - 1) *
+                            TabStyle::Get()->GetTabOverlap();
+  return std::max(0, width - total_overlap);
 }
 
 views::ProposedLayout SplitTabView::CalculateHorizontalLayout(

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
@@ -142,6 +143,9 @@ int GetChildCrossoverWidth(const views::View* child) {
     }
     return tab_view->tab_styling()->tab_style()->GetMinimumActiveWidth(
         tab_view->split());
+  }
+  if (const auto* split_view = views::AsViewClass<SplitTabView>(child)) {
+    return split_view->GetCrossoverWidth();
   }
   if (const auto* group_view = views::AsViewClass<TabGroupView>(child)) {
     return group_view->GetCrossoverWidth();
