@@ -507,8 +507,14 @@ IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, SessionStorageOnDiskSize) {
 IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, MAYBE_DeletePhysicalStorageKey) {
   EXPECT_EQ(0U, GetUsage().size());
   SimpleTest(GetTestUrl("dom_storage", "store_data.html"), kNotIncognito);
-  std::vector<StorageUsageInfo> usage = GetUsage();
-  ASSERT_EQ(1U, usage.size());
+  // The page's writes reach the storage service asynchronously. An area that
+  // is still loading can appear in the usage list with zero bytes, so wait for
+  // nonzero usage before deleting it.
+  std::vector<StorageUsageInfo> usage;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    usage = GetUsage();
+    return usage.size() == 1U && usage[0].total_size_bytes > 0;
+  }));
   DeletePhysicalStorageKey(usage[0].storage_key);
   EXPECT_EQ(0U, GetUsage().size());
 }
