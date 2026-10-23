@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -814,6 +815,19 @@ TEST_P(QuotaDatabaseTest, DeleteBucketData) {
 
     ASSERT_TRUE(db->DeleteBucketData(bucket).has_value());
     ASSERT_FALSE(base::PathExists(bucket_path));
+
+    // Deleting a bucket that is missing from the database should still clean up
+    // its doomed directory on the error path.
+    ASSERT_TRUE(base::CreateDirectory(bucket_path));
+    ASSERT_TRUE(
+        base::WriteFile(bucket_path.AppendASCII("orphan"), "orphan_data"));
+    EXPECT_THAT(db->DeleteBucketData(bucket),
+                base::test::ErrorIs(QuotaError::kDatabaseError));
+    EXPECT_FALSE(base::PathExists(bucket_path));
+    base::FileEnumerator enumerator(
+        db->GetStoragePath(), /*recursive=*/false,
+        base::FileEnumerator::NAMES_ONLY, FILE_PATH_LITERAL("*-doomed-*"));
+    EXPECT_TRUE(enumerator.Next().empty());
   }
 }
 
