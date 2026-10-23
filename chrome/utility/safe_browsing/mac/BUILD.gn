@@ -17,12 +17,36 @@ rust_static_library("dmg_parser") {
     "rust/udif.rs",
   ]
   deps = [
+    ":dmg_decompress",
     "//third_party/rust/base64/v0_22:lib",
     "//third_party/rust/bytemuck/v1:lib",
+    "//third_party/rust/flate2/v1:lib",
     "//third_party/rust/log/v0_4:lib",
     "//third_party/rust/static_assertions/v1:lib",
     "//third_party/rust/xml/v1:lib",
   ]
+}
+
+# Thin, audited FFI wrapper over the system libbz2 (the same library used by
+# the C++ parser). Besides `dmg_ffi_bridge`, this and the test-only
+# `dmg_decompress_test_support` are the only Rust targets here that permit
+# `unsafe`.
+rust_static_library("dmg_decompress") {
+  visibility = [ ":*" ]
+  allow_unsafe = true
+  crate_root = "rust/decompress/bz2.rs"
+  sources = [ "rust/decompress/bz2.rs" ]
+  public_configs = [ ":dmg_public_config" ]
+}
+
+# Test-only bzip2 compressor used to synthesize test payloads.
+rust_static_library("dmg_decompress_test_support") {
+  testonly = true
+  visibility = [ ":*" ]
+  allow_unsafe = true
+  crate_root = "rust/decompress/test_support.rs"
+  sources = [ "rust/decompress/test_support.rs" ]
+  public_configs = [ ":dmg_public_config" ]
 }
 
 rust_static_library("dmg_parser_unittests") {
@@ -33,10 +57,13 @@ rust_static_library("dmg_parser_unittests") {
   crate_root = "rust/dmg_parser_unittests.rs"
   sources = [ "rust/dmg_parser_unittests.rs" ]
   deps = [
+    ":dmg_decompress",
+    ":dmg_decompress_test_support",
     ":dmg_parser",
     "//testing/rust_gtest_interop",
     "//third_party/rust/base64/v0_22:lib",
     "//third_party/rust/bytemuck/v1:lib",
+    "//third_party/rust/flate2/v1:lib",
   ]
 }
 
@@ -47,8 +74,7 @@ source_set("read_stream_bridge_hdr") {
 }
 
 # `cxx` FFI bridge exposing `dmg_parser` to C++ (`UDIFParser` / `HFSIterator`).
-# This is the only Rust target here that permits `unsafe` (for
-# `#[cxx::bridge]`).
+# Permits `unsafe` for `#[cxx::bridge]` (along with `dmg_decompress`).
 rust_static_library("dmg_ffi_bridge") {
   visibility = [
     ":*",

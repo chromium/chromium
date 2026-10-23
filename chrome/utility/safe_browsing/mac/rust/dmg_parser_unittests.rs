@@ -3,15 +3,19 @@
 // found in the LICENSE file.
 
 chromium::import! {
+    "//chrome/utility/safe_browsing/mac:dmg_decompress";
+    "//chrome/utility/safe_browsing/mac:dmg_decompress_test_support";
     "//chrome/utility/safe_browsing/mac:dmg_parser";
 }
 
-use std::io::{self, Cursor, Read, Seek, SeekFrom};
+use std::io::{self, Cursor, ErrorKind, Read, Seek, SeekFrom};
 use std::mem::{size_of, size_of_val};
 
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use base64::Engine as _;
 use bytemuck::Zeroable;
+use dmg_decompress::decompress_bz2;
+use dmg_decompress_test_support::compress_bz2;
 use dmg_parser::hfs::{
     FndrFileInfo, HfsBTreeEntry, HfsBTreeIterator, HfsCatalogRecord, HfsError, HfsForkReadStream,
     HfsIterator, HfsPlusBsdInfo, HfsPlusCatalogFile, HfsPlusCatalogFolder, HfsPlusExtentDescriptor,
@@ -20,12 +24,28 @@ use dmg_parser::hfs::{
     VOLUME_HEADER_SIZE,
 };
 use dmg_parser::udif::{
-    parse_partition_type, UdifBlock, UdifBlockChunk, UdifBlockChunkType, UdifBlockData, UdifError,
-    UdifParser, UdifResourceFile, UDIF_BLOCK_DATA_SIGNATURE, UDIF_BLOCK_DATA_VERSION,
+    parse_partition_type, UdifBlock, UdifBlockChunk, UdifBlockChunkReadStream, UdifBlockChunkType,
+    UdifBlockData, UdifError, UdifParser, UdifResourceFile, MAX_CHUNK_COMPRESSED_SIZE,
+    MAX_CHUNK_DECOMPRESSED_SIZE, UDIF_BLOCK_DATA_SIGNATURE, UDIF_BLOCK_DATA_VERSION,
     UDIF_RESOURCE_FILE_SIGNATURE, UDIF_RESOURCE_FILE_VERSION, UDIF_SECTOR_SIZE,
 };
 use dmg_parser::SharedStream;
 use rust_gtest_interop::prelude::*;
+
+/// Returns the error kind of `result`, or `None` if it is `Ok`. Unlike
+/// `unwrap_err()`, this does not panic (and abort the test binary) when the
+/// result is unexpectedly `Ok`.
+fn err_kind<T>(result: &std::io::Result<T>) -> Option<ErrorKind> {
+    result.as_ref().err().map(std::io::Error::kind)
+}
+
+/// Compresses `data` into a zlib payload for synthesizing test chunks.
+fn compress_zlib(data: &[u8]) -> Vec<u8> {
+    use std::io::Write;
+    let mut encoder = flate2::write::ZlibEncoder::new(Vec::new(), flate2::Compression::default());
+    encoder.write_all(data).expect("zlib compression failed");
+    encoder.finish().expect("zlib compression failed")
+}
 
 fn build_mish_block(
     signature: u32,
@@ -1027,4 +1047,568 @@ fn test_invalid_seek_and_overflow_rejected() {
     };
     let mut overflow_start_stream = HfsForkReadStream::new(disk, u32::MAX, overflow_start_fork);
     expect_true!(overflow_start_stream.read(&mut buf).is_err());
+}
+
+#[gtest(RustUdifChunkTest, ZeroFillAndIgnoredChunks)]
+fn test_udif_zerofill_and_ignored_chunks() {
+    let stream = SharedStream::new(Cursor::new(vec![0xaau8; 1024]));
+
+    let zerofill_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::ZERO_FILL,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 2, // 1024 bytes (512 block_size)
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+
+    let mut reader = UdifBlockChunkReadStream::new(stream.clone(), 512, &zerofill_chunk)
+        .expect("ZeroFill chunk initialization should succeed");
+    expect_eq!(reader.length_in_bytes(), 1024);
+    expect_false!(reader.is_at_end());
+
+    let mut buf = [0xffu8; 512];
+    expect_eq!(reader.read(&mut buf).ok(), Some(512));
+    expect_true!(buf.iter().all(|&b| b == 0));
+    expect_eq!(reader.offset(), 512);
+
+    expect_eq!(reader.seek(SeekFrom::Start(100)).ok(), Some(100));
+    let mut small_buf = [0xffu8; 10];
+    expect_eq!(reader.read(&mut small_buf).ok(), Some(10));
+    expect_true!(small_buf.iter().all(|&b| b == 0));
+    expect_eq!(reader.offset(), 110);
+
+    expect_eq!(reader.seek(SeekFrom::End(0)).ok(), Some(1024));
+    expect_true!(reader.is_at_end());
+    expect_eq!(reader.read(&mut buf).ok(), Some(0));
+
+    // Test Ignored chunk behaves identical to ZeroFill
+    let ignored_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::IGNORED,
+        comment: 0,
+        start_sector: 2,
+        sector_count: 1, // 512 bytes
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+    let mut ignored_reader = UdifBlockChunkReadStream::new(stream, 512, &ignored_chunk).unwrap();
+    let mut ign_buf = [0xffu8; 512];
+    expect_eq!(ignored_reader.read(&mut ign_buf).ok(), Some(512));
+    expect_true!(ign_buf.iter().all(|&b| b == 0));
+}
+
+#[gtest(RustUdifChunkTest, UncompressedChunkReadAndSeek)]
+fn test_udif_uncompressed_chunk() {
+    let raw_payload = b"Hello, Chromium Safe Browsing UDIF Chunk Stream!";
+    let mut image_data = vec![0u8; 1024];
+    let chunk_start_offset = 64u64;
+    image_data[chunk_start_offset as usize..chunk_start_offset as usize + raw_payload.len()]
+        .copy_from_slice(raw_payload);
+
+    let stream = SharedStream::new(Cursor::new(image_data));
+    let chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1, // 512 bytes
+        compressed_offset: chunk_start_offset,
+        compressed_length: 512,
+    };
+
+    let mut reader = UdifBlockChunkReadStream::new(stream, 512, &chunk).unwrap();
+    let mut read_buf = vec![0u8; raw_payload.len()];
+    expect_eq!(reader.read_exact(&mut read_buf).ok(), Some(()));
+    expect_eq!(&read_buf, raw_payload);
+
+    // SeekFrom::Current
+    expect_eq!(reader.seek(SeekFrom::Current(10)).ok(), Some(raw_payload.len() as u64 + 10));
+
+    // SeekFrom::Start
+    expect_eq!(reader.seek(SeekFrom::Start(7)).ok(), Some(7));
+    let mut sub_buf = [0u8; 8];
+    expect_eq!(reader.read_exact(&mut sub_buf).ok(), Some(()));
+    expect_eq!(&sub_buf, &raw_payload[7..15]);
+
+    // SeekFrom::End
+    expect_eq!(reader.seek(SeekFrom::End(-12)).ok(), Some(500));
+}
+
+#[gtest(RustUdifChunkTest, CompressZlibChunk)]
+fn test_udif_zlib_decompression() {
+    let mut payload = vec![0u8; 1024];
+    for (i, b) in payload.iter_mut().enumerate() {
+        *b = ((i * 17 + 5) % 251) as u8;
+    }
+
+    let compressed = compress_zlib(&payload);
+    let stream = SharedStream::new(Cursor::new(compressed.clone()));
+
+    let chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 2, // 1024 bytes (512 block size)
+        compressed_offset: 0,
+        compressed_length: compressed.len() as u64,
+    };
+
+    let mut reader = UdifBlockChunkReadStream::new(stream, 512, &chunk).unwrap();
+    let mut decompressed = vec![0u8; 1024];
+    expect_eq!(reader.read_exact(&mut decompressed).ok(), Some(()));
+    expect_eq!(&decompressed, &payload);
+
+    // Intra-chunk seeking in cached buffer
+    expect_eq!(reader.seek(SeekFrom::Start(250)).ok(), Some(250));
+    let mut slice_buf = [0u8; 20];
+    expect_eq!(reader.read_exact(&mut slice_buf).ok(), Some(()));
+    expect_eq!(&slice_buf, &payload[250..270]);
+}
+
+#[gtest(RustUdifChunkTest, CompressBz2Chunk)]
+fn test_udif_bz2_decompression() {
+    let mut payload = vec![0u8; 1024];
+    for (i, b) in payload.iter_mut().enumerate() {
+        *b = ((i * 31 + 47) % 251) as u8;
+    }
+
+    let compressed = compress_bz2(&payload).expect("bz2 compress should succeed");
+    let stream = SharedStream::new(Cursor::new(compressed.clone()));
+
+    let chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_BZ2,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 2, // 1024 bytes (512 block size)
+        compressed_offset: 0,
+        compressed_length: compressed.len() as u64,
+    };
+
+    let mut reader = UdifBlockChunkReadStream::new(stream, 512, &chunk).unwrap();
+    let mut decompressed = vec![0u8; 1024];
+    expect_eq!(reader.read_exact(&mut decompressed).ok(), Some(()));
+    expect_eq!(&decompressed, &payload);
+
+    // Intra-chunk seeking in cached buffer
+    expect_eq!(reader.seek(SeekFrom::Start(100)).ok(), Some(100));
+    let mut slice_buf = [0u8; 15];
+    expect_eq!(reader.read_exact(&mut slice_buf).ok(), Some(()));
+    expect_eq!(&slice_buf, &payload[100..115]);
+}
+
+#[gtest(RustUdifChunkTest, DecompressionBombProtection)]
+fn test_udif_decompression_bomb_protection() {
+    let stream = SharedStream::new(Cursor::new(vec![]));
+    let bomb_sectors = (MAX_CHUNK_DECOMPRESSED_SIZE / 512) + 1;
+
+    let bomb_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+        comment: 0,
+        start_sector: 0,
+        sector_count: bomb_sectors,
+        compressed_offset: 0,
+        compressed_length: 100,
+    };
+
+    let zlib_res = UdifBlockChunkReadStream::new(stream.clone(), 512, &bomb_chunk);
+    expect_eq!(err_kind(&zlib_res), Some(ErrorKind::InvalidData));
+
+    let compressed_bomb_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_BZ2,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: MAX_CHUNK_COMPRESSED_SIZE + 1,
+    };
+    let bz2_res = UdifBlockChunkReadStream::new(stream.clone(), 512, &compressed_bomb_chunk);
+    expect_eq!(err_kind(&bz2_res), Some(ErrorKind::InvalidData));
+
+    // Large ZeroFill chunks do NOT allocate decompression buffers, so they must
+    // be allowed.
+    let zerofill_large = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::ZERO_FILL,
+        comment: 0,
+        start_sector: 0,
+        sector_count: bomb_sectors,
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+    let mut zf_reader =
+        UdifBlockChunkReadStream::new(stream, 512, &zerofill_large).expect("ZeroFill can be large");
+    let mut small_buf = [0xffu8; 32];
+    expect_eq!(zf_reader.read(&mut small_buf).ok(), Some(32));
+    expect_true!(small_buf.iter().all(|&b| b == 0));
+}
+
+#[gtest(RustUdifChunkTest, UnexpectedEofUncompressed)]
+fn test_udif_unexpected_eof_uncompressed() {
+    let short_data = b"ShortData";
+    let stream = SharedStream::new(Cursor::new(short_data.to_vec()));
+
+    let chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1, // 512 bytes expected
+        compressed_offset: 0,
+        compressed_length: 512,
+    };
+
+    let mut reader = UdifBlockChunkReadStream::new(stream, 512, &chunk).unwrap();
+    let mut buf = [0u8; 512];
+    // First read returns the 9 available bytes
+    let n1 = reader.read(&mut buf).unwrap();
+    expect_eq!(n1, 9);
+    // Next read on underlying EOF returns UnexpectedEof
+    expect_eq!(err_kind(&reader.read(&mut buf)), Some(ErrorKind::UnexpectedEof));
+}
+
+#[gtest(RustUdifChunkTest, CorruptedCompression)]
+fn test_udif_corrupted_compression() {
+    let corrupted = b"this is completely corrupted data for compression engines";
+    let stream = SharedStream::new(Cursor::new(corrupted.to_vec()));
+
+    let zlib_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: corrupted.len() as u64,
+    };
+    let mut zlib_reader = UdifBlockChunkReadStream::new(stream.clone(), 512, &zlib_chunk).unwrap();
+    let mut buf = [0u8; 512];
+    expect_eq!(err_kind(&zlib_reader.read(&mut buf)), Some(ErrorKind::InvalidData));
+
+    let bz2_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_BZ2,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: corrupted.len() as u64,
+    };
+    let mut bz2_reader = UdifBlockChunkReadStream::new(stream, 512, &bz2_chunk).unwrap();
+    expect_eq!(err_kind(&bz2_reader.read(&mut buf)), Some(ErrorKind::InvalidData));
+}
+
+#[gtest(RustUdifChunkTest, Bz2StallDetection)]
+fn test_udif_bz2_stall_detection() {
+    // Truncated bz2 header that cannot make decompression progress
+    let partial_bz2 = [0x42, 0x5a, 0x68, 0x39]; // "BZh9"
+    let mut decompressed = [0u8; 100];
+    let res = decompress_bz2(&partial_bz2, &mut decompressed);
+    let kind = err_kind(&res);
+    expect_true!(kind == Some(ErrorKind::UnexpectedEof) || kind == Some(ErrorKind::InvalidData));
+}
+
+#[gtest(RustUdifChunkTest, ChunkTypeFromU32)]
+fn test_udif_chunk_type_from_u32() {
+    let cases = [
+        (0x0000_0000, UdifBlockChunkType::ZERO_FILL),
+        (0x0000_0001, UdifBlockChunkType::UNCOMPRESSED),
+        (0x0000_0002, UdifBlockChunkType::IGNORED),
+        (0x8000_0004, UdifBlockChunkType::COMPRESS_ADC),
+        (0x8000_0005, UdifBlockChunkType::COMPRESS_ZLIB),
+        (0x8000_0006, UdifBlockChunkType::COMPRESS_BZ2),
+        (0x7fff_fffe, UdifBlockChunkType::COMMENT),
+        (0xffff_ffff, UdifBlockChunkType::LAST_BLOCK),
+        // LZFSE (ULFO) and LZMA (ULMO) are not supported but must not fail parsing.
+        (0x8000_0007, UdifBlockChunkType(0x8000_0007)),
+        (0x8000_0008, UdifBlockChunkType(0x8000_0008)),
+    ];
+    for (raw, expected) in cases {
+        expect_eq!(UdifBlockChunkType::from(raw), expected, "raw: 0x{raw:08x}");
+    }
+}
+
+#[gtest(RustUdifChunkTest, UnknownChunkTypeReadUnsupported)]
+fn test_udif_unknown_chunk_type_read_unsupported() {
+    let stream = SharedStream::new(Cursor::new(vec![0u8; 1024]));
+    let chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::from(0x8000_0007),
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: 100,
+    };
+    let mut reader = UdifBlockChunkReadStream::new(stream, 512, &chunk).unwrap();
+    let mut buf = [0u8; 16];
+    expect_eq!(err_kind(&reader.read(&mut buf)), Some(ErrorKind::Unsupported));
+}
+
+#[gtest(RustUdifChunkTest, UnsupportedAndSpecialChunks)]
+fn test_udif_unsupported_and_special_chunks() {
+    let stream = SharedStream::new(Cursor::new(vec![0u8; 128]));
+
+    let adc_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ADC,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: 50,
+    };
+    let mut adc_reader = UdifBlockChunkReadStream::new(stream.clone(), 512, &adc_chunk).unwrap();
+    let mut buf = [0u8; 10];
+    expect_eq!(err_kind(&adc_reader.read(&mut buf)), Some(ErrorKind::Unsupported));
+
+    let comment_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMMENT,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+    let mut comment_reader =
+        UdifBlockChunkReadStream::new(stream.clone(), 512, &comment_chunk).unwrap();
+    expect_eq!(err_kind(&comment_reader.read(&mut buf)), Some(ErrorKind::InvalidData));
+
+    let last_block = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::LAST_BLOCK,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 0,
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+    let mut last_reader = UdifBlockChunkReadStream::new(stream, 512, &last_block).unwrap();
+    expect_eq!(last_reader.read(&mut buf).ok(), Some(0));
+}
+
+#[gtest(RustUdifChunkTest, ArithmeticOverflow)]
+fn test_udif_arithmetic_overflow() {
+    let stream = SharedStream::new(Cursor::new(vec![]));
+    let overflow_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::ZERO_FILL,
+        comment: 0,
+        start_sector: 0,
+        sector_count: u64::MAX,
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+    let res = UdifBlockChunkReadStream::new(stream.clone(), 512, &overflow_chunk);
+    expect_eq!(err_kind(&res), Some(ErrorKind::InvalidData));
+
+    let valid_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::ZERO_FILL,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+    let mut reader = UdifBlockChunkReadStream::new(stream, 512, &valid_chunk).unwrap();
+    expect_true!(reader.seek(SeekFrom::Start(u64::MAX)).is_err());
+    expect_true!(reader.seek(SeekFrom::Current(i64::MIN)).is_err());
+    expect_true!(reader.seek(SeekFrom::End(i64::MIN)).is_err());
+}
+
+#[gtest(RustUdifChunkTest, BlockSizeZeroRejected)]
+fn test_udif_block_size_zero_rejected() {
+    let stream = SharedStream::new(Cursor::new(vec![]));
+    let chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::ZERO_FILL,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+    let res = UdifBlockChunkReadStream::new(stream, 0, &chunk);
+    expect_eq!(err_kind(&res), Some(ErrorKind::InvalidInput));
+}
+
+#[gtest(RustUdifChunkTest, CompressedOffsetOverflow)]
+fn test_udif_compressed_offset_overflow() {
+    let stream = SharedStream::new(Cursor::new(vec![]));
+    let compressed_overflow = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: u64::MAX - 10,
+        compressed_length: 20,
+    };
+    let res_zlib = UdifBlockChunkReadStream::new(stream.clone(), 512, &compressed_overflow);
+    expect_eq!(err_kind(&res_zlib), Some(ErrorKind::InvalidData));
+
+    let uncompressed_overflow = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 2, // 1024 bytes
+        compressed_offset: u64::MAX - 100,
+        compressed_length: 1024,
+    };
+    let res_uncomp = UdifBlockChunkReadStream::new(stream, 512, &uncompressed_overflow);
+    expect_eq!(err_kind(&res_uncomp), Some(ErrorKind::InvalidData));
+}
+
+#[gtest(RustUdifChunkTest, EmptyCompressedDataRejected)]
+fn test_udif_empty_compressed_data_rejected() {
+    let mut decompressed = [0u8; 100];
+    let bz2_res = decompress_bz2(&[], &mut decompressed);
+    expect_eq!(err_kind(&bz2_res), Some(ErrorKind::UnexpectedEof));
+
+    // 0 decompressed bytes into 0 buffer should succeed
+    expect_eq!(decompress_bz2(&[], &mut []).ok(), Some(0));
+
+    // Verify chunk stream rejects empty compressed data
+    let stream = SharedStream::new(Cursor::new(vec![]));
+    let zlib_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+    let mut zlib_reader = UdifBlockChunkReadStream::new(stream.clone(), 512, &zlib_chunk).unwrap();
+    let mut buf = [0u8; 512];
+    expect_true!(zlib_reader.read(&mut buf).is_err());
+
+    let bz2_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_BZ2,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+    let mut bz2_reader = UdifBlockChunkReadStream::new(stream, 512, &bz2_chunk).unwrap();
+    expect_true!(bz2_reader.read(&mut buf).is_err());
+}
+
+#[gtest(RustUdifChunkTest, ZlibShortPayloadZeroPaddedTail)]
+fn test_udif_zlib_short_payload_zero_padded_tail() {
+    // 300 bytes of non-zero payload decompressed into a 2-sector (1024-byte)
+    // chunk.
+    let payload = vec![0xABu8; 300];
+    let compressed = compress_zlib(&payload);
+    let stream = SharedStream::new(Cursor::new(compressed.clone()));
+    let chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 2, // 1024 bytes
+        compressed_offset: 0,
+        compressed_length: compressed.len() as u64,
+    };
+    let mut reader = UdifBlockChunkReadStream::new(stream, 512, &chunk).unwrap();
+    let mut out = vec![0xFFu8; 1024];
+    expect_eq!(reader.read_exact(&mut out).ok(), Some(()));
+    expect_eq!(&out[..300], &payload[..]);
+    expect_true!(out[300..].iter().all(|&b| b == 0));
+}
+
+#[gtest(RustUdifChunkTest, Bz2ShortPayloadZeroPaddedTail)]
+fn test_udif_bz2_short_payload_zero_padded_tail() {
+    // 300 bytes of non-zero payload decompressed into a 2-sector (1024-byte)
+    // chunk.
+    let payload = vec![0xCDu8; 300];
+    let compressed = compress_bz2(&payload).expect("bz2 compress should succeed");
+    let stream = SharedStream::new(Cursor::new(compressed.clone()));
+    let chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_BZ2,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 2, // 1024 bytes
+        compressed_offset: 0,
+        compressed_length: compressed.len() as u64,
+    };
+    let mut reader = UdifBlockChunkReadStream::new(stream, 512, &chunk).unwrap();
+    let mut out = vec![0xFFu8; 1024];
+    expect_eq!(reader.read_exact(&mut out).ok(), Some(()));
+    expect_eq!(&out[..300], &payload[..]);
+    expect_true!(out[300..].iter().all(|&b| b == 0));
+}
+
+#[gtest(RustUdifChunkTest, PayloadLargerThanChunkErrors)]
+fn test_udif_payload_larger_than_chunk_errors() {
+    // 1024 bytes of payload compressed into a 1-sector (512-byte) chunk.
+    let payload = vec![0xEFu8; 1024];
+    let zlib_compressed = compress_zlib(&payload);
+    let stream_zlib = SharedStream::new(Cursor::new(zlib_compressed.clone()));
+    let zlib_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1, // 512 bytes
+        compressed_offset: 0,
+        compressed_length: zlib_compressed.len() as u64,
+    };
+    let mut zlib_reader = UdifBlockChunkReadStream::new(stream_zlib, 512, &zlib_chunk).unwrap();
+    let mut buf = [0u8; 512];
+    expect_true!(zlib_reader.read(&mut buf).is_err());
+
+    let bz2_compressed = compress_bz2(&payload).expect("bz2 compress should succeed");
+    let stream_bz2 = SharedStream::new(Cursor::new(bz2_compressed.clone()));
+    let bz2_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_BZ2,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1, // 512 bytes
+        compressed_offset: 0,
+        compressed_length: bz2_compressed.len() as u64,
+    };
+    let mut bz2_reader = UdifBlockChunkReadStream::new(stream_bz2, 512, &bz2_chunk).unwrap();
+    expect_true!(bz2_reader.read(&mut buf).is_err());
+}
+
+#[gtest(RustUdifChunkTest, CompressedDataExceedsStreamLength)]
+fn test_udif_compressed_data_exceeds_stream_length() {
+    let stream = SharedStream::new(Cursor::new(vec![0u8; 50]));
+    let chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 40,
+        compressed_length: 20, // 40 + 20 = 60 > 50
+    };
+    let mut reader = UdifBlockChunkReadStream::new(stream, 512, &chunk).unwrap();
+    let mut buf = [0u8; 512];
+    let res = reader.read(&mut buf);
+    expect_eq!(err_kind(&res), Some(ErrorKind::UnexpectedEof));
+}
+
+#[gtest(RustUdifChunkTest, SharedStreamStreamLen)]
+fn test_shared_stream_stream_len() {
+    let data = b"hello world 12345";
+    let stream = SharedStream::new(Cursor::new(data.to_vec()));
+    expect_eq!(stream.stream_len().ok(), Some(data.len() as u64));
+}
+
+#[gtest(RustUdifChunkTest, ExactBoundary128MB)]
+fn test_udif_exact_boundary_128mb() {
+    let stream = SharedStream::new(Cursor::new(vec![]));
+    let exact_sectors = MAX_CHUNK_DECOMPRESSED_SIZE / 512;
+
+    let exact_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+        comment: 0,
+        start_sector: 0,
+        sector_count: exact_sectors,
+        compressed_offset: 0,
+        compressed_length: MAX_CHUNK_COMPRESSED_SIZE,
+    };
+    // Initialization at the exact boundary must succeed without allocating
+    // decompress_buffer yet
+    let res = UdifBlockChunkReadStream::new(stream, 512, &exact_chunk);
+    expect_true!(res.is_ok());
+    let reader = res.unwrap();
+    expect_eq!(reader.length_in_bytes(), MAX_CHUNK_DECOMPRESSED_SIZE);
+}
+
+#[gtest(RustUdifChunkTest, Bz2ShortPayloadReturnsBytesProduced)]
+fn test_udif_bz2_short_payload_returns_bytes_produced() {
+    let payload = vec![0x5Au8; 300];
+    let compressed = compress_bz2(&payload).expect("bz2 compress should succeed");
+    let mut out = vec![0u8; 512];
+    expect_eq!(decompress_bz2(&compressed, &mut out).ok(), Some(payload.len()));
+    expect_eq!(&out[..payload.len()], &payload[..]);
+    expect_true!(out[payload.len()..].iter().all(|&b| b == 0));
 }

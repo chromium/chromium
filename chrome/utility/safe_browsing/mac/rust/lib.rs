@@ -6,7 +6,10 @@
 //! filesystems.
 //!
 //! This crate is intentionally free of `unsafe` code; all C++ FFI glue lives in
-//! the separate `dmg_ffi_bridge` crate (`ffi.rs`).
+//! the separate `dmg_ffi_bridge` crate (`ffi.rs`), and bzip2 decompression FFI
+//! lives in the separate `dmg_decompress` crate.
+
+#![forbid(unsafe_code)]
 
 use std::cell::RefCell;
 use std::io::{self, Read, Seek, SeekFrom};
@@ -71,6 +74,13 @@ impl SharedStream {
         let start = stream.seek(SeekFrom::End(offset))?;
         stream.read_exact(buf)?;
         Ok(start)
+    }
+
+    /// Returns the total length of the underlying stream in bytes by seeking to
+    /// the end.
+    pub fn stream_len(&self) -> io::Result<u64> {
+        let mut stream = self.inner.borrow_mut();
+        stream.seek(SeekFrom::End(0))
     }
 }
 
