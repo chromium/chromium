@@ -6,5 +6,8 @@ agentic_review {
       "chrome/browser/ui/views/profiles/first_run_flow_controller\\.(cc|h)",
       "chrome/browser/ui/views/profiles/feature_showcase/.*"
     ]
+    review_capability_skills: [
+      "agents/skills/first-run-feature-showcase-reviewer/SKILL.md"
+    ]
   }
 }

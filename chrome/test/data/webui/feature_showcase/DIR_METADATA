@@ -1,3 +1,9 @@
 mixins: "//chrome/browser/profiles/COMMON_METADATA"
 
-agentic_review {}
+agentic_review {
+  capability_groups {
+    review_capability_skills: [
+      "agents/skills/first-run-feature-showcase-reviewer/SKILL.md"
+    ]
+  }
+}
