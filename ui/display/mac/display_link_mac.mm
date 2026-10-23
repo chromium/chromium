@@ -58,13 +58,17 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   CGDirectDisplayID display_id =
       static_cast<CGDirectDisplayID>(vsync_display_id);
 
+  scoped_refptr<DisplayLinkMac> display_link;
   // CADisplayLink is available only for MacOS 14.0+.
   if (SupportsCADisplayLinkInGPU()) {
-    return CADisplayLinkMac::GetForDisplay(display_id,
-                                           /*in_gpu_process=*/true);
+    display_link = CADisplayLinkMac::GetForDisplay(display_id,
+                                                   /*in_gpu_process=*/true);
+    if (!display_link) {
+      return CVDisplayLinkMac::GetForDisplay(display_id);
+    }
+    return display_link;
   }
 
-  scoped_refptr<DisplayLinkMac> display_link;
   if (SupportsDisplayLinkMacInBrowser()) {
     display_link = ExternalDisplayLinkMac::GetForDisplay(display_id);
     if (display_link) {

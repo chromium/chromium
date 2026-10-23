@@ -156,7 +156,10 @@ void CVDisplayLinkMac::TryRecordDisplayLinkCreation(
   auto [it, inserted] = globals.recorded_displays.insert(display_id);
   if (inserted) {
     UMA_HISTOGRAM_BOOLEAN("Viz.DisplayLink.Create.GPU.CVDisplayLink", success);
-    RecordDisplayLinkCreation(success);
+    // No metrics recording if in a fallback path.
+    if (!SupportsCADisplayLinkInGPU()) {
+      RecordDisplayLinkCreation(success);
+    }
   }
 }
 
