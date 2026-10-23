@@ -31,18 +31,26 @@ enum ContextualTasksButtonContextMenuCommand {
   kCommandCustomizeToolbar = 4,
 };
 
-constexpr size_t kPinnedActionMenuPinIndex = 0;
-constexpr size_t kPinnedActionMenuUnpinIndex = 1;
-constexpr size_t kPinnedActionMenuCustomizeIndex = 2;
-
-std::optional<size_t> GetPinnedActionMenuIndexForCommand(int command_id) {
+std::optional<size_t> GetPinnedActionMenuIndexForCommand(
+    const PinnedActionToolbarButtonMenuModel* menu_model,
+    int command_id) {
+  constexpr size_t kPinnedActionMenuDefaultItemCount = 3;
+  constexpr size_t kPinnedActionMenuPinOffset = 0;
+  constexpr size_t kPinnedActionMenuUnpinOffset = 1;
+  constexpr size_t kPinnedActionMenuCustomizeOffset = 2;
+  if (!menu_model ||
+      menu_model->GetItemCount() < kPinnedActionMenuDefaultItemCount) {
+    return std::nullopt;
+  }
+  const size_t base_index =
+      menu_model->GetItemCount() - kPinnedActionMenuDefaultItemCount;
   switch (command_id) {
     case kCommandPinToToolbar:
-      return kPinnedActionMenuPinIndex;
+      return base_index + kPinnedActionMenuPinOffset;
     case kCommandUnpinFromToolbar:
-      return kPinnedActionMenuUnpinIndex;
+      return base_index + kPinnedActionMenuUnpinOffset;
     case kCommandCustomizeToolbar:
-      return kPinnedActionMenuCustomizeIndex;
+      return base_index + kPinnedActionMenuCustomizeOffset;
     default:
       return std::nullopt;
   }
@@ -91,17 +99,22 @@ void ContextualTasksEphemeralButtonMenuModel::UpdateItems() {
           std::make_unique<PinnedActionToolbarButtonMenuModel>(
               browser_window_interface_, kActionSidePanelShowContextualTasks);
     }
-    constexpr std::pair<int, size_t> kPinnedMenuCommands[] = {
-        {kCommandPinToToolbar, kPinnedActionMenuPinIndex},
-        {kCommandUnpinFromToolbar, kPinnedActionMenuUnpinIndex},
-        {kCommandCustomizeToolbar, kPinnedActionMenuCustomizeIndex},
+    constexpr int kPinnedMenuCommands[] = {
+        kCommandPinToToolbar,
+        kCommandUnpinFromToolbar,
+        kCommandCustomizeToolbar,
     };
-    for (const auto& [command_id, index] : kPinnedMenuCommands) {
-      AddItemWithIcon(command_id, pinned_action_menu_model_->GetLabelAt(index),
-                      pinned_action_menu_model_->GetIconAt(index));
+    for (const int command_id : kPinnedMenuCommands) {
+      const std::optional<size_t> index = GetPinnedActionMenuIndexForCommand(
+          pinned_action_menu_model_.get(), command_id);
+      if (!index.has_value()) {
+        continue;
+      }
+      AddItemWithIcon(command_id, pinned_action_menu_model_->GetLabelAt(*index),
+                      pinned_action_menu_model_->GetIconAt(*index));
       SetElementIdentifierAt(
           GetItemCount() - 1,
-          pinned_action_menu_model_->GetElementIdentifierAt(index));
+          pinned_action_menu_model_->GetElementIdentifierAt(*index));
     }
   } else {
     pinned_action_menu_model_.reset();
@@ -110,8 +123,8 @@ void ContextualTasksEphemeralButtonMenuModel::UpdateItems() {
 
 bool ContextualTasksEphemeralButtonMenuModel::IsCommandIdEnabled(
     int command_id) const {
-  if (std::optional<size_t> index =
-          GetPinnedActionMenuIndexForCommand(command_id);
+  if (std::optional<size_t> index = GetPinnedActionMenuIndexForCommand(
+          pinned_action_menu_model_.get(), command_id);
       index.has_value()) {
     return IsPinningEligible() && pinned_action_menu_model_ &&
            pinned_action_menu_model_->IsEnabledAt(*index);
@@ -121,8 +134,8 @@ bool ContextualTasksEphemeralButtonMenuModel::IsCommandIdEnabled(
 
 bool ContextualTasksEphemeralButtonMenuModel::IsCommandIdVisible(
     int command_id) const {
-  if (std::optional<size_t> index =
-          GetPinnedActionMenuIndexForCommand(command_id);
+  if (std::optional<size_t> index = GetPinnedActionMenuIndexForCommand(
+          pinned_action_menu_model_.get(), command_id);
       index.has_value()) {
     return IsPinningEligible() && pinned_action_menu_model_ &&
            pinned_action_menu_model_->IsVisibleAt(*index);
@@ -148,8 +161,8 @@ void ContextualTasksEphemeralButtonMenuModel::ExecuteCommand(int command_id,
     controller->RemoveEphemeralButtonForCurrentTask();
     return;
   }
-  if (std::optional<size_t> index =
-          GetPinnedActionMenuIndexForCommand(command_id);
+  if (std::optional<size_t> index = GetPinnedActionMenuIndexForCommand(
+          pinned_action_menu_model_.get(), command_id);
       index.has_value() && IsPinningEligible() && pinned_action_menu_model_) {
     if (command_id == kCommandPinToToolbar) {
       base::RecordAction(base::UserMetricsAction(

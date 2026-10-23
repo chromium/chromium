@@ -4673,6 +4673,21 @@ const FeatureEntry::FeatureVariation
         {"with 'Close side panel'",
          kContextualTasksEphemeralButtonContextMenuCloseSidePanel, nullptr}};
 
+const FeatureEntry::FeatureParam
+    kContextualTasksPinnedButtonActiveIndicatorWithoutContextMenu[] = {
+        {"ContextualTasksPinnedButtonContextMenuCloseSidePanel", "false"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksPinnedButtonActiveIndicatorWithContextMenu[] = {
+        {"ContextualTasksPinnedButtonContextMenuCloseSidePanel", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kContextualTasksPinnedButtonActiveIndicatorVariations[] = {
+        {"without 'Close/Hide side panel' in context menu",
+         kContextualTasksPinnedButtonActiveIndicatorWithoutContextMenu,
+         nullptr},
+        {"with 'Close/Hide side panel' in context menu",
+         kContextualTasksPinnedButtonActiveIndicatorWithContextMenu, nullptr}};
+
 const FeatureEntry::FeatureParam kContextualTasksUnifyPinButtonLogosSpark[] = {
     {"ContextualTasksUnifyPinButtonLogo", "spark"}};
 const FeatureEntry::FeatureParam kContextualTasksUnifyPinButtonLogosSuperG[] = {
@@ -12450,8 +12465,10 @@ const FeatureEntry kFeatureEntries[] = {
      contextual_tasks::flag_descriptions::
          kContextualTasksPinnedButtonActiveIndicatorDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         contextual_tasks::kContextualTasksPinnedButtonActiveIndicator)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         contextual_tasks::kContextualTasksPinnedButtonActiveIndicator,
+         kContextualTasksPinnedButtonActiveIndicatorVariations,
+         "ContextualTasksPinnedButtonActiveIndicator")},
 
     {"contextual-tasks-enable-spatial-model-toolbar-layout",
      contextual_tasks::flag_descriptions::

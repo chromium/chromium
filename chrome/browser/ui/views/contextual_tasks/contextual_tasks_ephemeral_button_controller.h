@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -28,6 +29,10 @@
 
 class BrowserWindowInterface;
 class SidePanelEntry;
+
+namespace actions {
+class ActionItem;
+}  // namespace actions
 
 namespace content {
 class Page;
@@ -155,6 +160,7 @@ class ContextualTasksEphemeralButtonController
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
       contextual_task_entry_observation_{this};
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+  raw_ptr<actions::ActionItem> close_side_panel_action_item_ = nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription tab_change_subscription_;
@@ -170,6 +176,8 @@ class ContextualTasksEphemeralButtonController
       pinned_toolbar_observation_{this};
   ShouldUpdateVisibilityCallbackList should_update_visibility_callbacks_;
   ShouldUpdateButtonPositionCallbackList should_update_position_callbacks_;
+  base::WeakPtrFactory<ContextualTasksEphemeralButtonController>
+      weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTROLLER_H_

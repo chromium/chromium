@@ -31,6 +31,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/view_class_properties.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarPinElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarUnpinElementId);
@@ -270,7 +271,9 @@ void PinnedActionToolbarButtonMenuModel::AddActionSpecificItems() {
         // should be displayed as Checked that is handled in `GetTypeAt` which
         // will evaluated the ActionItem's checked state when the menu is run.
         auto* child_action_item = child_item->GetActionItem();
-        items_.emplace_back(*child_action_item->GetActionId(), TYPE_COMMAND);
+        items_.emplace_back(
+            *child_action_item->GetActionId(), TYPE_COMMAND,
+            child_action_item->GetProperty(views::kElementIdentifierKey));
       }
       items_.emplace_back(TYPE_SEPARATOR);
     }

@@ -611,6 +611,16 @@ extern bool IsContextualTasksPinningV2Enabled();
 // show an active indicator when the active tab has an ongoing thread/session.
 extern bool IsContextualTasksPinnedButtonActiveIndicatorEnabled();
 
+// Controls whether the permanent pinned contextual tasks toolbar button context
+// menu displays a "Close/Hide side panel" item when the active tab has an
+// ongoing thread/session.
+extern const base::FeatureParam<bool>
+    kContextualTasksPinnedButtonContextMenuCloseSidePanel;
+
+// Returns whether the permanent pinned contextual tasks toolbar button context
+// menu should show a "Close/Hide side panel" item when active.
+extern bool ShouldShowCloseSidePanelInPinnedButtonContextMenu();
+
 // Returns whether the pin button in the side panel header is enabled on SRP.
 extern bool IsContextualTasksPinButtonOnSrpEnabled();
 
