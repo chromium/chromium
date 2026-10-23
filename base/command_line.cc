@@ -68,7 +68,7 @@ constexpr auto kSwitchPrefixes = std::to_array<CommandLine::StringViewType>({
 size_t switch_prefix_count = std::size(kSwitchPrefixes);
 
 bool IsSwitchNameValid(std::string_view switch_name) {
-  return ToLowerASCII(switch_name) == switch_name;
+  return std::ranges::none_of(switch_name, &IsAsciiUpper<char>);
 }
 
 #if BUILDFLAG(IS_WIN)
