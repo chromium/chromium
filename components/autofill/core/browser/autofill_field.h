@@ -564,7 +564,7 @@ class AutofillField : public FormFieldData {
   // Predictions which where calculated on the client. This is initialized to
   // `NO_SERVER_DATA`, which means "NO_DATA", i.e. no classification was
   // attempted.
-  std::array<FieldType, static_cast<size_t>(HeuristicSource::kMaxValue) + 1>
+  std::array<FieldType, std::to_underlying(HeuristicSource::kMaxValue) + 1>
       local_type_predictions_;
 
   // Structure that holds the additional information on the regex match (e.g.

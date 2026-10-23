@@ -511,11 +511,11 @@ FieldType AutofillField::heuristic_type(HeuristicSource s) const {
   // Special handling for ML model predictions.
   if (s == HeuristicSource::kAutofillMachineLearning) {
     FieldType regex_type =
-        local_type_predictions_[static_cast<size_t>(HeuristicSource::kRegexes)];
+        local_type_predictions_[std::to_underlying(HeuristicSource::kRegexes)];
     if (regex_type == FieldType::NO_SERVER_DATA) {
       regex_type = FieldType::UNKNOWN_TYPE;
     }
-    FieldType model_type = local_type_predictions_[static_cast<size_t>(
+    FieldType model_type = local_type_predictions_[std::to_underlying(
         HeuristicSource::kAutofillMachineLearning)];
     // We fall back to regex heuristics in the following cases:
     // - The regex heuristics detected a type that the model does not support
@@ -530,7 +530,7 @@ FieldType AutofillField::heuristic_type(HeuristicSource s) const {
     return model_type;
   }
 
-  FieldType type = local_type_predictions_[static_cast<size_t>(s)];
+  FieldType type = local_type_predictions_[std::to_underlying(s)];
   // Guaranteed by construction of `local_type_predictions_`.
   DCHECK(ToSafeFieldType(type).has_value());
   // `NO_SERVER_DATA` would mean that there is no heuristic type. Client code
@@ -551,7 +551,7 @@ FieldType AutofillField::server_type() const {
 
 void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
   CHECK(ToSafeFieldType(type).has_value());
-  local_type_predictions_[static_cast<size_t>(s)] = type;
+  local_type_predictions_[std::to_underlying(s)] = type;
   if (s == GetActiveHeuristicSource()) {
     overall_type_ = std::nullopt;
   }

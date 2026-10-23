@@ -13,7 +13,6 @@
 #include <ostream>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -763,12 +762,10 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
     return comparison;
   }
 
-  if (static_cast<int>(card_issuer_) <
-      static_cast<int>(credit_card.card_issuer_)) {
+  if (card_issuer_ < credit_card.card_issuer_) {
     return -1;
   }
-  if (static_cast<int>(card_issuer_) >
-      static_cast<int>(credit_card.card_issuer_)) {
+  if (card_issuer_ > credit_card.card_issuer_) {
     return 1;
   }
 
@@ -777,12 +774,12 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
     return comparison;
   }
 
-  if (static_cast<int>(virtual_card_enrollment_state_) <
-      static_cast<int>(credit_card.virtual_card_enrollment_state_)) {
+  if (virtual_card_enrollment_state_ <
+      credit_card.virtual_card_enrollment_state_) {
     return -1;
   }
-  if (static_cast<int>(virtual_card_enrollment_state_) >
-      static_cast<int>(credit_card.virtual_card_enrollment_state_)) {
+  if (virtual_card_enrollment_state_ >
+      credit_card.virtual_card_enrollment_state_) {
     return 1;
   }
 
@@ -823,21 +820,19 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
     return 1;
   }
 
-  if (static_cast<int>(card_info_retrieval_enrollment_state_) <
-      static_cast<int>(credit_card.card_info_retrieval_enrollment_state_)) {
+  if (card_info_retrieval_enrollment_state_ <
+      credit_card.card_info_retrieval_enrollment_state_) {
     return -1;
   }
-  if (static_cast<int>(card_info_retrieval_enrollment_state_) >
-      static_cast<int>(credit_card.card_info_retrieval_enrollment_state_)) {
+  if (card_info_retrieval_enrollment_state_ >
+      credit_card.card_info_retrieval_enrollment_state_) {
     return 1;
   }
 
-  if (static_cast<int>(card_creation_source_) <
-      static_cast<int>(credit_card.card_creation_source_)) {
+  if (card_creation_source_ < credit_card.card_creation_source_) {
     return -1;
   }
-  if (static_cast<int>(card_creation_source_) >
-      static_cast<int>(credit_card.card_creation_source_)) {
+  if (card_creation_source_ > credit_card.card_creation_source_) {
     return 1;
   }
   return 0;
@@ -1306,12 +1301,9 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << credit_card.usage_history().use_count() << " "
             << credit_card.usage_history().use_date() << " "
             << credit_card.billing_address_id() << " " << credit_card.nickname()
+            << " " << std::to_underlying(credit_card.card_issuer()) << " "
+            << credit_card.issuer_id() << " " << credit_card.instrument_id()
             << " "
-            << static_cast<
-                   typename std::underlying_type<CreditCard::Issuer>::type>(
-                   credit_card.card_issuer())
-            << " " << credit_card.issuer_id() << " "
-            << credit_card.instrument_id() << " "
             << std::to_underlying(credit_card.virtual_card_enrollment_state())
             << " " << credit_card.card_art_url().spec() << " "
             << base::UTF16ToUTF8(credit_card.product_description()) << " "
