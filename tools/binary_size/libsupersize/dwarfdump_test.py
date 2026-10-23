@@ -55,11 +55,12 @@ class DwarfDumpTest(unittest.TestCase):
     )
 
   def testParseNonContiguousIgnoreEmptyRanges(self):
-    """Test that empty ranges are ignored when parsing DW_AT_ranges."""
+    """Test that empty and tombstone (0x0) ranges are ignored."""
     lines = [
       'DW_TAG_compile_unit',
       'DW_AT_name ("solution.cc")',
       'DW_AT_ranges (0x1',
+      '[0x0, 0x10)',
       '[0x1, 0x1)',
       '[0x10, 0x21)',
       '[0x22, 0x22)',
