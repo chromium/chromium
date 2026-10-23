@@ -576,6 +576,7 @@ base::span<const SearchConcept> GetA11yShakeToLocateSearchConcepts() {
         {
             IDS_OS_SETTINGS_TAG_A11Y_SHAKE_TO_LOCATE_CURSOR_ALT1,
             IDS_OS_SETTINGS_TAG_A11Y_SHAKE_TO_LOCATE_CURSOR_ALT2,
+            IDS_OS_SETTINGS_TAG_A11Y_SHAKE_TO_LOCATE_CURSOR_ALT3,
             SearchConcept::kAltTagEnd,
         }}});
   return tags;

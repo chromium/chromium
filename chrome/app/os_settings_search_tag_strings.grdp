@@ -1337,6 +1337,9 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_SHAKE_TO_LOCATE_CURSOR_ALT2" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable enlarging the mouse cursor when it is shaken. Alternate phrase for: 'Shake to locate cursor'">
     Lost mouse cursor
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SHAKE_TO_LOCATE_CURSOR_ALT3" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable enlarging the mouse cursor when it is shaken. Alternate phrase for: 'Shake to locate cursor'">
+    Find mouse cursor
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_TABLET_NAVIGATION_BUTTONS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable showing navigation buttons (launcher, back, overview) in the shelf when the device is in tablet mode.">
     Tablet navigation buttons
   </message>
