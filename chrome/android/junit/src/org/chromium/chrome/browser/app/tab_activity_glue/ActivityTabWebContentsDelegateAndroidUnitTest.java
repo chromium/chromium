@@ -303,6 +303,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void testIsDocumentPictureInPictureBlockedBySystem() {
         setRepositionPermission(true);
         // Test in app fullscreen (not multi-window mode) -> Blocked.
@@ -315,6 +316,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void
             testIsDocumentPictureInPictureBlockedBySystem_BlockedWhenCurrentBrowserNotDefault() {
         // Test when the current browser is NOT the default browser -> Blocked even in multi-window

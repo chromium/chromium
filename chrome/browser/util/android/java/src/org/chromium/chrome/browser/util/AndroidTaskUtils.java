@@ -11,17 +11,21 @@ import android.app.TaskLocation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.OutcomeReceiver;
+import android.os.Process;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Display;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -64,6 +68,30 @@ public class AndroidTaskUtils {
     private static @Nullable AppTask sAppTaskForTesting;
     private static @Nullable Map<AppTask, RecentTaskInfo> sTaskInfosForTesting;
     private static @Nullable MoveTaskDelegate sMoveTaskDelegateForTesting;
+    private static @Nullable Boolean sCanRepositionSelfWindowsForTesting;
+
+    /**
+     * Checks whether Chrome holds the permission required to reposition/resize windows. On API 37+
+     * (Cinnamon Bun), this permission is granted to the default browser role holder.
+     */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.CINNAMON_BUN)
+    public static boolean canRepositionSelfWindows() {
+        if (sCanRepositionSelfWindowsForTesting != null) {
+            return sCanRepositionSelfWindowsForTesting;
+        }
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+                && ApiCompatibilityUtils.checkPermission(
+                                ContextUtils.getApplicationContext(),
+                                android.Manifest.permission.REPOSITION_SELF_WINDOWS,
+                                Process.myPid(),
+                                Process.myUid())
+                        == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void setCanRepositionSelfWindowsForTesting(@Nullable Boolean canReposition) {
+        sCanRepositionSelfWindowsForTesting = canReposition;
+        ResettersForTesting.register(() -> sCanRepositionSelfWindowsForTesting = null);
+    }
 
     /**
      * Finishes tasks other than the one with the given ID that were started with the given data in

@@ -12,7 +12,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.media.AudioManager;
@@ -66,6 +65,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
@@ -695,18 +695,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         return mActivity != null && PictureInPicture.isEnabled(mActivity);
     }
 
-    private boolean hasRepositionWindowsPermission() {
-        // Query if the system has granted us the permission to reposition and resize windows, which
-        // is required to create a movable task for Document Picture-in-Picture. This permission is
-        // granted automatically to the app currently set as the system's default web browser.
-        return ApiCompatibilityUtils.checkPermission(
-                        ContextUtils.getApplicationContext(),
-                        android.Manifest.permission.REPOSITION_SELF_WINDOWS,
-                        android.os.Process.myPid(),
-                        android.os.Process.myUid())
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
     /**
      * Checks if the OS currently prevents the creation of a Document Picture-in-Picture window.
      * This check blocks window creation synchronously if:
@@ -721,7 +709,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
      */
     @Override
     protected boolean isDocumentPictureInPictureBlockedBySystem() {
-        if (!hasRepositionWindowsPermission()) {
+        if (!AndroidTaskUtils.canRepositionSelfWindows()) {
             Log.w(
                     TAG,
                     "isDocumentPictureInPictureBlockedBySystem: Blocked because the current browser"

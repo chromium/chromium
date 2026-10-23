@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import static android.Manifest.permission.REPOSITION_SELF_WINDOWS;
 import static android.os.Looper.getMainLooper;
 
 import static org.junit.Assert.assertEquals;
@@ -38,11 +39,9 @@ import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUni
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.role.RoleManager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
-import android.os.Process;
 import android.util.Pair;
 import android.view.WindowMetrics;
 
@@ -57,12 +56,11 @@ import org.mockito.InOrder;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowRoleManager;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Promise;
 import org.chromium.base.TimeUtils;
@@ -225,12 +223,18 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Before
     public void setUp() {
-        ShadowRoleManager.addRoleHolder(
-                RoleManager.ROLE_BROWSER,
-                ContextUtils.getApplicationContext().getPackageName(),
-                Process.myUserHandle());
+        setRepositionPermission(true);
         var multiInstanceOrchestrator = mock(MultiInstanceOrchestrator.class);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(multiInstanceOrchestrator);
+    }
+
+    private static void setRepositionPermission(boolean granted) {
+        var shadowApp = shadowOf(RuntimeEnvironment.getApplication());
+        if (granted) {
+            shadowApp.grantPermissions(REPOSITION_SELF_WINDOWS);
+        } else {
+            shadowApp.denyPermissions(REPOSITION_SELF_WINDOWS);
+        }
     }
 
     @Test
@@ -2078,16 +2082,12 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
-    public void canResize_notBrowserRole_returnsBrowserRoleNotHeld() {
+    public void canResize_noRepositionPermission_returnsBrowserRoleNotHeld() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
-        // Remove the ROLE_BROWSER that was added in setUp()
-        ShadowRoleManager.removeRoleHolder(
-                RoleManager.ROLE_BROWSER,
-                ContextUtils.getApplicationContext().getPackageName(),
-                Process.myUserHandle());
+        setRepositionPermission(false);
 
         // Act & Assert.
         assertEquals(
@@ -2106,6 +2106,18 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act & Assert.
         assertEquals(
                 WindowResizePrecheckResult.NOT_A_FREEFORM_WINDOW, chromeAndroidTask.canResize());
+    }
+
+    @Test
+    public void isFreeformWindow_followsAppHeaderState() {
+        var chromeAndroidTask =
+                createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
+
+        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
+        assertTrue(chromeAndroidTask.isFreeformWindow());
+
+        AppHeaderUtils.setAppInDesktopWindowForTesting(false);
+        assertFalse(chromeAndroidTask.isFreeformWindow());
     }
 
     @Test

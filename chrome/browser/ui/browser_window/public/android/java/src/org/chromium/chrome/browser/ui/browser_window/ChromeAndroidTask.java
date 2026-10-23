@@ -283,6 +283,9 @@ public interface ChromeAndroidTask {
     /** Returns whether this {@link ChromeAndroidTask} is currently in fullscreen mode. */
     boolean isFullscreen();
 
+    /** Returns whether this {@link ChromeAndroidTask} is currently a freeform window. */
+    boolean isFreeformWindow();
+
     /** Non-maximized bounds of the task even when currently maximized or minimized. */
     Rect getRestoredBoundsInDp();
 

@@ -8,7 +8,6 @@ import static org.chromium.base.ApplicationStatus.getTaskId;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.role.RoleManager;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION;
@@ -29,7 +28,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.TaskVisibilityListener;
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
@@ -552,30 +550,15 @@ final class ChromeAndroidTaskImpl
             return WindowResizePrecheckResult.SDK_TOO_LOW;
         }
 
-        // For the window bounds to be changed, the app must hold the browser role.
-        var roleManager = ContextUtils.getApplicationContext().getSystemService(RoleManager.class);
-        if (!roleManager.isRoleHeld(RoleManager.ROLE_BROWSER)) {
-            Log.w(TAG, "Unable to set bounds: the app doesn't hold the browser role");
+        // For the window bounds to be changed, the app must hold REPOSITION_SELF_WINDOWS, which is
+        // granted to the browser role holder.
+        if (!AndroidTaskUtils.canRepositionSelfWindows()) {
+            Log.w(TAG, "Unable to set bounds: the app lacks REPOSITION_SELF_WINDOWS");
             return WindowResizePrecheckResult.BROWSER_ROLE_NOT_HELD;
         }
 
         // Only free-form windows can change bounds.
-        boolean isFreeformWindow;
-        if (topActivityScopedObjects.mBrowserWindowType == BrowserWindowType.NORMAL) {
-            isFreeformWindow =
-                    AppHeaderUtils.isAppInDesktopWindow(
-                            topActivityScopedObjects.mDesktopWindowStateManager);
-        } else {
-            // For CCT/TWA/PWA, check if the window height matches the screen height
-            var activity = topActivityScopedObjects.mActivity;
-            var windowManager = activity.getWindowManager();
-            int windowHeight = windowManager.getCurrentWindowMetrics().getBounds().height();
-            int screenHeight =
-                    topActivityScopedObjects.mActivityWindowAndroid.getDisplay().getDisplayHeight();
-            isFreeformWindow = windowHeight != screenHeight;
-        }
-
-        if (!isFreeformWindow) {
+        if (!isFreeformWindowInternal(topActivityScopedObjects)) {
             Log.w(TAG, "Unable to set bounds: the app isn't in desktop windowing mode");
             return WindowResizePrecheckResult.NOT_A_FREEFORM_WINDOW;
         }
@@ -1009,6 +992,13 @@ final class ChromeAndroidTaskImpl
         }
 
         return mWindowStateManager.getWindowState() == WindowState.FULLSCREEN;
+    }
+
+    @Override
+    public boolean isFreeformWindow() {
+        ThreadUtils.assertOnUiThread();
+        return useActivity(
+                ChromeAndroidTaskImpl::isFreeformWindowInternal, /* defaultValue= */ false);
     }
 
     @Override
@@ -1773,6 +1763,21 @@ final class ChromeAndroidTaskImpl
                         || mState == State.IDLE
                         || mState == State.PENDING_UPDATE
                 : "This Task can no longer accept Features. Current state: " + mState;
+    }
+
+    private static boolean isFreeformWindowInternal(
+            TopActivityScopedObjects topActivityScopedObjects) {
+        if (topActivityScopedObjects.mBrowserWindowType == BrowserWindowType.NORMAL) {
+            return AppHeaderUtils.isAppInDesktopWindow(
+                    topActivityScopedObjects.mDesktopWindowStateManager);
+        }
+        // For CCT/TWA/PWA, check if the window height matches the screen height
+        var activity = topActivityScopedObjects.mActivity;
+        var windowManager = activity.getWindowManager();
+        int windowHeight = windowManager.getCurrentWindowMetrics().getBounds().height();
+        int screenHeight =
+                topActivityScopedObjects.mActivityWindowAndroid.getDisplay().getDisplayHeight();
+        return windowHeight != screenHeight;
     }
 
     private static boolean isActiveInternal(TopActivityScopedObjects topActivityScopedObjects) {
