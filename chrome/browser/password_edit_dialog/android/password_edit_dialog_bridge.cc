@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after headers that provide symbols used by @JniType.
@@ -41,7 +42,7 @@ PasswordEditDialogBridge::PasswordEditDialogBridge(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   java_password_dialog_ = Java_PasswordEditDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this), j_window_android);
+      env, jni_zero::MakeRaw(this), j_window_android);
 }
 
 PasswordEditDialogBridge::~PasswordEditDialogBridge() {
