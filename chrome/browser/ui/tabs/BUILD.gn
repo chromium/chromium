@@ -1034,6 +1034,7 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gtest",
       "//ui/base:types",
+      "//ui/gfx:test_support",
       "//ui/views",
     ]
   }

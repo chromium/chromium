@@ -318,6 +318,7 @@ void VerticalTabStripStateControllerImpl::OnLockDestroyed() {
     if (new_state != is_vertical_tabs_enabled_) {
       is_vertical_tabs_enabled_ = new_state;
       NotifyModeChanged();
+      UpdateCollapseActionItem();
     }
   }
 }
