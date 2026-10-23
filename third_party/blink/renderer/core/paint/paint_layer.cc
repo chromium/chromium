@@ -1345,17 +1345,6 @@ PaintLayer* PaintLayer::HitTestLayer(
     check_position_visibility_scope.emplace(*this);
   }
 
-  // TODO(vmpstr): We need to add a simple document flag which says whether
-  // there is an ongoing transition, since this may be too heavy of a check for
-  // each hit test.
-  if (auto* transition =
-          ViewTransitionUtils::TransitionForParticipantOrScope(layout_object)) {
-    // This means that the contents of the object are drawn elsewhere.
-    if (transition->IsRepresentedViaPseudoElements(layout_object)) {
-      return nullptr;
-    }
-  }
-
   ShouldRespectOverflowClipType clip_behavior = kRespectOverflowClip;
   if (result.GetHitTestRequest().IgnoreClipping() ||
       (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
@@ -1516,6 +1505,21 @@ PaintLayer* PaintLayer::HitTestLayer(
         // other hit_layer candidates.
         candidate_layer = hit_layer;
       }
+    }
+  }
+
+  // Elements represented via transition pseudos are not hit-tested at their
+  // DOM locations. The scope's transition pseudo subtree is handled above.
+  // TODO(vmpstr): We need to add a simple document flag which says whether
+  // there is an ongoing transition, since this may be too heavy of a check for
+  // each hit test.
+  if (auto* transition =
+          ViewTransitionUtils::TransitionForParticipantOrScope(layout_object)) {
+    if (transition->IsRepresentedViaPseudoElements(layout_object)) {
+      // Transition participants force 3D flattening, so an overlay hit would
+      // have returned above rather than being saved for depth sorting.
+      DCHECK(!candidate_layer);
+      return nullptr;
     }
   }
 
