@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_TEST_LAUNCHER_H_
 #define CONTENT_PUBLIC_TEST_TEST_LAUNCHER_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 
@@ -64,6 +66,10 @@ class TestLauncherDelegate {
  protected:
   virtual ~TestLauncherDelegate() = default;
 };
+
+// Returns the number of parallel test jobs to use for browser tests, or 0U in
+// case of error.
+size_t NumParallelJobsForBrowserTests();
 
 // Launches tests using |launcher_delegate|. |parallel_jobs| is the number
 // of test jobs to be run in parallel.

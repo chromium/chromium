@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -491,6 +492,45 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
           (base::TimeTicks::Now() - start_time).InSeconds());
   fflush(stdout);
   return result;
+}
+
+size_t NumParallelJobsForBrowserTests() {
+  // Query `base::NumParallelJobs` with `cores_per_job = 1` first so that:
+  // - If `--test-launcher-jobs=N` was explicitly passed, `N` is returned as-is
+  //   (or 0U if invalid).
+  // - If a test filter is active outside bot mode, 1U is returned so filtered
+  //   local runs execute serially by default.
+  // - Otherwise, the total number of logical CPU cores is returned.
+  size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/1);
+  if (parallel_jobs <= 1U || base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                 switches::kTestLauncherJobs)) {
+    return parallel_jobs;
+  }
+
+  // At this point, `parallel_jobs` is the number of logical CPU cores (or 2x
+  // logical cores on iOS simulator), since `--test-launcher-jobs` and the
+  // single-job filtered case returned early above.
+  //
+  // Scale the default parallel job count by build configuration:
+  // - When `EXPENSIVE_TEST_LOGIC_IS_ON()` (DCHECK, ASan/TSan/MSan, etc.), each
+  //   browser test process tree is CPU-heavy, so use 1/2 of logical cores
+  //   (e.g. 4 jobs on an 8-vCPU bot).
+  // - In fast builds without expensive checks, use 3/4 of logical cores (e.g.
+  //   6 jobs on a 4-physical-core / 8-SMT-thread Swarming VM). This ratio was
+  //   chosen via CQ/CI telemetry and local benchmarking across `jobs = 4..8`
+  //   (see crbug.com/573256256): each browser test spends significant wall time
+  //   waiting on async IPC, so 1/2 of logical cores under-utilizes CPU, whereas
+  //   1x logical cores over-saturates SMT pipelines on heavier suites such as
+  //   `linux-chromeos-rel` `browser_tests`. If browser test process weight or
+  //   bot topology changes in the future, re-benchmark `jobs` across the target
+  //   VM core count to see if this ratio should be adjusted.
+  //
+  // This scaling lives here rather than in `base::NumParallelJobs` because
+  // `base::NumParallelJobs` only takes an integer `cores_per_job` divisor and
+  // is shared with lightweight single-process unit test suites
+  // (`unit_test_launcher.cc`) that want 1 job per logical core.
+  return std::max<size_t>(
+      1U, parallel_jobs * (EXPENSIVE_TEST_LOGIC_IS_ON() ? 2 : 3) / 4);
 }
 
 int LaunchTests(TestLauncherDelegate* launcher_delegate,

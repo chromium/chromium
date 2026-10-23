@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/dcheck_is_on.h"
-#include "base/test/launcher/test_launcher.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "chrome/test/base/chrome_test_launcher.h"
 #include "chrome/test/base/chrome_test_suite.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/test_launcher.h"
 #include "ui/compositor/compositor_switches.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -19,8 +18,7 @@
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
-  size_t parallel_jobs = base::NumParallelJobs(
-      /*cores_per_job=*/EXPENSIVE_TEST_LOGIC_IS_ON() ? 2 : 1);
+  size_t parallel_jobs = content::NumParallelJobsForBrowserTests();
   if (parallel_jobs == 0U) {
     return 1;
   }
