@@ -3183,7 +3183,7 @@ deps = {
   'src/third_party/litert/src':
     Var('chromium_git') + '/external/github.com/google-ai-edge/LiteRT.git' + '@' + '86ae38de889076209e2eb71d9ac43f243226cb3a',
   'src/third_party/ml_drift/src':
-    Var('chromium_git') + '/external/github.com/google-ai-edge/ml-drift.git' + '@' + 'ba04e5aa30dc4758c68e00d5375861d2eef8ac0e',
+    Var('chromium_git') + '/external/github.com/google-ai-edge/ml-drift.git' + '@' + '7483ad8a5181b220a19bcc20ec02dbe9c040c100',
   'src/third_party/turbine/cipd': {
       'packages': [
           {

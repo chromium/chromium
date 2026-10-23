@@ -2,8 +2,8 @@ Name: ML Drift
 Short Name: ml-drift
 URL: https://github.com/google-ai-edge/ml-drift
 Version: N/A
-Revision: ba04e5aa30dc4758c68e00d5375861d2eef8ac0e
-Date: 2026-10-07
+Revision: 7483ad8a5181b220a19bcc20ec02dbe9c040c100
+Date: 2026-10-22
 Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
