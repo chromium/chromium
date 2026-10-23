@@ -177,18 +177,13 @@ def Diff(before, after, sort=False):
   )
   removed_sources, added_sources = symbol_diff.GetEntireAddOrRemoveSources()
   ret = models.DeltaSizeInfo(
-    before, after, containers_diff, symbol_diff, removed_sources, added_sources
+    before,
+    after,
+    containers_diff,
+    symbol_diff,
+    removed_sources,
+    added_sources,
+    sort=sort,
   )
-
-  if sort:
-    syms = ret.symbols  # Triggers clustering.
-    logging.debug('Grouping')
-    # Group path aliases so that functions defined in headers will be sorted
-    # by their actual size rather than shown as many small symbols.
-    # Grouping these is nice since adding or remove just one path alias changes
-    # the PSS of all symbols (a lot of noise).
-    syms = syms.GroupedByAliases(same_name_only=True)
-    logging.debug('Sorting')
-    ret.symbols = syms.Sorted()
   logging.debug('Diff complete')
   return ret

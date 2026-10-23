@@ -482,6 +482,7 @@ class DeltaSizeInfo(BaseSizeInfo):
     'after',
     'removed_sources',
     'added_sources',
+    '_sort_symbols',
   )
 
   def __init__(
@@ -492,12 +493,29 @@ class DeltaSizeInfo(BaseSizeInfo):
     raw_symbols,
     removed_sources=None,
     added_sources=None,
+    sort=False,
   ):
     super().__init__(containers, raw_symbols)
     self.before = before
     self.after = after
     self.removed_sources = removed_sources or []
     self.added_sources = added_sources or []
+    self._sort_symbols = sort
+
+  @property
+  def symbols(self):
+    if self._symbols is None:
+      syms = super().symbols
+      if self._sort_symbols:
+        logging.debug('Grouping')
+        # Group path aliases so that functions defined in headers will be sorted
+        # by their actual size rather than shown as many small symbols.
+        # Grouping these is nice since adding or remove just one path alias
+        # changes the PSS of all symbols (a lot of noise).
+        syms = syms.GroupedByAliases(same_name_only=True)
+        logging.debug('Sorting')
+        self._symbols = syms.Sorted()
+    return self._symbols
 
   @property
   def is_sparse(self):
@@ -509,6 +527,7 @@ class DeltaSizeInfo(BaseSizeInfo):
     # They could be re-computed if the need arises.
     self.removed_sources = []
     self.added_sources = []
+    self._symbols = None
 
     # Assumes BUILD_CONFIG_GIT_REVISION is always present.
     i = 1
@@ -560,6 +579,7 @@ class DeltaSizeInfo(BaseSizeInfo):
         DIFF_STATUS_UNCHANGED
       ).Inverted()
     self.raw_symbols = filtered_symbols
+    self._symbols = None
     self.before.MakeSparse(
       SymbolGroup(
         [sym.before_symbol for sym in filtered_symbols if sym.before_symbol]

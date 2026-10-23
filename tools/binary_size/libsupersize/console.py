@@ -166,7 +166,11 @@ class _Session:
     after = after if after is not None else self._size_infos[1]
     return diff.Diff(before, after, sort=sort)
 
-  def _PrintUploadCommand(self, file_to_upload, is_internal=False):
+  def _PrintUploadCommand(self, file_to_upload, size_info):
+    is_internal = any(
+      s.source_path.startswith('clank') or s.object_path.startswith('clank')
+      for s in size_info.raw_symbols
+    )
     oneoffs_dir = 'oneoffs'
     visibility = '-a public-read '
     if is_internal:
@@ -203,9 +207,7 @@ class _Session:
     assert to_file.endswith('.size'), 'to_file should end with .size'
 
     file_format.SaveSizeInfo(size_info, to_file)
-
-    is_internal = len(size_info.symbols.WherePathMatches('^clank')) > 0
-    self._PrintUploadCommand(to_file, is_internal)
+    self._PrintUploadCommand(to_file, size_info)
 
   def _SaveDeltaSizeInfo(self, size_info, to_file=None):
     """Writes a .sizediff file.
@@ -218,8 +220,7 @@ class _Session:
     assert to_file.endswith('.sizediff'), 'to_file should end with .sizediff'
 
     file_format.SaveDeltaSizeInfo(size_info, to_file)
-    is_internal = len(size_info.symbols.WherePathMatches('^clank')) > 0
-    self._PrintUploadCommand(to_file, is_internal)
+    self._PrintUploadCommand(to_file, size_info)
 
   def _SizeStats(self, size_info=None):
     """Prints some statistics for the given size info.
