@@ -5,6 +5,7 @@
 #ifndef HEADLESS_PUBLIC_HEADLESS_WEB_CONTENTS_H_
 #define HEADLESS_PUBLIC_HEADLESS_WEB_CONTENTS_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -50,8 +51,10 @@ class HEADLESS_EXPORT HeadlessWebContents {
     raw_ptr<HeadlessBrowserContext> browser_context;
 
     // Initial URL to ensure that the renderer gets initialized and eventually
-    // becomes ready to be inspected.
-    GURL initial_url = GURL("about:blank");
+    // becomes ready to be inspected. If nullopt, the web contents is not
+    // navigated upon creation and the caller is expected to navigate it right
+    // away. An invalid URL makes creation fail.
+    std::optional<GURL> initial_url = GURL("about:blank");
 
     // Initial window bounds. The default size is configured in browser
     // options.

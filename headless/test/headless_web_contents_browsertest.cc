@@ -29,13 +29,16 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/viz/common/switches.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/headless_browser.h"
 #include "headless/test/headless_browser_test.h"
@@ -291,6 +294,49 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, BrowserOpenInTab) {
               Not(DictHasKey("exceptionDetails")));
   // Check that we have a new tab.
   EXPECT_EQ(2u, browser_context->GetAllWebContents().size());
+}
+
+// Opening a link in a new tab should navigate the initial RenderFrameHost of
+// the new tab, which lives in the opener's SiteInstance, rather than go
+// through a throwaway about:blank navigation that would swap in a new
+// RenderFrameHost in a new process, only to replace it once again for the
+// actual navigation. See crbug.com/543471700.
+IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest,
+                       BrowserOpenInTabReusesInitialRenderFrameHost) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  HeadlessBrowserContext* browser_context = browser()->CreateBrowserContext();
+  ASSERT_TRUE(browser_context);
+
+  HeadlessWebContents* web_contents = browser_context->CreateWebContents(
+      embedded_test_server()->GetURL("/link.html"));
+  ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(WaitForLoad(web_contents));
+
+  content::WebContents* opener_contents =
+      HeadlessWebContentsImpl::From(web_contents)->web_contents();
+
+  content::WebContentsAddedObserver new_contents_observer;
+  std::string script =
+      "var event = new MouseEvent('click', {'button': 1});"
+      "document.getElementsByTagName('a')[0].dispatchEvent(event);";
+  EXPECT_THAT(EvaluateScript(web_contents, script),
+              Not(DictHasKey("exceptionDetails")));
+
+  content::WebContents* new_contents = new_contents_observer.GetWebContents();
+  ASSERT_TRUE(new_contents);
+  content::RenderFrameHost* initial_rfh = new_contents->GetPrimaryMainFrame();
+  EXPECT_EQ(opener_contents->GetPrimaryMainFrame()->GetSiteInstance(),
+            initial_rfh->GetSiteInstance());
+  content::GlobalRenderFrameHostId initial_rfh_id = initial_rfh->GetGlobalId();
+
+  EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+  EXPECT_EQ(embedded_test_server()->GetURL("/hello.html"),
+            new_contents->GetLastCommittedURL());
+  EXPECT_EQ(initial_rfh_id, new_contents->GetPrimaryMainFrame()->GetGlobalId());
+  EXPECT_EQ(opener_contents->GetPrimaryMainFrame()->GetProcess(),
+            new_contents->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_TRUE(new_contents->GetRenderWidgetHostView()->HasFocus());
 }
 
 // BeginFrameControl is not supported on MacOS.

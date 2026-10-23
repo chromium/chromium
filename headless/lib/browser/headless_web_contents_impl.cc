@@ -226,6 +226,9 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
             headless_web_contents_->browser_context());
         create_params.window_bounds = source->GetContainerBounds();
         create_params.source_site_instance = params.source_site_instance;
+        // Disable the initial about:blank navigation and the creation of a
+        // temporary RenderFrameHost. We will navigate below anyway.
+        create_params.initial_url = std::nullopt;
         HeadlessWebContentsImpl* child_contents = HeadlessWebContentsImpl::From(
             headless_web_contents_->browser_context()->CreateWebContents(
                 create_params));
@@ -250,6 +253,8 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
 
     base::WeakPtr<content::NavigationHandle> navigation =
         target->GetController().LoadURLWithParams(load_url_params);
+    ActivateContents(target);
+    target->Focus();
     if (navigation_handle_callback && navigation) {
       std::move(navigation_handle_callback).Run(*navigation);
     }
@@ -417,7 +422,8 @@ std::unique_ptr<HeadlessWebContentsImpl> HeadlessWebContentsImpl::Create(
       headless_web_contents->browser()->options()->enable_begin_frame_control;
   headless_web_contents->InitializeWindow(params.window_bounds,
                                           params.window_state);
-  if (!headless_web_contents->OpenURL(params.initial_url)) {
+  if (params.initial_url.has_value() &&
+      !headless_web_contents->OpenURL(*params.initial_url)) {
     return nullptr;
   }
   return headless_web_contents;
