@@ -132,9 +132,8 @@ def main():
     out_gn_args_path = options.out_dir / 'args.gn'
     extra_gn_args = [
         'treat_warnings_as_errors = true',
-        # reclient does not work with non-standard output directories.
+        # RBE does not work with non-standard output directories.
         'use_remoteexec = false',
-        'use_reclient = false',
         # Do not use fast_local_dev_server.py.
         'android_static_analysis = "on"',
     ]

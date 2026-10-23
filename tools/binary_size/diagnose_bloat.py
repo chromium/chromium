@@ -287,7 +287,7 @@ class _BuildHelper:
     self.output_directory = args.output_directory
     self.target = args.target
     self.target_os = args.target_os
-    self.use_reclient = args.use_reclient
+    self.use_remoteexec = args.use_remoteexec
     self.webview = args.webview
     self.apk_name_override = args.custom_apk_name
     self.main_lib_path_override = args.custom_main_lib_path
@@ -455,7 +455,7 @@ class _BuildHelper:
     # Compiles need at least symbol_level=1 for pak allowlist to work.
     gn_args += ' symbol_level=1'
     gn_args += ' use_errorprone_java_compiler=false'
-    gn_args += ' use_remoteexec=%s' % str(self.use_reclient).lower()
+    gn_args += ' use_remoteexec=%s' % str(self.use_remoteexec).lower()
     gn_args += ' target_os="%s"' % self.target_os
     if self.IsAndroid():
       gn_args += (
@@ -1195,11 +1195,14 @@ def main():
 
   build_group = parser.add_argument_group('build arguments')
   build_group.add_argument(
+    '--no-remoteexec',
     '--no-reclient',
     action='store_false',
-    dest='use_reclient',
+    dest='use_remoteexec',
     default=True,
-    help='Do not use reclient when building with ninja.',
+    help=(
+      'Do not use remote execution when building (--no-reclient is deprecated).'
+    ),
   )
   build_group.add_argument(
     '--clean', action='store_true', help='Do a clean build for each revision.'
