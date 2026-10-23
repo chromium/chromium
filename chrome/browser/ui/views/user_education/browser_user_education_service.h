@@ -21,12 +21,14 @@ class UserEducationService;
 // These do low-level initialization of data structures required for user
 // education; most code should not call them directly.
 user_education::HelpBubbleDelegate* GetHelpBubbleDelegate();
-void RegisterChromeHelpBubbleFactories(
-    user_education::HelpBubbleFactoryRegistry& registry);
 void MaybeRegisterChromeFeaturePromos(
     user_education::FeaturePromoRegistry& registry);
 void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry);
 void MaybeRegisterChromeTutorials(user_education::TutorialRegistry& registry);
+
+// Ensures that help bubbles can be tagged to most UI elements in the browser.
+void RegisterChromeHelpBubbleFactories(
+    user_education::HelpBubbleFactoryRegistry& registry);
 
 // Creates (or doesn't create) a FeaturePromoController for the specified
 // `service`. Not all browser windows can do promos; specifically,

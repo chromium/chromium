@@ -62,6 +62,10 @@ UserEducationService::UserEducationService(Profile* profile, bool allows_promos)
             user_education::GetNtpPromoControllerParams());
   }
 
+  // Help bubble factories should always be registered to support e.g.
+  // `ShowPromoInPage()`.
+  RegisterChromeHelpBubbleFactories(help_bubble_factory_registry_);
+
   // This MUST be last, after all other initialization, because it relies on
   // members initialized above.
   if (allows_promos) {

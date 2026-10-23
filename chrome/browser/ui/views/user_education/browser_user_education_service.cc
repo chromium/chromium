@@ -2973,8 +2973,6 @@ CreateUserEducationResources(UserEducationService& user_education_service) {
   CHECK(UserEducationServiceFactory::ProfileAllowsUserEducation(profile));
 
   // Consider registering factories, etc.
-  RegisterChromeHelpBubbleFactories(
-      user_education_service.help_bubble_factory_registry());
   MaybeRegisterChromeFeaturePromos(
       user_education_service.feature_promo_registry(), profile);
   MaybeRegisterChromeTutorials(user_education_service.tutorial_registry());
