@@ -522,7 +522,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.MagicStackPromo.OptInFlow"
-    enum="PriceTrackingPromoOptInFlow" expires_after="2026-10-20">
+    enum="PriceTrackingPromoOptInFlow" expires_after="2027-10-23">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
