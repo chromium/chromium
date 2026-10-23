@@ -23,4 +23,9 @@ agentic_review: {
     content_patterns: "\\b(?:(?:Mock|Fake|Stub|Recording)?DataType(?:SyncBridge|LocalChangeProcessor)|SyncableServiceBasedBridge|DataTypeStore(?:TestUtil)?|MergeFullSyncData|ApplyIncrementalSyncChanges|TrimAllSupportedFieldsFromRemoteSpecifics|GetPossiblyTrimmedRemoteSpecifics|ModelReadyToSync|CreateWriteBatch|change_processor)\\b"
     review_capability_skills: "agents/skills/sync-bridge/SKILL.md"
   }
+  capability_groups: {
+    path_expression: ".*unique_position.*|.*bridge.*\\.(?:h|cc|mm)|.*\\.proto"
+    content_patterns: "\\b(?:UniquePosition|SupportsUniquePositions|unique_position)\\b"
+    review_capability_skills: "agents/skills/sync-unique-positions/SKILL.md"
+  }
 }
