@@ -380,6 +380,12 @@ void ManifestManagerHost::ParseManifestFromString(
     const std::string& manifest_contents,
     ParseManifestCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  if (!document_url.is_valid() || url::Origin::Create(document_url).opaque()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), blink::mojom::Manifest::New()));
+    return;
+  }
   GetManifestManager().ParseManifestFromString(
       document_url, manifest_url, manifest_contents,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(

@@ -62,7 +62,7 @@ To keep each CL small and independently reviewable:
 
 ## 3. Progress
 
-- [ ] **Milestone 1: Enforce Precondition `C0` in
+- [x] **Milestone 1: Enforce Precondition `C0` in
   `ManifestManagerHost::ParseManifestFromString`**
 - [ ] **Milestone 2: Make `Manifest?` Nullable in `ManifestManager` Mojo IPCs**
 - [ ] **Milestone 3: Implement `blink::Manifest` Class, `Builder`, Nested Struct

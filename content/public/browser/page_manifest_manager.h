@@ -76,6 +76,11 @@ class CONTENT_EXPORT PageManifestManager {
   // invalid manifest (e.g. cross-origin handlers or mismatched manifest URL),
   // a Mojo bad message is reported, terminating the renderer process, and
   // `callback` is called with an empty ManifestPtr.
+  //
+  // `document_url` must be valid and have a non-opaque origin. If
+  // `document_url` is invalid or has an opaque origin, `callback` is invoked
+  // asynchronously with an empty ManifestPtr without contacting the
+  // renderer.
   virtual void ParseManifestFromString(const GURL& document_url,
                                        const GURL& manifest_url,
                                        const std::string& manifest_contents,
