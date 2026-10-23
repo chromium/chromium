@@ -3,18 +3,19 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Polymer element for indicating policies that apply to an
+ * @fileoverview Element for indicating policies that apply to an
  * element controlling a settings preference.
  */
-import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 
+import {getCss as getCrHiddenStyleCss} from '//resources/cr_elements/cr_hidden_style_lit.css.js';
 import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_types.js';
 import type {CrTooltipIconElement} from '//resources/cr_elements/policy/cr_tooltip_icon.js';
-import {assert, assertNotReached} from '//resources/js/assert.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from '//resources/js/assert.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_policy_pref_indicator.html.js';
+import {getHtml} from './cr_policy_pref_indicator.html.js';
 
 export interface CrPolicyPrefIndicatorElement {
   $: {
@@ -22,76 +23,68 @@ export interface CrPolicyPrefIndicatorElement {
   };
 }
 
-export class CrPolicyPrefIndicatorElement extends PolymerElement {
+export class CrPolicyPrefIndicatorElement extends CrLitElement {
   static get is() {
     return 'cr-policy-pref-indicator';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCrHiddenStyleCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      iconAriaLabel: String,
-
-      indicatorIcon: {
-        type: String,
-        computed: 'getIndicatorIcon_(indicatorType)',
-      },
-
-      indicatorType: {
-        type: String,
-        value: CrPolicyIndicatorType.NONE,
-        computed: 'getIndicatorTypeForPref_(pref.*, associatedValue)',
-      },
-
-      indicatorTooltip: {
-        type: String,
-        computed: 'getIndicatorTooltipForPref_(indicatorType, pref.*)',
-      },
-
-      indicatorVisible: {
-        type: Boolean,
-        computed: 'getIndicatorVisible_(indicatorType)',
-      },
+      iconAriaLabel: {type: String},
+      indicatorType: {type: String},
+      indicatorTooltip: {type: String},
 
       /**
-       * Optional preference object associated with the indicator. Initialized
-       * to null so that computed functions will get called if this is never
-       * set.
+       * Optional preference object associated with the indicator.
        */
-      pref: Object,
+      pref: {type: Object},
 
       /**
        * Optional value for the preference value this indicator is associated
        * with. If this is set, no indicator will be shown if it is a member
        * of |pref.userSelectableValues| and is not |pref.recommendedValue|.
        */
-      associatedValue: Object,
+      associatedValue: {type: Object},
     };
   }
 
-  declare iconAriaLabel: string;
-  declare indicatorIcon: string;
-  declare indicatorType: CrPolicyIndicatorType;
-  declare indicatorTooltip: string;
-  declare indicatorVisible: boolean;
-  declare pref?: chrome.settingsPrivate.PrefObject;
-  declare associatedValue?: unknown;
+  accessor iconAriaLabel: string = '';
+  accessor indicatorType: CrPolicyIndicatorType = CrPolicyIndicatorType.NONE;
+  accessor indicatorTooltip: string = '';
+  accessor pref: chrome.settingsPrivate.PrefObject|undefined;
+  accessor associatedValue: unknown;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('pref') ||
+        changedProperties.has('associatedValue')) {
+      this.indicatorType = this.getIndicatorTypeForPref_();
+    }
+    if (changedProperties.has('pref') ||
+        changedProperties.has('associatedValue') ||
+        changedProperties.has('indicatorType')) {
+      this.indicatorTooltip = this.getIndicatorTooltipForPref_();
+    }
+  }
 
   /**
    * @return True if the indicator should be shown.
    */
-  private getIndicatorVisible_(type: CrPolicyIndicatorType): boolean {
-    return type !== CrPolicyIndicatorType.NONE;
+  protected getIndicatorVisible_(): boolean {
+    return this.indicatorType !== CrPolicyIndicatorType.NONE;
   }
 
-  /**
-   * @return {string} The cr-icon icon name.
-   */
-  private getIndicatorIcon_(type: CrPolicyIndicatorType): string {
-    switch (type) {
+  protected getIndicatorIcon_(): string {
+    switch (this.indicatorType) {
       case CrPolicyIndicatorType.EXTENSION:
         return 'cr:chrome-extension-filled';
       case CrPolicyIndicatorType.NONE:
@@ -159,7 +152,9 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
    * @return The indicator type based on |pref| and |associatedValue|.
    */
   private getIndicatorTypeForPref_(): CrPolicyIndicatorType {
-    assert(this.pref);
+    if (!this.pref) {
+      return CrPolicyIndicatorType.NONE;
+    }
     const {enforcement, userSelectableValues, controlledBy, recommendedValue} =
         this.pref;
     if (enforcement === chrome.settingsPrivate.Enforcement.RECOMMENDED) {
@@ -212,7 +207,7 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
       return '';
     }
 
-    const matches = this.pref && this.pref.value === this.pref.recommendedValue;
+    const matches = this.pref.value === this.pref.recommendedValue;
     return this.getIndicatorTooltip_(
         this.indicatorType, this.pref.controlledByName || '', matches);
   }

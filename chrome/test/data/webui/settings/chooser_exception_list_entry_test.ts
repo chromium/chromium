@@ -147,7 +147,7 @@ suite('ChooserExceptionListEntry', function() {
         assertTrue(!!policyIndicator);
 
         const icon =
-            policyIndicator.shadowRoot!.querySelector('cr-tooltip-icon');
+            policyIndicator.shadowRoot.querySelector('cr-tooltip-icon');
         assertTrue(!!icon);
 
         const crTooltip = icon.shadowRoot.querySelector('cr-tooltip');

@@ -4,57 +4,62 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
-import {getTemplate} from './extension_controlled_indicator.html.js';
+import {getCss} from './extension_controlled_indicator.css.js';
+import {getHtml} from './extension_controlled_indicator.html.js';
 
-export class ExtensionControlledIndicatorElement extends PolymerElement {
+export class ExtensionControlledIndicatorElement extends CrLitElement {
   static get is() {
     return 'extension-controlled-indicator';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      extensionCanBeDisabled: Boolean,
-      extensionId: String,
-      extensionName: String,
-      extensionNameOnlyInLabel: Boolean,
+      extensionCanBeDisabled: {type: Boolean},
+      extensionId: {type: String},
+      extensionName: {type: String},
+      extensionNameOnlyInLabel: {type: Boolean},
     };
   }
 
-  declare extensionCanBeDisabled: boolean;
-  declare extensionId: string;
-  declare extensionName: string;
-  declare extensionNameOnlyInLabel?: boolean;
+  accessor extensionCanBeDisabled: boolean = false;
+  accessor extensionId: string = '';
+  accessor extensionName: string = '';
+  accessor extensionNameOnlyInLabel: boolean = false;
 
-  private getLabel_(): string {
-    if (this.extensionNameOnlyInLabel === true) {
+  protected getLabel_(): string {
+    if (this.extensionNameOnlyInLabel) {
       return this.extensionName;
     }
     return loadTimeData.getStringF('controlledByExtension', this.extensionName);
   }
 
-  private onManageClick_() {
+  protected onManageClick_() {
     const manageUrl = 'chrome://extensions/?id=' + this.extensionId;
     OpenWindowProxyImpl.getInstance().openUrl(manageUrl);
   }
 
-  private onDisableClick_() {
+  protected onDisableClick_() {
     assert(this.extensionCanBeDisabled);
     ExtensionControlBrowserProxyImpl.getInstance().disableExtension(
         this.extensionId);
-    this.dispatchEvent(new CustomEvent(
-        'disable-extension-click', {bubbles: true, composed: true}));
+    this.fire('disable-extension-click');
   }
 }
 

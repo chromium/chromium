@@ -19,6 +19,8 @@ build_webui("build") {
     "controls/extension_controlled_indicator.ts",
   ]
 
+  css_files = [ "controls/extension_controlled_indicator.css" ]
+
   ts_files = [
     "a11y_page/ax_annotations_browser_proxy.ts",
     "a11y_page/captions_browser_proxy.ts",

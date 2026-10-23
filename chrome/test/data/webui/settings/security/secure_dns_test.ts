@@ -262,7 +262,7 @@ suite('SettingsSecureDns', function() {
         !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
     assertTrue(
         secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator')!
-            .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
+            .shadowRoot.querySelector('cr-tooltip-icon')!.hidden);
   });
 
   test('SecureDnsParentalControl', async function() {
@@ -280,7 +280,7 @@ suite('SettingsSecureDns', function() {
         !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
     assertTrue(
         secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator')!
-            .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
+            .shadowRoot.querySelector('cr-tooltip-icon')!.hidden);
   });
 
   test('SecureDnsManaged', async function() {
@@ -306,6 +306,6 @@ suite('SettingsSecureDns', function() {
         !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
     assertFalse(
         secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator')!
-            .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
+            .shadowRoot.querySelector('cr-tooltip-icon')!.hidden);
   });
 });

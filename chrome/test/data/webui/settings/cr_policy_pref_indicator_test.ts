@@ -6,10 +6,9 @@
 import 'chrome://settings/settings.js';
 
 import type {CrPolicyPrefIndicatorElement} from 'chrome://settings/settings.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
 import {CrPolicyStrings} from 'chrome://webui-test/cr_elements/cr_policy_strings.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr_policy-pref-indicator. */
@@ -24,29 +23,29 @@ suite('CrPolicyPrefIndicator', function() {
   });
 
   test('none', function() {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
+    const icon = indicator.$.tooltipIcon;
     assertTrue(icon.hidden);
   });
 
-  test('pref', function() {
+  test('pref', async function() {
     indicator.pref = {
       key: 'foo',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
     };
-    flush();
+    await microtasksFinished();
 
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
+    const icon = indicator.$.tooltipIcon;
     assertTrue(icon.hidden);
 
     // <if expr="is_chromeos">
     // Check indicator behavior for a preference controlled by the device owner.
-    indicator.set(
-        'pref.controlledBy', chrome.settingsPrivate.ControlledBy.OWNER);
-    indicator.set('pref.controlledByName', 'owner_name');
-    indicator.set(
-        'pref.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
-    flush();
+    indicator.pref = Object.assign({}, indicator.pref, {
+      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
+      controlledByName: 'owner_name',
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    await microtasksFinished();
     assertFalse(icon.hidden);
     assertEquals('cr:person-filled', icon.iconClass);
     assertEquals('owner: owner_name', icon.tooltipText);
@@ -54,28 +53,29 @@ suite('CrPolicyPrefIndicator', function() {
 
     // Check indicator behavior for a preference with a recommended value that
     // is different from the current value of the preference.
-    indicator.set('pref.value', 'foo');
-    indicator.set('pref.recommendedValue', 'bar');
-    indicator.set(
-        'pref.enforcement', chrome.settingsPrivate.Enforcement.RECOMMENDED);
-    flush();
+    indicator.pref = Object.assign({}, indicator.pref, {
+      value: 'foo',
+      recommendedValue: 'bar',
+      enforcement: chrome.settingsPrivate.Enforcement.RECOMMENDED,
+    });
+    await microtasksFinished();
     assertFalse(icon.hidden);
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals('differs', icon.tooltipText);
 
     // Check indicator behavior for a preference with a recommended value that
     // is the same as the current value of the preference.
-    indicator.set('pref.value', 'bar');
-    flush();
+    indicator.pref = Object.assign({}, indicator.pref, {value: 'bar'});
+    await microtasksFinished();
     assertEquals('matches', icon.tooltipText);
 
     // <if expr="is_chromeos">
     // Check indicator behavior for a preference that is enforced for a
     // supervised user.
-    indicator.set(
-        'pref.enforcement',
-        chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED);
-    flush();
+    indicator.pref = Object.assign({}, indicator.pref, {
+      enforcement: chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED,
+    });
+    await microtasksFinished();
     assertFalse(icon.hidden);
     assertEquals('cr20:family-link', icon.iconClass);
     assertEquals(CrPolicyStrings.controlledSettingParent, icon.tooltipText);
@@ -83,11 +83,11 @@ suite('CrPolicyPrefIndicator', function() {
 
     // Check indicator behavior for a preference that is enforced by device
     // policy.
-    indicator.set(
-        'pref.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
-    indicator.set(
-        'pref.controlledBy', chrome.settingsPrivate.ControlledBy.DEVICE_POLICY);
-    flush();
+    indicator.pref = Object.assign({}, indicator.pref, {
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+    });
+    await microtasksFinished();
     assertFalse(icon.hidden);
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals(CrPolicyStrings.controlledSettingPolicy, icon.tooltipText);
@@ -96,49 +96,58 @@ suite('CrPolicyPrefIndicator', function() {
     // having a recommended value.
     const indicatorPrefValue = 1;
     const differentPrefValue = 2;
-    indicator.set(
-        'pref.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
-
-    indicator.set('associatedValue', indicatorPrefValue);
-    indicator.set(
-        'pref.userSelectableValues', [indicatorPrefValue, differentPrefValue]);
-    flush();
+    indicator.associatedValue = indicatorPrefValue;
+    indicator.pref = Object.assign({}, indicator.pref, {
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      userSelectableValues: [indicatorPrefValue, differentPrefValue],
+    });
+    await microtasksFinished();
     assertTrue(icon.hidden);
 
-    indicator.set('pref.recommendedValue', differentPrefValue);
-    indicator.set('pref.value', differentPrefValue);
-    flush();
+    indicator.pref = Object.assign({}, indicator.pref, {
+      recommendedValue: differentPrefValue,
+      value: differentPrefValue,
+    });
+    await microtasksFinished();
     assertTrue(icon.hidden);
 
-    indicator.set('pref.recommendedValue', indicatorPrefValue);
+    indicator.pref = Object.assign({}, indicator.pref, {
+      recommendedValue: indicatorPrefValue,
+    });
+    await microtasksFinished();
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals('differs', icon.tooltipText);
 
-    indicator.set('pref.value', indicatorPrefValue);
-    flush();
+    indicator.pref =
+        Object.assign({}, indicator.pref, {value: indicatorPrefValue});
+    await microtasksFinished();
     assertEquals('matches', icon.tooltipText);
 
     // Check indicator behavior for an preference that is recommended whilst the
     // indicator has an associated value.
-    indicator.set(
-        'pref.enforcement', chrome.settingsPrivate.Enforcement.RECOMMENDED);
-    indicator.set('pref.userSelectableValues', []);
-    indicator.set('pref.value', differentPrefValue);
-
-    indicator.set('pref.recommendedValue', differentPrefValue);
-    flush();
+    indicator.pref = Object.assign({}, indicator.pref, {
+      enforcement: chrome.settingsPrivate.Enforcement.RECOMMENDED,
+      userSelectableValues: [],
+      value: differentPrefValue,
+      recommendedValue: differentPrefValue,
+    });
+    await microtasksFinished();
     assertTrue(icon.hidden);
 
-    indicator.set('pref.recommendedValue', indicatorPrefValue);
+    indicator.pref = Object.assign({}, indicator.pref, {
+      recommendedValue: indicatorPrefValue,
+    });
+    await microtasksFinished();
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals('differs', icon.tooltipText);
 
-    indicator.set('pref.value', indicatorPrefValue);
-    flush();
+    indicator.pref =
+        Object.assign({}, indicator.pref, {value: indicatorPrefValue});
+    await microtasksFinished();
     assertEquals('matches', icon.tooltipText);
   });
 
-  test('controlledBySafeBrowsingIsOff', function() {
+  test('controlledBySafeBrowsingIsOff', async function() {
     indicator.pref = {
       key: 'foo',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -146,7 +155,7 @@ suite('CrPolicyPrefIndicator', function() {
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       controlledBy: chrome.settingsPrivate.ControlledBy.SAFE_BROWSING_OFF,
     };
-    flush();
+    await microtasksFinished();
     assertEquals('none', indicator.indicatorType);
   });
 });

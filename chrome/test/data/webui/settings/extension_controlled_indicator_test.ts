@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ExtensionControlledIndicatorElement} from 'chrome://settings/settings.js';
 import {OpenWindowProxyImpl, ExtensionControlBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestExtensionControlBrowserProxy} from './test_extension_control_browser_proxy.js';
 
@@ -31,29 +31,28 @@ suite('extension controlled indicator', function() {
     indicator.extensionCanBeDisabled = true;
     indicator.extensionName = 'The Bestest Name Ever';
     document.body.appendChild(indicator);
-    flush();
   });
 
-  test('disable button tracks extensionCanBeDisabled', function() {
+  test('disable button tracks extensionCanBeDisabled', async function() {
     assertTrue(indicator.extensionCanBeDisabled);
-    assertTrue(!!indicator.shadowRoot!.querySelector('#disable'));
+    assertTrue(!!indicator.shadowRoot.querySelector('#disable'));
 
     indicator.extensionCanBeDisabled = false;
-    flush();
-    assertFalse(!!indicator.shadowRoot!.querySelector('#disable'));
+    await microtasksFinished();
+    assertFalse(!!indicator.shadowRoot.querySelector('#disable'));
   });
 
   test('label icon and text', function() {
-    const imgSrc = indicator.shadowRoot!.querySelector('img')!.src;
+    const imgSrc = indicator.shadowRoot.querySelector('img')!.src;
     assertTrue(imgSrc.includes(indicator.extensionId));
 
-    const label = indicator.shadowRoot!.querySelector('span');
+    const label = indicator.shadowRoot.querySelector('span');
     assertTrue(!!label);
     assertTrue(label.textContent.includes(indicator.extensionName));
   });
 
   test('tapping manage button invokes browser proxy', async function() {
-    const button = indicator.shadowRoot!.querySelector<HTMLElement>('#manage');
+    const button = indicator.shadowRoot.querySelector<HTMLElement>('#manage');
     assertTrue(!!button);
     button.click();
     const url = await openWindowProxy.whenCalled('openUrl');
@@ -61,7 +60,7 @@ suite('extension controlled indicator', function() {
   });
 
   test('tapping disable button invokes browser proxy', async function() {
-    const button = indicator.shadowRoot!.querySelector<HTMLElement>('#disable');
+    const button = indicator.shadowRoot.querySelector<HTMLElement>('#disable');
     assertTrue(!!button);
     button.click();
     const extensionId = await browserProxy.whenCalled('disableExtension');

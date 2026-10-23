@@ -1,5 +1,5 @@
-    <style include="cr-hidden-style"></style>
-    <cr-tooltip-icon id="tooltipIcon" hidden$="[[!indicatorVisible]]"
-        tooltip-text="[[indicatorTooltip]]" icon-class="[[indicatorIcon]]"
-        icon-aria-label="[[iconAriaLabel]]" exportparts="tooltip">
-    </cr-tooltip-icon>
+<cr-tooltip-icon id="tooltipIcon" ?hidden="${!this.getIndicatorVisible_()}"
+    tooltip-text="${this.indicatorTooltip}"
+    icon-class="${this.getIndicatorIcon_()}"
+    icon-aria-label="${this.iconAriaLabel}" exportparts="tooltip">
+</cr-tooltip-icon>
