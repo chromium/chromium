@@ -83,7 +83,7 @@ class OmniboxPopupView {
 
   // Syncs the text and selection state from the native location bar to the
   // WebUI omnibox.
-  virtual void SyncNativeStateToWebUI(bool query_zps) {}
+  virtual void SyncNativeStateToWebUI(bool query_zps, bool show_full_url) {}
 
   // Like `SyncNativeStateToWebUI(/*query_zps=*/false)`, but the WebUI omnibox
   // keeps showing its current autocomplete matches (stopping any in-flight
@@ -95,7 +95,7 @@ class OmniboxPopupView {
   virtual void OnTabChanged(content::WebContents* contents) {}
 
   // Called when the omnibox gains focus.
-  virtual void OnFocus(bool query_zps, bool select_all = false) {}
+  virtual void OnFocus(bool query_zps, bool select_all, bool show_full_url) {}
 
   // Focuses the searchbox and enters keyword mode for the default search
   // provider.

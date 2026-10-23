@@ -1071,7 +1071,7 @@ suite('OmniboxPopupSearchboxTest', function() {
         document, 'visibilityState', {value: 'hidden', configurable: true});
 
     // Trigger dedicated `setFocus` IPC while document is hidden.
-    callbackRouter.setFocus(true, false, false);
+    callbackRouter.setFocus(true, false, false, /*showFullUrl=*/ false);
     await microtasksFinished();
 
     assertFalse(searchbox.shadowRoot.activeElement === searchbox.$.input);
@@ -1103,7 +1103,9 @@ suite('OmniboxPopupSearchboxTest', function() {
 
     // Trigger dedicated `setFocus` IPC (e.g. refocusing or clicking top
     // chrome).
-    callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ false);
+    callbackRouter.setFocus(
+        true, /*queryZps=*/ false, /*selectAll=*/ false,
+        /*showFullUrl=*/ false);
     await microtasksFinished();
 
     // Verify existing sub-selection range is preserved and not clobbered to
@@ -1129,13 +1131,45 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(15, input.selectionEnd);
 
     // Trigger dedicated `setFocus` IPC with selectAll = true.
-    callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ true);
+    callbackRouter.setFocus(
+        true, /*queryZps=*/ false, /*selectAll=*/ true, /*showFullUrl=*/ false);
     await microtasksFinished();
 
     // Verify all text is selected.
     assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
     assertEquals(0, input.selectionStart);
     assertEquals(testUrl.length, input.selectionEnd);
+  });
+
+  test('SetFocus_ShowFullUrlUnelidesThenSelectsAll', async () => {
+    const displayUrl = 'example.com';
+    const fullUrl = 'https://www.example.com/';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: displayUrl,
+      fullUrl: fullUrl,
+      permanentDisplayText: displayUrl,
+      selection: {start: 0, end: displayUrl.length},
+      userInputInProgress: false,
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kDefault,
+    }));
+    await microtasksFinished();
+
+    const input = searchbox.getInputElement().inputElement;
+    assertEquals(displayUrl, input.value);
+
+    // Trigger dedicated `setFocus` IPC with showFullUrl = true (Ctrl+L /
+    // Cmd+L from outside the WebUI): the URL unelides, then all of it is
+    // selected.
+    callbackRouter.setFocus(
+        true, /*queryZps=*/ false, /*selectAll=*/ true,
+        /*showFullUrl=*/ true);
+    await microtasksFinished();
+
+    assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+    assertEquals(fullUrl, input.value);
+    assertEquals(0, input.selectionStart);
+    assertEquals(fullUrl.length, input.selectionEnd);
   });
 
   test('SetFocus_RequeriesZpsWhenSteadyStateAndDropdownClosed', async () => {
@@ -1153,7 +1187,8 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(searchbox.dropdownIsVisible);
     testProxy.handler.resetResolver('queryAutocomplete');
 
-    callbackRouter.setFocus(true, /*queryZps=*/ true, /*selectAll=*/ false);
+    callbackRouter.setFocus(
+        true, /*queryZps=*/ true, /*selectAll=*/ false, /*showFullUrl=*/ false);
     await microtasksFinished();
 
     const input = searchbox.getInputElement().inputElement;
@@ -1181,7 +1216,8 @@ suite('OmniboxPopupSearchboxTest', function() {
     searchbox.dropdownIsVisible = true;
     testProxy.handler.resetResolver('queryAutocomplete');
 
-    callbackRouter.setFocus(true, /*queryZps=*/ true, /*selectAll=*/ false);
+    callbackRouter.setFocus(
+        true, /*queryZps=*/ true, /*selectAll=*/ false, /*showFullUrl=*/ false);
     await microtasksFinished();
 
     const input = searchbox.getInputElement().inputElement;
@@ -1205,7 +1241,8 @@ suite('OmniboxPopupSearchboxTest', function() {
     searchbox.dropdownIsVisible = true;
     testProxy.handler.resetResolver('queryAutocomplete');
 
-    callbackRouter.setFocus(true, /*queryZps=*/ true, /*selectAll=*/ false);
+    callbackRouter.setFocus(
+        true, /*queryZps=*/ true, /*selectAll=*/ false, /*showFullUrl=*/ false);
     await microtasksFinished();
 
     const input = searchbox.getInputElement().inputElement;
@@ -1230,7 +1267,9 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(searchbox.dropdownIsVisible);
     testProxy.handler.resetResolver('queryAutocomplete');
 
-    callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ false);
+    callbackRouter.setFocus(
+        true, /*queryZps=*/ false, /*selectAll=*/ false,
+        /*showFullUrl=*/ false);
     await microtasksFinished();
 
     const input = searchbox.getInputElement().inputElement;
@@ -2059,7 +2098,9 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertTrue(searchbox.dropdownIsVisible);
 
    // Receiving `setFocus(false)` via Mojo IPC triggers focus-loss cleanup.
-   callbackRouter.setFocus(false, /*queryZps=*/ false, /*selectAll=*/ false);
+   callbackRouter.setFocus(
+       false, /*queryZps=*/ false, /*selectAll=*/ false,
+       /*showFullUrl=*/ false);
    await microtasksFinished();
    assertFalse(searchbox.dropdownIsVisible);
  });
@@ -3951,7 +3992,8 @@ suite('OmniboxPopupSearchboxTest', function() {
          // Defocus / blur the omnibox (handleFocusLost_ clears autocomplete
          // matches).
          callbackRouter.setFocus(
-             false, /*queryZps=*/ false, /*selectAll=*/ false);
+             false, /*queryZps=*/ false, /*selectAll=*/ false,
+             /*showFullUrl=*/ false);
          await microtasksFinished();
 
          // Verify autocomplete result was cleared on the searchbox component.
@@ -4210,7 +4252,8 @@ suite('OmniboxPopupSearchboxTest', function() {
 
  test('FocusLostHidesAimButton', async () => {
    // Explicitly set focus and enable AIM button visibility.
-   callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ false);
+   callbackRouter.setFocus(
+       true, /*queryZps=*/ false, /*selectAll=*/ false, /*showFullUrl=*/ false);
    testProxy.page.setAimButtonVisible(true);
    await microtasksFinished();
 
@@ -4219,13 +4262,16 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertTrue(isVisible(composeButton));
 
    // When focus is lost, AIM button should be hidden.
-   callbackRouter.setFocus(false, /*queryZps=*/ false, /*selectAll=*/ false);
+   callbackRouter.setFocus(
+       false, /*queryZps=*/ false, /*selectAll=*/ false,
+       /*showFullUrl=*/ false);
    await microtasksFinished();
 
    assertFalse(isVisible(composeButton));
 
    // Refocus, then type text into the Omnibox.
-   callbackRouter.setFocus(true, /*queryZps=*/ true, /*selectAll=*/ false);
+   callbackRouter.setFocus(
+       true, /*queryZps=*/ true, /*selectAll=*/ false, /*showFullUrl=*/ false);
    searchbox.getInputElement().setInputText('temporary text');
    testProxy.page.setAimButtonVisible(true);
    await microtasksFinished();
@@ -4234,7 +4280,9 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    // If focus is lost with temporary text in the Omnibox, then AIM button
    // should be hidden.
-   callbackRouter.setFocus(false, /*queryZps=*/ false, /*selectAll=*/ false);
+   callbackRouter.setFocus(
+       false, /*queryZps=*/ false, /*selectAll=*/ false,
+       /*showFullUrl=*/ false);
    await microtasksFinished();
 
    assertFalse(isVisible(composeButton));
@@ -5519,7 +5567,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
 
    // Blur the searchbox while keeping the popup open (e.g. draft text).
-   callbackRouter.setFocus(false, false, false);
+   callbackRouter.setFocus(false, false, false, /*showFullUrl=*/ false);
    await microtasksFinished();
    assertEquals(null, searchbox.shadowRoot.activeElement);
 
@@ -6075,7 +6123,9 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertTrue(input.scrollLeft > 0, 'focused input should be scrolled');
    assertEquals('clip', getComputedStyle(mirror).textOverflow);
 
-   callbackRouter.setFocus(false, /*queryZps=*/ false, /*selectAll=*/ false);
+   callbackRouter.setFocus(
+       false, /*queryZps=*/ false, /*selectAll=*/ false,
+       /*showFullUrl=*/ false);
    await microtasksFinished();
    // Blink scrolls the input back to its start on blur, and the #mirror
    // follows on the input's (asynchronous) scroll event.
@@ -6097,7 +6147,8 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(inputRect.right, mirrorRect.right);
 
    // Refocusing stops eliding the text again.
-   callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ false);
+   callbackRouter.setFocus(
+       true, /*queryZps=*/ false, /*selectAll=*/ false, /*showFullUrl=*/ false);
    await microtasksFinished();
    assertTrue(mirror.parentElement!.matches(':focus-within'));
    assertEquals('clip', getComputedStyle(mirror).textOverflow);

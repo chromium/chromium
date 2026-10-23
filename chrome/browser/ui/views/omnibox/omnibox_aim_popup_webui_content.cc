@@ -124,7 +124,8 @@ void OmniboxAimPopupWebUIContent::ApplyInputAndCleanup(const std::string& input,
     // Hand focus back to the omnibox. Don't select all so the caret continues
     // the user's editing session.
     if (auto* popup_view = location_bar()->GetOmniboxPopupView()) {
-      popup_view->OnFocus(/*query_zps=*/false, /*select_all=*/false);
+      popup_view->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                          /*show_full_url=*/false);
     }
   }
 }
