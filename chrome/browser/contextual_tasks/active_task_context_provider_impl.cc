@@ -136,7 +136,9 @@ std::set<tabs::TabHandle> GetTabsFromContext(
     if (matching_attachment != context_session_ids_url_map.end()) {
       // Verify if the tab's current URL is equivalent to the context URL.
       // If not, the tab has navigated away and is removed from context.
-      if (omnibox::IsTabDeselectionInComposeboxEnabled()) {
+      if (omnibox::IsTabDeselectionInComposeboxEnabled() ||
+          IsContextualTasksRearchitectureEnabled() ||
+          IsContextualTasksSidePanelRearchitectureEnabled()) {
         bool is_equivalent =
             session_handle
                 ? session_handle->AreUrlsEquivalent(

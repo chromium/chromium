@@ -4755,4 +4755,103 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(suggest_inputs.added_contexts(0).request_id().context_id(), 888);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    DeleteTabContext_RemovesRestoredTabAndAllowsReselection) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.google.com/restored_page"),
+      static_cast<WindowOpenDisposition>(3),
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* tab = TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(tab, nullptr);
+  const int32_t tab_handle_id = tab->GetHandle().raw_value();
+  const SessionID session_id =
+      sessions::SessionTabHelper::IdForTab(tab->GetContents());
+  ASSERT_TRUE(session_id.is_valid());
+
+  // 1. Seed a restored tab backed by a submitted `FileInfo` (e.g. from initial
+  // CSB query or thread history where `attached` is empty).
+  const base::UnguessableToken submitted_token =
+      base::UnguessableToken::Create();
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(7777);
+  contextual_search::FileInfo submitted_file_info;
+  submitted_file_info.file_token = submitted_token;
+  submitted_file_info.tab_session_id = session_id;
+  submitted_file_info.tab_url = GURL("https://www.google.com/restored_page");
+  submitted_file_info.tab_title = "Restored Page";
+  submitted_file_info.request_id = req_id;
+  ON_CALL(*mock_session_handle_, GetSubmittedContextFileInfos())
+      .WillByDefault(Return(
+          std::vector<contextual_search::FileInfo>{submitted_file_info}));
+  mock_session_handle_->SetSubmittedContextTokens({submitted_token});
+
+  contextual_search::TabInfo restored_tab;
+  restored_tab.tab_id = session_id.id();
+  restored_tab.url = GURL("https://www.google.com/restored_page");
+  restored_tab.title = "Restored Page";
+  {
+    base::RunLoop restore_loop;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+        .WillOnce([&restore_loop, tab_handle_id](
+                      std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                      const std::vector<int32_t>& submitted_tab_ids) {
+          ASSERT_EQ(tabs.size(), 1u);
+          EXPECT_EQ(tabs[0]->tab_id, tab_handle_id);
+          restore_loop.Quit();
+        });
+    mock_session_handle_->SetRestoredTabs({restored_tab});
+    restore_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+
+  // 2. Unselecting the restored tab removes it immediately on first click.
+  {
+    base::RunLoop deselect_loop;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+        .WillOnce(
+            [&deselect_loop](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                             const std::vector<int32_t>& submitted_tab_ids) {
+              EXPECT_TRUE(tabs.empty());
+              EXPECT_TRUE(submitted_tab_ids.empty());
+              deselect_loop.Quit();
+            });
+    static_cast<searchbox::mojom::PageHandler*>(handler_)->DeleteTabContext(
+        tab_handle_id);
+    deselect_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+
+  // 3. Re-selecting the same tab via `AddTabContext()` clears its deselection
+  // and re-attaches it on the first click, and `TakeRemovedContexts()` does not
+  // report the re-selected tab as removed.
+  {
+    base::RunLoop reselect_notify_loop;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+        .WillOnce([&reselect_notify_loop, tab_handle_id](
+                      std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                      const std::vector<int32_t>& submitted_tab_ids) {
+          ASSERT_EQ(tabs.size(), 1u);
+          EXPECT_EQ(tabs[0]->tab_id, tab_handle_id);
+          reselect_notify_loop.Quit();
+        });
+    base::RunLoop add_loop;
+    static_cast<searchbox::mojom::PageHandler*>(handler_)->AddTabContext(
+        tab_handle_id, /*delay_upload=*/false,
+        searchbox::mojom::TabAttachmentSource::kContextMenu,
+        base::BindLambdaForTesting(
+            [&add_loop](
+                base::expected<base::UnguessableToken,
+                               contextual_search::ContextUploadErrorType>
+                    result) {
+              EXPECT_TRUE(result.has_value());
+              add_loop.Quit();
+            }));
+    add_loop.Run();
+    reselect_notify_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+  EXPECT_TRUE(mock_session_handle_->TakeRemovedContexts().empty());
+}
+
 }  // namespace contextual_tasks

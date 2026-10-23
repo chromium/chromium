@@ -41,6 +41,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #endif
 #include "chrome/common/webui_url_constants.h"
@@ -338,8 +339,15 @@ CaptureAndUploadTabContext(
                        /*is_tab_suggestion_chip=*/false,
                        browser_window_interface);
 
-  if (omnibox::IsTabDeselectionInComposeboxEnabled()) {
-    session_handle->RemoveDeselectedTab(SessionID::FromSerializedValue(tab_id));
+  if (omnibox::IsTabDeselectionInComposeboxEnabled() ||
+      IsContextualTasksRearchitectureEnabled() ||
+      IsContextualTasksSidePanelRearchitectureEnabled()) {
+    if (content::WebContents* contents = tab->GetContents()) {
+      SessionID session_id = sessions::SessionTabHelper::IdForTab(contents);
+      if (session_id.is_valid()) {
+        session_handle->RemoveDeselectedTab(session_id);
+      }
+    }
   }
 
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) ||

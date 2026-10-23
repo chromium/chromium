@@ -112,6 +112,30 @@ IdentityState GetIdentityState(content::WebContents* web_contents) {
   return state;
 }
 
+std::optional<int32_t> FindOpenTabHandleForSessionTabId(
+    int32_t session_tab_id,
+    BrowserWindowInterface* browser_window_interface) {
+  if (!browser_window_interface) {
+    return std::nullopt;
+  }
+  auto* tab_list = TabListInterface::From(browser_window_interface);
+  if (!tab_list) {
+    return std::nullopt;
+  }
+  for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+    if (!tab || !tab->GetContents()) {
+      continue;
+    }
+    const SessionID open_tab_session_id =
+        sessions::SessionTabHelper::IdForTab(tab->GetContents());
+    if (open_tab_session_id.is_valid() &&
+        open_tab_session_id.id() == session_tab_id) {
+      return tab->GetHandle().raw_value();
+    }
+  }
+  return std::nullopt;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void RemoveAttachedTabUnderline(
     std::optional<int32_t> session_tab_id,
@@ -120,18 +144,12 @@ void RemoveAttachedTabUnderline(
   if (!session_tab_id.has_value() || !browser_window_interface) {
     return;
   }
-  if (auto* tab_list = TabListInterface::From(browser_window_interface)) {
-    for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
-      if (!tab || !tab->GetContents()) {
-        continue;
-      }
-      if (sessions::SessionTabHelper::IdForTab(tab->GetContents()).id() ==
-          *session_tab_id) {
-        contextual_tasks::RemoveTabUnderline(tab->GetHandle().raw_value(),
-                                             browser_window_interface);
-        return;
-      }
-    }
+  if (std::optional<int32_t> open_tab_handle_id =
+          FindOpenTabHandleForSessionTabId(*session_tab_id,
+                                           browser_window_interface)) {
+    contextual_tasks::RemoveTabUnderline(*open_tab_handle_id,
+                                         browser_window_interface);
+    return;
   }
   if (std::optional<int32_t> tab_handle_id =
           user_data.GetTabHandleForSessionTabId(*session_tab_id)) {
@@ -174,17 +192,6 @@ lens::LensOverlayVisualSearchInteractionData CreateCropInteractionData(
   return vsint;
 }
 #endif
-
-void DeleteTabToken(
-    contextual_search::ContextualSearchSessionHandle* session_handle,
-    const base::UnguessableToken& token) {
-  if (!session_handle) {
-    return;
-  }
-  if (!session_handle->DeleteFile(token)) {
-    session_handle->RemoveUploadedContextToken(token);
-  }
-}
 
 }  // namespace
 
@@ -860,7 +867,9 @@ ContextualTasksWebContentsUserData::GetTabsToRecontextualize(
   if (!active_tab || overlay_token.has_value()) {
     return {};
   }
-  if (omnibox::IsTabDeselectionInComposeboxEnabled() &&
+  if ((omnibox::IsTabDeselectionInComposeboxEnabled() ||
+       IsContextualTasksRearchitectureEnabled() ||
+       IsContextualTasksSidePanelRearchitectureEnabled()) &&
       session_handle.IsTabDeselected(
           sessions::SessionTabHelper::IdForTab(active_tab->GetContents()),
           active_tab->GetContents()->GetLastCommittedURL(),
@@ -1342,9 +1351,17 @@ void ContextualTasksWebContentsUserData::DeleteContext(
 }
 
 void ContextualTasksWebContentsUserData::DeleteTabContext(int32_t tab_id) {
+  auto* session_handle = GetOrCreateContextualSessionHandle();
+  if (!session_handle) {
+    return;
+  }
+  GURL tab_url;
+  std::string tab_title;
   std::optional<int32_t> session_tab_id;
   if (tabs::TabInterface* const tab = tabs::TabHandle(tab_id).Get();
       tab && tab->GetContents()) {
+    tab_url = tab->GetContents()->GetLastCommittedURL();
+    tab_title = base::UTF16ToUTF8(tab->GetTitle());
     SessionID session_id =
         sessions::SessionTabHelper::IdForTab(tab->GetContents());
     if (session_id.is_valid()) {
@@ -1357,20 +1374,20 @@ void ContextualTasksWebContentsUserData::DeleteTabContext(int32_t tab_id) {
   if (!session_tab_id.has_value()) {
     return;
   }
-  auto selected_tabs = GetSelectedTabs();
-  auto it = std::ranges::find_if(
-      selected_tabs, [&](const contextual_search::TabInfo& tab_info) {
-        return tab_info.tab_id == *session_tab_id;
-      });
-  if (it == selected_tabs.end()) {
+
+  std::optional<std::vector<base::UnguessableToken>> removed_tokens =
+      session_handle->DeleteTabContext(
+          SessionID::FromSerializedValue(*session_tab_id), tab_url, tab_title);
+  if (!removed_tokens.has_value()) {
     return;
   }
-  base::UnguessableToken token = it->context_token;
 #if !BUILDFLAG(IS_ANDROID)
   contextual_tasks::RemoveTabUnderline(tab_id, GetBrowserWindowInterface());
 #endif
-  OnTabContextRemoved(token);
-  DeleteTabToken(GetOrCreateContextualSessionHandle(), token);
+  for (const auto& token : *removed_tokens) {
+    OnTabContextRemoved(token);
+  }
+
   if (auto model = GetOrCreateInputStateModel()) {
     model->OnContextChanged();
   }
@@ -1505,6 +1522,22 @@ ContextualTasksWebContentsUserData::GetTabHandleForSessionTabId(
     if (mapped_session_id == session_tab_id) {
       return tab_handle_id;
     }
+  }
+  return std::nullopt;
+}
+
+std::optional<int32_t>
+ContextualTasksWebContentsUserData::ResolveAndRecordTabHandleForSessionTabId(
+    int32_t session_tab_id) {
+  if (std::optional<int32_t> handle_id =
+          GetTabHandleForSessionTabId(session_tab_id)) {
+    return handle_id;
+  }
+  if (std::optional<int32_t> open_tab_handle_id =
+          FindOpenTabHandleForSessionTabId(session_tab_id,
+                                           GetBrowserWindowInterface())) {
+    RecordTabIdMapping(*open_tab_handle_id, session_tab_id);
+    return open_tab_handle_id;
   }
   return std::nullopt;
 }

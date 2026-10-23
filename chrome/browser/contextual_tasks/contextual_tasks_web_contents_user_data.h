@@ -230,6 +230,12 @@ class ContextualTasksWebContentsUserData
       int32_t tab_handle_id) const;
   std::optional<int32_t> GetTabHandleForSessionTabId(
       int32_t session_tab_id) const;
+  // Resolves `session_tab_id` to its `TabHandle` ID by checking existing tab ID
+  // mappings and scanning open tabs in the browser window (recording the
+  // mapping if a matching open tab is found). Returns `std::nullopt` if no
+  // matching tab handle exists.
+  std::optional<int32_t> ResolveAndRecordTabHandleForSessionTabId(
+      int32_t session_tab_id);
 
   void AppendTabContextsToOnSubmitQueryResponseForTesting(
       lens::ClientToSearchMessage* response_message,
