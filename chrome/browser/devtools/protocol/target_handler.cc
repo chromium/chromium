@@ -122,7 +122,9 @@ protocol::Response TargetHandler::CreateTarget(
     }
   } else {
     profile = ProfileManager::GetLastUsedProfile();
-    CHECK(profile, base::NotFatalUntil::M161);
+    // TODO(crbug.com/576322189): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(profile);
   }
 
   bool create_new_window = new_window.value_or(false);
