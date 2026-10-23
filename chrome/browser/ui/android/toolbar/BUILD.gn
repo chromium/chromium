@@ -500,6 +500,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomBarConstraintsSupplierUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsMediatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsViewBinderTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewResourceFrameLayoutUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/download_button/DownloadButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/download_button/DownloadProgressRingDrawableTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/home_button/HomeButtonCoordinatorTest.java",

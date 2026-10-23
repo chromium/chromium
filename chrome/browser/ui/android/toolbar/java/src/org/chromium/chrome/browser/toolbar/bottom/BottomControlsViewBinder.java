@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -41,8 +42,10 @@ class BottomControlsViewBinder {
             View bottomControlsView = view.root.findViewById(R.id.bottom_container_slot);
             int height = model.get(BottomControlsProperties.ANDROID_VIEW_HEIGHT_NO_PADDING);
             view.sceneLayer.setContentHeight(height);
-            if (bottomControlsView.getLayoutParams().height != height) {
-                bottomControlsView.getLayoutParams().height = height;
+            LayoutParams params = bottomControlsView.getLayoutParams();
+            if (params.height != height) {
+                params.height = height;
+                bottomControlsView.setLayoutParams(params);
                 view.root.onModelTokenChange(new Object());
             }
         } else if (BottomControlsProperties.Y_OFFSET == propertyKey) {

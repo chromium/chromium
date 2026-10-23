@@ -88,6 +88,32 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
             }
 
             @Override
+            public void onLayoutChange(
+                    View v,
+                    int left,
+                    int top,
+                    int right,
+                    int bottom,
+                    int oldLeft,
+                    int oldTop,
+                    int oldRight,
+                    int oldBottom) {
+                super.onLayoutChange(
+                        v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom);
+                // A capture may have consumed the current token before layout settled, so mint a
+                // new token (keeping mLastCaptureSnapshotToken non-null so controls-lock deferral
+                // still applies) and force a recapture at the new size when visible.
+                boolean sizeChanged =
+                        right - left != oldRight - oldLeft || bottom - top != oldBottom - oldTop;
+                if (sizeChanged && mCurrentSnapshotToken != null) {
+                    mCurrentSnapshotToken = new Object();
+                    if (getVisibility() == View.VISIBLE) {
+                        onResourceRequested();
+                    }
+                }
+            }
+
+            @Override
             public void onCaptureStart(Canvas canvas, Rect dirtyRect) {
                 // The android and composited views both have a shadow. The default state is to
                 // to show only the android shadow. When the bottom controls begin to scroll off,

@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -107,11 +109,24 @@ public class BottomControlsViewBinderTest {
     }
 
     @Test
+    public void testAndroidViewHeightNoPadding_unchanged() {
+        mSlotView.getLayoutParams().height = 100;
+        mSlotView.layout(0, 0, 100, 100);
+        assertFalse(mSlotView.isLayoutRequested());
+
+        mModel.set(BottomControlsProperties.ANDROID_VIEW_HEIGHT_NO_PADDING, 100);
+        assertFalse(mSlotView.isLayoutRequested());
+        verify(mSceneLayer).setContentHeight(100);
+    }
+
+    @Test
     public void testAndroidViewHeightNoPadding_changed() {
         assertEquals(80, mSlotView.getLayoutParams().height);
+        mSlotView.layout(0, 0, 100, 80);
         mModel.set(BottomControlsProperties.ANDROID_VIEW_HEIGHT_NO_PADDING, 100);
 
         assertEquals(100, mSlotView.getLayoutParams().height);
+        assertTrue(mSlotView.isLayoutRequested());
         verify(mSceneLayer).setContentHeight(100);
     }
 
