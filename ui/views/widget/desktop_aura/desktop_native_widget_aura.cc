@@ -535,6 +535,10 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
   native_widget_delegate_->OnNativeWidgetActivationChanged(active);
 }
 
+bool DesktopNativeWidgetAura::IsHandlingHostDeactivation() const {
+  return should_activate_.has_value() && !should_activate_.value();
+}
+
 void DesktopNativeWidgetAura::OnHostWillClose() {
   // The host is going to close, but our DnD client may use it, so we need to
   // detach the DnD client and destroy it to avoid uses after free.
@@ -687,7 +691,7 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   capture_client_ = std::make_unique<DesktopCaptureClient>(host_->window());
 
   wm::FocusController* focus_controller =
-      new wm::FocusController(new DesktopFocusRules(content_window_));
+      new wm::FocusController(new DesktopFocusRules(content_window_, this));
   focus_client_.reset(focus_controller);
   aura::client::SetFocusClient(host_->window(), focus_controller);
   wm::SetActivationClient(host_->window(), focus_controller);

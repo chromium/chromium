@@ -8,12 +8,16 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/wm/core/window_util.h"
 
 namespace views {
 
-DesktopFocusRules::DesktopFocusRules(aura::Window* content_window)
-    : content_window_(content_window) {}
+DesktopFocusRules::DesktopFocusRules(
+    aura::Window* content_window,
+    const DesktopNativeWidgetAura* desktop_native_widget)
+    : content_window_(content_window),
+      desktop_native_widget_(desktop_native_widget) {}
 
 DesktopFocusRules::~DesktopFocusRules() = default;
 
@@ -73,6 +77,13 @@ const aura::Window* DesktopFocusRules::GetToplevelWindow(
 
 aura::Window* DesktopFocusRules::GetNextActivatableWindow(
     aura::Window* window) const {
+  // While the window tree host is losing activation, nothing in it should be
+  // activated next. `content_window_` already can't be, but a sibling, such as
+  // a child widget's window, otherwise could, and would then be active in an
+  // inactive host.
+  if (desktop_native_widget_->IsHandlingHostDeactivation()) {
+    return nullptr;
+  }
   aura::Window* next_activatable_window =
       wm::BaseFocusRules::GetNextActivatableWindow(window);
   // In Desktop-Aura the content_window_'s parent is a dummy window and thus

@@ -111,6 +111,10 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // we are being activated/deactivated.
   void HandleActivationChanged(bool active);
 
+  // Returns whether `HandleActivationChanged(false)` is in progress, i.e. the
+  // window tree host is losing activation.
+  bool IsHandlingHostDeactivation() const;
+
   // Called before the window tree host will close.
   void OnHostWillClose();
 

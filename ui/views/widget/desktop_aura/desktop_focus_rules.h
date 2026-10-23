@@ -10,9 +10,13 @@
 
 namespace views {
 
+class DesktopNativeWidgetAura;
+
 class DesktopFocusRules : public wm::BaseFocusRules {
  public:
-  explicit DesktopFocusRules(aura::Window* content_window);
+  // `desktop_native_widget` owns `content_window` and must outlive this.
+  DesktopFocusRules(aura::Window* content_window,
+                    const DesktopNativeWidgetAura* desktop_native_widget);
 
   DesktopFocusRules(const DesktopFocusRules&) = delete;
   DesktopFocusRules& operator=(const DesktopFocusRules&) = delete;
@@ -34,6 +38,8 @@ class DesktopFocusRules : public wm::BaseFocusRules {
   // The content window. This is an activatable window even though it is a
   // child.
   raw_ptr<aura::Window> content_window_;
+
+  raw_ptr<const DesktopNativeWidgetAura> desktop_native_widget_;
 };
 
 }  // namespace views
