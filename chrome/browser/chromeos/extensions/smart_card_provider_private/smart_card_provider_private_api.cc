@@ -11,7 +11,7 @@
 #include "base/notreached.h"
 #include "base/timer/timer.h"
 #include "base/types/expected_macros.h"
-#include "chrome/common/extensions/api/smart_card_provider_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/smart_card_provider_private.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_listener_map.h"

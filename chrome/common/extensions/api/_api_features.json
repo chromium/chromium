@@ -803,10 +803,6 @@
     "dependencies": ["permission:sidePanel"],
     "contexts": ["privileged_extension"]
   },
-  "smartCardProviderPrivate": {
-    "dependencies": ["permission:smartCardProviderPrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "systemPrivate": {
     "dependencies": ["permission:systemPrivate"],
     "contexts": ["privileged_extension"]

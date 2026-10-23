@@ -929,16 +929,6 @@
     "min_manifest_version": 3,
     "platforms": ["chromeos", "desktop_android", "linux", "mac", "win"]
   },
-  "smartCardProviderPrivate": {
-    "channel": "stable",
-    "platforms": ["chromeos"],
-    "extension_types": ["extension", "platform_app"],
-    "allowlist": [
-      "EC3DE21E048B67319893889529354DFBFA96FD23", // Smart Card Connector
-      "A19608AC34215B127FF9D7C006D67F5C8ED8146D"  // Smart Card Connector - beta channel
-    ],
-    "feature_flag": "SmartCard"
-  },
   "systemPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],

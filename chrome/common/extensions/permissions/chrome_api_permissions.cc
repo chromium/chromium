@@ -171,7 +171,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kSafeBrowsingPrivate, "safeBrowsingPrivate"},
     {APIPermissionID::kSettingsPrivate, "settingsPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kSmartCardProviderPrivate, "smartCardProviderPrivate"},
     {APIPermissionID::kSystemPrivate, "systemPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kTerminalPrivate, "terminalPrivate",

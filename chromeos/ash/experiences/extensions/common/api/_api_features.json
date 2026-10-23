@@ -165,6 +165,10 @@
     "contexts": ["privileged_extension"],
     "required_buildflags": ["use_cups"]
   },
+  "smartCardProviderPrivate": {
+    "dependencies": ["permission:smartCardProviderPrivate"],
+    "contexts": ["privileged_extension"]
+  },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["privileged_extension"]

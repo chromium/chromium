@@ -896,7 +896,9 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kImageWriterPrivate);
   skip.insert(APIPermissionID::kResourcesPrivate);
   skip.insert(APIPermissionID::kSafeBrowsingPrivate);
+#if BUILDFLAG(IS_CHROMEOS)
   skip.insert(APIPermissionID::kSmartCardProviderPrivate);
+#endif
   skip.insert(APIPermissionID::kSystemPrivate);
   skip.insert(APIPermissionID::kTabCaptureForTab);
   skip.insert(APIPermissionID::kTerminalPrivate);

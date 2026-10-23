@@ -14,7 +14,7 @@ source_set("smart_card_provider_private") {
 
   deps = [
     "//base",
-    "//chrome/common/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//extensions/browser",
   ]
 }
@@ -31,5 +31,6 @@ source_set("browser_tests") {
     ":smart_card_provider_private",
     "//chrome/browser",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/extensions/common/api",
   ]
 }
