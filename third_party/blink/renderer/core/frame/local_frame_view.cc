@@ -242,8 +242,7 @@ std::optional<cc::PaintRecord> GetCanvasSnapshot(DOMNodeId id) {
     if (snapshot) {
       DCHECK(!snapshot->IsTextureBacked());
       PaintRecordBuilder builder;
-      gfx::RectF dest_rect(
-          gfx::SizeF(nested_layout_obj->PhysicalContentBoxRect().size));
+      gfx::RectF dest_rect(nested_layout_obj->ReplacedContentRect());
       gfx::RectF src_rect(gfx::SizeF(nested_canvas->Size()));
       {
         DrawingRecorder recorder(
