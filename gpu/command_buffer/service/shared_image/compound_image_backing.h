@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/enum_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -158,45 +159,32 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // Remove the SCANOUT flag if |kAllowShmOverlays|.
   static SharedImageUsageSet GetGpuSharedImageUsage(SharedImageUsageSet usage);
 
-  // Creates a backing that contains a shared memory backing and GPU backing
-  // provided by `shared_image_factory` based on `usage`. Eventually, instead of
-  // creating a shm+gpu backing, this method will have various strategy to
-  // allocate different combination of backings based on the `usage`.
+  // Creates a CompoundImageBacking that wraps or allocates the appropriate
+  // underlying backing(s) provided by `shared_image_factory`.
   static std::unique_ptr<SharedImageBacking> Create(
       SharedImageFactory* shared_image_factory,
-      scoped_refptr<SharedImageCopyManager> copy_manager,
-      const Mailbox& mailbox,
-      gfx::GpuMemoryBufferHandle handle,
-      const SharedImageInfo& si_info);
-
-  // Creates a backing that contains a shared memory backing and GPU backing
-  // provided by `shared_image_factory` based on `usage`. Eventually, instead of
-  // creating a shm+gpu backing, this method will have various strategy to
-  // allocate different combination of backings based on the `usage`.
-  // We additionally pass a |buffer_usage| parameter here in order to create a
-  // CPU mappable by creating a shared memory handle.
-  // TODO(crbug.com/40276878): Remove this method once we figure out the mapping
-  // between SharedImageUsage and BufferUsage and no longer need to use
-  // BufferUsage.
-  static std::unique_ptr<SharedImageBacking> Create(
-      SharedImageFactory* shared_image_factory,
-      scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
       const SharedImageInfo& si_info,
+      SurfaceHandle surface_handle);
+
+  static std::unique_ptr<SharedImageBacking> Create(
+      SharedImageFactory* shared_image_factory,
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage);
 
-  // Wraps a backing in a CompoundImageBacking. This is used to enable
-  // CompoundImageBacking as the default, where it serves as the sole backing.
-  // To achieve this, SharedImageFactory creates the standard backing and then
-  // wraps it using this method.
-  // TODO(crbug.com/448962784): Once CompoundImageBacking is fully enabled by
-  // default, it will be directly creating underlying backing itself and
-  // SharedImageFactory will be refactored to move most of backing creation
-  // logic inside CompoundImageBacking.
-  static std::unique_ptr<SharedImageBacking> WrapExternalBacking(
+  static std::unique_ptr<SharedImageBacking> Create(
       SharedImageFactory* shared_image_factory,
-      scoped_refptr<SharedImageCopyManager> copy_manager,
-      std::unique_ptr<SharedImageBacking> backing);
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      base::span<const uint8_t> pixel_data);
+
+  static std::unique_ptr<SharedImageBacking> Create(
+      SharedImageFactory* shared_image_factory,
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      gfx::GpuMemoryBufferHandle handle);
 
   ~CompoundImageBacking() override;
 
@@ -339,6 +327,32 @@ class GPU_GLES2_EXPORT CompoundImageBacking
     CreateBackingCallback create_callback;
     std::unique_ptr<SharedImageBacking> backing;
   };
+
+  // Creates a backing that contains a shared memory backing and GPU backing
+  // provided by `shared_image_factory` based on `usage`.
+  static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
+      SharedImageFactory* shared_image_factory,
+      const Mailbox& mailbox,
+      gfx::GpuMemoryBufferHandle handle,
+      const SharedImageInfo& si_info);
+
+  // Creates a backing that contains a shared memory backing and GPU backing
+  // provided by `shared_image_factory` based on `usage`. We additionally pass a
+  // |buffer_usage| parameter here in order to create a CPU mappable by creating
+  // a shared memory handle.
+  // TODO(crbug.com/40276878): Remove this method once we figure out the mapping
+  // between SharedImageUsage and BufferUsage and no longer need to use
+  // BufferUsage.
+  static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
+      SharedImageFactory* shared_image_factory,
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      gfx::BufferUsage buffer_usage);
+
+  // Wraps a backing in a CompoundImageBacking.
+  static std::unique_ptr<SharedImageBacking> WrapExternalBacking(
+      SharedImageFactory* shared_image_factory,
+      std::unique_ptr<SharedImageBacking> backing);
 
   // Creates a backing that contains a shared memory backing and GPU backing
   // provided by `gpu_backing_factory`.

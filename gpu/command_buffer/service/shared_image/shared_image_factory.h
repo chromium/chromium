@@ -216,6 +216,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                            gfx::GpuMemoryBufferType gmb_type,
                            const gfx::Size& size,
                            const std::string& debug_label);
+  static const char* GmbTypeToString(gfx::GpuMemoryBufferType type);
 #if BUILDFLAG(IS_WIN)
   bool IsD3DSharedImageSupported() const;
 #endif
