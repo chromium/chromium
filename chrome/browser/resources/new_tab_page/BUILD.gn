@@ -39,12 +39,6 @@ build_webui("build") {
     "modules/tab_groups/icons:build_grdp",
   ]
 
-  if (is_chrome_branded) {
-    extra_grdp_files +=
-        [ "$target_gen_dir/icons/chrome_branded_resources.grdp" ]
-    extra_grdp_deps += [ "icons:chrome_branded_build_grdp" ]
-  }
-
   web_component_files = all_web_component_files
   ts_files = all_ts_files
   css_files = all_css_files

@@ -107,6 +107,21 @@ generate_grd("build_grdp") {
   input_files_base_dir = rebase_path(".", "//")
 }
 
+if (!is_chrome_branded) {
+  # The Google logo used by <ntp-logo>, read from its existing location so that
+  # the trademarked image isn't duplicated in the public repo. Chrome-branded
+  # builds serve the branded copy at the same path, from
+  # chrome_branded_build_grdp.
+  generate_grd("google_logo_grdp") {
+    grd_prefix = "searchbox_icons"
+    resource_path_prefix = "cr_components/searchbox/icons"
+    out_grd = "$target_gen_dir/google_logo_resources.grdp"
+    input_files = [ "google_logo.svg" ]
+    input_files_base_dir =
+        rebase_path("//chrome/browser/resources/new_tab_page/icons", "//")
+  }
+}
+
 if (is_chrome_branded) {
   generate_grd("chrome_branded_build_grdp") {
     grd_prefix = "searchbox_icons"
@@ -126,5 +141,16 @@ if (is_chrome_branded) {
     ]
     input_files_base_dir =
         rebase_path("//chrome/app/theme/google_chrome/realbox", "//")
+  }
+
+  # The 2026 version of the Google logo, used by <ntp-logo> when
+  # ntp_features::kNtpGoogleLogo26 is enabled.
+  generate_grd("chrome_branded_google_logo_26_grdp") {
+    grd_prefix = "searchbox_icons_google_logo_26"
+    resource_path_prefix = "cr_components/searchbox/icons/google_logo_26"
+    out_grd = "$target_gen_dir/chrome_branded_google_logo_26_resources.grdp"
+    input_files = [ "google_logo.svg" ]
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/new_tab_page", "//")
   }
 }

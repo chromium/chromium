@@ -312,6 +312,10 @@ suite('NewTabPageLogoTest', () => {
 
   [true, false].forEach(useGoogleLogo26 => {
     const logoName = useGoogleLogo26 ? '2026' : 'legacy';
+    const logoUrl = useGoogleLogo26 ?
+        'chrome://resources/cr_components/searchbox/icons/google_logo_26/' +
+            'google_logo.svg' :
+        'chrome://resources/cr_components/searchbox/icons/google_logo.svg';
 
     test(`${logoName} Google logo multi-colored render path`, async () => {
       // Arrange.
@@ -321,7 +325,7 @@ suite('NewTabPageLogoTest', () => {
       const logo = await createLogo();
 
       // Assert.
-      assertNotStyle($$(logo, '#logo')!, 'background-image', '');
+      assertStyle($$(logo, '#logo')!, 'background-image', `url("${logoUrl}")`);
       assertStyle($$(logo, '#logo')!, '-webkit-mask-image', 'none');
       assertStyle($$(logo, '#logo')!, 'background-color', 'rgba(0, 0, 0, 0)');
     });
@@ -337,7 +341,8 @@ suite('NewTabPageLogoTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertNotStyle($$(logo, '#logo')!, '-webkit-mask-image', 'none');
+      assertStyle(
+          $$(logo, '#logo')!, '-webkit-mask-image', `url("${logoUrl}")`);
       assertStyle($$(logo, '#logo')!, 'background-color', 'rgb(255, 0, 0)');
       assertStyle($$(logo, '#logo')!, 'background-image', 'none');
     });
