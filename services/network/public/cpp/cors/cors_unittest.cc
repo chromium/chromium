@@ -407,13 +407,6 @@ TEST_F(CorsTest, SafelistedContentType) {
                                      "application/x-www-form-urlencoded"));
   EXPECT_TRUE(IsCorsSafelistedHeader("content-type", "multipart/form-data"));
 
-  EXPECT_FALSE(IsCorsSafelistedHeader(
-      "content-type", "message/ad-auction-trusted-signals-request"));
-  EXPECT_TRUE(IsCorsSafelistedHeader(
-      "content-type", "message/ad-auction-trusted-signals-request",
-      /*is_ad_auction_trusted_signals_request=*/
-      true));
-
   EXPECT_TRUE(IsCorsSafelistedHeader("content-type", "Text/plain"));
   EXPECT_TRUE(IsCorsSafelistedHeader("content-type", "tEXT/PLAIN"));
   EXPECT_FALSE(IsCorsSafelistedHeader("content-type", "text/html"));

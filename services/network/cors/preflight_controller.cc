@@ -55,14 +55,6 @@ namespace network::cors {
 
 namespace {
 
-// Returns true if
-// `request.trusted_params.is_ad_auction_trusted_signals_request` exists and is
-// true.
-bool IsAdAuctionTrustedSignalsRequest(const ResourceRequest& request) {
-  return request.trusted_params &&
-         request.trusted_params->is_ad_auction_trusted_signals_request;
-}
-
 int RetrieveCacheFlags(int load_flags) {
   return load_flags & (net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
                        net::LOAD_DISABLE_CACHE);
@@ -92,15 +84,13 @@ bool IsRevalidatingForHeadersCheck(const ResourceRequest& request) {
 //  - byte-lowercased
 std::string CreateAccessControlRequestHeadersHeader(
     const net::HttpRequestHeaders& headers,
-    bool is_revalidating,
-    bool is_ad_auction_trusted_signals_request) {
+    bool is_revalidating) {
   // Exclude the forbidden headers because they may be added by the user
   // agent. They must be checked separately and rejected for
   // JavaScript-initiated requests.
   std::vector<std::string> filtered_headers =
-      CorsUnsafeNotForbiddenRequestHeaderNames(
-          headers.GetHeaderVector(), is_revalidating,
-          is_ad_auction_trusted_signals_request);
+      CorsUnsafeNotForbiddenRequestHeaderNames(headers.GetHeaderVector(),
+                                               is_revalidating);
   if (filtered_headers.empty())
     return std::string();
 
@@ -143,8 +133,7 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
       header_names::kAccessControlRequestMethod, request.method);
 
   std::string request_headers = CreateAccessControlRequestHeadersHeader(
-      request.headers, IsRevalidatingForHeadersCheck(request),
-      IsAdAuctionTrustedSignalsRequest(request));
+      request.headers, IsRevalidatingForHeadersCheck(request));
   if (!request_headers.empty()) {
     preflight_request->headers.SetHeader(
         header_names::kAccessControlRequestHeaders, request_headers);
@@ -161,8 +150,7 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
     //
     // This is useful when the client security state is not specified through
     // the URL loader factory params, typically when a single URL loader factory
-    // is shared by a few different client contexts. This is the case for
-    // navigations and interest group auctions.
+    // is shared by multiple client contexts, as is the case for navigations.
     preflight_request->trusted_params->client_security_state =
         request.trusted_params->client_security_state.Clone();
 
@@ -334,8 +322,7 @@ std::optional<CorsErrorStatus> CheckPreflightResult(
 
   return result.EnsureAllowedCrossOriginHeaders(
       original_request.headers, IsRevalidatingForHeadersCheck(original_request),
-      non_wildcard_request_headers_support,
-      IsAdAuctionTrustedSignalsRequest(original_request));
+      non_wildcard_request_headers_support);
 }
 
 }  // namespace
@@ -651,8 +638,7 @@ PreflightController::PerformPreflightCheck(
           request.request_initiator.value(), request.url, network_isolation_key,
           request.credentials_mode, request.method, request.headers,
           IsRevalidatingForHeadersCheck(request), net_log,
-          acam_preflight_spec_conformant,
-          IsAdAuctionTrustedSignalsRequest(request))) {
+          acam_preflight_spec_conformant)) {
     std::move(callback).Run(net::OK, std::nullopt, false);
     return nullptr;
   }

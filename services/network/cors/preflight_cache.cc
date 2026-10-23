@@ -119,8 +119,7 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     const net::HttpRequestHeaders& request_headers,
     bool is_revalidating,
     const net::NetLogWithSource& net_log,
-    bool acam_preflight_spec_conformant,
-    bool is_ad_auction_trusted_signals_request) {
+    bool acam_preflight_spec_conformant) {
   const std::optional<net::SchemefulSite>& top_frame_site =
       network_isolation_key.GetTopFrameSite();
   auto cache_it = cache_.Peek(top_frame_site);
@@ -144,8 +143,7 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     if (cache_entry->second->EnsureAllowedRequest(
             credentials_mode, method, request_headers, is_revalidating,
             NonWildcardRequestHeadersSupport(true),
-            acam_preflight_spec_conformant,
-            is_ad_auction_trusted_signals_request)) {
+            acam_preflight_spec_conformant)) {
       cache_.Get(top_frame_site);
       // Note that we always use the "with non-wildcard request headers"
       // variant, because it is hard to generate the correct error information

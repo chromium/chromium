@@ -82,8 +82,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
       const net::HttpRequestHeaders& headers,
       bool is_revalidating,
       const net::NetLogWithSource& net_log,
-      bool acam_preflight_spec_conformant,
-      bool is_ad_auction_trusted_signals_request);
+      bool acam_preflight_spec_conformant);
 
   // Clears cached preflight results according to `url_filter`.
   // If `url_filter` is null, all entries across all top-frame sites are
