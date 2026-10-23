@@ -8,6 +8,8 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "content/browser/android/drop_data_android.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -78,6 +80,34 @@ class MockWebContentsViewAndroid : public WebContentsViewAndroid {
   bool allowed_ = false;
 };
 
+// Named fields for MakeDragEvent(). Unset fields are null or empty, so tests
+// only spell out what they care about.
+struct DragEventParams {
+  int action = 0;
+  gfx::PointF location;
+  gfx::PointF screen_location;
+  // DragEventAndroid keeps a reference to the MIME types, so they must
+  // outlive the event.
+  raw_ptr<const std::vector<std::u16string>> mime_types = nullptr;
+  bool has_files = false;
+  base::android::ScopedJavaLocalRef<jobjectArray> filenames;
+  base::android::ScopedJavaLocalRef<jstring> text;
+  base::android::ScopedJavaLocalRef<jstring> html;
+  base::android::ScopedJavaLocalRef<jstring> url;
+  base::android::ScopedJavaLocalRef<jstring> custom_data;
+  base::android::ScopedJavaLocalRef<jstring> effect_allowed;
+};
+
+ui::DragEventAndroid MakeDragEvent(const DragEventParams& params) {
+  static const base::NoDestructor<std::vector<std::u16string>> kNoMimeTypes;
+  return ui::DragEventAndroid(
+      base::android::AttachCurrentThread(), params.action, params.location,
+      params.screen_location,
+      params.mime_types ? *params.mime_types : *kNoMimeTypes, params.has_files,
+      params.filenames, params.text, params.html, params.url,
+      params.custom_data, params.effect_allowed);
+}
+
 }  // namespace
 
 class WebContentsViewAndroidTest : public RenderViewHostTestHarness {
@@ -144,11 +174,11 @@ TEST_F(WebContentsViewAndroidTest, DropDataRestoredFromJava) {
       base::android::ConvertUTF8ToJavaString(env, "move");
 
   // Action 3 is ACTION_DROP.
-  ui::DragEventAndroid drop_event(
-      env, 3, gfx::PointF(), gfx::PointF(), mime_types, false,
-      base::android::JavaRef<jobjectArray>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      j_custom_data, j_effect_allowed);
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = 3,
+                     .mime_types = &mime_types,
+                     .custom_data = j_custom_data,
+                     .effect_allowed = j_effect_allowed});
 
   view()->OnDragEvent(drop_event);
 
@@ -172,12 +202,9 @@ TEST_F(WebContentsViewAndroidTest, DragInaccessibleImage_SameTab_Filtered) {
 
   // ACTION_DRAG_ENTERED with image MIME type.
   std::vector<std::u16string> enter_mime_types = {u"image/png"};
-  ui::DragEventAndroid enter_event(
-      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
-      enter_mime_types, false, base::android::JavaRef<jobjectArray>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>());
+  ui::DragEventAndroid enter_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENTERED,
+                     .mime_types = &enter_mime_types});
   view()->OnDragEvent(enter_event);
 
   // File metadata should not be advertised when image access is not allowed.
@@ -188,11 +215,10 @@ TEST_F(WebContentsViewAndroidTest, DragInaccessibleImage_SameTab_Filtered) {
       {"content://org.chromium.test/image.png", "image.png"}};
   base::android::ScopedJavaLocalRef<jobjectArray> j_filenames =
       base::android::ToJavaArrayOfStringArray(env, filenames_vec);
-  ui::DragEventAndroid drop_event(
-      env, DragEventJni::ACTION_DROP, gfx::PointF(), gfx::PointF(),
-      enter_mime_types, false, j_filenames, base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>());
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .mime_types = &enter_mime_types,
+                     .filenames = j_filenames});
   view()->OnDragEvent(drop_event);
 
   DropData* restored_data = view()->GetDropData();
@@ -214,12 +240,9 @@ TEST_F(WebContentsViewAndroidTest, DragAccessibleImage_SameTab_Allowed) {
 
   // ACTION_DRAG_ENTERED with image MIME type.
   std::vector<std::u16string> enter_mime_types = {u"image/png"};
-  ui::DragEventAndroid enter_event(
-      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
-      enter_mime_types, false, base::android::JavaRef<jobjectArray>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>());
+  ui::DragEventAndroid enter_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENTERED,
+                     .mime_types = &enter_mime_types});
   view()->OnDragEvent(enter_event);
 
   // File metadata should be advertised when image access is allowed.
@@ -232,11 +255,10 @@ TEST_F(WebContentsViewAndroidTest, DragAccessibleImage_SameTab_Allowed) {
       {"content://org.chromium.test/image.png", "image.png"}};
   base::android::ScopedJavaLocalRef<jobjectArray> j_filenames =
       base::android::ToJavaArrayOfStringArray(env, filenames_vec);
-  ui::DragEventAndroid drop_event(
-      env, DragEventJni::ACTION_DROP, gfx::PointF(), gfx::PointF(),
-      enter_mime_types, false, j_filenames, base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>());
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .mime_types = &enter_mime_types,
+                     .filenames = j_filenames});
   view()->OnDragEvent(drop_event);
 
   DropData* restored_data = view()->GetDropData();
@@ -256,12 +278,9 @@ TEST_F(WebContentsViewAndroidTest, DragImage_ExternalSource_Allowed) {
 
   // ACTION_DRAG_ENTERED with image MIME type.
   std::vector<std::u16string> enter_mime_types = {u"image/png"};
-  ui::DragEventAndroid enter_event(
-      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
-      enter_mime_types, false, base::android::JavaRef<jobjectArray>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>());
+  ui::DragEventAndroid enter_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENTERED,
+                     .mime_types = &enter_mime_types});
   view()->OnDragEvent(enter_event);
 
   ASSERT_EQ(view()->drag_metadata_.size(), 1u);
@@ -272,11 +291,10 @@ TEST_F(WebContentsViewAndroidTest, DragImage_ExternalSource_Allowed) {
       {"content://external.app/photo.png", "photo.png"}};
   base::android::ScopedJavaLocalRef<jobjectArray> j_filenames =
       base::android::ToJavaArrayOfStringArray(env, filenames_vec);
-  ui::DragEventAndroid drop_event(
-      env, DragEventJni::ACTION_DROP, gfx::PointF(), gfx::PointF(),
-      enter_mime_types, false, j_filenames, base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>());
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .mime_types = &enter_mime_types,
+                     .filenames = j_filenames});
   view()->OnDragEvent(drop_event);
 
   DropData* restored_data = view()->GetDropData();
@@ -301,12 +319,9 @@ TEST_F(WebContentsViewAndroidTest,
   // ACTION_DRAG_ENTERED with text and image MIME types.
   std::vector<std::u16string> enter_mime_types = {ui::kMimeTypePlainText16,
                                                   u"image/png"};
-  ui::DragEventAndroid enter_event(
-      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
-      enter_mime_types, false, base::android::JavaRef<jobjectArray>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>());
+  ui::DragEventAndroid enter_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENTERED,
+                     .mime_types = &enter_mime_types});
   view()->OnDragEvent(enter_event);
 
   // String MIME type is kept in metadata, while file metadata is omitted.
@@ -321,11 +336,11 @@ TEST_F(WebContentsViewAndroidTest,
       {"content://org.chromium.test/image.png", "image.png"}};
   base::android::ScopedJavaLocalRef<jobjectArray> j_filenames =
       base::android::ToJavaArrayOfStringArray(env, filenames_vec);
-  ui::DragEventAndroid drop_event(
-      env, DragEventJni::ACTION_DROP, gfx::PointF(), gfx::PointF(),
-      enter_mime_types, false, j_filenames, j_text,
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>());
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .mime_types = &enter_mime_types,
+                     .filenames = j_filenames,
+                     .text = j_text});
   view()->OnDragEvent(drop_event);
 
   DropData* restored_data = view()->GetDropData();
@@ -343,13 +358,8 @@ TEST_F(WebContentsViewAndroidTest, OnDragEnded_ResetsDropDataAndSecurityInfo) {
   EXPECT_TRUE(view()->drag_security_info_.did_initiate());
   EXPECT_FALSE(view()->drag_security_info_.IsImageAccessibleFromFrame());
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ui::DragEventAndroid end_event(
-      env, DragEventJni::ACTION_DRAG_ENDED, gfx::PointF(), gfx::PointF(), {},
-      false, base::android::JavaRef<jobjectArray>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>());
+  ui::DragEventAndroid end_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENDED});
 
   view()->OnDragEvent(end_event);
 
@@ -395,28 +405,31 @@ TEST_F(WebContentsViewAndroidTest,
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<std::u16string> mime_types = {ui::kMimeTypePlainText16};
 
-  ui::DragEventAndroid enter_event(
-      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
-      mime_types, false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  ui::DragEventAndroid enter_event = MakeDragEvent(
+      {.action = DragEventJni::ACTION_DRAG_ENTERED, .mime_types = &mime_types});
   view()->OnDragEvent(enter_event);
 
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
   EXPECT_TRUE(delegate.last_drop_data().text.has_value());
   EXPECT_FALSE(view()->current_target_rwh_for_drag_);
 
-  ui::DragEventAndroid location_event(env, DragEventJni::ACTION_DRAG_LOCATION,
-                                      gfx::PointF(10, 10), gfx::PointF(10, 10),
-                                      mime_types, false, nullptr, nullptr,
-                                      nullptr, nullptr, nullptr, nullptr);
+  ui::DragEventAndroid location_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_LOCATION,
+                     .location = gfx::PointF(10, 10),
+                     .screen_location = gfx::PointF(10, 10),
+                     .mime_types = &mime_types});
   view()->OnDragEvent(location_event);
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
   EXPECT_FALSE(view()->current_target_rwh_for_drag_);
 
   base::android::ScopedJavaLocalRef<jstring> j_text =
       base::android::ConvertUTF8ToJavaString(env, "rejected text");
-  ui::DragEventAndroid drop_event(
-      env, DragEventJni::ACTION_DROP, gfx::PointF(10, 10), gfx::PointF(10, 10),
-      mime_types, false, nullptr, j_text, nullptr, nullptr, nullptr, nullptr);
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .location = gfx::PointF(10, 10),
+                     .screen_location = gfx::PointF(10, 10),
+                     .mime_types = &mime_types,
+                     .text = j_text});
   view()->OnDragEvent(drop_event);
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
   EXPECT_FALSE(view()->current_target_rwh_for_drag_);
@@ -426,9 +439,8 @@ TEST_F(WebContentsViewAndroidTest,
   EXPECT_EQ(view()->GetDropData()->view_id, IPC::mojom::kRoutingIdNone);
 
   // Exiting resets `drag_rejected_by_delegate_` so the next drag is evaluated.
-  ui::DragEventAndroid exit_event(
-      env, DragEventJni::ACTION_DRAG_EXITED, gfx::PointF(), gfx::PointF(), {},
-      false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  ui::DragEventAndroid exit_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_EXITED});
   view()->OnDragEvent(exit_event);
   view()->OnDragEvent(enter_event);
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 2);
@@ -440,12 +452,12 @@ TEST_F(WebContentsViewAndroidTest, CanDragEnter_AcceptedSetsTargetRwh) {
   MockWebContentsDelegate delegate(/*can_drag_enter=*/true);
   web_contents()->SetDelegate(&delegate);
 
-  JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<std::u16string> mime_types = {u"image/png"};
 
-  ui::DragEventAndroid enter_event(
-      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
-      mime_types, true, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  ui::DragEventAndroid enter_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENTERED,
+                     .mime_types = &mime_types,
+                     .has_files = true});
   view()->OnDragEvent(enter_event);
 
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
@@ -456,12 +468,10 @@ TEST_F(WebContentsViewAndroidTest, CanDragEnter_AcceptedSetsTargetRwh) {
 }
 
 TEST_F(WebContentsViewAndroidTest, UpdateDragOperation_IgnoresStaleTargetRwh) {
-  JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<std::u16string> mime_types = {ui::kMimeTypePlainText16};
 
-  ui::DragEventAndroid enter_event(
-      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
-      mime_types, false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  ui::DragEventAndroid enter_event = MakeDragEvent(
+      {.action = DragEventJni::ACTION_DRAG_ENTERED, .mime_types = &mime_types});
   view()->OnDragEvent(enter_event);
   ASSERT_EQ(GetRenderWidgetHost(), view()->current_target_rwh_for_drag_.get());
 
@@ -486,9 +496,8 @@ TEST_F(WebContentsViewAndroidTest, UpdateDragOperation_IgnoresStaleTargetRwh) {
 
   // Exiting the drag resets current_target_rwh_for_drag_, drag_operation_, and
   // document_is_handling_drag_, and ignores late replies arriving after exit.
-  ui::DragEventAndroid exit_event(
-      env, DragEventJni::ACTION_DRAG_EXITED, gfx::PointF(), gfx::PointF(), {},
-      false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  ui::DragEventAndroid exit_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_EXITED});
   view()->OnDragEvent(exit_event);
   EXPECT_FALSE(view()->current_target_rwh_for_drag_);
   EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
@@ -509,9 +518,8 @@ TEST_F(WebContentsViewAndroidTest, UpdateDragOperation_IgnoresStaleTargetRwh) {
   EXPECT_EQ(ui::mojom::DragOperation::kCopy, view()->drag_operation_);
   EXPECT_TRUE(view()->document_is_handling_drag_);
 
-  ui::DragEventAndroid end_event(
-      env, DragEventJni::ACTION_DRAG_ENDED, gfx::PointF(), gfx::PointF(), {},
-      false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  ui::DragEventAndroid end_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENDED});
   view()->OnDragEvent(end_event);
   EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
   EXPECT_FALSE(view()->document_is_handling_drag_);
