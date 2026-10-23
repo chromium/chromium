@@ -361,6 +361,10 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
     flush();
 
+    // Prevent the link from opening a new tab. The relative URL resolves to
+    // chrome://settings/www.google.com, which would load the full Settings page
+    // in a new foreground tab, slowing down the rest of the test considerably.
+    learnMoreLink.addEventListener('click', e => e.preventDefault());
     learnMoreLink.click();
     assertTrue(testElement.checked);
   });
