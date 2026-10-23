@@ -184,6 +184,12 @@ class PrimaryAccountManagerTest : public testing::Test,
     }
   }
 
+#if BUILDFLAG(IS_IOS)
+  void OnEndBatchOfPrimaryAccountChanges() override {
+    num_end_batch_of_primary_account_changes_++;
+  }
+#endif  // BUILDFLAG(IS_IOS)
+
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestSigninClient test_signin_client_;
@@ -197,6 +203,9 @@ class PrimaryAccountManagerTest : public testing::Test,
   int num_successful_signins_{0};
   int num_successful_signouts_{0};
   int num_unconsented_account_changed_{0};
+#if BUILDFLAG(IS_IOS)
+  int num_end_batch_of_primary_account_changes_{0};
+#endif  // BUILDFLAG(IS_IOS)
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -342,6 +351,48 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
                       .sign_out = signin_metrics::ProfileSignout::kTest});
 }
+
+#if BUILDFLAG(IS_IOS)
+// Tests `OnEndBatchOfPrimaryAccountChanges()` with
+// `StartBatchOfPrimaryAccountChanges()`.
+TEST_F(PrimaryAccountManagerTest, BatchOfPrimaryAccountChanges) {
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id1 =
+      AddToAccountTracker(GaiaId("gaia_id1"), "user1@gmail.com");
+  CoreAccountId account_id2 =
+      AddToAccountTracker(GaiaId("gaia_id2"), "user2@gmail.com");
+
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id1).GetCoreAccountInfo(),
+      ConsentLevel::kSignin, AccessPoint::kStartPage);
+  EXPECT_EQ(1, num_unconsented_account_changed_);
+  EXPECT_EQ(1, num_end_batch_of_primary_account_changes_);
+  EXPECT_FALSE(manager_->IsBatchOfPrimaryAccountChangesInProgress());
+
+  base::ScopedClosureRunner scoped_closure_runner =
+      manager_->StartBatchOfPrimaryAccountChanges();
+  EXPECT_TRUE(manager_->IsBatchOfPrimaryAccountChangesInProgress());
+
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
+  EXPECT_EQ(2, num_unconsented_account_changed_);
+  EXPECT_EQ(1, num_end_batch_of_primary_account_changes_);
+
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id2).GetCoreAccountInfo(),
+      ConsentLevel::kSignin, AccessPoint::kStartPage);
+  EXPECT_EQ(3, num_unconsented_account_changed_);
+  EXPECT_EQ(1, num_end_batch_of_primary_account_changes_);
+
+  scoped_closure_runner.RunAndReset();
+  EXPECT_FALSE(manager_->IsBatchOfPrimaryAccountChangesInProgress());
+  EXPECT_EQ(3, num_unconsented_account_changed_);
+  EXPECT_EQ(2, num_end_batch_of_primary_account_changes_);
+
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
+  EXPECT_EQ(4, num_unconsented_account_changed_);
+  EXPECT_EQ(3, num_end_batch_of_primary_account_changes_);
+}
+#endif  // BUILDFLAG(IS_IOS)
 #endif
 
 TEST_F(PrimaryAccountManagerTest, RevokeSyncConsentAllowedSignoutProhibited) {

@@ -26,6 +26,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -57,6 +58,14 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
     // level for the primary account.
     virtual void OnPrimaryAccountChanged(
         const signin::PrimaryAccountChangeEvent& event_details) = 0;
+
+#if BUILDFLAG(IS_IOS)
+    // Called once the batch of primary account changes ended.
+    // This method is also called for each single primary account event, when
+    // there is no batch.
+    // See `StartBatchOfPrimaryAccountChanges()`.
+    virtual void OnEndBatchOfPrimaryAccountChanges() = 0;
+#endif  // BUILDFLAG(IS_IOS)
   };
 
   // Used to remove accounts from the token service and the account tracker.
@@ -177,6 +186,19 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // the accounts untouched.
   void RevokeSyncConsent(signin_metrics::ProfileSignout signout_source_metric);
 
+#if BUILDFLAG(IS_IOS)
+  // Whether a batch of primary account changes is in progress. See
+  // `Observer::OnEndBatchOfPrimaryAccountChanges()`.
+  bool IsBatchOfPrimaryAccountChangesInProgress() const;
+
+  // Starts a batch of primary account changes (e.g. when switching from one
+  // primary account to another). `OnEndBatchOfPrimaryAccountChanges()` is not
+  // sent on `OnPrimaryAccountChanged()` while the batch is running, and is sent
+  // when the returned `ScopedClosureRunner` is destructed.
+  // See `Observer::OnEndBatchOfPrimaryAccountChanges()`.
+  base::ScopedClosureRunner StartBatchOfPrimaryAccountChanges();
+#endif  // BUILDFLAG(IS_IOS)
+
   // Adds and removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -249,6 +271,17 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // account was initialized.
   const PrimaryAccount& GetPrimaryAccount() const;
 
+#if BUILDFLAG(IS_IOS)
+  // Stops the batch of primary account changes. Can only be called by
+  // `StartBatchOfPrimaryAccountChanges()`. Only one batch of primary account
+  // changes can be started at the same time.
+  void BatchOfPrimaryAccountChangesDone();
+
+  // Triggers `OnEndBatchOfPrimaryAccountChanges()` events. A batch of primary
+  // account changes should not be in progress when calling this method.
+  void FireOnEndBatchOfPrimaryAccountChanges();
+#endif  // BUILDFLAG(IS_IOS)
+
   // The SigninClient instance associated with this object. Must outlive this
   // object.
   raw_ptr<SigninClient> client_;
@@ -273,6 +306,10 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   std::optional<PrimaryAccount> primary_account_;
 
 #if BUILDFLAG(IS_IOS)
+  // `true` if there is a batch of primary account changes (e.g. account
+  // switching) in progress. See `StartBatchOfPrimaryAccountChanges()`.
+  bool batch_of_primary_account_changes_in_progress_ = false;
+
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
   base::ObserverList<
       Observer,
@@ -285,6 +322,10 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   base::ScopedObservation<ProfileOAuth2TokenService,
                           ProfileOAuth2TokenServiceObserver>
       token_service_observation_{this};
+
+#if BUILDFLAG(IS_IOS)
+  base::WeakPtrFactory<PrimaryAccountManager> weak_factory_{this};
+#endif  // BUILDFLAG(IS_IOS)
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_

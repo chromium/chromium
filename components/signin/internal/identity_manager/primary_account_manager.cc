@@ -692,6 +692,34 @@ void PrimaryAccountManager::RevokeSyncConsent(
   StartSignOut(signout_source_metric, RemoveAccountsOption::kKeepAllAccounts);
 }
 
+#if BUILDFLAG(IS_IOS)
+bool PrimaryAccountManager::IsBatchOfPrimaryAccountChangesInProgress() const {
+  return batch_of_primary_account_changes_in_progress_;
+}
+
+base::ScopedClosureRunner
+PrimaryAccountManager::StartBatchOfPrimaryAccountChanges() {
+  CHECK(!batch_of_primary_account_changes_in_progress_);
+  batch_of_primary_account_changes_in_progress_ = true;
+  return base::ScopedClosureRunner(
+      base::BindOnce(&PrimaryAccountManager::BatchOfPrimaryAccountChangesDone,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void PrimaryAccountManager::BatchOfPrimaryAccountChangesDone() {
+  CHECK(batch_of_primary_account_changes_in_progress_);
+  batch_of_primary_account_changes_in_progress_ = false;
+  FireOnEndBatchOfPrimaryAccountChanges();
+}
+
+void PrimaryAccountManager::FireOnEndBatchOfPrimaryAccountChanges() {
+  CHECK(!batch_of_primary_account_changes_in_progress_);
+  for (Observer& observer : observers_) {
+    observer.OnEndBatchOfPrimaryAccountChanges();
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void PrimaryAccountManager::StartSignOut(
     signin_metrics::ProfileSignout signout_source_metric,
     RemoveAccountsOption remove_option) {
@@ -911,6 +939,11 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
   for (Observer& observer : observers_) {
     observer.OnPrimaryAccountChanged(event_details);
   }
+#if BUILDFLAG(IS_IOS)
+  if (!batch_of_primary_account_changes_in_progress_) {
+    FireOnEndBatchOfPrimaryAccountChanges();
+  }
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 void PrimaryAccountManager::OnRefreshTokensLoaded() {

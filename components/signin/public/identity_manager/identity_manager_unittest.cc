@@ -2568,8 +2568,10 @@ TEST_F(IdentityManagerTest, BatchOfPrimaryAccountChanges) {
   identity_manager_observer()->SetOnPrimaryAccountChangedCallback(
       primary_account_callback);
 
+  EXPECT_FALSE(identity_manager()->IsBatchOfPrimaryAccountChangesInProgress());
   base::ScopedClosureRunner scoped_closure_runner =
       identity_manager()->StartBatchOfPrimaryAccountChanges();
+  EXPECT_TRUE(identity_manager()->IsBatchOfPrimaryAccountChangesInProgress());
   EXPECT_EQ(on_primary_account_changed_called, 0ul);
   ClearPrimaryAccount(identity_manager());
   EXPECT_EQ(on_primary_account_changed_called, 1ul);
@@ -2584,6 +2586,7 @@ TEST_F(IdentityManagerTest, BatchOfPrimaryAccountChanges) {
       primary_account_callback);
 
   scoped_closure_runner.RunAndReset();
+  EXPECT_FALSE(identity_manager()->IsBatchOfPrimaryAccountChangesInProgress());
   EXPECT_EQ(identity_manager_observer()
                 ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
             1ul);

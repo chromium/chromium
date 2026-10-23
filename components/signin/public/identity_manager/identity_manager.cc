@@ -134,11 +134,12 @@ void IdentityManager::Shutdown() {
 }
 
 #if BUILDFLAG(IS_IOS)
+bool IdentityManager::IsBatchOfPrimaryAccountChangesInProgress() const {
+  return primary_account_manager_->IsBatchOfPrimaryAccountChangesInProgress();
+}
+
 base::ScopedClosureRunner IdentityManager::StartBatchOfPrimaryAccountChanges() {
-  CHECK(!batch_of_primary_account_changes_in_progress_);
-  batch_of_primary_account_changes_in_progress_ = true;
-  return base::ScopedClosureRunner(base::BindOnce(
-      &IdentityManager::BatchOfPrimaryAccountChangesDone, GetWeakPtr()));
+  return primary_account_manager_->StartBatchOfPrimaryAccountChanges();
 }
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -654,12 +655,15 @@ void IdentityManager::OnPrimaryAccountChanged(
     }
   }
 #endif
-#if BUILDFLAG(IS_IOS)
-  if (!batch_of_primary_account_changes_in_progress_) {
-    FireOnEndBatchOfPrimaryAccountChanges();
-  }
-#endif  // BUILDFLAG(IS_IOS)
 }
+
+#if BUILDFLAG(IS_IOS)
+void IdentityManager::OnEndBatchOfPrimaryAccountChanges() {
+  for (auto& observer : observer_list_) {
+    observer.OnEndBatchOfPrimaryAccountChanges();
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {
   CoreAccountInfo account_info =
@@ -840,24 +844,6 @@ void IdentityManager::OnAccountRemoved(const AccountInfo& info) {
   }
 }
 
-#if BUILDFLAG(IS_IOS)
-bool IdentityManager::IsBatchOfPrimaryAccountChangesInProgress() {
-  return batch_of_primary_account_changes_in_progress_;
-}
-
-void IdentityManager::BatchOfPrimaryAccountChangesDone() {
-  CHECK(batch_of_primary_account_changes_in_progress_);
-  batch_of_primary_account_changes_in_progress_ = false;
-  FireOnEndBatchOfPrimaryAccountChanges();
-}
-
-void IdentityManager::FireOnEndBatchOfPrimaryAccountChanges() {
-  CHECK(!batch_of_primary_account_changes_in_progress_);
-  for (auto& observer : observer_list_) {
-    observer.OnEndBatchOfPrimaryAccountChanges();
-  }
-}
-#endif  // BUILDFLAG(IS_IOS)
 }  // namespace signin
 
 #if BUILDFLAG(IS_ANDROID)
