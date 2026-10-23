@@ -7,6 +7,8 @@
 #import <BackgroundTasks/BackgroundTasks.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/synchronization/waitable_event.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/test/ios/wait_util.h"
@@ -14,6 +16,7 @@
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/threading/thread_restrictions.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/app/application_delegate/app_init_stage.h"
 #import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
@@ -61,13 +64,20 @@ typedef void (^TaskExpirationBlock)();
 }
 @end
 
-// Refresh provider task that delays execution long enough to be canceled.
+// Refresh provider task that blocks execution until halted, allowing
+// cancellation to be tested deterministically.
 @interface ProlongedTask : VerifiableTask
+- (void)halt;
 @end
-@implementation ProlongedTask
+@implementation ProlongedTask {
+  base::WaitableEvent _haltEvent;
+}
 - (void)execute {
-  sleep(1);
-  [super execute];
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+  _haltEvent.Wait();
+}
+- (void)halt {
+  _haltEvent.Signal();
 }
 @end
 
@@ -129,6 +139,12 @@ typedef void (^TaskExpirationBlock)();
 }
 - (id<AppRefreshProviderTask>)task {
   return self.injectedTask;
+}
+- (void)cancelRefresh {
+  [super cancelRefresh];
+  if ([self.injectedTask isKindOfClass:[ProlongedTask class]]) {
+    [(ProlongedTask*)self.injectedTask halt];
+  }
 }
 @end
 
@@ -316,12 +332,14 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
   }
 
   // Call the handler passed as the `launchHandler` into `BGTaskScheduler` on
-  // the callback runner thread,  and then call `thenCallback` on the main
+  // the callback runner thread, and then call `thenCallback` on the main
   // thread.
   void InvokeTaskHandlerThen(base::OnceClosure thenCallback) {
     base::OnceCallback callback = base::BindOnce(task_handler_, task_mock_);
     scheduler_callback_runner_->PostTask(
-        FROM_HERE, std::move(callback).Then(std::move(thenCallback)));
+        FROM_HERE,
+        std::move(callback).Then(base::BindPostTask(
+            web::GetUIThreadTaskRunner({}), std::move(thenCallback))));
   }
 
   // Call the handler passed as the `expirationHandler` into `BGTask`.
@@ -568,8 +586,7 @@ TEST_F(BackgroundRefreshAppAgentTest, HandleNotDueTask) {
   EXPECT_FALSE([notDueProvider injectedTask].executed);
 }
 
-// TODO(crbug.com/377624966): Flaky-failing on ios-simulator
-TEST_F(BackgroundRefreshAppAgentTest, DISABLED_ExpireTask) {
+TEST_F(BackgroundRefreshAppAgentTest, ExpireTask) {
   // Test that when a task is running and the OS expiration method is called,
   // the task is terminated, and the task is *not* marked successful.
   // Note: The current implementation doesn't terminate the prolonged task;
@@ -579,7 +596,7 @@ TEST_F(BackgroundRefreshAppAgentTest, DISABLED_ExpireTask) {
   long_provider.injectedTask = [[ProlongedTask alloc] init];
   [agent_ addAppRefreshProvider:long_provider];
 
-  OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
+  OCMStub([task_mock_ setTaskCompletedWithSuccess:NO]);
 
   SimulateAppBackgrounding();
   InvokeTaskHandlerThen(run_loop_.QuitClosure());
