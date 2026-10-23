@@ -652,8 +652,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2Manager) {
   RunTestsInJsModule("ink2_manager_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, UndoRedoStack) {
-  RunTestsInJsModule("undo_redo_stack_test.js", "test.pdf");
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSMochaTest, UndoRedoStack) {
+  RunMochaTest("undo_redo_stack_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2AnnotationBrushMixin) {

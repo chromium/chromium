@@ -5,8 +5,7 @@
 import {UndoRedoStack} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {UndoRedoState, UndoRedoStateChangedDetail} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
-
-import {assertDeepEquals} from './test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNull} from 'chrome://webui-test/chai_assert.js';
 
 const textState: UndoRedoState = {
   type: 'text',
@@ -14,41 +13,39 @@ const textState: UndoRedoState = {
   after: null,
 };
 
-let lastEventDetail: UndoRedoStateChangedDetail|null = null;
+suite('UndoRedoStack', () => {
+  let stack: UndoRedoStack;
+  let lastEventDetail: UndoRedoStateChangedDetail|null = null;
 
-function createStackForEventTest(): UndoRedoStack {
-  lastEventDetail = null;
-  const target = new EventTarget();
-  const stack = new UndoRedoStack(target);
-  target.addEventListener('undo-redo-state-changed', (e: Event) => {
-    lastEventDetail = (e as CustomEvent<UndoRedoStateChangedDetail>).detail;
+  setup(() => {
+    lastEventDetail = null;
+    const target = new EventTarget();
+    stack = new UndoRedoStack(target);
+    target.addEventListener('undo-redo-state-changed', (e: Event) => {
+      lastEventDetail = (e as CustomEvent<UndoRedoStateChangedDetail>).detail;
+    });
   });
-  return stack;
-}
 
-function assertEvent(canUndo: boolean, canRedo: boolean, isDirty: boolean) {
-  assert(lastEventDetail);
-  chrome.test.assertEq(canUndo, lastEventDetail.canUndo);
-  chrome.test.assertEq(canRedo, lastEventDetail.canRedo);
-  chrome.test.assertEq(isDirty, lastEventDetail.hasUnsavedEdits);
-  lastEventDetail = null;
-}
+  function assertEvent(canUndo: boolean, canRedo: boolean, isDirty: boolean) {
+    assert(lastEventDetail);
+    assertEquals(canUndo, lastEventDetail.canUndo);
+    assertEquals(canRedo, lastEventDetail.canRedo);
+    assertEquals(isDirty, lastEventDetail.hasUnsavedEdits);
+    lastEventDetail = null;
+  }
 
-function assertNoEvent() {
-  chrome.test.assertEq(null, lastEventDetail);
-}
+  function assertNoEvent() {
+    assertNull(lastEventDetail);
+  }
 
-chrome.test.runTests([
-  function testPushAndUndoRedo() {
-    const stack = createStackForEventTest();
-
+  test('PushAndUndoRedo', () => {
     // Initial state
-    chrome.test.assertFalse(stack.canUndo());
-    chrome.test.assertFalse(stack.canRedo());
-    chrome.test.assertFalse(stack.isDirty());
+    assertFalse(stack.canUndo());
+    assertFalse(stack.canRedo());
+    assertFalse(stack.isDirty());
 
     // Undo when there is nothing to undo is a no-op and doesn't fire an event.
-    chrome.test.assertEq(null, stack.undo());
+    assertNull(stack.undo());
     assertNoEvent();
 
     // Push ink annotation
@@ -68,7 +65,7 @@ chrome.test.runTests([
     assertEvent(false, true, false);
 
     // Undo when there is nothing to undo is a no-op and doesn't fire an event.
-    chrome.test.assertEq(null, stack.undo());
+    assertNull(stack.undo());
     assertNoEvent();
 
     // Redo pushes the ink annotation
@@ -80,17 +77,13 @@ chrome.test.runTests([
     assertEvent(true, false, true);
 
     // Calling redo with nothing to redo does not fire an event and is a no-op.
-    chrome.test.assertEq(null, stack.redo());
+    assertNull(stack.redo());
     assertNoEvent();
+  });
 
-    chrome.test.succeed();
-  },
-
-  function testSavedState() {
-    const stack = createStackForEventTest();
-
+  test('SavedState', () => {
     // Initial state is clean.
-    chrome.test.assertFalse(stack.isDirty());
+    assertFalse(stack.isDirty());
 
     // Ink stroke makes the stack dirty.
     stack.push({type: 'ink'});
@@ -123,13 +116,9 @@ chrome.test.runTests([
     // Redo to saved state -> clean
     stack.redo();
     assertEvent(true, true, false);
+  });
 
-    chrome.test.succeed();
-  },
-
-  function testInvalidateRedo() {
-    const stack = createStackForEventTest();
-
+  test('InvalidateRedo', () => {
     stack.push({type: 'ink'});
     assertEvent(true, false, true);
     stack.push(textState);
@@ -143,7 +132,5 @@ chrome.test.runTests([
     // be cleared.
     stack.push({type: 'ink'});
     assertEvent(true, false, true);
-
-    chrome.test.succeed();
-  },
-]);
+  });
+});
