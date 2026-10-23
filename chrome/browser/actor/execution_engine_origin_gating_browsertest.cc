@@ -2743,7 +2743,7 @@ class ExecutionEngineOriginGatingSlowResponseBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    CHECK(!embedded_https_test_server().Started());
+    CHECK(!embedded_https_test_server().StartedAcceptingConnection());
     response_manager_ =
         std::make_unique<net::test_server::ControllableHttpResponseManager>(
             &embedded_https_test_server(), "/slow");
