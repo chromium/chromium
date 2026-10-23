@@ -135,6 +135,16 @@ Notes (hints) for the next roll(er):
   was renamed or deleted upstream), plus the upstream source files added or
   removed (the same report as `check_file_lists.py`). Add `--json` for
   machine-readable output.
+* Run `third_party/protobuf/roll_protobuf.py start --to <tag or commit>` (as an
+  alternative to steps 0-3 and 5 above) to prepare `GITDIR/protobuf-roll/`,
+  commit the unmodified upstream release, and replay `patches/*.patch` one
+  commit at a time with `git apply -3`. CLEAN patches are committed and their
+  `.patch` files regenerated; EMPTY patches (already upstream) are deleted and
+  dropped in their own commit; and CONFLICT stops with exit code 2 so you can
+  finish by hand (see "Doing it by hand" below). `roll_protobuf.py status
+  [--json]` shows where the roll is, `roll_protobuf.py prepare --to <version>`
+  populates `GITDIR/protobuf-roll/` without modifying the working tree, and
+  `roll_protobuf.py abort` resets the branch to the commit before `start`.
 * Run
   `third_party/protobuf/compile_size_probe.py -C out/Default --save pre_roll`
   before starting a roll and
@@ -149,6 +159,36 @@ Notes (hints) for the next roll(er):
 * The protobuf wheel for vpython3 needs to stay in sync with this protobuf, at
   least if there are breaking changes in protobuf's python bindings. See
   https://chromium.googlesource.com/infra/infra/+/refs/heads/main/infra/tools/dockerbuild/README.wheels.md
+
+Doing it by hand:
+
+`roll_protobuf.py start` records all of its state in git commits on your local
+branch and under `GITDIR/protobuf-roll/` (`GITDIR` is `git rev-parse
+--git-dir`). If `start` stops on a conflicting patch, you can finish that patch
+and any remaining files in `GITDIR/protobuf-roll/chain/` (in sorted order) with
+plain git:
+
+1. Apply the patch (skip the `git apply` command for the patch that already
+   conflicted during `start`). If `git apply` leaves conflicts, resolve the
+   `<<<<<<<` markers and `git add` the resolved files:
+
+   $ git apply -3 --directory=third_party/protobuf \
+       "$GITDIR/protobuf-roll/chain/NNNN-name.patch"
+
+2. If nothing is staged (`git diff --cached --quiet` succeeds), the change is
+   already upstream:
+
+   $ git rm third_party/protobuf/patches/NNNN-name.patch
+   $ git commit -m "Drop patches/NNNN-name.patch (already upstream)"
+
+3. Otherwise commit the change, regenerate its `.patch` file from that commit
+   alone, and amend:
+
+   $ git commit -m "Apply patches/NNNN-name.patch"
+   $ git diff HEAD~1 HEAD --relative=third_party/protobuf \
+       > third_party/protobuf/patches/NNNN-name.patch
+   $ git commit --amend --no-edit \
+       third_party/protobuf/patches/NNNN-name.patch
 
 Note about vpython:
 

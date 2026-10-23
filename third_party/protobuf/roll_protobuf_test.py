@@ -2639,6 +2639,91 @@ class RollProtobufStartTest(unittest.TestCase):
                                     r'No protobuf roll is in progress'):
             roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
 
+    def testMainStartExitsTwoOnConflictAndStatusAndAbortCleanUp(self):
+        start_commit = _RunGitCommand(self.repository_root,
+                                      ['rev-parse', 'HEAD'])
+
+        start_code, start_stdout, _ = _RunMain(
+            'start',
+            '--to',
+            'v37.0',
+            '--protobuf-dir',
+            self.fixture.protobuf_directory,
+            '--upstream-repo',
+            self.fixture.upstream_directory,
+        )
+        status_code, status_stdout, _ = _RunMain(
+            'status',
+            '--protobuf-dir',
+            self.fixture.protobuf_directory,
+            '--json',
+        )
+        abort_code, abort_stdout, _ = _RunMain(
+            'abort',
+            '--protobuf-dir',
+            self.fixture.protobuf_directory,
+        )
+
+        self.assertEqual(
+            (
+                roll_protobuf.EXIT_CODE_CONFLICT,
+                roll_protobuf.EXIT_CODE_SUCCESS,
+                roll_protobuf.EXIT_CODE_SUCCESS,
+            ),
+            (start_code, status_code, abort_code),
+        )
+        self.assertIn('Doing it by hand', start_stdout)
+        self.assertEqual('conflict', json.loads(status_stdout)['state'])
+        self.assertEqual(
+            f'Aborted roll to v37.0 and reset to {start_commit}.',
+            abort_stdout,
+        )
+
+    def testMainPrepareAndCleanStartExitZero(self):
+        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+            os.remove(
+                os.path.join(self.fixture.protobuf_directory, 'patches',
+                             patch_name))
+        _RunGitCommand(self.repository_root, ['add', '-A', '.'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Drop conflicting patches'])
+
+        prepare_code, prepare_stdout, _ = _RunMain(
+            'prepare',
+            '--to',
+            'v37.0',
+            '--protobuf-dir',
+            self.fixture.protobuf_directory,
+            '--upstream-repo',
+            self.fixture.upstream_directory,
+        )
+        start_code, start_stdout, _ = _RunMain(
+            'start',
+            '--to',
+            'v37.0',
+            '--protobuf-dir',
+            self.fixture.protobuf_directory,
+            '--upstream-repo',
+            self.fixture.upstream_directory,
+        )
+        status_code, status_stdout, _ = _RunMain(
+            'status',
+            '--protobuf-dir',
+            self.fixture.protobuf_directory,
+        )
+
+        self.assertEqual(
+            (
+                roll_protobuf.EXIT_CODE_SUCCESS,
+                roll_protobuf.EXIT_CODE_SUCCESS,
+                roll_protobuf.EXIT_CODE_SUCCESS,
+            ),
+            (prepare_code, start_code, status_code),
+        )
+        self.assertIn('Prepared roll', prepare_stdout)
+        self.assertIn('Replayed all 3 patch(es).', start_stdout)
+        self.assertIn('State: replayed (3/3 patch(es)).', status_stdout)
+
 
 if __name__ == '__main__':
     unittest.main()

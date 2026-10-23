@@ -20,10 +20,21 @@ Subcommands:
     (https://crbug.com/568074498). Replays every patch onto the target with
     `git apply -3`, classifies it (see PatchReplayStatus), and lists upstream
     library files added or removed between the two versions.
+  prepare --to <tag or commit>: Writes GITDIR/protobuf-roll/ (chain/*.patch
+    with full blob IDs and state.json) and copies preimage blobs into the
+    checkout without modifying the working tree.
+  start --to <tag or commit>: Prepares GITDIR/protobuf-roll/, commits the
+    unmodified upstream release, and replays patches/*.patch one commit at a
+    time with `git apply -3`, stopping on the first conflict
+    (https://crbug.com/568074155).
+  status: Reports where an in-progress roll is and which commands are valid
+    next.
+  abort: Resets the branch to the commit recorded by `start` and removes
+    GITDIR/protobuf-roll/.
 
-Exit codes: 0 when the command succeeded (for `plan`, whatever the per-patch
-classification), 1 when verification failed or an error occurred, 2 for
-invalid usage (argparse).
+Exit codes: 0 when the step finished (for `plan`, whatever the per-patch
+classification), 2 when `start` stopped on a conflict (or for invalid CLI
+arguments), 1 when verification failed or an error occurred.
 """
 
 from collections.abc import Collection, Iterable, Sequence
@@ -1592,11 +1603,28 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         help='Dry run: classify every patch as CLEAN, EMPTY, CONFLICT or '
         'MISSING_FILE on a new upstream version, without touching the '
         'checkout.')
-    plan_parser.add_argument(
-        '--to',
-        required=True,
-        dest='to_revision',
-        help='Upstream tag or commit to plan the roll to (for example v37.0).')
+    prepare_parser = subparsers.add_parser(
+        'prepare',
+        help='Populate GITDIR/protobuf-roll/ and copy preimage blobs without '
+        'modifying the working tree.')
+    start_parser = subparsers.add_parser(
+        'start',
+        help='Import a new upstream version into the checkout and replay '
+        'patches/*.patch one commit at a time.')
+    subparsers.add_parser(
+        'status',
+        help='Show where an in-progress roll is and which commands are valid '
+        'next.')
+    subparsers.add_parser(
+        'abort',
+        help='Reset the branch to the commit before start and delete '
+        'GITDIR/protobuf-roll/.')
+    for target_parser in (plan_parser, prepare_parser, start_parser):
+        target_parser.add_argument(
+            '--to',
+            required=True,
+            dest='to_revision',
+            help='Upstream tag or commit to roll to (for example v37.0).')
     for subparser in subparsers.choices.values():
         subparser.add_argument(
             '-C',
@@ -1643,6 +1671,28 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
                               *upstream_arguments)
             report = FormatRollPlanReport(result)
             # A plan with conflicts is what `plan` is for.
+            exit_code = EXIT_CODE_SUCCESS
+        elif arguments.subcommand == 'prepare':
+            result = PrepareRoll(arguments.to_revision,
+                                 arguments.protobuf_directory,
+                                 *upstream_arguments)
+            report = FormatRollStateReport(result)
+            exit_code = EXIT_CODE_SUCCESS
+        elif arguments.subcommand == 'start':
+            result = StartRoll(arguments.to_revision,
+                               arguments.protobuf_directory,
+                               *upstream_arguments)
+            report = FormatRollStateReport(result)
+            exit_code = (EXIT_CODE_CONFLICT
+                         if result.phase == 'conflict' else EXIT_CODE_SUCCESS)
+        elif arguments.subcommand == 'status':
+            result = GetRollStatus(arguments.protobuf_directory)
+            report = FormatRollStatusReport(result)
+            exit_code = EXIT_CODE_SUCCESS
+        elif arguments.subcommand == 'abort':
+            result = AbortRoll(arguments.protobuf_directory)
+            report = (f'Aborted roll to {result.new_revision} and reset to '
+                      f'{result.start_commit}.')
             exit_code = EXIT_CODE_SUCCESS
         else:
             result = CheckTreeMatchesPatchedUpstream(
