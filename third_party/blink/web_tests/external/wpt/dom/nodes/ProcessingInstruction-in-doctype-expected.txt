@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] XML: Processing instruction in doctype internal subset
-  assert_equals: expected DocumentType node but got ProcessingInstruction node with target "x" and data "y"
-Harness: the test ran to completion.
-

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] xml-stylesheet processing instruction in doctype internal subset
-  assert_equals: expected "auto" but got "1"
-Harness: the test ran to completion.
-

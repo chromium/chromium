@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.h"
 
+#include "base/auto_reset.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_view_rust.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -76,7 +77,8 @@ inline AtomicString RustStrToAtomicString(rust::Str str) {
 }
 
 inline bool HasNoStyleInformation(Document* document) {
-  if (document->SawElementsInKnownNamespaces()) {
+  if (document->SawElementsInKnownNamespaces() ||
+      DocumentXSLT::HasTransformSourceDocument(*document)) {
     return false;
   }
 
@@ -263,6 +265,11 @@ void XMLDocumentParserRs::Append(const String& xml_string) {
     return;
   }
 
+  if (parser_paused_ || in_process_events_) {
+    pending_src_.Append(xml_string);
+    return;
+  }
+
   if (!xml_string.empty()) {
     // Resume parsing, recover from unbalanced root error at previous chunk
     // boundary.
@@ -282,27 +289,48 @@ void XMLDocumentParserRs::Append(const String& xml_string) {
 }
 
 void XMLDocumentParserRs::ProcessEvents() {
-  while (!parser_paused_ && !IsStopped() && !saw_end_document_ &&
-         !xml_ffi::saw_error(*read_state_)) {
-    xml_ffi::process_next_event(*read_state_);
+  {
+    CHECK(!in_process_events_);
+    base::AutoReset<bool> reentrancy_guard(&in_process_events_, true);
+    while (!parser_paused_ && !IsStopped() && !saw_end_document_ &&
+           !xml_ffi::saw_error(*read_state_)) {
+      xml_ffi::process_next_event(*read_state_);
+    }
+    if (xml_ffi::saw_error(*read_state_)) {
+      rust::String error_message = "";
+      TextPosition position = TextPosition::BelowRangePosition();
+      uint64_t row = 0, column = 0;
+      if (xml_ffi::try_get_error_details(*read_state_, error_message, row,
+                                         column)) {
+        position = TextPosition(
+            OrdinalNumber::FromZeroBasedInt(static_cast<int>(row)),
+            OrdinalNumber::FromZeroBasedInt(static_cast<int>(column)));
+      }
+      if (xml_ffi::is_error_resumable(*read_state_)) {
+        carry_unbalanced_root_error_ = {String::FromUtf8(error_message.c_str()),
+                                        position};
+        xml_ffi::reset_error(*read_state_);
+      } else {
+        HandleError(XMLErrors::kErrorTypeFatal, error_message.c_str(),
+                    position);
+      }
+    }
   }
-  if (xml_ffi::saw_error(*read_state_)) {
-    rust::String error_message = "";
-    TextPosition position = TextPosition::BelowRangePosition();
-    uint64_t row = 0, column = 0;
-    if (xml_ffi::try_get_error_details(*read_state_, error_message, row,
-                                       column)) {
-      position = TextPosition(
-          OrdinalNumber::FromZeroBasedInt(static_cast<int>(row)),
-          OrdinalNumber::FromZeroBasedInt(static_cast<int>(column)));
+
+  if (IsDetached() || parser_paused_) {
+    return;
+  }
+
+  if (!pending_src_.empty()) {
+    String rest = pending_src_.ReleaseString();
+    Append(rest);
+    if (IsDetached() || parser_paused_) {
+      return;
     }
-    if (xml_ffi::is_error_resumable(*read_state_) && !finish_called_) {
-      carry_unbalanced_root_error_ = {String::FromUtf8(error_message.c_str()),
-                                      position};
-      xml_ffi::reset_error(*read_state_);
-    } else {
-      HandleError(XMLErrors::kErrorTypeFatal, error_message.c_str(), position);
-    }
+  }
+
+  if (finish_called_) {
+    EndInternal();
   }
 }
 
@@ -365,8 +393,16 @@ void XMLDocumentParserRs::StartDocument(
   GetDocument()->SetHasXMLDeclaration(true);
 }
 
+void XMLDocumentParserRs::UpdateScriptStartPositionIfNeeded() {
+  if (set_script_start_position_on_next_event_) {
+    script_start_position_ = GetTextPosition();
+    set_script_start_position_on_next_event_ = false;
+  }
+}
+
 void XMLDocumentParserRs::ProcessingInstruction(rust::Str target,
                                                 rust::Str data) {
+  UpdateScriptStartPositionIfNeeded();
   if (!UpdateLeafTextNode()) {
     return;
   }
@@ -401,8 +437,8 @@ void XMLDocumentParserRs::ProcessingInstruction(rust::Str target,
     // Only XSL processing instructions before the first element (in the prolog)
     // can trigger an XSL transformation.
     if (!saw_first_element_ && IsXSLTAllowed()) {
-      saw_xsl_transform_ = true;
       if (!DocumentXSLT::HasTransformSourceDocument(*GetDocument())) {
+        saw_xsl_transform_ = true;
         StopParsing();
       }
     } else {
@@ -419,6 +455,7 @@ void XMLDocumentParserRs::StartElementNs(
     rust::Str ns,
     xml_ffi::AttributesIterator& attributes,
     xml_ffi::NamespacesIterator& namespaces) {
+  UpdateScriptStartPositionIfNeeded();
   if (IsStopped()) {
     return;
   }
@@ -456,8 +493,8 @@ void XMLDocumentParserRs::StartElementNs(
               if (pi->IsXSL()) {
                 DocumentXSLT::ProcessingInstructionInsertedIntoDocument(
                     *document_, pi);
-                saw_xsl_transform_ = true;
                 if (!DocumentXSLT::HasTransformSourceDocument(*GetDocument())) {
+                  saw_xsl_transform_ = true;
                   StopParsing();
                   return;
                 }
@@ -578,13 +615,30 @@ void XMLDocumentParserRs::StartElementNs(
 
   Element* new_element =
       current_node_->GetDocument().CreateElement(q_name, flags, is, registry);
-
+  // Check IsStopped() because custom element constructors may synchronously
+  // trigger removal of the document and cancellation of this parser.
+  if (IsStopped()) {
+    return;
+  }
   if (!new_element) {
     StopParsing();
     return;
   }
 
-  SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
+  if (reactions.has_value()) {
+    // A synchronous custom element constructor ran and may have manipulated
+    // the element (set attributes, appended children, or inserted it into the
+    // tree), so the batched ParserSetAttributes() path is no longer safe. Set
+    // the attributes one by one, as HTMLConstructionSite::CreateElement does.
+    if (!ScriptingContentIsAllowed(GetParserContentPolicy())) {
+      new_element->StripScriptingAttributes(prefixed_attributes);
+    }
+    for (const auto& attribute : prefixed_attributes) {
+      new_element->setAttribute(attribute.GetName(), attribute.Value());
+    }
+  } else {
+    SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
+  }
 
   if (parsing_fragment_ && encountered_namespace_reset &&
       !ancestor_resetting_namespace_) {
@@ -595,6 +649,7 @@ void XMLDocumentParserRs::StartElementNs(
 
   if (new_element->IsScriptElement()) {
     script_start_position_ = GetTextPosition();
+    set_script_start_position_on_next_event_ = true;
   }
 
   current_node_->ParserAppendChild(new_element);
@@ -627,6 +682,7 @@ void XMLDocumentParserRs::StartElementNs(
 void XMLDocumentParserRs::EndElementNs(rust::Str local_name,
                                        rust::Str prefix,
                                        rust::Str ns) {
+  UpdateScriptStartPositionIfNeeded();
   if (!UpdateLeafTextNode()) {
     return;
   }
@@ -695,11 +751,13 @@ void XMLDocumentParserRs::EndElementNs(rust::Str local_name,
 }
 
 void XMLDocumentParserRs::Characters(rust::Str characters) {
+  UpdateScriptStartPositionIfNeeded();
   CreateLeafTextNodeIfNeeded();
   buffered_text_.Append(RustStrToWtfString(characters));
 }
 
 void XMLDocumentParserRs::CData(rust::Str data) {
+  UpdateScriptStartPositionIfNeeded();
   if (!UpdateLeafTextNode()) {
     return;
   }
@@ -709,6 +767,7 @@ void XMLDocumentParserRs::CData(rust::Str data) {
 }
 
 void XMLDocumentParserRs::Comment(rust::Str comment) {
+  UpdateScriptStartPositionIfNeeded();
   if (!UpdateLeafTextNode()) {
     return;
   }
@@ -806,12 +865,21 @@ void XMLDocumentParserRs::EndInternal() {
     DocumentParser::StopParsing();
   }
 
-  if (IsDetached()) {
+  if (IsDetached() || parser_paused_) {
     return;
   }
 
-  if (parser_paused_) {
-    return;
+  finish_called_ = false;
+
+  if (carry_unbalanced_root_error_) {
+    CarryUnbalancedRootElementError error =
+        std::move(*carry_unbalanced_root_error_);
+    carry_unbalanced_root_error_ = std::nullopt;
+    HandleError(XMLErrors::kErrorTypeFatal, error.error_message.Utf8().c_str(),
+                error.position);
+    if (IsDetached()) {
+      return;
+    }
   }
 
   // StopParsing() calls InsertErrorMessageBlock() if there was a parsing
@@ -856,13 +924,7 @@ void XMLDocumentParserRs::Finish() {
     return;
   }
 
-  if (carry_unbalanced_root_error_) {
-    HandleError(XMLErrors::kErrorTypeFatal,
-                carry_unbalanced_root_error_->error_message.Utf8().c_str(),
-                carry_unbalanced_root_error_->position);
-  }
-
-  if (parser_paused_) {
+  if (parser_paused_ || in_process_events_) {
     finish_called_ = true;
   } else {
     EndInternal();
@@ -911,7 +973,8 @@ void XMLDocumentParserRs::Detach() {
 }
 
 bool XMLDocumentParserRs::WellFormed() const {
-  return !xml_ffi::saw_error(*read_state_) && !carry_unbalanced_root_error_;
+  return !saw_error_ && !xml_ffi::saw_error(*read_state_) &&
+         !carry_unbalanced_root_error_;
 }
 
 void XMLDocumentParserRs::InsertErrorMessageBlock() {

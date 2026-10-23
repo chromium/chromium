@@ -8008,6 +8008,7 @@
       // if XSLT is enabled (e.g. reverse origin trial or CAP alerts).
       // https://crbug.com/441911594
       name: "XMLParsingRust",
+      status: "experimental",
     },
     {
       // Enables the Rust XML parser for situations where we know

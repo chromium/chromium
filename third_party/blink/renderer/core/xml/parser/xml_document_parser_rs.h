@@ -114,9 +114,11 @@ class CORE_EXPORT XMLDocumentParserRs final : public ScriptableDocumentParser,
 
   bool ShouldMarkScriptAlreadyStarted() const;
   bool IsXSLTAllowed() const;
+  void UpdateScriptStartPositionIfNeeded();
 
   Member<XMLParserScriptRunner> script_runner_;
   TextPosition script_start_position_;
+  bool set_script_start_position_on_next_event_ = false;
   bool saw_error_ = false;
   bool saw_css_ = false;
 
@@ -142,6 +144,8 @@ class CORE_EXPORT XMLDocumentParserRs final : public ScriptableDocumentParser,
   StringBuilder original_source_for_transform_;
 
   bool parser_paused_ = false;
+  bool in_process_events_ = false;
+  StringBuilder pending_src_;
   bool requesting_script_ = false;
   bool waiting_for_stylesheets_ = false;
   bool added_pending_parser_blocking_stylesheet_ = false;

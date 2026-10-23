@@ -9,7 +9,7 @@ use xml::{
     attribute::OwnedAttribute,
     common::{Position, TextPosition},
     reader::{
-        ErrorKind, EventReader as XmlEventReader,
+        ErrorKind, EventReader as XmlEventReader, ImmutableEntitiesError,
         XmlEvent::{
             CData, Characters, Comment, Doctype, EndDocument, EndElement, ProcessingInstruction,
             StartDocument, StartElement, Whitespace,
@@ -209,10 +209,10 @@ fn try_get_last_event_position(read_state: &XmlReadState, row: &mut u64, col: &m
 
 fn add_xhtml_entities(read_state: &mut XmlReadState) {
     for map in [LAT1_MAP, SYMBOL_MAP, SPECIAL_MAP, HTML5_MAP].iter() {
-        read_state
-            .event_reader
-            .add_entities(map.iter().copied())
-            .expect("Adding built-in entities should not cause an error.");
+        match read_state.event_reader.add_entities(map.iter().copied()) {
+            Ok(()) | Err(ImmutableEntitiesError::StandaloneDocument) => {}
+            Err(e) => panic!("Adding built-in entities should not cause an error: {e}"),
+        }
     }
 }
 

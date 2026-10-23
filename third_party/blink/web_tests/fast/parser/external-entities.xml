@@ -7,6 +7,6 @@ if (window.testRunner)
     testRunner.dumpAsText();
 </script>
 <p>&message;</p>
-<p class="test"><font color="red"> This should be the only line on this page.  You should see a parse error above.</font></p>
+<p class="test"><font color="red">FAIL: This line should not be rendered. You should see a parse error instead.</font></p>
 </body>
 </html>

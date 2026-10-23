@@ -9,6 +9,5 @@ If you don't crash, you pass. A parsing error in the "xml-parser" subframe is ex
 Frame: 'xml-parser'
 --------
 This page contains the following errors:
-error on line 1 at column 20: Blank needed here
-
+error on line 1 at column 20: Unexpected token: >
 Below is a rendering of the page up to the first error.
