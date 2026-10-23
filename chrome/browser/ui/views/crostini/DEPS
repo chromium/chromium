@@ -16,11 +16,25 @@ include_rules = [
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/chrome_browser_main.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/test",
-  "+chrome/test",
 ]
+
+# Only tests need these non-ash //chrome dependencies.
+specific_include_rules = {
+  "crostini_app_restart_dialog_unittest\\.cc": [
+    "+chrome/test",
+  ],
+  "crostini_dialogue_browser_test_util\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/chrome_browser_main.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  ],
+  "crostini_dialogue_browser_test_util\\.h": [
+    "+chrome/browser/ui/test",
+  ],
+  "(crostini_uninstaller_view_browsertest\\.cc|crostini_update_filesystem_view_browsertest\\.cc)": [
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/test",
+  ],
+}
