@@ -387,8 +387,7 @@ use_remoteexec = true
 use_siso = true
 ```
 
-If `args.gn` contains `use_reclient=true`, drop it or replace it with
-`use_reclient=false`.
+If `args.gn` contains `use_reclient`, remove it.
 
 That's it. Remember to always use `autoninja` for building Chromium as described
 below, instead of directly invoking `siso` or `ninja`.
