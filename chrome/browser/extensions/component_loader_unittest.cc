@@ -62,6 +62,10 @@
 #include "components/search/ntp_features.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/file_manager/app_id.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -548,6 +552,18 @@ TEST_F(ComponentLoaderTest, RemovePendingAdd) {
   EXPECT_FALSE(component_loader_->Exists(kExtensionId));
   EXPECT_FALSE(component_loader_->IsPendingAdd(kExtensionId));
   EXPECT_FALSE(component_loader_->ExistsOrPendingAdd(kExtensionId));
+}
+
+// Verifies that the Image Loader extension is not loaded by default and can
+// be loaded on demand.
+TEST_F(ComponentLoaderTest, AddImageLoaderExtensionOnDemand) {
+  component_loader_->EnableBackgroundExtensionsForTesting();
+  component_loader_->AddDefaultComponentExtensions(false);
+  EXPECT_FALSE(
+      component_loader_->Exists(file_manager::kImageLoaderExtensionId));
+
+  component_loader_->AddImageLoaderExtension();
+  EXPECT_TRUE(component_loader_->Exists(file_manager::kImageLoaderExtensionId));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

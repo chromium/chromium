@@ -158,6 +158,9 @@ class ComponentLoader : public KeyedService {
                            base::OnceClosure done_cb);
 
   void AddChromeOsSpeechSynthesisExtensions();
+
+  // Adds the Image Loader component extension.
+  void AddImageLoaderExtension();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   void set_ignore_allowlist_for_testing(bool value) {
@@ -250,7 +253,6 @@ class ComponentLoader : public KeyedService {
   void AddChromeApp();
   void AddFileManagerExtension();
   void AddGalleryExtension();
-  void AddImageLoaderExtension();
   void AddGuestModeTestExtension(const base::FilePath& path);
   void AddKeyboardApp();
 

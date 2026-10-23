@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
@@ -336,6 +337,13 @@ void ThumbnailLoader::LoadForFileWithMetadata(
   if (!IsSupported(request.file_path)) {
     std::move(callback).Run(/*bitmap=*/nullptr, base::File::FILE_ERROR_ABORT);
     return;
+  }
+
+  // Load the Image Loader extension on demand before opening a channel to it.
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (component_loader &&
+      !component_loader->Exists(file_manager::kImageLoaderExtensionId)) {
+    component_loader->AddImageLoaderExtension();
   }
 
   const GURL image_loader_url = file_manager::util::GetImageLoaderBaseURL();

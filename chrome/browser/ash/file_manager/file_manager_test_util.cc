@@ -143,6 +143,9 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
   extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
   auto* component_loader = extensions::ComponentLoader::Get(profile);
   component_loader->AddDefaultComponentExtensions(false);
+  // Image Loader is loaded on demand in production, so add it explicitly for
+  // tests that interact with it directly (e.g. ImageLoaderJsTest).
+  component_loader->AddImageLoaderExtension();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // QuickOffice loads from rootfs at /usr/share/chromeos-assets/quickoffce
   // which does not exist on bots for tests, so load test version after the
