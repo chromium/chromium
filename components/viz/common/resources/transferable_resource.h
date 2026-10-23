@@ -43,7 +43,6 @@ struct ReturnedResourceViz;
 
 struct VIZ_COMMON_EXPORT TransferableResource {
   struct VIZ_COMMON_EXPORT MetadataOverride {
-    std::optional<bool> is_overlay_candidate;
     std::optional<gfx::ColorSpace> color_space;
     std::optional<SkAlphaType> alpha_type;
   };
@@ -168,10 +167,9 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // A gpu resource may be possible to use directly in an overlay if this is
   // true.
   bool GetIsOverlayCandidate() const {
-    return metadata_override_.is_overlay_candidate.value_or(
-        shared_image_
-            ? shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)
-            : false);
+    return shared_image_
+               ? shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)
+               : false;
   }
 
   // The color space that is used for pixel path operations (e.g, TexImage,

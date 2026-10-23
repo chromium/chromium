@@ -25,11 +25,6 @@ namespace mojo {
 template <>
 struct StructTraits<viz::mojom::MetadataOverrideDataView,
                     viz::TransferableResource::MetadataOverride> {
-  static const std::optional<bool>& is_overlay_candidate(
-      const viz::TransferableResource::MetadataOverride& input) {
-    return input.is_overlay_candidate;
-  }
-
   static const std::optional<gfx::ColorSpace>& color_space(
       const viz::TransferableResource::MetadataOverride& input) {
     return input.color_space;
