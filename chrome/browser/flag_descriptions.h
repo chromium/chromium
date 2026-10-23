@@ -7735,11 +7735,6 @@ inline constexpr char kFaceRetouchOverrideDescription[] =
     "Enables or disables the face retouch feature using the relighting button "
     "in the VC panel.";
 
-inline constexpr char kFastPairPwaCompanionName[] =
-    "Enable Fast Pair Web Companion";
-inline constexpr char kFastPairPwaCompanionDescription[] =
-    "Enables Fast Pair Web Companion link after device pairing.";
-
 inline constexpr char kUseHDRTransferFunctionName[] =
     "Monitor/Display HDR transfer function";
 inline constexpr char kUseHDRTransferFunctionDescription[] =

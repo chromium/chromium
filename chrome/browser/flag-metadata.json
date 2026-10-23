@@ -5134,14 +5134,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "fast-pair-pwa-companion",
-    "owners": [
-      "//ash/quick_pair/OWNERS",
-      "gschen@chromium.org"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "fedcm-active-mode-multiple-identity-providers",
     "owners": [ "ryqin@google.com", "web-identity-eng@google.com" ],
     "expiry_milestone": 165
