@@ -22,6 +22,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "testing/android/native_test/native_browser_test_support.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_management.h"
@@ -109,6 +110,12 @@ bool AndroidBrowserTest::SetUpUserDataDirectory() {
 void AndroidBrowserTest::PreRunTestOnMainThread() {}
 
 void AndroidBrowserTest::PostRunTestOnMainThread() {
+  // Begin Activity teardown before closing all tabs so Activity.isFinishing()
+  // is already true when TabModel observers fire. Otherwise closing the last
+  // tab causes LayoutManagerChrome to show HubLayout, inflating tab switcher UI
+  // and running a full compositor frame right before destroying the Activity.
+  testing::android::RunActivityTeardownCallback();
+
   // Closing all tabs in a TabModel can result in it removing itself from
   // TabModelList::models(), so we must copy the list first.
   std::vector<raw_ptr<TabModel, VectorExperimental>> models =

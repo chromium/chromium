@@ -29,6 +29,7 @@ namespace {
 // Java calls to set this true when async startup tasks are done for browser
 // tests.
 bool g_java_startup_tasks_complete = false;
+bool g_activity_teardown_started = false;
 bool g_activity_teardown_complete = false;
 
 base::OnceClosure& GetJavaStartupTasksCompleteCallback() {
@@ -80,6 +81,10 @@ void SetActivityTeardownCompleteCallbackForBrowserTests(
 }
 
 void RunActivityTeardownCallback() {
+  if (g_activity_teardown_started) {
+    return;
+  }
+  g_activity_teardown_started = true;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NativeBrowserTest_runActivityTeardownCallback(env);
 }

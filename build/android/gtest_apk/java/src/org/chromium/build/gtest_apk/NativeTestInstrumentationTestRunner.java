@@ -359,20 +359,29 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
                 // process crashes.
             }
 
+            boolean hasMoreShards = mShards != null && !mShards.isEmpty();
             if (mPid != Process.myPid()) {
                 Process.killProcess(mPid);
-                try {
-                    // Always wait at least once to give the OS time to kill the process. Otherwise
-                    // the process occasionally fails to start correctly.
-                    Thread.sleep(WAIT_FOR_DEATH_MILLIS);
-                    while (isAppProcessAlive(getContext(), mPid)) {
+                // Only block waiting for process death if another shard is about to launch inside
+                // this instrumentation run (where startActivity() can otherwise race AMS's async
+                // binderDied handling, see crrev.com/c/7063392). Otherwise finish() invokes
+                // finishInstrumentation(), which synchronously calls forceStopPackageLocked().
+                //
+                // Note: if there are hangs or failures, then the wait may be needed in all cases.
+                if (hasMoreShards) {
+                    try {
+                        // Always wait at least once to give the OS time to kill the process.
+                        // Otherwise the process occasionally fails to start correctly.
                         Thread.sleep(WAIT_FOR_DEATH_MILLIS);
+                        while (isAppProcessAlive(getContext(), mPid)) {
+                            Thread.sleep(WAIT_FOR_DEATH_MILLIS);
+                        }
+                    } catch (InterruptedException e) {
+                        Log.e(TAG, String.format("%d may still be alive.", mPid), e);
                     }
-                } catch (InterruptedException e) {
-                    Log.e(TAG, String.format("%d may still be alive.", mPid), e);
                 }
             }
-            if (mShards != null && !mShards.isEmpty()) {
+            if (hasMoreShards) {
                 mHandler.post(new ShardStarter());
             } else {
                 finish(Activity.RESULT_OK, new Bundle());

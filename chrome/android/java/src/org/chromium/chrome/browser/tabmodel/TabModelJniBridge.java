@@ -252,8 +252,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     private void forceCloseAllTabs() {
         // Tests need to use forceCloseTabs here. If a native test has left a shared tab group open
         // the protections of TabRemover#closeTabs will kick in and when trying to close all tabs
-        // and we won't actually close all tabs.
-        getTabRemover().forceCloseTabs(TabClosureParams.closeAllTabs().build());
+        // and we won't actually close all tabs. Disallow undo since all pending closures are
+        // committed immediately below, avoiding wasted UndoBarController view inflation.
+        getTabRemover().forceCloseTabs(TabClosureParams.closeAllTabs().allowUndo(false).build());
         commitAllTabClosures();
     }
 

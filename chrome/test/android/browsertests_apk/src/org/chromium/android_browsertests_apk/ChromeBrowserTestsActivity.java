@@ -5,6 +5,8 @@
 package org.chromium.android_browsertests_apk;
 
 import android.content.Intent;
+import android.os.Build;
+import android.view.View;
 
 import org.chromium.base.PathUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -19,6 +21,7 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     private static final String TAG = "browser_test";
 
     private final NativeTest mTest = new NativeTest();
+    private boolean mTeardownStarted;
 
     @Override
     public void performPreInflationStartup() {
@@ -82,8 +85,31 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
-        NativeBrowserTest.setActivityTeardownCallback(() -> finishAndRemoveTask());
+        NativeBrowserTest.setActivityTeardownCallback(
+                () -> {
+                    mTeardownStarted = true;
+                    if (getWindow() != null && getWindow().peekDecorView() != null) {
+                        getWindow().peekDecorView().setVisibility(View.GONE);
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        super.setRecentsScreenshotEnabled(false);
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0);
+                    }
+                    finishAndRemoveTask();
+                });
         NativeBrowserTest.javaStartupTasksComplete();
+    }
+
+    @Override
+    public void setRecentsScreenshotEnabled(boolean enabled) {
+        if (mTeardownStarted) {
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            super.setRecentsScreenshotEnabled(enabled);
+        }
     }
 
     private File getPrivateDataDirectory() {
