@@ -1736,6 +1736,254 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
+       SendRegionSearch_SelectedRegionOnly_RemapsTextCoordinates) {
+  SignInUser();
+  lens::GrantLensOverlayNeededPermissions(profile_.get());
+  // Arrange: Set up invocation source to kOmniboxPopupButton (selected region
+  // only).
+  EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+      .WillRepeatedly(
+          Return(lens::LensOverlayInvocationSource::kOmniboxPopupButton));
+
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillRepeatedly(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+  router.SetTabContextualizationController(
+      mock_tab_contextualization_controller_.get());
+
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(), CreateContextToken())
+      .WillRepeatedly(Return(file_token));
+  EXPECT_CALL(*router.mock_session_handle(),
+              StartTabContextUploadFlow(_, _, _));
+
+  GURL example_url("https://example.com");
+  router.StartQueryFlow(router.GetViewportScreenshot(),
+                        router.GetViewportScreenshot(), example_url, "Title",
+                        {}, {}, lens::MimeType::kAnnotatedPageContent,
+                        std::nullopt, 1.0f, base::TimeTicks::Now());
+  EXPECT_EQ(router.context_upload_mode(),
+            LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
+
+  // Arrange: Region selection in the viewport.
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(0.6f, 0.4f, 0.2f, 0.2f);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+
+  base::OnceCallback<void(lens::LensOverlayInteractionResponse)>
+      captured_interaction_callback;
+
+  auto* service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile_.get()));
+  EXPECT_CALL(*service,
+              InitSidePanelWithGhostLoader(
+                  mock_browser_window_interface_.get(), &mock_tab_interface_,
+                  testing::Pointer(router.mock_session_handle()), testing::_))
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle,
+              omnibox::ChromeAimEntryPoint entry_point) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
+
+  EXPECT_CALL(*router.mock_session_handle(), CreateSearchUrl(_, _))
+      .WillOnce([&](std::unique_ptr<CreateSearchUrlRequestInfo> request_info,
+                    base::OnceCallback<void(GURL)> callback) {
+        // Assert: image_crop sent to server has 0.5, 0.5, 1.0, 1.0.
+        EXPECT_TRUE(request_info->image_crop.has_value());
+        EXPECT_FLOAT_EQ(
+            request_info->image_crop->zoomed_crop().crop().center_x(), 0.5f);
+        EXPECT_FLOAT_EQ(
+            request_info->image_crop->zoomed_crop().crop().center_y(), 0.5f);
+        EXPECT_FLOAT_EQ(request_info->image_crop->zoomed_crop().crop().width(),
+                        1.0f);
+        EXPECT_FLOAT_EQ(request_info->image_crop->zoomed_crop().crop().height(),
+                        1.0f);
+        EXPECT_FLOAT_EQ(request_info->image_crop->zoomed_crop().zoom(), 1.0f);
+        EXPECT_EQ(request_info->image_crop->zoomed_crop().parent_width(), 10);
+        EXPECT_EQ(request_info->image_crop->zoomed_crop().parent_height(), 10);
+
+        captured_interaction_callback =
+            std::move(request_info->interaction_response_callback);
+      });
+
+  SkBitmap region_bytes;
+  region_bytes.allocN32Pixels(10, 10);
+  router.SendRegionSearch(
+      base::Time::Now(), std::move(region),
+      lens::LensOverlaySelectionType::REGION_SEARCH, {}, region_bytes,
+      lens::LensOverlayInvocationSource::kOmniboxPopupButton);
+
+  ASSERT_TRUE(captured_interaction_callback);
+
+  // Arrange: Server response with word in center of cropped image (0.5, 0.5).
+  lens::LensOverlayInteractionResponse server_response;
+  auto* text = server_response.mutable_text();
+  text->set_content_language("en");
+  auto* paragraph = text->mutable_text_layout()->add_paragraphs();
+  auto* line = paragraph->add_lines();
+  auto* word = line->add_words();
+  word->set_plain_text("hello");
+  auto* word_box = word->mutable_geometry()->mutable_bounding_box();
+  word_box->set_center_x(0.5f);
+  word_box->set_center_y(0.5f);
+  word_box->set_width(0.5f);
+  word_box->set_height(0.5f);
+  word_box->set_coordinate_type(lens::CoordinateType::NORMALIZED);
+
+  // Assert: HandleInteractionResponse maps word box to viewport space:
+  // origin_x = 0.6 - 0.2/2 = 0.5. center_x = 0.5 + 0.5 * 0.2 = 0.6.
+  // origin_y = 0.4 - 0.2/2 = 0.3. center_y = 0.3 + 0.5 * 0.2 = 0.4.
+  // width = 0.5 * 0.2 = 0.1.
+  // height = 0.5 * 0.2 = 0.1.
+  EXPECT_CALL(*mock_lens_search_controller_, HandleInteractionResponse(_))
+      .WillOnce([](lens::mojom::TextPtr response_text) {
+        ASSERT_TRUE(response_text);
+        ASSERT_EQ(response_text->text_layout->paragraphs.size(), 1u);
+        ASSERT_EQ(response_text->text_layout->paragraphs[0]->lines.size(), 1u);
+        ASSERT_EQ(
+            response_text->text_layout->paragraphs[0]->lines[0]->words.size(),
+            1u);
+        const auto& word_mojo =
+            response_text->text_layout->paragraphs[0]->lines[0]->words[0];
+        EXPECT_NEAR(word_mojo->geometry->bounding_box->box.x(), 0.6f, 0.001f);
+        EXPECT_NEAR(word_mojo->geometry->bounding_box->box.y(), 0.4f, 0.001f);
+        EXPECT_NEAR(word_mojo->geometry->bounding_box->box.width(), 0.1f,
+                    0.001f);
+        EXPECT_NEAR(word_mojo->geometry->bounding_box->box.height(), 0.1f,
+                    0.001f);
+      });
+
+  std::move(captured_interaction_callback).Run(server_response);
+}
+
+TEST_F(
+    LensQueryFlowRouterContextualTaskEnabledTest,
+    SendRegionSearch_SelectedRegionOnly_RemapsTextCoordinatesWithDownscaledRegion) {
+  SignInUser();
+  lens::GrantLensOverlayNeededPermissions(profile_.get());
+  EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+      .WillRepeatedly(
+          Return(lens::LensOverlayInvocationSource::kOmniboxPopupButton));
+
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillRepeatedly(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+  router.SetTabContextualizationController(
+      mock_tab_contextualization_controller_.get());
+
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(), CreateContextToken())
+      .WillRepeatedly(Return(file_token));
+  EXPECT_CALL(*router.mock_session_handle(),
+              StartTabContextUploadFlow(_, _, _));
+
+  GURL example_url("https://example.com");
+  router.StartQueryFlow(router.GetViewportScreenshot(),
+                        router.GetViewportScreenshot(), example_url, "Title",
+                        {}, {}, lens::MimeType::kAnnotatedPageContent,
+                        std::nullopt, 1.0f, base::TimeTicks::Now());
+  EXPECT_EQ(router.context_upload_mode(),
+            LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(0.6f, 0.4f, 0.2f, 0.2f);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+
+  base::OnceCallback<void(lens::LensOverlayInteractionResponse)>
+      captured_interaction_callback;
+  float captured_zoom = 1.0f;
+
+  auto* service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile_.get()));
+  EXPECT_CALL(*service,
+              InitSidePanelWithGhostLoader(
+                  mock_browser_window_interface_.get(), &mock_tab_interface_,
+                  testing::Pointer(router.mock_session_handle()), testing::_))
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle,
+              omnibox::ChromeAimEntryPoint entry_point) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
+
+  EXPECT_CALL(*router.mock_session_handle(), CreateSearchUrl(_, _))
+      .WillOnce([&](std::unique_ptr<CreateSearchUrlRequestInfo> request_info,
+                    base::OnceCallback<void(GURL)> callback) {
+        EXPECT_TRUE(request_info->image_crop.has_value());
+        captured_zoom = request_info->image_crop->zoomed_crop().zoom();
+        // A 2000x2000 image exceeds default max area and should be downscaled.
+        EXPECT_LT(captured_zoom, 1.0f);
+
+        captured_interaction_callback =
+            std::move(request_info->interaction_response_callback);
+      });
+
+  SkBitmap region_bytes;
+  region_bytes.allocN32Pixels(2000, 2000);
+  router.SendRegionSearch(
+      base::Time::Now(), std::move(region),
+      lens::LensOverlaySelectionType::REGION_SEARCH, {}, region_bytes,
+      lens::LensOverlayInvocationSource::kOmniboxPopupButton);
+
+  ASSERT_TRUE(captured_interaction_callback);
+  ASSERT_LT(captured_zoom, 1.0f);
+
+  lens::LensOverlayInteractionResponse server_response;
+  auto* text = server_response.mutable_text();
+  text->set_content_language("en");
+  auto* paragraph = text->mutable_text_layout()->add_paragraphs();
+  auto* line = paragraph->add_lines();
+  auto* word = line->add_words();
+  word->set_plain_text("hello");
+  auto* word_box = word->mutable_geometry()->mutable_bounding_box();
+  // Server coordinates on the downscaled image:
+  word_box->set_center_x(0.5f / captured_zoom);
+  word_box->set_center_y(0.5f / captured_zoom);
+  word_box->set_width(0.5f / captured_zoom);
+  word_box->set_height(0.5f / captured_zoom);
+  word_box->set_coordinate_type(lens::CoordinateType::NORMALIZED);
+
+  // When remapped, zoom cancels out and coordinates match the expected viewport
+  // geometry.
+  EXPECT_CALL(*mock_lens_search_controller_, HandleInteractionResponse(_))
+      .WillOnce([](lens::mojom::TextPtr response_text) {
+        ASSERT_TRUE(response_text);
+        ASSERT_EQ(response_text->text_layout->paragraphs.size(), 1u);
+        ASSERT_EQ(response_text->text_layout->paragraphs[0]->lines.size(), 1u);
+        ASSERT_EQ(
+            response_text->text_layout->paragraphs[0]->lines[0]->words.size(),
+            1u);
+        const auto& word_mojo =
+            response_text->text_layout->paragraphs[0]->lines[0]->words[0];
+        EXPECT_NEAR(word_mojo->geometry->bounding_box->box.x(), 0.6f, 0.001f);
+        EXPECT_NEAR(word_mojo->geometry->bounding_box->box.y(), 0.4f, 0.001f);
+        EXPECT_NEAR(word_mojo->geometry->bounding_box->box.width(), 0.1f,
+                    0.001f);
+        EXPECT_NEAR(word_mojo->geometry->bounding_box->box.height(), 0.1f,
+                    0.001f);
+      });
+
+  std::move(captured_interaction_callback).Run(server_response);
+}
+
+TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        SendRegionSearch_NotEligible_RoutesToContextualTasks) {
   // Arrange: Set up and create the router.
   EXPECT_CALL(*mock_lens_search_controller_,

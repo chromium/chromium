@@ -851,4 +851,37 @@ suite('SimplifiedSelection', function() {
     assertEquals(
         showSelectedRegionContextMenuEvent.detail.selectionEndIndex, -1);
   });
+
+  test('ShowHighlightedRegionTextInjectedImageWithoutFullText', async () => {
+    // Verify that when an injected image's region text arrives without an
+    // accompanying full text response (e.g. region-only mode), the highlighted
+    // lines are still rendered from the region text response.
+    await addRegionTextToPage(
+        callbackRouterRemote, TOP_TO_BOTTOM_TEXT, /*isInjectedImage=*/ true);
+    await waitAfterNextRender(textLayerElement);
+    assertEquals(
+        2,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+  });
+
+  test('EmptyRegionTextFallsBackToFullTextResponse', async () => {
+    // Add words to the full text response.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    // Add empty region text response (e.g. interaction response returned no
+    // words).
+    await addEmptyRegionTextToPage(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+
+    const showSelectedRegionContextMenuEventPromise =
+        eventToPromise<SelectedRegionContextMenuEvent>(
+            'show-selected-region-context-menu', document.body);
+    await dispatchDetectTextInRegionEvent();
+    const showSelectedRegionContextMenuEvent =
+        await showSelectedRegionContextMenuEventPromise;
+    assertEquals(
+        showSelectedRegionContextMenuEvent.detail.selectionStartIndex, 0);
+    assertEquals(
+        showSelectedRegionContextMenuEvent.detail.selectionEndIndex, 2);
+  });
 });

@@ -1722,11 +1722,27 @@ void LensOverlayQueryController::SendInteraction(
   // Async Flow 1: Downscale the image region for the interaction request.
   // Do the image encoding asynchronously to prevent the main thread from
   // blocking on the encoding.
+  // In the non-blocking privacy notice flow for image context menu searches,
+  // the initial query is restricted to uploading the injected image rather than
+  // the full viewport screenshot. In this flow, the region coordinates are
+  // normalized relative to the cropped image bitmap. Use the cropped image as
+  // base_image so that the computed zoom factor remains 1.0 rather than scaling
+  // relative to the full viewport. Otherwise, when region coordinates are
+  // normalized relative to the full viewport screenshot, original_screenshot_
+  // must be used as base_image.
+  const bool is_region_normalized_to_injected_image =
+      selection_type == lens::INJECTED_IMAGE && initial_query_restricted_;
+  const SkBitmap& base_image =
+      is_region_normalized_to_injected_image
+          ? (region_bytes.has_value()
+                 ? *region_bytes
+                 : (!initial_image_.drawsNothing() ? initial_image_
+                                                   : original_screenshot_))
+          : original_screenshot_;
   encoding_task_tracker_->PostTaskAndReplyWithResult(
       encoding_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&lens::DownscaleAndEncodeBitmapRegionIfNeeded,
-                     original_screenshot_, region.Clone(), region_bytes,
-                     ref_counted_logs),
+      base::BindOnce(&lens::DownscaleAndEncodeBitmapRegionIfNeeded, base_image,
+                     region.Clone(), region_bytes, ref_counted_logs),
       base::BindOnce(
           &LensOverlayQueryController::
               CreateInteractionRequestAndTryPerformInteractionRequest,
