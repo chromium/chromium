@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace blink {
 
@@ -343,6 +345,79 @@ TEST_F(CanvasAccessibilityUkmMetricsValueTest,
   auto* entry = entries[0].get();
   ukm::TestUkmRecorder::ExpectEntryMetric(
       entry, ukm::builders::Accessibility_Canvas::kHasMouseListenerName, 1);
+}
+
+TEST_F(CanvasAccessibilityUkmMetricsValueTest,
+       VerifyNeedsAccessibilitySupportDecoupledWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(::features::kAccessibilityCanvas);
+
+  ASSERT_TRUE(canvas_element_);
+  CanvasContextCreationAttributesCore attributes;
+  canvas_element_->GetCanvasRenderingContext(
+      GetDocument().GetExecutionContext(), "2d", attributes);
+  canvas_element_->SetIsDisplayed(true);
+
+  // Simulate an assistive technology session where the AX tree marked the
+  // canvas as ignored.
+  canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/true);
+
+  // With kAccessibilityCanvas disabled, GetNeedsAccessibilitySupportHeuristic()
+  // should ignore last_ax_ignored_state_ and evaluate to true for displayed,
+  // unlabeled canvases.
+  EXPECT_TRUE(canvas_element_->GetNeedsAccessibilitySupportHeuristic());
+}
+
+TEST_F(CanvasAccessibilityUkmMetricsValueTest,
+       VerifyNeedsAccessibilitySupportRespectedWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kAccessibilityCanvas);
+
+  ASSERT_TRUE(canvas_element_);
+  CanvasContextCreationAttributesCore attributes;
+  canvas_element_->GetCanvasRenderingContext(
+      GetDocument().GetExecutionContext(), "2d", attributes);
+  canvas_element_->SetIsDisplayed(true);
+
+  // Simulate an assistive technology session where the AX tree marked the
+  // canvas as ignored.
+  canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/true);
+
+  // With kAccessibilityCanvas enabled, true accessibility ignored state should
+  // be respected.
+  EXPECT_FALSE(canvas_element_->GetNeedsAccessibilitySupportHeuristic());
+}
+
+TEST_F(CanvasAccessibilityUkmMetricsValueTest,
+       VerifyNeedsAccessibilitySupportRecordedInUkm) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {::features::kEnableCollectAccessibilityHeuristicInCanvasUkm},
+      /*disabled_features=*/{::features::kAccessibilityCanvas});
+
+  ASSERT_TRUE(canvas_element_);
+  CanvasContextCreationAttributesCore attributes;
+  canvas_element_->GetCanvasRenderingContext(
+      GetDocument().GetExecutionContext(), "2d", attributes);
+  canvas_element_->SetIsDisplayed(true);
+
+  // Even if last_ax_ignored_state_ is true (simulating an AT session without
+  // kAccessibilityCanvas), the heuristic correctly reports 1 for a displayed
+  // canvas.
+  canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/true);
+
+  base::PendingTask dummy_pending_task(FROM_HERE, base::OnceClosure());
+  canvas_element_->RenderingContext()->DidProcessTask(dummy_pending_task);
+  FastForwardBy(CanvasRenderingContext::kAccessibilityUkmRecordingDelay);
+
+  auto entries = recorder_.GetEntriesByName(
+      ukm::builders::Accessibility_Canvas::kEntryName);
+  ASSERT_EQ(entries.size(), 1);
+  auto* entry = entries[0].get();
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      entry,
+      ukm::builders::Accessibility_Canvas::kNeedsAccessibilitySupportName, 1);
 }
 
 }  // namespace blink

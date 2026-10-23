@@ -2186,16 +2186,26 @@ void HTMLCanvasElement::OnAxObjectIgnoredStateChanged(bool is_ignored) {
 // TODO(crbug.com/475512055): Remove this function once UKM collection is
 // not needed anymore.
 bool HTMLCanvasElement::GetNeedsAccessibilitySupportHeuristic() {
-  bool is_ignored = false;
-  if (accessibility_manager_ &&
-      accessibility_manager_->GetIsIgnored().has_value()) {
-    is_ignored = *accessibility_manager_->GetIsIgnored();
-  } else if (last_ax_ignored_state_.has_value()) {
-    is_ignored = *last_ax_ignored_state_;
-  } else {
-    // Estimate is_ignored when accessibility is not enabled.
-    // True "is_ignored" needs AXObjectCache, so we approximate here by
-    // checking display/visibility and lack of aria-hidden="true".
+  std::optional<bool> is_ignored;
+  // If kAccessibilityCanvas is enabled, use the true accessibility ignored
+  // state from AXObjectCache if available. When kAccessibilityCanvas is
+  // disabled (e.g. during standalone UKM telemetry studies), AXObjectCache
+  // marks all unlabeled canvases as ignored; using that state would cause
+  // false negatives for users with assistive technologies enabled.
+  if (base::FeatureList::IsEnabled(::features::kAccessibilityCanvas)) {
+    if (accessibility_manager_ &&
+        accessibility_manager_->GetIsIgnored().has_value()) {
+      is_ignored = accessibility_manager_->GetIsIgnored();
+    } else if (last_ax_ignored_state_.has_value()) {
+      is_ignored = last_ax_ignored_state_;
+    }
+  }
+
+  if (!is_ignored.has_value()) {
+    // Estimate is_ignored when accessibility is not enabled or when
+    // kAccessibilityCanvas is disabled. True "is_ignored" needs AXObjectCache,
+    // so approximate here by checking display/visibility and lack of
+    // aria-hidden="true".
     bool is_visible = IsDisplayed();
     bool has_aria_hidden = EqualIgnoringAsciiCase(
         FastGetAttribute(html_names::kAriaHiddenAttr), "true");
@@ -2203,7 +2213,7 @@ bool HTMLCanvasElement::GetNeedsAccessibilitySupportHeuristic() {
   }
 
   return HTMLCanvasAccessibilityManager::ComputeHeuristicResult(*this,
-                                                                is_ignored) ==
+                                                                *is_ignored) ==
          HTMLCanvasAccessibilityManager::HeuristicResult::kNeedsA11ySupport;
 }
 
