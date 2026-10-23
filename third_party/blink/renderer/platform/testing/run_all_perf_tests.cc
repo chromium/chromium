@@ -8,7 +8,8 @@
 #include "gin/public/isolate_holder.h"
 
 int main(int argc, char** argv) {
+  blink::BlinkPerfTestSuite suite(argc, argv);
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kStrictMode,
                                  gin::ArrayBufferAllocator::SharedInstance());
-  return blink::BlinkPerfTestSuite(argc, argv).Run();
+  return suite.Run();
 }

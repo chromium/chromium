@@ -2698,6 +2698,7 @@ test("blink_platform_perftests") {
     "testing/blink_perf_test_suite.h",
     "testing/run_all_perf_tests.cc",
     "testing/shaping_line_breaker_perf_test.cc",
+    "text/capitalize_perf_test.cc",
   ]
 
   configs += [
