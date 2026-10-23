@@ -52,7 +52,6 @@ const char kNamedPipeName[] = "named-pipe-name";
 const char kRunAsBrokerClient[] = "run-as-broker-client";
 const char kAcceptInvitationAsync[] = "accept-invitation-async";
 const char kTestChildMessagePipeName[] = "test_pipe";
-const char kDisableAllCapabilities[] = "disable-all-capabilities";
 
 // For use (and only valid) in a test child process:
 IsolatedConnection& GetChildIsolatedConnection() {
@@ -142,7 +141,6 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   base::LaunchOptions options;
   switch (launch_type) {
     case LaunchType::CHILD:
-    case LaunchType::CHILD_WITHOUT_CAPABILITIES:
     case LaunchType::PEER:
     case LaunchType::ASYNC:
       channel.PrepareToPassRemoteEndpoint(&options, &command_line);
@@ -167,7 +165,7 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
       command_line.AppendSwitchNative(kNamedPipeName, server_name);
       break;
     }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
   }
 
   if (!switch_string.empty()) {
@@ -190,7 +188,6 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   PlatformChannelServerEndpoint server_endpoint;
   switch (launch_type) {
     case LaunchType::CHILD:
-    case LaunchType::CHILD_WITHOUT_CAPABILITIES:
     case LaunchType::PEER:
     case LaunchType::ASYNC:
       local_channel_endpoint = channel.TakeLocalEndpoint();
@@ -210,12 +207,8 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   OutgoingInvitation child_invitation;
   ScopedMessagePipeHandle pipe;
   switch (launch_type) {
-    case LaunchType::CHILD_WITHOUT_CAPABILITIES:
     case LaunchType::ASYNC:
-      // It's one or the other
-      command_line.AppendSwitch(launch_type == LaunchType::ASYNC
-                                    ? kAcceptInvitationAsync
-                                    : kDisableAllCapabilities);
+      command_line.AppendSwitch(kAcceptInvitationAsync);
       [[fallthrough]];
     case LaunchType::CHILD:
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
@@ -245,14 +238,12 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   test_child_ =
       base::SpawnMultiProcessTestChild(test_child_main, command_line, options);
 
-  if (launch_type == LaunchType::CHILD ||
-      launch_type == LaunchType::CHILD_WITHOUT_CAPABILITIES ||
-      launch_type == LaunchType::PEER || launch_type == LaunchType::ASYNC) {
+  if (launch_type == LaunchType::CHILD || launch_type == LaunchType::PEER ||
+      launch_type == LaunchType::ASYNC) {
     channel.RemoteProcessLaunchAttempted();
   }
 
-  if (launch_type == LaunchType::CHILD ||
-      launch_type == LaunchType::CHILD_WITHOUT_CAPABILITIES) {
+  if (launch_type == LaunchType::CHILD) {
     DCHECK(local_channel_endpoint.is_valid());
     OutgoingInvitation::Send(std::move(child_invitation), test_child_.Handle(),
                              std::move(local_channel_endpoint),

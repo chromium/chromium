@@ -38,9 +38,6 @@ struct Configuration {
   // policy; only set this for process types where that is known to hold.
   bool direct_unsafe_shared_memory_allocation = false;
 #endif
-
-  // If true we will not advertise our capabilities to our peer.
-  bool dont_advertise_capabilities = false;
 };
 
 }  // namespace core

@@ -20,10 +20,6 @@ namespace mojo::core::test {
 
 namespace {
 
-// Command-line switch to disable internal Mojo Channel capability
-// advertisement, used to test skew between client versions.
-const char kDisableAllCapabilities[] = "disable-all-capabilities";
-
 class TestSupportInitializer {
  public:
   TestSupportInitializer() {
@@ -43,11 +39,6 @@ class ScopedMojoSupport::CoreInstance {
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             test_switches::kMojoIsBroker)) {
       mojo_config.is_broker_process = true;
-    }
-
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            kDisableAllCapabilities)) {
-      mojo_config.dont_advertise_capabilities = true;
     }
 
     mojo::core::InitFeatures();
