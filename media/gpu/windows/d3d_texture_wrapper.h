@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D11_TEXTURE_WRAPPER_H_
-#define MEDIA_GPU_WINDOWS_D3D11_TEXTURE_WRAPPER_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D_TEXTURE_WRAPPER_H_
+#define MEDIA_GPU_WINDOWS_D3D_TEXTURE_WRAPPER_H_
 
 #include <memory>
 #include <optional>
@@ -180,4 +180,4 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_WINDOWS_D3D11_TEXTURE_WRAPPER_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D_TEXTURE_WRAPPER_H_

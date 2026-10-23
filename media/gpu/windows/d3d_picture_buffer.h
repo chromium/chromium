@@ -22,10 +22,10 @@
 #include "media/base/video_frame.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_status.h"
+#include "media/gpu/windows/d3d_texture_wrapper.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {

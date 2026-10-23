@@ -35,9 +35,9 @@
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
-#include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_backend.h"
 #include "media/gpu/windows/d3d_picture_buffer.h"
+#include "media/gpu/windows/d3d_texture_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;

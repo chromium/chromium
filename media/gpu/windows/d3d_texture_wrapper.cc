@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/d3d11_texture_wrapper.h"
+#include "media/gpu/windows/d3d_texture_wrapper.h"
 
 #include <list>
 #include <memory>
@@ -123,8 +123,9 @@ D3DStatus DefaultTexture2DWrapper::Init(
 }
 
 void DefaultTexture2DWrapper::OnError(D3DStatus status) {
-  if (!received_error_)
+  if (!received_error_) {
     received_error_ = status;
+  }
 }
 
 void DefaultTexture2DWrapper::OnGPUResourceInitDone(

@@ -13,10 +13,10 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/video_types.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_status.h"
+#include "media/gpu/windows/d3d_texture_wrapper.h"
 #include "ui/gfx/color_space.h"
 
 namespace media {

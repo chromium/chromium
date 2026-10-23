@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/d3d11_texture_wrapper.h"
-
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
 #include "media/gpu/windows/d3d_picture_buffer.h"
+#include "media/gpu/windows/d3d_texture_wrapper.h"
 #include "media/gpu/windows/format_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
