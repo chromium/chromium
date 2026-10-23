@@ -2170,7 +2170,7 @@
     <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_NON_EEA" desc="Subtitle of the default search engine picker dialog, shown below the dialog title, for users in countries where the list of search engines is not shown in random order (outside the EEA). Explains that the listed search engines are popular in the user's region.">
       Popular in your region
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_OPTIONS" desc="Label of a button in the header of the default search engine picker dialog. Clicking it replaces the dialog with another dialog listing all the other search engines the user can pick as their default search engine.">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_OPTIONS" desc="Label of a button in the header of the default search engine picker dialog. Clicking it replaces the dialog with another dialog listing all the search engines the user can pick as their default search engine." meaning="Choices of search engines to pick from, not settings.">
       More options
     </message>
     <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_ENGINES" desc="Title of the dialog, opened from the default search engine picker dialog, that lists all the search engines the user can pick as their default search engine. Also used as the accessibility label of the list of search engines in that dialog.">
