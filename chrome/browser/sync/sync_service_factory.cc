@@ -391,7 +391,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
 std::unique_ptr<syncer::SyncClient> BuildSyncClient(Profile* profile) {
   CHECK(profile);
 
-  return std::make_unique<browser_sync::ChromeSyncClient>(
+  return std::make_unique<ChromeSyncClient>(
       profile->GetBaseName(), profile->GetPrefs(),
       IdentityManagerFactory::GetForProfile(profile),
       TrustedVaultServiceFactory::GetForProfile(profile),

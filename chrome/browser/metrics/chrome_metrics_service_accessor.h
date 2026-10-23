@@ -21,6 +21,7 @@ class BrowserWindowInterface;
 class CampaignsManagerClientImpl;
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
+class ChromeSyncClient;
 class DeviceInfoSyncClientImpl;
 class GlobalFeatures;
 class HttpsFirstModeService;
@@ -34,10 +35,6 @@ class CrashesDOMHandler;
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeCameraAppUIDelegate;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-namespace browser_sync {
-class ChromeSyncClient;
-}
 
 namespace subscription_eligibility {
 class SubscriptionEligibilityMetricsProvider;
@@ -146,7 +143,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeBrowserMainParts;
   friend class ChromeContentBrowserClient;
   friend class ChromeMetricsServicesManagerClient;
-  friend class browser_sync::ChromeSyncClient;
+  friend class ChromeSyncClient;
   friend class ChromeDomainReliabilityDelegate;
   friend class domain_reliability::TestDomainReliabilityServiceDelegate;
   friend class extensions::ChromeGuestViewManagerDelegate;
