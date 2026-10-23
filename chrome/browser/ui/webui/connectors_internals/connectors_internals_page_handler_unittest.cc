@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -51,6 +52,13 @@ class ConnectorsInternalsPageHandlerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    // IsDeviceTrustConnectorAndroidEnabled() returns false on desktop form
+    // factors. Pin a non-desktop form factor so that these tests behave the
+    // same on all Android devices.
+    base::android::device_info::set_is_desktop_for_testing(false);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENTERPRISE_PROXY)
     EnterpriseProxyServiceFactory::GetInstance()->SetTestingFactory(
         &profile_,
@@ -64,6 +72,12 @@ class ConnectorsInternalsPageHandlerTest : public testing::Test {
     handler_ = std::make_unique<ConnectorsInternalsPageHandler>(
         page_handler_.BindNewPipeAndPassReceiver(), &profile_);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void TearDown() override {
+    base::android::device_info::reset_is_desktop_for_testing();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
  protected:
   content::BrowserTaskEnvironment task_environment_;

@@ -41,9 +41,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#else
 #include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using content::NavigationThrottle;
 using ::testing::_;
@@ -146,6 +148,19 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
         .WillByDefault(
             [this](const GURL& url) { return fake_connector_->Watches(url); });
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void SetUp() override {
+    // IsDeviceTrustConnectorAndroidEnabled() returns false on desktop form
+    // factors. Pin a non-desktop form factor so that these tests behave the
+    // same on all Android devices.
+    base::android::device_info::set_is_desktop_for_testing(false);
+  }
+
+  void TearDown() override {
+    base::android::device_info::reset_is_desktop_for_testing();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
   void CreateAndSetMockConsentRequester() {
@@ -724,6 +739,15 @@ TEST_F(DeviceTrustNavigationThrottleTest, NoThrottleWhenFeatureDisabled) {
   scoped_feature_list_.InitAndDisableFeature(kDeviceTrustConnectorAndroid);
   test_prefs_->SetBoolean(
       device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled, true);
+
+  EXPECT_EQ(0u, CountCreatedThrottles());
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest, NoThrottleOnDesktopFormFactor) {
+  scoped_feature_list_.InitAndEnableFeature(kDeviceTrustConnectorAndroid);
+  test_prefs_->SetBoolean(
+      device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled, true);
+  base::android::device_info::set_is_desktop_for_testing(true);
 
   EXPECT_EQ(0u, CountCreatedThrottles());
 }

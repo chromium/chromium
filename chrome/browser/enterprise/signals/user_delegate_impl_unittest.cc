@@ -26,9 +26,11 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#else
 #include "components/enterprise/device_trust/core/fake_device_trust_connector_service.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_signals {
 
@@ -55,6 +57,19 @@ base::ListValue GetUrls() {
 
 class UserDelegateImplTest : public testing::Test {
  protected:
+#if BUILDFLAG(IS_ANDROID)
+  void SetUp() override {
+    // IsDeviceTrustConnectorAndroidEnabled() returns false on desktop form
+    // factors. Pin a non-desktop form factor so that these tests behave the
+    // same on all Android devices.
+    base::android::device_info::set_is_desktop_for_testing(false);
+  }
+
+  void TearDown() override {
+    base::android::device_info::reset_is_desktop_for_testing();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   void CreateDelegate(
       bool is_managed_user = true,
       std::optional<base::FilePath> profile_path = std::nullopt) {
@@ -181,6 +196,19 @@ TEST_F(UserDelegateImplTest,
       enterprise_connectors::kDeviceTrustConnectorAndroid};
   CreateDelegate(/*is_managed_user=*/true);
   EXPECT_FALSE(user_delegate_->IsCollectSignalsConsentRequired());
+}
+
+// Tests that consent is required for a managed user on desktop form factors,
+// where the Device Trust Connector is not supported yet, even when the
+// DeviceTrustConnectorAndroid feature is enabled.
+TEST_F(
+    UserDelegateImplTest,
+    IsCollectSignalsConsentRequired_FeatureEnabled_ManagedUser_DesktopFormFactor) {
+  base::test::ScopedFeatureList feature_list{
+      enterprise_connectors::kDeviceTrustConnectorAndroid};
+  base::android::device_info::set_is_desktop_for_testing(true);
+  CreateDelegate(/*is_managed_user=*/true);
+  EXPECT_TRUE(user_delegate_->IsCollectSignalsConsentRequired());
 }
 
 // Tests that consent is required for an unmanaged user on Android even when the
