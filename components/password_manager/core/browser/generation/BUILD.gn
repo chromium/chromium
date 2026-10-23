@@ -11,7 +11,10 @@ source_set("core") {
     "password_generator.cc",
     "password_generator.h",
   ]
-  public_deps = [ "//components/autofill/core/browser/proto" ]
+  public_deps = [
+    "//components/autofill/core/browser/proto",
+    "//components/password_manager/core/browser:password_string",
+  ]
   deps = [
     "//base",
     "//components/password_manager/core/browser/features:password_features",

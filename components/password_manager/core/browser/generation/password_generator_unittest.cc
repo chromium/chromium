@@ -7,9 +7,13 @@
 #include <algorithm>
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "base/notreached.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -44,7 +48,7 @@ bool IsCharInClass(char16_t c, const std::string& class_name) {
   NOTREACHED() << "Don't call IsCharInClass for symbols";
 }
 
-size_t CountCharsInClass(const std::u16string& password,
+size_t CountCharsInClass(std::u16string_view password,
                          const std::string& class_name) {
   return std::ranges::count_if(password, [&class_name](char16_t c) {
     return IsCharInClass(c, class_name);
@@ -77,7 +81,26 @@ class PasswordGeneratorTest : public testing::Test {
 };
 
 TEST_F(PasswordGeneratorTest, PasswordLengthDefault) {
-  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
+  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).size());
+}
+
+TEST_F(PasswordGeneratorTest, ReturnedPasswordPreservesGeneratedValue) {
+  spec_.mutable_lower_case()->set_character_set("a");
+  spec_.mutable_lower_case()->set_min(kDefaultPasswordLength);
+  spec_.mutable_upper_case()->set_max(0);
+  spec_.mutable_numeric()->set_max(0);
+
+  for (bool use_process_bound_backing : {false, true}) {
+    SCOPED_TRACE(use_process_bound_backing);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(
+        password_manager::features::kUseProcessBoundPasswordString,
+        use_process_bound_backing);
+
+    password_manager::PasswordString password = GeneratePassword(spec_);
+    EXPECT_EQ(password.size(), kDefaultPasswordLength);
+    EXPECT_EQ(password.secure_value(), u"aaaaaaaaaaaaaaa");
+  }
 }
 
 TEST_F(PasswordGeneratorTest, ConditionallyAddNumericDigitsToAlphabet) {
@@ -119,28 +142,28 @@ TEST_F(PasswordGeneratorTest, ConditionallyDoNotAddNumericDigitsToAlphabet) {
 TEST_F(PasswordGeneratorTest, PasswordLengthMaxLength) {
   // Limit length according to requirement.
   spec_.set_max_length(kDefaultPasswordLength - 5u);
-  EXPECT_EQ(kDefaultPasswordLength - 5u, GeneratePassword(spec_).length());
+  EXPECT_EQ(kDefaultPasswordLength - 5u, GeneratePassword(spec_).size());
 
   // If max is higher than default, it does not matter.
   spec_.set_max_length(kDefaultPasswordLength + 5);
-  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
+  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).size());
 }
 
 TEST_F(PasswordGeneratorTest, PasswordLengthMinLength) {
   // If min is smaller than default, it does not matter.
   spec_.set_min_length(kDefaultPasswordLength - 5u);
-  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
+  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).size());
 
   // If a higher minimum length is explicitly set, use it.
   spec_.set_min_length(kDefaultPasswordLength + 5u);
-  EXPECT_EQ(kDefaultPasswordLength + 5u, GeneratePassword(spec_).length());
+  EXPECT_EQ(kDefaultPasswordLength + 5u, GeneratePassword(spec_).size());
 }
 
 TEST_F(PasswordGeneratorTest, PasswordLengthMinAndMax) {
   // Configure a contradicting min and max length. The max length wins.
   spec_.set_min_length(kDefaultPasswordLength + 5u);
   spec_.set_max_length(kDefaultPasswordLength - 5u);
-  EXPECT_EQ(kDefaultPasswordLength - 5u, GeneratePassword(spec_).length());
+  EXPECT_EQ(kDefaultPasswordLength - 5u, GeneratePassword(spec_).size());
 }
 
 TEST_F(PasswordGeneratorTest, MinCharFrequenciesRespected) {
@@ -152,7 +175,7 @@ TEST_F(PasswordGeneratorTest, MinCharFrequenciesRespected) {
     char_class_config->set_min(10);
     char_class_config->set_max(1000);
 
-    std::u16string password = GeneratePassword(spec_);
+    auto password = GeneratePassword(spec_).secure_value();
     EXPECT_GE(CountCharsInClass(password, char_class), 10u);
   }
 }
@@ -169,11 +192,11 @@ TEST_F(PasswordGeneratorTest, MinCharFrequenciesInsane) {
     char_class_config->set_min(1000);
     char_class_config->set_max(1000);
 
-    std::u16string password = GeneratePassword(spec_);
+    auto password = GeneratePassword(spec_).secure_value();
     // At least some of the characters should be there.
     EXPECT_GE(CountCharsInClass(password, char_class), 1u);
     // But the password length does not change by minimum length requirements.
-    EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
+    EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).size());
   }
 }
 
@@ -187,7 +210,7 @@ TEST_F(PasswordGeneratorTest, MinCharFrequenciesBiggerThanMax) {
     char_class_config->set_max(5);
   }
 
-  std::u16string password = GeneratePassword(spec_);
+  auto password = GeneratePassword(spec_).secure_value();
 
   for (std::string char_class : kAllClassesButSymbolsAndAlphabetic) {
     SCOPED_TRACE(char_class);
@@ -207,11 +230,11 @@ TEST_F(PasswordGeneratorTest, MaxFrequenciesRespected) {
     auto* char_class_config = GetMutableCharClass(&spec_, char_class);
     char_class_config->set_max(2);
 
-    std::u16string password = GeneratePassword(spec_);
+    auto password = GeneratePassword(spec_).secure_value();
     EXPECT_LE(CountCharsInClass(password, char_class), 2u);
     // Ensure that the other character classes that are not limited fill up the
     // password to the desired length.
-    EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
+    EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).size());
   }
 }
 
@@ -225,7 +248,7 @@ TEST_F(PasswordGeneratorTest, MaxFrequenciesInsufficient) {
     char_class_config->set_max(2);
   }
   // The resulting password can contain only 6 characters.
-  EXPECT_EQ(6u, GeneratePassword(spec_).length());
+  EXPECT_EQ(6u, GeneratePassword(spec_).size());
 }
 
 TEST_F(PasswordGeneratorTest, CharacterSetCanBeOverridden) {
@@ -233,7 +256,7 @@ TEST_F(PasswordGeneratorTest, CharacterSetCanBeOverridden) {
   spec_.mutable_lower_case()->set_character_set("ab");
   spec_.mutable_lower_case()->set_min(5);
   spec_.mutable_lower_case()->set_max(5);
-  std::u16string password = GeneratePassword(spec_);
+  auto password = GeneratePassword(spec_).secure_value();
   // Then ensure that 'a's and 'b's are generated at the expected frequencies
   // as an indicator that the override was respected.
   size_t num_as_and_bs = 0;
@@ -257,7 +280,7 @@ TEST_F(PasswordGeneratorTest, AllCharactersAreGenerated) {
   // generator does not fully use the character set (probably due to an
   // off-by-one error).
   for (size_t attempt = 0; attempt < 100; ++attempt) {
-    std::u16string password = GeneratePassword(spec_);
+    auto password = GeneratePassword(spec_).secure_value();
     size_t num_as = 0;
     size_t num_bs = 0;
     for (char16_t c : password) {
@@ -281,9 +304,9 @@ TEST_F(PasswordGeneratorTest, PasswordCanBeGeneratedWithEmptyCharSet) {
   spec_.mutable_lower_case()->set_character_set("");
   spec_.mutable_lower_case()->set_min(5);
   spec_.mutable_lower_case()->set_max(5);
-  std::u16string password = GeneratePassword(spec_);
+  auto password = GeneratePassword(spec_).secure_value();
   EXPECT_EQ(0u, CountCharsInClass(password, kLowerCase));
-  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
+  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).size());
 }
 
 TEST_F(PasswordGeneratorTest, AllCharactersForbidden) {
@@ -295,7 +318,7 @@ TEST_F(PasswordGeneratorTest, AllCharactersForbidden) {
   }
   // If it is impossible to generate a password (due to max = 0), the generator
   // delivers a password as per default spec and ignores everything else.
-  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
+  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).size());
 }
 
 TEST_F(PasswordGeneratorTest, ZeroLength) {
@@ -303,7 +326,7 @@ TEST_F(PasswordGeneratorTest, ZeroLength) {
   spec_.set_max_length(0);
   // If the generated password following the spec is empty, a default spec is
   // applied.
-  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
+  EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).size());
 }
 
 TEST_F(PasswordGeneratorTest, SanitizeRequirementsSpecAcceptsValidSpec) {

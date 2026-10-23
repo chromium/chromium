@@ -522,8 +522,10 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest,
   PasswordsNavigationObserver observer(web_contents);
   EXPECT_TRUE(observer.Wait());
 
-  std::string generated_password = base::UTF16ToUTF8(
-      static_cast<PasswordChangeDelegateImpl*>(delegate)->generated_password());
+  std::string generated_password =
+      base::UTF16ToUTF8(static_cast<PasswordChangeDelegateImpl*>(delegate)
+                            ->generated_password()
+                            .secure_value());
 
   // Verify all the fields are filled correctly.
   WaitForElementValue("new_password_2", generated_password);
@@ -549,7 +551,8 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   CheckThatCredentialsStored(
       /*username=*/"test", "pa$$word",
       base::UTF16ToUTF8(static_cast<PasswordChangeDelegateImpl*>(delegate)
-                            ->generated_password()));
+                            ->generated_password()
+                            .secure_value()));
 }
 
 // Verify that after password change is stopped, password change delegate is not
@@ -585,7 +588,8 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   CheckThatCredentialsStored(
       /*username=*/"test",
       base::UTF16ToUTF8(static_cast<PasswordChangeDelegateImpl*>(delegate)
-                            ->generated_password()),
+                            ->generated_password()
+                            .secure_value()),
       "pa$$word", password_manager::PasswordForm::Type::kChangeSubmission);
 
   base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
@@ -641,7 +645,8 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   CheckThatCredentialsStored(
       base::UTF16ToUTF8(form.username_value),
       base::UTF16ToUTF8(static_cast<PasswordChangeDelegateImpl*>(delegate)
-                            ->generated_password()),
+                            ->generated_password()
+                            .secure_value()),
       base::UTF16ToUTF8(form.password_value.value()),
       password_manager::PasswordForm::Type::kChangeSubmission);
 }
@@ -1373,7 +1378,8 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest,
   CheckThatCredentialsStored(
       /*username=*/"test",
       base::UTF16ToUTF8(static_cast<PasswordChangeDelegateImpl*>(delegate)
-                            ->generated_password()),
+                            ->generated_password()
+                            .secure_value()),
       "pa$$word", password_manager::PasswordForm::Type::kChangeSubmission);
 
   // Stop the flow.

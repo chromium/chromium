@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_GENERATION_FRAME_HELPER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_GENERATION_FRAME_HELPER_H_
 
-#include <string>
-#include <vector>
-
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +24,7 @@ namespace password_manager {
 
 class PasswordManagerClient;
 class PasswordManagerDriver;
+class PasswordString;
 
 // Per-frame helper for password generation. Will enable this feature only if
 //
@@ -98,7 +96,7 @@ class PasswordGenerationFrameHelper {
   // Virtual for testing
   //
   // TODO(crbug.com/41396292): Add a stub for this class to facilitate testing.
-  virtual std::u16string GeneratePassword(
+  virtual PasswordString GeneratePassword(
       const GURL& last_committed_url,
       autofill::password_generation::PasswordGenerationType generation_type,
       autofill::FormSignature form_signature,

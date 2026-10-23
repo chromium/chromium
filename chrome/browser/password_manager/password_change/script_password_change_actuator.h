@@ -20,6 +20,7 @@
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -49,7 +50,7 @@ class ScriptPasswordChangeActuator : public PasswordChangeActuator {
   void Cancel() override;
   content::WebContents* GetExecutorWebContents() const override;
   void OpenPasswordChangeTab(content::WebContents* originator) override;
-  std::u16string GetGeneratedPassword() const override;
+  password_manager::PasswordString GetGeneratedPassword() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -85,8 +86,8 @@ class ScriptPasswordChangeActuator : public PasswordChangeActuator {
 
   const GURL change_password_url_;
   const std::u16string username_;
-  const std::u16string original_password_;
-  std::u16string generated_password_;
+  const password_manager::PasswordString original_password_;
+  password_manager::PasswordString generated_password_;
 
   const raw_ptr<Profile> profile_ = nullptr;
   const raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;

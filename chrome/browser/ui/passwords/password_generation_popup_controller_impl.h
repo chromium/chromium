@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -96,7 +97,7 @@ class PasswordGenerationPopupControllerImpl
 
   // Update the value of the generated password to be displayed in the UI (e.g.
   // upon editing the generated password).
-  void UpdateGeneratedPassword(std::u16string new_password);
+  void UpdateGeneratedPassword(password_manager::PasswordString new_password);
 
   // Hides the popup, since its position is no longer valid.
   void FrameWasScrolled();
@@ -187,7 +188,7 @@ class PasswordGenerationPopupControllerImpl
   GenerationUIState state() const override;
   bool accept_button_selected() const override;
   bool cancel_button_selected() const override;
-  const std::u16string& password() const override;
+  const password_manager::PasswordString& password() const override;
   std::u16string SuggestedText() const override;
   const std::u16string& HelpText() const override;
 
@@ -233,7 +234,7 @@ class PasswordGenerationPopupControllerImpl
 
   // The current password that is considered generated. This is the password to
   // be displayed in the user generation dialog.
-  std::u16string current_generated_password_;
+  password_manager::PasswordString current_generated_password_;
 
   // Currently selected / highlighted element of the popup.
   PasswordGenerationPopupElement selected_element_ =

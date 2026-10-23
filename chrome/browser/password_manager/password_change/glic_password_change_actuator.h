@@ -21,6 +21,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
 
@@ -73,7 +74,7 @@ class GlicPasswordChangeActuator
   void Cancel() override;
   content::WebContents* GetExecutorWebContents() const override;
   void OpenPasswordChangeTab(content::WebContents* originator) override;
-  std::u16string GetGeneratedPassword() const override;
+  password_manager::PasswordString GetGeneratedPassword() const override;
   void AddObserver(PasswordChangeActuator::Observer* observer) override;
   void RemoveObserver(PasswordChangeActuator::Observer* observer) override;
 
@@ -110,7 +111,7 @@ class GlicPasswordChangeActuator
 
   const GURL change_password_url_;
   const password_manager::StoredCredential credential_;
-  std::u16string generated_password_;
+  password_manager::PasswordString generated_password_;
 
   base::WeakPtr<content::WebContents> originator_;
   const raw_ptr<Profile> profile_ = nullptr;

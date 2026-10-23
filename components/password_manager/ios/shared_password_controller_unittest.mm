@@ -46,6 +46,7 @@
 #import "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager_interface.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
 #import "components/password_manager/core/browser/stub_password_manager_driver.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -204,7 +205,7 @@ std::vector<PasskeyCredential> CreateCredential() {
 
 class MockPasswordGenerationFrameHelper : public PasswordGenerationFrameHelper {
  public:
-  MOCK_METHOD(std::u16string,
+  MOCK_METHOD(password_manager::PasswordString,
               GeneratePassword,
               (const GURL&,
                autofill::password_generation::PasswordGenerationType,
@@ -952,7 +953,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
       GeneratePassword(web_state_.GetLastCommittedURL(),
                        PasswordGenerationType::kAutomatic, form_signature,
                        field_signature, kMaxPasswordLength))
-      .WillOnce(::testing::Return(kGeneratedPassword));
+      .WillOnce(Return(PasswordString(kGeneratedPassword)));
 
   // Select suggestion to start the password generation flow which will stop at
   // showing the generated pasword.
@@ -1040,7 +1041,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
 
   // Mock generating a valid password.
   EXPECT_CALL(password_generation_helper_, GeneratePassword)
-      .WillOnce(::testing::Return(kGeneratedPassword));
+      .WillOnce(::testing::Return(PasswordString(kGeneratedPassword)));
 
   EXPECT_CALL(password_manager_, OnPresaveGeneratedPassword);
 
@@ -1216,7 +1217,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword_Empty) {
 
   // Emulate generating an empty password.
   EXPECT_CALL(password_generation_helper_, GeneratePassword)
-      .WillOnce(::testing::Return(u""));
+      .WillOnce(::testing::Return(PasswordString()));
 
   // Verify that presaving is never done because the generated password is empty
   // hence invalid for presaving. The
@@ -1301,7 +1302,7 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
                       inFrame:frame
             completionHandler:extract_completion_handler_arg]);
   EXPECT_CALL(password_generation_helper_, GeneratePassword)
-      .WillOnce(Return(u"testpass"));
+      .WillOnce(Return(PasswordString(u"testpass")));
 
   [controller_ triggerPasswordGeneration];
 
@@ -1361,7 +1362,7 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration_Proactively) {
 
   // Emulate generating a non-empty password.
   EXPECT_CALL(password_generation_helper_, GeneratePassword)
-      .WillOnce(Return(u"testpass"));
+      .WillOnce(Return(PasswordString(u"testpass")));
 
   // Trigger password generation proactively to start the password generation
   // flow which will stop at the stage where it is shown to the user through the
@@ -2057,7 +2058,7 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
 
   OCMStub([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, GeneratePassword)
-      .WillOnce(Return(u"testpass"));
+      .WillOnce(Return(PasswordString(u"testpass")));
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
   // Check that the generation is terminated.

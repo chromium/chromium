@@ -197,11 +197,16 @@ class ChangePasswordFormFillerTest : public ChromeRenderViewHostTestHarness {
                            std::optional<autofill::FormData> result,
                            base::OnceCallback<void(FillingResult)> callback) {
     base::RunLoop run_loop;
-    EXPECT_CALL(driver(), FillChangePasswordForm)
+    EXPECT_CALL(driver(),
+                FillChangePasswordForm(_, _, _, testing::Eq(kOldPassword),
+                                       testing::Eq(kNewPassword), _))
         .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
                         base::test::RunOnceCallback<5>(result)));
-    filler->FillForm(manager, kUsername, kOldPassword, kNewPassword,
-                     std::move(callback));
+    filler->FillForm(
+        manager, kUsername,
+        password_manager::PasswordString(std::u16string(kOldPassword)),
+        password_manager::PasswordString(std::u16string(kNewPassword)),
+        std::move(callback));
     run_loop.Run();
   }
 
@@ -380,7 +385,9 @@ TEST_F(ChangePasswordFormFillerTest, ProvisionallySaveFailed) {
   autofill::FormData filled_form = CreateFilledTestPasswordFormData();
   filled_form.set_renderer_id(new_form_data.renderer_id());
 
-  EXPECT_CALL(driver(), FillChangePasswordForm)
+  EXPECT_CALL(driver(),
+              FillChangePasswordForm(_, _, _, testing::Eq(kOldPassword),
+                                     testing::Eq(kNewPassword), _))
       .WillOnce(base::test::RunOnceCallback<5>(filled_form));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       filler->form_waiter())
@@ -415,7 +422,9 @@ TEST_F(ChangePasswordFormFillerTest,
       ->OnPasswordFormParsed(form_manager);
   testing::Mock::VerifyAndClearExpectations(&driver());
 
-  EXPECT_CALL(driver(), FillChangePasswordForm)
+  EXPECT_CALL(driver(),
+              FillChangePasswordForm(_, _, _, testing::Eq(kOldPassword),
+                                     testing::Eq(kNewPassword), _))
       .WillOnce(base::test::RunOnceCallback<5>(filled_form));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       filler->form_waiter())

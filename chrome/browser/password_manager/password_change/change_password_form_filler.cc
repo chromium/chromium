@@ -52,21 +52,16 @@ ChangePasswordFormFiller::~ChangePasswordFormFiller() {
 void ChangePasswordFormFiller::FillForm(
     password_manager::PasswordFormManager* form_manager,
     const std::u16string& username,
-    const std::u16string& login_password,
-    const std::u16string& generated_password,
+    const password_manager::PasswordString& login_password,
+    const password_manager::PasswordString& generated_password,
     base::OnceCallback<void(FillingResult)> callback) {
   CHECK(form_manager);
   CHECK(form_manager->GetParsedObservedForm());
   CHECK(form_manager->GetDriver());
 
   username_ = username;
-  // TODO(crbug.com/513276101): Explicit construction of std::u16string
-  // R-Value to be removed once FillForm converted to take PasswordString
-  // argument for login_password
-  login_password_ =
-      password_manager::PasswordString(std::u16string(login_password));
-  generated_password_ =
-      password_manager::PasswordString(std::u16string(generated_password));
+  login_password_ = login_password;
+  generated_password_ = generated_password;
   callback_ = std::move(callback);
 
   const password_manager::PasswordForm& parsed_form =

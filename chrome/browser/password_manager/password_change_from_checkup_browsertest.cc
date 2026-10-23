@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   WaitForPasswordStore();
   CheckThatCredentialsStored(
       /*username=*/"testuser",
-      /*password=*/base::UTF16ToUTF8(delegate->generated_password()));
+      /*password=*/base::UTF16ToUTF8(delegate->generated_password().value()));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,

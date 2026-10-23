@@ -43,6 +43,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
@@ -138,7 +139,7 @@ std::string GetPostSubmissionPrompt() {
   return kDefaultPostSubmissionPrompt;
 }
 
-std::u16string GeneratePassword(
+password_manager::PasswordString GeneratePassword(
     const password_manager::PasswordForm& form,
     password_manager::PasswordGenerationFrameHelper* generation_helper) {
   auto iter = std::ranges::find(form.form_data.fields(),
@@ -393,7 +394,8 @@ void GlicPasswordChangeActuator::OpenPasswordChangeTab(
   }
 }
 
-std::u16string GlicPasswordChangeActuator::GetGeneratedPassword() const {
+password_manager::PasswordString
+GlicPasswordChangeActuator::GetGeneratedPassword() const {
   return generated_password_;
 }
 
@@ -507,8 +509,8 @@ void GlicPasswordChangeActuator::OnChangePasswordFormManagerFound(
       /*logs_uploader=*/nullptr);
 
   form_filler_->FillForm(
-      form_manager, credential_.username_value,
-      credential_.password_value.value(), generated_password_,
+      form_manager, credential_.username_value, credential_.password_value,
+      generated_password_,
       base::BindOnce(&GlicPasswordChangeActuator::OnChangePasswordFormFilled,
                      weak_ptr_factory_.GetWeakPtr()));
 }

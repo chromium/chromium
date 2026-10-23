@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -56,14 +57,14 @@ bool TouchToFillPasswordGenerationController::ShowTouchToFill(
     PrefService* pref_service) {
   password_generation_type_ = type;
 
-  std::u16string generated_password =
+  password_manager::PasswordString generated_password =
       frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
           frame_driver_->GetLastCommittedOrigin().GetURL(), type,
           generation_element_data_.form_signature,
           generation_element_data_.field_signature,
           generation_element_data_.max_password_length);
   if (!bridge_->Show(web_contents_, pref_service, this,
-                     std::move(generated_password),
+                     generated_password.value(),
                      std::move(account_display_name))) {
     return false;
   }

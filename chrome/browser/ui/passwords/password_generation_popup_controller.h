@@ -9,6 +9,10 @@
 
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 
+namespace password_manager {
+class PasswordString;
+}
+
 class PasswordGenerationPopupController
     : public autofill::AutofillPopupViewDelegate {
  public:
@@ -33,7 +37,7 @@ class PasswordGenerationPopupController
   virtual GenerationUIState state() const = 0;
   virtual bool accept_button_selected() const = 0;
   virtual bool cancel_button_selected() const = 0;
-  virtual const std::u16string& password() const = 0;
+  virtual const password_manager::PasswordString& password() const = 0;
 
   // Translated strings
   virtual std::u16string SuggestedText() const = 0;

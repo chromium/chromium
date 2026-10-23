@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_PASSWORD_CHANGE_ACTUATOR_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_PASSWORD_CHANGE_ACTUATOR_H_
 
-#include <memory>
-#include <string>
-
 #include "base/observer_list_types.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace password_manager {
+class PasswordString;
 }
 
 // Interface for performing the actual password change actuation on a website.
@@ -63,7 +64,7 @@ class PasswordChangeActuator {
   virtual void OpenPasswordChangeTab(content::WebContents* originator) = 0;
 
   // Returns the password generated during the password change flow, if any.
-  virtual std::u16string GetGeneratedPassword() const = 0;
+  virtual password_manager::PasswordString GetGeneratedPassword() const = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

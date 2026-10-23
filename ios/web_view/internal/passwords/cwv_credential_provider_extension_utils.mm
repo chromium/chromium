@@ -31,8 +31,9 @@
   __block PasswordSpecFetcher* fetcher =
       [[PasswordSpecFetcher alloc] initWithHost:host APIKey:APIKey];
   [fetcher fetchSpecWithCompletion:^(autofill::PasswordRequirementsSpec spec) {
-    std::u16string password = autofill::GeneratePassword(spec);
-    completionHandler(base::SysUTF16ToNSString(password));
+    password_manager::PasswordString password =
+        autofill::GeneratePassword(spec);
+    completionHandler(base::SysUTF16ToNSString(password.secure_value()));
 
     // This guarantees that |fetcher| will not be deallocated until after this
     // block is called.

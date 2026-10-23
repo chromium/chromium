@@ -53,8 +53,8 @@ class ChangePasswordFormFiller {
   // Fills the change password form.
   void FillForm(password_manager::PasswordFormManager* form_manager,
                 const std::u16string& username,
-                const std::u16string& login_password,
-                const std::u16string& generated_password,
+                const password_manager::PasswordString& login_password,
+                const password_manager::PasswordString& generated_password,
                 base::OnceCallback<void(FillingResult)> callback);
 
 #if defined(UNIT_TEST)

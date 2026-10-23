@@ -36,6 +36,7 @@
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -428,10 +429,11 @@ TEST_F(PasswordGenerationFrameHelperTest, ShortCrowdsourcedPasswordLength) {
 
   // Check that crowdsourced length is used when password is generated
   // automatically.
-  std::u16string generated_pwd = GetGenerationHelper()->GeneratePassword(
-      kTestOrigin, PasswordGenerationType::kAutomatic, kTestFormSignature,
-      kTestFieldSignature,
-      /*max_length=*/0);
+  password_manager::PasswordString generated_pwd =
+      GetGenerationHelper()->GeneratePassword(
+          kTestOrigin, PasswordGenerationType::kAutomatic, kTestFormSignature,
+          kTestFieldSignature,
+          /*max_length=*/0);
   EXPECT_EQ(generated_pwd.size(), kShortLength);
 
   // Check that crowdsourced length is ignored when password generation is

@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -53,7 +54,10 @@ class MockPasswordGenerationPopupController
   MOCK_METHOD(GenerationUIState, state, (), (const override));
   MOCK_METHOD(bool, accept_button_selected, (), (const override));
   MOCK_METHOD(bool, cancel_button_selected, (), (const override));
-  MOCK_METHOD(const std::u16string&, password, (), (const override));
+  MOCK_METHOD(const password_manager::PasswordString&,
+              password,
+              (),
+              (const override));
   MOCK_METHOD(const std::u16string&, HelpText, (), (const override));
   MOCK_METHOD(std::u16string, SuggestedText, (), (const override));
 
@@ -121,7 +125,7 @@ class PasswordGenerationPopupViewBrowsertest
 
  private:
   static constexpr gfx::RectF kElementBounds{100, 100, 250, 50};
-  const std::u16string password_{u"123!-scfFGamFD"};
+  const password_manager::PasswordString password_{u"123!-scfFGamFD"};
 };
 
 IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,

@@ -490,10 +490,12 @@ void PasswordChangeDelegateImpl::OpenPasswordDetails() {
       change_password_url_, originator_->GetLastCommittedURL(), {});
 
   if (is_same_domain) {
+    // UI boundary: the confirmation bubble requires the plaintext password.
     ManagePasswordsUIController::FromWebContents(originator_)
         ->ShowChangePasswordBubble(
             password_form_info_.username_value,
-            actuator_ ? actuator_->GetGeneratedPassword() : std::u16string());
+            actuator_ ? actuator_->GetGeneratedPassword().value()
+                      : std::u16string());
   } else {
     auto* tab = tabs::TabInterface::GetFromContents(originator_);
     BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 
 namespace autofill {
@@ -250,7 +252,8 @@ void ConditionallyAddNumericDigitsToAlphabet(PasswordRequirementsSpec* spec) {
   }
 }
 
-std::u16string GeneratePassword(const PasswordRequirementsSpec& spec) {
+password_manager::PasswordString GeneratePassword(
+    const PasswordRequirementsSpec& spec) {
   PasswordRequirementsSpec actual_spec = BuildDefaultSpec();
 
   // Override all fields that are set in |spec|. Character classes are merged
@@ -272,7 +275,7 @@ std::u16string GeneratePassword(const PasswordRequirementsSpec& spec) {
   }
 
   CHECK_LE(4u, password.size());
-  return password;
+  return password_manager::PasswordString(std::move(password));
 }
 
 }  // namespace autofill

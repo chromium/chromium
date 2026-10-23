@@ -275,11 +275,15 @@ class ChangePasswordFormFillingSubmissionHelperTest
                            ChangePasswordFormFillingSubmissionHelper* verifier,
                            std::optional<autofill::FormData> result) {
     base::RunLoop run_loop;
-    EXPECT_CALL(driver(), FillChangePasswordForm)
+    EXPECT_CALL(driver(),
+                FillChangePasswordForm(_, _, _, testing::Eq(kOldPassword),
+                                       testing::Eq(kNewPassword), _))
         .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
                         base::test::RunOnceCallback<5>(result)));
-    verifier->FillChangePasswordForm(manager, kUsername, kOldPassword,
-                                     kNewPassword);
+    verifier->FillChangePasswordForm(
+        manager, kUsername,
+        password_manager::PasswordString(std::u16string(kOldPassword)),
+        password_manager::PasswordString(std::u16string(kNewPassword)));
     run_loop.Run();
   }
 
@@ -476,8 +480,10 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, FailedDueToTimeout) {
 
   base::test::TestFuture<SubmissionResult> completion_future;
   auto verifier = CreateVerifier(form_manager, completion_future.GetCallback());
-  verifier->FillChangePasswordForm(form_manager, kUsername, kOldPassword,
-                                   kNewPassword);
+  verifier->FillChangePasswordForm(
+      form_manager, kUsername,
+      password_manager::PasswordString(std::u16string(kOldPassword)),
+      password_manager::PasswordString(std::u16string(kNewPassword)));
 
   EXPECT_FALSE(completion_future.IsReady());
   task_environment()->AdvanceClock(

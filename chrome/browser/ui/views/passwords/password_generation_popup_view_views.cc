@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -124,8 +126,8 @@ class NudgePasswordButtons : public views::View {
     accept_button->SetStyle(ui::ButtonStyle::kProminent);
     accept_button->GetViewAccessibility().SetRole(
         ax::mojom::Role::kListBoxOption);
-    accept_button->GetViewAccessibility().SetName(
-        base::JoinString({accept_button_label, controller_->password()}, u" "));
+    accept_button->GetViewAccessibility().SetName(base::JoinString(
+        {accept_button_label, controller_->password().secure_value()}, u" "));
     accept_button->GetViewAccessibility().SetDescription(
         l10n_util::GetStringFUTF16(
             IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
@@ -169,8 +171,8 @@ class NudgePasswordButtons : public views::View {
       return;
     }
     const std::u16string accept_button_label = controller_->SuggestedText();
-    accept_button_->GetViewAccessibility().SetName(
-        base::JoinString({accept_button_label, controller_->password()}, u" "));
+    accept_button_->GetViewAccessibility().SetName(base::JoinString(
+        {accept_button_label, controller_->password().secure_value()}, u" "));
   }
 
   void reset_controller() {
@@ -252,7 +254,7 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
   // Fills the view with strings provided by |controller|.
   void Init(base::WeakPtr<PasswordGenerationPopupController> controller);
 
-  void UpdateGeneratedPassword(const std::u16string& password) {
+  void UpdateGeneratedPassword(std::u16string_view password) {
     password_label_->SetText(password);
   }
 
@@ -270,7 +272,8 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     }
 
     GetViewAccessibility().SetName(base::JoinString(
-        {controller_->SuggestedText(), controller_->password()}, u" "));
+        {controller_->SuggestedText(), controller_->password().secure_value()},
+        u" "));
     GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF16(
         IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
         l10n_util::GetStringUTF16(
@@ -314,9 +317,10 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
       /*resize=*/true, this);
 
   CHECK(!password_label_, base::NotFatalUntil::M162);
-  password_label_ = AddChildView(std::make_unique<views::Label>(
-      controller_->password(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY_MONOSPACED));
+  password_label_ = AddChildView(
+      std::make_unique<views::Label>(controller_->password().secure_value(),
+                                     views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                     views::style::STYLE_SECONDARY_MONOSPACED));
   layout->SetFlexForView(password_label_, 1);
   UpdateAccessibleNameAndDescription();
 }
@@ -376,7 +380,8 @@ void PasswordGenerationPopupViewViews::UpdateState() {
 
 void PasswordGenerationPopupViewViews::UpdateGeneratedPasswordValue() {
   if (password_view_) {
-    password_view_->UpdateGeneratedPassword(controller_->password());
+    password_view_->UpdateGeneratedPassword(
+        controller_->password().secure_value());
   }
   if (nudge_password_buttons_view_) {
     static_cast<NudgePasswordButtons*>(nudge_password_buttons_view_)

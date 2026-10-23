@@ -31,6 +31,7 @@ class PasswordChangeSubmissionLoggingData;
 namespace password_manager {
 class PasswordFormManager;
 class PasswordManagerClient;
+class PasswordString;
 }  // namespace password_manager
 
 class AnnotatedPageContentCapturer;
@@ -85,8 +86,8 @@ class ChangePasswordFormFillingSubmissionHelper {
   void FillChangePasswordForm(
       password_manager::PasswordFormManager* form_manager,
       const std::u16string& username,
-      const std::u16string& login_password,
-      const std::u16string& generated_password);
+      const password_manager::PasswordString& login_password,
+      const password_manager::PasswordString& generated_password);
 
   // Saves a password with a given `username`. Must be called only after
   // `callback_` was invoked.

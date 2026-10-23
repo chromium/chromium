@@ -68,12 +68,14 @@ using base::SysUTF16ToNSString;
 - (void)userDidRequestGeneratedPassword {
   if (self.fetcher.didFetchSpec) {
     PasswordRequirementsSpec spec = self.fetcher.spec;
-    [self.uiHandler setPassword:SysUTF16ToNSString(GeneratePassword(spec))];
+    [self.uiHandler
+        setPassword:SysUTF16ToNSString(GeneratePassword(spec).secure_value())];
     return;
   }
   __weak __typeof__(self) weakSelf = self;
   [self.fetcher fetchSpecWithCompletion:^(PasswordRequirementsSpec spec) {
-    [weakSelf.uiHandler setPassword:SysUTF16ToNSString(GeneratePassword(spec))];
+    [weakSelf.uiHandler
+        setPassword:SysUTF16ToNSString(GeneratePassword(spec).secure_value())];
   }];
 }
 

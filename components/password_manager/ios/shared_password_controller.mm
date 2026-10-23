@@ -60,6 +60,7 @@
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/constants.h"
@@ -1117,7 +1118,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
     }
   }
 
-  std::u16string generatedPassword =
+  password_manager::PasswordString generatedPassword =
       [_driverHelper PasswordGenerationHelper:frame]->GeneratePassword(
           frame->GetSecurityOrigin().GetURL(),
           isManuallyTriggered ? PasswordGenerationType::kManual
@@ -1128,7 +1129,8 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
       "PasswordGeneration.iOS.GeneratedPasswordIsEmpty.BeforeParsing",
       generatedPassword.empty());
 
-  NSString* generatedPotentialPassword = SysUTF16ToNSString(generatedPassword);
+  NSString* generatedPotentialPassword =
+      SysUTF16ToNSString(generatedPassword.secure_value());
 
   __weak SharedPasswordController* weakSelf = self;
   [self.delegate sharedPasswordController:self

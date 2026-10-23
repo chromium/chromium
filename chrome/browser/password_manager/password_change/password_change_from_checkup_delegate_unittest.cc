@@ -42,7 +42,10 @@ class MockPasswordChangeActuator : public PasswordChangeActuator {
               (),
               (const, override));
   MOCK_METHOD(void, OpenPasswordChangeTab, (content::WebContents*), (override));
-  MOCK_METHOD(std::u16string, GetGeneratedPassword, (), (const, override));
+  MOCK_METHOD(password_manager::PasswordString,
+              GetGeneratedPassword,
+              (),
+              (const, override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 
@@ -225,10 +228,12 @@ TEST_F(PasswordChangeFromCheckupDelegateTest,
   // When actuator is set.
   base::WeakPtr<MockPasswordChangeActuator> mock_actuator =
       InjectMockActuator();
+  const password_manager::PasswordString generated_password(
+      u"GeneratedP@ssword123");
   EXPECT_CALL(*mock_actuator, GetGeneratedPassword())
-      .WillOnce(Return(u"GeneratedP@ssword123"));
+      .WillOnce(Return(generated_password));
 
-  EXPECT_EQ(delegate()->generated_password(), u"GeneratedP@ssword123");
+  EXPECT_EQ(delegate()->generated_password(), generated_password);
   delegate()->Stop(actor::ActorTask::StoppedReason::kStoppedByUser);
 }
 

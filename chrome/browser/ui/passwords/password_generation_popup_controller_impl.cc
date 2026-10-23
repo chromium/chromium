@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -264,7 +265,7 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     // See https://crbug.com/40053471 for when `driver_` might be null due to a
     // compromised renderer.
     driver_->GeneratedPasswordAccepted(form_data_, generation_element_id_,
-                                       current_generated_password_);
+                                       current_generated_password_.value());
   }
   // |this| can be destroyed here because GeneratedPasswordAccepted pops up
   // another UI and generates some event to close the dropdown.
@@ -371,7 +372,7 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state,
 
   // Preview password on show in generation state.
   if (state_ == kOfferGeneration) {
-    driver_->PreviewGenerationSuggestion(current_generated_password_);
+    driver_->PreviewGenerationSuggestion(current_generated_password_.value());
 
     // When manually triggered, e.g. via context menu, select the accept button
     // on show so that focus enters the popup immediately without requiring
@@ -395,7 +396,7 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state,
 }
 
 void PasswordGenerationPopupControllerImpl::UpdateGeneratedPassword(
-    std::u16string new_password) {
+    password_manager::PasswordString new_password) {
   current_generated_password_ = std::move(new_password);
   if (view_) {
     view_->UpdateGeneratedPasswordValue();
@@ -519,7 +520,8 @@ bool PasswordGenerationPopupControllerImpl::cancel_button_selected() const {
   return selected_element_ == PasswordGenerationPopupElement::kCancelButton;
 }
 
-const std::u16string& PasswordGenerationPopupControllerImpl::password() const {
+const password_manager::PasswordString&
+PasswordGenerationPopupControllerImpl::password() const {
   return current_generated_password_;
 }
 

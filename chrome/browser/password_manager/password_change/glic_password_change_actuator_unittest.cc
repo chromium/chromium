@@ -473,13 +473,17 @@ TEST_F(GlicPasswordChangeActuatorTest,
                   PasswordChangeActuator::State::kChangingPassword));
   EXPECT_CALL(driver(), FillChangePasswordForm)
       .WillOnce(
-          [](autofill::FieldRendererId old_password_field_id,
-             autofill::FieldRendererId new_password_field_id,
-             autofill::FieldRendererId confirm_password_field_id,
-             const std::u16string& old_password,
-             const std::u16string& new_password,
-             base::OnceCallback<void(const std::optional<autofill::FormData>&)>
-                 callback) {
+          [this](
+              autofill::FieldRendererId old_password_field_id,
+              autofill::FieldRendererId new_password_field_id,
+              autofill::FieldRendererId confirm_password_field_id,
+              const std::u16string& old_password,
+              const std::u16string& new_password,
+              base::OnceCallback<void(const std::optional<autofill::FormData>&)>
+                  callback) {
+            const password_manager::PasswordString generated_password =
+                actuator()->GetGeneratedPassword();
+            EXPECT_EQ(generated_password, new_password);
             std::move(callback).Run(
                 CreateChangePasswordFormData(old_password, new_password));
           });

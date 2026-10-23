@@ -41,7 +41,7 @@ using SubmissionError =
 using SubmissionVerificationResult =
     PasswordChangeSubmissionVerifier::SubmissionVerificationResult;
 
-std::u16string GeneratePassword(
+password_manager::PasswordString GeneratePassword(
     const password_manager::PasswordForm& form,
     password_manager::PasswordGenerationFrameHelper* generation_helper,
     ModelQualityLogsUploader* logs_uploader) {
@@ -127,7 +127,7 @@ ScriptPasswordChangeActuator::ScriptPasswordChangeActuator(
     ModelQualityLogsUploader* logs_uploader)
     : change_password_url_(std::move(change_password_url)),
       username_(std::move(password_form_info.username_value)),
-      original_password_(password_form_info.password_value.value()),
+      original_password_(std::move(password_form_info.password_value)),
       profile_(profile),
       logs_uploader_(logs_uploader) {}
 
@@ -197,7 +197,8 @@ void ScriptPasswordChangeActuator::OpenPasswordChangeTab(
   }
 }
 
-std::u16string ScriptPasswordChangeActuator::GetGeneratedPassword() const {
+password_manager::PasswordString
+ScriptPasswordChangeActuator::GetGeneratedPassword() const {
   return generated_password_;
 }
 

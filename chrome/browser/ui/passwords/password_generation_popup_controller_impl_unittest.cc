@@ -20,6 +20,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
@@ -210,6 +211,26 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateTheSame) {
           /*observer=*/nullptr, web_contents(), main_rfh());
 
   EXPECT_EQ(controller1.get(), controller2.get());
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       EditedPasswordIsProtectedAndNotifiesView) {
+  auto controller = CreateControllerWithView();
+  PasswordGenerationPopupController* popup_controller = controller.get();
+  const PasswordString& password = popup_controller->password();
+  const PasswordString edited_password(u"edited_password");
+
+  EXPECT_CALL(*popup_view(), UpdateGeneratedPasswordValue());
+  controller->UpdateGeneratedPassword(edited_password);
+
+  EXPECT_EQ(password, u"edited_password");
+  EXPECT_EQ(edited_password, u"edited_password");
+
+  PasswordString replacement_password(u"replacement_password");
+  EXPECT_CALL(*popup_view(), UpdateGeneratedPasswordValue());
+  controller->UpdateGeneratedPassword(std::move(replacement_password));
+
+  EXPECT_EQ(password, u"replacement_password");
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentBounds) {

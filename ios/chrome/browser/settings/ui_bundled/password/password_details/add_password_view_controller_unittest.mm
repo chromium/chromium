@@ -93,8 +93,8 @@ constexpr char kPassword[] = "test";
 - (void)requestGeneratedPasswordWithCompletion:
     (void (^)(NSString* password))completion {
   autofill::PasswordRequirementsSpec defaultSpec;
-  _suggestedPassword =
-      base::SysUTF16ToNSString(autofill::GeneratePassword(defaultSpec));
+  _suggestedPassword = base::SysUTF16ToNSString(
+      autofill::GeneratePassword(defaultSpec).secure_value());
   [_passwordCell setTextFieldValue:_suggestedPassword];
 }
 

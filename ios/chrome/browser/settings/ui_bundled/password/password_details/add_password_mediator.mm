@@ -20,6 +20,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_requirements_service.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -232,8 +233,8 @@ bool CheckForDuplicates(
   __weak __typeof(self) weakSelf = self;
   password_manager::FetchPasswordRequirementsSpecCallback callback =
       base::BindOnce(^(autofill::PasswordRequirementsSpec spec) {
-        NSString* generatedPassword =
-            base::SysUTF16ToNSString(autofill::GeneratePassword(spec));
+        NSString* generatedPassword = base::SysUTF16ToNSString(
+            autofill::GeneratePassword(spec).secure_value());
         weakSelf.suggestedPassword = generatedPassword;
         completion(generatedPassword);
       });
