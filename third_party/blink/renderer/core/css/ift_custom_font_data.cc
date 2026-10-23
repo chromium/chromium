@@ -125,7 +125,7 @@ bool IftCustomFontData::IftRequireSubset(const StringView& text) const {
   // If no patches intersect (either because the subset is already supported or
   // because the font has no patches for it), the font is ready to shape with
   // and any missing glyphs will fall back on `.notdef`.
-  if (!patcher_->RequiresPatches(*scratch_subset_)) {
+  if (!patcher_->RenderedFontRequiresPatches(*scratch_subset_)) {
     return true;
   }
   requested_subset_->Union(*scratch_subset_);
@@ -142,7 +142,9 @@ void IftCustomFontData::BeginIdle() const {
     return;
   }
   state_ = State::kIdle;
-  if (rendered_font_version_ == patched_font_version_) {
+  // Nothing was patched since the font was last rendered, so there is no text
+  // waiting on an invalidation.
+  if (!patcher_->HasUnrenderedChanges()) {
     return;
   }
   scoped_refptr<SharedBuffer> buffer =
@@ -154,7 +156,7 @@ void IftCustomFontData::BeginIdle() const {
     BeginFailed();
     return;
   }
-  rendered_font_version_ = patched_font_version_;
+  patcher_->MarkFontDataRendered();
   font_face_source_->UpdateCustomFontData(custom_font_data);
 }
 
@@ -224,7 +226,6 @@ void IftCustomFontData::ApplyPatches() const {
   switch (patcher_->ApplyPatches(*fetched_subset_)) {
     case IftPatcher::ApplyStatus::kSuccess:
     case IftPatcher::ApplyStatus::kMissingPatches:
-      ++patched_font_version_;
       // Attempt to refetch in case applying an invalidating patch revealed
       // additional patches needed for `fetched_subset_`, or in case
       // `requested_subset_` was extended while fetching.

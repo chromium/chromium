@@ -101,10 +101,22 @@ class PLATFORM_EXPORT IftPatcher {
   // or tables.
   base::span<const uint8_t> GetFontData() const LIFETIME_BOUND;
 
-  // Returns true if the font has unapplied patches that intersect `subset`.
-  // Returns false if `subset` is already covered or cannot be patched into the
-  // font.
-  bool RequiresPatches(const IftSubsetDefinition& subset) const;
+  // Returns true if the rendered font has unapplied patches that intersect
+  // `subset`. Returns false if `subset` is already covered or cannot be patched
+  // into the font.
+  //
+  // The rendered font is the font data as of the last `MarkFontDataRendered()`
+  // call, or the initial font data if it was never called. Patches applied
+  // after that call are treated as unapplied.
+  bool RenderedFontRequiresPatches(const IftSubsetDefinition& subset) const;
+
+  // Returns true if patches modified the font data since the last
+  // `MarkFontDataRendered()` call, or since creation if it was never called.
+  bool HasUnrenderedChanges() const;
+
+  // Records that the current font data, as returned by `GetFontData()`, is now
+  // the font data being rendered.
+  void MarkFontDataRendered();
 
   // Evaluates `subset` against the current font state and returns a vector of
   // patch URLs required to fulfill the subset request.

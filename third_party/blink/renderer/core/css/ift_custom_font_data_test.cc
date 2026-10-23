@@ -388,6 +388,12 @@ TEST_F(IftCustomFontDataTest, CodepointsRequestedWhileFetchingAreFetched) {
   EXPECT_NE(font_data_b, original_font);
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
   EXPECT_FALSE(IsShapedWithUpdated(custom_font_data));
+  // "b" is patched but not rendered yet, so the font is not ready for it.
+  // Text the rendered font already supports is unaffected.
+  EXPECT_FALSE(custom_font_data->IftRequireSubset("b"));
+  EXPECT_TRUE(custom_font_data->IftRequireSubset("a"));
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
 
   // Patches for "c" are applied and the text is shaped with the patched font.
   patch_c_table.Complete(PatchPayload(kPatchCAfterBTableUrl));

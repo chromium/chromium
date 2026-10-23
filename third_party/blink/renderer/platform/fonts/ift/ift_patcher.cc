@@ -80,8 +80,17 @@ base::span<const uint8_t> IftPatcher::GetFontData() const {
   return base::span(font_data.to_span());
 }
 
-bool IftPatcher::RequiresPatches(const IftSubsetDefinition& subset) const {
-  return patcher_.requires_patches(subset.subset_);
+bool IftPatcher::RenderedFontRequiresPatches(
+    const IftSubsetDefinition& subset) const {
+  return patcher_.rendered_font_requires_patches(subset.subset_);
+}
+
+bool IftPatcher::HasUnrenderedChanges() const {
+  return patcher_.has_unrendered_changes();
+}
+
+void IftPatcher::MarkFontDataRendered() {
+  patcher_.mark_rendered();
 }
 
 Vector<String> IftPatcher::RequestPatches(const IftSubsetDefinition& subset) {

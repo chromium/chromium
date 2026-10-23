@@ -78,7 +78,11 @@ impl IftSubsetDefinition {
 #[derive(Default)]
 pub struct IftPatcher {
     font_data: Vec<u8>,
-    patch_map: PatchMap,
+    /// The patch map of the font data as of the last `mark_rendered()` call, or
+    /// of the initial font data if it was never called.
+    rendered_patch_map: PatchMap,
+    /// Whether `font_data` was modified since the last `mark_rendered()` call.
+    has_unrendered_changes: bool,
     patch_data: HashMap<PatchUrl, UrlStatus>,
     requested: HashSet<PatchUrl>,
 }
@@ -92,10 +96,10 @@ fn create_patch_map(font_data: &[u8]) -> PatchMap {
 
 impl From<&[u8]> for IftPatcher {
     fn from(font_data: &[u8]) -> IftPatcher {
-        let patch_map = create_patch_map(font_data);
         IftPatcher {
             font_data: font_data.to_vec(),
-            patch_map,
+            rendered_patch_map: create_patch_map(font_data),
+            has_unrendered_changes: false,
             patch_data: HashMap::default(),
             requested: HashSet::default(),
         }
@@ -114,8 +118,19 @@ impl IftPatcher {
         &self.font_data
     }
 
-    pub fn requires_patches(&self, subset: &IftSubsetDefinition) -> bool {
-        self.patch_map.has_intersecting_patches(&subset.0)
+    pub fn rendered_font_requires_patches(&self, subset: &IftSubsetDefinition) -> bool {
+        self.rendered_patch_map.has_intersecting_patches(&subset.0)
+    }
+
+    pub fn has_unrendered_changes(&self) -> bool {
+        self.has_unrendered_changes
+    }
+
+    pub fn mark_rendered(&mut self) {
+        if self.has_unrendered_changes {
+            self.rendered_patch_map = create_patch_map(&self.font_data);
+            self.has_unrendered_changes = false;
+        }
     }
 
     pub fn request_patches(&mut self, subset: &IftSubsetDefinition) -> Vec<String> {
@@ -148,35 +163,30 @@ impl IftPatcher {
     }
 
     pub fn apply_patches(&mut self, subset: &IftSubsetDefinition) -> IftApplyStatus {
-        let mut font_modified = false;
-        let status = loop {
+        loop {
             let Ok(font) = FontRef::new(&self.font_data) else {
-                break IftApplyStatus::InvalidFont;
+                return IftApplyStatus::InvalidFont;
             };
             let Ok(patch_group) =
                 PatchGroup::select_next_patches(font, &self.patch_data, &subset.0)
                     .inspect_err(|err| warn!("IFT error: {err}"))
             else {
-                break IftApplyStatus::PatchGroupError;
+                return IftApplyStatus::PatchGroupError;
             };
             let result = patch_group.apply_next_patches(&mut self.patch_data);
             match result {
                 Ok(data) => {
                     self.font_data = data;
-                    font_modified = true;
+                    self.has_unrendered_changes = true;
                 }
-                Err(PatchingError::EmptyPatchList) => break IftApplyStatus::Success,
-                Err(PatchingError::MissingPatches) => break IftApplyStatus::MissingPatches,
+                Err(PatchingError::EmptyPatchList) => return IftApplyStatus::Success,
+                Err(PatchingError::MissingPatches) => return IftApplyStatus::MissingPatches,
                 Err(err) => {
                     warn!("IFT error: {err}");
-                    break IftApplyStatus::PatchError;
+                    return IftApplyStatus::PatchError;
                 }
             };
-        };
-        if font_modified {
-            self.patch_map = create_patch_map(&self.font_data);
         }
-        status
     }
 
     pub fn has_pending_patch_requests(&self) -> bool {
