@@ -197,6 +197,7 @@ void WaylandToplevelWindow::Hide() {
   // makes sense only if the xdg_toplevel object is going to be reused, which is
   // not the case here.
   xdg_toplevel_.reset();
+  minimize_sync_callback_.reset();
   toplevel_session_.reset();
   appmenu_.reset();
 
@@ -308,12 +309,12 @@ void WaylandToplevelWindow::Minimize() {
 
   if (IsSurfaceConfigured()) {
     if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
-      xdg_toplevel_->SetMinimized();
+      SendSetMinimized();
       pending_minimize_ = true;
     } else {
       auto previous_state = applied_state().window_state;
       previously_maximized_ = previous_state == PlatformWindowState::kMaximized;
-      xdg_toplevel_->SetMinimized();
+      SendSetMinimized();
       ForceApplyWindowStateDoNotUse(PlatformWindowState::kMinimized);
       delegate()->OnWindowStateChanged(previous_state,
                                        PlatformWindowState::kMinimized);
@@ -559,14 +560,20 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   VLOG(3) << __func__ << " states=[ " << window_states.ToString() << "]";
 
   PlatformWindowState window_state = PlatformWindowState::kUnknown;
+  // The compositor does not report the minimized state, so a client-requested
+  // minimize is assumed to persist until the compositor activates the window.
+  // An activated configure sent before the compositor processed set_minimized
+  // does not count, since it predates the minimize.
+  const bool can_unminimize =
+      window_states.is_activated && !minimize_sync_callback_;
   bool is_minimized =
       base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)
           ? ((pending_minimize_ || GetLatestRequestedState().window_state ==
                                        PlatformWindowState::kMinimized) &&
-             !window_states.is_activated)
+             !can_unminimize)
           : (GetLatestRequestedState().window_state ==
                  PlatformWindowState::kMinimized &&
-             !window_states.is_activated);
+             !can_unminimize);
 
   if (is_minimized || window_states.is_minimized) {
     window_state = PlatformWindowState::kMinimized;
@@ -594,7 +601,19 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   bool prev_suspended = is_suspended_;
   is_suspended_ = window_states.is_suspended;
 
-  UpdatePreviouslyMaximized(last_configured_window_state_, window_state);
+  // The compositor does not report the minimized state, but it still reports
+  // the state underneath, which is what Restore() should return to. Use that
+  // instead of the previous configure while the client keeps the window
+  // minimized.
+  PlatformWindowState previous_state = last_configured_window_state_;
+  if (window_state == PlatformWindowState::kMinimized &&
+      !window_states.is_minimized) {
+    previous_state =
+        window_states.is_fullscreen  ? PlatformWindowState::kFullScreen
+        : window_states.is_maximized ? PlatformWindowState::kMaximized
+                                     : PlatformWindowState::kNormal;
+  }
+  UpdatePreviouslyMaximized(previous_state, window_state);
   last_configured_window_state_ = window_state;
 
   // The tiled state affects the window geometry, so apply it here.
@@ -940,7 +959,7 @@ void WaylandToplevelWindow::TriggerStateChanges(
     // UnSetMaximized may result in wrong restored window position that clients
     // are not allowed to know about.
     if (window_state == PlatformWindowState::kMinimized) {
-      xdg_toplevel_->SetMinimized();
+      SendSetMinimized();
       pending_minimize_ = true;
     } else if (window_state == PlatformWindowState::kFullScreen) {
       xdg_toplevel_->SetFullscreen(
@@ -996,6 +1015,30 @@ bool WaylandToplevelWindow::ShouldTriggerStateChange(
 
   // Otherwise do not allow the transition.
   return false;
+}
+
+void WaylandToplevelWindow::SendSetMinimized() {
+  CHECK(xdg_toplevel_);
+  xdg_toplevel_->SetMinimized();
+
+  // Requests are processed in order, so the sync completes only after the
+  // compositor has processed set_minimized.
+  minimize_sync_callback_.reset(connection()->GetSyncCallback());
+  static constexpr wl_callback_listener kMinimizeSyncListener = {
+      .done = &OnMinimizeSyncDone,
+  };
+  wl_callback_add_listener(minimize_sync_callback_.get(),
+                           &kMinimizeSyncListener, this);
+  connection()->Flush();
+}
+
+// static
+void WaylandToplevelWindow::OnMinimizeSyncDone(void* data,
+                                               wl_callback* callback,
+                                               uint32_t time) {
+  auto* self = static_cast<WaylandToplevelWindow*>(data);
+  CHECK_EQ(self->minimize_sync_callback_.get(), callback);
+  self->minimize_sync_callback_.reset();
 }
 
 void WaylandToplevelWindow::UpdatePreviouslyMaximized(

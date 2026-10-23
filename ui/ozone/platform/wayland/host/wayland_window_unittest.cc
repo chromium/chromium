@@ -1167,6 +1167,69 @@ TEST_P(WaylandWindowTest, ServerInitiatedRestoreFromMinimizedState) {
   EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
 }
 
+// Regression test for crbug.com/557572360. The compositor may send a configure
+// before it processes set_minimized, e.g. its reply to an earlier
+// set_maximized. Such a configure still carries the activated state, but must
+// not be interpreted as the compositor restoring the window.
+TEST_P(WaylandWindowTest, StaleActivatedConfigureDoesNotUnminimize) {
+  constexpr gfx::Size kMaximizedSize{800, 600};
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _))
+      .Times(testing::AnyNumber());
+
+  auto active = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, {0, 0}, active);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  ASSERT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+  window_->Maximize();
+  ASSERT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+
+  // Queue the compositor's reply to set_maximized. The client does not
+  // dispatch it until after Minimize(), so it was sent before the compositor
+  // received set_minimized.
+  auto active_maximized = MakeStateArray(
+      {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_MAXIMIZED});
+  connection_->RoundTripQueue();
+  server_.Post(
+      base::BindLambdaForTesting([&, id = surface_id_, size = kMaximizedSize](
+                                     wl::TestWaylandServerThread* server) {
+        auto* xdg_surface =
+            server->GetObject<wl::MockSurface>(id)->xdg_surface();
+        wl::ScopedWlArray states(active_maximized);
+        xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
+                                    size.width(), size.height(), states.get());
+        xdg_surface_send_configure(xdg_surface->resource(),
+                                   server->GetNextSerial());
+      }));
+  server_.FlushForTesting();
+
+  window_->Minimize();
+  EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
+
+  // Dispatch the stale configure. The window must remain minimized.
+  SyncDisplay();
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
+
+  // The configure the compositor sends after minimizing the window deactivates
+  // it. The window must still remain minimized.
+  auto maximized = MakeStateArray({XDG_TOPLEVEL_STATE_MAXIMIZED});
+  SendConfigureEvent(surface_id_, kMaximizedSize, maximized);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
+
+  // Restoring the window must return it to the maximized state.
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    EXPECT_CALL(*mock_surface->xdg_surface()->xdg_toplevel(), SetMaximized());
+  });
+  window_->Restore();
+  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+  SyncDisplay();
+}
+
 // Regression test for crbug.com/396148609. A minimized window is not visible,
 // so its window geometry and bounds must be left at their restored values.
 // Otherwise the geometry origin flips to (0,0) and the bounds shrink to the
@@ -1778,6 +1841,42 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestoreAsync) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kAsyncFullscreenWindowState);
   DoSetMaximizedFullscreenAndRestoreTest(/*async_state=*/true);
+}
+
+// Some compositors drop the maximized state when a maximized window goes
+// fullscreen. Leaving fullscreen must still return the window to maximized.
+TEST_P(WaylandWindowTest, ExitFullscreenWithoutMaximizedStateAsync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncFullscreenWindowState);
+  constexpr gfx::Size kMaximizedSize{800, 600};
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _))
+      .Times(testing::AnyNumber());
+
+  auto active_maximized = MakeStateArray(
+      {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_MAXIMIZED});
+  window_->Maximize();
+  SendConfigureEvent(surface_id_, kMaximizedSize, active_maximized);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  ASSERT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+
+  auto active_fullscreen = MakeStateArray(
+      {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_FULLSCREEN});
+  window_->SetFullscreen(true, display::kInvalidDisplayId);
+  SendConfigureEvent(surface_id_, kMaximizedSize, active_fullscreen);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  ASSERT_EQ(PlatformWindowState::kFullScreen,
+            window_->GetPlatformWindowState());
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    wl::MockXdgTopLevel* toplevel = mock_surface->xdg_surface()->xdg_toplevel();
+    EXPECT_CALL(*toplevel, UnsetFullscreen());
+    EXPECT_CALL(*toplevel, SetMaximized());
+  });
+  window_->SetFullscreen(false, display::kInvalidDisplayId);
+  SyncDisplay();
 }
 
 TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximize) {
