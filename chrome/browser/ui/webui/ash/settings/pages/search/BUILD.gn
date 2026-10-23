@@ -32,7 +32,6 @@ static_library("search") {
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/lobster",
     "//chrome/browser/ash/magic_boost",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chromeos/ash/experiences/arc",

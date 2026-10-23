@@ -14,7 +14,6 @@ static_library("management_disclosure") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/management",
   ]
 }

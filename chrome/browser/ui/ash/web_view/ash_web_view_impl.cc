@@ -8,7 +8,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
 #include "content/public/browser/focused_node_details.h"

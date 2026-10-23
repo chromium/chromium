@@ -20,7 +20,6 @@ static_library("languages") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/input_method",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
