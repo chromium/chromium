@@ -8,8 +8,13 @@ import("//build/config/android/rules.gni")
 android_resources("java_resources") {
   sources = [
     "java/res/color-night/bottom_bar_promo_glow_transparent.xml",
+    "java/res/color/bottom_bar_education_illustration_glow_transparent.xml",
+    "java/res/color/bottom_bar_education_illustration_surface_transparent.xml",
+    "java/res/color/bottom_bar_education_illustration_tertiary_glow_transparent.xml",
     "java/res/color/bottom_bar_promo_glow_transparent.xml",
     "java/res/drawable-night/bottom_bar_promo_illustration.xml",
+    "java/res/drawable/bottom_bar_education_illustration_ergonomics.xml",
+    "java/res/drawable/bottom_bar_education_illustration_gemini.xml",
     "java/res/drawable/bottom_bar_new_tab_background.xml",
     "java/res/drawable/bottom_bar_promo_illustration.xml",
     "java/res/layout/bottom_bar_app_menu_template.xml",
@@ -18,6 +23,8 @@ android_resources("java_resources") {
     "java/res/layout/bottom_bar_layout.xml",
     "java/res/layout/bottom_bar_list_menu_template.xml",
     "java/res/layout/bottom_bar_promo_dialog_view.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [
@@ -109,6 +116,7 @@ android_library("java") {
     "//components/feature_engagement/public:public_java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",

@@ -35,7 +35,6 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/bottom_bar_promo_illustration"
                 android:importantForAccessibility="no"
                 android:layout_marginBottom="@dimen/bottom_bar_education_title_margin_top"
                 android:contentDescription="@null"/>

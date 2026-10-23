@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <color name="bottom_bar_education_illustration_surface">@color/gm3_baseline_surface_light</color>
+    <color name="bottom_bar_education_illustration_screen_end">@color/gm3_baseline_surface_light</color>
+    <color name="bottom_bar_education_illustration_screen_start">@color/material_primary_90</color>
+    <color name="bottom_bar_education_illustration_frame_stroke_start">@color/material_secondary_90</color>
+    <color name="bottom_bar_education_illustration_frame_stroke_end">@color/material_primary_80</color>
+    <color name="bottom_bar_education_illustration_accent_fill">@color/material_secondary_80</color>
+    <color name="bottom_bar_education_illustration_accent_fill_2">@color/material_secondary_80</color>
+    <color name="bottom_bar_education_illustration_accent_path_2">@color/material_primary_20</color>
+    <color name="bottom_bar_education_illustration_accent_path">@color/material_secondary_20</color>
+    <color name="bottom_bar_education_illustration_tertiary_container_mid_energy">@color/gm3_aurora_tertiary_container_mid_energy_light</color>
+    <color name="bottom_bar_education_illustration_tertiary_container_end_energy">@color/gm3_aurora_tertiary_container_end_energy_light</color>
+    <color name="bottom_bar_education_illustration_accent_2">@color/material_tertiary_80</color>
+    <color name="bottom_bar_education_illustration_accent_3">@color/material_tertiary_20</color>
+    <color name="bottom_bar_education_illustration_accent_4">@color/material_secondary_70</color>
+    <color name="bottom_bar_education_illustration_tertiary_glow">@color/material_tertiary_90</color>
+    <color name="bottom_bar_education_illustration_glow">@color/material_primary_80</color>
+    <color name="bottom_bar_education_illustration_bar">@color/material_primary_90</color>
+</resources>

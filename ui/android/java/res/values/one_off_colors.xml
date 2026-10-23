@@ -233,4 +233,10 @@ found in the LICENSE file.
     <color name="google_logo_light_yellow" tools:ignore="UnusedResources">#FFBE00</color>
     <color name="google_logo_light_green" tools:ignore="UnusedResources">#00AF57</color>
     <color name="google_logo_light_blue" tools:ignore="UnusedResources">@color/spark_blue_gradient_mid</color>
+
+    <!-- GM3 Aurora Tertiary Container Energy seed colors for illustrations -->
+    <color name="gm3_aurora_tertiary_container_mid_energy_light">#6EE3C5</color>
+    <color name="gm3_aurora_tertiary_container_mid_energy_dark">#0C976D</color>
+    <color name="gm3_aurora_tertiary_container_end_energy_light">#6DD4FF</color>
+    <color name="gm3_aurora_tertiary_container_end_energy_dark">#00ADCC</color>
 </resources>

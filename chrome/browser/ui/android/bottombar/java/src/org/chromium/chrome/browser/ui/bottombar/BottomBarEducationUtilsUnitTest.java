@@ -18,6 +18,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -30,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -100,7 +102,11 @@ public class BottomBarEducationUtilsUnitTest {
                 R.string.bottom_bar_education_title_gemini,
                 R.string.bottom_bar_education_body);
         assertBubbleButtons(view);
-        assertEquals(View.VISIBLE, view.findViewById(R.id.education_illustration).getVisibility());
+        ImageView illustration = view.findViewById(R.id.education_illustration);
+        assertEquals(View.VISIBLE, illustration.getVisibility());
+        assertEquals(
+                R.drawable.bottom_bar_education_illustration_gemini,
+                Shadows.shadowOf(illustration.getDrawable()).getCreatedFromResId());
     }
 
     @Test
@@ -111,7 +117,11 @@ public class BottomBarEducationUtilsUnitTest {
                 R.string.bottom_bar_education_title_ergonomics,
                 R.string.bottom_bar_education_body);
         assertBubbleButtons(view);
-        assertEquals(View.VISIBLE, view.findViewById(R.id.education_illustration).getVisibility());
+        ImageView illustration = view.findViewById(R.id.education_illustration);
+        assertEquals(View.VISIBLE, illustration.getVisibility());
+        assertEquals(
+                R.drawable.bottom_bar_education_illustration_ergonomics,
+                Shadows.shadowOf(illustration.getDrawable()).getCreatedFromResId());
     }
 
     @Test
@@ -122,7 +132,11 @@ public class BottomBarEducationUtilsUnitTest {
                 R.string.bottom_bar_education_title_opt_in,
                 R.string.bottom_bar_education_body_opt_in);
         assertEquals(View.GONE, view.findViewById(R.id.button_bar).getVisibility());
-        assertEquals(View.VISIBLE, view.findViewById(R.id.education_illustration).getVisibility());
+        ImageView illustration = view.findViewById(R.id.education_illustration);
+        assertEquals(View.VISIBLE, illustration.getVisibility());
+        assertEquals(
+                R.drawable.bottom_bar_education_illustration_ergonomics,
+                Shadows.shadowOf(illustration.getDrawable()).getCreatedFromResId());
     }
 
     @Test
