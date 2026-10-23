@@ -173,7 +173,7 @@ AmountExtractionManager::GetEligibleFeatures(
     }
 
     // If the interacted form field is CVC, do not trigger the search.
-    if (kCvcFieldTypes.find(field_type) != kCvcFieldTypes.end()) {
+    if (kCvcFieldTypes.contains(field_type)) {
       return {};
     }
 

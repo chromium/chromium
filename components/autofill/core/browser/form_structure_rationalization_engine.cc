@@ -296,7 +296,7 @@ void ApplyRuleIfApplicable(
     LogBuffer buffer(IsLoggingActive(log_manager));
     for (const SetTypeAction& action : rule.actions) {
       // Actions can only happen for fields that are bound via conditions.
-      CHECK(found_fields.find(action.target) != found_fields.end());
+      CHECK(found_fields.contains(action.target));
       AutofillField& field = *fields[found_fields[action.target]];
       buffer << ", changing field " << found_fields[action.target] << " from "
              << FieldTypeSetToString(field.Type().GetTypes()) << " to "

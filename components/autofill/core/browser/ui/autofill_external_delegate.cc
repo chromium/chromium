@@ -232,8 +232,7 @@ void PossiblyRemoveAutofillWarnings(std::vector<Suggestion>& suggestions) {
     const SuggestionType type = suggestion.type;
     return type == SuggestionType::kInsecureContextPaymentDisabledMessage;
   };
-  if (std::ranges::find_if(suggestions, std::not_fn(is_warning)) ==
-      suggestions.end()) {
+  if (std::ranges::all_of(suggestions, is_warning)) {
     return;
   }
 

@@ -214,9 +214,7 @@ PhoneFieldParser::GetPhoneGrammars() {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:PhoneNumberGrammarUsage2)
 
   DCHECK(std::ranges::all_of(*grammars, [](const PhoneGrammar& grammar) {
-    return std::ranges::any_of(grammar.rules, [](const Rule& rule) {
-      return rule.phone_part == FIELD_PHONE;
-    });
+    return std::ranges::contains(grammar.rules, FIELD_PHONE, &Rule::phone_part);
   })) << "No grammar without `FIELD_PHONE` should be defined.";
 
   DCHECK(
