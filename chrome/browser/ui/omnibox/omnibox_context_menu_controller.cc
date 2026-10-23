@@ -251,14 +251,15 @@ std::optional<ui::ImageModel> GetImageModelForIconResourceId(
 // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/searchbox_config_icons.html.ts:SearchboxConfigIcons)
 
 void RecordSingleTabMenuItemAction(bool is_active_tab, bool selected) {
-  // Values correspond to `ContextualSearchSingleTabMenuItemAction` in
-  // `tools/metrics/histograms/metadata/contextual_search/enums.xml`.
-  int sample = selected ? (is_active_tab ? /*Current tab selected*/ 3
-                                         : /*Recent tab selected*/ 0)
-                        : (is_active_tab ? /*Current tab deselected*/ 4
-                                         : /*Recent tab deselected*/ 1);
-  base::UmaHistogramExactLinear(
-      "ContextualSearch.SingleTabMenuItem.Action.Omnibox", sample, 6);
+  omnibox::SingleTabMenuItemAction action =
+      selected ? (is_active_tab
+                      ? omnibox::SingleTabMenuItemAction::kCurrentTabSelected
+                      : omnibox::SingleTabMenuItemAction::kRecentTabSelected)
+               : (is_active_tab
+                      ? omnibox::SingleTabMenuItemAction::kCurrentTabDeselected
+                      : omnibox::SingleTabMenuItemAction::kRecentTabDeselected);
+  base::UmaHistogramEnumeration(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox", action);
 }
 
 }  // namespace

@@ -38,6 +38,21 @@ enum class ContextType {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SingleTabMenuItemAction)
+enum class SingleTabMenuItemAction {
+  kRecentTabSelected = 0,
+  kRecentTabDeselected = 1,
+  kRecentTabSubmitted = 2,
+  kCurrentTabSelected = 3,
+  kCurrentTabDeselected = 4,
+  kCurrentTabSubmitted = 5,
+  kMaxValue = kCurrentTabSubmitted,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchSingleTabMenuItemAction,
+// //ui/webui/resources/cr_components/composebox/common.ts:SingleTabMenuItemAction)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(ResultToContentReadyEarlyExitReason)
 enum class ResultToContentReadyEarlyExitReason {
   kUnspecified = 0,

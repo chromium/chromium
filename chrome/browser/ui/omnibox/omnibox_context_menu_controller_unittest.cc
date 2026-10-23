@@ -1614,7 +1614,7 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
       "ContextualSearch.TabPicker.SelectedTabPosition.Omnibox", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
-      /*Current tab selected*/ 3, 1);
+      omnibox::SingleTabMenuItemAction::kCurrentTabSelected, 1);
 }
 
 TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
@@ -1632,7 +1632,7 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
   controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, 0);
   histogram_tester.ExpectUniqueSample(
       "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
-      /*Current tab selected*/ 3, 1);
+      omnibox::SingleTabMenuItemAction::kCurrentTabSelected, 1);
   auto pending_context = searchbox_context_data.TakePendingContext();
   ASSERT_TRUE(pending_context);
   ASSERT_EQ(1u, pending_context->file_infos.size());
@@ -1649,7 +1649,7 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
   controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, 0);
   histogram_tester.ExpectBucketCount(
       "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
-      /*Current tab deselected*/ 4, 1);
+      omnibox::SingleTabMenuItemAction::kCurrentTabDeselected, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualSearch.SingleTabMenuItem.Action.Omnibox", 2);
 }
@@ -1669,7 +1669,7 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
   controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, 0);
   histogram_tester.ExpectUniqueSample(
       "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
-      /*Recent tab selected*/ 0, 1);
+      omnibox::SingleTabMenuItemAction::kRecentTabSelected, 1);
   auto pending_context = searchbox_context_data.TakePendingContext();
   ASSERT_TRUE(pending_context);
   ASSERT_EQ(1u, pending_context->file_infos.size());
@@ -1686,7 +1686,7 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
   controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, 0);
   histogram_tester.ExpectBucketCount(
       "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
-      /*Recent tab deselected*/ 1, 1);
+      omnibox::SingleTabMenuItemAction::kRecentTabDeselected, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualSearch.SingleTabMenuItem.Action.Omnibox", 2);
 }
