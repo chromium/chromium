@@ -82,7 +82,9 @@ bool ShouldUpdateAccessibleName(const TabData& old_data,
           old_data.title != new_data.title || collaboration_message_changed);
 }
 
-std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
+std::u16string GetAccessibleTabLabel(const TabInterface* tab,
+                                     bool is_for_tab,
+                                     const TabData* tab_data) {
   const BrowserWindowInterface* bwi = tab->GetBrowserWindowInterface();
   if (!bwi) {
     return std::u16string();
@@ -91,8 +93,9 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
   const TabStripModel* tab_strip_model = bwi->GetTabStripModel();
 
-  const TabData& tab_data =
-      browser_view->tab_strip_view()->GetTabData(tab->GetHandle());
+  if (!tab_data) {
+    tab_data = &browser_view->tab_strip_view()->GetTabData(tab->GetHandle());
+  }
 
   auto* controller = WindowMetadataController::From(bwi);
 
@@ -141,12 +144,12 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
   }
 
   // Tab has crashed.
-  if (tab_data.is_crashed) {
+  if (tab_data->is_crashed) {
     return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_CRASHED_FORMAT, title);
   }
 
   // Network error interstitial.
-  if (tab_data.network_state == tabs::TabNetworkState::kError) {
+  if (tab_data->network_state == tabs::TabNetworkState::kError) {
     return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_NETWORK_ERROR_FORMAT,
                                       title);
   }
@@ -174,22 +177,22 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
     }
   }
 
-  if (tab_data.should_show_discard_status) {
+  if (tab_data->should_show_discard_status) {
     title = l10n_util::GetStringFUTF16(IDS_TAB_AX_INACTIVE_TAB, title);
     std::optional<base::ByteSize> discarded_memory_savings =
-        tab_data.discarded_memory_savings;
+        tab_data->discarded_memory_savings;
     if (discarded_memory_savings.has_value() &&
         discarded_memory_savings.value().is_positive()) {
       title = l10n_util::GetStringFUTF16(
           IDS_TAB_AX_MEMORY_SAVINGS, title,
           ui::FormatBytes(discarded_memory_savings.value()));
     }
-  } else if (tab_data.tab_resource_usage &&
-             tab_data.tab_resource_usage->memory_usage().is_positive()) {
+  } else if (tab_data->tab_resource_usage &&
+             tab_data->tab_resource_usage->memory_usage().is_positive()) {
     const base::ByteSize memory_used =
-        tab_data.tab_resource_usage->memory_usage();
+        tab_data->tab_resource_usage->memory_usage();
     const bool is_high_memory_usage =
-        tab_data.tab_resource_usage->is_high_memory_usage();
+        tab_data->tab_resource_usage->is_high_memory_usage();
 
     TabHoverCardController* const hover_card_controller =
         browser_view->tab_strip_view()
@@ -207,11 +210,11 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
       title = l10n_util::GetStringFUTF16(message_id, title,
                                          ui::FormatBytes(memory_used));
     }
-  } else if (tab_data.collaboration_messaging &&
-             tab_data.collaboration_messaging->HasMessage()) {
-    std::u16string given_name = tab_data.collaboration_messaging->given_name();
+  } else if (tab_data->collaboration_messaging &&
+             tab_data->collaboration_messaging->HasMessage()) {
+    std::u16string given_name = tab_data->collaboration_messaging->given_name();
 
-    switch (tab_data.collaboration_messaging->collaboration_event()) {
+    switch (tab_data->collaboration_messaging->collaboration_event()) {
       case collaboration::messaging::CollaborationEvent::TAB_ADDED:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB,

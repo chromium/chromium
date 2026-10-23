@@ -23,8 +23,12 @@ class TabInterface;
 bool ShouldUpdateAccessibleName(const TabData& old_data,
                                 const TabData& new_data);
 
-// Returns the localized accessible name for a tab.
-std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab);
+// Returns the localized accessible name for a tab. `tab_data` is the tab's
+// TabData if the caller has it at hand (the tab's own view does); otherwise it
+// is looked up in the tab strip.
+std::u16string GetAccessibleTabLabel(const TabInterface* tab,
+                                     bool is_for_tab,
+                                     const TabData* tab_data = nullptr);
 
 }  // namespace tabs
 

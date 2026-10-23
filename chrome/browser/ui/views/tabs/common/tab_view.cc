@@ -1076,8 +1076,8 @@ void TabView::ResetCollectionNode() {
 void TabView::UpdateAccessibleName() {
   CHECK(collection_node_);
 
-  std::u16string name =
-      tabs::GetAccessibleTabLabel(GetTabInterface(), /*is_for_tab=*/true);
+  std::u16string name = tabs::GetAccessibleTabLabel(
+      GetTabInterface(), /*is_for_tab=*/true, &data());
   if (!name.empty()) {
     GetViewAccessibility().SetName(name);
   } else {
