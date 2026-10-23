@@ -5899,7 +5899,8 @@
               "cpu": "Apple_(Virtual)"
             }
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "content_unittests",
         "test_id_prefix": "ninja://content/test:content_unittests/"
@@ -6310,7 +6311,7 @@
             "os": "Mac-26"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 16
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"

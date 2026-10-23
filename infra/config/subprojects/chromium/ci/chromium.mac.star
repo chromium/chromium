@@ -633,6 +633,9 @@ ci.thin_tester(
             ),
             "content_unittests": targets.mixin(
                 enable_rts_filtering = True,
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
             ),
             # TODO(crbug.com/436628295): test fails on VM
             "headless_shell_wpt_tests": targets.per_test_modification(
@@ -645,7 +648,7 @@ ci.thin_tester(
                 mixins = [
                     targets.mixin(
                         swarming = targets.swarming(
-                            shards = 8,
+                            shards = 16,
                         ),
                     ),
                     "mac_26_arm64",
