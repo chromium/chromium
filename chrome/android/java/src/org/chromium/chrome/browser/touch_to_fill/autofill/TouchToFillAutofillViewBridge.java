@@ -11,6 +11,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -29,8 +33,11 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("autofill")
 @NullMarked
 class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Delegate {
+    @JniType("::autofill::TouchToFillAutofillViewImpl")
+    interface NativeTouchToFillAutofillViewImpl extends JniTypeToken {}
+
     private final TouchToFillAutofillComponent mComponent;
-    private long mNativeViewImpl;
+    private @Nullable JniRawPtr<NativeTouchToFillAutofillViewImpl> mNativeViewImpl;
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
     private final WebContents mWebContents;
@@ -43,7 +50,7 @@ class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Dele
                             && reason != StateChangeReason.NAVIGATION) {
                         restoreKeyboardAndFocus();
                     }
-                    if (mNativeViewImpl != 0) {
+                    if (mNativeViewImpl != null) {
                         TouchToFillAutofillViewBridgeJni.get().onDismissed(mNativeViewImpl);
                     }
                     mBottomSheetController.removeObserver(this);
@@ -52,8 +59,8 @@ class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Dele
             };
 
     @VisibleForTesting
-    public TouchToFillAutofillViewBridge(
-            long nativeViewImpl,
+    TouchToFillAutofillViewBridge(
+            JniRawPtr<NativeTouchToFillAutofillViewImpl> nativeViewImpl,
             Context context,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid,
@@ -71,14 +78,20 @@ class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Dele
     }
 
     @CalledByNative
-    private static @Nullable TouchToFillAutofillViewBridge create(
-            long nativeViewImpl, @Nullable WindowAndroid windowAndroid, WebContents webContents) {
-        if (windowAndroid == null) return null;
-        Context context = windowAndroid.getContext().get();
-        if (context == null) return null;
-        BottomSheetController bottomSheetController =
-                BottomSheetControllerProvider.from(windowAndroid);
-        if (bottomSheetController == null) return null;
+    static @Nullable TouchToFillAutofillViewBridge create(
+            JniRawPtr<NativeTouchToFillAutofillViewImpl> nativeViewImpl,
+            @Nullable WindowAndroid windowAndroid,
+            WebContents webContents) {
+        Context context = null;
+        BottomSheetController bottomSheetController = null;
+        if (windowAndroid != null) {
+            context = windowAndroid.getContext().get();
+            bottomSheetController = BottomSheetControllerProvider.from(windowAndroid);
+        }
+        if (windowAndroid == null || context == null || bottomSheetController == null) {
+            nativeViewImpl.release();
+            return null;
+        }
         return new TouchToFillAutofillViewBridge(
                 nativeViewImpl, context, bottomSheetController, windowAndroid, webContents);
     }
@@ -103,20 +116,20 @@ class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Dele
     }
 
     @CalledByNative
-    private void hide() {
+    void hide() {
         mComponent.hide();
     }
 
     @Override
     public void onNoticeAcknowledged() {
-        if (mNativeViewImpl != 0) {
+        if (mNativeViewImpl != null) {
             TouchToFillAutofillViewBridgeJni.get().onNoticeAcknowledged(mNativeViewImpl);
         }
     }
 
     @Override
     public void onSettingsLinkClicked() {
-        if (mNativeViewImpl != 0) {
+        if (mNativeViewImpl != null) {
             TouchToFillAutofillViewBridgeJni.get().onSettingsLinkClicked(mNativeViewImpl);
         }
     }
@@ -130,7 +143,7 @@ class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Dele
      * from overlapping with the sheet slide-down animation windows.
      */
     private void restoreKeyboardAndFocus() {
-        if (mNativeViewImpl == 0) return;
+        if (mNativeViewImpl == null) return;
         if (mWebContents.isDestroyed()) return;
 
         ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mWebContents);
@@ -152,10 +165,11 @@ class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Dele
 
     @CalledByNative
     void destroy() {
-        if (mNativeViewImpl == 0) {
+        if (mNativeViewImpl == null) {
             return;
         }
-        mNativeViewImpl = 0;
+        mNativeViewImpl.release();
+        mNativeViewImpl = null;
         if (mIsObserverRegistered) {
             mBottomSheetController.removeObserver(mBottomSheetObserver);
             mIsObserverRegistered = false;
@@ -165,10 +179,10 @@ class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Dele
 
     @NativeMethods
     interface Natives {
-        void onNoticeAcknowledged(long nativeTouchToFillAutofillViewImpl);
+        void onNoticeAcknowledged(JniPtr<NativeTouchToFillAutofillViewImpl> self);
 
-        void onSettingsLinkClicked(long nativeTouchToFillAutofillViewImpl);
+        void onSettingsLinkClicked(JniPtr<NativeTouchToFillAutofillViewImpl> self);
 
-        void onDismissed(long nativeTouchToFillAutofillViewImpl);
+        void onDismissed(JniPtr<NativeTouchToFillAutofillViewImpl> self);
     }
 }

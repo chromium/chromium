@@ -4,12 +4,11 @@
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_view_impl.h"
 
-#include <cstdint>
-
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/TouchToFillAutofillViewBridge_jni.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 namespace autofill {
@@ -34,7 +33,7 @@ bool TouchToFillAutofillViewImpl::EnsureJavaBridge(
   if (!java_object_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     java_object_ = Java_TouchToFillAutofillViewBridge_create(
-        env, reinterpret_cast<intptr_t>(this),
+        env, jni_zero::MakeRaw(this),
         web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
         web_contents_->GetJavaWebContents());
   }

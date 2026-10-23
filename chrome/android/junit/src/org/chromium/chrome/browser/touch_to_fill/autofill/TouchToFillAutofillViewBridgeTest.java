@@ -21,6 +21,8 @@ import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,12 +56,14 @@ public class TouchToFillAutofillViewBridgeTest {
     private ViewAndroidDelegate mViewAndroidDelegate;
     private ViewGroup mContainerView;
 
-    private static final long NATIVE_POINTER = 123456L;
+    private JniRawPtr<TouchToFillAutofillViewBridge.NativeTouchToFillAutofillViewImpl>
+            mNativePointer;
     private TouchToFillAutofillViewBridge mBridge;
 
     @Before
     public void setUp() {
         TouchToFillAutofillViewBridgeJni.setInstanceForTesting(mNativeMock);
+        mNativePointer = JniRawPtr.createForTesting(123456L);
 
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         mContainerView = new FrameLayout(activity);
@@ -72,11 +76,16 @@ public class TouchToFillAutofillViewBridgeTest {
 
         mBridge =
                 new TouchToFillAutofillViewBridge(
-                        NATIVE_POINTER,
+                        mNativePointer,
                         activity,
                         mBottomSheetController,
                         mWindowAndroid,
                         mWebContents);
+    }
+
+    @After
+    public void tearDown() {
+        mNativePointer.release();
     }
 
     @Test
@@ -143,7 +152,7 @@ public class TouchToFillAutofillViewBridgeTest {
 
         observer.onSheetClosed(BottomSheetController.StateChangeReason.BACK_PRESS);
 
-        verify(mNativeMock).onDismissed(NATIVE_POINTER);
+        verify(mNativeMock).onDismissed(mNativePointer);
     }
 
     @Test
@@ -196,7 +205,7 @@ public class TouchToFillAutofillViewBridgeTest {
         assertTrue(mContainerView.isFocused());
         InOrder inOrder = inOrder(mKeyboardDelegate, mNativeMock);
         inOrder.verify(mKeyboardDelegate).showKeyboard(mContainerView);
-        inOrder.verify(mNativeMock).onDismissed(NATIVE_POINTER);
+        inOrder.verify(mNativeMock).onDismissed(mNativePointer);
     }
 
     @Test
