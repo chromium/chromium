@@ -425,6 +425,7 @@ static_library("content_shell_lib") {
 
   if (is_ios) {
     deps += [
+      "//components/application_locale_storage",
       "//components/permissions",
       "//components/strings:components_strings",
       "//services/tracing/public/cpp",

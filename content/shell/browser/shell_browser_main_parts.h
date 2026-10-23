@@ -45,7 +45,7 @@ class ShellBrowserMainParts : public BrowserMainParts {
   // BrowserMainParts overrides.
   int PreEarlyInitialization() override;
   int PreCreateThreads() override;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   void PreCreateMainMessageLoop() override;
 #endif
   int PostCreateThreads() override;

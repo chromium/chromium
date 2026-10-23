@@ -5,8 +5,13 @@
 #include "content/shell/browser/shell_browser_main_parts.h"
 
 #include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 namespace content {
+
+void ShellBrowserMainParts::PreCreateMainMessageLoop() {
+  l10n_util::OverrideLocaleWithCocoaLocale();
+}
 
 device::GeolocationSystemPermissionManager*
 ShellBrowserMainParts::GetGeolocationSystemPermissionManager() {
