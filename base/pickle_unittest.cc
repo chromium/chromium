@@ -21,6 +21,7 @@
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,6 +129,15 @@ TEST(PickleTest, UnownedVsOwned) {
 
   Pickle owned_pickle = Pickle::WithData(buffer);
   EXPECT_GE(unowned_pickle.GetTotalAllocatedSize(), 0u);
+}
+
+TEST(PickleDeathTest, WriteToUnownedBuffer) {
+  Pickle::Header header = {.payload_size = 0};
+  Pickle pickle = Pickle::WithUnownedBuffer(byte_span_from_ref(header));
+  // Pickles created with `WithUnownedBuffer()` are read-only, so reserving
+  // capacity or writing to them must fail.
+  EXPECT_CHECK_DEATH(pickle.Reserve(64));
+  EXPECT_CHECK_DEATH(pickle.WriteUInt32(0x41414141));
 }
 
 TEST(PickleTest, EncodeDecode) {
