@@ -4615,6 +4615,16 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
       proxy_instance_->GetProcTableForANGLE(),
       EGL_PLATFORM_ANGLE_WEBGPU_INSTANCE_ANGLE,
       proxy_instance_->GetInstanceForANGLE(),
+      // Use a different EGLDisplay per context. ANGLE caches displays by their
+      // attributes, but ignores the Dawn proc table and instance above. A
+      // second context would otherwise get the first context's display, and
+      // its wgpu::Device. That device belongs to the first context's Dawn wire
+      // client, and can't be used with ours.
+      // ANGLE never frees displays: a later context at the same address reuses
+      // a terminated one. That's fine, it is initialized again.
+      // TODO(413078308): Reuse the keys to avoid leaking a display per context.
+      EGL_PLATFORM_ANGLE_DISPLAY_KEY_ANGLE,
+      reinterpret_cast<EGLAttrib>(this),
       EGL_NONE,
   });
   driver_.display = EGLFN(driver_, eglGetPlatformDisplay)(
