@@ -29,8 +29,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -437,8 +437,7 @@ bool IsLoggingDisabledByPolicy(const AutofillPopupController* controller) {
       optimization_guide::prefs::kFindAndFillWithGeminiSettings);
   return policy_value ==
          std::to_underlying(
-             optimization_guide::model_execution::prefs::
-                 ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+             optimization_guide::EnterprisePolicyValue::kAllowWithoutLogging);
 }
 
 }  // namespace

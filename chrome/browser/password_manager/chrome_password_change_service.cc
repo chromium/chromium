@@ -19,9 +19,9 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
@@ -353,8 +353,7 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
 
   // The feature is disabled by enterprise policy.
   constexpr int kPolicyDisabled =
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable);
+      std::to_underlying(optimization_guide::EnterprisePolicyValue::kDisable);
   if (pref_service_->GetInteger(
           optimization_guide::prefs::
               kAutomatedPasswordChangeEnterprisePolicyAllowed) ==

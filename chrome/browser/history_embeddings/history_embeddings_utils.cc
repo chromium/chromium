@@ -11,6 +11,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -152,8 +153,7 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
       profile->GetPrefs()->GetInteger(
           optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed) ==
       static_cast<int>(
-          optimization_guide::model_execution::prefs::
-              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+          optimization_guide::EnterprisePolicyValue::kAllowWithoutLogging);
   if (logging_disabled_by_enterprise) {
     source->AddLocalizedString("historyEmbeddingsDisclaimer",
                                IDS_HISTORY_EMBEDDINGS_DISCLAIMER_LOGGING_OFF);

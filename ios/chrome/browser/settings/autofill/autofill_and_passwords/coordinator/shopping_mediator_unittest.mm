@@ -12,8 +12,8 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/core/common/dense_set.h"
+#import "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #import "components/optimization_guide/core/feature_registry/feature_registration.h"
-#import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/test/test_sync_service.h"
@@ -170,28 +170,24 @@ TEST_F(ShoppingMediatorTest, AutofillProfilePrefChangeUpdatesConsumer) {
 // Tests that a policy preference change updates the consumer toggle managed
 // state.
 TEST_F(ShoppingMediatorTest, PolicyPrefChangeUpdatesConsumer) {
-  using optimization_guide::model_execution::prefs::
-      ModelExecutionEnterprisePolicyValue;
+  using optimization_guide::EnterprisePolicyValue;
   const std::string kPolicyPref = optimization_guide::prefs::
       kAutofillPredictionImprovementsEnterprisePolicyAllowed;
 
   profile_->GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillAiShoppingEntitiesEnabled, true);
   profile_->GetPrefs()->SetInteger(
-      kPolicyPref,
-      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow));
+      kPolicyPref, static_cast<int>(EnterprisePolicyValue::kAllow));
   mediator_.consumer = consumer_;
 
   OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:YES]);
   profile_->GetPrefs()->SetInteger(
-      kPolicyPref,
-      static_cast<int>(ModelExecutionEnterprisePolicyValue::kDisable));
+      kPolicyPref, static_cast<int>(EnterprisePolicyValue::kDisable));
   [consumer_ verify];
 
   OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
   profile_->GetPrefs()->SetInteger(
-      kPolicyPref,
-      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow));
+      kPolicyPref, static_cast<int>(EnterprisePolicyValue::kAllow));
   [consumer_ verify];
 }
 

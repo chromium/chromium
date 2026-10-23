@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_mediator.h"
 
+#import "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #import "components/optimization_guide/core/feature_registry/feature_registration.h"
-#import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -68,9 +68,8 @@ TEST_F(SuggestionsFromGeminiMediatorTest,
 
   pref_service_.SetManagedPref(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-      std::make_unique<base::Value>(
-          static_cast<int>(optimization_guide::model_execution::prefs::
-                               ModelExecutionEnterprisePolicyValue::kDisable)));
+      std::make_unique<base::Value>(static_cast<int>(
+          optimization_guide::EnterprisePolicyValue::kDisable)));
 
   OCMExpect([mock_consumer_ setSuggestionsFromGeminiSwitchOn:YES]);
   OCMExpect(
@@ -90,8 +89,7 @@ TEST_F(SuggestionsFromGeminiMediatorTest,
   pref_service_.SetManagedPref(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings,
       std::make_unique<base::Value>(static_cast<int>(
-          optimization_guide::model_execution::prefs::
-              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging)));
+          optimization_guide::EnterprisePolicyValue::kAllowWithoutLogging)));
 
   OCMExpect([mock_consumer_ setSuggestionsFromGeminiSwitchOn:YES]);
   OCMExpect(

@@ -31,8 +31,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
@@ -864,11 +864,9 @@ bool IsAutofillAiEntityTypeBlockedByPolicy(const AutofillClient& client,
   // State of the AutofillAI-specific enterprise policy pref.
   constexpr int kAutofillPredictionSettingsAllowWithoutLogging =
       std::to_underlying(
-          optimization_guide::model_execution::prefs::
-              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+          optimization_guide::EnterprisePolicyValue::kAllowWithoutLogging);
   constexpr int kAutofillPredictionSettingsDisabled =
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable);
+      std::to_underlying(optimization_guide::EnterprisePolicyValue::kDisable);
   static_assert(kAutofillPredictionSettingsAllowWithoutLogging == 1);
   static_assert(kAutofillPredictionSettingsDisabled == 2);
 
@@ -882,8 +880,7 @@ bool IsAutofillAiEntityTypeBlockedByPolicy(const AutofillClient& client,
     const PrefService* prefs) {
   // State of the AutofillAI-specific enterprise policy pref.
   constexpr int kAutofillPredictionSettingsAllow =
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kAllow);
+      std::to_underlying(optimization_guide::EnterprisePolicyValue::kAllow);
   static_assert(kAutofillPredictionSettingsAllow == 0);
 
   return prefs->GetInteger(

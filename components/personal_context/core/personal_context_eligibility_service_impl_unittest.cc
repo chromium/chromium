@@ -18,8 +18,8 @@
 #if !BUILDFLAG(IS_IOS)
 #include "components/glic/glic_pref_names.h"
 #endif
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_eligibility_service_impl_test_api.h"
 #include "components/personal_context/core/personal_context_features.h"
@@ -99,8 +99,7 @@ class PersonalContextEligibilityServiceImplTest : public testing::Test {
 #endif
     pref_service_.registry()->RegisterIntegerPref(
         optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-        std::to_underlying(optimization_guide::model_execution::prefs::
-                               ModelExecutionEnterprisePolicyValue::kAllow));
+        std::to_underlying(optimization_guide::EnterprisePolicyValue::kAllow));
     pref_service_.SetBoolean(
         personal_context::prefs::
             kPersonalContextAmbientAutofillNoticeShouldBeShown,
@@ -446,8 +445,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
 TEST_F(PersonalContextEligibilityServiceImplTest, EnterprisePolicyDisabled) {
   pref_service_.SetInteger(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable));
+      std::to_underlying(optimization_guide::EnterprisePolicyValue::kDisable));
 
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
@@ -472,8 +470,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
 
   pref_service_.SetInteger(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable));
+      std::to_underlying(optimization_guide::EnterprisePolicyValue::kDisable));
 
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);

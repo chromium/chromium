@@ -154,8 +154,8 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
@@ -1406,8 +1406,7 @@ class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
 
     autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-        std::to_underlying(optimization_guide::model_execution::prefs::
-                               ModelExecutionEnterprisePolicyValue::kAllow));
+        std::to_underlying(optimization_guide::EnterprisePolicyValue::kAllow));
     autofill_client().GetPrefs()->SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);

@@ -19,6 +19,7 @@
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
@@ -1094,8 +1095,7 @@ TEST_F(FindsServiceTest, MaybeRescheduleNotifications_Reschedules) {
 TEST_F(FindsServiceTest, TestExecuteModelEnterprisePolicyDisabled) {
   prefs_.SetInteger(
       optimization_guide::prefs::kFindsEnterprisePolicyAllowed,
-      static_cast<int>(optimization_guide::model_execution::prefs::
-                           ModelExecutionEnterprisePolicyValue::kDisable));
+      static_cast<int>(optimization_guide::EnterprisePolicyValue::kDisable));
 
   base::RunLoop run_loop;
   service_->ExecuteModelAndScheduleNotification(base::BindOnce(
@@ -1118,8 +1118,7 @@ TEST_F(FindsServiceTest, TestRecordThemeURLVisitedEnterprisePolicyDisabled) {
 
   prefs_.SetInteger(
       optimization_guide::prefs::kFindsEnterprisePolicyAllowed,
-      static_cast<int>(optimization_guide::model_execution::prefs::
-                           ModelExecutionEnterprisePolicyValue::kDisable));
+      static_cast<int>(optimization_guide::EnterprisePolicyValue::kDisable));
 
   testing::NiceMock<MockFindsServiceObserver> observer;
   service_->AddObserver(&observer);
@@ -1141,8 +1140,7 @@ TEST_F(FindsServiceTest, TestRecordThemeURLVisitedEnterprisePolicyDisabled) {
 TEST_F(FindsServiceTest, TestSRPBackNavigationEnterprisePolicyDisabled) {
   prefs_.SetInteger(
       optimization_guide::prefs::kFindsEnterprisePolicyAllowed,
-      static_cast<int>(optimization_guide::model_execution::prefs::
-                           ModelExecutionEnterprisePolicyValue::kDisable));
+      static_cast<int>(optimization_guide::EnterprisePolicyValue::kDisable));
 
   testing::NiceMock<MockFindsServiceObserver> observer;
   service_->AddObserver(&observer);

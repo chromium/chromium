@@ -24,8 +24,8 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/test_renderer_host.h"
@@ -615,8 +615,7 @@ TEST_F(PopupNoticeViewTest,
       .WillByDefault(Return(FillingProduct::kAtMemory));
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-      static_cast<int>(optimization_guide::model_execution::prefs::
-                           ModelExecutionEnterprisePolicyValue::kAllow));
+      static_cast<int>(optimization_guide::EnterprisePolicyValue::kAllow));
 
   base::HistogramTester histogram_tester;
   controller().set_suggestions(
@@ -650,8 +649,7 @@ TEST_F(PopupNoticeViewTest,
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings,
       static_cast<int>(
-          optimization_guide::model_execution::prefs::
-              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging));
+          optimization_guide::EnterprisePolicyValue::kAllowWithoutLogging));
 
   controller().set_suggestions(
       {Suggestion(SuggestionType::kPersonalContextNotice)});

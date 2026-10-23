@@ -17,6 +17,7 @@
 #include "chrome/browser/notifications/scheduler/public/finds_agent.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
@@ -144,8 +145,7 @@ TEST_F(FindsClientTest, OnShowNotification) {
 TEST_F(FindsClientTest, BeforeShowNotification_EnterprisePolicyAllowed) {
   pref_service()->SetInteger(
       optimization_guide::prefs::kFindsEnterprisePolicyAllowed,
-      static_cast<int>(optimization_guide::model_execution::prefs::
-                           ModelExecutionEnterprisePolicyValue::kAllow));
+      static_cast<int>(optimization_guide::EnterprisePolicyValue::kAllow));
 
   auto notification_data = std::make_unique<NotificationData>();
   notification_data->title = u"Test Title";
@@ -162,8 +162,7 @@ TEST_F(FindsClientTest, BeforeShowNotification_EnterprisePolicyAllowed) {
 TEST_F(FindsClientTest, BeforeShowNotification_EnterprisePolicyDisabled) {
   pref_service()->SetInteger(
       optimization_guide::prefs::kFindsEnterprisePolicyAllowed,
-      static_cast<int>(optimization_guide::model_execution::prefs::
-                           ModelExecutionEnterprisePolicyValue::kDisable));
+      static_cast<int>(optimization_guide::EnterprisePolicyValue::kDisable));
 
   auto notification_data = std::make_unique<NotificationData>();
   notification_data->title = u"Test Title";

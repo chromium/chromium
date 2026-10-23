@@ -20,8 +20,8 @@
 #if !BUILDFLAG(IS_IOS)
 #include "components/glic/glic_pref_names.h"
 #endif
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
@@ -153,8 +153,7 @@ SatisfiesPrefsRequirements(const PrefService* pref_service,
   const int policy_value = pref_service->GetInteger(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings);
   if (policy_value ==
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable)) {
+      std::to_underlying(optimization_guide::EnterprisePolicyValue::kDisable)) {
     MaybeOutputReason(
         debug_message,
         "Disallowed by FindAndFillWithGeminiSettings enterprise policy.");

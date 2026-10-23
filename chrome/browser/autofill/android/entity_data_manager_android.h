@@ -150,7 +150,7 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
       JNIEnv* env) const;
 
   // Checks whether Autofill AI is disabled by enterprise policy.
-  // TODO(crbug.com/468236777): Return `ModelExecutionEnterprisePolicyValue`
+  // TODO(crbug.com/468236777): Return `EnterprisePolicyValue`
   // enum instead of having a specific method to check the policy pref state.
   bool GetIsAutofillAiDisabledByEnterprisePolicy(JNIEnv* env);
 

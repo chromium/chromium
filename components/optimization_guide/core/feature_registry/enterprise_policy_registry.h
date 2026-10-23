@@ -9,11 +9,22 @@
 #include <string_view>
 #include <vector>
 
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "base/component_export.h"
 
+class PrefRegistrySimple;
 class PrefService;
 
 namespace optimization_guide {
+
+// The possible values for the model execution enterprise policy.
+// LINT.IfChange(EnterprisePolicyValue)
+enum class EnterprisePolicyValue {
+  kAllow = 0,
+  kAllowWithoutLogging = 1,
+  kDisable = 2,
+};
+// LINT.ThenChange(//chrome/browser/resources/settings/ai_page/constants.ts:ModelExecutionEnterprisePolicyValue,
+// //chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:AllowLogging)
 
 // EnterprisePolicyPref holds configuration for an enterprise policy controlling
 // a model execution feature.
@@ -26,8 +37,7 @@ class EnterprisePolicyPref {
 
   // Returns the current setting of the enterprise policy.
   COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-  model_execution::prefs::ModelExecutionEnterprisePolicyValue GetValue(
-      const PrefService*) const;
+  EnterprisePolicyValue GetValue(const PrefService*) const;
 
  private:
   // The full pref path controlling the enterprise policy.

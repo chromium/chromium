@@ -4,14 +4,12 @@
 
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
 
-using model_execution::prefs::ModelExecutionEnterprisePolicyValue;
 
 class EnterprisePolicyRegistryTest : public testing::Test {};
 
@@ -22,11 +20,9 @@ TEST_F(EnterprisePolicyRegistryTest, Register) {
   registry->Register("pref_name");
   registry->RegisterProfilePrefs(pref_service.registry());
   auto value =
-      static_cast<model_execution::prefs::ModelExecutionEnterprisePolicyValue>(
-          pref_service.GetInteger("pref_name"));
+      static_cast<EnterprisePolicyValue>(pref_service.GetInteger("pref_name"));
   // The default value should be kAllow.
-  EXPECT_EQ(model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow,
-            value);
+  EXPECT_EQ(EnterprisePolicyValue::kAllow, value);
 }
 
 TEST_F(EnterprisePolicyRegistryTest, GetValue) {
@@ -36,15 +32,12 @@ TEST_F(EnterprisePolicyRegistryTest, GetValue) {
   EnterprisePolicyPref enterprise_policy = registry->Register("pref_name");
   registry->RegisterProfilePrefs(pref_service.registry());
 
-  EXPECT_EQ(model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow,
+  EXPECT_EQ(EnterprisePolicyValue::kAllow,
             enterprise_policy.GetValue(&pref_service));
   pref_service.SetInteger(
       "pref_name",
-      static_cast<int>(
-          model_execution::prefs::ModelExecutionEnterprisePolicyValue::
-              kAllowWithoutLogging));
-  EXPECT_EQ(model_execution::prefs::ModelExecutionEnterprisePolicyValue::
-                kAllowWithoutLogging,
+      static_cast<int>(EnterprisePolicyValue::kAllowWithoutLogging));
+  EXPECT_EQ(EnterprisePolicyValue::kAllowWithoutLogging,
             enterprise_policy.GetValue(&pref_service));
 }
 

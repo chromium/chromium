@@ -56,7 +56,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     // LINT.IfChange(AllowLogging)
     private static final int ALLOW_LOGGING = 0;
 
-    // LINT.ThenChange(//components/optimization_guide/core/model_execution/model_execution_prefs.h:ModelExecutionEnterprisePolicyValue)
+    // LINT.ThenChange(//components/optimization_guide/core/feature_registry/enterprise_policy_registry.h:EnterprisePolicyValue)
 
     private final Context mContext;
     private final PropertyModel mModel;

@@ -9,8 +9,8 @@
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
 
@@ -49,8 +49,7 @@ GeneratedFindAndFillWithGeminiPref::SetPref(const base::Value* value) {
   const int policy_value = policy_pref ? policy_pref->GetValue()->GetInt() : 0;
 
   if (policy_value ==
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable)) {
+      std::to_underlying(optimization_guide::EnterprisePolicyValue::kDisable)) {
     return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
   }
 
@@ -81,8 +80,7 @@ settings_api::PrefObject GeneratedFindAndFillWithGeminiPref::GetPrefObject()
   const int policy_value = policy_pref ? policy_pref->GetValue()->GetInt() : 0;
   const bool is_disabled_by_policy =
       (policy_value ==
-       std::to_underlying(optimization_guide::model_execution::prefs::
-                              ModelExecutionEnterprisePolicyValue::kDisable));
+       std::to_underlying(optimization_guide::EnterprisePolicyValue::kDisable));
 
   if (is_disabled_by_policy) {
     pref_object.value = base::Value(false);

@@ -49,8 +49,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -122,8 +122,8 @@ bool EntityDataManagerAndroid::IsPersonalContextDisabledByEnterprisePolicy(
     return false;
   }
   return policy_pref->GetValue()->GetInt() ==
-         std::to_underlying(optimization_guide::model_execution::prefs::
-                                ModelExecutionEnterprisePolicyValue::kDisable);
+         std::to_underlying(
+             optimization_guide::EnterprisePolicyValue::kDisable);
 }
 
 void EntityDataManagerAndroid::SetPersonalContextEnabled(JNIEnv* env,

@@ -11,8 +11,8 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
@@ -62,8 +62,7 @@ class PersonalContextAutofillUtilTest : public testing::Test {
         /*disabled_features=*/{});
     client_.GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-        std::to_underlying(optimization_guide::model_execution::prefs::
-                               ModelExecutionEnterprisePolicyValue::kAllow));
+        std::to_underlying(optimization_guide::EnterprisePolicyValue::kAllow));
     client_.GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, 1);
     client_.SetUpPrefsAndIdentityForAutofillAi();

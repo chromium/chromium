@@ -15,19 +15,6 @@ class PrefService;
 
 namespace optimization_guide::model_execution::prefs {
 
-// TODO: crbug.com/514743962 - This is a remote model execution thing.
-// The possible values for the model execution enterprise policy.
-// LINT.IfChange(ModelExecutionEnterprisePolicyValue)
-enum class ModelExecutionEnterprisePolicyValue {
-  kAllow = 0,
-  kAllowWithoutLogging = 1,
-  kDisable = 2,
-};
-// LINT.ThenChange(
-//    //chrome/browser/resources/settings/ai_page/constants.ts:ModelExecutionEnterprisePolicyValue,
-//    //chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:AllowLogging
-// )
-
 enum class GenAILocalFoundationalModelEnterprisePolicySettings {
   kAllowed = 0,
   kDisallowed = 1,

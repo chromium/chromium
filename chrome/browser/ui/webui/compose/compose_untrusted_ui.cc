@@ -18,8 +18,8 @@
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -149,8 +149,7 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
       pref_service->GetInteger(
           optimization_guide::prefs::kComposeEnterprisePolicyAllowed) ==
       static_cast<int>(
-          optimization_guide::model_execution::prefs::
-              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+          optimization_guide::EnterprisePolicyValue::kAllowWithoutLogging);
   source->AddBoolean("useEnterpriseWithoutLoggingPolicy",
                      is_enterprise_without_logging);
 }

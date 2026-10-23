@@ -45,8 +45,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -1050,8 +1050,7 @@ class AtMemoryContextMenuManagerTest
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
     autofill_client()->GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-        std::to_underlying(optimization_guide::model_execution::prefs::
-                               ModelExecutionEnterprisePolicyValue::kAllow));
+        std::to_underlying(optimization_guide::EnterprisePolicyValue::kAllow));
     autofill_client()->GetPrefs()->SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);

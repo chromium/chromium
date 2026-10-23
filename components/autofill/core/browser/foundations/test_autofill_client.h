@@ -81,8 +81,8 @@
 #include "components/metrics/profile_metrics_service.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/sms_otp_service.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/first_run/personal_context_first_run_service.h"
 #include "components/personal_context/first_run/test_personal_context_first_run_service.h"
@@ -684,8 +684,7 @@ class TestAutofillClientTemplate : public T {
     GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::
             kAutofillPredictionImprovementsEnterprisePolicyAllowed,
-        std::to_underlying(optimization_guide::model_execution::prefs::
-                               ModelExecutionEnterprisePolicyValue::kAllow),
+        std::to_underlying(optimization_guide::EnterprisePolicyValue::kAllow),
         PrefRegistry::LOSSY_PREF);
     GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::kGeminiSettings,

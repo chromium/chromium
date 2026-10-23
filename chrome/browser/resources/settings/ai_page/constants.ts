@@ -4,7 +4,7 @@
 
 // These values must stay in sync with
 // optimization_guide::prefs::FeatureOptInState in
-// components/optimization_guide/core/optimization_guide_prefs.h.
+// components/optimization_guide/core/feature_registry/feature_keys.h.
 export enum FeatureOptInState {
   NOT_INITIALIZED = 0,
   ENABLED = 1,
@@ -17,7 +17,7 @@ export enum ModelExecutionEnterprisePolicyValue {
   ALLOW_WITHOUT_LOGGING = 1,
   DISABLE = 2,
 }
-// LINT.ThenChange(/components/optimization_guide/core/model_execution/model_execution_prefs.h:ModelExecutionEnterprisePolicyValue)
+// LINT.ThenChange(/components/optimization_guide/core/feature_registry/enterprise_policy_registry.h:EnterprisePolicyValue)
 
 export enum ChromeSuggestionsSettingsValue {
   ENABLED = 0,

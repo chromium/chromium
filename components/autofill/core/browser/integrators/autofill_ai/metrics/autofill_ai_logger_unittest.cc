@@ -43,6 +43,8 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
@@ -1407,8 +1409,7 @@ TEST_F(AutofillAiMqlsMetricsTest, NoMqlsMetricsIfDisabledByEnterprisePolicy) {
   autofill_client().GetPrefs()->SetInteger(
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed,
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable));
+      std::to_underlying(optimization_guide::EnterprisePolicyValue::kDisable));
 
   EntityInstance entity = test::GetPassportEntityInstance();
   std::unique_ptr<FormStructure> form = CreatePassportForm();

@@ -16,8 +16,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -31,13 +31,12 @@
 namespace policy {
 namespace {
 
-using optimization_guide::model_execution::prefs::
-    ModelExecutionEnterprisePolicyValue;
+using optimization_guide::EnterprisePolicyValue;
 
-using enum ModelExecutionEnterprisePolicyValue;
+using enum EnterprisePolicyValue;
 
 // The policy's value are 0, 1, 2 and Autofill expects that the enum
-// ModelExecutionEnterprisePolicyValue matches those values.
+// EnterprisePolicyValue matches those values.
 static_assert(std::to_underlying(kAllow) == 0);
 static_assert(std::to_underlying(kAllowWithoutLogging) == 1);
 static_assert(std::to_underlying(kDisable) == 2);
@@ -46,7 +45,7 @@ static_assert(std::to_underlying(kDisable) == 2);
 //  * Policy value.
 class AutofillAiPolicyTest
     : public PolicyTest,
-      public testing::WithParamInterface<ModelExecutionEnterprisePolicyValue> {
+      public testing::WithParamInterface<EnterprisePolicyValue> {
  public:
   AutofillAiPolicyTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -56,9 +55,7 @@ class AutofillAiPolicyTest
         {});
   }
 
-  ModelExecutionEnterprisePolicyValue policy_value() const {
-    return GetParam();
-  }
+  EnterprisePolicyValue policy_value() const { return GetParam(); }
   bool disabled_by_policy() const { return policy_value() == kDisable; }
 
   void SetUpOnMainThread() override {

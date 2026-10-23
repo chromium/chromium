@@ -13,8 +13,8 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -183,8 +183,7 @@ TEST_F(FindsTabHelperTest, TestOptInCooldownNotPassed) {
 TEST_F(FindsTabHelperTest, TestEnterprisePolicyDisabled) {
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kFindsEnterprisePolicyAllowed,
-      static_cast<int>(optimization_guide::model_execution::prefs::
-                           ModelExecutionEnterprisePolicyValue::kDisable));
+      static_cast<int>(optimization_guide::EnterprisePolicyValue::kDisable));
   EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
   SimulateSRPBackNavigations(srp_return_count_threshold_);
   EXPECT_EQ(srp_return_count(), 0);

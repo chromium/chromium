@@ -35,8 +35,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -76,8 +76,7 @@ class EntityDataManagerAndroidTest : public testing::Test {
     prefs_.registry()->RegisterIntegerPref(
         optimization_guide::prefs::
             kAutofillPredictionImprovementsEnterprisePolicyAllowed,
-        std::to_underlying(optimization_guide::model_execution::prefs::
-                               ModelExecutionEnterprisePolicyValue::kAllow),
+        std::to_underlying(optimization_guide::EnterprisePolicyValue::kAllow),
         user_prefs::PrefRegistrySyncable::LOSSY_PREF);
     entity_data_manager_ = std::make_unique<EntityDataManager>(
         &prefs_, identity_test_env_.identity_manager(), &sync_service_,
@@ -397,8 +396,7 @@ TEST_F(EntityDataManagerAndroidTest,
   // Set policy to kDisable (2).
   prefs_.SetInteger(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable));
+      std::to_underlying(optimization_guide::EnterprisePolicyValue::kDisable));
 
   // Verify that setting is reported as disabled by policy and
   // `IsPersonalContextEnabled` returns false.

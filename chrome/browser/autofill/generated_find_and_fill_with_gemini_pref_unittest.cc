@@ -8,8 +8,8 @@
 
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -95,9 +95,8 @@ TEST_F(GeneratedFindAndFillWithGeminiPrefTest, PolicyDisabled) {
   // Set the enterprise policy to kDisable (2).
   prefs()->SetManagedPref(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-      base::Value(
-          static_cast<int>(optimization_guide::model_execution::prefs::
-                               ModelExecutionEnterprisePolicyValue::kDisable)));
+      base::Value(static_cast<int>(
+          optimization_guide::EnterprisePolicyValue::kDisable)));
 
   settings_api::PrefObject pref_object = pref.GetPrefObject();
   EXPECT_EQ(pref_object.value->GetBool(), false);
@@ -124,8 +123,7 @@ TEST_F(GeneratedFindAndFillWithGeminiPrefTest, PolicyAllowed) {
   prefs()->SetManagedPref(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings,
       base::Value(
-          static_cast<int>(optimization_guide::model_execution::prefs::
-                               ModelExecutionEnterprisePolicyValue::kAllow)));
+          static_cast<int>(optimization_guide::EnterprisePolicyValue::kAllow)));
 
   settings_api::PrefObject pref_object = pref.GetPrefObject();
   EXPECT_EQ(pref_object.value->GetBool(), true);

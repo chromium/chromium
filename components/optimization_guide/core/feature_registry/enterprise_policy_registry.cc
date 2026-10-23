@@ -17,12 +17,10 @@ namespace optimization_guide {
 EnterprisePolicyPref::EnterprisePolicyPref(std::string_view name)
     : name_(name) {}
 
-model_execution::prefs::ModelExecutionEnterprisePolicyValue
-EnterprisePolicyPref::GetValue(const PrefService* pref_service) const {
+EnterprisePolicyValue EnterprisePolicyPref::GetValue(
+    const PrefService* pref_service) const {
   CHECK(pref_service);
-  return static_cast<
-      model_execution::prefs::ModelExecutionEnterprisePolicyValue>(
-      pref_service->GetInteger(name_));
+  return static_cast<EnterprisePolicyValue>(pref_service->GetInteger(name_));
 }
 
 EnterprisePolicyRegistry::EnterprisePolicyRegistry() = default;
@@ -55,9 +53,7 @@ void EnterprisePolicyRegistry::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   for (const EnterprisePolicyPref& policy : enterprise_policies_) {
     registry->RegisterIntegerPref(
-        policy.name(),
-        static_cast<int>(model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kAllow),
+        policy.name(), static_cast<int>(EnterprisePolicyValue::kAllow),
         PrefRegistry::LOSSY_PREF);
   }
   // From that point on, it's too late to modify the registry as the prefs

@@ -21,9 +21,9 @@
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
@@ -536,9 +536,8 @@ class ChromePasswordChangeServiceAvailabilityTest
  public:
   ChromePasswordChangeServiceAvailabilityTest() {
     if (GetParam().is_disabled_by_policy) {
-      constexpr int kPolicyDisabled =
-          std::to_underlying(optimization_guide::model_execution::prefs::
-                                 ModelExecutionEnterprisePolicyValue::kDisable);
+      constexpr int kPolicyDisabled = std::to_underlying(
+          optimization_guide::EnterprisePolicyValue::kDisable);
       prefs()->SetInteger(optimization_guide::prefs::
                               kAutomatedPasswordChangeEnterprisePolicyAllowed,
                           kPolicyDisabled);

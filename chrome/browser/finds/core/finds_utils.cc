@@ -8,8 +8,8 @@
 #include "base/notreached.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -87,8 +87,7 @@ bool IsAllowedByEnterprisePolicy(PrefService* pref_service) {
   }
   return pref_service->GetInteger(
              optimization_guide::prefs::kFindsEnterprisePolicyAllowed) !=
-         static_cast<int>(optimization_guide::model_execution::prefs::
-                              ModelExecutionEnterprisePolicyValue::kDisable);
+         static_cast<int>(optimization_guide::EnterprisePolicyValue::kDisable);
 }
 
 bool IsHistorySyncAndMsbbEnabled(syncer::SyncService* sync_service,
