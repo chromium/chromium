@@ -45,7 +45,7 @@ impl SharedStream {
         // escape across calls. Therefore, the only way for a panic to occur is
         // via reentrancy, which would also indicate a reference cycle.
         let mut stream = self.inner.borrow_mut();
-        stream.seek(SeekFrom::Start(offset))?;
+        seek_to_offset(&mut *stream, offset)?;
         stream.read(buf)
     }
 
@@ -56,7 +56,7 @@ impl SharedStream {
         // escape across calls. Therefore, the only way for a panic to occur is
         // via reentrancy, which would also indicate a reference cycle.
         let mut stream = self.inner.borrow_mut();
-        stream.seek(SeekFrom::Start(offset))?;
+        seek_to_offset(&mut *stream, offset)?;
         stream.read_exact(buf)
     }
 
@@ -72,4 +72,15 @@ impl SharedStream {
         stream.read_exact(buf)?;
         Ok(start)
     }
+}
+
+fn seek_to_offset(stream: &mut dyn ReadSeek, offset: u64) -> io::Result<()> {
+    let pos = stream.seek(SeekFrom::Start(offset))?;
+    if pos != offset {
+        return Err(io::Error::new(
+            io::ErrorKind::UnexpectedEof,
+            "seek did not reach target offset",
+        ));
+    }
+    Ok(())
 }

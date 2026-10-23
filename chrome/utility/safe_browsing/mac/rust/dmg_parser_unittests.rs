@@ -6,13 +6,16 @@ chromium::import! {
     "//chrome/utility/safe_browsing/mac:dmg_parser";
 }
 
-use std::io::Cursor;
+use std::io::{self, Cursor, Read, Seek, SeekFrom};
 use std::mem::{size_of, size_of_val};
 
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use base64::Engine as _;
 use bytemuck::Zeroable;
-use dmg_parser::hfs::{HfsError, HfsIterator};
+use dmg_parser::hfs::{
+    HfsError, HfsForkReadStream, HfsIterator, HfsPlusExtentDescriptor, HfsPlusForkData,
+    MAX_EXTENT_BUFFER_SIZE,
+};
 use dmg_parser::udif::{
     parse_partition_type, UdifBlock, UdifBlockChunk, UdifBlockChunkType, UdifBlockData, UdifError,
     UdifParser, UdifResourceFile, UDIF_BLOCK_DATA_SIGNATURE, UDIF_BLOCK_DATA_VERSION,
@@ -464,4 +467,267 @@ fn test_parse_rejects_invalid_trailers_and_plists() {
         UdifParser::try_new(SharedStream::new(Cursor::new(missing_blkx_image))).err(),
         Some(UdifError::InvalidPlist)
     );
+}
+
+/// Test reader whose `seek` clamps offsets past EOF to `data.len()`, mirroring
+/// C++ `MemoryReadStream::Seek`.
+struct ClampingMemoryStream {
+    data: Vec<u8>,
+    pos: usize,
+}
+
+impl Read for ClampingMemoryStream {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        let remaining = &self.data[self.pos..];
+        let to_copy = remaining.len().min(buf.len());
+        buf[..to_copy].copy_from_slice(&remaining[..to_copy]);
+        self.pos += to_copy;
+        Ok(to_copy)
+    }
+}
+
+impl Seek for ClampingMemoryStream {
+    fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
+        let SeekFrom::Start(offset) = pos else {
+            return Err(io::Error::new(io::ErrorKind::Unsupported, "only SeekFrom::Start"));
+        };
+        let clamped = usize::try_from(offset).unwrap_or(self.data.len()).min(self.data.len());
+        self.pos = clamped;
+        Ok(clamped as u64)
+    }
+}
+
+#[gtest(RustSharedStreamTest, ClampedSeekPastEofReturnsUnexpectedEof)]
+fn test_shared_stream_clamped_seek_past_eof() {
+    let stream = SharedStream::new(ClampingMemoryStream { data: b"01234567".to_vec(), pos: 0 });
+    let mut buf = [0u8; 4];
+
+    // Reading within bounds succeeds.
+    expect_eq!(stream.read_at(2, &mut buf).ok(), Some(4));
+    expect_eq!(&buf, b"2345");
+    expect_eq!(stream.read_exact_at(4, &mut buf).ok(), Some(()));
+    expect_eq!(&buf, b"4567");
+
+    // Seeking past EOF clamps to `data.len()` (8 != 16), so both `read_at` and
+    // `read_exact_at` reject the clamped seek with `UnexpectedEof`.
+    expect_eq!(
+        stream.read_at(16, &mut buf).expect_err("clamped seek should fail").kind(),
+        io::ErrorKind::UnexpectedEof
+    );
+    expect_eq!(
+        stream.read_exact_at(16, &mut buf).expect_err("clamped seek should fail").kind(),
+        io::ErrorKind::UnexpectedEof
+    );
+}
+
+#[gtest(RustHfsForkReadStreamTest, ParseForkDataAndExtentDescriptorsFromBigEndian)]
+fn test_parse_fork_data_from_big_endian() {
+    let mut raw = [0u8; HfsPlusForkData::SIZE];
+    raw[0..8].copy_from_slice(&0x0000_0000_0001_2345u64.to_be_bytes());
+    raw[8..12].copy_from_slice(&0x0000_4000u32.to_be_bytes());
+    raw[12..16].copy_from_slice(&36u32.to_be_bytes());
+    // Extent 0: start_block = 10, block_count = 32.
+    raw[16..20].copy_from_slice(&10u32.to_be_bytes());
+    raw[20..24].copy_from_slice(&32u32.to_be_bytes());
+    // Extent 7: start_block = 99, block_count = 4.
+    raw[72..76].copy_from_slice(&99u32.to_be_bytes());
+    raw[76..80].copy_from_slice(&4u32.to_be_bytes());
+
+    let fork = HfsPlusForkData::from_be_bytes(&raw);
+    expect_eq!(fork.logical_size, 0x1_2345);
+    expect_eq!(fork.clump_size, 0x4000);
+    expect_eq!(fork.total_blocks, 36);
+    expect_eq!(fork.extents[0], HfsPlusExtentDescriptor { start_block: 10, block_count: 32 });
+    expect_false!(fork.extents[0].is_empty());
+    expect_eq!(fork.extents[1], HfsPlusExtentDescriptor { start_block: 0, block_count: 0 });
+    expect_true!(fork.extents[1].is_empty());
+    expect_eq!(fork.extents[7], HfsPlusExtentDescriptor { start_block: 99, block_count: 4 });
+}
+
+#[gtest(RustHfsForkReadStreamTest, ReadAndSeekAcrossAllEightExtents)]
+fn test_read_and_seek_across_all_eight_extents() {
+    const BLOCK_SIZE: u32 = 64;
+    const TOTAL_DISK_BLOCKS: usize = 40;
+
+    // 8 non-contiguous extents with varying block counts (total = 13 blocks =
+    // 832 bytes), with logical_size = 800 bytes so the 8th extent is
+    // partially filled.
+    let extents = [
+        HfsPlusExtentDescriptor { start_block: 2, block_count: 1 },
+        HfsPlusExtentDescriptor { start_block: 7, block_count: 2 },
+        HfsPlusExtentDescriptor { start_block: 4, block_count: 1 },
+        HfsPlusExtentDescriptor { start_block: 15, block_count: 3 },
+        HfsPlusExtentDescriptor { start_block: 11, block_count: 1 },
+        HfsPlusExtentDescriptor { start_block: 25, block_count: 2 },
+        HfsPlusExtentDescriptor { start_block: 20, block_count: 1 },
+        HfsPlusExtentDescriptor { start_block: 30, block_count: 2 },
+    ];
+    let logical_size: usize = 800;
+
+    let mut fake_disk = vec![0xFFu8; TOTAL_DISK_BLOCKS * (BLOCK_SIZE as usize)];
+    let mut expected_fork = Vec::new();
+
+    for (extent_idx, ext) in extents.iter().enumerate() {
+        let disk_start = (ext.start_block as usize) * (BLOCK_SIZE as usize);
+        let extent_len = (ext.block_count as usize) * (BLOCK_SIZE as usize);
+        for b in 0..extent_len {
+            let byte_val = ((extent_idx * 31 + b) & 0xFF) as u8;
+            fake_disk[disk_start + b] = byte_val;
+            if expected_fork.len() < logical_size {
+                expected_fork.push(byte_val);
+            }
+        }
+    }
+    expect_eq!(expected_fork.len(), logical_size);
+
+    let fork = HfsPlusForkData {
+        logical_size: logical_size as u64,
+        clump_size: 0,
+        total_blocks: 13,
+        extents,
+    };
+
+    let disk_stream = SharedStream::new(Cursor::new(fake_disk));
+    let mut fork_stream = HfsForkReadStream::new(disk_stream, BLOCK_SIZE, fork);
+
+    // 1. Read the entire 8-extent fork in 37-byte chunks that straddle extent
+    //    boundaries.
+    let mut read_chunked = Vec::new();
+    let mut chunk = [0u8; 37];
+    loop {
+        let n = fork_stream.read(&mut chunk).expect("chunked read should succeed");
+        if n == 0 {
+            break;
+        }
+        read_chunked.extend_from_slice(&chunk[..n]);
+    }
+    expect_eq!(read_chunked, expected_fork);
+
+    // Subsequent read at EOF returns 0.
+    expect_eq!(fork_stream.read(&mut chunk).ok(), Some(0));
+
+    // 2. Seek back to 0 and read the entire fork in a single call.
+    expect_eq!(fork_stream.seek(SeekFrom::Start(0)).ok(), Some(0));
+    let mut read_all = vec![0u8; logical_size + 32];
+    let n = fork_stream.read(&mut read_all).expect("full read should succeed");
+    expect_eq!(n, logical_size);
+    expect_eq!(&read_all[..n], expected_fork.as_slice());
+
+    // 3. Seek into the middle of extent 3 (logical offset 300) and read across
+    //    into extent 5.
+    expect_eq!(fork_stream.seek(SeekFrom::Start(300)).ok(), Some(300));
+    let mut mid_buf = vec![0u8; 250];
+    expect_eq!(fork_stream.read(&mut mid_buf).ok(), Some(250));
+    expect_eq!(&mid_buf[..], &expected_fork[300..550]);
+
+    // 4. Seek within the same cached extent (extent 5 spans logical bytes
+    //    512..640)
+    // and verify intra-extent backward/forward seeks return the right slice.
+    expect_eq!(fork_stream.seek(SeekFrom::Start(520)).ok(), Some(520));
+    let mut intra_buf = [0u8; 16];
+    expect_eq!(fork_stream.read(&mut intra_buf).ok(), Some(16));
+    expect_eq!(&intra_buf[..], &expected_fork[520..536]);
+
+    // 5. Seek near the end of extent 7 (logical offset 790) and verify reading
+    //    stops at
+    // logical_size (800).
+    expect_eq!(fork_stream.seek(SeekFrom::Start(790)).ok(), Some(790));
+    let mut tail_buf = [0u8; 64];
+    expect_eq!(fork_stream.read(&mut tail_buf).ok(), Some(10));
+    expect_eq!(&tail_buf[..10], &expected_fork[790..800]);
+}
+
+#[gtest(RustHfsForkReadStreamTest, ZeroLogicalSizeAndTrailingEmptyExtents)]
+fn test_zero_logical_size_and_trailing_empty_extents() {
+    let disk = SharedStream::new(Cursor::new(vec![0xAAu8; 2048]));
+
+    // Empty fork (logical_size == 0).
+    let empty_fork = HfsPlusForkData::default();
+    let mut empty_stream = HfsForkReadStream::new(disk.clone(), 512, empty_fork);
+    let mut buf = [0u8; 16];
+    expect_eq!(empty_stream.read(&mut buf).ok(), Some(0));
+    // Seeking to 0 on an empty fork with 0 extents fails (matching C++).
+    expect_true!(empty_stream.seek(SeekFrom::Start(0)).is_err());
+
+    // Fork with 1 populated extent followed by empty extents, where
+    // logical_size > extent bytes.
+    let mut extents = [HfsPlusExtentDescriptor::default(); 8];
+    extents[0] = HfsPlusExtentDescriptor { start_block: 1, block_count: 1 };
+    let fork = HfsPlusForkData { logical_size: 1024, clump_size: 0, total_blocks: 1, extents };
+    let mut stream = HfsForkReadStream::new(disk, 512, fork);
+    let mut out = vec![0u8; 1024];
+    expect_eq!(stream.read(&mut out).ok(), Some(512));
+    expect_eq!(stream.read(&mut out).ok(), Some(0));
+}
+
+#[gtest(RustHfsForkReadStreamTest, ExtentExceedingMaxBufferSizeRejected)]
+fn test_extent_exceeding_max_buffer_size_rejected() {
+    const BLOCK_SIZE: u32 = 512;
+    let huge_blocks = (MAX_EXTENT_BUFFER_SIZE / (BLOCK_SIZE as usize)) as u32 + 1;
+
+    let mut extents = [HfsPlusExtentDescriptor::default(); 8];
+    extents[0] = HfsPlusExtentDescriptor { start_block: 1, block_count: huge_blocks };
+    let fork = HfsPlusForkData {
+        logical_size: u64::from(huge_blocks) * u64::from(BLOCK_SIZE),
+        clump_size: 0,
+        total_blocks: huge_blocks,
+        extents,
+    };
+
+    // Backing disk only needs a few bytes; the 64 MiB cap rejects the extent
+    // before reading.
+    let disk = SharedStream::new(Cursor::new(vec![0u8; 2048]));
+    let mut stream = HfsForkReadStream::new(disk, BLOCK_SIZE, fork);
+    let mut buf = [0u8; 16];
+    expect_true!(stream.read(&mut buf).is_err());
+}
+
+#[gtest(RustHfsForkReadStreamTest, InvalidSeekAndOverflowRejected)]
+fn test_invalid_seek_and_overflow_rejected() {
+    let mut extents = [HfsPlusExtentDescriptor::default(); 8];
+    extents[0] = HfsPlusExtentDescriptor { start_block: 1, block_count: 2 };
+    let fork = HfsPlusForkData { logical_size: 1000, clump_size: 0, total_blocks: 2, extents };
+
+    let disk = SharedStream::new(Cursor::new(vec![0u8; 4096]));
+    let mut stream = HfsForkReadStream::new(disk.clone(), 512, fork);
+
+    // SeekFrom::Current (including stream_position) and SeekFrom::End are
+    // unsupported.
+    expect_true!(stream.seek(SeekFrom::Current(1)).is_err());
+    expect_true!(stream.stream_position().is_err());
+    expect_true!(stream.seek(SeekFrom::End(0)).is_err());
+
+    // Seeking to >= logical_size is rejected.
+    expect_true!(stream.seek(SeekFrom::Start(1000)).is_err());
+    expect_true!(stream.seek(SeekFrom::Start(5000)).is_err());
+
+    // Invalid block_size == 0 is rejected on both read and seek.
+    let mut zero_bs_stream = HfsForkReadStream::new(disk.clone(), 0, fork);
+    let mut buf = [0u8; 8];
+    expect_true!(zero_bs_stream.seek(SeekFrom::Start(0)).is_err());
+    expect_true!(zero_bs_stream.read(&mut buf).is_err());
+
+    // Extent with start_block != 0 and block_count == 0 is rejected on read.
+    let mut zero_bc_extents = [HfsPlusExtentDescriptor::default(); 8];
+    zero_bc_extents[0] = HfsPlusExtentDescriptor { start_block: 5, block_count: 0 };
+    let zero_bc_fork = HfsPlusForkData {
+        logical_size: 512,
+        clump_size: 0,
+        total_blocks: 0,
+        extents: zero_bc_extents,
+    };
+    let mut zero_bc_stream = HfsForkReadStream::new(disk.clone(), 512, zero_bc_fork);
+    expect_true!(zero_bc_stream.read(&mut buf).is_err());
+
+    // Extent with start_block * block_size overflowing u64 is rejected on read.
+    let mut overflow_start_extents = [HfsPlusExtentDescriptor::default(); 8];
+    overflow_start_extents[0] = HfsPlusExtentDescriptor { start_block: u32::MAX, block_count: 1 };
+    let overflow_start_fork = HfsPlusForkData {
+        logical_size: u64::MAX,
+        clump_size: 0,
+        total_blocks: 1,
+        extents: overflow_start_extents,
+    };
+    let mut overflow_start_stream = HfsForkReadStream::new(disk, u32::MAX, overflow_start_fork);
+    expect_true!(overflow_start_stream.read(&mut buf).is_err());
 }
