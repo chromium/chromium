@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_CLIENT_H_
 #define ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_CLIENT_H_
 
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"
 
@@ -114,6 +115,15 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
   // Called when the FaceGaze disable dialog is accepted/rejected so that the
   // settings UI can be properly updated.
   virtual void SendFaceGazeDisableDialogResultToSettings(bool accepted) = 0;
+
+  // Dispatches pointer or touch coordinates to the Accessibility Common
+  // extension for Hover Text hit-testing.
+  virtual void OnHoverTextPointUpdated(const gfx::Point& point_in_screen,
+                                       HoverTextPointerType pointer_type) = 0;
+
+  // Dispatches activation modifier or Escape key state changes to the
+  // Accessibility Common extension for Hover Text.
+  virtual void OnHoverTextKeyEvent(bool is_active, bool stop_speech) = 0;
 };
 
 }  // namespace ash

@@ -198,3 +198,14 @@ void AccessibilityControllerClient::SendFaceGazeDisableDialogResultToSettings(
   AccessibilityManager::Get()->SendFaceGazeDisableDialogResultToSettings(
       accepted);
 }
+
+void AccessibilityControllerClient::OnHoverTextPointUpdated(
+    const gfx::Point& point_in_screen,
+    ash::HoverTextPointerType pointer_type) {
+  // TODO(b/568813139): Wire to AccessibilityManager.
+}
+
+void AccessibilityControllerClient::OnHoverTextKeyEvent(bool is_active,
+                                                        bool stop_speech) {
+  // TODO(b/568813139): Wire to AccessibilityManager.
+}

@@ -17,6 +17,7 @@
 #include "ash/accessibility/disable_touchpad_event_rewriter.h"
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
+#include "ash/accessibility/hover_text_event_handler.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
@@ -392,25 +393,54 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
 }
 
 TEST_F(AccessibilityControllerTest, SetHoverTextEnabled) {
+  TestAccessibilityControllerClient client;
+
   base::test::ScopedFeatureList scoped_feature_list(
       ::features::kAccessibilityHoverText);
   EXPECT_FALSE(controller()->hover_text().enabled());
   EXPECT_EQ(nullptr, controller()->GetHoverTextBubbleControllerForTest());
+  EXPECT_EQ(nullptr, controller()->GetHoverTextEventHandlerForTest());
 
   TestAccessibilityObserver observer;
   EXPECT_EQ(0, observer.status_changed_count_);
 
   controller()->hover_text().SetEnabled(true);
   EXPECT_TRUE(controller()->hover_text().enabled());
+  EXPECT_FALSE(controller()->IsHoverTextActive());
   EXPECT_EQ(1, observer.status_changed_count_);
   EXPECT_NE(nullptr, controller()->GetHoverTextBubbleControllerForTest());
+  EXPECT_NE(nullptr, controller()->GetHoverTextEventHandlerForTest());
   ExpectSessionDurationMetricCount("CrosHoverText", 0);
+
+  // Verify toggling active state when enabled.
+  EXPECT_FALSE(controller()->IsHoverTextActive());
+  controller()->ToggleHoverTextActive();
+  EXPECT_TRUE(controller()->IsHoverTextActive());
+  EXPECT_EQ(1, observer.status_changed_count_);
+  EXPECT_EQ(1, client.hover_text_key_event_count());
+  EXPECT_TRUE(client.last_hover_text_activation_key_held());
+  EXPECT_FALSE(client.last_hover_text_stop_speech());
+
+  controller()->ToggleHoverTextActive();
+  EXPECT_FALSE(controller()->IsHoverTextActive());
+  EXPECT_EQ(2, client.hover_text_key_event_count());
+  EXPECT_FALSE(client.last_hover_text_activation_key_held());
+  EXPECT_TRUE(client.last_hover_text_stop_speech());
+
+  controller()->ToggleHoverTextActive();
+  EXPECT_TRUE(controller()->IsHoverTextActive());
+  EXPECT_EQ(3, client.hover_text_key_event_count());
 
   controller()->hover_text().SetEnabled(false);
   EXPECT_FALSE(controller()->hover_text().enabled());
+  EXPECT_FALSE(controller()->IsHoverTextActive());
   EXPECT_EQ(2, observer.status_changed_count_);
   EXPECT_EQ(nullptr, controller()->GetHoverTextBubbleControllerForTest());
+  EXPECT_EQ(nullptr, controller()->GetHoverTextEventHandlerForTest());
   ExpectSessionDurationMetricCount("CrosHoverText", 1);
+  EXPECT_EQ(4, client.hover_text_key_event_count());
+  EXPECT_FALSE(client.last_hover_text_activation_key_held());
+  EXPECT_TRUE(client.last_hover_text_stop_speech());
 }
 
 TEST_F(AccessibilityControllerTest, HoverTextConflictsWithChromeVox) {
@@ -458,6 +488,7 @@ TEST_F(AccessibilityControllerTest, HoverTextPrefsUpdateControllers) {
     disabled_feature_list.InitAndDisableFeature(
         ::features::kAccessibilityHoverText);
     controller()->hover_text().SetEnabled(true);
+    EXPECT_EQ(nullptr, controller()->GetHoverTextEventHandlerForTest());
     EXPECT_EQ(nullptr, controller()->GetHoverTextBubbleControllerForTest());
     controller()->hover_text().SetEnabled(false);
   }
@@ -465,6 +496,7 @@ TEST_F(AccessibilityControllerTest, HoverTextPrefsUpdateControllers) {
   base::test::ScopedFeatureList scoped_feature_list(
       ::features::kAccessibilityHoverText);
   controller()->hover_text().SetEnabled(true);
+  ASSERT_NE(nullptr, controller()->GetHoverTextEventHandlerForTest());
   ASSERT_NE(nullptr, controller()->GetHoverTextBubbleControllerForTest());
 
   HoverTextBubbleProps props;

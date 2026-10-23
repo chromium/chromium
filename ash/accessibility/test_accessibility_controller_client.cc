@@ -98,6 +98,21 @@ TestAccessibilityControllerClient::GetDictationDefaultLocale(bool new_user) {
 void TestAccessibilityControllerClient::
     SendFaceGazeDisableDialogResultToSettings(bool accepted) {}
 
+void TestAccessibilityControllerClient::OnHoverTextPointUpdated(
+    const gfx::Point& point_in_screen,
+    HoverTextPointerType pointer_type) {
+  last_hover_text_point_ = point_in_screen;
+  last_hover_text_pointer_type_ = pointer_type;
+  ++hover_text_point_update_count_;
+}
+
+void TestAccessibilityControllerClient::OnHoverTextKeyEvent(bool is_active,
+                                                            bool stop_speech) {
+  last_hover_text_activation_key_held_ = is_active;
+  last_hover_text_stop_speech_ = stop_speech;
+  ++hover_text_key_event_count_;
+}
+
 std::optional<Sound>
 TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
   return std::exchange(sound_key_, std::nullopt);

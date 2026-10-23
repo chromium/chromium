@@ -24,6 +24,7 @@
 #include "ash/accessibility/drag_event_rewriter.h"
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
+#include "ash/accessibility/hover_text_event_handler.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/mouse_locator/mouse_shake_to_locate_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
@@ -1585,6 +1586,7 @@ void AccessibilityController::Shutdown() {
   // Clean up any child windows and widgets that might be animating out.
   dictation_bubble_controller_.reset();
   facegaze_bubble_controller_.reset();
+  hover_text_event_handler_.reset();
   hover_text_bubble_controller_.reset();
 
   for (auto& observer : observers_) {
@@ -4051,7 +4053,12 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
           hover_text_bubble_controller_ =
               std::make_unique<HoverTextBubbleController>();
         }
+        if (!hover_text_event_handler_) {
+          hover_text_event_handler_ =
+              std::make_unique<HoverTextEventHandler>(this);
+        }
       } else {
+        hover_text_event_handler_.reset();
         hover_text_bubble_controller_.reset();
       }
       break;
@@ -4067,7 +4074,35 @@ void AccessibilityController::UpdateHoverTextBubble(
   if (!hover_text_bubble_controller_) {
     return;
   }
+  if (props.visible && hover_text_event_handler_) {
+    hover_text_event_handler_->OnHoverTextBubbleShown();
+  }
   hover_text_bubble_controller_->UpdateBubble(props);
+}
+
+void AccessibilityController::OnHoverTextPointUpdated(
+    const gfx::Point& point_in_screen,
+    HoverTextPointerType pointer_type) {
+  if (client_) {
+    client_->OnHoverTextPointUpdated(point_in_screen, pointer_type);
+  }
+}
+
+void AccessibilityController::OnHoverTextKeyEvent(bool is_active,
+                                                  bool stop_speech) {
+  if (client_) {
+    client_->OnHoverTextKeyEvent(is_active, stop_speech);
+  }
+}
+
+bool AccessibilityController::IsHoverTextActive() const {
+  return hover_text_event_handler_ && hover_text_event_handler_->IsActive();
+}
+
+void AccessibilityController::ToggleHoverTextActive() {
+  if (hover_text_event_handler_) {
+    hover_text_event_handler_->OnTrayToggled();
+  }
 }
 
 HoverTextBubbleController*

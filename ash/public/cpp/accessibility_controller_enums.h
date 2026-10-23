@@ -304,6 +304,12 @@ enum class HoverTextFontStyle {
   kMaxValue = kMonospace,
 };
 
+enum class HoverTextPointerType {
+  kMouse,
+  kTouchPress,
+  kTouchRelease,
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_ENUMS_H_
