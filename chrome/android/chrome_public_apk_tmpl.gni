@@ -149,7 +149,7 @@ template("chrome_common_apk_or_module_tmpl") {
   # both 64-bit and 32-bit ABIs. The 32-bit ABI remains the primary one via
   # use32bitAbi="true".
   _is_32_bit_multiarch_browser =
-      !_is_trichrome && !_is_test && !_is_64_bit_browser &&
+      is_chrome_branded && !_is_trichrome && !_is_test && !_is_64_bit_browser &&
       (android_64bit_target_cpu || defined(android_app_64bit_placeholder_abi))
 
   if (_is_trichrome) {
