@@ -5,15 +5,19 @@
 #include "media/webrtc/voice_isolation/tflite_voice_isolation.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
-#include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
@@ -24,10 +28,13 @@
 #include "third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
 #endif
 
+#include "third_party/tflite/src/tensorflow/lite/builtin_ops.h"
+#include "third_party/tflite/src/tensorflow/lite/core/c/builtin_op_data.h"
+#include "third_party/tflite/src/tensorflow/lite/core/subgraph.h"
+#include "third_party/tflite/src/tensorflow/lite/experimental/resource/resource_variable.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter_builder.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/kernel_util.h"
-#include "third_party/tflite/src/tensorflow/lite/kernels/register.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 #include "third_party/tflite/src/tensorflow/lite/op_resolver.h"
 
@@ -43,11 +50,15 @@ constexpr size_t kExpectedFftSize = 320;
 // Floats of the model input tensor: all DFTs of a call.
 constexpr size_t kFrameSize = kNumFfts * kExpectedFftSize;
 constexpr int64_t kModelInputSize = static_cast<int64_t>(kFrameSize);
+constexpr size_t kModelInputBytes = kFrameSize * sizeof(float);
+constexpr size_t kModelOutputBytes = 2 * kModelInputBytes;
 
 // The model output interleaves its two outputs for each frequency bin: the
 // (re, im) pair of the dereverberated output, then the (re, im) pair of the
 // denoising-only output.
 constexpr size_t kDenoisingOnlyOutputOffset = 2;
+// Upper bound on the number of elements of a model input or output tensor.
+constexpr size_t kMaxTensorElements = 100000;
 
 // Weights of the two model outputs in the output of ProcessAudio(). Mostly the
 // dereverberated output, plus a little of the denoising-only output, whose
@@ -56,8 +67,39 @@ constexpr size_t kDenoisingOnlyOutputOffset = 2;
 constexpr float kDereverbWeight = 0.9f;
 constexpr float kDenoisingOnlyWeight = 1.0f - kDereverbWeight;
 
+// Returns true if `subgraph` contains any control-flow operator other than
+// `CALL_ONCE`. See the model requirements on
+// `TfLiteVoiceIsolation::MaybeCreate()`.
+bool HasControlFlowOpsOtherThanCallOnce(const tflite::Subgraph& subgraph) {
+  for (size_t node_index = 0; node_index < subgraph.nodes_size();
+       ++node_index) {
+    const std::pair<TfLiteNode, TfLiteRegistration>* node_and_registration =
+        subgraph.node_and_registration(base::checked_cast<int>(node_index));
+    CHECK(node_and_registration);
+    switch (node_and_registration->second.builtin_code) {
+      case kTfLiteBuiltinCall:
+      case kTfLiteBuiltinIf:
+      case kTfLiteBuiltinWhile:
+      case kTfLiteBuiltinStablehloWhile:
+      case kTfLiteBuiltinStablehloCase:
+      case kTfLiteBuiltinStablehloComposite:
+        return true;
+      default:
+        break;
+    }
+  }
+  return false;
+}
+
+// Checks the primary subgraph and input/output tensor requirements listed on
+// `TfLiteVoiceIsolation::MaybeCreate()`.
 bool ValidateModelInterpreter(tflite::Interpreter* interpreter) {
   if (!interpreter) {
+    return false;
+  }
+  tflite::Subgraph& primary = interpreter->primary_subgraph();
+  if (primary.HasDynamicTensors() ||
+      HasControlFlowOpsOtherThanCallOnce(primary)) {
     return false;
   }
   if (interpreter->inputs().size() != 1 ||
@@ -66,7 +108,9 @@ bool ValidateModelInterpreter(tflite::Interpreter* interpreter) {
   }
   const TfLiteTensor* input_tensor =
       interpreter->tensor(interpreter->inputs()[0]);
-  if (!input_tensor || tflite::NumElements(input_tensor) != kModelInputSize) {
+  if (!input_tensor || input_tensor->allocation_type != kTfLiteArenaRw ||
+      tflite::NumElements(input_tensor) != kModelInputSize ||
+      input_tensor->bytes != kModelInputBytes) {
     return false;
   }
 
@@ -76,8 +120,9 @@ bool ValidateModelInterpreter(tflite::Interpreter* interpreter) {
   }
   const TfLiteTensor* output_tensor =
       interpreter->tensor(interpreter->outputs()[0]);
-  if (!output_tensor ||
-      tflite::NumElements(output_tensor) != 2 * kModelInputSize) {
+  if (!output_tensor || output_tensor->allocation_type != kTfLiteArenaRw ||
+      tflite::NumElements(output_tensor) != 2 * kModelInputSize ||
+      output_tensor->bytes != kModelOutputBytes) {
     return false;
   }
 
@@ -88,37 +133,73 @@ bool ValidateModelInterpreter(tflite::Interpreter* interpreter) {
   return true;
 }
 
+// Wraps the data buffer of `tensor` as a span of `T` elements (`T` may be
+// const-qualified).
+template <typename T>
+base::span<T> WrapTensor(
+    std::conditional_t<std::is_const_v<T>, const TfLiteTensor, TfLiteTensor>*
+        tensor) {
+  CHECK(tensor);
+  CHECK(tensor->data.raw);
+  CHECK_EQ(tensor->bytes % sizeof(T), 0u);
+
+  // SAFETY: `tensor->data.raw` points to `tensor->bytes` valid bytes owned by
+  // the tensor, allocated during model initialization or subgraph execution.
+  return UNSAFE_BUFFERS(base::span(reinterpret_cast<T*>(tensor->data.raw),
+                                   tensor->bytes / sizeof(T)));
+}
+
+// Wraps a float32 model input or output tensor, validating its size.
+base::span<float> WrapFloatTensor(TfLiteTensor* tensor) {
+  CHECK(tensor);
+  CHECK_EQ(tensor->type, kTfLiteFloat32);
+
+  const base::span<float> tensor_span = WrapTensor<float>(tensor);
+  CHECK_EQ(tensor_span.size(),
+           base::checked_cast<size_t>(tflite::NumElements(tensor)));
+  CHECK_GT(tensor_span.size(), 0u);
+  CHECK_LT(tensor_span.size(), kMaxTensorElements);
+  return tensor_span;
+}
+
 base::span<float> WrapInputTensor(tflite::Interpreter* interpreter,
                                   size_t index) {
   CHECK(interpreter);
   CHECK_LT(index, interpreter->inputs().size());
-  float* ptr = interpreter->typed_input_tensor<float>(index);
-  CHECK(ptr);
-  auto num_elements =
-      tflite::NumElements(interpreter->tensor(interpreter->inputs()[index]));
-  CHECK_GT(num_elements, 0);
-  CHECK_LT(num_elements, 100000);
-  // SAFETY: The TfLite interpreter allocates this memory to store the input and
-  // output tensors after a call to AllocateTensors that we already called in
-  // TfLiteVoiceIsolation::MaybeCreate.
-  return UNSAFE_BUFFERS(base::span(ptr, static_cast<size_t>(num_elements)));
+  return WrapFloatTensor(interpreter->input_tensor(index));
 }
 
 base::span<float> WrapOutputTensor(tflite::Interpreter* interpreter,
                                    size_t index) {
   CHECK(interpreter);
   CHECK_LT(index, interpreter->outputs().size());
-  float* ptr = interpreter->typed_output_tensor<float>(index);
-  CHECK(ptr);
-  auto num_elements =
-      tflite::NumElements(interpreter->tensor(interpreter->outputs()[index]));
-  CHECK_GT(num_elements, 0);
-  CHECK_LT(num_elements, 100000);
-  // SAFETY: The TfLite interpreter allocates this memory to store the input and
-  // output tensors after a call to AllocateTensors that we already called in
-  // TfLiteVoiceIsolation::MaybeCreate.
-  return UNSAFE_BUFFERS(base::span(ptr, static_cast<size_t>(num_elements)));
+  return WrapFloatTensor(interpreter->output_tensor(index));
 }
+
+// Returns the indices of the subgraphs invoked by CallOnce ops in the primary
+// subgraph. These subgraphs initialize the model resource variables.
+// Voice Isolation models only define CallOnce initialization ops in the
+// primary subgraph, so other subgraphs are not scanned.
+std::vector<int> FindInitSubgraphs(tflite::Interpreter* interpreter) {
+  CHECK(interpreter);
+  std::vector<int> init_subgraphs;
+  const tflite::Subgraph& primary = interpreter->primary_subgraph();
+  for (size_t node_index = 0; node_index < primary.nodes_size(); ++node_index) {
+    const std::pair<TfLiteNode, TfLiteRegistration>* node_and_registration =
+        primary.node_and_registration(base::checked_cast<int>(node_index));
+    CHECK(node_and_registration);
+    if (node_and_registration->second.builtin_code != kTfLiteBuiltinCallOnce) {
+      continue;
+    }
+
+    const auto* params = static_cast<const TfLiteCallOnceParams*>(
+        node_and_registration->first.builtin_data);
+    CHECK(params);
+    init_subgraphs.push_back(params->init_subgraph_index);
+  }
+  return init_subgraphs;
+}
+
 }  // namespace
 
 TfLiteVoiceIsolation::TfLiteVoiceIsolation(
@@ -142,6 +223,107 @@ TfLiteVoiceIsolation::TfLiteVoiceIsolation(
   CHECK_NE(interpreter_->typed_input_tensor<float>(0),
            interpreter_->typed_output_tensor<float>(0));
   DVLOG(1) << "TfLiteVoiceIsolation frame_size=" << kFrameSize;
+}
+
+TfLiteVoiceIsolation::ResourceVariableSnapshot::ResourceVariableSnapshot(
+    tflite::resource::ResourceVariable* variable,
+    size_t bytes)
+    : variable(variable), initial_value(bytes) {}
+
+TfLiteVoiceIsolation::ResourceVariableSnapshot::ResourceVariableSnapshot(
+    ResourceVariableSnapshot&&) noexcept = default;
+
+TfLiteVoiceIsolation::ResourceVariableSnapshot&
+TfLiteVoiceIsolation::ResourceVariableSnapshot::operator=(
+    ResourceVariableSnapshot&&) noexcept = default;
+
+TfLiteVoiceIsolation::ResourceVariableSnapshot::~ResourceVariableSnapshot() =
+    default;
+
+bool TfLiteVoiceIsolation::CaptureInitialState() {
+  TRACE_EVENT("audio", "TfLiteVoiceIsolation::CaptureInitialState");
+  tflite::resource::ResourceMap& resources =
+      interpreter_->primary_subgraph().resources();
+
+  // Check the recurrent-state requirements on `MaybeCreate()`: record the
+  // post-warmup byte size of every resource variable so we can verify that the
+  // CallOnce initialization subgraphs leave each variable with the same byte
+  // size.
+  size_t total_bytes = 0;
+  for (const auto& [resource_id, unused_resource] : resources) {
+    tflite::resource::ResourceVariable* variable =
+        tflite::resource::GetResourceVariable(&resources, resource_id);
+    if (!variable) {
+      continue;
+    }
+
+    const TfLiteTensor* tensor = variable->GetTensor();
+    if (!tensor || !tensor->data.raw || tensor->bytes == 0) {
+      return false;
+    }
+    initial_state_.emplace_back(variable, tensor->bytes);
+    total_bytes += tensor->bytes;
+  }
+
+  // Run the initialization subgraphs the same way the CallOnce kernel does.
+  // CallOnce already ran them in the warmup `Invoke()` of `MaybeCreate()` and
+  // does not run them again. Running them here assigns the initial values back
+  // to the resource variables.
+  const std::vector<int> init_subgraphs = FindInitSubgraphs(interpreter_.get());
+  if (!initial_state_.empty() && init_subgraphs.empty()) {
+    return false;
+  }
+  for (int subgraph_index : init_subgraphs) {
+    tflite::Subgraph* init_subgraph = interpreter_->subgraph(subgraph_index);
+    if (subgraph_index <= 0 || !init_subgraph ||
+        init_subgraph->AllocateTensors() != kTfLiteOk ||
+        init_subgraph->Invoke() != kTfLiteOk ||
+        init_subgraph->ReleaseNonPersistentMemory() != kTfLiteOk) {
+      return false;
+    }
+  }
+
+  // Resource variables are shared by all subgraphs. Store a copy of the
+  // initial value of each one.
+  for (ResourceVariableSnapshot& snapshot : initial_state_) {
+    const TfLiteTensor* tensor = snapshot.variable->GetTensor();
+    if (!tensor || !tensor->data.raw ||
+        tensor->bytes != snapshot.initial_value.size()) {
+      return false;
+    }
+    base::span(snapshot.initial_value)
+        .copy_from(WrapTensor<const uint8_t>(tensor));
+  }
+  TRACE_EVENT_INSTANT("audio", "TfLiteVoiceIsolation::InitialState",
+                      "resource_variables", initial_state_.size(),
+                      "total_bytes", total_bytes);
+  DVLOG(1) << "TfLiteVoiceIsolation resource variables="
+           << initial_state_.size();
+  return true;
+}
+
+bool TfLiteVoiceIsolation::ResetState() {
+  TRACE_EVENT("audio", "TfLiteVoiceIsolation::ResetState", "resource_variables",
+              initial_state_.size());
+  // Restore the resource variables in place. `CaptureInitialState()` verified
+  // that the initial and post-warmup byte sizes match, and
+  // `ResourceVariable::AssignFrom()` during `Invoke()` reuses the existing
+  // data buffer when the byte size is unchanged, so no data buffer is
+  // allocated in `ResetState()` or `Invoke()`.
+  for (const ResourceVariableSnapshot& snapshot : initial_state_) {
+    TfLiteTensor* tensor = snapshot.variable->GetTensor();
+    if (!tensor || !tensor->data.raw ||
+        tensor->bytes != snapshot.initial_value.size()) {
+      return false;
+    }
+    WrapTensor<uint8_t>(tensor).copy_from(snapshot.initial_value);
+  }
+
+  // Models using `is_variable` tensors instead of resource variables; see the
+  // recurrent-state requirements on `MaybeCreate()`. ResetVariableTensors()
+  // zeroes internal variable tensor buffers via memset without allocating heap
+  // memory or acquiring locks, making it safe for the real-time audio thread.
+  return interpreter_->ResetVariableTensors() == kTfLiteOk;
 }
 
 base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
@@ -192,12 +374,28 @@ TfLiteVoiceIsolation::MaybeCreate(const tflite::FlatBufferModel* model) {
     return base::unexpected(VoiceIsolationCreationResult::kWarmupFailed);
   }
 
+  // Re-validate after `Invoke()` in case an operator in the model resized or
+  // reallocated the input or output tensors during warmup.
+  if (!ValidateModelInterpreter(interpreter.get())) {
+    return base::unexpected(VoiceIsolationCreationResult::kIncompatibleModel);
+  }
+
   base::span<const float> output_span =
       WrapOutputTensor(interpreter.get(), /*index=*/0);
   std::vector<float> bias(output_span.begin(), output_span.end());
 
-  return base::WrapUnique(
+  std::unique_ptr<TfLiteVoiceIsolation> voice_isolation = base::WrapUnique(
       new TfLiteVoiceIsolation(std::move(interpreter), std::move(bias)));
+
+  // Computing the bias advanced the model state. Capture the initial state and
+  // restore it so that the first processed frame starts from the same state as
+  // after `ClearBuffers()`.
+  if (!voice_isolation->CaptureInitialState() ||
+      !voice_isolation->ResetState()) {
+    return base::unexpected(VoiceIsolationCreationResult::kIncompatibleModel);
+  }
+
+  return voice_isolation;
 }
 
 TfLiteVoiceIsolation::~TfLiteVoiceIsolation() = default;
@@ -299,13 +497,8 @@ size_t TfLiteVoiceIsolation::FramesPerSecond() const {
 }
 
 void TfLiteVoiceIsolation::ClearBuffers() {
-  if (interpreter_) {
-    // ResetVariableTensors() zeroes internal variable tensor buffers via memset
-    // without allocating heap memory or acquiring locks, making it safe for the
-    // real-time audio thread.
-    CHECK_EQ(interpreter_->ResetVariableTensors(), kTfLiteOk);
-  }
   speech_mask_estimator_.Clear();
+  CHECK(ResetState());
 }
 
 base::TimeDelta TfLiteVoiceIsolation::AlgorithmicDelay() const {

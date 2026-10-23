@@ -6,14 +6,14 @@
 #define MEDIA_WEBRTC_VOICE_ISOLATION_TFLITE_VOICE_ISOLATION_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -22,6 +22,10 @@
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
+
+namespace tflite::resource {
+class ResourceVariable;
+}  // namespace tflite::resource
 
 namespace media {
 
@@ -54,14 +58,61 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   // near 8 kHz (bins 158..160).
   base::span<const float> SpeechMask() const override;
 
-  // `model` needs to outlive this TfLiteVoiceIsolation instance.
+  // Creates a TfLiteVoiceIsolation running `model`, which needs to outlive the
+  // returned instance.
+  //
+  // Model requirements. MaybeCreate() rejects a model that violates any of
+  // them, and the audio service then stops using the model:
+  // - All ops are supported by optimization_guide::TFLiteOpResolver
+  //   (kInterpreterCreationFailed).
+  // - One float32 input with 640 elements (two 16 kHz DFTs, see
+  //   ProcessAudio()) and one float32 output with 1280 elements (per bin:
+  //   dereverberated re, im, then denoising-only re, im). Both live in the
+  //   interpreter arena: they are neither constant model data nor resized
+  //   during Invoke() (kIncompatibleModel).
+  // - The primary subgraph has static shapes (no dynamic tensors) and no
+  //   control-flow ops other than CALL_ONCE (kIncompatibleModel).
+  // - Invoke() succeeds on an all-zero input (kWarmupFailed). The output for
+  //   that input, starting from the initial state, is subtracted from every
+  //   frame as a bias.
+  // - Recurrent state is kept in resource variables initialized by CALL_ONCE
+  //   ops of the primary subgraph, or in `is_variable` tensors, which are reset
+  //   to zero. Each resource variable keeps the byte size of its initial value,
+  //   and every `is_variable` tensor is in a subgraph that runs
+  //   (kIncompatibleModel).
+  // - Zero lookahead (assumed, not checked): AlgorithmicDelay() is 0.
   static base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
                         VoiceIsolationCreationResult>
   MaybeCreate(const tflite::FlatBufferModel* model);
 
  private:
+  // Initial value of a TFLite resource variable, where stateful models keep
+  // their recurrent state.
+  struct ResourceVariableSnapshot {
+    ResourceVariableSnapshot(tflite::resource::ResourceVariable* variable,
+                             size_t bytes);
+    ResourceVariableSnapshot(ResourceVariableSnapshot&&) noexcept;
+    ResourceVariableSnapshot& operator=(ResourceVariableSnapshot&&) noexcept;
+    ~ResourceVariableSnapshot();
+
+    raw_ptr<tflite::resource::ResourceVariable> variable;
+    std::vector<uint8_t> initial_value;
+  };
+
   TfLiteVoiceIsolation(std::unique_ptr<tflite::Interpreter> interpreter,
                        std::vector<float> bias);
+
+  // Runs the model initialization subgraphs (the ones referenced by CallOnce
+  // ops) and stores the initial value of every resource variable. Returns
+  // false if the model has incompatible resource variables (e.g. empty or
+  // whose byte size changes between initialization and `Invoke()`). Allocates
+  // memory, so it must not run on the real-time audio thread.
+  [[nodiscard]] bool CaptureInitialState();
+
+  // Restores the model state captured by `CaptureInitialState()`. Returns
+  // false if it cannot. Does not allocate memory, so it is safe to call on the
+  // real-time audio thread.
+  [[nodiscard]] bool ResetState();
 
   std::unique_ptr<tflite::Interpreter> interpreter_;
   base::raw_span<float> input_tensor_span_;
@@ -73,6 +124,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   // aligned DFTs for SpeechMaskEstimator::Estimate() and the output mix.
   base::AlignedHeapArray<float> denoising_only_dfts_;
   SpeechMaskEstimator speech_mask_estimator_;
+  // Declared after `interpreter_`, which owns the resource variables.
+  std::vector<ResourceVariableSnapshot> initial_state_;
 };
 }  // namespace media
 

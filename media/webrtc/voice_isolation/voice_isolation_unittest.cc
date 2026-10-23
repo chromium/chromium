@@ -165,15 +165,13 @@ TEST(VoiceIsolationTest, CreateComponentProcesses10MsFrames) {
   EXPECT_EQ(component->AlgorithmicDelay(), kStftDelay + kBufferingDelay);
 }
 
-// TODO(barrerap): Enable once TfLiteVoiceIsolation stops advancing the model
-// state when it computes the bias.
-TEST(VoiceIsolationTest, DISABLED_VoiceIsolationCanAdaptToAudioParameters) {
+TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Stereo(), kSampleRateHz,
                          kComponentFrameSize);
 
   std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadVoiceIsolationTestModel();
+      LoadStatefulVoiceIsolationTestModel();
   std::unique_ptr<VoiceIsolation> voice_isolation =
       VoiceIsolation::Create(model.get(), params);
   ASSERT_NE(voice_isolation, nullptr);
@@ -184,17 +182,31 @@ TEST(VoiceIsolationTest, DISABLED_VoiceIsolationCanAdaptToAudioParameters) {
   std::unique_ptr<AudioBus> output_bus =
       AudioBus::Create(2, kComponentFrameSize);
 
-  // Fill input bus with dummy data.
-  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 42.f);
-  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(), -1.0f);
+  // Fill the input bus with a Hann-windowed 1 kHz stereo tone so that the
+  // signal lies inside the 50..7500 Hz model passband. A step or DC input
+  // would straddle the bypassed DC bin (gain 1.0) and the model passband
+  // (gain 1.1 from the 0.9 / 0.1 mix of the stateful test model's outputs),
+  // dispersing energy into the zero-padded start of the first STFT window.
+  constexpr float kToneFrequencyHz = 1000.0f;
+  constexpr float kTwoPi = 2.0f * std::numbers::pi_v<float>;
+  for (size_t i = 0; i < kComponentFrameSize; ++i) {
+    const float window_sine =
+        std::sin(std::numbers::pi_v<float> * static_cast<float>(i) /
+                 static_cast<float>(kComponentFrameSize));
+    const float window = window_sine * window_sine;
+    const float time_s = static_cast<float>(i) / kSampleRateHz;
+    const float sample = window * std::sin(kTwoPi * kToneFrequencyHz * time_s);
+    input_bus->channel(0)[i] = kLeftLevel * sample;
+    input_bus->channel(1)[i] = kRightLevel * sample;
+  }
 
   // Clear output bus to verify changes.
   output_bus->Zero();
 
   // BufferedVoiceIsolation and the STFT introduce a delay of two 10 ms frames.
-  // The third frame holds the zero-padded start of the first STFT output,
+  // The second frame holds the zero-padded start of the first STFT output,
   // which stays silent only if the model starts from its initial state.
-  constexpr int kNumLatencyFrames = 3;
+  constexpr int kNumLatencyFrames = 2;
   for (int j = 0; j < kNumLatencyFrames; ++j) {
     voice_isolation->ProcessAudio(*input_bus, *output_bus);
     float output_energy = std::inner_product(
@@ -386,15 +398,13 @@ TEST(VoiceIsolationTest, ClearBuffersPurgesStaleLookaheadAudio) {
   }
 }
 
-// TODO(barrerap): Enable once TfLiteVoiceIsolation::ClearBuffers() resets the
-// model resource variables.
-TEST(VoiceIsolationTest, DISABLED_ClearBuffersMatchesFreshInstance) {
+TEST(VoiceIsolationTest, ClearBuffersMatchesFreshInstance) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Stereo(), kSampleRateHz,
                          kComponentFrameSize);
 
   std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadVoiceIsolationTestModel();
+      LoadStatefulVoiceIsolationTestModel();
   std::unique_ptr<VoiceIsolation> voice_isolation =
       VoiceIsolation::Create(model.get(), params);
   ASSERT_NE(voice_isolation, nullptr);
