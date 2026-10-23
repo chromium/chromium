@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -15,7 +16,9 @@
 #include "base/containers/to_vector.h"
 #include "base/memory/aligned_memory.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "media/webrtc/voice_isolation/speech_mask_estimator.h"
 #include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1070,6 +1073,70 @@ TEST(TfLiteVoiceIsolation, RejectsModelWithControlFlowOp) {
       result = TfLiteVoiceIsolation::MaybeCreate(fake_model.model.get());
   EXPECT_THAT(result, base::test::ErrorIs(
                           VoiceIsolationCreationResult::kIncompatibleModel));
+}
+
+TEST(TfLiteVoiceIsolation, RecordsModelInferenceExecutionTimeEvery10Seconds) {
+  constexpr size_t kMetricsReportingIntervalSeconds = 10;
+  constexpr std::string_view kAverageInferenceTimeHistogram =
+      "Media.Audio.Capture.VoiceIsolation.ModelInferenceExecutionTime.Average";
+  constexpr std::string_view kMaxInferenceTimeHistogram =
+      "Media.Audio.Capture.VoiceIsolation.ModelInferenceExecutionTime.Max";
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  ASSERT_NE(model, nullptr);
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
+
+  const std::vector<float> input(voice_isolation->FrameSize(), 0.0f);
+  std::vector<float> output(voice_isolation->FrameSize(), 0.0f);
+
+  // 10 seconds of active processing at 50 Hz = 500 calls. The warmup Invoke()
+  // inside MaybeCreate() must not count toward the 500-call period.
+  const size_t calls_per_10_seconds =
+      kMetricsReportingIntervalSeconds * voice_isolation->FramesPerSecond();
+  for (size_t i = 0; i < calls_per_10_seconds - 1; ++i) {
+    voice_isolation->ProcessAudio(input, output);
+  }
+
+  histogram_tester.ExpectTotalCount(kAverageInferenceTimeHistogram,
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(kMaxInferenceTimeHistogram,
+                                    /*expected_count=*/0);
+
+  // The 500th call completes the 10-second window.
+  voice_isolation->ProcessAudio(input, output);
+
+  const int expected_high_res_samples =
+      base::TimeTicks::IsHighResolution() ? 1 : 0;
+  histogram_tester.ExpectUniqueSample(
+      kAverageInferenceTimeHistogram,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMicroseconds(),
+      /*expected_bucket_count=*/expected_high_res_samples);
+  histogram_tester.ExpectUniqueSample(
+      kMaxInferenceTimeHistogram,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMicroseconds(),
+      /*expected_bucket_count=*/expected_high_res_samples);
+
+  // Verify that the per-period counter resets and only logs again after a
+  // second 500-call window completes.
+  for (size_t i = 0; i < calls_per_10_seconds - 1; ++i) {
+    voice_isolation->ProcessAudio(input, output);
+  }
+  histogram_tester.ExpectTotalCount(
+      kAverageInferenceTimeHistogram,
+      /*expected_count=*/expected_high_res_samples);
+
+  voice_isolation->ProcessAudio(input, output);
+  histogram_tester.ExpectTotalCount(
+      kAverageInferenceTimeHistogram,
+      /*expected_count=*/2 * expected_high_res_samples);
+  histogram_tester.ExpectTotalCount(
+      kMaxInferenceTimeHistogram,
+      /*expected_count=*/2 * expected_high_res_samples);
 }
 
 }  // namespace media

@@ -15,13 +15,17 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
-#include "media/webrtc/voice_isolation/voice_isolation.h"
+#include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "third_party/tflite/buildflags.h"
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
@@ -44,6 +48,17 @@
 
 namespace media {
 namespace {
+
+// Calls per second of `TfLiteVoiceIsolation::ProcessAudio()` (20 ms frames).
+constexpr size_t kFramesPerSecond = 50;
+
+// Reporting interval and histogram bounds for model inference execution timing.
+constexpr size_t kMetricsReportingIntervalSeconds = 10;
+constexpr size_t kInferencesPerLogPeriod =
+    kMetricsReportingIntervalSeconds * kFramesPerSecond;
+constexpr base::TimeDelta kInferenceTimeHistogramMin = base::Microseconds(50);
+constexpr base::TimeDelta kInferenceTimeHistogramMax = base::Milliseconds(20);
+constexpr size_t kInferenceTimeHistogramBuckets = 50;
 
 // The model processes two 16kHz DFTs (20 ms each) per call.
 constexpr size_t kNumFfts = 2;
@@ -428,7 +443,9 @@ void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
 
   {
     TRACE_EVENT("audio", "TfLiteVoiceIsolation::Inference");
+    const base::ElapsedTimer inference_timer;
     CHECK_EQ(interpreter_->Invoke(), kTfLiteOk);
+    RecordInferenceExecutionTime(inference_timer.Elapsed());
   }
   base::span(temp_output_).copy_from(output_tensor_span_);
 
@@ -497,7 +514,33 @@ size_t TfLiteVoiceIsolation::FrameSize() const {
 }
 
 size_t TfLiteVoiceIsolation::FramesPerSecond() const {
-  return 50;
+  return kFramesPerSecond;
+}
+
+void TfLiteVoiceIsolation::RecordInferenceExecutionTime(
+    base::TimeDelta elapsed) {
+  ++inferences_in_log_period_;
+  sum_inference_time_in_period_ += elapsed;
+  max_inference_time_in_period_ =
+      std::max(max_inference_time_in_period_, elapsed);
+
+  if (inferences_in_log_period_ < kInferencesPerLogPeriod) {
+    return;
+  }
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Media.Audio.Capture.VoiceIsolation.ModelInferenceExecutionTime.Average",
+      sum_inference_time_in_period_ / kInferencesPerLogPeriod,
+      kInferenceTimeHistogramMin, kInferenceTimeHistogramMax,
+      kInferenceTimeHistogramBuckets);
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Media.Audio.Capture.VoiceIsolation.ModelInferenceExecutionTime.Max",
+      max_inference_time_in_period_, kInferenceTimeHistogramMin,
+      kInferenceTimeHistogramMax, kInferenceTimeHistogramBuckets);
+
+  inferences_in_log_period_ = 0;
+  sum_inference_time_in_period_ = base::TimeDelta();
+  max_inference_time_in_period_ = base::TimeDelta();
 }
 
 void TfLiteVoiceIsolation::ClearBuffers() {

@@ -108,6 +108,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   // to call on the real-time audio thread.
   [[nodiscard]] bool ResetState();
 
+  // Accumulates `elapsed` and logs the average and maximum model inference
+  // execution time to UMA every 10 seconds of processed audio.
+  void RecordInferenceExecutionTime(base::TimeDelta elapsed);
+
   std::unique_ptr<tflite::Interpreter> interpreter_;
   base::raw_span<float> input_tensor_span_;
   base::raw_span<float> output_tensor_span_;
@@ -120,6 +124,11 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   SpeechMaskEstimator speech_mask_estimator_;
   // Declared after `interpreter_`, which owns the resource variables.
   std::vector<ResourceVariableState> resource_variables_;
+
+  // Execution time tracking for model inference UMA metrics.
+  size_t inferences_in_log_period_ = 0;
+  base::TimeDelta sum_inference_time_in_period_;
+  base::TimeDelta max_inference_time_in_period_;
 };
 }  // namespace media
 
