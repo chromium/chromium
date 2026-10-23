@@ -1579,8 +1579,10 @@ export const ComposeboxEmbedderMixin =
         }
 
         shouldShowSuggestionActivityLink(): boolean {
-          const showActivityLink = this.result && this.showDropdown &&
-              this.result.showAimActivityLink;
+          // The link explains zero-suggest suggestions based on the user's
+          // activity, so hide it as soon as the user starts typing.
+          const showActivityLink = !this.input && this.result &&
+              this.showDropdown && this.result.showAimActivityLink;
           this.fire('show-suggestion-activity-link', showActivityLink);
           return !!showActivityLink;
         }

@@ -1682,6 +1682,25 @@ suite('OmniboxComposeboxTest', () => {
         assertFalse(!!suggestionActivity);
       });
 
+  test('suggestion activity link hidden once the user types', async () => {
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: omniboxComposebox.activeQueryId,
+          matches: [createSearchMatchForTesting()],
+          showAimActivityLink: true,
+        }));
+    await testProxy.page.$.flushForTesting();
+    await microtasksFinished();
+    await omniboxComposebox.updateComplete;
+    assertTrue(
+        !!omniboxComposebox.shadowRoot.querySelector('#suggestionActivity'));
+
+    omniboxComposebox.input = 'test';
+    await omniboxComposebox.updateComplete;
+    assertFalse(
+        !!omniboxComposebox.shadowRoot.querySelector('#suggestionActivity'));
+  });
+
   function createDragEvent(type: string, files: File[]): DragEvent {
     const event = new DragEvent(type, {
       bubbles: true,
