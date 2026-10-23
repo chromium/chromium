@@ -2042,13 +2042,14 @@ mojom("mojom") {
     enabled_features += [ "win_permissions_validation" ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
     export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
     export_header_blink = "third_party/blink/public/platform/web_common.h"
-    if (enable_reporting) {
-      enabled_features += [ "enable_reporting" ]
-    }
+  }
+
+  if (enable_reporting) {
+    enabled_features += [ "enable_reporting" ]
   }
 
   if (is_linux) {

@@ -32,8 +32,8 @@ declare_args() {
   enable_mdns = is_win || is_linux || is_chromeos || is_fuchsia || is_apple ||
                 enable_desktop_android_extensions
 
-  # Reporting not used on iOS.
-  enable_reporting = !is_ios
+  # Reporting not used on iOS, except for iOS Blink.
+  enable_reporting = use_blink
 
   # Includes the transport security state preload list. This list includes
   # the HSTS mechanism to enforce trusted connections to a significant
