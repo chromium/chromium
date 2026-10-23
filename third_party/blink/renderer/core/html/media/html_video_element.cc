@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -599,8 +600,7 @@ void HTMLVideoElement::RequestSaveVideoFrame() {
   params->should_prompt_for_save_location = true;
   auto timestamp_ms = base::saturated_cast<uint32_t>(
       currentTime() * base::Time::kMillisecondsPerSecond);
-  params->suggested_name =
-      StrCat({"videoframe_", String::Number(timestamp_ms)});
+  params->suggested_name = Format("videoframe_{}", timestamp_ms);
   params->url = KURL(blob_url);
   params->blob_url_token = std::move(blob_url_token);
 

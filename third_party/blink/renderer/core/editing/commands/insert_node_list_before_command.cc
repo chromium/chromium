@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/core/editing/commands/editing_state.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -54,8 +54,8 @@ void InsertNodeListBeforeCommand::DoUnapply() {
 }
 
 String InsertNodeListBeforeCommand::ToString() const {
-  return StrCat({"InsertNodeListBeforeCommand {insert_children:[",
-                 String::Number(insert_children_.size()), " nodes]}"});
+  return Format("InsertNodeListBeforeCommand {{insert_children:[{} nodes]}}",
+                insert_children_.size());
 }
 
 void InsertNodeListBeforeCommand::Trace(Visitor* visitor) const {

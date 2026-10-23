@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -107,10 +108,9 @@ void FrameConsole::ReportResourceResponseReceived(
     return;
   if (response.HttpStatusCode() < 400)
     return;
-  String message =
-      StrCat({"Failed to load resource: the server responded with a status of ",
-              String::Number(response.HttpStatusCode()), " (",
-              response.HttpStatusText(), ")"});
+  String message = Format(
+      "Failed to load resource: the server responded with a status of {} ({})",
+      response.HttpStatusCode(), response.HttpStatusText());
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kNetwork,
       mojom::blink::ConsoleMessageLevel::kError, message,

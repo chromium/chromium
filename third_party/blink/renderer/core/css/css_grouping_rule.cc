@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -104,9 +105,9 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
   if (index > num_child_rules) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat(
-            {"the index ", String::Number(index),
-             " must be less than or equal to the length of the rule list."}));
+        Format("the index {} must be less than or equal to the length of the "
+               "rule list.",
+               index));
     return nullptr;
   }
 
@@ -274,8 +275,8 @@ void CSSGroupingRule::deleteRule(unsigned index,
   if (index >= group_rule_->ChildRules().size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"the index ", String::Number(index),
-                " is greated than the length of the rule list."}));
+        Format("the index {} is greater than the length of the rule list.",
+               index));
     return;
   }
 

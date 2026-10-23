@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -443,9 +444,8 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
   if (index > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The index provided (", String::Number(index),
-                ") is larger than the maximum index (",
-                String::Number(length()), ")."}));
+        Format("The index provided ({}) is larger than the maximum index ({}).",
+               index, length()));
     return 0;
   }
 
@@ -503,9 +503,9 @@ void CSSStyleSheet::deleteRule(unsigned index,
     if (length()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
-          StrCat({"The index provided (", String::Number(index),
-                  ") is larger than the maximum index (",
-                  String::Number(length() - 1), ")."}));
+          Format(
+              "The index provided ({}) is larger than the maximum index ({}).",
+              index, length() - 1));
     } else {
       exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
                                         "Style sheet is empty (length 0).");

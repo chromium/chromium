@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -458,8 +459,8 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, ManyCrossOriginFrames) {
   RequestUrlAndDataType frame_url_and_data;
   for (wtf_size_t i = 0; i < kNumCrossOriginFrames; ++i) {
     auto frame_id = i + 1;
-    frame_urls.emplace_back(kCrossSubdomainUrl + "frame-" +
-                            String::Number(frame_id) + ".html");
+    frame_urls.emplace_back(
+        Format("{}frame-{}.html", kCrossSubdomainUrl, frame_id));
     frame_url_and_data.emplace_back(std::make_pair(frame_urls[i], ""));
   }
 

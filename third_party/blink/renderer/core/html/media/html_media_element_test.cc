@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -3673,7 +3674,7 @@ TEST_P(HTMLMediaElementTest, SelectNextSourceChildMediaQueryMatching) {
   source1->setAttribute(html_names::kMediaAttr, AtomicString("not all"));
   // Fill up inline attribute vector capacity to verify attribute stability.
   for (int i = 0; i < 6; ++i) {
-    source1->setAttribute(AtomicString("data-attr" + String::Number(i)),
+    source1->setAttribute(AtomicString(Format("data-attr{}", i)),
                           AtomicString("val"));
   }
   Media()->AppendChild(source1);

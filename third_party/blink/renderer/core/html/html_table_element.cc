@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
@@ -187,8 +187,7 @@ HTMLTableRowElement* HTMLTableElement::insertRow(
   if (index < -1) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The index provided (", String::Number(index),
-                ") is less than -1."}));
+        Format("The index provided ({}) is less than -1.", index));
     return nullptr;
   }
 
@@ -203,9 +202,9 @@ HTMLTableRowElement* HTMLTableElement::insertRow(
         if (i != index) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kIndexSizeError,
-              StrCat({"The index provided (", String::Number(index),
-                      ") is greater than the number of rows in the table (",
-                      String::Number(i), ")."}));
+              Format("The index provided ({}) is greater than the number of "
+                     "rows in the table ({}).",
+                     index, i));
           return nullptr;
         }
         break;
@@ -238,8 +237,7 @@ void HTMLTableElement::deleteRow(int index, ExceptionState& exception_state) {
   if (index < -1) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The index provided (", String::Number(index),
-                ") is less than -1."}));
+        Format("The index provided ({}) is less than -1.", index));
     return;
   }
 
@@ -259,9 +257,9 @@ void HTMLTableElement::deleteRow(int index, ExceptionState& exception_state) {
   if (!row) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The index provided (", String::Number(index),
-                ") is greater than the number of rows in the table (",
-                String::Number(i), ")."}));
+        Format("The index provided ({}) is greater than the number of rows in "
+               "the table ({}).",
+               index, i));
     return;
   }
   row->remove(exception_state);

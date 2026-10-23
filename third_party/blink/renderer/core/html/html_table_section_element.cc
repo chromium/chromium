@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -56,9 +56,8 @@ HTMLElement* HTMLTableSectionElement::insertRow(
   if (index < -1 || index > num_rows) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The provided index (", String::Number(index),
-                " is outside the range [-1, ", String::Number(num_rows),
-                "]."}));
+        Format("The provided index ({} is outside the range [-1, {}].", index,
+               num_rows));
     return nullptr;
   }
 
@@ -85,9 +84,8 @@ void HTMLTableSectionElement::deleteRow(int index,
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The provided index (", String::Number(index),
-                " is outside the range [-1, ", String::Number(num_rows),
-                "]."}));
+        Format("The provided index ({} is outside the range [-1, {}].", index,
+               num_rows));
   }
 }
 

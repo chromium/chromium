@@ -9,5 +9,5 @@ PASS: Exception raised successfully. Type: HierarchyRequestError: Failed to exec
 PASS: Exception raised successfully. Type: SyntaxError: Failed to execute 'insertRule' on 'CSSGroupingRule': the rule '@charset "ISO-8859-1";' is invalid and cannot be parsed.
 PASS: Exception raised successfully. Type: SyntaxError: Failed to execute 'insertRule' on 'CSSGroupingRule': the rule '@media screen { p { color: red; } };' is invalid and cannot be parsed.
 PASS: No exception raised! Rule at position 'length - 1' deleted successfully.
-PASS: Exception raised successfully. Type: IndexSizeError: Failed to execute 'deleteRule' on 'CSSGroupingRule': the index 1 is greated than the length of the rule list.
-PASS: Exception raised successfully. Type: IndexSizeError: Failed to execute 'deleteRule' on 'CSSGroupingRule': the index 4294967295 is greated than the length of the rule list.
+PASS: Exception raised successfully. Type: IndexSizeError: Failed to execute 'deleteRule' on 'CSSGroupingRule': the index 1 is greater than the length of the rule list.
+PASS: Exception raised successfully. Type: IndexSizeError: Failed to execute 'deleteRule' on 'CSSGroupingRule': the index 4294967295 is greater than the length of the rule list.

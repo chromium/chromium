@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -121,8 +122,7 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
   if (offset > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The offset ", String::Number(offset),
-                " is larger than the Text node's length."}));
+        Format("The offset {} is larger than the Text node's length.", offset));
     return nullptr;
   }
 

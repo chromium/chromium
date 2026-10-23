@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/commands/editing_state.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -34,7 +35,7 @@ class AttributeReallocatingIdObserver final : public IdTargetObserver {
     // least once, which frees the buffer it was using.
     for (unsigned i = 0; i < 8; ++i) {
       element_->setAttribute(
-          QualifiedName(g_null_atom, AtomicString(String::Number(i) + "pad"),
+          QualifiedName(g_null_atom, AtomicString(Format("{}pad", i)),
                         g_null_atom),
           AtomicString("1"));
     }

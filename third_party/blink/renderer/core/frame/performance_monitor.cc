@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "v8/include/v8-metrics.h"
 
 namespace blink {
@@ -244,8 +245,8 @@ void PerformanceMonitor::Did(const probe::CallFunction& probe) {
 
   String name = user_callback->name ? String(user_callback->name)
                                     : String(user_callback->atomic_name);
-  String text = StrCat({"'", name, "' handler took ",
-                        String::Number(duration.InMilliseconds()), "ms"});
+  String text =
+      Format("'{}' handler took {}ms", name, duration.InMilliseconds());
   InnerReportGenericViolation(
       probe.context, handler_type, text, duration,
       CaptureSourceLocation(probe.context->GetIsolate(), probe.function));

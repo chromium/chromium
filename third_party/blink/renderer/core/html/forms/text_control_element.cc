@@ -72,7 +72,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -471,9 +471,9 @@ void TextControlElement::setRangeText(const String& replacement,
   if (start > end) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The provided start value (", String::Number(start),
-                ") is larger than the provided end value (",
-                String::Number(end), ")."}));
+        Format("The provided start value ({}) is larger than the provided end "
+               "value ({}).",
+               start, end));
     return;
   }
   if (OpenShadowRoot())
@@ -891,8 +891,7 @@ void TextControlElement::setMaxLength(int new_value,
   if (new_value < 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The value provided (", String::Number(new_value),
-                ") is not positive or 0."}));
+        Format("The value provided ({}) is not positive or 0.", new_value));
   } else if (min >= 0 && new_value < min) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
@@ -909,8 +908,7 @@ void TextControlElement::setMinLength(int new_value,
   if (new_value < 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The value provided (", String::Number(new_value),
-                ") is not positive or 0."}));
+        Format("The value provided ({}) is not positive or 0.", new_value));
   } else if (max >= 0 && new_value > max) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,

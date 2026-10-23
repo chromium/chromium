@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -1143,10 +1144,11 @@ TEST_F(DisplayAdElementMonitorTest, LargeStickyAdDetectedWithJitter) {
     UpdateLifecycle();
 
     // JS repositioning brings it back to the bottom.
-    ad_element->setAttribute(html_names::kStyleAttr,
-                             AtomicString("position:absolute; left:0px; top:" +
-                                          String::Number(400 + current_scroll) +
-                                          "px; width:800px; height:200px;"));
+    ad_element->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString(Format(
+            "position:absolute; left:0px; top:{}px; width:800px; height:200px;",
+            400 + current_scroll)));
     UpdateLifecycle();
   }
 
@@ -1196,10 +1198,11 @@ TEST_F(DisplayAdElementMonitorTest, LargeStickyAdNotDetectedWithLargeJitter) {
     // JS repositioning brings it back to the bottom.
     // A new anchor is established, but the scroll distance from the new anchor
     // is 0, so the sticky condition is never met.
-    ad_element->setAttribute(html_names::kStyleAttr,
-                             AtomicString("position:absolute; left:0px; top:" +
-                                          String::Number(400 + current_scroll) +
-                                          "px; width:800px; height:200px;"));
+    ad_element->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString(Format(
+            "position:absolute; left:0px; top:{}px; width:800px; height:200px;",
+            400 + current_scroll)));
     UpdateLifecycle();
   }
 

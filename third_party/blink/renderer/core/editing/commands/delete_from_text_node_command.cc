@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -69,8 +69,8 @@ void DeleteFromTextNodeCommand::DoUnapply() {
 }
 
 String DeleteFromTextNodeCommand::ToString() const {
-  return StrCat({"DeleteFromTextNodeCommand {offset:", String::Number(offset_),
-                 ", count:", String::Number(count_), "}"});
+  return Format("DeleteFromTextNodeCommand {{offset:{}, count:{}}}", offset_,
+                count_);
 }
 
 void DeleteFromTextNodeCommand::Trace(Visitor* visitor) const {

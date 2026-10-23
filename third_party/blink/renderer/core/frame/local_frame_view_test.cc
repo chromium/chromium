@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/gfx/geometry/size.h"
 
 using blink::test::RunPendingTasks;
@@ -2077,7 +2078,7 @@ TEST_F(LocalFrameViewPresentationTimeTest,
   // 5. Simulate 100 more same-document navigations.
   for (int i = 0; i < 100; ++i) {
     loader->CommitSameDocumentNavigation(
-        KURL(StrCat({"https://example.com/test.html#bar", String::Number(i)})),
+        KURL(Format("https://example.com/test.html#bar{}", i)),
         WebFrameLoadType::kStandard, nullptr,
         ClientRedirectPolicy::kNotClientRedirect,
         false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,

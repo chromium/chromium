@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 
 #include <memory>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -58,7 +60,7 @@ void CanvasFontCacheTest::SetUp() {
 TEST_F(CanvasFontCacheTest, CacheHardLimit) {
   for (unsigned i = 0; i < Cache()->HardMaxFonts() + 1; ++i) {
     String font_string;
-    font_string = String::Number(i + 1) + "px sans-serif";
+    font_string = Format("{}px sans-serif", i + 1);
     Context2D()->setFontForTesting(font_string);
     if (i < Cache()->HardMaxFonts()) {
       EXPECT_TRUE(Cache()->IsInCache("1px sans-serif"));
@@ -108,7 +110,7 @@ TEST_F(CanvasFontCacheTest, HardMaxFontsOnPageVisibility) {
   // Fill up the font cache.
   for (unsigned i = 0; i < Cache()->HardMaxFonts(); ++i) {
     String font_string;
-    font_string = String::Number(i + 1) + "px sans-serif";
+    font_string = Format("{}px sans-serif", i + 1);
     Context2D()->setFontForTesting(font_string);
     EXPECT_TRUE(Cache()->IsInCache(font_string));
     EXPECT_EQ(Cache()->GetCacheSize(), i + 1);

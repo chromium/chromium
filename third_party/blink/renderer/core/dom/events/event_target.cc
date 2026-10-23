@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -140,11 +141,11 @@ void ReportBlockedEvent(EventTarget& target,
   if (!listener)
     return;
 
-  String message_text =
-      StrCat({"Handling of '", event.type(), "' input event was delayed for ",
-              String::Number(delayed.InMilliseconds()),
-              " ms due to main thread being busy. Consider marking event "
-              "handler as 'passive' to make the page more responsive."});
+  String message_text = Format(
+      "Handling of '{}' input event was delayed for {} ms due to main thread "
+      "being busy. Consider marking event handler as 'passive' to make the "
+      "page more responsive.",
+      event.type(), delayed.InMilliseconds());
   PerformanceMonitor::ReportGenericViolation(
       target.GetExecutionContext(), PerformanceMonitor::kBlockedEvent,
       message_text, delayed, listener->GetSourceLocation(target));

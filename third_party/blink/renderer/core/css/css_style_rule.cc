@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -251,9 +251,9 @@ unsigned CSSStyleRule::insertRule(const ExecutionContext* execution_context,
     if (index > 0) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
-          StrCat(
-              {"the index ", String::Number(index),
-               " must be less than or equal to the length of the rule list."}));
+          Format("the index {} must be less than or equal to the length of the "
+                 "rule list.",
+                 index));
       return 0;
     }
     style_rule_->EnsureChildRules();
@@ -282,8 +282,8 @@ void CSSStyleRule::deleteRule(unsigned index, ExceptionState& exception_state) {
       index >= style_rule_->ChildRules()->size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"the index ", String::Number(index),
-                " is greated than the length of the rule list."}));
+        Format("the index {} is greater than the length of the rule list.",
+               index));
     return;
   }
 

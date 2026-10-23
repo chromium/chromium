@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -33,10 +33,10 @@ void HTMLCredentialElement::ParseAttribute(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kOther,
               mojom::blink::ConsoleMessageLevel::kError,
-              StrCat({"credential params attribute was invalid JSON: ",
-                      parse_error.message, " (line ",
-                      String::Number(parse_error.line), ", col ",
-                      String::Number(parse_error.column), ")"})));
+              Format("credential params attribute was invalid JSON: {} (line "
+                     "{}, col {})",
+                     parse_error.message, parse_error.line,
+                     parse_error.column)));
     }
   } else if (params.name == html_names::kConfigurlAttr &&
              !params.new_value.IsNull()) {

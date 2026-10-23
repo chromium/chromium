@@ -615,10 +615,9 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError,
-        StrCat({"iframe trusttoken attribute was invalid JSON: ",
-                parse_error.message, " (line ",
-                String::Number(parse_error.line), ", col ",
-                String::Number(parse_error.column), ")"})));
+        Format("iframe trusttoken attribute was invalid JSON: {} (line {}, col "
+               "{})",
+               parse_error.message, parse_error.line, parse_error.column)));
     return nullptr;
   }
 
