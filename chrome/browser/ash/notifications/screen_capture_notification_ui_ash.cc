@@ -19,7 +19,11 @@ ScreenCaptureNotificationUIAsh::~ScreenCaptureNotificationUIAsh() {
   // MediaStreamCaptureIndicator will delete ScreenCaptureNotificationUI object
   // after it stops screen capture.
   stop_callback_.Reset();
-  ash::Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
+  // Some owners (e.g. Cast mirroring sessions) may outlive ash::Shell during
+  // shutdown.
+  if (ash::Shell::HasInstance()) {
+    ash::Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
+  }
 }
 
 gfx::NativeViewId ScreenCaptureNotificationUIAsh::OnStarted(

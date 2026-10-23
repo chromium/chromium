@@ -445,6 +445,7 @@ source_set("impl") {
       "platform_verification_chromeos.cc",
     ]
     deps += [
+      "//chrome/browser/ui:screen_capture_notification_ui",
       "//chrome/browser/ui/ash/login",
       "//chrome/browser/ui/webui/ash/lock_screen_reauth",
       "//chromeos/ash/components/settings",
