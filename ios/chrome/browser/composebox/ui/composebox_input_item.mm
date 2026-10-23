@@ -69,7 +69,9 @@
     // This is a shallow copy, but it's all that's needed for the diffable
     // data source. The UnguessableToken is copied by value.
     copy->_identifier = _identifier;
+    copy.serverToken = self.serverToken;
     copy.previewImage = self.previewImage;
+    copy.leadingIconImage = self.leadingIconImage;
     copy.title = self.title;
     copy.uploadIndex = self.uploadIndex;
     copy.state = self.state;
@@ -77,11 +79,13 @@
     copy.imageProvider = self.imageProvider;
     copy.fileURL = self.fileURL;
     copy.tabURL = self.tabURL;
+    copy.webStateID = self.webStateID;
     copy.source = self.source;
     copy.driveIdentifier = self.driveIdentifier;
     copy.driveResourceKey = self.driveResourceKey;
     copy.driveMimeType = self.driveMimeType;
-    copy.performedAnimation = copy.performedAnimation;
+    copy.performedAnimation = self.performedAnimation;
+    copy.isAutoAdded = self.isAutoAdded;
   }
   return copy;
 }

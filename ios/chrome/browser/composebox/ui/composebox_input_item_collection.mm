@@ -29,6 +29,18 @@
 
 #pragma mark - Public properties
 
+- (NSArray<ComposeboxInputItem*>*)containedTabItems {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  NSMutableArray<ComposeboxInputItem*>* tabItems =
+      [[NSMutableArray alloc] init];
+  for (ComposeboxInputItem* item in _containedItems) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
+      [tabItems addObject:item];
+    }
+  }
+  return [tabItems copy];
+}
+
 - (size_t)count {
   return _containedItems.count;
 }

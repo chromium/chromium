@@ -34,6 +34,10 @@ class UnguessableToken;
 @property(nonatomic, readonly, copy)
     NSArray<ComposeboxInputItem*>* containedItems;
 
+// The contained tab items in this collection.
+@property(nonatomic, readonly, copy)
+    NSArray<ComposeboxInputItem*>* containedTabItems;
+
 // The number of objects in the array.
 @property(nonatomic, readonly) size_t count;
 

@@ -1223,6 +1223,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                source:source];
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
   item.tabURL = webState->GetVisibleURL();
+  item.webStateID = webState->GetUniqueIdentifier();
   base::UnguessableToken identifier = item.identifier;
   _latestTabSelectionMapping[identifier] = webState->GetUniqueIdentifier();
 

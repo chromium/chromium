@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
+#import "ios/web/public/web_state_id.h"
 #import "url/gurl.h"
 
 namespace base {
@@ -79,6 +80,9 @@ enum class ComposeboxInputItemType {
 @property(nonatomic, strong) NSURL* fileURL;
 // The tab URL for this item. Only set for tab types.
 @property(nonatomic, assign) GURL tabURL;
+// The unique identifier of the `WebState` associated with this item. Only set
+// for tab types.
+@property(nonatomic, assign) web::WebStateID webStateID;
 // The Drive item identifier. Only set for Drive types.
 @property(nonatomic, copy) NSString* driveIdentifier;
 // The Drive resource key. Only set for Drive types.
