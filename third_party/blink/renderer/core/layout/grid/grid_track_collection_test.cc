@@ -29,35 +29,19 @@ namespace {
 
 }  // namespace
 
-class GridTrackCollectionBaseTest : public GridTrackCollectionBase {
+class TestLayoutTrackCollection : public GridLayoutTrackCollection {
  public:
-  struct TestTrackRange {
-    wtf_size_t start_line;
-    wtf_size_t track_count;
-  };
-
-  explicit GridTrackCollectionBaseTest(const Vector<wtf_size_t>& range_sizes)
-      : GridTrackCollectionBase() {
+  explicit TestLayoutTrackCollection(const Vector<wtf_size_t>& range_sizes)
+      : GridLayoutTrackCollection(kForColumns) {
     wtf_size_t start_line = 0;
     for (wtf_size_t size : range_sizes) {
-      TestTrackRange range;
+      GridRange range{};
       range.start_line = start_line;
       range.track_count = size;
       ranges_.push_back(range);
       start_line += size;
     }
   }
-
-  wtf_size_t RangeCount() const override { return ranges_.size(); }
-  wtf_size_t RangeStartLine(wtf_size_t range_index) const override {
-    return ranges_[range_index].start_line;
-  }
-  wtf_size_t RangeTrackCount(wtf_size_t range_index) const override {
-    return ranges_[range_index].track_count;
-  }
-
- private:
-  Vector<TestTrackRange> ranges_;
 };
 
 class GridTrackCollectionTest : public RenderingTest {
@@ -100,33 +84,36 @@ class GridTrackCollectionTest : public RenderingTest {
 
 TEST_F(GridTrackCollectionTest, TestRangeIndexFromGridLine) {
   // Small case.
-  GridTrackCollectionBaseTest track_collection({3, 10u, 5u});
-  EXPECT_EQ(0u, track_collection.RangeIndexFromGridLine(0u));
-  EXPECT_EQ(1u, track_collection.RangeIndexFromGridLine(4u));
-  EXPECT_EQ(2u, track_collection.RangeIndexFromGridLine(15u));
+  auto* track_collection = MakeGarbageCollected<TestLayoutTrackCollection>(
+      Vector<wtf_size_t>{3, 10u, 5u});
+  EXPECT_EQ(0u, track_collection->RangeIndexFromGridLine(0u));
+  EXPECT_EQ(1u, track_collection->RangeIndexFromGridLine(4u));
+  EXPECT_EQ(2u, track_collection->RangeIndexFromGridLine(15u));
 
   // Small case with large repeat count.
-  track_collection = GridTrackCollectionBaseTest({3000000u, 7u, 10u});
-  EXPECT_EQ(0u, track_collection.RangeIndexFromGridLine(600u));
-  EXPECT_EQ(1u, track_collection.RangeIndexFromGridLine(3000000u));
-  EXPECT_EQ(1u, track_collection.RangeIndexFromGridLine(3000004u));
+  track_collection = MakeGarbageCollected<TestLayoutTrackCollection>(
+      Vector<wtf_size_t>{3000000u, 7u, 10u});
+  EXPECT_EQ(0u, track_collection->RangeIndexFromGridLine(600u));
+  EXPECT_EQ(1u, track_collection->RangeIndexFromGridLine(3000000u));
+  EXPECT_EQ(1u, track_collection->RangeIndexFromGridLine(3000004u));
 
   // Larger case.
-  track_collection = GridTrackCollectionBaseTest({
-      10u,   // 0 - 9
-      10u,   // 10 - 19
-      10u,   // 20 - 29
-      10u,   // 30 - 39
-      20u,   // 40 - 59
-      20u,   // 60 - 79
-      20u,   // 80 - 99
-      100u,  // 100 - 199
-  });
-  EXPECT_EQ(0u, track_collection.RangeIndexFromGridLine(0u));
-  EXPECT_EQ(3u, track_collection.RangeIndexFromGridLine(35u));
-  EXPECT_EQ(4u, track_collection.RangeIndexFromGridLine(40u));
-  EXPECT_EQ(5u, track_collection.RangeIndexFromGridLine(79));
-  EXPECT_EQ(7u, track_collection.RangeIndexFromGridLine(105u));
+  track_collection =
+      MakeGarbageCollected<TestLayoutTrackCollection>(Vector<wtf_size_t>{
+          10u,   // 0 - 9
+          10u,   // 10 - 19
+          10u,   // 20 - 29
+          10u,   // 30 - 39
+          20u,   // 40 - 59
+          20u,   // 60 - 79
+          20u,   // 80 - 99
+          100u,  // 100 - 199
+      });
+  EXPECT_EQ(0u, track_collection->RangeIndexFromGridLine(0u));
+  EXPECT_EQ(3u, track_collection->RangeIndexFromGridLine(35u));
+  EXPECT_EQ(4u, track_collection->RangeIndexFromGridLine(40u));
+  EXPECT_EQ(5u, track_collection->RangeIndexFromGridLine(79));
+  EXPECT_EQ(7u, track_collection->RangeIndexFromGridLine(105u));
 }
 
 TEST_F(GridTrackCollectionTest, TestGridTrackList) {

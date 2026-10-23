@@ -14,26 +14,6 @@
 
 namespace blink {
 
-// |GridTrackCollectionBase| provides an implementation for some shared
-// functionality on grid collections, specifically binary search on the
-// collection to get the range that contains a specific grid line.
-class CORE_EXPORT GridTrackCollectionBase {
- public:
-  virtual ~GridTrackCollectionBase() = default;
-
-  // Returns the number of track ranges in the collection.
-  virtual wtf_size_t RangeCount() const = 0;
-  // Returns the start line of a given track range.
-  virtual wtf_size_t RangeStartLine(wtf_size_t range_index) const = 0;
-  // Returns the number of tracks in a given track range.
-  virtual wtf_size_t RangeTrackCount(wtf_size_t range_index) const = 0;
-
-  // Returns the end line of a given track range.
-  wtf_size_t RangeEndLine(wtf_size_t range_index) const;
-  // Gets the index of the range that contains the given grid line.
-  wtf_size_t RangeIndexFromGridLine(wtf_size_t grid_line) const;
-};
-
 class CORE_EXPORT TrackSpanProperties {
  public:
   enum PropertyId : unsigned {
@@ -175,8 +155,7 @@ class CORE_EXPORT GridRangeBuilder {
 };
 
 class CORE_EXPORT GridLayoutTrackCollection
-    : public GarbageCollected<GridLayoutTrackCollection>,
-      public GridTrackCollectionBase {
+    : public GarbageCollected<GridLayoutTrackCollection> {
  public:
   struct SetGeometry {
     explicit SetGeometry(LayoutUnit offset, wtf_size_t track_count = 0)
@@ -190,16 +169,23 @@ class CORE_EXPORT GridLayoutTrackCollection
       : track_direction_(track_direction) {}
 
   GridLayoutTrackCollection() = delete;
+  virtual ~GridLayoutTrackCollection() = default;
 
   // Don't allow this class to be used for grid sizing.
   virtual bool IsForSizing() const { return false; }
 
   bool operator==(const GridLayoutTrackCollection& other) const;
 
-  // GridTrackCollectionBase overrides.
-  wtf_size_t RangeCount() const override { return ranges_.size(); }
-  wtf_size_t RangeStartLine(wtf_size_t range_index) const override;
-  wtf_size_t RangeTrackCount(wtf_size_t range_index) const override;
+  // Returns the number of track ranges in the collection.
+  wtf_size_t RangeCount() const { return ranges_.size(); }
+  // Returns the start line of a given track range.
+  wtf_size_t RangeStartLine(wtf_size_t range_index) const;
+  // Returns the number of tracks in a given track range.
+  wtf_size_t RangeTrackCount(wtf_size_t range_index) const;
+  // Returns the end line of a given track range.
+  wtf_size_t RangeEndLine(wtf_size_t range_index) const;
+  // Gets the index of the range that contains the given grid line.
+  wtf_size_t RangeIndexFromGridLine(wtf_size_t grid_line) const;
 
   // Returns the number of sets spanned by a given track range.
   wtf_size_t RangeSetCount(wtf_size_t range_index) const;

@@ -18,11 +18,12 @@ struct SameSizeAsGridRange {
 
 ASSERT_SIZE(GridRange, SameSizeAsGridRange);
 
-wtf_size_t GridTrackCollectionBase::RangeEndLine(wtf_size_t range_index) const {
+wtf_size_t GridLayoutTrackCollection::RangeEndLine(
+    wtf_size_t range_index) const {
   return RangeStartLine(range_index) + RangeTrackCount(range_index);
 }
 
-wtf_size_t GridTrackCollectionBase::RangeIndexFromGridLine(
+wtf_size_t GridLayoutTrackCollection::RangeIndexFromGridLine(
     wtf_size_t grid_line) const {
   wtf_size_t upper = RangeCount();
   DCHECK_GT(upper, 0u);
