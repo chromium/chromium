@@ -323,6 +323,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
 
     AccessStreamSet access_streams;
     uint64_t content_id_ = 0;
+    bool is_dynamically_allocated = false;
 
     CreateBackingCallback create_callback;
     std::unique_ptr<SharedImageBacking> backing;

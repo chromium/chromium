@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 
+#include <optional>
 #include <ostream>
 
 #include "base/check_is_test.h"
@@ -1581,6 +1582,22 @@ bool CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
                  << backing->GetName();
     }
 
+    const bool is_src_dynamic =
+        latest_content_element->is_dynamically_allocated;
+    const bool is_dst_dynamic =
+        !access_element || access_element->is_dynamically_allocated;
+    const int32_t initial_usage =
+        static_cast<int32_t>(static_cast<uint32_t>(this->usage()));
+    // Encoded as SSDDAA:
+    //   SS = src_type (SharedImageBackingType: 00..19)
+    //   DD = dst_type (SharedImageBackingType: 00..19)
+    //   AA = stream   (SharedImageAccessStream: 00..08)
+    const int32_t copy_info =
+        static_cast<int32_t>(latest_content_element->GetBacking()->GetType()) *
+            10000 +
+        static_cast<int32_t>(backing->GetType()) * 100 +
+        static_cast<int32_t>(stream);
+
     UMA_HISTOGRAM_BOOLEAN("GPU.CompoundImageBacking.ContentSync.Success",
                           copy_succeeded);
     UMA_HISTOGRAM_ENUMERATION(
@@ -1595,9 +1612,21 @@ bool CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
                                   : ContentSyncReason::kWrite);
     UMA_HISTOGRAM_ENUMERATION(
         "GPU.CompoundImageBacking.ContentSync.TriggeringAccessStream", stream);
-    UMA_HISTOGRAM_SPARSE(
-        "GPU.CompoundImageBacking.ContentSync.InitialSharedImageUsage",
-        static_cast<int32_t>(static_cast<uint32_t>(this->usage())));
+    if (is_src_dynamic || is_dst_dynamic) {
+      UMA_HISTOGRAM_SPARSE(
+          "GPU.CompoundImageBacking.ContentSync.Dynamic.CopyInfo", copy_info);
+      UMA_HISTOGRAM_SPARSE(
+          "GPU.CompoundImageBacking.ContentSync.Dynamic."
+          "InitialSharedImageUsage",
+          initial_usage);
+    } else {
+      UMA_HISTOGRAM_SPARSE(
+          "GPU.CompoundImageBacking.ContentSync.Static.CopyInfo", copy_info);
+      UMA_HISTOGRAM_SPARSE(
+          "GPU.CompoundImageBacking.ContentSync.Static."
+          "InitialSharedImageUsage",
+          initial_usage);
+    }
 
     if (!copy_succeeded) {
       // The destination backing was not updated so it must not be exposed to
@@ -2259,20 +2288,24 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
   AutoLock auto_lock(this);
   ElementHolder* best_match = nullptr;
   ElementHolder* any_match = nullptr;
+  std::optional<SharedImageBackingType> incompatible_backing_type;
 
   // Note that for now iterating over all elements should be fine since we would
   // likely not ever had too many backings existing concurrently. We can
   // optimize this code by using better algorithm or more suitable data
   // structure later if needed.
   for (auto& element : elements_) {
-    if (element.access_streams.Has(stream) && element.GetBacking() &&
-        element.GetBacking()->SupportsAccess(stream, params)) {
-      if (element.content_id_ == latest_content_id_) {
-        best_match = &element;
-        break;
-      }
-      if (!any_match) {
-        any_match = &element;
+    if (element.access_streams.Has(stream) && element.GetBacking()) {
+      if (element.GetBacking()->SupportsAccess(stream, params)) {
+        if (element.content_id_ == latest_content_id_) {
+          best_match = &element;
+          break;
+        }
+        if (!any_match) {
+          any_match = &element;
+        }
+      } else if (!incompatible_backing_type) {
+        incompatible_backing_type = element.GetBacking()->GetType();
       }
     }
   }
@@ -2314,13 +2347,36 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
       }
     });
 
+    UMA_HISTOGRAM_BOOLEAN("GPU.CompoundImageBacking.DynamicAllocation.Success",
+                          !!new_backing);
+
     if (new_backing) {
       if (format().PrefersExternalSampler()) {
         CHECK_EQ(new_backing->format(), backing_format);
       }
+      // If the CSI container is thread-safe, we treat newly created backings
+      // as transient if they are not thread-safe. They will be owned by the
+      // representation and destroyed after use. This ensures that a
+      // non-thread-safe backing allocated on one thread doesn't persist in
+      // the thread-safe container, which could lead to race conditions if
+      // accessed from another thread later.
+      const bool is_transient =
+          is_thread_safe() && !new_backing->is_thread_safe();
       UMA_HISTOGRAM_ENUMERATION(
           "GPU.CompoundImageBacking.DynamicAllocation.BackingType",
           new_backing->GetType());
+      if (incompatible_backing_type) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "GPU.CompoundImageBacking.DynamicAllocation."
+            "IncompatibleExistingBackingType",
+            *incompatible_backing_type);
+      }
+      UMA_HISTOGRAM_BOOLEAN(
+          "GPU.CompoundImageBacking.DynamicAllocation.HasSharedMemoryBacking",
+          has_shm_backing_);
+      UMA_HISTOGRAM_BOOLEAN(
+          "GPU.CompoundImageBacking.DynamicAllocation.IsTransientBacking",
+          is_transient);
       UMA_HISTOGRAM_ENUMERATION(
           "GPU.CompoundImageBacking.DynamicAllocation.AccessStream", stream);
       UMA_HISTOGRAM_SPARSE(
@@ -2328,13 +2384,7 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
           "InitialSharedImageUsage",
           static_cast<int32_t>(static_cast<uint32_t>(this->usage())));
 
-      // If the CSI container is thread-safe, we treat newly created backings
-      // as transient if they are not thread-safe. They will be owned by the
-      // representation and destroyed after use. This ensures that a
-      // non-thread-safe backing allocated on one thread doesn't persist in
-      // the thread-safe container, which could lead to race conditions if
-      // accessed from another thread later.
-      if (is_thread_safe() && !new_backing->is_thread_safe()) {
+      if (is_transient) {
         out_transient_backing = std::move(new_backing);
         return out_transient_backing.get();
       }
@@ -2345,6 +2395,7 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
       ElementHolder element;
       element.access_streams.Put(stream);
       element.backing = std::move(new_backing);
+      element.is_dynamically_allocated = true;
       elements_.push_back(std::move(element));
       if (elements_.size() > max_elements_allocated_) {
         max_elements_allocated_ = elements_.size();

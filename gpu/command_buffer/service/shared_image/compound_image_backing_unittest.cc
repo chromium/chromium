@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -1019,6 +1020,77 @@ TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
   EXPECT_TRUE(async_callback_called);
   EXPECT_FALSE(async_success);
   EXPECT_FALSE(stale_gpu_backing->GetReadbackToMemoryCalledAndReset());
+}
+
+TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
+       DynamicAllocationAndContentSyncHistograms) {
+  base::HistogramTester histograms;
+
+  // 1. Static/lazy GPU backing syncs from shared memory -> records under
+  //    ContentSync.Static.*.
+  {
+    auto backing = CreateCompoundBacking({SHARED_IMAGE_USAGE_GLES2_READ});
+    auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+    auto factory_rep =
+        manager_.Register(std::move(backing), &memory_type_tracker_);
+
+    auto overlay_rep = manager_.ProduceOverlay(compound_backing->mailbox(),
+                                               &memory_type_tracker_);
+    ASSERT_TRUE(overlay_rep);
+    auto read_access = overlay_rep->BeginScopedReadAccess();
+    EXPECT_TRUE(read_access);
+  }
+  // kSharedMemory (10) * 10000 + kTest (0) * 100 + kOverlay (1) = 100001.
+  histograms.ExpectUniqueSample(
+      "GPU.CompoundImageBacking.ContentSync.Static.CopyInfo", 100001, 1);
+  histograms.ExpectUniqueSample(
+      "GPU.CompoundImageBacking.ContentSync.Static.InitialSharedImageUsage",
+      static_cast<int32_t>(SHARED_IMAGE_USAGE_GLES2_READ), 1);
+  histograms.ExpectTotalCount(
+      "GPU.CompoundImageBacking.ContentSync.Dynamic.CopyInfo", 0);
+
+  // 2. Dynamic GPU backing allocation when initial GPU backing rejects Skia
+  //    access -> records DynamicAllocation.* and ContentSync.Dynamic.*.
+  {
+    test_factory_.SetUnsupportedAccessStreamForNextBacking(
+        SharedImageAccessStream::kSkia);
+
+    auto backing = CreateCompoundBackingWithDynamicAllocation(
+        {SHARED_IMAGE_USAGE_GLES2_READ});
+    auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+    auto factory_rep =
+        manager_.Register(std::move(backing), &memory_type_tracker_);
+
+    auto skia_rep =
+        manager_.ProduceSkia(compound_backing->mailbox(), &memory_type_tracker_,
+                             nullptr, /*required_usages=*/{});
+    ASSERT_TRUE(skia_rep);
+
+    histograms.ExpectUniqueSample(
+        "GPU.CompoundImageBacking.DynamicAllocation.Success", true, 1);
+    histograms.ExpectUniqueSample(
+        "GPU.CompoundImageBacking.DynamicAllocation."
+        "IncompatibleExistingBackingType",
+        SharedImageBackingType::kTest, 1);
+    histograms.ExpectUniqueSample(
+        "GPU.CompoundImageBacking.DynamicAllocation.HasSharedMemoryBacking",
+        true, 1);
+    histograms.ExpectUniqueSample(
+        "GPU.CompoundImageBacking.DynamicAllocation.IsTransientBacking", false,
+        1);
+
+    std::vector<GrBackendSemaphore> begin_semaphores;
+    std::vector<GrBackendSemaphore> end_semaphores;
+    auto skia_read =
+        skia_rep->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
+    EXPECT_TRUE(skia_read);
+  }
+  // kSharedMemory (10) * 10000 + kTest (0) * 100 + kSkia (0) = 100000.
+  histograms.ExpectUniqueSample(
+      "GPU.CompoundImageBacking.ContentSync.Dynamic.CopyInfo", 100000, 1);
+  histograms.ExpectUniqueSample(
+      "GPU.CompoundImageBacking.ContentSync.Dynamic.InitialSharedImageUsage",
+      static_cast<int32_t>(SHARED_IMAGE_USAGE_GLES2_READ), 1);
 }
 
 }  // namespace gpu

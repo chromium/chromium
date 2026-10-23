@@ -525,18 +525,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.CompoundImageBacking.ContentSync.InitialSharedImageUsage"
-    units="SharedImageUsage" expires_after="2027-04-11">
-  <owner>vikassoni@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Records the initial SharedImageUsage of the CompoundImageBacking when a
-    content synchronization (copy) occurs. This helps identify if specific
-    initial usage configurations are prone to excessive copying. Recorded as a
-    sparse histogram of the usage bitmask.
-  </summary>
-</histogram>
-
 <histogram name="GPU.CompoundImageBacking.ContentSync.Reason"
     enum="ContentSyncReason" expires_after="2027-04-11">
   <owner>vikassoni@chromium.org</owner>
@@ -581,6 +569,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.CompoundImageBacking.ContentSync.{CopyType}.CopyInfo"
+    units="encoded_copy_info" expires_after="2027-04-11">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the combined source backing type, destination backing type, and
+    triggering access stream for a {CopyType} content synchronization (copy)
+    operation within CompoundImageBacking. Recorded as a sparse histogram of the
+    decimal value `src_type * 10000 + dst_type * 100 + stream` (`SSDDAA`), where
+    `SS` and `DD` are `SharedImageBackingType` values and `AA` is the
+    `SharedImageAccessStream` value.
+  </summary>
+  <token key="CopyType">
+    <variant name="Dynamic"
+        summary="copy where the source and/or destination backing was
+                 dynamically allocated"/>
+    <variant name="Static"
+        summary="copy solely between initial static or lazily created
+                 backings"/>
+  </token>
+</histogram>
+
+<histogram
+    name="GPU.CompoundImageBacking.ContentSync.{CopyType}.InitialSharedImageUsage"
+    units="SharedImageUsage" expires_after="2027-04-11">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the initial SharedImageUsage of the CompoundImageBacking when a
+    {CopyType} content synchronization (copy) occurs. Recorded as a sparse
+    histogram of the usage bitmask.
+  </summary>
+  <token key="CopyType">
+    <variant name="Dynamic"
+        summary="copy where the source and/or destination backing was
+                 dynamically allocated"/>
+    <variant name="Static"
+        summary="copy solely between initial static or lazily created
+                 backings"/>
+  </token>
+</histogram>
+
 <histogram name="GPU.CompoundImageBacking.DynamicAllocation.AccessStream"
     enum="SharedImageAccessStream" expires_after="2027-04-11">
   <owner>vikassoni@chromium.org</owner>
@@ -604,6 +634,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="GPU.CompoundImageBacking.DynamicAllocation.HasSharedMemoryBacking"
+    enum="Boolean" expires_after="2027-04-11">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records whether the CompoundImageBacking was created with a shared memory
+    backing when a dynamic backing allocation occurs.
+  </summary>
+</histogram>
+
+<histogram
+    name="GPU.CompoundImageBacking.DynamicAllocation.IncompatibleExistingBackingType"
+    enum="SharedImageBackingType" expires_after="2027-04-11">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the SharedImageBackingType of the existing element in
+    CompoundImageBacking that was incompatible with the requested access stream
+    and parameters (returned false from SupportsAccess), triggering a dynamic
+    backing allocation.
+  </summary>
+</histogram>
+
+<histogram
     name="GPU.CompoundImageBacking.DynamicAllocation.InitialSharedImageUsage"
     units="SharedImageUsage" expires_after="2027-04-11">
   <owner>vikassoni@chromium.org</owner>
@@ -613,6 +667,28 @@ chromium-metrics-reviews@google.com.
     dynamic allocation occurs. This helps identify which initial usage
     configurations are most likely to require additional backings later.
     Recorded as a sparse histogram of the usage bitmask.
+  </summary>
+</histogram>
+
+<histogram name="GPU.CompoundImageBacking.DynamicAllocation.IsTransientBacking"
+    enum="Boolean" expires_after="2027-04-11">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records whether a dynamically allocated backing in CompoundImageBacking is
+    transient (owned by the representation and destroyed after access) or
+    retained permanently in the compound backing's elements list.
+  </summary>
+</histogram>
+
+<histogram name="GPU.CompoundImageBacking.DynamicAllocation.Success"
+    enum="BooleanSuccess" expires_after="2027-04-11">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records whether dynamic backing allocation succeeded when
+    CompoundImageBacking attempted to allocate a new backing for an access
+    stream not supported by existing elements.
   </summary>
 </histogram>
 

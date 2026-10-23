@@ -1417,6 +1417,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="16" label="DCompSurfaceImageBacking"/>
   <int value="17" label="DXGISwapChainImageBacking"/>
   <int value="18" label="WrappedGraphiteTextureBacking"/>
+  <int value="19" label="DawnImageBacking"/>
 </enum>
 
 <enum name="SharedImageFormatUMA">
