@@ -5,14 +5,24 @@
 #include "chrome/browser/contextual_tasks/search_journey_tab_feature.h"
 
 #include <string>
+#include <string_view>
+#include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/utils.h"
 #include "components/google/core/common/google_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -23,6 +33,10 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace contextual_tasks {
 
@@ -34,12 +48,41 @@ int GetLastCommittedEntryId(content::WebContents* contents) {
   return entry ? entry->GetUniqueID() : 0;
 }
 
+// Returns the AI Mode URL that restores `journey`'s AI Overview as the first
+// turn of a thread: `ai_page_url` over HTTPS, with the journey's search terms
+// as `q`, its non-empty restore parameters and the ABA entry point. `journey`
+// must have restore parameters.
+GURL BuildRestoreUrl(const GURL& ai_page_url, const JourneyState& journey) {
+  CHECK(journey.promo_params.has_value());
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kHttpsScheme);
+  GURL url = ai_page_url.ReplaceComponents(replacements);
+  url = net::AppendOrReplaceQueryParameter(
+      url, "q", base::UTF16ToUTF8(journey.search_terms));
+
+  const AimPromoParams& params = *journey.promo_params;
+  const std::pair<std::string_view, const std::string&> restore_params[] = {
+      {"mstk", params.mstk},
+      {"aioh", params.aioh},
+      {"csuir", params.csuir},
+      {"sxsrf", params.sxsrf},
+  };
+  for (const auto& [name, value] : restore_params) {
+    if (!value.empty()) {
+      url = net::AppendOrReplaceQueryParameter(url, name, value);
+    }
+  }
+  return AppendAimEntryPointParams(
+      url, omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_ABA_ONRAMP_IPH);
+}
+
 }  // namespace
 
 DEFINE_USER_DATA(SearchJourneyTabFeature);
 
 SearchJourneyTabFeature::SearchJourneyTabFeature(tabs::TabInterface& tab)
     : content::WebContentsObserver(tab.GetContents()),
+      tab_(tab),
       will_discard_contents_subscription_(tab.RegisterWillDiscardContents(
           base::BindRepeating(&SearchJourneyTabFeature::OnWillDiscardContents,
                               base::Unretained(this)))),
@@ -66,6 +109,36 @@ SearchJourneyTabFeature::~SearchJourneyTabFeature() {
 SearchJourneyTabFeature* SearchJourneyTabFeature::From(
     tabs::TabInterface* tab) {
   return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+bool SearchJourneyTabFeature::CanRestoreJourneyInSidePanel() const {
+  return GetRestoreUrl().is_valid();
+}
+
+bool SearchJourneyTabFeature::RestoreJourneyInSidePanel() {
+  const GURL url = GetRestoreUrl();
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          web_contents()->GetBrowserContext());
+  // Tab A isn't added as context. It shows as the suggested tab, and is only
+  // sent if the user attaches it to a follow-up.
+  ui_service->StartTaskUiInSidePanel(
+      tab_->GetBrowserWindowInterface(), &tab_.get(), url,
+      /*session_handle=*/nullptr,
+      StartTaskUiOptions{
+          .associate_web_contents = false,
+          .entry_point =
+              omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_ABA_ONRAMP_IPH,
+          .use_mstk_for_task_association = true,
+          .open_time_ticks = base::TimeTicks::Now(),
+      });
+  tracker_->OnJourneyRestored(
+      sessions::SessionTabHelper::IdForTab(web_contents()));
+  return true;
 }
 
 void SearchJourneyTabFeature::OnTextCopiedToClipboard(
@@ -149,6 +222,31 @@ void SearchJourneyTabFeature::NotifyTabDestroyed(
   if (tracker_ && tab_id.is_valid()) {
     tracker_->OnTabDestroyed(tab_id);
   }
+}
+
+GURL SearchJourneyTabFeature::GetRestoreUrl() const {
+  if (!tracker_ || !web_contents()) {
+    return GURL();
+  }
+  const JourneyState* journey = tracker_->GetRestorableJourney(
+      sessions::SessionTabHelper::IdForTab(web_contents()),
+      GetLastCommittedEntryId(web_contents()));
+  if (!journey) {
+    return GURL();
+  }
+
+  // The side panel only opens next to the active tab.
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          web_contents()->GetBrowserContext());
+  if (!tab_->GetBrowserWindowInterface() || !tab_->IsActivated() ||
+      !ui_service ||
+      !EntryPointEligibilityManager::IsEligible(tab_->GetProfile())) {
+    return GURL();
+  }
+
+  const GURL url = BuildRestoreUrl(ui_service->GetDefaultAiPageUrl(), *journey);
+  return url.is_valid() && url.SchemeIs(url::kHttpsScheme) ? url : GURL();
 }
 
 }  // namespace contextual_tasks

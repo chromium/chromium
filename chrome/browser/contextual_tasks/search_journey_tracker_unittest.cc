@@ -451,6 +451,60 @@ TEST_F(SearchJourneyTrackerTest, ClosingSearchTabKeepsPromoParams) {
   EXPECT_EQ(journey->promo_params->mstk, "token");
 }
 
+TEST_F(SearchJourneyTrackerTest, GetRestorableJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams(), {}));
+
+  const JourneyState* journey =
+      tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId);
+  ASSERT_TRUE(journey);
+  EXPECT_EQ(journey, GetJourney(kSourceTab1));
+}
+
+TEST_F(SearchJourneyTrackerTest, GetRestorableJourneyWithoutJourney) {
+  EXPECT_FALSE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+}
+
+TEST_F(SearchJourneyTrackerTest, GetRestorableJourneyWithoutPromoParams) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+
+  EXPECT_FALSE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+  EXPECT_TRUE(GetJourney(kSourceTab1));
+}
+
+TEST_F(SearchJourneyTrackerTest, GetRestorableJourneyAfterSourceTabChanged) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams(), {}));
+
+  EXPECT_FALSE(tracker_.GetRestorableJourney(kSourceTab1, kOtherNavEntryId));
+  // The journey is kept in case the user goes back to the page they left.
+  EXPECT_TRUE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+}
+
+TEST_F(SearchJourneyTrackerTest, GetRestorableJourneyAfterExpiry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kABASearchJourneys, {{"aba_search_journeys_ttl", "5m"}});
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams(), {}));
+
+  task_environment_.AdvanceClock(base::Minutes(6));
+  EXPECT_FALSE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+}
+
+TEST_F(SearchJourneyTrackerTest, OnJourneyRestoredDropsJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"quantum computing", CreatePromoParams(), {}));
+
+  tracker_.OnJourneyRestored(kSourceTab1);
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+  EXPECT_FALSE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+}
+
 TEST_F(SearchJourneyTrackerTest, JourneyTtlExpiry) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(

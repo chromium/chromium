@@ -223,6 +223,27 @@ bool SearchJourneyTracker::OnAimPromoParamsReceived(
   return false;
 }
 
+const JourneyState* SearchJourneyTracker::GetRestorableJourney(
+    SessionID source_tab_id,
+    int nav_entry_id) const {
+  auto it = active_journeys_.find(source_tab_id);
+  if (it == active_journeys_.end()) {
+    return nullptr;
+  }
+  const JourneyState& journey = it->second;
+  if (base::TimeTicks::Now() - journey.search_committed_time >
+          GetABASearchJourneysTtl() ||
+      journey.source_nav_entry_id != nav_entry_id ||
+      !journey.promo_params.has_value()) {
+    return nullptr;
+  }
+  return &journey;
+}
+
+void SearchJourneyTracker::OnJourneyRestored(SessionID source_tab_id) {
+  active_journeys_.erase(source_tab_id);
+}
+
 void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
   std::erase_if(ring_buffer_, [tab_id](const CopyRecord& record) {
     return record.source_tab_id == tab_id;

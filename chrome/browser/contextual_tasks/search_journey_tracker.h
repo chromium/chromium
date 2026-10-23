@@ -174,6 +174,17 @@ class SearchJourneyTracker : public KeyedService,
                                 AimPromoParams params,
                                 AimPromoQueryHints query_hints);
 
+  // Returns the journey whose Tab A is `source_tab_id` if its AI Overview can
+  // be restored: the journey hasn't expired, Tab A is still on `nav_entry_id`,
+  // and Tab B's results page registered restore parameters. Otherwise, returns
+  // nullptr.
+  const JourneyState* GetRestorableJourney(SessionID source_tab_id,
+                                           int nav_entry_id) const;
+
+  // Drops the journey whose Tab A is `source_tab_id` once its AI Overview has
+  // been restored, so it can't be restored again.
+  void OnJourneyRestored(SessionID source_tab_id);
+
   // Clears copy records for `tab_id` and any journey whose Tab A is `tab_id`.
   // Journeys whose Tab B is `tab_id` are kept and marked as closed.
   void OnTabDestroyed(SessionID tab_id);

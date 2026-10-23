@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/search_journey_tab_feature.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -12,6 +13,10 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +27,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -36,7 +42,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -330,6 +338,189 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
 
   tab_list()->CloseTab(source_tab->GetHandle());
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
+}
+
+namespace {
+
+constexpr char kAiPageUrl[] =
+    "https://www.google.com/search?udm=50&sourceid=chrome";
+
+AimPromoParams CreatePromoParams() {
+  AimPromoParams params;
+  params.mstk = "token";
+  params.aioh = "3";
+  params.csuir = "1";
+  params.sxsrf = "xsrf";
+  return params;
+}
+
+}  // namespace
+
+class SearchJourneyRestoreBrowserTest
+    : public SearchJourneyTabFeatureBrowserTest {
+ public:
+  SearchJourneyRestoreBrowserTest() {
+    // Makes contextual tasks entry points eligible, so the side panel can open.
+    eligibility_feature_list_.InitAndEnableFeature(
+        kContextualTasksForceEntryPointEligibility);
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    SearchJourneyTabFeatureBrowserTest::SetUpBrowserContextKeyedServices(
+        context);
+    ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto ui_service =
+              std::make_unique<testing::NiceMock<MockContextualTasksUiService>>(
+                  Profile::FromBrowserContext(context), /*service=*/nullptr,
+                  /*identity_manager=*/nullptr,
+                  /*aim_eligibility_service=*/nullptr,
+                  /*eligibility_manager=*/nullptr,
+                  /*cookie_synchronizer=*/nullptr);
+          ON_CALL(*ui_service, GetDefaultAiPageUrl())
+              .WillByDefault(testing::Return(GURL(kAiPageUrl)));
+          return ui_service;
+        }));
+  }
+
+ protected:
+  testing::NiceMock<MockContextualTasksUiService>* ui_service() {
+    return static_cast<testing::NiceMock<MockContextualTasksUiService>*>(
+        ContextualTasksUiServiceFactory::GetForBrowserContext(GetProfile()));
+  }
+
+  // Leaves a source tab for a search for "how do tides work" and, if `params`
+  // is set, registers it along with a query hint. Returns the source tab. The
+  // search tab stays active.
+  tabs::TabInterface* StartJourney(std::optional<AimPromoParams> params) {
+    if (!ui_test_utils::NavigateToURL(browser(),
+                                      GURL("https://example.com/doc"))) {
+      return nullptr;
+    }
+    tabs::TabInterface* source_tab = tab_list()->GetActiveTab();
+    tabs::TabInterface* search_tab = SearchInNewTab(u"how do tides work");
+    if (!source_tab || !search_tab) {
+      return nullptr;
+    }
+    if (params) {
+      EXPECT_TRUE(tracker()->OnAimPromoParamsReceived(
+          sessions::SessionTabHelper::IdForTab(search_tab->GetContents()),
+          u"how do tides work", std::move(*params),
+          {AimPromoQueryHint::kEduHomework}));
+    }
+    return source_tab;
+  }
+
+  // Like `StartJourney()`, but then returns to the source tab.
+  tabs::TabInterface* StartJourneyAndReturn(
+      std::optional<AimPromoParams> params) {
+    tabs::TabInterface* source_tab = StartJourney(std::move(params));
+    if (source_tab) {
+      tab_list()->ActivateTab(source_tab->GetHandle());
+    }
+    return source_tab;
+  }
+
+ private:
+  base::test::ScopedFeatureList eligibility_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyRestoreBrowserTest,
+                       RestoresJourneyInSidePanel) {
+  tabs::TabInterface* source_tab = StartJourneyAndReturn(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  SearchJourneyTabFeature* feature = SearchJourneyTabFeature::From(source_tab);
+  ASSERT_TRUE(feature);
+  EXPECT_TRUE(feature->CanRestoreJourneyInSidePanel());
+
+  // The query hint isn't added to the URL.
+  EXPECT_CALL(
+      *ui_service(),
+      StartTaskUiInSidePanelImpl(
+          testing::_, source_tab,
+          GURL(std::string(kAiPageUrl) +
+               "&q=how+do+tides+work&mstk=token&aioh=3&csuir=1&sxsrf=xsrf"
+               "&aep=228"),
+          testing::_,
+          testing::AllOf(
+              testing::Field(&StartTaskUiOptions::associate_web_contents,
+                             false),
+              testing::Field(
+                  &StartTaskUiOptions::entry_point,
+                  omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_ABA_ONRAMP_IPH),
+              testing::Field(&StartTaskUiOptions::use_mstk_for_task_association,
+                             true))));
+
+  EXPECT_TRUE(feature->RestoreJourneyInSidePanel());
+  EXPECT_FALSE(feature->CanRestoreJourneyInSidePanel());
+  EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyRestoreBrowserTest,
+                       RestoreUrlSkipsEmptyParams) {
+  // The URL is always HTTPS, even if the AI page URL isn't.
+  ON_CALL(*ui_service(), GetDefaultAiPageUrl())
+      .WillByDefault(
+          testing::Return(GURL("http://www.google.com/search?udm=50")));
+  AimPromoParams params;
+  params.mstk = "token";
+  tabs::TabInterface* source_tab = StartJourneyAndReturn(std::move(params));
+  ASSERT_TRUE(source_tab);
+
+  EXPECT_CALL(*ui_service(),
+              StartTaskUiInSidePanelImpl(
+                  testing::_, source_tab,
+                  GURL("https://www.google.com/search?udm=50"
+                       "&q=how+do+tides+work&mstk=token&aep=228"),
+                  testing::_, testing::_));
+
+  EXPECT_TRUE(
+      SearchJourneyTabFeature::From(source_tab)->RestoreJourneyInSidePanel());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyRestoreBrowserTest,
+                       DoesNotRestoreWithoutPromoParams) {
+  tabs::TabInterface* source_tab =
+      StartJourneyAndReturn(/*params=*/std::nullopt);
+  ASSERT_TRUE(source_tab);
+  SearchJourneyTabFeature* feature = SearchJourneyTabFeature::From(source_tab);
+  ASSERT_TRUE(feature);
+
+  EXPECT_CALL(*ui_service(), StartTaskUiInSidePanelImpl).Times(0);
+
+  EXPECT_FALSE(feature->CanRestoreJourneyInSidePanel());
+  EXPECT_FALSE(feature->RestoreJourneyInSidePanel());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyRestoreBrowserTest,
+                       DoesNotRestoreAfterSourceTabNavigates) {
+  tabs::TabInterface* source_tab = StartJourneyAndReturn(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/new")));
+  SearchJourneyTabFeature* feature = SearchJourneyTabFeature::From(source_tab);
+  ASSERT_TRUE(feature);
+
+  EXPECT_CALL(*ui_service(), StartTaskUiInSidePanelImpl).Times(0);
+
+  EXPECT_FALSE(feature->CanRestoreJourneyInSidePanel());
+  EXPECT_FALSE(feature->RestoreJourneyInSidePanel());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyRestoreBrowserTest,
+                       DoesNotRestoreWhileSourceTabIsInactive) {
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  SearchJourneyTabFeature* feature = SearchJourneyTabFeature::From(source_tab);
+  ASSERT_TRUE(feature);
+
+  EXPECT_CALL(*ui_service(), StartTaskUiInSidePanelImpl).Times(0);
+
+  EXPECT_FALSE(feature->CanRestoreJourneyInSidePanel());
+  EXPECT_FALSE(feature->RestoreJourneyInSidePanel());
+  EXPECT_FALSE(tracker()->GetActiveJourneysForTesting().empty());
 }
 
 class SearchJourneyTabFeatureDisabledBrowserTest : public InProcessBrowserTest {
