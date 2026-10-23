@@ -1902,6 +1902,8 @@ android_library("chrome_test_java_various") {
     "//chrome/browser/ui/android/logo:utils_java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
+    "//chrome/browser/ui/browser_window/public/android:factory_java",
+    "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/browser/ui/side_panel/android:dev_java",
     "//components/browser_ui/contacts_picker/android:java",
     "//components/browser_ui/http_auth/android:java",

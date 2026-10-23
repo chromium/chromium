@@ -431,12 +431,7 @@ public class CustomTabActivityEphemeralTest {
                     assertFalse(
                             new PopupCreatorImpl()
                                     .createNewPopupFromWebContents(
-                                            activity,
-                                            ephemeralProfile,
-                                            webContents,
-                                            null,
-                                            null,
-                                            null));
+                                            activity, ephemeralProfile, webContents, null, null));
                     assertTrue(webContents.isDestroyed());
                 });
 

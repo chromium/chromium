@@ -231,6 +231,7 @@ if (is_android) {
       "//chrome/browser/ui/android/toolbar:java",
       "//chrome/browser/ui/android/toolbar:optional_button_java",
       "//chrome/browser/ui/browser_window/public/android:java",
+      "//chrome/browser/ui/browser_window/test:junit_test_support",
       "//chrome/browser/ui/messages/android:java",
       "//chrome/browser/ui/side_ui/public:java",
       "//chrome/browser/uid/android:java",

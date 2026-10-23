@@ -152,7 +152,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         var extrasCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(PopupCreatorFactory.getInstance())
-                .createNewPopup(any(), anyBoolean(), any(), extrasCaptor.capture(), any());
+                .createNewPopup(any(), anyBoolean(), any(), extrasCaptor.capture());
 
         Bundle extras = extrasCaptor.getValue();
         assertNotNull(extras);
@@ -189,8 +189,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
                         BrowserWindowType.POPUP);
         JniOnceCallback<Long> mockCallback = mock();
-        when(PopupCreatorFactory.getInstance()
-                        .createNewPopup(any(), anyBoolean(), any(), any(), any()))
+        when(PopupCreatorFactory.getInstance().createNewPopup(any(), anyBoolean(), any(), any()))
                 .thenReturn(false);
 
         // Act.

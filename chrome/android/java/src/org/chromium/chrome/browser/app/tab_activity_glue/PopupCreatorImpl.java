@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
@@ -48,16 +49,22 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowResizePrecheckResult;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.Origin;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Handles launching new popup windows as CCTs and Document Picture-in-Picture windows. */
 @NullMarked
@@ -66,6 +73,88 @@ public class PopupCreatorImpl implements PopupCreator {
             "chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES";
 
     private static final String TAG = "PopupCreatorImpl";
+
+    /** What a popup is created from, i.e. which {@link PopupCreator} method creates it. */
+    @IntDef({
+        PopupLaunchSource.NEW_POPUP,
+        PopupLaunchSource.FROM_WEB_CONTENTS,
+        PopupLaunchSource.FROM_TAB
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PopupLaunchSource {
+        int NEW_POPUP = 0;
+        int FROM_WEB_CONTENTS = 1;
+        int FROM_TAB = 2;
+    }
+
+    /** How a popup is launched, decided before the launch. */
+    @IntDef({
+        PopupLaunchMode.MOVABLE_TASK_REQUIRED,
+        PopupLaunchMode.MOVABLE_TASK_NOT_REQUIRED,
+        PopupLaunchMode.FALLBACK_TO_TAB
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PopupLaunchMode {
+        int MOVABLE_TASK_REQUIRED = 0;
+        int MOVABLE_TASK_NOT_REQUIRED = 1;
+        int FALLBACK_TO_TAB = 2;
+    }
+
+    // LINT.IfChange(PopupLaunchOutcome)
+    @IntDef({
+        PopupLaunchOutcome.MOVABLE_TASK_LAUNCHED,
+        PopupLaunchOutcome.NON_MOVABLE_TASK_LAUNCHED_NO_PERMISSION,
+        PopupLaunchOutcome.NON_MOVABLE_TASK_LAUNCHED_BELOW_API37,
+        PopupLaunchOutcome.NON_MOVABLE_TASK_LAUNCHED_AFTER_INFEASIBLE,
+        PopupLaunchOutcome.FALLBACK_TO_TAB,
+        PopupLaunchOutcome.FAILED_INFEASIBLE_OPTIONS,
+        PopupLaunchOutcome.FAILED_SECURITY,
+        PopupLaunchOutcome.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    public @interface PopupLaunchOutcome {
+        int MOVABLE_TASK_LAUNCHED = 0;
+        int NON_MOVABLE_TASK_LAUNCHED_NO_PERMISSION = 1;
+        int NON_MOVABLE_TASK_LAUNCHED_BELOW_API37 = 2;
+        int NON_MOVABLE_TASK_LAUNCHED_AFTER_INFEASIBLE = 3;
+        int FALLBACK_TO_TAB = 4;
+        int FAILED_INFEASIBLE_OPTIONS = 5;
+        int FAILED_SECURITY = 6;
+        int COUNT = 7;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PopupLaunchOutcome)
+
+    /** The popup launch in progress, read by {@link #tryStartActivity}. */
+    private static final class PendingPopupLaunch {
+        final @PopupLaunchSource int mLaunchSource;
+        final @PopupLaunchMode int mLaunchMode;
+
+        /** Options to retry with after InfeasibleActivityOptionsException; null if no retry. */
+        final @Nullable Bundle mRetryOptions;
+
+        PendingPopupLaunch(
+                @PopupLaunchSource int launchSource,
+                @PopupLaunchMode int launchMode,
+                @Nullable Bundle retryOptions) {
+            mLaunchSource = launchSource;
+            mLaunchMode = launchMode;
+            mRetryOptions = retryOptions;
+        }
+    }
+
+    /** Starts the Activity of a popup for {@link #launchPopup}. */
+    private interface ActivityStarter {
+        /**
+         * Starts the Activity, synchronously calling {@link #tryStartActivity}.
+         *
+         * @param activityOptions The {@link ActivityOptions} bundle to start the Activity with.
+         * @return Whether the Activity was started.
+         */
+        boolean start(Bundle activityOptions);
+    }
+
     private static @Nullable ReparentingTask sReparentingTaskForTesting;
     private static @Nullable Boolean sPredictPopupWindowBoundsForTesting;
     private static @Nullable Boolean sMoveTabToNewPopupResultForTesting;
@@ -73,20 +162,22 @@ public class PopupCreatorImpl implements PopupCreator {
     private static @Nullable Boolean sSetMovableTaskRequiredForPopupsForTesting;
     private static @Nullable Boolean sTryStartActivityResultForTesting;
 
+    private @Nullable PendingPopupLaunch mPendingPopupLaunch;
+
     @Override
     public boolean createNewPopup(
             Context context,
             boolean isIncognito,
             @Nullable WindowFeatures windowFeatures,
-            @Nullable Bundle additionalIntentExtras,
-            @Nullable Bundle startActivityOptions) {
-        Bundle optionsBundle =
-                resolveStartActivityOptions(
-                        startActivityOptions, windowFeatures, /* sourceWindow= */ null);
-
+            @Nullable Bundle additionalIntentExtras) {
         final Intent intent =
                 createTrustedPopupIntent(windowFeatures, isIncognito, additionalIntentExtras);
-        return tryStartActivity(context, intent, optionsBundle);
+        return launchPopup(
+                PopupLaunchSource.NEW_POPUP,
+                getPopupLaunchMode(),
+                resolveTargetDisplayAndBounds(windowFeatures),
+                /* sourceWindow= */ null,
+                options -> tryStartActivity(context, intent, options));
     }
 
     @Override
@@ -95,8 +186,7 @@ public class PopupCreatorImpl implements PopupCreator {
             Profile profile,
             WebContents webContents,
             @Nullable WindowFeatures windowFeatures,
-            @Nullable Bundle additionalIntentExtras,
-            @Nullable Bundle startActivityOptions) {
+            @Nullable Bundle additionalIntentExtras) {
         // Only allow popups for the main incognito profile. Other OTR profiles
         // cannot have popups. The caller transfers ownership of webContents to
         // this method, so if popup creation fails we must destroy webContents.
@@ -108,17 +198,20 @@ public class PopupCreatorImpl implements PopupCreator {
         TabDelegateFactory delegateFactory = CustomTabDelegateFactory.createEmpty();
         Tab tab = TabBuilder.createDetachedSpareTab(context, delegateFactory, profile, webContents);
 
-        Bundle optionsBundle =
-                resolveStartActivityOptions(
-                        startActivityOptions, windowFeatures, tab.getWindowAndroid());
-
         final Intent intent =
                 createTrustedPopupIntent(
                         windowFeatures, tab.isIncognitoBranded(), additionalIntentExtras);
         intent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
 
         boolean success =
-                getReparentingTask(tab).begin(tab.getContext(), intent, optionsBundle, null);
+                launchPopup(
+                        PopupLaunchSource.FROM_WEB_CONTENTS,
+                        getPopupLaunchMode(),
+                        resolveTargetDisplayAndBounds(windowFeatures),
+                        tab.getWindowAndroid(),
+                        options ->
+                                getReparentingTask(tab)
+                                        .begin(tab.getContext(), intent, options, null));
         if (!success) {
             tab.destroy();
         }
@@ -138,18 +231,30 @@ public class PopupCreatorImpl implements PopupCreator {
             return false;
         }
 
-        Bundle optionsBundle =
-                resolveStartActivityOptions(null, windowFeatures, tab.getWindowAndroid());
-
-        if (optionsBundle == null) {
+        Pair<DisplayAndroid, Rect> targetDisplayAndBounds =
+                resolveTargetDisplayAndBounds(windowFeatures);
+        @PopupLaunchMode
+        int launchMode =
+                getPopupLaunchMode(
+                        tab, targetDisplayAndBounds != null ? targetDisplayAndBounds.first : null);
+        if (launchMode == PopupLaunchMode.FALLBACK_TO_TAB) {
+            recordOutcome(PopupLaunchSource.FROM_TAB, PopupLaunchOutcome.FALLBACK_TO_TAB);
             return false;
         }
 
         final Intent intent =
-                createTrustedPopupIntent(windowFeatures, tab.isIncognitoBranded(), null);
+                createTrustedPopupIntent(
+                        windowFeatures,
+                        tab.isIncognitoBranded(),
+                        /* additionalIntentExtras= */ null);
         intent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
 
-        return getReparentingTask(tab).begin(tab.getContext(), intent, optionsBundle, null);
+        return launchPopup(
+                PopupLaunchSource.FROM_TAB,
+                launchMode,
+                targetDisplayAndBounds,
+                tab.getWindowAndroid(),
+                options -> getReparentingTask(tab).begin(tab.getContext(), intent, options, null));
     }
 
     @Override
@@ -174,8 +279,7 @@ public class PopupCreatorImpl implements PopupCreator {
         }
 
         final ActivityOptions activityOptions =
-                createDocumentPipActivityOptions(
-                        windowOptions.windowBounds, webContents.getTopLevelNativeWindow());
+                createDocumentPipActivityOptions(windowOptions.windowBounds);
         if (activityOptions == null) {
             return false;
         }
@@ -195,6 +299,13 @@ public class PopupCreatorImpl implements PopupCreator {
     public static void adjustWindowBoundsToRequested(
             ChromeActivity activity, @Nullable WindowFeatures requestedWindowFeaturesDp) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
+            return;
+        }
+
+        final ChromeAndroidTask task =
+                ChromeAndroidTaskTrackerFactory.getInstance().get(activity.getTaskId());
+        if (task == null || task.canResize() != WindowResizePrecheckResult.OK) {
+            Log.v(TAG, "adjustWindowBounds: the task cannot be resized -- bailing out");
             return;
         }
 
@@ -331,46 +442,52 @@ public class PopupCreatorImpl implements PopupCreator {
                 appTask, INVALID_DISPLAY /* current display */, targetWindowBoundsPx);
     }
 
+    // TODO(crbug.com/576054107): Move tryStartActivity out of PopupCreatorImpl and share it with
+    // tab reparenting, or give tab reparenting its own start-Activity logic.
     @Override
     public boolean tryStartActivity(
             Context context, Intent intent, @Nullable Bundle activityOptions) {
         if (sTryStartActivityResultForTesting != null) {
             return sTryStartActivityResultForTesting;
         }
+        final PendingPopupLaunch pendingPopupLaunch = mPendingPopupLaunch;
+        final @PopupLaunchSource @Nullable Integer launchSource =
+                pendingPopupLaunch != null ? pendingPopupLaunch.mLaunchSource : null;
         try {
             context.startActivity(intent, activityOptions);
+            recordOutcome(
+                    launchSource,
+                    pendingPopupLaunch != null
+                                    && pendingPopupLaunch.mLaunchMode
+                                            == PopupLaunchMode.MOVABLE_TASK_REQUIRED
+                            ? PopupLaunchOutcome.MOVABLE_TASK_LAUNCHED
+                            : nonMovableTaskLaunchOutcome());
+            return true;
         } catch (SecurityException e) {
-            Log.w(TAG, "tryStartActivity: no permission to start a movable task", e);
-            // On devices where Chrome lacks REPOSITION_SELF_WINDOWS permission, launching an
-            // activity with setMovableTaskRequired(true) triggers a SecurityException. Fall back
-            // to starting the activity without movableTaskRequired option.
-            if (activityOptions != null) {
-                Bundle fallbackOptions = new Bundle(activityOptions);
-                fallbackOptions.remove("android.activity.movableTaskRequired");
-                try {
-                    context.startActivity(intent, fallbackOptions);
-                    return true;
-                } catch (SecurityException retryException) {
-                    Log.w(
-                            TAG,
-                            "tryStartActivity: retry without movableTaskRequired also failed",
-                            retryException);
-                }
-            }
+            Log.w(TAG, "tryStartActivity: no permission to start the activity", e);
+            recordOutcome(launchSource, PopupLaunchOutcome.FAILED_SECURITY);
             return false;
         } catch (Throwable e) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
-                    && e instanceof InfeasibleActivityOptionsException) {
-                Log.w(
-                        TAG,
-                        "tryStartActivity: startActivity threw InfeasibleActivityOptionsException");
+            if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+                    && e instanceof InfeasibleActivityOptionsException)) {
+                throw e;
+            }
+            Log.w(TAG, "tryStartActivity: startActivity threw InfeasibleActivityOptionsException");
+            if (pendingPopupLaunch == null || pendingPopupLaunch.mRetryOptions == null) {
+                recordOutcome(launchSource, PopupLaunchOutcome.FAILED_INFEASIBLE_OPTIONS);
                 return false;
             }
-
-            throw e;
+            try {
+                context.startActivity(intent, pendingPopupLaunch.mRetryOptions);
+                recordOutcome(
+                        launchSource,
+                        PopupLaunchOutcome.NON_MOVABLE_TASK_LAUNCHED_AFTER_INFEASIBLE);
+                return true;
+            } catch (SecurityException retryFailure) {
+                recordOutcome(launchSource, PopupLaunchOutcome.FAILED_SECURITY);
+                return false;
+            }
         }
-
-        return true;
     }
 
     /**
@@ -580,68 +697,172 @@ public class PopupCreatorImpl implements PopupCreator {
         return (origin != null && !origin.isOpaque()) ? origin.toString() : "";
     }
 
-    private static @Nullable Bundle resolveStartActivityOptions(
-            @Nullable Bundle startActivityOptions,
-            @Nullable WindowFeatures windowFeatures,
-            @Nullable WindowAndroid sourceWindow) {
-        if (startActivityOptions != null) return startActivityOptions;
-
-        final Rect windowBounds = getWindowBoundsFromWindowFeatures(windowFeatures);
-        final ActivityOptions activityOptions =
-                createPopupActivityOptions(windowBounds, sourceWindow);
-        return activityOptions != null ? activityOptions.toBundle() : null;
-    }
-
-    private static @Nullable ActivityOptions createPopupActivityOptions(
-            @Nullable Rect windowBounds, @Nullable WindowAndroid sourceWindow) {
-        return createPopupActivityOptions(
-                windowBounds, sourceWindow, /* predictFinalBounds= */ true);
-    }
-
-    private static @Nullable ActivityOptions createDocumentPipActivityOptions(
-            @Nullable Rect windowBounds, @Nullable WindowAndroid sourceWindow) {
-        // TODO(crbug.com/465413462): Add support for predicting final bounds.
-        return createPopupActivityOptions(
-                windowBounds, sourceWindow, /* predictFinalBounds= */ false);
-    }
-
-    private static @Nullable ActivityOptions createPopupActivityOptions(
-            @Nullable Rect windowBounds,
+    /**
+     * Starts a popup through {@code activityStarter}, which must call {@link #tryStartActivity}
+     * synchronously with the given options.
+     */
+    private boolean launchPopup(
+            @PopupLaunchSource int launchSource,
+            @PopupLaunchMode int launchMode,
+            @Nullable Pair<DisplayAndroid, Rect> targetDisplayAndBounds,
             @Nullable WindowAndroid sourceWindow,
-            boolean predictFinalBounds) {
+            ActivityStarter activityStarter) {
+        Bundle options =
+                buildPopupActivityOptions(targetDisplayAndBounds, sourceWindow, launchMode);
+        // window.open falls back to a tab instead; native popups have none, so they retry.
+        Bundle retryOptions =
+                launchMode == PopupLaunchMode.MOVABLE_TASK_REQUIRED
+                                && launchSource != PopupLaunchSource.FROM_TAB
+                        ? buildPopupActivityOptions(
+                                targetDisplayAndBounds,
+                                sourceWindow,
+                                PopupLaunchMode.MOVABLE_TASK_NOT_REQUIRED)
+                        : null;
+        mPendingPopupLaunch = new PendingPopupLaunch(launchSource, launchMode, retryOptions);
+        try {
+            return activityStarter.start(options);
+        } finally {
+            mPendingPopupLaunch = null;
+        }
+    }
+
+    private static @Nullable Pair<DisplayAndroid, Rect> resolveTargetDisplayAndBounds(
+            @Nullable WindowFeatures windowFeatures) {
+        final Rect bounds = getWindowBoundsFromWindowFeatures(windowFeatures);
+        if (bounds == null || bounds.isEmpty()) return null;
+        return DisplayUtil.convertGlobalDipToLocalPxCoordinates(bounds);
+    }
+
+    /**
+     * Returns the launch mode for popups without an opener tab.
+     *
+     * @see #getPopupLaunchMode(Tab, DisplayAndroid)
+     */
+    private static @PopupLaunchMode int getPopupLaunchMode() {
+        if (sSetMovableTaskRequiredForPopupsForTesting != null
+                && !sSetMovableTaskRequiredForPopupsForTesting) {
+            return PopupLaunchMode.MOVABLE_TASK_NOT_REQUIRED;
+        }
+        return AndroidTaskUtils.canRepositionSelfWindows()
+                ? PopupLaunchMode.MOVABLE_TASK_REQUIRED
+                : PopupLaunchMode.MOVABLE_TASK_NOT_REQUIRED;
+    }
+
+    /** Returns the launch mode for a window.open popup opened from {@code openerTab}. */
+    private static @PopupLaunchMode int getPopupLaunchMode(
+            Tab openerTab, @Nullable DisplayAndroid targetDisplay) {
+        if (sSetMovableTaskRequiredForPopupsForTesting != null
+                && !sSetMovableTaskRequiredForPopupsForTesting) {
+            return PopupLaunchMode.MOVABLE_TASK_NOT_REQUIRED;
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
+            return PopupLaunchMode.FALLBACK_TO_TAB;
+        }
+        if (AndroidTaskUtils.canRepositionSelfWindows()) {
+            return PopupLaunchMode.MOVABLE_TASK_REQUIRED;
+        }
+        // Without the permission, the OS only places the popup in freeform if the opener is a
+        // freeform window on the same display.
+        final WindowAndroid openerWindow = openerTab.getWindowAndroid();
+        final boolean isOpenerWindowFreeform =
+                openerWindow != null && isFreeformWindow(openerWindow);
+        final boolean isOpenerWindowOnSameDisplay =
+                openerWindow != null
+                        && (targetDisplay == null
+                                || targetDisplay.getDisplayId()
+                                        == openerWindow.getDisplay().getDisplayId());
+        if (isOpenerWindowFreeform && isOpenerWindowOnSameDisplay) {
+            return PopupLaunchMode.MOVABLE_TASK_NOT_REQUIRED;
+        }
+        return PopupLaunchMode.FALLBACK_TO_TAB;
+    }
+
+    private static boolean isFreeformWindow(WindowAndroid window) {
+        Activity activity = window.getActivity().get();
+        if (activity == null) return false;
+        ChromeAndroidTask task =
+                ChromeAndroidTaskTrackerFactory.getInstance().get(activity.getTaskId());
+        return task != null && task.isFreeformWindow();
+    }
+
+    private static @PopupLaunchOutcome int nonMovableTaskLaunchOutcome() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+                ? PopupLaunchOutcome.NON_MOVABLE_TASK_LAUNCHED_NO_PERMISSION
+                : PopupLaunchOutcome.NON_MOVABLE_TASK_LAUNCHED_BELOW_API37;
+    }
+
+    private static Bundle buildPopupActivityOptions(
+            @Nullable Pair<DisplayAndroid, Rect> targetDisplayAndBounds,
+            @Nullable WindowAndroid sourceWindow,
+            @PopupLaunchMode int launchMode) {
         ActivityOptions activityOptions = ActivityOptions.makeBasic();
 
-        if (sSetMovableTaskRequiredForPopupsForTesting == null
-                || sSetMovableTaskRequiredForPopupsForTesting) {
+        if (launchMode == PopupLaunchMode.MOVABLE_TASK_REQUIRED) {
+            // getPopupLaunchMode() only requires a movable task on API 37+; the SDK check is for
+            // the NewApi lint.
+            assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
                 activityOptions.setMovableTaskRequired(true);
-            } else {
-                return null;
             }
         }
 
-        if (windowBounds == null || windowBounds.isEmpty()) {
-            return activityOptions;
-        }
+        if (targetDisplayAndBounds != null) {
+            final DisplayAndroid display = targetDisplayAndBounds.first;
+            Rect bounds = targetDisplayAndBounds.second;
 
-        final Pair<DisplayAndroid, Rect> localCoordinates =
-                DisplayUtil.convertGlobalDipToLocalPxCoordinates(windowBounds);
-
-        if (localCoordinates != null) {
-            final DisplayAndroid display = localCoordinates.first;
-            Rect bounds = localCoordinates.second;
-
-            if (predictFinalBounds) {
-                bounds = predictPopupWindowBounds(sourceWindow, display, bounds);
-            }
-
+            bounds = predictPopupWindowBounds(sourceWindow, display, bounds);
             bounds = DisplayUtil.clampWindowToDisplay(bounds, display);
 
             activityOptions.setLaunchDisplayId(display.getDisplayId());
             activityOptions.setLaunchBounds(bounds);
         }
 
+        return activityOptions.toBundle();
+    }
+
+    private static @Nullable ActivityOptions createDocumentPipActivityOptions(
+            @Nullable Rect windowBounds) {
+        // TODO(crbug.com/465413462): Add support for predicting final bounds.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
+            return null;
+        }
+        ActivityOptions activityOptions = ActivityOptions.makeBasic();
+        activityOptions.setMovableTaskRequired(true);
+
+        if (windowBounds != null && !windowBounds.isEmpty()) {
+            final Pair<DisplayAndroid, Rect> localCoordinates =
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(windowBounds);
+            if (localCoordinates != null) {
+                final DisplayAndroid display = localCoordinates.first;
+                Rect bounds = DisplayUtil.clampWindowToDisplay(localCoordinates.second, display);
+                activityOptions.setLaunchDisplayId(display.getDisplayId());
+                activityOptions.setLaunchBounds(bounds);
+            }
+        }
+
         return activityOptions;
+    }
+
+    private static void recordOutcome(
+            @PopupLaunchSource @Nullable Integer launchSource, @PopupLaunchOutcome int outcome) {
+        // Nothing is recorded for plain tab reparenting or under the test hook.
+        if (launchSource == null
+                || (sSetMovableTaskRequiredForPopupsForTesting != null
+                        && !sSetMovableTaskRequiredForPopupsForTesting)) {
+            return;
+        }
+        String variant =
+                switch (launchSource) {
+                    case PopupLaunchSource.NEW_POPUP -> "NewPopup";
+                    case PopupLaunchSource.FROM_WEB_CONTENTS -> "FromWebContents";
+                    case PopupLaunchSource.FROM_TAB -> "FromTab";
+                    default -> null;
+                };
+        if (variant == null) return;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.MultiWindowMode.PopupLaunch.Outcome." + variant,
+                outcome,
+                PopupLaunchOutcome.COUNT);
     }
 
     private static @Nullable Rect getWindowBoundsFromWindowFeatures(

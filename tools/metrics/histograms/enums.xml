@@ -24498,6 +24498,21 @@ Called by update_net_error_codes.py.-->
   <int value="123" label="ENOMEDIUM">No medium found</int>
 </enum>
 
+<!-- LINT.IfChange(PopupLaunchOutcome) -->
+
+<enum name="PopupLaunchOutcome">
+  <int value="0" label="Launched as movable task"/>
+  <int value="1" label="Launched as non-movable task (no permission)"/>
+  <int value="2" label="Launched as non-movable task (below API 37)"/>
+  <int value="3"
+      label="Launched as non-movable task (after infeasible options retry)"/>
+  <int value="4" label="Fallback to tab"/>
+  <int value="5" label="Failed (infeasible activity options)"/>
+  <int value="6" label="Failed (security exception)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/PopupCreatorImpl.java:PopupLaunchOutcome) -->
+
 <enum name="PopupSafeBrowsingStatus">
   <int value="0" label="Popup has no safe-browsing status"/>
   <int value="1"

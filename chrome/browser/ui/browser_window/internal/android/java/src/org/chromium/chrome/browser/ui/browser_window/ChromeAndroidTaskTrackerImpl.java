@@ -436,8 +436,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         Bundle extrasBundle = new Bundle();
         extrasBundle.putInt(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
 
-        ActivityOptions options = getStartActivityOptions(context, bounds);
-
         WebContents webContents = createParams.takeWebContents();
         if (webContents != null) {
             return PopupCreatorFactory.getInstance()
@@ -446,16 +444,14 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                             createParams.getProfile(),
                             webContents,
                             features,
-                            extrasBundle,
-                            options != null ? options.toBundle() : null);
+                            extrasBundle);
         }
         return PopupCreatorFactory.getInstance()
                 .createNewPopup(
                         context,
                         createParams.getProfile().isIncognitoBranded(),
                         features,
-                        extrasBundle,
-                        options != null ? options.toBundle() : null);
+                        extrasBundle);
     }
 
     private static @Nullable ActivityOptions getStartActivityOptions(

@@ -41,6 +41,7 @@ import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.BlinkFeatures;
@@ -49,7 +50,9 @@ import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.popups.testhtmls.PopupLauncherPageStation;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -248,6 +251,90 @@ public class PopupMultiwindowPTTest {
                         .withExpectedTitle("Simple")
                         .build();
         page.clickOpenPopup().arriveAt(newPage);
+
+        // Assert that a new tab has been created
+        assertEquals(
+                "The number of tabs in the original window is unexpected",
+                2,
+                mCtaTestRule.tabsCount(/* incognito= */ false));
+
+        TransitAsserts.assertFinalDestinations(newPage);
+    }
+
+    /**
+     * Non-default-browser variant on a desktop display: without REPOSITION_SELF_WINDOWS the popup
+     * is launched without setMovableTaskRequired but still yields a freeform popup window, because
+     * the opener itself is in a desktop window on the same display.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    public void testPopupOpensAsNonMovableTaskWithoutRepositionPermission() {
+        AndroidTaskUtils.setCanRepositionSelfWindowsForTesting(false);
+        final HistogramWatcher watcher =
+                expectNoPermissionOutcome(
+                        PopupCreatorImpl.PopupLaunchOutcome
+                                .NON_MOVABLE_TASK_LAUNCHED_NO_PERMISSION);
+
+        final PopupLauncherPageStation page =
+                PopupLauncherPageStation.loadInCurrentTab(
+                        mCtaTestRule.getActivityTestRule(), mEntryPage);
+
+        final CctPageStation popup =
+                page.clickOpenPopup().inNewTask().arriveAt(SIMPLE_POPUP_BUILDER.build());
+
+        watcher.assertExpected();
+
+        // Assert that no tab has been created in lieu of a window
+        assertEquals(
+                "The number of tabs in the original window is unexpected",
+                1,
+                mCtaTestRule.tabsCount(/* incognito= */ false));
+
+        final int popupTaskId = popup.getActivity().getTaskId();
+        assertTrue(
+                "The popup should be a freeform window",
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                ChromeAndroidTaskTrackerFactory.getInstance()
+                                        .get(popupTaskId)
+                                        .isFreeformWindow()));
+
+        TransitAsserts.assertFinalDestinations(page, popup);
+    }
+
+    /**
+     * Non-default-browser variant with the opener not in a desktop window (phone or tablet):
+     * window.open() falls back to a tab instead of launching a non-movable popup task.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    public void testPopupFallsBackToTabWithoutPermissionOutsideDesktopWindow() {
+        AndroidTaskUtils.setCanRepositionSelfWindowsForTesting(false);
+        final HistogramWatcher watcher =
+                expectNoPermissionOutcome(PopupCreatorImpl.PopupLaunchOutcome.FALLBACK_TO_TAB);
+
+        final PopupLauncherPageStation page =
+                PopupLauncherPageStation.loadInCurrentTab(
+                        mCtaTestRule.getActivityTestRule(), mEntryPage);
+
+        assertEquals(
+                "The number of tabs in the original window is unexpected",
+                1,
+                mCtaTestRule.tabsCount(/* incognito= */ false));
+
+        final WebPageStation newPage =
+                WebPageStation.newBuilder()
+                        .initOpeningNewTab()
+                        .withExpectedUrlSubstring("simple.html")
+                        .withExpectedTitle("Simple")
+                        .build();
+        page.clickOpenPopup().arriveAt(newPage);
+
+        watcher.assertExpected();
 
         // Assert that a new tab has been created
         assertEquals(
@@ -591,6 +678,13 @@ public class PopupMultiwindowPTTest {
         page.clickResizePopupBy().withContext(popup).arriveAt(resizedPopup);
 
         TransitAsserts.assertFinalDestinations(page, resizedPopup);
+    }
+
+    private static HistogramWatcher expectNoPermissionOutcome(
+            @PopupCreatorImpl.PopupLaunchOutcome int outcome) {
+        return HistogramWatcher.newBuilder()
+                .expectIntRecord("Android.MultiWindowMode.PopupLaunch.Outcome.FromTab", outcome)
+                .build();
     }
 
     private static void forceUnflaggedLaunchPath() {

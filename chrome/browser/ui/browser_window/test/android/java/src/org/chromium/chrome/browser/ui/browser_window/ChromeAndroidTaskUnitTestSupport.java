@@ -626,9 +626,8 @@ public final class ChromeAndroidTaskUnitTestSupport {
     public static PopupCreator mockPopupCreator() {
         if (sPopupCreator != null) return sPopupCreator;
         sPopupCreator = mock(PopupCreator.class);
-        when(sPopupCreator.createNewPopup(any(), anyBoolean(), any(), any(), any()))
-                .thenReturn(true);
-        when(sPopupCreator.createNewPopupFromWebContents(any(), any(), any(), any(), any(), any()))
+        when(sPopupCreator.createNewPopup(any(), anyBoolean(), any(), any())).thenReturn(true);
+        when(sPopupCreator.createNewPopupFromWebContents(any(), any(), any(), any(), any()))
                 .thenReturn(true);
         PopupCreatorFactory.setInstanceForTesting(sPopupCreator);
         ResettersForTesting.register(() -> sPopupCreator = null);
