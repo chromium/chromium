@@ -25,7 +25,7 @@ namespace {
 struct ProfileConfig {
   std::u16string gaia_name;
   bool active = true;
-  bool sync_consent = false;
+  SigninState signin_state = SigninState::kNotSignedIn;
   bool supervised = false;
   bool managed = false;
 };
@@ -33,7 +33,7 @@ struct ProfileConfig {
 struct ProfileMetricsParam {
   std::vector<ProfileConfig> profiles;
   int expected_managed_profile_count = 0;
-  int expected_sync_consent_profile_count = 0;
+  int expected_signed_in_profile_count = 0;
   int expected_active_profile_count = 0;
 };
 
@@ -46,9 +46,15 @@ const ProfileMetricsParam profile_metrics_test_params[] = {
     {.profiles = {{.supervised = true}},
      .expected_managed_profile_count = 1,
      .expected_active_profile_count = 1},
-    // Syncing in profile.
-    {.profiles = {{.sync_consent = true}},
-     .expected_sync_consent_profile_count = 1,
+    // Signed-in profile without sync consent.
+    {.profiles = {{.signin_state =
+                       SigninState::kSignedInWithUnconsentedPrimaryAccount}},
+     .expected_signed_in_profile_count = 1,
+     .expected_active_profile_count = 1},
+    // Syncing profile.
+    {.profiles = {{.signin_state =
+                       SigninState::kSignedInWithConsentedPrimaryAccount}},
+     .expected_signed_in_profile_count = 1,
      .expected_active_profile_count = 1},
     // With Gaia name.
     {
@@ -58,11 +64,15 @@ const ProfileMetricsParam profile_metrics_test_params[] = {
     // Multiple profiles with various states.
     {
         .profiles = {{.active = false},
-                     {.sync_consent = true, .supervised = true},
+                     {.signin_state =
+                          SigninState::kSignedInWithConsentedPrimaryAccount,
+                      .supervised = true},
                      {.gaia_name = u"Name1", .active = false},
-                     {.gaia_name = u"Name2"}},
+                     {.gaia_name = u"Name2",
+                      .signin_state =
+                          SigninState::kSignedInWithUnconsentedPrimaryAccount}},
         .expected_managed_profile_count = 1,
-        .expected_sync_consent_profile_count = 1,
+        .expected_signed_in_profile_count = 2,
         .expected_active_profile_count = 2,
     },
     // Duplicate Gaia name (non-managed).
@@ -129,8 +139,17 @@ TEST_P(ProfileMetricsParamsTest, LogNumberOfProfiles) {
     if (profile_config.supervised) {
       entry->SetSupervisedUserId("supervised id");
     }
-    if (profile_config.sync_consent) {
-      entry->SetAuthInfo(GaiaId("gaia"), u"email", true);
+    switch (profile_config.signin_state) {
+      case SigninState::kNotSignedIn:
+        break;
+      case SigninState::kSignedInWithUnconsentedPrimaryAccount:
+        entry->SetAuthInfo(GaiaId("gaia"), u"email",
+                           /*is_consented_primary_account=*/false);
+        break;
+      case SigninState::kSignedInWithConsentedPrimaryAccount:
+        entry->SetAuthInfo(GaiaId("gaia"), u"email",
+                           /*is_consented_primary_account=*/true);
+        break;
     }
     entry->SetUserAcceptedAccountManagement(profile_config.managed);
     ++i;
@@ -142,14 +161,18 @@ TEST_P(ProfileMetricsParamsTest, LogNumberOfProfiles) {
   histogram_tester.ExpectUniqueSample("Profile.NumberOfProfiles",
                                       test_param.profiles.size(), 1);
   histogram_tester.ExpectUniqueSample(
-      "Profile.NumberOfSignedInProfiles",
-      test_param.expected_sync_consent_profile_count, 1);
+      "Profile.NumberOfSignedInProfiles2",
+      test_param.expected_signed_in_profile_count, 1);
   histogram_tester.ExpectUniqueSample(
-      "Profile.NumberOfSignedInProfiles.1Day",
-      test_param.expected_sync_consent_profile_count, 1);
+      "Profile.NumberOfSignedInProfiles2.1Day",
+      test_param.expected_signed_in_profile_count, 1);
   histogram_tester.ExpectUniqueSample(
-      "Profile.NumberOfSignedInProfiles.7Days",
-      test_param.expected_sync_consent_profile_count, 1);
+      "Profile.NumberOfSignedInProfiles2.7Days",
+      test_param.expected_signed_in_profile_count, 1);
+  histogram_tester.ExpectTotalCount("Profile.NumberOfSignedInProfiles", 0);
+  histogram_tester.ExpectTotalCount("Profile.NumberOfSignedInProfiles.1Day", 0);
+  histogram_tester.ExpectTotalCount("Profile.NumberOfSignedInProfiles.7Days",
+                                    0);
 
   histogram_tester.ExpectUniqueSample("Profile.NumberOfManagedProfiles",
                                       test_param.expected_managed_profile_count,
@@ -223,6 +246,8 @@ TEST(ProfileMetrics, ThresholdTest) {
       storage.GetProfileAttributesWithPath(profile_path);
   CHECK(entry);
   entry->SetActiveTimeToNow();
+  entry->SetAuthInfo(GaiaId("gaia"), u"email",
+                     /*is_consented_primary_account=*/false);
 
   {
     base::HistogramTester histogram_tester;
@@ -233,6 +258,13 @@ TEST(ProfileMetrics, ThresholdTest) {
     histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
                                         1, 1);
     histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 1, 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.1Day", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.7Days", 1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfSignedInProfiles2", 1,
+                                        1);
 
     histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
                                         0, 1);
@@ -253,6 +285,13 @@ TEST(ProfileMetrics, ThresholdTest) {
                                         1, 1);
     histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 1, 1);
 
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.1Day", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.7Days", 1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfSignedInProfiles2", 1,
+                                        1);
+
     histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
                                         1, 1);
     histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.7Days",
@@ -271,6 +310,13 @@ TEST(ProfileMetrics, ThresholdTest) {
     histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
                                         0, 1);
     histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 1, 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.1Day", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.7Days", 0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfSignedInProfiles2", 1,
+                                        1);
 
     histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
                                         1, 1);
@@ -291,6 +337,13 @@ TEST(ProfileMetrics, ThresholdTest) {
                                         0, 1);
     histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 0, 1);
 
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.1Day", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.7Days", 0, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfSignedInProfiles2", 0,
+                                        1);
+
     histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
                                         1, 1);
     histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.7Days",
@@ -309,6 +362,13 @@ TEST(ProfileMetrics, ThresholdTest) {
     histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles.7Days",
                                         1, 1);
     histogram_tester.ExpectUniqueSample("Profile.NumberOfActiveProfiles", 1, 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.1Day", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Profile.NumberOfSignedInProfiles2.7Days", 1, 1);
+    histogram_tester.ExpectUniqueSample("Profile.NumberOfSignedInProfiles2", 1,
+                                        1);
 
     histogram_tester.ExpectUniqueSample("Profile.NumberOfUnusedProfiles.1Day",
                                         0, 1);

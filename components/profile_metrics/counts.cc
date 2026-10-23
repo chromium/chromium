@@ -47,7 +47,7 @@ void LogProfileMetricsCounts(const Counts& counts,
       base::StrCat({"Profile.PercentageOfManagedProfiles", histogram_suffix}),
       100 * counts.supervised / counts.total);
   base::UmaHistogramCounts100(
-      base::StrCat({"Profile.NumberOfSignedInProfiles", histogram_suffix}),
+      base::StrCat({"Profile.NumberOfSignedInProfiles2", histogram_suffix}),
       counts.signedin);
   base::UmaHistogramCounts100(
       base::StrCat({"Profile.NumberOfActiveProfiles", histogram_suffix}),

@@ -54,7 +54,7 @@ profile_metrics::Counts CountProfileInformation(
       if (entry->IsSupervised()) {
         counts.supervised++;
       }
-      if (entry->IsAuthenticated()) {
+      if (entry->GetSigninState() != SigninState::kNotSignedIn) {
         counts.signedin++;
       }
     }

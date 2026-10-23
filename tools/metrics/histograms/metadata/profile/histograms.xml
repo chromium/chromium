@@ -544,13 +544,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.NumberOfSignedInProfiles{ProfileActivityThreshold}"
-    units="profiles" expires_after="2027-04-11">
+<histogram name="Profile.NumberOfSignedInProfiles2{ProfileActivityThreshold}"
+    units="profiles" expires_after="2027-04-21">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Counts the number of signed-in (syncing) profiles on a user's machine. Only
-    emitted for users with at least one profile (of any type).
+    Counts the number of signed-in profiles (regardless of sync status, i.e.
+    ConsentLevel::kSignin) on a user's machine. Replaces
+    Profile.NumberOfSignedInProfiles (and its variants), which only counted
+    syncing profiles on non-iOS platforms. Only emitted for users with at least
+    one profile (of any type).
 
     This is intended to count only profiles that have been used in the last
     {ProfileActivityThreshold}. However, active usage detection does not work
