@@ -16,11 +16,14 @@
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/ift/ift_patcher.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -75,17 +78,25 @@ IftCustomFontData* IftCustomFontData::MaybeCreate(
   if (!patcher) {
     return nullptr;
   }
+  // The "initial font URL" from the IFT spec. Patch URLs are resolved against
+  // it and it is sent as the referrer of patch requests. The spec does not say
+  // whether this is the URL before or after redirects. Use the URL after
+  // redirects, matching how Blink handles URLs within stylesheets, so that
+  // patches are fetched relative to where the font bytes actually came from.
+  const KURL initial_font_url = font_resource.GetResponse().ResponseUrl();
   return MakeGarbageCollected<IftCustomFontData>(
-      base::PassKey<IftCustomFontData>(), font_face_source,
-      font_resource.GetResponse().ResponseUrl(), std::move(patcher));
+      base::PassKey<IftCustomFontData>(), font_face_source, initial_font_url,
+      font_resource.Options().WorldForCsp(), std::move(patcher));
 }
 
 IftCustomFontData::IftCustomFontData(base::PassKey<IftCustomFontData>,
                                      RemoteFontFaceSource* font_face_source,
                                      const KURL& font_url,
+                                     const DOMWrapperWorld* world_for_csp,
                                      std::unique_ptr<IftPatcher> patcher)
     : font_face_source_(font_face_source),
       font_url_(font_url),
+      world_for_csp_(world_for_csp),
       patcher_(std::move(patcher)),
       requested_subset_(std::make_unique<IftSubsetDefinition>()),
       fetched_subset_(std::make_unique<IftSubsetDefinition>()),
@@ -98,6 +109,7 @@ IftCustomFontData::~IftCustomFontData() = default;
 
 void IftCustomFontData::Trace(Visitor* visitor) const {
   visitor->Trace(font_face_source_);
+  visitor->Trace(world_for_csp_);
   visitor->Trace(patch_loaders_);
   CustomFontData::Trace(visitor);
 }
@@ -188,15 +200,17 @@ void IftCustomFontData::BeginFetching() const {
   for (const String& patch_url : patch_urls) {
     PatchLoader* loader = MakeGarbageCollected<PatchLoader>(this, patch_url);
     patch_loaders_.insert(loader);
-    // TODO(wmedrano): Follow the spec for the request settings. See
-    // https://www.w3.org/TR/IFT/#abstract-opdef-load-patch-file.
+    // https://www.w3.org/TR/IFT/#abstract-opdef-load-patch-file
     ResourceRequest resource_request(KURL(font_url_, patch_url));
     resource_request.SetRequestContext(mojom::blink::RequestContextType::FONT);
     resource_request.SetRequestDestination(
         network::mojom::RequestDestination::kFont);
-    FetchParameters params(
-        std::move(resource_request),
-        ResourceLoaderOptions(execution_context->GetCurrentWorld()));
+    resource_request.SetReferrerString(font_url_.GetString());
+    ResourceLoaderOptions options(world_for_csp_);
+    options.initiator_info.name = fetch_initiator_type_names::kFont;
+    FetchParameters params(std::move(resource_request), std::move(options));
+    params.SetCrossOriginAccessControl(execution_context->GetSecurityOrigin(),
+                                       kCrossOriginAttributeAnonymous);
     RawResource::Fetch(params, fetcher, loader);
   }
 }

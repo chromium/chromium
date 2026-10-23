@@ -1305,6 +1305,9 @@ static const char* InitiatorTypeNameToString(
   if (initiator_type_name == fetch_initiator_type_names::kFetch) {
     return "Fetch";
   }
+  if (initiator_type_name == fetch_initiator_type_names::kFont) {
+    return "Font";
+  }
   if (initiator_type_name == fetch_initiator_type_names::kLink) {
     return "Link element resource";
   }
@@ -1338,7 +1341,7 @@ static const char* InitiatorTypeNameToString(
   }
 
   static_assert(
-      fetch_initiator_type_names::kNamesCount == 19,
+      fetch_initiator_type_names::kNamesCount == 20,
       "New FetchInitiatorTypeNames should be handled correctly here.");
 
   return "Resource";

@@ -8,7 +8,9 @@
 #include <memory>
 #include <optional>
 
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
@@ -17,18 +19,27 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/fonts/custom_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -76,14 +87,30 @@ class IftCustomFontDataTest : public SimTest {
   // The font is `roboto-ift.ttf`, a Roboto subset whose base font contains
   // only codepoint 'a'. Codepoints 'b' and 'c' are added through table-keyed
   // and glyph-keyed patches.
-  const IftCustomFontData* LoadCustomFontData(const String& text = "a") {
+  //
+  // If `world` is set, the `@font-face` rule is parsed in `world`. If
+  // `font_redirect_url` is set, the font request is redirected to it.
+  const IftCustomFontData* LoadCustomFontData(
+      const String& text = "a",
+      DOMWrapperWorld* world = nullptr,
+      const String& font_redirect_url = String()) {
     SimRequest main_resource("https://example.com/index.html", "text/html");
+    SimRequest::Params font_params;
+    font_params.redirect_url = font_redirect_url;
     SimSubresourceRequest font_resource(
-        "https://example.com/fonts/roboto-ift.ttf", "font/ttf");
+        "https://example.com/fonts/roboto-ift.ttf", "font/ttf", font_params);
+    std::optional<SimSubresourceRequest> redirected_font_resource;
+    if (!font_redirect_url.empty()) {
+      redirected_font_resource.emplace(font_redirect_url, "font/ttf");
+    }
 
     LoadURL("https://example.com/index.html");
+    main_resource.Write("<!doctype html>");
+    std::optional<ScriptState::Scope> world_scope;
+    if (world) {
+      world_scope.emplace(ToScriptState(GetDocument().GetFrame(), *world));
+    }
     main_resource.Complete(R"HTML(
-      <!doctype html>
       <style>
         @font-face {
           font-family: ift-font;
@@ -95,6 +122,7 @@ class IftCustomFontDataTest : public SimTest {
       </style>
       <span id="target"></span>
     )HTML");
+    world_scope.reset();
 
     Compositor().BeginFrame();
 
@@ -114,7 +142,8 @@ class IftCustomFontDataTest : public SimTest {
     std::optional<Vector<char>> font_bytes =
         test::ReadFromFile(test::PlatformTestDataPath("roboto-ift.ttf"));
     CHECK(font_bytes.has_value());
-    font_resource.Complete(*font_bytes);
+    (redirected_font_resource ? *redirected_font_resource : font_resource)
+        .Complete(*font_bytes);
     test::RunPendingTasks();
 
     Element* target = GetElementById("target");
@@ -488,6 +517,87 @@ TEST_F(IftCustomFontDataTest, DocumentDetachedBeforeFetchingFails) {
   test::RunPendingTasks();
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kFailed);
+}
+
+TEST_F(IftCustomFontDataTest, PatchRequestSettings) {
+  SimSubresourceRequest patch_b_table(kPatchBTableUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_b_glyph(kPatchBGlyphUrl,
+                                      "application/octet-stream");
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      GetDocument().GetExecutionContext()->GetIsolate(), /*world_id=*/1);
+  const IftCustomFontData* custom_font_data =
+      LoadCustomFontData("b", isolated_world);
+  ASSERT_NE(custom_font_data, nullptr);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
+
+  for (const char* url : {kPatchBTableUrl, kPatchBGlyphUrl}) {
+    SCOPED_TRACE(url);
+    const Resource* resource =
+        GetDocument().Fetcher()->CachedResource(KURL(url));
+    ASSERT_NE(resource, nullptr);
+
+    const ResourceRequestHead& request = resource->GetResourceRequest();
+    EXPECT_EQ(request.HttpMethod(), http_names::kGET);
+    EXPECT_EQ(request.Url(), KURL(url));
+    EXPECT_EQ(request.GetRequestContext(),
+              mojom::blink::RequestContextType::FONT);
+    EXPECT_EQ(request.GetRequestDestination(),
+              network::mojom::RequestDestination::kFont);
+    EXPECT_EQ(request.ReferrerString(),
+              "https://example.com/fonts/roboto-ift.ttf");
+    EXPECT_EQ(request.GetMode(), network::mojom::RequestMode::kCors);
+    EXPECT_EQ(request.GetCredentialsMode(),
+              network::mojom::CredentialsMode::kSameOrigin);
+    EXPECT_EQ(resource->Options().initiator_info.name,
+              fetch_initiator_type_names::kFont);
+    EXPECT_EQ(resource->Options().WorldForCsp(), isolated_world);
+  }
+
+  patch_b_table.Complete(PatchPayload(kPatchBTableUrl));
+  patch_b_glyph.Complete(PatchPayload(kPatchBGlyphUrl));
+}
+
+// Patch URLs are resolved against, and the referrer is set to, the font's
+// post-redirect URL.
+TEST_F(IftCustomFontDataTest, PatchRequestsUseRedirectedFontUrl) {
+  constexpr char kRedirectedFontUrl[] = "https://example.com/v2/roboto-ift.ttf";
+  constexpr char kRedirectedPatchBTableUrl[] =
+      "https://example.com/v2/0K.ift_tk";
+  constexpr char kRedirectedPatchBGlyphUrl[] =
+      "https://example.com/v2/04.1.ift_gk";
+  SimSubresourceRequest patch_b_table(kRedirectedPatchBTableUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_b_glyph(kRedirectedPatchBGlyphUrl,
+                                      "application/octet-stream");
+  const IftCustomFontData* custom_font_data =
+      LoadCustomFontData("b", /*world=*/nullptr, kRedirectedFontUrl);
+  ASSERT_NE(custom_font_data, nullptr);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
+
+  for (const char* url :
+       {kRedirectedPatchBTableUrl, kRedirectedPatchBGlyphUrl}) {
+    SCOPED_TRACE(url);
+    const Resource* resource =
+        GetDocument().Fetcher()->CachedResource(KURL(url));
+    ASSERT_NE(resource, nullptr);
+    EXPECT_EQ(resource->GetResourceRequest().ReferrerString(),
+              kRedirectedFontUrl);
+  }
+
+  patch_b_table.Complete(PatchPayload(kRedirectedPatchBTableUrl));
+  patch_b_glyph.Complete(PatchPayload(kRedirectedPatchBGlyphUrl));
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kIdle);
 }
 
 }  // namespace

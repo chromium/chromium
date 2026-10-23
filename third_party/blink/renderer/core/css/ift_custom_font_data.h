@@ -20,6 +20,7 @@
 
 namespace blink {
 
+class DOMWrapperWorld;
 class FontResource;
 class IftPatcher;
 class IftSubsetDefinition;
@@ -38,6 +39,7 @@ class CORE_EXPORT IftCustomFontData final : public CustomFontData {
   IftCustomFontData(base::PassKey<IftCustomFontData>,
                     RemoteFontFaceSource* font_face_source,
                     const KURL& font_url,
+                    const DOMWrapperWorld* world_for_csp,
                     std::unique_ptr<IftPatcher> patcher);
   ~IftCustomFontData() override;
 
@@ -82,6 +84,7 @@ class CORE_EXPORT IftCustomFontData final : public CustomFontData {
   Member<RemoteFontFaceSource> font_face_source_;
   // The URL of the font. Patch URLs are resolved relative to this.
   const KURL font_url_;
+  Member<const DOMWrapperWorld> world_for_csp_;
   std::unique_ptr<IftPatcher> patcher_;
   // Incremented each time patches are applied to `patcher_`.
   mutable uint32_t patched_font_version_ = 0;
