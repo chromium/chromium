@@ -20,11 +20,9 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #endif  //  BUILDFLAG(IS_MAC)
@@ -60,8 +58,6 @@ class PlatformAuthPolicyObserverTest : public PlatformBrowserTest {
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 #if BUILDFLAG(IS_MAC)
-  base::test::ScopedFeatureList feature_list_{
-      enterprise_auth::kEnableExtensibleEnterpriseSSO};
   policy::ScopedManagementServiceOverrideForTesting platform_management_{
       policy::ManagementServiceFactory::GetForPlatform(),
       policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};

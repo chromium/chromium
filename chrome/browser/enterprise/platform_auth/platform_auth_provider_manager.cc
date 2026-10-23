@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -29,7 +28,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -76,8 +74,7 @@ bool ShouldBeEnabled(PrefService* local_state) {
 
 bool ShouldBeEnabled(PrefService* local_state) {
   // If the device is not managed we shouldn't enable the Manager.
-  if (!base::FeatureList::IsEnabled(kEnableExtensibleEnterpriseSSO) ||
-      !policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
+  if (!policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
     return false;
   }
 

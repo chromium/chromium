@@ -9,8 +9,6 @@
 
 namespace enterprise_auth {
 
-BASE_DECLARE_FEATURE(kEnableExtensibleEnterpriseSSO);
-
 // Enables extensible enterprise SSO support for the Ping Identity IdP.
 BASE_DECLARE_FEATURE(kPingSso);
 

@@ -19,12 +19,10 @@
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "components/policy/core/common/management/management_service.h"
 #endif  //  BUILFLAG(IS_MAC)
 
@@ -93,8 +91,6 @@ void PlatformAuthPolicyObserver::OnPrefChanged() {
 #if BUILDFLAG(IS_MAC)
 void PlatformAuthPolicyObserver::UpdateSsoPrefsHandler() {
   const bool should_be_enabled =
-      base::FeatureList::IsEnabled(
-          enterprise_auth::kEnableExtensibleEnterpriseSSO) &&
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
       pref_change_registrar_.prefs()->GetInteger(GetPrefName()) != 0;
 
