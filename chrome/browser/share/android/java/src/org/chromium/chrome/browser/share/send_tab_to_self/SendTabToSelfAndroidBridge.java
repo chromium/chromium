@@ -559,21 +559,19 @@ public class SendTabToSelfAndroidBridge {
         // native app if available.
         if (newestNewTabIndex != TabModel.INVALID_TAB_INDEX) {
             assert newestTab != null;
-            if (ChromeFeatureList.sSendTabToSelfRecordSnackbarActivation.isEnabled()) {
-                assert newestLabelData != null;
+            assert newestLabelData != null;
 
-                // The entry is going to be activated, so drop any label data. This also prevents
-                // the entry from being marked activated again upon tab activation.
-                newestLabelData.removeAndDestroy();
+            // The entry is going to be activated, so drop any label data. This also prevents
+            // the entry from being marked activated again upon tab activation.
+            newestLabelData.removeAndDestroy();
 
-                // Mark the entry as activated.
-                Profile profile = normalTabModel.getProfile();
-                if (profile != null) {
-                    SendTabToSelfAndroidBridge.markEntryActivated(
-                            profile,
-                            newestLabelData.getGuid(),
-                            ShareActivatedEntryPoint.MOBILE_MESSAGE_BANNER);
-                }
+            // Mark the entry as activated.
+            Profile profile = normalTabModel.getProfile();
+            if (profile != null) {
+                SendTabToSelfAndroidBridge.markEntryActivated(
+                        profile,
+                        newestLabelData.getGuid(),
+                        ShareActivatedEntryPoint.MOBILE_MESSAGE_BANNER);
             }
 
             // In the single-tab case, open the matching native app directly if available.

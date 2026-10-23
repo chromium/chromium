@@ -50,9 +50,6 @@ BASE_FEATURE(kSendTabToSelfGesture, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfOpenNativeApp, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSendTabToSelfRecordSnackbarActivation,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSendTabToSelfSwitchToParentOnBack,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
