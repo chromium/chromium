@@ -6,14 +6,14 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/grit",
 ]
 
 specific_include_rules = {
   'device_settings_interactive_uitest\\.cc': [
     '+ash/shell.h',
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
     "+chrome/test",
     '+device/udev_linux/fake_udev_loader.h',
   ],
