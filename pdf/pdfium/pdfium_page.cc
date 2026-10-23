@@ -127,6 +127,21 @@ gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   return output_rect;
 }
 
+gfx::PointF FloatPagePointToPixelPoint(FPDF_PAGE page,
+                                       const gfx::PointF& input) {
+  int output_width = FPDF_GetPageWidthF(page);
+  int output_height = FPDF_GetPageHeightF(page);
+
+  int x;
+  int y;
+  if (!FPDF_PageToDevice(page, 0, 0, output_width, output_height, 0, input.x(),
+                         input.y(), &x, &y)) {
+    return gfx::PointF();
+  }
+  return gfx::PointF(ConvertUnitFloat(x, kPointsPerInch, kPixelsPerInch),
+                     ConvertUnitFloat(y, kPointsPerInch, kPixelsPerInch));
+}
+
 gfx::RectF GetFloatCharRectInPixels(FPDF_PAGE page,
                                     FPDF_TEXTPAGE text_page,
                                     int index) {
@@ -1341,9 +1356,7 @@ gfx::PointF PDFiumPage::TransformPageToScreenXY(const gfx::PointF& xy) {
   if (!available_)
     return gfx::PointF();
 
-  gfx::RectF page_rect(xy.x(), xy.y(), 0, 0);
-  gfx::RectF pixel_rect(FloatPageRectToPixelRect(GetPage(), page_rect));
-  return gfx::PointF(pixel_rect.x(), pixel_rect.y());
+  return FloatPagePointToPixelPoint(GetPage(), xy);
 }
 
 float PDFiumPage::TransformPageToScreenX(float x) {
