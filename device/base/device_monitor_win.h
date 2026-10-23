@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/win/windows_types.h"
 #include "device/base/device_base_export.h"
 
@@ -47,6 +48,10 @@ class DEVICE_BASE_EXPORT DeviceMonitorWin {
                          const std::wstring& device_path);
   void NotifyDeviceRemoved(const GUID& class_guid,
                            const std::wstring& device_path);
+
+  // `observer_list_` is not thread-safe, so observers must be added and
+  // removed on the sequence that delivers notifications.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 };

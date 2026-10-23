@@ -104,6 +104,7 @@ test("device_unittests") {
 
   if (is_win) {
     sources += [
+      "base/device_monitor_win_unittest.cc",
       "bluetooth/bluetooth_adapter_win_unittest.cc",
       "bluetooth/bluetooth_device_win_unittest.cc",
       "bluetooth/bluetooth_service_record_win_unittest.cc",
