@@ -889,6 +889,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   }
   // </if>
 
+  // LINT.IfChange(ContextualTasksTooltipLogic)
   private get isAskGEntryPointEligible_(): boolean {
     if (this.isShownInTab_) {
       return this.entryPoint_ === 'omnibox_tab_search';
@@ -959,6 +960,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       this.onboardingTooltipShowing_ = onboardingTooltip.shouldShow;
     }
   }
+  // LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_onboarding_tooltip_controller.cc:ContextualTasksTooltipLogic)
 
   protected onOnboardingTooltipDismissed_() {
     this.onboardingTooltipShowing_ = false;
