@@ -27,6 +27,7 @@
 #include "base/version.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/component_download_observer.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/asset_priorities.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
@@ -52,40 +53,6 @@ BASE_DECLARE_FEATURE(kScanForOrphanedManifestAssets);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kOrphanedManifestAssetScanDelay);
 
 class UsageTracker;
-
-// Priorities for assets in the manifest.
-enum class AssetPriority {
-  // Unconditionally uninstalled when auto removal is disabled, because the user
-  // explicitly requested uninstall.
-  kUninstall = 0,
-  // Evicted only auto removal is enabled, otherwise retained on disk.
-  kEvictable = 1,
-  kRetain = 2,
-  kSpeculative = 3,
-  kBestEffort = 4,
-  kUserBlocking = 5,
-};
-
-// Tracks the priority of assets in the manifest.
-class AssetPriorities {
- public:
-  AssetPriorities();
-  ~AssetPriorities();
-  AssetPriorities(const AssetPriorities&);
-  AssetPriorities& operator=(const AssetPriorities&);
-  AssetPriorities(AssetPriorities&&);
-  AssetPriorities& operator=(AssetPriorities&&);
-
-  void Raise(AssetPriority priority,
-             const absl::flat_hash_set<Manifest::AssetId>& assets);
-  void Clear();
-
-  bool IsAtLeast(AssetPriority priority,
-                 const Manifest::AssetId& asset_id) const;
-
- private:
-  absl::flat_hash_map<Manifest::AssetId, AssetPriority> priorities_;
-};
 
 // Manages the state of assets defined in the on-device model manifest.
 class ManifestAssetManager : public UsageTracker::Observer,
@@ -143,7 +110,8 @@ class ManifestAssetManager : public UsageTracker::Observer,
                            const std::string& version,
                            bool is_already_installed) override;
 
-  // Recomputes the priorities of assets required by use cases.
+  // Recomputes asset priorities from the current manifest and usage tracker,
+  // then updates component registrations.
   void RecomputeAssetPriorities();
 
   // Requests uninstall for all use cases in the manifest and updates component

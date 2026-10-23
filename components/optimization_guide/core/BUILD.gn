@@ -391,6 +391,8 @@ source_set("ondevice") {
 if (build_with_model_execution) {
   source_set("manifest_broker") {
     sources = [
+      "model_execution/manifest_broker/asset_priorities.cc",
+      "model_execution/manifest_broker/asset_priorities.h",
       "model_execution/manifest_broker/manifest.cc",
       "model_execution/manifest_broker/manifest.h",
       "model_execution/manifest_broker/manifest_asset_manager.cc",
@@ -836,6 +838,7 @@ source_set("model_execution_unit_tests") {
       "model_execution/configs/summarize_solution_config_unittest.cc",
       "model_execution/fieldwise_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",
+      "model_execution/manifest_broker/asset_priorities_unittest.cc",
       "model_execution/manifest_broker/manifest_asset_manager_unittest.cc",
       "model_execution/manifest_broker/manifest_broker_service_crash_unittest.cc",
       "model_execution/manifest_broker/manifest_broker_state_unittest.cc",
