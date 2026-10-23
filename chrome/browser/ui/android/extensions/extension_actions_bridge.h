@@ -25,9 +25,6 @@ class ExtensionActionsBridge {
   ExtensionActionsBridge& operator=(const ExtensionActionsBridge&) = delete;
   ~ExtensionActionsBridge();
 
-  // JNI implementations.
-  void Destroy(JNIEnv* env);
-
  private:
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<Profile> profile_;

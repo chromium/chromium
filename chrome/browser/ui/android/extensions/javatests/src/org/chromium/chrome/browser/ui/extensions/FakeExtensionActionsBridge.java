@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.extensions;
 
 import org.jni_zero.JniPtr;
+import org.jni_zero.JniUniquePtr;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -117,14 +118,11 @@ public class FakeExtensionActionsBridge {
         private FakeExtensionActionsBridgeJni() {}
 
         @Override
-        public long init(
+        public JniUniquePtr<ExtensionActionsBridge.NativeExtensionActionsBridge> init(
                 ExtensionActionsBridge bridge, JniPtr<NativeBrowserWindowInterface> browserWindow) {
-            // Use the bridge ID as the native bridge pointer.
-            return allocateBridgeId(browserWindow);
+            // Use the bridge ID as the fake native bridge pointer.
+            return JniUniquePtr.createForTesting(allocateBridgeId(browserWindow));
         }
-
-        @Override
-        public void destroy(long bridgeId) {}
 
         /** Allocates a new bridge ID for the given native browser window. */
         private long allocateBridgeId(JniPtr<NativeBrowserWindowInterface> browserWindow) {

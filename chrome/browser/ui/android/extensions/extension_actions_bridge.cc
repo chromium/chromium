@@ -27,16 +27,12 @@ ExtensionActionsBridge::ExtensionActionsBridge(
 
 ExtensionActionsBridge::~ExtensionActionsBridge() = default;
 
-void ExtensionActionsBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-static int64_t JNI_ExtensionActionsBridge_Init(
+static jni_zero::JniUniquePtr<ExtensionActionsBridge>
+JNI_ExtensionActionsBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_object,
     BrowserWindowInterface* browser) {
-  return reinterpret_cast<int64_t>(
-      new ExtensionActionsBridge(browser, java_object));
+  return jni_zero::MakeUnique<ExtensionActionsBridge>(browser, java_object);
 }
 
 }  // namespace extensions

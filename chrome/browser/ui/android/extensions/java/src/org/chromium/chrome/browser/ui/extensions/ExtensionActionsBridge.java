@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.ui.extensions;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -20,29 +23,28 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBro
 @NullMarked
 @JNINamespace("extensions")
 public class ExtensionActionsBridge implements Destroyable {
+    @JniType("::extensions::ExtensionActionsBridge")
+    interface NativeExtensionActionsBridge extends JniTypeToken {}
+
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private long mNativeExtensionActionsBridge;
+    private final JniUniquePtr<NativeExtensionActionsBridge> mNative;
 
     public ExtensionActionsBridge(ChromeAndroidTask task, Profile profile) {
-        mNativeExtensionActionsBridge =
+        mNative =
                 ExtensionActionsBridgeJni.get()
                         .init(this, task.getOrCreateNativeBrowserWindow(profile));
     }
 
     @Override
     public void destroy() {
-        assert mNativeExtensionActionsBridge != 0;
-        ExtensionActionsBridgeJni.get().destroy(mNativeExtensionActionsBridge);
-        mNativeExtensionActionsBridge = 0;
+        mNative.destroy();
         LifetimeAssert.destroy(mLifetimeAssert);
     }
 
     @NativeMethods
-    public interface Natives {
+    interface Natives {
 
-        long init(
+        JniUniquePtr<NativeExtensionActionsBridge> init(
                 ExtensionActionsBridge bridge, JniPtr<NativeBrowserWindowInterface> browserWindow);
-
-        void destroy(long nativeExtensionActionsBridge);
     }
 }
