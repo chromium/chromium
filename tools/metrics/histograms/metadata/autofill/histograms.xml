@@ -2215,6 +2215,25 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.PersonalContext.Prefetch.EntityFunnel{EntityType}"
+    enum="AutofillAiPersonalContextPrefetchEntityFunnelOutcome"
+    expires_after="2027-04-20">
+  <owner>tobson@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the stage at which an entity received from Personal Context during
+    Ambient Autofill prefetch is dropped, or that it passes all stages. Emitted
+    once per entity in a prefetch response. Entities that cannot be parsed are
+    only recorded in the aggregate. When suppressions change, unsuppressed
+    entities are recorded again as deduplicated or passed.
+
+    {EntityType}
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for all entity types (aggregate)."/>
+  </token>
+</histogram>
+
 <histogram
     name="Autofill.Ai.PersonalContext.Prefetch.EntitySourceCount{EntityType}"
     units="sources" expires_after="2027-04-13">

@@ -91,6 +91,28 @@ enum class PersonalContextDeduplicationAgainstRecordType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextDeduplicationAgainstRecordType)
 
+// LINT.IfChange(AutofillAiPersonalContextPrefetchEntityFunnelOutcome)
+// Represents the stage at which an entity received from Personal Context during
+// Ambient Autofill prefetch is dropped, or `kPassed` if it passes all stages.
+// Logged to UMA.
+enum class PersonalContextPrefetchEntityFunnelOutcome {
+  // The entity cannot be converted into an `EntityInstance`, e.g. because it
+  // cannot be decrypted or its entity type is unknown.
+  kParsingFailed = 0,
+  // The entity does not satisfy the requirements of Ambient Autofill, e.g.
+  // because it is missing required attributes, has expired or is of a type that
+  // was not requested.
+  kInvalid = 1,
+  // The entity is suppressed by the user.
+  kSuppressed = 2,
+  // The entity is a duplicate of a local or Wallet entity.
+  kDeduplicated = 3,
+  // The entity passes all stages.
+  kPassed = 4,
+  kMaxValue = kPassed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextPrefetchEntityFunnelOutcome)
+
 // LINT.IfChange(AutofillAiEntitySuppressionLoadDropReason)
 // Reasons why a stored entity suppression record is dropped when loading
 // suppressions from disk. Logged to UMA.
@@ -162,6 +184,13 @@ void LogPersonalContextPrefetchEntitySourceCount(EntityType type, size_t count);
 void LogPersonalContextDeduplicationAgainstRecordType(
     EntityType type,
     std::optional<EntityInstance::RecordType> record_type);
+
+// Logs the `outcome` of an entity received from Personal Context during Ambient
+// Autofill prefetch. The per-type histogram is only logged if the `type` is
+// known, which is not the case if the entity cannot be parsed.
+void LogPersonalContextPrefetchEntityFunnelOutcome(
+    std::optional<EntityType> type,
+    PersonalContextPrefetchEntityFunnelOutcome outcome);
 
 // Logs the number of entities filtered out due to suppression during prefetch.
 void LogEntitySuppressionEntitiesFilteredPerPrefetch(size_t count);
