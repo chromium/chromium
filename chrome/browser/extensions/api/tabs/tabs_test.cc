@@ -3848,11 +3848,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveAcrossWindows) {
   function->set_extension(extension.get());
   constexpr char kFormatArgs[] =
       R"([[%d, %d, %d, %d], {"windowId": %d, "index": 1}])";
+  const std::array<int, 4> moved_tab_ids = {tab_ids2[2], tab_ids[0], tab_ids[2],
+                                            tab_ids[4]};
   const std::string args =
-      base::StringPrintf(kFormatArgs, tab_ids2[2], tab_ids[0], tab_ids[2],
-                         tab_ids[4], window_2_id);
-  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
-                                 utils::FunctionMode::kNone));
+      base::StringPrintf(kFormatArgs, moved_tab_ids[0], moved_tab_ids[1],
+                         moved_tab_ids[2], moved_tab_ids[3], window_2_id);
+  base::ListValue moved_tabs = utils::ToList(
+      utils::RunFunctionAndReturnSingleResult(function.get(), args, profile()));
+
+  ASSERT_EQ(moved_tab_ids.size(), moved_tabs.size());
+  for (size_t i = 0; i < moved_tab_ids.size(); ++i) {
+    const base::DictValue& tab = moved_tabs[i].GetDict();
+    EXPECT_EQ(moved_tab_ids[i], utils::GetInteger(tab, "id"));
+    EXPECT_EQ(window_2_id, utils::GetInteger(tab, "windowId"));
+    EXPECT_EQ(static_cast<int>(i) + 1, utils::GetInteger(tab, "index"));
+  }
 
   ASSERT_EQ(kNumTabs2 + kNumTabsMovedAcrossWindows, tab_list2->GetTabCount());
   EXPECT_EQ(tab_list2->GetTab(1)->GetContents(), web_contentses2[2]);
