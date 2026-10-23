@@ -3217,35 +3217,6 @@ TEST_F(MenuControllerTest, RegisterClickWithChildViews) {
   DestroyMenuControllerDelegate();
 }
 
-TEST_F(MenuControllerTest, RegisterGestureTapWithChildViews) {
-  CreateMenu();
-  DestroyMenuControllerOnMenuClosed(menu_controller_delegate());
-  ShowSubmenu();
-  SubmenuView* submenu = menu_item()->GetSubmenu();
-  MenuItemView* first_menu_item = submenu->GetMenuItemAt(0);
-  first_menu_item->AddChildView(std::make_unique<View>());
-  const gfx::Point location = first_menu_item->bounds().CenterPoint();
-
-  ProcessGestureEvent(
-      submenu,
-      ui::GestureEvent(location.x(), location.y(), 0, ui::EventTimeForNow(),
-                       ui::GestureEventDetails(ui::EventType::kGestureTap)));
-  // No signal when there's a child view and
-  // SetTriggerActionWithNonIconChildViews is false.
-  EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 0);
-
-  first_menu_item->SetTriggerActionWithNonIconChildViews(true);
-  ProcessGestureEvent(
-      submenu,
-      ui::GestureEvent(location.x(), location.y(), 0, ui::EventTimeForNow(),
-                       ui::GestureEventDetails(ui::EventType::kGestureTap)));
-  // We should receive a signal to close the menu when
-  // SetTriggerActionWithNonIconChildViews is true.
-  EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 1);
-
-  DestroyMenuControllerDelegate();
-}
-
 #endif  // defined(USE_AURA)
 
 // Tests that having the MenuController deleted during OnMousePressed does not
