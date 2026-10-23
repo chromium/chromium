@@ -547,7 +547,10 @@ source_set("browser_tests") {
 
   if (enable_dice_support) {
     sources += [ "cloud/user_policy_signin_service_browsertest.cc" ]
-    deps += [ "//chrome/browser/ui/webui/signin" ]
+    deps += [
+      "//chrome/browser/enterprise",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+    ]
   }
 
   if (enable_extensions_core) {
