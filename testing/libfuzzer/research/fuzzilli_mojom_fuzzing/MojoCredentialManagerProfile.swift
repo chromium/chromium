@@ -274,8 +274,11 @@ let mojoCredentialManagerProfile = Profile(
     ],
     maxExecsBeforeRespawn: 50,
     timeout: Timeout.interval(11000, 11000),
+    // The first statement tells js_in_process_fuzzer which Mojo scripts page to
+    // load before running the program.
     codePrefix: """
         // --- Begin program prefix ---
+        'mojo-scripts-page: /gen/third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-scripts-page.html';
         let globalRemote = null;
         const mojoAsyncFunctionPromises = [];
         function getOrCreatePrimaryRemote() {

@@ -40,10 +40,7 @@ extension ILType {
         withMethods: [
           "close",
           "isBound",
-          "associateAndPassReceiver",
         ])
-    fileprivate static let jsBlinkMojomLockHandlePendingAssociatedReceiver: ILType = .object(
-        ofGroup: "blink.mojom.LockHandlePendingAssociatedReceiver")
 
     // LockRequest
     fileprivate static let jsBlinkMojomLockRequestCallbackRouter: ILType = .object(
@@ -56,9 +53,11 @@ extension ILType {
     fileprivate static let jsBlinkMojomLockRequestCallbackRouterReceiverHelper: ILType = .object(
         ofGroup: "blink.mojom.LockRequestCallbackRouterReceiverHelper",
         withMethods: [
-          "closeBindings",
+          "close",
           "associateAndPassRemote",
         ])
+    fileprivate static let jsBlinkMojomLockRequestPendingAssociatedReceiver: ILType = .object(
+        ofGroup: "blink.mojom.LockRequestPendingAssociatedReceiver")
     fileprivate static let jsBlinkMojomLockRequestPendingAssociatedRemote: ILType = .object(
         ofGroup: "blink.mojom.LockRequestPendingAssociatedRemote",
         withProperties: ["$"])
@@ -69,8 +68,6 @@ extension ILType {
           "isBound",
           "associateAndPassReceiver",
         ])
-    fileprivate static let jsBlinkMojomLockRequestPendingAssociatedReceiver: ILType = .object(
-        ofGroup: "blink.mojom.LockRequestPendingAssociatedReceiver")
     fileprivate static let jsBlinkMojomLockRequestGrantedCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomLockRequestGrantedCallbackReceiver",
         withMethods: ["addListener"])
@@ -121,14 +118,7 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
-            "associateAndPassReceiver": [] => .jsBlinkMojomLockHandlePendingAssociatedReceiver,
         ])
-    fileprivate static let blinkMojomLockHandlePendingAssociatedReceiver = ObjectGroup(
-        name: "blink.mojom.LockHandlePendingAssociatedReceiver",
-        instanceType: .jsBlinkMojomLockHandlePendingAssociatedReceiver,
-        properties: [:],
-        methods: [:]
-    )
 
     // LockRequest
     fileprivate static let blinkMojomLockRequestCallbackRouter = ObjectGroup(
@@ -141,13 +131,12 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
-
     fileprivate static let blinkMojomLockRequestCallbackRouterReceiverHelper = ObjectGroup(
         name: "blink.mojom.LockRequestCallbackRouterReceiverHelper",
         instanceType: .jsBlinkMojomLockRequestCallbackRouterReceiverHelper,
         properties: [:],
         methods: [
-            "closeBindings": [] => .undefined,
+            "close": [] => .undefined,
             "associateAndPassRemote": [] => .jsBlinkMojomLockRequestPendingAssociatedRemote,
         ])
 
@@ -177,14 +166,18 @@ extension ObjectGroup {
                         ] => .undefined))
             ] => .integer,
         ])
-
+    fileprivate static let blinkMojomLockRequestPendingAssociatedReceiver = ObjectGroup(
+        name: "blink.mojom.LockRequestPendingAssociatedReceiver",
+        instanceType: .jsBlinkMojomLockRequestPendingAssociatedReceiver,
+        properties: [:],
+        methods: [:]
+    )
     fileprivate static let blinkMojomLockRequestPendingAssociatedRemote = ObjectGroup(
         name: "blink.mojom.LockRequestPendingAssociatedRemote",
         instanceType: .jsBlinkMojomLockRequestPendingAssociatedRemote,
         properties: ["$": .jsBlinkMojomLockRequestRemoteWrapper],
         methods: [:]
     )
-
     fileprivate static let blinkMojomLockRequestRemoteWrapper = ObjectGroup(
         name: "blink.mojom.LockRequestRemoteWrapper",
         instanceType: .jsBlinkMojomLockRequestRemoteWrapper,
@@ -194,13 +187,6 @@ extension ObjectGroup {
             "isBound": [] => .boolean,
             "associateAndPassReceiver": [] => .jsBlinkMojomLockRequestPendingAssociatedReceiver,
         ])
-
-    fileprivate static let blinkMojomLockRequestPendingAssociatedReceiver = ObjectGroup(
-        name: "blink.mojom.LockRequestPendingAssociatedReceiver",
-        instanceType: .jsBlinkMojomLockRequestPendingAssociatedReceiver,
-        properties: [:],
-        methods: [:]
-    )
 }
 
 ///
@@ -378,11 +364,10 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomLockManagerRemoteWrapper,
     .blinkMojomLockHandleRemote,
     .blinkMojomLockHandleRemoteWrapper,
-    .blinkMojomLockHandlePendingAssociatedReceiver,
     .blinkMojomLockRequestCallbackRouter,
     .blinkMojomLockRequestCallbackRouterReceiverHelper,
-    .blinkMojomLockRequestPendingAssociatedRemote,
     .blinkMojomLockRequestPendingAssociatedReceiver,
+    .blinkMojomLockRequestPendingAssociatedRemote,
     .blinkMojomLockRequestRemoteWrapper,
     .blinkMojomLockRequestGrantedCallbackReceiver,
     .blinkMojomLockRequestFailedCallbackReceiver,
@@ -423,8 +408,11 @@ let mojoLockManagerProfile = Profile(
     ],
     maxExecsBeforeRespawn: 50,
     timeout: Timeout.interval(11000, 11000),
+    // The first statement tells js_in_process_fuzzer which Mojo scripts page to
+    // load before running the program.
     codePrefix: """
         // --- Begin program prefix ---
+        'mojo-scripts-page: /gen/third_party/blink/public/mojom/locks/lock_manager.mojom-scripts-page.html';
         let globalRemote = null;
         const mojoAsyncFunctionPromises = [];
         function getOrCreatePrimaryRemote() {
