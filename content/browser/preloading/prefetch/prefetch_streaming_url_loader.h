@@ -46,6 +46,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   //   prefetching.
   //   `browser_context_for_service_worker` should be non-null for successful
   //   prefetch.
+  //
+  // Completion (including failure) is never notified to `response_reader`
+  // synchronously inside this method, because `PrefetchService` expects to be
+  // notified only after `PrefetchScheduler` marks the prefetch as active,
+  // which happens after `PrefetchService::StartSinglePrefetch()` returns.
   static base::WeakPtr<PrefetchStreamingURLLoader> CreateAndStart(
       scoped_refptr<network::SharedURLLoaderFactory> network_url_loader_factory,
       const network::ResourceRequest& request,
@@ -180,11 +185,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // deletion.
   base::OnceClosure on_deletion_scheduled_for_tests_;
 
-  // Called just before URLLoaderFactory is started, or just before failing a
-  // prefetch constructed from a PrePrefetch that found a ServiceWorker
-  // controller. At that time, ServiceWorker interceptor (if any) is already
-  // done, and it's known whether there is a ServiceWorker controller,
-  // indicated by `PrefetchServiceWorkerState`.
+  // Called just before URLLoaderFactory is started, or just before scheduling
+  // the failure of a prefetch constructed from a PrePrefetch that found a
+  // ServiceWorker controller. At that time, ServiceWorker interceptor (if any)
+  // is already done, and it's known whether there is a ServiceWorker
+  // controller, indicated by `PrefetchServiceWorkerState`.
   OnServiceWorkerStateDeterminedCallback
       on_service_worker_state_determined_callback_;
 

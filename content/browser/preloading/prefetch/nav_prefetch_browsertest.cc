@@ -933,6 +933,47 @@ IN_PROC_BROWSER_TEST_F(PrePrefetchServiceWorkerBrowserTest,
       true, 1);
 }
 
+// Tests that a prefetch constructed from a PrePrefetch fails without crashing
+// when its URL is controlled by an already activated ServiceWorker, e.g. after
+// a navigation to a page in the ServiceWorker's scope.
+IN_PROC_BROWSER_TEST_F(PrePrefetchServiceWorkerBrowserTest,
+                       ControllingServiceWorkerAlreadyActivated) {
+  GURL initiator_url =
+      GetUrl("a.test", "/service_worker/create_service_worker.html");
+  GURL controlled_url = GetUrl("a.test", "/service_worker/empty.html");
+  GURL prefetch_url = GetUrl("a.test", "/service_worker/empty2.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+  ASSERT_EQ("DONE",
+            EvalJs(shell(), JsReplace("register($1)",
+                                      "fetch_event_respond_with_fetch.js")));
+
+  // Load a page that the ServiceWorker controls before the prefetch.
+  ASSERT_TRUE(NavigateToURL(shell(), controlled_url));
+  ASSERT_EQ(true, EvalJs(shell(), "!!navigator.serviceWorker.controller"));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+
+  // Start a PrePrefetch. Its network request doesn't go through the
+  // ServiceWorker.
+  std::unique_ptr<PrePrefetchHandle> handle = StartPrePrefetch(prefetch_url);
+  ASSERT_NE(handle, nullptr);
+  WaitForRequest(prefetch_url);
+  EXPECT_EQ(GetRequestCount(prefetch_url), 1);
+
+  // `PrePrefetchContainer` consumption. The prefetch finds the controlling
+  // ServiceWorker and fails.
+  std::unique_ptr<PrefetchHandle> prefetch_handle =
+      prefetch_service().AddPrefetchRequestFromPrePrefetch(std::move(handle));
+  ASSERT_NE(prefetch_handle, nullptr);
+
+  // The navigation doesn't use the prefetch (and doesn't crash), and is loaded
+  // via the ServiceWorker with a new network request.
+  ASSERT_TRUE(NavigateToURL(shell(), prefetch_url));
+  EXPECT_FALSE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  EXPECT_EQ(GetRequestCount(prefetch_url), 2);
+}
+
 class PrefetchActivationBeaconBrowserTest
     : public NavPrefetchBrowserTest,
       public ::testing::WithParamInterface<bool> {
