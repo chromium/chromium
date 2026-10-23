@@ -4,6 +4,13 @@
 
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 
+#include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -283,6 +290,52 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithRepeatedContent) {
                     Box (block-flow)(resumed) offset:0,0 size:0x20 LayoutBlockFlow DIV
 )DUMP";
   EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(PhysicalFragmentTest, CrashInScrollableOverflowCalculator) {
+  ScopedMenuElementsForTest menu_elements(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes fuzz-reveal {
+        from { content-visibility: hidden; }
+        to { content-visibility: visible; }
+      }
+    </style>
+    <menulist id="target" style="animation-name: fuzz-reveal; animation-duration: 4s; animation-delay: -5s; animation-direction: reverse; animation-fill-mode: both; animation-timing-function: steps(1); animation-iteration-count: 1;"></menulist>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  LocalFrame::NotifyUserActivation(
+      GetDocument().GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
+  Fullscreen::RequestFullscreen(*target);
+  Fullscreen::DidResolveEnterFullscreenRequest(GetDocument(), /*granted=*/true);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* start_keyframe = MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(CSSPropertyID::kDisplay, "block",
+                                      SecureContextMode::kInsecureContext,
+                                      nullptr);
+  auto* end_keyframe = MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(CSSPropertyID::kDisplay, "block",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1000);
+
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  auto* effect = MakeGarbageCollected<KeyframeEffect>(target, model, timing);
+  Animation* animation =
+      Animation::Create(effect, &GetDocument().Timeline(), ASSERT_NO_EXCEPTION);
+  animation->play();
+
+  UpdateAllLifecyclePhasesForTest();
 }
 
 }  // namespace blink

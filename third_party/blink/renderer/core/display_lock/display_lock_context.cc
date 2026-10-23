@@ -1216,8 +1216,9 @@ bool DisplayLockContext::SubtreeHasTopLayerElement() const {
 }
 
 void DisplayLockContext::DetachDescendantTopLayerElements() {
-  if (!ConnectedToView() || !SubtreeHasTopLayerElement())
+  if (!ConnectedToView() || !SubtreeHasTopLayerElement()) {
     return;
+  }
 
   std::optional<StyleEngine::DetachLayoutTreeScope> detach_scope;
   if (!document_->InStyleRecalc()) {
@@ -1231,9 +1232,16 @@ void DisplayLockContext::DetachDescendantTopLayerElements() {
   // since we would remove the ::backdrop pseudo when the layout object
   // disappears). This means that we're potentially modifying the list as we're
   // traversing it. Instead of doing that, make a copy.
-  auto top_layer_elements = document_->TopLayerElements();
-  for (auto top_layer_element : top_layer_elements) {
-    auto* ancestor = top_layer_element.Get();
+  HeapVector<Member<Element>> top_layer_elements =
+      document_->TopLayerElements();
+
+  for (Member<Element>& top_layer_element : top_layer_elements) {
+    if (top_layer_element->IsBackdropPseudoElement() &&
+        top_layer_element->parentElement() == element_) {
+      // Keep rendering the ::backdrop for a content-visibility:hidden element.
+      continue;
+    }
+    Element* ancestor = top_layer_element.Get();
     while ((ancestor = FlatTreeTraversal::ParentElement(*ancestor))) {
       if (ancestor == element_) {
         top_layer_element->DetachLayoutTree();
