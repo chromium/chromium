@@ -62,6 +62,23 @@ BASE_DECLARE_FEATURE(kDynamicAimFulfillmentRealbox);
 // If enabled, dynamically routes Omnibox Composebox queries between SRP and AIM
 // based on active tools, models, and inputs.
 BASE_DECLARE_FEATURE(kDynamicAimFulfillmentOmnibox);
+// Main switch for dynamic AIM fulfillment, and the settings both surfaces
+// share. A surface uses dynamic AIM fulfillment only if this feature and that
+// surface's feature above are both enabled; with this feature disabled, every
+// composebox query routes to AIM as before.
+BASE_DECLARE_FEATURE(kDynamicAimFulfillment);
+// Which attached inputs may go to the Search results page: "none",
+// "single_image", "multi_image" or "any_combination".
+extern const base::FeatureParam<std::string>
+    kDynamicAimFulfillmentSrpInputPhase;
+// Whether to use the phase sent by the server, when present, instead of
+// `srp_input_phase`.
+extern const base::FeatureParam<bool> kDynamicAimFulfillmentUseServerInputRules;
+// Whether dynamic AIM fulfillment is enabled for the Realbox / Omnibox
+// Composebox: `kDynamicAimFulfillment` and the surface's feature are both
+// enabled.
+bool IsDynamicAimFulfillmentEnabledForRealbox();
+bool IsDynamicAimFulfillmentEnabledForOmnibox();
 
 // If enabled, clicking outside the Realbox Composebox closes the suggestions
 // dropdown and restores page interaction while keeping the Composebox open.

@@ -228,9 +228,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxRichImageSuggestionsEnabled",
                      base::FeatureList::IsEnabled(
                          omnibox::kComposeboxRichImageSuggestionsOmnibox));
-  source->AddBoolean(
-      "dynamicAimFulfillmentEnabled",
-      base::FeatureList::IsEnabled(omnibox::kDynamicAimFulfillmentOmnibox));
+  source->AddBoolean("dynamicAimFulfillmentEnabled",
+                     omnibox::IsDynamicAimFulfillmentEnabledForOmnibox());
   source->AddBoolean("composeboxShowLensIcon", omnibox::kAskGLensIcon.Get());
   source->AddBoolean("askGLensIconIphEnabled", omnibox::kAskGLensIconIph.Get());
   source->AddBoolean("askGComposeboxLensChipEnabled",

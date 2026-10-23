@@ -84,11 +84,13 @@ source_set("features") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "composebox_features_unittest.cc",
     "logger_unittest.cc",
     "string_cleaning_unittest.cc",
   ]
   deps = [
     ":common",
+    ":features",
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
