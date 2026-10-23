@@ -12,8 +12,9 @@
 // Note: This utility has been designed to work on iPad running iOS 26+.
 @interface ChromeMultitaskingTestUtil : NSObject
 
-// Double taps the status bar to put the app in windowed mode (Stage Manager).
-// Asserts that the window successfully enters windowed mode.
+// Drags the bottom-right corner of the window inwards to put the app in
+// windowed mode (Stage Manager). Asserts that the window successfully enters
+// windowed mode.
 + (void)moveToWindowedMode;
 
 // Drags the bottom-left corner of the window to transition the app to compact

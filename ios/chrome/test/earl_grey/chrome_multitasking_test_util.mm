@@ -23,14 +23,19 @@ using base::test::ios::kWaitForUIElementTimeout;
 @implementation ChromeMultitaskingTestUtil
 
 + (void)moveToWindowedMode {
-  XCUIApplication* springboard = [[XCUIApplication alloc]
-      initWithBundleIdentifier:kSpringboardBundleIdentifier];
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElement* appWindow = app.windows[@"0"];
 
-  // Double tap status bar at center to enter Stage Manager windowed mode.
-  XCUIElement* statusBar = springboard.statusBars.firstMatch;
-  XCUICoordinate* tapCoordinate =
-      [statusBar coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
-  [tapCoordinate doubleTap];
+  // Drag bottom-right corner inwards to enter Stage Manager windowed mode.
+  XCUICoordinate* bottomRightStart =
+      [appWindow coordinateWithNormalizedOffset:CGVectorMake(1.0, 1.0)];
+  XCUICoordinate* dragDestination =
+      [appWindow coordinateWithNormalizedOffset:CGVectorMake(0.85, 0.85)];
+
+  [bottomRightStart pressForDuration:kDragDuration
+                thenDragToCoordinate:dragDestination
+                        withVelocity:XCUIGestureVelocityDefault
+                 thenHoldForDuration:kDragDuration];
 
   GREYCondition* isWindowed =
       [GREYCondition conditionWithName:@"Wait for windowed mode"
