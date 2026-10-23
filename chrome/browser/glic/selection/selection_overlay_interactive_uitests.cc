@@ -284,7 +284,7 @@ class SelectionOverlayInteractiveTestWithPrompt
   }
 
   void TearDownOnMainThread() override {
-    tabs::TabInterface* tab = browser()->tab_strip_model()->GetTabAtIndex(0);
+    tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
     if (tab && fake_tool_) {
       if (auto* service = ::selection::SuggestionService::From(tab)) {
         service->UnregisterTool(fake_tool_.get());
@@ -1737,8 +1737,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
   const DeepQuery kOverlayApp = {"selection-overlay-app"};
   const DeepQuery kSelectionOverlay = {"selection-overlay-app",
                                        "glic-selection-overlay"};
-  const DeepQuery kSettingsButton = {
-      "selection-overlay-app", "glic-selection-overlay", "#settingsButton"};
+  const DeepQuery kCloseRegionButton = {
+      "selection-overlay-app", "glic-selection-overlay", "#closeRegionButton"};
 
   RunTestSequence(
       OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
@@ -1792,12 +1792,12 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
           "el => {"
           "  const container = "
           "el.shadowRoot.querySelector('#floatingPromptContainer');"
-          "  const settingsBtn = "
-          "el.shadowRoot.querySelector('#settingsButton');"
+          "  const closeBtn = "
+          "el.shadowRoot.querySelector('#closeRegionButton');"
           "  const chip = el.shadowRoot.querySelector('.action-chip');"
-          "  if (!container || !settingsBtn || !chip) return false;"
+          "  if (!container || !closeBtn || !chip) return false;"
           "  const containerRect = container.getBoundingClientRect();"
-          "  const btnRect = settingsBtn.getBoundingClientRect();"
+          "  const btnRect = closeBtn.getBoundingClientRect();"
           "  const chipRect = chip.getBoundingClientRect();"
           "  const overlayRect = el.selectionOverlayRect;"
           "  const sel = el.activeSelection;"
@@ -1808,7 +1808,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
           "      Math.abs(containerRect.bottom - selTop) <= 2 && "
           "      btnRect.left >= chipRect.right;"
           "}"),
-      MoveMouseTo(kOverlayWebContentsId, kSettingsButton), ClickMouse(),
+      MoveMouseTo(kOverlayWebContentsId, kCloseRegionButton), ClickMouse(),
       WaitForHide(OverlayBaseController::kOverlayId));
 }
 
@@ -2172,29 +2172,77 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
-                       ClickSettingsButtonOpensInlineCueMenuSettings) {
+                       CloseOverlayWithCloseButtonShowsHiddenToast) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-  const DeepQuery kSettingsButton = {
-      "selection-overlay-app", "glic-selection-overlay", "#settingsButton"};
+  const DeepQuery kCloseRegionButton = {
+      "selection-overlay-app", "glic-selection-overlay", "#closeRegionButton"};
 
   RunTestSequence(
       OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
-      WaitForElementVisible(kOverlayWebContentsId, kSettingsButton),
-      ClickElement(kOverlayWebContentsId, kSettingsButton,
+      WaitForElementVisible(kOverlayWebContentsId, kCloseRegionButton),
+      ClickElement(kOverlayWebContentsId, kCloseRegionButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(OverlayBaseController::kOverlayId),
-      EnsureNotPresent(toasts::ToastView::kToastViewId),
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
-                  2),
+      WaitForShow(toasts::ToastView::kToastViewId),
       CheckResult(
           [this]() {
-            return browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetVisibleURL();
+            auto* toast_controller = ToastController::MaybeGetForWebContents(
+                browser()->tab_strip_model()->GetActiveWebContents());
+            return toast_controller ? toast_controller->GetCurrentToastId()
+                                    : std::nullopt;
           },
-          GURL("chrome://settings/ai/inlineCueMenu")));
+          std::optional<ToastId>(ToastId::kGlicSelectionHiddenForSite)));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       CloseOverlayWithEscapeKeyShowsHiddenToast) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
+      SendKeyPress(OverlayBaseController::kOverlayId, ui::VKEY_ESCAPE),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      CheckResult(
+          [this]() {
+            auto* toast_controller = ToastController::MaybeGetForWebContents(
+                browser()->tab_strip_model()->GetActiveWebContents());
+            return toast_controller ? toast_controller->GetCurrentToastId()
+                                    : std::nullopt;
+          },
+          std::optional<ToastId>(ToastId::kGlicSelectionHiddenForSite)));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       CloseOverlayWithBackgroundClickDoesNotShowHiddenToast) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(300, 300)),
+      ClickMouse(), WaitForHide(OverlayBaseController::kOverlayId),
+      EnsureNotPresent(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       CloseOverlayWithCardCloseButtonDoesNotShowHiddenToast) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kCardCloseButton = {
+      "selection-overlay-app", "glic-selection-overlay",
+      "#inlineFulfillmentHost > glic-explain-fulfillment .close-button"};
+
+  RunTestSequence(
+      OpenExplainCard(kActiveTab, kOverlayWebContentsId),
+      WaitForElementVisible(kOverlayWebContentsId, kCardCloseButton),
+      ClickElement(kOverlayWebContentsId, kCardCloseButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      EnsureNotPresent(toasts::ToastView::kToastViewId));
 }
 
 namespace {

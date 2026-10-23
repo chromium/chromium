@@ -183,9 +183,4 @@ export class SelectionOverlayBaseHandlerImpl extends
     const proxy = BrowserProxyImpl.getInstance();
     proxy.handler.dismissOverlay(reason);
   }
-
-  openSettings(): void {
-    const proxy = BrowserProxyImpl.getInstance();
-    proxy.handler.openSettings();
-  }
 }

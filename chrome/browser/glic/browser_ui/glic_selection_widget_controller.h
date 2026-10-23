@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -109,6 +110,8 @@ class GlicSelectionWidgetController
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
+
+  base::CallbackListSubscription overlay_closed_subscription_;
 
   std::unique_ptr<GlicSelectionWidgetDelegate> widget_delegate_;
 };

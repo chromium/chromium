@@ -12,7 +12,6 @@ build_webui("build") {
     "explain.svg",
     "prompt_suggestion.svg",
     "selection_overlay.html",
-    "settings.svg",
     "spark.svg",
     "spark_mono.svg",
   ]
