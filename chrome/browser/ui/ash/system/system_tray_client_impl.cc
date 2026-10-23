@@ -52,9 +52,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
@@ -63,6 +61,7 @@
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -80,6 +79,8 @@
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
@@ -184,9 +185,13 @@ bool IsAppInstalled(std::string app_id) {
 }
 
 void OpenInBrowser(const GURL& event_url) {
-  ShowSingletonTabOverwritingNTP(ProfileManager::GetActiveUserProfile(),
-                                 event_url,
-                                 NavigateParams::IGNORE_AND_NAVIGATE);
+  const session_manager::Session& session =
+      CHECK_DEREF(SessionManager::Get()->GetActiveSession());
+  ash::BrowserController::GetInstance()->OpenUrl(
+      session.account_id(), event_url,
+      {.disposition = WindowOpenDisposition::kSwitchToTab,
+       .transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+       .ignore_path_for_tab_reuse = true});
 }
 
 ash::ManagementDeviceMode GetManagementDeviceMode(
@@ -564,8 +569,12 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
 }
 
 void SystemTrayClientImpl::ShowPaletteHelp() {
-  ShowSingletonTab(ProfileManager::GetActiveUserProfile(),
-                   GURL(ash::external_urls::kPaletteHelpURL));
+  const session_manager::Session& session =
+      CHECK_DEREF(SessionManager::Get()->GetActiveSession());
+  ash::BrowserController::GetInstance()->OpenUrl(
+      session.account_id(), GURL(ash::external_urls::kPaletteHelpURL),
+      {.disposition = WindowOpenDisposition::kSingletonTab,
+       .transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK});
 }
 
 void SystemTrayClientImpl::ShowPaletteSettings() {

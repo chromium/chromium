@@ -158,8 +158,13 @@ class BrowserController {
     // popup hides the location bar, title bar, and window icon, uses
     // app-style header rendering, and uses saved or default window bounds
     // instead of inheriting bounds from the last active browser.
-    // Only allowed when `disposition` is `WindowOpenDisposition::kNewPopup`.
+    // Only allowed when `disposition` is `kNewPopup`.
     bool popup_has_trusted_source = false;
+    // Whether existing-tab matching should ignore the URL path and query (in
+    // addition to the ref) and navigate the matched tab to `url` if its current
+    // URL differs.
+    // Only allowed when `disposition` is `kSingletonTab` or `kSwitchToTab`.
+    bool ignore_path_for_tab_reuse = false;
   };
 
   // See OpenCaptivePortalSignin below.

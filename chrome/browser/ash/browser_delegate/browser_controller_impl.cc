@@ -310,6 +310,11 @@ content::WebContents* BrowserControllerImpl::OpenUrl(
     CHECK_EQ(params.disposition, WindowOpenDisposition::kNewPopup);
     nav_params.trusted_source = true;
   }
+  if (params.ignore_path_for_tab_reuse) {
+    CHECK(params.disposition == WindowOpenDisposition::kSingletonTab ||
+          params.disposition == WindowOpenDisposition::kSwitchToTab);
+    nav_params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
+  }
   Navigate(&nav_params);
   return nav_params.navigated_or_inserted_contents.get();
 }
