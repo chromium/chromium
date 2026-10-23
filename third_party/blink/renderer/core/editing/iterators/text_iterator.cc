@@ -258,8 +258,6 @@ TextIteratorAlgorithm<Strategy>::~TextIteratorAlgorithm() {
   const Document& document = OwnerDocument();
   if (behavior_.ForSelectionToString())
     document.CountUse(WebFeature::kSelectionToStringWithShadowTree);
-  if (behavior_.ForWindowFind())
-    document.CountUse(WebFeature::kWindowFindWithShadowTree);
 }
 
 template <typename Strategy>

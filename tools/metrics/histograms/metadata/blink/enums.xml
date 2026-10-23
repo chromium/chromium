@@ -1297,7 +1297,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="859" label="V8MouseEvent_LayerY_AttributeGetter"/>
   <int value="860" label="InnerTextWithShadowTree"/>
   <int value="861" label="SelectionToStringWithShadowTree"/>
-  <int value="862" label="WindowFindWithShadowTree"/>
+  <int value="862" label="OBSOLETE_WindowFindWithShadowTree"/>
   <int value="863" label="V8CompositionEvent_InitCompositionEvent_Method"/>
   <int value="864" label="V8CustomEvent_InitCustomEvent_Method"/>
   <int value="865" label="V8DeviceMotionEvent_InitDeviceMotionEvent_Method"/>

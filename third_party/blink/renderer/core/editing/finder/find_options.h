@@ -67,15 +67,6 @@ class FindOptions {
     return *this;
   }
 
-  // Used for window.find() or execCommand('find').
-  // TODO(yosin) Once find UI works on flat tree and it doesn't use
-  // `rangeOfString()`, we should get rid of the FindApiCall flag.
-  bool IsFindApiCall() const { return find_api_call_; }
-  constexpr FindOptions& SetFindApiCall(bool flag) {
-    find_api_call_ = flag;
-    return *this;
-  }
-
   bool IsRubySupported() const { return ruby_supported_; }
   constexpr FindOptions& SetRubySupported(bool flag) {
     ruby_supported_ = flag;
@@ -113,7 +104,6 @@ class FindOptions {
   bool wrapping_around_ : 1 = false;
   bool starting_in_selection_ : 1 = false;
   bool whole_word_ : 1 = false;
-  bool find_api_call_ : 1 = false;
   bool ruby_supported_ : 1 = false;
   bool require_word_bounded_start_ : 1 = false;
   bool require_word_bounded_end_ : 1 = false;

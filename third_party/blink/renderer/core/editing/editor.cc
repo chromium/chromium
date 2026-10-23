@@ -807,8 +807,7 @@ bool Editor::FindString(LocalFrame& frame,
   // |EphemeralRange| rather than|Range| object.
   Range* const result_range = FindRangeOfString(
       *frame.GetDocument(), target,
-      EphemeralRangeInFlatTree(selection.Start(), selection.End()),
-      options.SetFindApiCall(true));
+      EphemeralRangeInFlatTree(selection.Start(), selection.End()), options);
 
   if (!result_range)
     return false;

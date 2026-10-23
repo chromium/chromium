@@ -56,7 +56,6 @@ class BackwardsCharacterIteratorAlgorithm {
  private:
   wtf_size_t offset_ = 0;
   wtf_size_t run_offset_ = 0;
-  bool at_break_;
 
   SimplifiedBackwardsTextIteratorAlgorithm<Strategy> text_iterator_;
 };

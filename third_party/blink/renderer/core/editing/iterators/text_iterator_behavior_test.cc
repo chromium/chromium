@@ -21,10 +21,6 @@ TEST(TextIteratorBehaviorTest, Basic) {
 
 TEST(TextIteratorBehaviorTest, Values) {
   EXPECT_TRUE(TextIteratorBehavior::Builder()
-                  .SetDoesNotBreakAtReplacedElement(true)
-                  .Build()
-                  .DoesNotBreakAtReplacedElement());
-  EXPECT_TRUE(TextIteratorBehavior::Builder()
                   .SetEmitsCharactersBetweenAllVisiblePositions(true)
                   .Build()
                   .EmitsCharactersBetweenAllVisiblePositions());
@@ -60,10 +56,6 @@ TEST(TextIteratorBehaviorTest, Values) {
                   .SetForSelectionToString(true)
                   .Build()
                   .ForSelectionToString());
-  EXPECT_TRUE(TextIteratorBehavior::Builder()
-                  .SetForWindowFind(true)
-                  .Build()
-                  .ForWindowFind());
   EXPECT_TRUE(TextIteratorBehavior::Builder()
                   .SetIgnoresStyleVisibility(true)
                   .Build()

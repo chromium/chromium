@@ -532,7 +532,7 @@ enum WebFeature {
   kV8MouseEvent_LayerY_AttributeGetter = 859,
   kInnerTextWithShadowTree = 860,
   kSelectionToStringWithShadowTree = 861,
-  kWindowFindWithShadowTree = 862,
+  kOBSOLETE_WindowFindWithShadowTree = 862,
   kV8CompositionEvent_InitCompositionEvent_Method = 863,
   kV8CustomEvent_InitCustomEvent_Method = 864,
   kV8DeviceMotionEvent_InitDeviceMotionEvent_Method = 865,

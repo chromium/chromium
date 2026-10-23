@@ -94,10 +94,6 @@ class TextIteratorAlgorithm {
     return text_state_.CharacterAt(index);
   }
 
-  bool BreaksAtReplacedElement() {
-    return !behavior_.DoesNotBreakAtReplacedElement();
-  }
-
   // Computes the length of the given range using a text iterator according to
   // the specified iteration behavior. The default iteration behavior is to
   // always emit object replacement characters for replaced elements.
@@ -179,10 +175,6 @@ class TextIteratorAlgorithm {
 
   bool ExcludesAutofilledValue() const {
     return behavior_.ExcludeAutofilledValue();
-  }
-
-  bool DoesNotBreakAtReplacedElement() const {
-    return behavior_.DoesNotBreakAtReplacedElement();
   }
 
   // Clipboard should respect user-select style attribute

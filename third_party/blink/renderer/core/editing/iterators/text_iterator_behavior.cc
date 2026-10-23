@@ -17,12 +17,6 @@ TextIteratorBehavior TextIteratorBehavior::Builder::Build() {
 }
 
 TextIteratorBehavior::Builder&
-TextIteratorBehavior::Builder::SetDoesNotBreakAtReplacedElement(bool value) {
-  behavior_.values_.bits.does_not_break_at_replaced_element = value;
-  return *this;
-}
-
-TextIteratorBehavior::Builder&
 TextIteratorBehavior::Builder::SetEmitsCharactersBetweenAllVisiblePositions(
     bool value) {
   behavior_.values_.bits.emits_characters_between_all_visible_positions = value;
@@ -80,12 +74,6 @@ TextIteratorBehavior::Builder::SetExcludeAutofilledValue(bool value) {
 TextIteratorBehavior::Builder&
 TextIteratorBehavior::Builder::SetForSelectionToString(bool value) {
   behavior_.values_.bits.for_selection_to_string = value;
-  return *this;
-}
-
-TextIteratorBehavior::Builder& TextIteratorBehavior::Builder::SetForWindowFind(
-    bool value) {
-  behavior_.values_.bits.for_window_find = value;
   return *this;
 }
 
