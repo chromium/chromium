@@ -37,7 +37,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
@@ -62,26 +61,6 @@ namespace {
 using ExtensionStreamState = extensions::api::dictation_private::StreamState;
 using ExtensionTranscriptionType =
     extensions::api::dictation_private::TranscriptionType;
-
-class FocusLossObserver : public content::WebContentsObserver {
- public:
-  explicit FocusLossObserver(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-  FocusLossObserver(const FocusLossObserver&) = delete;
-  FocusLossObserver& operator=(const FocusLossObserver&) = delete;
-  ~FocusLossObserver() override = default;
-
-  // content::WebContentsObserver:
-  void OnWebContentsLostFocus(
-      content::RenderWidgetHost* render_widget_host) override {
-    lost_focus_called_ = true;
-  }
-
-  bool lost_focus_called() const { return lost_focus_called_; }
-
- private:
-  bool lost_focus_called_ = false;
-};
 
 class DictationKeyedServiceBrowserTest
     : public DictationBrowserTestBase,
@@ -589,16 +568,8 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
       web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
   frame_observer.Wait();
 
-  FocusLossObserver focus_loss_observer(web_contents());
-
   // Focus the textarea so that dictation targets it.
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "text_id");
-
-  if (!content::IsRenderWidgetHostFocused(
-          web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost())) {
-    GTEST_SKIP() << "Test is sensitive to focus loss from test environment "
-                    "until crbug.com/525856380 is fixed.";
-  }
 
   std::optional<int> dom_node_id =
       content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#text_id");
@@ -628,11 +599,6 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   ExtensionSendStreamStateUpdate(profile(), provider->stream_id_for_testing(),
                                  ExtensionStreamState::kComplete);
 
-  if (focus_loss_observer.lost_focus_called()) {
-    GTEST_SKIP() << "Test is sensitive to focus loss from test environment "
-                    "until crbug.com/525856380 is fixed.";
-  }
-
   // Verify the transcription reached the document.
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "Hello World");
 }
@@ -652,16 +618,8 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
       web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
   frame_observer.Wait();
 
-  FocusLossObserver focus_loss_observer(web_contents());
-
   // Focus the textarea so that dictation targets it.
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "text_id");
-
-  if (!content::IsRenderWidgetHostFocused(
-          web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost())) {
-    GTEST_SKIP() << "Test is sensitive to focus loss from test environment "
-                    "until crbug.com/525856380 is fixed.";
-  }
 
   std::optional<int> dom_node_id =
       content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#text_id");
@@ -711,11 +669,6 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
     session_controller()->UiRequestEndActiveStream();
     ExtensionSendStreamStateUpdate(profile(), stream_id,
                                    ExtensionStreamState::kComplete);
-  }
-
-  if (focus_loss_observer.lost_focus_called()) {
-    GTEST_SKIP() << "Test is sensitive to focus loss from test environment "
-                    "until crbug.com/525856380 is fixed.";
   }
 
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "Hello World");
