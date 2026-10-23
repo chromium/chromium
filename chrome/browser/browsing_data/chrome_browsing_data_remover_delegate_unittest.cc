@@ -104,13 +104,16 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/mock_entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_test_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -2698,29 +2701,34 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        EntitySuppressionsClearedOnAutofillRemoval) {
   base::test::ScopedFeatureList feature_list{
       autofill::features::kAutofillAmbientAutofillSuppression};
-  auto* mock_suppression_manager =
-      static_cast<autofill::MockEntitySuppressionManager*>(
-          autofill::EntitySuppressionManagerFactory::GetInstance()
-              ->SetTestingFactoryAndUse(
-                  GetProfile(),
-                  base::BindOnce([](content::BrowserContext*)
-                                     -> std::unique_ptr<KeyedService> {
-                    return std::make_unique<
-                        autofill::MockEntitySuppressionManager>();
-                  })));
+  auto* suppression_manager = static_cast<autofill::EntitySuppressionManager*>(
+      autofill::EntitySuppressionManagerFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              GetProfile(),
+              base::BindOnce([](content::BrowserContext*)
+                                 -> std::unique_ptr<KeyedService> {
+                return autofill::CreateTestEntitySuppressionManager();
+              })));
 
-  // Perform removal for the last hour.
-  const base::Time begin_time = AnHourAgo();
-  EXPECT_CALL(*mock_suppression_manager,
-              ClearSuppressions(begin_time, base::Time::Max()));
-  BlockUntilBrowsingDataRemoved(begin_time, base::Time::Max(),
+  // Suppress one entity two hours ago and one now.
+  const autofill::EntityInstance old_entity =
+      autofill::test::GetPassportEntityInstance();
+  const autofill::EntityInstance new_entity =
+      autofill::test::GetDriversLicenseEntityInstance();
+  ASSERT_TRUE(suppression_manager->SuppressEntity(old_entity));
+  task_environment()->AdvanceClock(base::Hours(2));
+  ASSERT_TRUE(suppression_manager->SuppressEntity(new_entity));
+
+  // Removal for the last hour only clears the new suppression.
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_FORM_DATA, false);
+  EXPECT_TRUE(suppression_manager->IsSuppressed(old_entity));
+  EXPECT_FALSE(suppression_manager->IsSuppressed(new_entity));
 
-  // Perform removal for all-time.
-  EXPECT_CALL(*mock_suppression_manager,
-              ClearSuppressions(base::Time(), base::Time::Max()));
+  // Removal for all-time clears the remaining suppression.
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_FORM_DATA, false);
+  EXPECT_FALSE(suppression_manager->IsSuppressed(old_entity));
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
