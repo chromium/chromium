@@ -45,7 +45,7 @@ namespace {
 constexpr CGFloat kTabGridFontSize = 11;
 // The size of the button images.
 constexpr CGFloat kButtonImageSize = 23;
-constexpr CGFloat kFiveButtonAppBarButtonImageSize = 22;
+constexpr CGFloat kFiveButtonAppBarButtonImageSize = 24;
 // The padding between the image and the text in the buttons.
 constexpr CGFloat kButtonImagePadding = 3;
 // The shadow radius for the buttons.
@@ -75,9 +75,10 @@ constexpr CGFloat kAssistantHighlightDuration = 0.2;
 constexpr CGFloat kStackViewSpacing = 4;
 // The horizontal margins of the stack view.
 constexpr CGFloat kStackViewHorizontalMargin = 8;
+constexpr CGFloat kFiveButtonStackViewLandscapeHorizontalMargin = 4;
 // The vertical offset of the stack view in portrait.
 constexpr CGFloat kStackViewPortraitVerticalOffset = 2;
-constexpr CGFloat kFiveButtonStackViewPortraitVerticalOffset = 20;
+constexpr CGFloat kFiveButtonStackViewPortraitVerticalOffset = 24;
 
 // The inner padding of the buttons.
 constexpr CGFloat kButtonHorizontalPadding = 4;
@@ -365,8 +366,15 @@ UIColor* AssistantHighlightBackgroundColor() {
     _trailingSpacer.hidden = NO;
     _heightConstraint.constant = AppBarHeightLandscape();
     _stackViewBottomConstraint.constant = 0;
-    _stackViewLeadingConstraint.constant = 0;
-    _stackViewTrailingConstraint.constant = 0;
+    if (IsFiveButtonAppBarLayoutEnabled()) {
+      _stackViewLeadingConstraint.constant =
+          kFiveButtonStackViewLandscapeHorizontalMargin;
+      _stackViewTrailingConstraint.constant =
+          -kFiveButtonStackViewLandscapeHorizontalMargin;
+    } else {
+      _stackViewLeadingConstraint.constant = 0;
+      _stackViewTrailingConstraint.constant = 0;
+    }
   } else {
     _stackView.distribution = UIStackViewDistributionFillEqually;
     [NSLayoutConstraint deactivateConstraints:_buttonWidthConstraints];
