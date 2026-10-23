@@ -164,8 +164,9 @@ void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
   }
 
   const TemplateURL* template_url = model->GetTemplateURLForKeyword(keyword);
-  CHECK_EQ(extension_id, template_url->GetExtensionId(),
-           base::NotFatalUntil::M161);
+  // TODO(crbug.com/576173326): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(extension_id, template_url->GetExtensionId());
 
   // We want to order these suggestions in descending order, so start with
   // the relevance of the first result, added synchronously in
