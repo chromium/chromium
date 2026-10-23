@@ -1222,3 +1222,30 @@ TEST_F(OmniboxMetricsProviderTest, LogScoringSignals) {
   RecordLogAndVerifyScoringSignals(log, *matches[0].scoring_signals);
 }
 #endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
+
+// Every result type the client can log needs a summarized type, so that the
+// client histograms agree with the server-side summary of the same events.
+TEST_F(OmniboxMetricsProviderTest, GetClientSummarizedResultType_MapsAllTypes) {
+  using Suggestion = metrics::OmniboxEventProto::Suggestion;
+  for (int i = Suggestion::ResultType_MIN; i <= Suggestion::ResultType_MAX;
+       ++i) {
+    if (!Suggestion::ResultType_IsValid(i) ||
+        i == Suggestion::UNKNOWN_RESULT_TYPE) {
+      continue;
+    }
+    const auto type = static_cast<Suggestion::ResultType>(i);
+    EXPECT_NE(ClientSummarizedResultType::kUnknown,
+              OmniboxMetricsProvider::GetClientSummarizedResultType(type))
+        << Suggestion::ResultType_Name(type);
+  }
+
+  EXPECT_EQ(ClientSummarizedResultType::kUnknown,
+            OmniboxMetricsProvider::GetClientSummarizedResultType(
+                Suggestion::UNKNOWN_RESULT_TYPE));
+  EXPECT_EQ(ClientSummarizedResultType::kUrl,
+            OmniboxMetricsProvider::GetClientSummarizedResultType(
+                Suggestion::TAB_GROUP));
+  EXPECT_EQ(ClientSummarizedResultType::kOnDevice,
+            OmniboxMetricsProvider::GetClientSummarizedResultType(
+                Suggestion::NULL_RESULT_MESSAGE));
+}
