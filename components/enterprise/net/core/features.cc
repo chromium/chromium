@@ -8,8 +8,8 @@
 
 namespace enterprise_net {
 
-BASE_FEATURE(kEnableDynamicRouteFetching, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kEnterpriseProxyErrorHandling, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableDynamicRouteFetching, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnterpriseProxyErrorHandling, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr size_t kDefaultPvdConfigMaxSizeBytes = 3 * 1024 * 1024;
 
